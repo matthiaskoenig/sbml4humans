@@ -16,17 +16,19 @@ Alternatively the backend and frontend can be run directly on the machine. This 
 
 
 ### Start backend API (local)
-Create a python virtual environment and install the backend dependencies
+The backend is the `sbml4humans` Python package in `backend/`, it requires
+Python 3.14 and [uv](https://docs.astral.sh/uv/). For development it runs
+against the [sbmlutils](https://github.com/matthiaskoenig/sbmlutils) checkout
+next to this repository, which provides the curated BioModels served as examples
+(see the [main README](../README.md) for details).
+
 ```bash
-uv venv --python 3.14
-uv pip install -r backend/requirements.txt
+git clone https://github.com/matthiaskoenig/sbmlutils.git ../sbmlutils
+cd backend
+uv sync
+uv run uvicorn sbml4humans.api:api --reload --port 1444
 ```
 
-Start the backend API from `backend/api.py` either from the python module or via
-the command line via
-```bash
-uv run uvicorn --app-dir backend api:api --reload --port 1444
-```
 This will run the API on port 1444. Check that the API is running using a browser
 http://localhost:1444/api/examples
 
@@ -34,7 +36,7 @@ http://localhost:1444/api/examples
 ### Start frontend (local)
 **Install all dependencies**  
 ```
-cd sbml4humans
+cd frontend
 npm install
 ```
 
