@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from pymetadata.omex import Omex
 from sbmlutils.resources import (
     BIOMODELS_CURATED_PATH,
     OMEX_ICGMODEL,
@@ -16,6 +17,7 @@ from sbml4humans.examples import (
     example_from_omex,
     example_from_sbml,
     load_examples,
+    main_sbml_entry,
 )
 
 
@@ -64,8 +66,29 @@ def test_biomodel_examples_skips_missing_files(tmp_path: Path) -> None:
     examples = biomodel_examples(tmp_path, count=3)
     assert [e.id for e in examples] == ["BIOMD0000000002"]
     assert examples[0].file.is_file()
-    assert examples[0].file.name == "icg_body.xml"
-    assert examples[0].packages == ["comp"]
+    # the master model of the archive
+    assert examples[0].file.name == "icg_body_flat.xml"
+
+
+def test_main_sbml_entry_master() -> None:
+    """The master SBML entry of an archive is the main entry."""
+    entry = main_sbml_entry(Omex.from_omex(OMEX_ICGMODEL))
+    assert entry.location == "./models/icg_body_flat.xml"
+    assert entry.master
+
+
+def test_main_sbml_entry_without_master() -> None:
+    """Without master the first SBML entry by location is the main entry."""
+    omex = Omex.from_omex(OMEX_ICGMODEL)
+    for entry in omex.manifest.entries:
+        entry.master = False
+    assert main_sbml_entry(omex).location == "./models/icg_body.xml"
+
+
+def test_main_sbml_entry_without_sbml() -> None:
+    """An archive without SBML entry is rejected."""
+    with pytest.raises(ValueError, match="no SBML entry"):
+        main_sbml_entry(Omex())
 
 
 def test_biomodel_examples_available() -> None:

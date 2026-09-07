@@ -10,7 +10,7 @@ from pathlib import Path
 
 import libsbml
 from pydantic import BaseModel, Field, FilePath
-from pymetadata.omex import Omex
+from pymetadata.omex import ManifestEntry, Omex
 from sbmlutils.io import read_sbml
 from sbmlutils.resources import (
     API_EXAMPLES_MODEL,
@@ -82,7 +82,7 @@ def biomodel_examples(
     """Read the metadata of the first curated biomodels.
 
     The curated biomodels are not part of the sbmlutils distribution, missing
-    archives are skipped. The example of a biomodel is its (first) SBML model.
+    archives are skipped. The example of a biomodel is its main SBML model.
     """
     if not biomodels_dir.is_dir():
         logger.warning("No curated biomodels found in '%s'", biomodels_dir)
@@ -96,11 +96,29 @@ def biomodel_examples(
             continue
 
         omex = Omex.from_omex(omex_path)
-        sbml_entry = omex.entries_by_format(format_key="sbml")[0]
-        sbml_path = omex.get_path(sbml_entry.location)
+        sbml_path = omex.get_path(main_sbml_entry(omex).location)
         examples.append(example_from_sbml(sbml_path, example_id=biomodel_id))
 
     return examples
+
+
+def main_sbml_entry(omex: Omex) -> ManifestEntry:
+    """Get the main SBML entry of an archive.
+
+    This is the master entry if one of the SBML entries is the master,
+    otherwise the first SBML entry by location (the order of the entries in
+    an archive is not guaranteed).
+
+    Raises:
+        ValueError: if the archive contains no SBML entry.
+    """
+    entries = omex.entries_by_format(format_key="sbml")
+    if not entries:
+        raise ValueError("The archive contains no SBML entry")
+    return next(
+        (entry for entry in entries if entry.master),
+        min(entries, key=lambda entry: entry.location),
+    )
 
 
 @lru_cache(maxsize=1)
