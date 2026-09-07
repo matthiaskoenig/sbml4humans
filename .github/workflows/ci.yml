@@ -4,12 +4,14 @@ on:
   push:
   workflow_dispatch:
 
+# least privilege by default, the release job raises what it needs
 permissions:
   contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # superseded branch runs are cancelled, release runs are never cancelled
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
   test:
@@ -46,3 +48,21 @@ jobs:
       - name: Test the backend
         working-directory: sbml4humans/backend
         run: uv run pytest
+
+  release:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write  # create the GitHub release
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          body_path: "release-notes/${{ github.ref_name }}.md"
+          draft: false
+          prerelease: false

@@ -28,6 +28,7 @@ Repository = "https://github.com/matthiaskoenig/sbml4humans"
 
 [dependency-groups]
 dev = [
+    "bump-my-version>=1.5.1",
     "pytest>=9.1.1",
     "ruff>=0.16.6",
     "ty>=0.0.78",
@@ -41,6 +42,24 @@ sbmlutils = { path = "../../sbmlutils", editable = true }
 
 [tool.hatch.version]
 path = "sbml4humans/__init__.py"
+
+[tool.bumpversion]
+# the version of sbml4humans is the version of the backend package, the frontend
+# follows it. Run from this directory: `uv run bump-my-version bump minor`
+current_version = "0.2.0"
+commit = true
+tag = true
+tag_name = "{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+message = "Bump version: {current_version} → {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "sbml4humans/__init__.py"
+
+[[tool.bumpversion.files]]
+filename = "../frontend/package.json"
+search = "\"version\": \"{current_version}\""
+replace = "\"version\": \"{new_version}\""
 
 [tool.hatch.build.targets.wheel]
 packages = ["sbml4humans"]

@@ -62,6 +62,21 @@ npm run serve
 
 The development server runs on <http://localhost:3456> and talks to the backend api.
 
+## Releases
+
+The version of sbml4humans is the version of the backend package in
+`backend/sbml4humans/__init__.py`, the frontend `package.json` follows it. A
+release is described in `release-notes/<version>.md`; bumping the version
+commits and tags, and the tag creates the
+[GitHub release](https://github.com/matthiaskoenig/sbml4humans/releases) with
+these notes:
+
+```bash
+cd backend
+uv run bump-my-version bump minor  # or major, patch
+git push origin main --tags
+```
+
 ## Funding
 
 SBML4Humans was funded as part of [Google Summer of Code 2021](https://summerofcode.withgoogle.com/).
