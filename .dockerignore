@@ -1,0 +1,10 @@
+# only the backend is copied into the backend container
+.git
+.venv
+backend/.venv
+backend/uv.lock
+frontend
+nginx
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache

@@ -9,7 +9,7 @@ Until sbmlutils 0.10.0 the application lived in the sbmlutils repository. It was
 | path | content |
 | --- | --- |
 | `frontend/` | the Vue 3 application (TypeScript, Vuex, Vue Router, PrimeVue) |
-| `backend/` | the FastAPI api, a thin http layer over `sbmlutils.report.sbmlinfo.SBMLDocumentInfo` |
+| `backend/` | the `sbml4humans` Python package: a FastAPI api, a thin http layer over `sbmlutils.report.sbmlinfo.SBMLDocumentInfo` |
 | `nginx/` | the proxy configuration of sbml4humans.de |
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
 | `deploy.md`, `deploy.sh`, `docker-purge.sh` | deployment of the server |
@@ -23,15 +23,34 @@ sudo docker compose -f docker-compose-develop.yml build --no-cache
 sudo docker compose -f docker-compose-develop.yml up
 ```
 
+The backend container installs sbmlutils from its latest `develop` branch.
+
 ### Backend
 
+The backend is the Python package in `backend/`, it requires Python 3.14. For
+development it runs against the [sbmlutils](https://github.com/matthiaskoenig/sbmlutils)
+checkout next to this repository (see `[tool.uv.sources]` in
+`backend/pyproject.toml`): the checkout provides the curated BioModels served as
+examples, which are not part of the sbmlutils distribution on PyPI.
+
 ```bash
-uv venv --python 3.14
-uv pip install -r backend/requirements.txt
-uv run uvicorn --app-dir backend api:api --reload --port 1444
+git clone https://github.com/matthiaskoenig/sbmlutils.git ../sbmlutils
+cd backend
+uv sync
+uv run uvicorn sbml4humans.api:api --reload --port 1444
 ```
 
-The api answers on port 1444, e.g. <http://localhost:1444/api/examples>.
+The api answers on port 1444, e.g. <http://localhost:1444/api/examples>, the
+OpenAPI documentation on <http://localhost:1444/docs>.
+
+Tests, linting and type checks run from the `backend` directory, the same checks
+run as GitHub Actions on every push:
+
+```bash
+uv run pytest
+uv run ruff check . && uv run ruff format --check .
+uv run ty check
+```
 
 ### Frontend
 

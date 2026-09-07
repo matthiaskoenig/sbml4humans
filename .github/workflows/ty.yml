@@ -1,0 +1,43 @@
+name: ty
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ty:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # the backend depends on the sbmlutils checkout next to the repository
+      # (see [tool.uv.sources] in backend/pyproject.toml)
+      - uses: actions/checkout@v7
+        with:
+          path: sbml4humans
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: matthiaskoenig/sbmlutils
+          path: sbmlutils
+          persist-credentials: false
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          python-version: "3.14"
+          enable-cache: true
+      - name: Install the backend
+        working-directory: sbml4humans/backend
+        run: uv sync
+      - name: Type check
+        working-directory: sbml4humans/backend
+        env:
+          # render diagnostics as GitHub Actions workflow annotations
+          TY_OUTPUT_FORMAT: github
+        run: uv run ty check

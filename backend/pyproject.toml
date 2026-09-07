@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sbml4humans"
+dynamic = ["version"]
+description = "The http api of sbml4humans, a thin layer over the SBML report of sbmlutils."
+requires-python = ">=3.14"
+license = "MIT"
+authors = [
+    {name = "Matthias König", email = "konigmatt@googlemail.com"},
+]
+dependencies = [
+    # the report and the example models
+    "sbmlutils>=0.10.0",
+    # the http api
+    "fastapi>=0.119.0",
+    "uvicorn>=0.37.0",
+    "python-multipart>=0.0.20",
+    # downloading models from urls
+    "httpx>=0.27",
+]
+
+[project.urls]
+Homepage = "https://sbml4humans.de"
+Repository = "https://github.com/matthiaskoenig/sbml4humans"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0",
+    "ruff>=0.16.6",
+    "ty>=0.0.78",
+]
+
+[tool.uv.sources]
+# development runs against the sbmlutils checkout next to this repository: it
+# provides the curated biomodels served as examples, which are not part of the
+# sbmlutils distribution on PyPI
+sbmlutils = { path = "../../sbmlutils", editable = true }
+
+[tool.hatch.version]
+path = "sbml4humans/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sbml4humans"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 88
+target-version = "py314"
+
+[tool.ruff.lint]
+# the rule set of sbmlutils: Pyflakes (`F`) and a subset of pycodestyle (`E`), plus:
+#   W    pycodestyle warnings
+#   I    import sorting
+#   D    docstrings (google convention, see [tool.ruff.lint.pydocstyle])
+#   UP   pyupgrade, keeps the code on current python syntax
+#   B    bugbear, likely bugs and design problems
+#   C4   comprehensions
+#   SIM  simplifications
+#   RET  return statements
+#   G    logging format, lazy `%s` instead of f-strings
+#   PIE  misc lints
+#   RUF  ruff specific rules
+select = [
+    "E4", "E7", "E9", "F", "W", "I", "D", "UP", "B", "C4", "SIM", "RET", "G", "PIE", "RUF",
+]
+ignore = [
+    # names such as `König` are not ambiguous unicode, they are german
+    "RUF001",
+    "RUF002",
+    "RUF003",
+]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2
+known-first-party = ["sbml4humans"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ty.src]
+include = ["sbml4humans", "tests"]
+
+[tool.ty.terminal]
+# warnings are failures: keep the codebase free of any diagnostic
+error-on-warning = true
