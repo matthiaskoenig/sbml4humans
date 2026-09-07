@@ -7,7 +7,7 @@ environment for the SBML4Humans report.
 ### Start backend API and frontend (docker compose)
 The simplest setup is to start the frontend and backend via the docker-compose scripts.
 
-```
+```bash
 sudo docker compose -f docker-compose-develop.yml build --no-cache
 sudo docker compose -f docker-compose-develop.yml up
 ```
