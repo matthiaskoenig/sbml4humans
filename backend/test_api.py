@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from rich import print
 
-from sbmlutils.report import api
+import api
 from sbmlutils.resources import BIOMODELS_CURATED_PATH, sbml_paths_idfn
 
 

@@ -21,7 +21,7 @@ from pymetadata.omex import EntryFormat, ManifestEntry, Omex
 
 from sbmlutils import log
 from sbmlutils.console import console
-from sbmlutils.report.api_examples import ExampleMetaData, examples_info
+from api_examples import ExampleMetaData, examples_info
 from sbmlutils.report.sbmlinfo import SBMLDocumentInfo
 
 
@@ -31,7 +31,7 @@ api = FastAPI(
     title="sbml4humans",
     description="sbml4humans backend api",
     version="0.1.2",
-    terms_of_service="https://github.com/matthiaskoenig/sbmlutils/blob/develop/sbml4humans/privacy_notice.md",
+    terms_of_service="https://github.com/matthiaskoenig/sbml4humans/blob/main/frontend/privacy_notice.md",
     contact={
         "name": "Matthias König",
         "url": "https://livermetabolism.com",
@@ -263,9 +263,9 @@ def get_annotation_resource(resource: str) -> Dict[Any, Any]:
 
 
 if __name__ == "__main__":
-    # shell command: uvicorn sbmlutils.report.api:app --reload --port 1444
+    # shell command: uvicorn api:api --reload --port 1444
     uvicorn.run(
-        "sbmlutils.report.api:api",
+        "api:api",
         host="localhost",
         port=1444,
         log_level="info",

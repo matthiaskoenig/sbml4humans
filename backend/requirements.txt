@@ -1,0 +1,6 @@
+# the report and the example models
+sbmlutils>=0.10.0
+# the http api
+fastapi>=0.119.0
+uvicorn>=0.37.0
+python-multipart>=0.0.20

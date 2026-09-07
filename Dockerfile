@@ -1,22 +1,19 @@
 # -------------------------------------------------------------------------------------
-# Container to serve FastAPI backend api from sbmlutils
-# sudo docker build -t fastapi-app .
-# sudo docker run -p 1444:1444 fastapi-app
+# Container which serves the sbml4humans FastAPI backend
+#   sudo docker build -t sbml4humans-backend .
+#   sudo docker run -p 1444:1444 sbml4humans-backend
 # -------------------------------------------------------------------------------------
-FROM python:3.13-slim
-
-# Add application code to the image
-COPY ./src /code/src
-COPY ./setup.cfg /code/setup.cfg
-COPY ./setup.py /code/setup.py
-COPY ./README.rst /code/README.rst
-COPY ./MANIFEST.in /code/MANIFEST.in
-COPY ./LICENSE /code/LICENSE
+FROM python:3.14-slim
 
 WORKDIR /code
 
-# Install sbmlutils
-RUN pip install -e . --no-cache-dir --upgrade
+# the report itself (`sbmlutils.report.sbmlinfo`) and the example models come
+# from sbmlutils, the api only serves them over http
+COPY ./backend/requirements.txt /code/backend/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/backend/requirements.txt
+
+COPY ./backend /code/backend
+WORKDIR /code/backend
 
 EXPOSE 1444
-CMD ["uvicorn", "sbmlutils.report.api:api", "--host", "0.0.0.0", "--port", "1444"]
+CMD ["uvicorn", "api:api", "--host", "0.0.0.0", "--port", "1444"]

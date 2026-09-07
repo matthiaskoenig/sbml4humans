@@ -16,16 +16,16 @@ Alternatively the backend and frontend can be run directly on the machine. This 
 
 
 ### Start backend API (local)
-Create Python virtual environment and install sbml4humans
+Create a python virtual environment and install the backend dependencies
 ```bash
-mkvirtualenv sbml4humans --python=python3.12
-pip install -e .[sbml4humans,development] --upgrade
-``` 
+uv venv --python 3.14
+uv pip install -r backend/requirements.txt
+```
 
-Start the backend API from `src/sbmlutils/report/api.py` either from the python module or via
-the command line via 
+Start the backend API from `backend/api.py` either from the python module or via
+the command line via
 ```bash
-python src/sbmlutils/report/api.py
+uv run uvicorn --app-dir backend api:api --reload --port 1444
 ```
 This will run the API on port 1444. Check that the API is running using a browser
 http://localhost:1444/api/examples

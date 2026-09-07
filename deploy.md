@@ -35,7 +35,7 @@ Login to server `denbi-node-2`.
 ### Initial setup
 ```
 cd /var/git
-git clone https://github.com/matthiaskoenig/sbmlutils.git
+git clone https://github.com/matthiaskoenig/sbml4humans.git
 ```
 
 **start containers**
