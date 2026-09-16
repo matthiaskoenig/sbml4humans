@@ -7,26 +7,16 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
   Submodel: [
     ...ID_COLUMNS,
     { field: "modelRef", header: "model", kind: "link", link: "modelRef" },
-    {
-      field: "timeConversionFactor",
-      header: "time conversion factor",
-      kind: "link",
-      link: "conversionFactor",
-    },
-    {
-      field: "extentConversionFactor",
-      header: "extent conversion factor",
-      kind: "link",
-      link: "conversionFactor",
-    },
+    { field: "timeConversionFactor", header: "time conversion factor", kind: "text" },
+    { field: "extentConversionFactor", header: "extent conversion factor", kind: "text" },
     { field: "listOfDeletions.length", header: "deletions", kind: "count" },
   ],
   Port: [
     ...ID_COLUMNS,
-    { field: "portRef", header: "port ref", kind: "link", link: "port" },
+    { field: "portRef", header: "port ref", kind: "text" },
     { field: "idRef", header: "id ref", kind: "link", link: "port" },
     { field: "unitRef", header: "unit ref", kind: "link", link: "port" },
-    { field: "metaIdRef", header: "meta id ref", kind: "text" },
+    { field: "metaIdRef", header: "meta id ref", kind: "link", link: "port" },
   ],
   GeneProduct: [
     ...ID_COLUMNS,

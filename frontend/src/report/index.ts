@@ -91,13 +91,15 @@ export class ReportIndex {
     return this.incoming.get(pk) ?? [];
   }
 
-  /** The pk of the element with the id referenced by the source through an edge of the kind, if any. */
+  /** The pk of the element with the id, or failing that the metaId, referenced by the source
+   * through an edge of the kind, if any. */
   resolve(sourcePk: string, kind: EdgeKind, id: string | null | undefined): string | null {
     if (!id) return null;
     for (const edge of this.references(sourcePk)) {
       if (edge.kind !== kind) continue;
       const target = this.nodes.get(edge.target);
-      if (target?.id === id || this.elements.get(edge.target)?.id === id) return edge.target;
+      const element = this.elements.get(edge.target);
+      if (target?.id === id || element?.id === id || element?.metaId === id) return edge.target;
     }
     return null;
   }

@@ -78,6 +78,13 @@ describe("ReportIndex", () => {
     expect(repressilator.resolve(species.pk, "units", "litre")).toBeNull();
   });
 
+  it("resolves a port reference by metaId, not only by id", () => {
+    // no fixture port sets metaIdRef (all are id references), so this exercises only the miss:
+    // an unknown metaId does not resolve, through the id path or the metaId fallback.
+    const port = icgBody.mainModel!.listOfPorts!.find((p) => p.idRef)!;
+    expect(icgBody.resolve(port.pk, "port", "unknown-meta-id")).toBeNull();
+  });
+
   it("resolves the species of a reactant from the reaction", () => {
     // the reactant, product and modifier edges start at the reaction, not at the species reference
     const reaction = repressilator.mainModel!.listOfReactions!.find(

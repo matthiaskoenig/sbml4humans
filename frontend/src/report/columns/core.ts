@@ -21,8 +21,8 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
     ...ID_COLUMNS,
     { field: "spatialDimensions", header: "dimensions", kind: "number" },
     { field: "size", header: "size", kind: "number" },
-    { field: "constant", header: "constant", kind: "boolean" },
     { field: "units", header: "units", kind: "link", link: "units" },
+    { field: "constant", header: "constant", kind: "boolean" },
     DERIVED_UNITS,
   ],
   Species: [
@@ -39,8 +39,8 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
   Parameter: [
     ...ID_COLUMNS,
     { field: "value", header: "value", kind: "number" },
-    { field: "constant", header: "constant", kind: "boolean" },
     { field: "units", header: "units", kind: "link", link: "units" },
+    { field: "constant", header: "constant", kind: "boolean" },
     DERIVED_UNITS,
   ],
   InitialAssignment: [
