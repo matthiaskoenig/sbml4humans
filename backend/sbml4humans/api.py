@@ -119,7 +119,12 @@ def examples() -> dict[str, list[dict[str, Any]]]:
     }
 
 
-@api.get("/api/examples/{example_id}", tags=["examples"])
+@api.get(
+    "/api/examples/{example_id}",
+    tags=["examples"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 def example(example_id: str) -> dict[str, Any]:
     """Create the report data of an example."""
     example: ExampleMetaData | None = load_examples().get(example_id)
@@ -128,19 +133,34 @@ def example(example_id: str) -> dict[str, Any]:
     return _dump(report_for_path(example.file))
 
 
-@api.post("/api/file", tags=["reports"])
+@api.post(
+    "/api/file",
+    tags=["reports"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 def report_from_file(source: UploadFile) -> dict[str, Any]:
     """Create the report data of an uploaded SBML file or COMBINE archive."""
     return _dump(report_for_bytes(source.file.read()))
 
 
-@api.get("/api/url", tags=["reports"])
+@api.get(
+    "/api/url",
+    tags=["reports"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 def report_from_url(url: str) -> dict[str, Any]:
     """Create the report data of an SBML file or COMBINE archive behind a url."""
     return _dump(report_for_bytes(download(url)))
 
 
-@api.post("/api/content", tags=["reports"])
+@api.post(
+    "/api/content",
+    tags=["reports"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 async def report_from_content(request: Request) -> dict[str, Any]:
     """Create the report data of the SBML content in the request body."""
     content = await request.body()

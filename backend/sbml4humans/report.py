@@ -12,9 +12,16 @@ import time
 import uuid
 from pathlib import Path
 
-from pymetadata.omex import EntryFormat, ManifestEntry, Omex
+from pymetadata.omex import EntryFormat, Omex
+from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
-from sbml4humans.model import Debug, ReportEntry, ReportResponse
+from sbml4humans.model import (
+    Debug,
+    Manifest,
+    ManifestEntry,
+    ReportEntry,
+    ReportResponse,
+)
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 
 
@@ -60,7 +67,15 @@ def report_for_path(path: Path) -> ReportResponse:
         for entry in omex.manifest.entries
         if entry.is_sbml()
     }
-    return ReportResponse(uid=uid, manifest=omex.manifest.model_dump(), reports=reports)
+    manifest = Manifest(
+        entries=[
+            ManifestEntry(
+                location=entry.location, format=str(entry.format), master=entry.master
+            )
+            for entry in omex.manifest.entries
+        ]
+    )
+    return ReportResponse(uid=uid, manifest=manifest, reports=reports)
 
 
 def report_for_bytes(content: bytes) -> ReportResponse:
@@ -95,7 +110,7 @@ def _omex_for_path(path: Path) -> Omex:
         omex = Omex()
         omex.add_entry(
             entry_path=sbml_path,
-            entry=ManifestEntry(
+            entry=OmexManifestEntry(
                 location=SBML_LOCATION, format=EntryFormat.SBML, master=True
             ),
         )

@@ -161,20 +161,37 @@ class SBMLDocumentInfo:
             return sbase.getMetaId()
         return hashlib.sha1(sbase.toSBML().encode("utf-8")).hexdigest()
 
-    def _pk(self, sbase: libsbml.SBase, scope: str | None = None) -> str:
+    def _pk(
+        self,
+        sbase: libsbml.SBase,
+        scope: str | None = None,
+        sbml_type: str | None = None,
+    ) -> str:
         """The primary key `<scope>/<type>:<id>` of an element.
 
-        The id falls back to the metaId and then to the digest of the xml.
+        The type is the `sbml_type` of the report object, which differs from the
+        libsbml class for a comp model definition. The id falls back to the
+        metaId and then to the digest of the xml.
         """
-        return f"{scope or self.scope}/{self._sbml_type(sbase)}:{self._key(sbase)}"
+        type_ = sbml_type or self._sbml_type(sbase)
+        return f"{scope or self.scope}/{type_}:{self._key(sbase)}"
 
-    def sbase(self, sbase: libsbml.SBase, scope: str | None = None) -> dict[str, Any]:
-        """The fields of `SBase` of an element, for the constructor of its class."""
+    def sbase(
+        self,
+        sbase: libsbml.SBase,
+        scope: str | None = None,
+        sbml_type: str | None = None,
+        pk: str | None = None,
+    ) -> dict[str, Any]:
+        """The fields of `SBase` of an element, for the constructor of its class.
+
+        A known pk is passed in, every other pk is built from scope and type.
+        """
         xml = None
         if sbase.getTypeCode() not in {libsbml.SBML_DOCUMENT, libsbml.SBML_MODEL}:
             xml = sbase.toSBML()
         return {
-            "pk": self._pk(sbase, scope),
+            "pk": pk if pk is not None else self._pk(sbase, scope, sbml_type),
             "id": sbase.getId() if sbase.isSetId() else None,
             "meta_id": sbase.getMetaId() if sbase.isSetMetaId() else None,
             "name": sbase.getName() if sbase.isSetName() else None,
@@ -283,8 +300,11 @@ class SBMLDocumentInfo:
             )
             for k in range(doc.getNumPlugins())
         ]
-        fields = self.sbase(doc, scope=DOCUMENT_SCOPE)
-        fields["pk"] = f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}"
+        fields = self.sbase(
+            doc,
+            scope=DOCUMENT_SCOPE,
+            pk=f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}",
+        )
         return SBMLDocument(
             **fields, level=doc.getLevel(), version=doc.getVersion(), packages=packages
         )
@@ -294,7 +314,7 @@ class SBMLDocumentInfo:
     ) -> Model:
         """A model or model definition with the lists of its elements."""
         self.scope = self._key(model)
-        fields = self.sbase(model)
+        fields = self.sbase(model, sbml_type="Model")
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             sid = _attribute(model, f"{key}Units")
             fields[f"{key}_units"] = sid
@@ -352,9 +372,15 @@ class SBMLDocumentInfo:
     def compartment(self, c: libsbml.Compartment, model: libsbml.Model) -> Compartment:
         """A compartment."""
         units = _attribute(c, "units")
+        # `getSpatialDimensions` truncates the fractional dimensions of L3 to an
+        # unsigned int; an L2 compartment without the attribute stays unset, the
+        # specification defaults it to 3
+        spatial_dimensions = (
+            c.getSpatialDimensionsAsDouble() if c.isSetSpatialDimensions() else None
+        )
         return Compartment(
             **self.sbase(c),
-            spatial_dimensions=_number(_attribute(c, "spatialDimensions")),
+            spatial_dimensions=_number(spatial_dimensions),
             size=_number(_attribute(c, "size")),
             constant=_attribute(c, "constant"),
             units=units,
@@ -364,27 +390,24 @@ class SBMLDocumentInfo:
 
     def species(self, s: libsbml.Species, model: libsbml.Model) -> Species:
         """A species."""
-        units = _attribute(s, "units")
+        substance_units = _attribute(s, "substanceUnits")
         fbc: libsbml.FbcSpeciesPlugin | None = s.getPlugin("fbc")
         species_fbc = None
         if fbc:
-            charge = (
-                fbc.getCharge() if fbc.isSetCharge() and fbc.getCharge() != 0 else None
-            )
             species_fbc = SpeciesFbc(
-                chemical_formula=_attribute(fbc, "chemicalFormula"), charge=charge
+                chemical_formula=_attribute(fbc, "chemicalFormula"),
+                charge=_attribute(fbc, "charge"),
             )
         return Species(
             **self.sbase(s),
             compartment=s.getCompartment(),
             initial_amount=_number(_attribute(s, "initialAmount")),
             initial_concentration=_number(_attribute(s, "initialConcentration")),
-            substance_units=_attribute(s, "substanceUnits"),
+            substance_units=substance_units,
             has_only_substance_units=_attribute(s, "hasOnlySubstanceUnits"),
             boundary_condition=_attribute(s, "boundaryCondition"),
             constant=_attribute(s, "constant"),
-            units=units,
-            units_latex=self.units(units, model),
+            units_latex=self.units(substance_units, model),
             derived_units=udef_to_string(s.getDerivedUnitDefinition()),
             conversion_factor=self.conversion_factor(s, model),
             fbc=species_fbc,
@@ -657,7 +680,10 @@ class SBMLDocumentInfo:
                 type=_attribute(o, "type"),
                 list_of_flux_objectives=[
                     FluxObjective(
-                        reaction=f.getReaction(), coefficient=f.getCoefficient()
+                        reaction=f.getReaction(),
+                        coefficient=_number(f.getCoefficient())
+                        if f.isSetCoefficient()
+                        else None,
                     )
                     for f in o.getListOfFluxObjectives()
                 ],

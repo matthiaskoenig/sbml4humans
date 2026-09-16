@@ -22,6 +22,9 @@ def _check_report(data: dict[str, Any]) -> None:
     """Check report data returned by the api."""
     assert "errors" not in data
     assert set(data) == {"uid", "manifest", "reports"}
+    assert set(data["manifest"]) == {"entries"}
+    for entry in data["manifest"]["entries"]:
+        assert set(entry) == {"location", "format", "master"}
     for entry in data["reports"].values():
         assert set(entry) == {"report", "debug"}
         assert set(entry["report"]) == {
@@ -36,9 +39,20 @@ def test_openapi(client: TestClient) -> None:
     """The api describes itself."""
     response = client.get("/openapi.json")
     assert response.status_code == 200
-    info = response.json()["info"]
+    schema = response.json()
+    info = schema["info"]
     assert info["title"] == "sbml4humans"
     assert info["version"] == __version__
+    for path, method in [
+        ("/api/examples/{example_id}", "get"),
+        ("/api/file", "post"),
+        ("/api/url", "get"),
+        ("/api/content", "post"),
+    ]:
+        content = schema["paths"][path][method]["responses"]["200"]["content"]
+        assert content["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/ReportResponse"
+        }
 
 
 def test_cors(client: TestClient) -> None:

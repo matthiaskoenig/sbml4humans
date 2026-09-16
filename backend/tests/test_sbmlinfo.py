@@ -1,5 +1,7 @@
 """Tests of the report information of a document."""
 
+import json
+
 import libsbml
 import pytest
 
@@ -222,7 +224,17 @@ def test_comp_model_definitions() -> None:
         ("model_definitions", "model"),
         ("m1", "modelDefinition"),
     ]
+    assert report.models[1].pk == "m1/Model:m1"
     assert report.models[1].list_of_species[0].pk.startswith("m1/Species:")
+
+
+def test_comp_sbase_without_replacements() -> None:
+    """An element of a comp document without replacements has no comp extension."""
+    report = SBMLDocumentInfo.from_sbml(COMP_ICG_BODY)
+    model = report.models[0]
+    assert model.list_of_submodels
+    assert [c for c in model.list_of_compartments if c.comp is None]
+    assert [s for s in model.list_of_species if s.comp is not None]
 
 
 def test_comp_submodels_ports_and_replacements() -> None:
@@ -248,6 +260,36 @@ def test_comp_submodels_ports_and_replacements() -> None:
     )
 
 
+def test_fractional_spatial_dimensions() -> None:
+    """The spatial dimensions of an L3 compartment can be fractional."""
+    doc = libsbml.SBMLDocument(3, 2)
+    model = doc.createModel()
+    model.setId("m")
+    compartment = model.createCompartment()
+    compartment.setId("c")
+    compartment.setSpatialDimensions(2.5)
+    report = SBMLDocumentInfo.from_doc(doc)
+    assert report.models[0].list_of_compartments[0].spatial_dimensions == 2.5
+
+
+def test_spatial_dimensions_unset() -> None:
+    """A compartment without spatial dimensions reports them as unset."""
+    doc = libsbml.SBMLDocument(3, 2)
+    model = doc.createModel()
+    model.setId("m")
+    model.createCompartment().setId("c")
+    report = SBMLDocumentInfo.from_doc(doc)
+    assert report.models[0].list_of_compartments[0].spatial_dimensions is None
+
+
+def test_species_units_are_the_substance_units() -> None:
+    """The units of a species are its substance units, rendered as latex."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "multiple_substance_units.xml")
+    species = [s for s in report.models[0].list_of_species if s.substance_units]
+    assert species
+    assert all(s.units_latex for s in species)
+
+
 def test_fbc() -> None:
     """Flux bounds, gene product associations, gene products and objectives are reported."""
     report = SBMLDocumentInfo.from_sbml(FBC_ECOLI_CORE_SBML)
@@ -264,6 +306,30 @@ def test_fbc() -> None:
     assert [(f.reaction, f.coefficient) for f in objective.list_of_flux_objectives] == [
         ("R_BIOMASS_Ecoli_core_w_GAM", 1.0)
     ]
+
+
+def test_charge_zero_is_reported() -> None:
+    """A charge of zero is a charge, not an unset attribute."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_mass_charge.xml")
+    species = next(s for s in report.models[0].list_of_species if s.id == "glc")
+    assert species.fbc is not None
+    assert species.fbc.charge == 0
+
+
+def test_flux_objective_without_coefficient() -> None:
+    """A flux objective without coefficient reports None instead of NaN."""
+    doc = libsbml.SBMLDocument(libsbml.SBMLNamespaces(3, 1, "fbc", 2))
+    model = doc.createModel()
+    model.setId("m")
+    plugin: libsbml.FbcModelPlugin = model.getPlugin("fbc")
+    objective: libsbml.Objective = plugin.createObjective()
+    objective.setId("obj")
+    objective.setType("maximize")
+    objective.createFluxObjective().setReaction("r")
+    report = SBMLDocumentInfo.from_doc(doc)
+    flux_objective = report.models[0].list_of_objectives[0].list_of_flux_objectives[0]
+    assert flux_objective.coefficient is None
+    assert "NaN" not in json.dumps(report.model_dump(mode="json", by_alias=True))
 
 
 def test_distrib_uncertainties() -> None:

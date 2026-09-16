@@ -813,7 +813,7 @@
       "type": "object"
     },
     "Edge": {
-      "description": "A directed reference from one object to another.",
+      "description": "A directed reference from one object to another.\n\nEdges are immutable values, so that they can be used in sets and as keys.",
       "properties": {
         "source": {
           "title": "Source",
@@ -1336,13 +1336,20 @@
           "type": "string"
         },
         "coefficient": {
-          "title": "Coefficient",
-          "type": "number"
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Coefficient"
         }
       },
       "required": [
-        "reaction",
-        "coefficient"
+        "reaction"
       ],
       "title": "FluxObjective",
       "type": "object"
@@ -2149,6 +2156,44 @@
       "title": "LocalParameter",
       "type": "object"
     },
+    "Manifest": {
+      "description": "The manifest of a COMBINE archive.",
+      "properties": {
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/ManifestEntry"
+          },
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "title": "Manifest",
+      "type": "object"
+    },
+    "ManifestEntry": {
+      "description": "An entry of the manifest of a COMBINE archive.",
+      "properties": {
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "format": {
+          "title": "Format",
+          "type": "string"
+        },
+        "master": {
+          "default": false,
+          "title": "Master",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "location",
+        "format"
+      ],
+      "title": "ManifestEntry",
+      "type": "object"
+    },
     "Math": {
       "description": "The math of an element as latex and as L3 formula string.",
       "properties": {
@@ -2743,7 +2788,7 @@
       "type": "object"
     },
     "Node": {
-      "description": "A node of the link graph: one SBML object.",
+      "description": "A node of the link graph: one SBML object.\n\nNodes are immutable values, so that they can be used in sets and as keys.",
       "properties": {
         "pk": {
           "title": "Pk",
@@ -4225,18 +4270,6 @@
           "default": null,
           "title": "Constant"
         },
-        "units": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Units"
-        },
         "unitsLatex": {
           "anyOf": [
             {
@@ -5046,9 +5079,7 @@
       "type": "string"
     },
     "manifest": {
-      "additionalProperties": true,
-      "title": "Manifest",
-      "type": "object"
+      "$ref": "#/$defs/Manifest"
     },
     "reports": {
       "additionalProperties": {

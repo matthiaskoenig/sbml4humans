@@ -6,7 +6,7 @@ uses snake_case, the JSON of the frontend camelCase (`by_alias=True`).
 """
 
 from enum import StrEnum
-from typing import Annotated, Any, Literal
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
@@ -194,7 +194,6 @@ class Species(SBase):
     has_only_substance_units: bool | None = None
     boundary_condition: bool | None = None
     constant: bool | None = None
-    units: str | None = None
     units_latex: str | None = None
     derived_units: str | None = None
     conversion_factor: ConversionFactor | None = None
@@ -396,7 +395,7 @@ class FluxObjective(ReportModel):
     """A weighted reaction of an objective."""
 
     reaction: str
-    coefficient: float
+    coefficient: float | None = None
 
 
 class Objective(SBase):
@@ -445,7 +444,14 @@ class Model(SBase):
 
 
 class Node(ReportModel):
-    """A node of the link graph: one SBML object."""
+    """A node of the link graph: one SBML object.
+
+    Nodes are immutable values, so that they can be used in sets and as keys.
+    """
+
+    model_config = ConfigDict(
+        alias_generator=to_camel, populate_by_name=True, frozen=True
+    )
 
     pk: str
     sbml_type: str
@@ -477,7 +483,14 @@ class EdgeKind(StrEnum):
 
 
 class Edge(ReportModel):
-    """A directed reference from one object to another."""
+    """A directed reference from one object to another.
+
+    Edges are immutable values, so that they can be used in sets and as keys.
+    """
+
+    model_config = ConfigDict(
+        alias_generator=to_camel, populate_by_name=True, frozen=True
+    )
 
     source: str
     target: str
@@ -502,6 +515,20 @@ class Report(ReportModel):
     link_graph: LinkGraph = Field(default_factory=LinkGraph)
 
 
+class ManifestEntry(ReportModel):
+    """An entry of the manifest of a COMBINE archive."""
+
+    location: str
+    format: str
+    master: bool = False
+
+
+class Manifest(ReportModel):
+    """The manifest of a COMBINE archive."""
+
+    entries: list[ManifestEntry] = Field(default_factory=list)
+
+
 class Debug(ReportModel):
     """Timing information of a report."""
 
@@ -519,5 +546,5 @@ class ReportResponse(ReportModel):
     """The response of the api: the manifest and one report per SBML entry."""
 
     uid: str
-    manifest: dict[str, Any]
+    manifest: Manifest
     reports: dict[str, ReportEntry]

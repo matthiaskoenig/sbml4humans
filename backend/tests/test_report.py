@@ -23,7 +23,9 @@ PATHS = API_EXAMPLES_OMEX + API_EXAMPLES_MODEL + BIOMODELS
 def _check_report(response: ReportResponse) -> None:
     """Check the structure of the report response of a path."""
     assert len(response.uid) == 32
-    assert response.manifest["entries"]
+    assert response.manifest.entries
+    assert all(e.location and e.format for e in response.manifest.entries)
+    assert len([e for e in response.manifest.entries if e.master]) <= 1
     assert response.reports
     for location, entry in response.reports.items():
         assert location.startswith("./")
@@ -43,6 +45,10 @@ def test_report_for_sbml_file() -> None:
     response = report_for_path(REPRESSILATOR_SBML)
     assert list(response.reports) == ["./model.xml"]
     assert response.reports["./model.xml"].report.models[0].id == "BIOMD0000000012"
+    master = [e for e in response.manifest.entries if e.master]
+    assert [(e.location, e.format) for e in master] == [
+        ("./model.xml", "http://identifiers.org/combine.specifications/sbml")
+    ]
 
 
 def test_report_for_omex_has_all_sbml_entries() -> None:
