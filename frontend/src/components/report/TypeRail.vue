@@ -43,7 +43,7 @@ function isVisible(type: ElementType): boolean {
 }
 
 function toggle(type: ElementType): void {
-  const all = ELEMENT_TYPES.map((info) => info.type);
+  const all = types.value.map((info) => info.type);
   const current = visible.value ?? all;
   const next = current.includes(type)
     ? current.filter((t) => t !== type)

@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import { readStorage, writeStorage } from "@/storage";
+
 const STORAGE_KEY = "sbml4humans.lastUrl";
 
 const emit = defineEmits<{ submit: [url: string] }>();
-const url = ref(localStorage.getItem(STORAGE_KEY) ?? "");
+const url = ref(readStorage(STORAGE_KEY) ?? "");
 
 function submit(): void {
   const value = url.value.trim();
   if (!value) return;
-  localStorage.setItem(STORAGE_KEY, value);
+  writeStorage(STORAGE_KEY, value);
   emit("submit", value);
 }
 </script>

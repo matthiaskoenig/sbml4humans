@@ -4,12 +4,13 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
-import type { Reaction, Species } from "@/api/types";
+import type { Reaction, Species, Uncertainty } from "@/api/types";
 import { primevueOptions } from "@/assets/primevue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
+import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
@@ -95,6 +96,29 @@ describe("inspector", () => {
   it("shows none for an element without edges", () => {
     const wrapper = mountWith(LinksColumn, { pk: "nope" }, repressilator);
     expect(wrapper.text()).toContain("none");
+  });
+
+  it("never renders the uncertainty definition url as a link unless it is http(s)", () => {
+    const distrib = indexes[fixtures.indexOf("distrib_uncertainties")]!;
+    const uncertainty = [...distrib.elements.values()].find(
+      (element) => element.sbmlType === "Uncertainty",
+    ) as Uncertainty;
+    const unsafe: Uncertainty = {
+      ...uncertainty,
+      uncertParameters: [
+        {
+          var: null,
+          value: null,
+          units: null,
+          type: "distribution",
+          definitionUrl: "javascript:alert(1)",
+          math: null,
+        },
+      ],
+    };
+    const wrapper = mountWith(UncertaintyAttributes, { element: unsafe }, distrib);
+    expect(wrapper.find("a").exists()).toBe(false);
+    expect(wrapper.text()).toContain("javascript:alert(1)");
   });
 
   it("renders the header of the panel", async () => {

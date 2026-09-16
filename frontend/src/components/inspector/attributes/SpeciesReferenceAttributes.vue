@@ -1,28 +1,19 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { Reaction, SpeciesReference } from "@/api/types";
+import type { SpeciesReference } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
+import { parentReaction } from "@/report/parentReaction";
 
 const props = defineProps<{ element: SpeciesReference }>();
 const index = useReportIndex();
 
 /** The reaction listing the reference and the role of the reference in it. */
-const parent = computed(() => {
-  const modelId = index.value?.modelOf(props.element.pk);
-  if (!index.value || !modelId) return null;
-  for (const reaction of index.value.byType(modelId).get("Reaction") as Reaction[]) {
-    if (reaction.listOfReactants?.some((r) => r.pk === props.element.pk))
-      return { reaction, kind: "reactant" as const };
-    if (reaction.listOfProducts?.some((r) => r.pk === props.element.pk))
-      return { reaction, kind: "product" as const };
-  }
-  return null;
-});
+const parent = computed(() => parentReaction(index.value, props.element.pk));
 
 const speciesPk = computed(() =>
   parent.value

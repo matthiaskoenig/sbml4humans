@@ -3,6 +3,7 @@ import { reactive, watchEffect } from "vue";
 
 import { resolveAnnotation } from "@/api/annotations";
 import type { AnnotationInfo, CVTerm } from "@/api/types";
+import { isHttpUrl } from "@/report/text";
 
 const props = defineProps<{ cvterms: CVTerm[] }>();
 const resolved = reactive(new Map<string, AnnotationInfo | null>());
@@ -22,7 +23,7 @@ watchEffect(() => {
 });
 
 function href(resource: string): string {
-  return resource.startsWith("http")
+  return isHttpUrl(resource)
     ? resource
     : `https://identifiers.org/${resource.replace(/^urn:miriam:/, "")}`;
 }

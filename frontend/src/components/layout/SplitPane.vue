@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from "vue";
 
+import { readStorage, writeStorage } from "@/storage";
+
 const props = withDefaults(
   defineProps<{
     direction: "horizontal" | "vertical";
@@ -14,7 +16,7 @@ const props = withDefaults(
 );
 
 const key = computed(() => `sbml4humans.split.${props.storageKey}`);
-const size = ref(Number(localStorage.getItem(key.value)) || props.initial);
+const size = ref(Number(readStorage(key.value)) || props.initial);
 const container = ref<HTMLElement | null>(null);
 const horizontal = computed(() => props.direction === "horizontal");
 
@@ -41,7 +43,7 @@ function onPointerUp(): void {
   dragging = false;
   document.body.style.cursor = "";
   document.body.style.userSelect = "";
-  localStorage.setItem(key.value, String(Math.round(size.value)));
+  writeStorage(key.value, String(Math.round(size.value)));
 }
 
 onBeforeUnmount(onPointerUp);

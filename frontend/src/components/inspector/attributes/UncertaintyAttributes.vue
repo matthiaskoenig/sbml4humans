@@ -3,6 +3,8 @@ import type { Uncertainty } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import MathView from "@/components/misc/MathView.vue";
+import ValueText from "@/components/misc/ValueText.vue";
+import { isHttpUrl } from "@/report/text";
 
 defineProps<{ element: Uncertainty }>();
 
@@ -21,14 +23,14 @@ const COLUMNS = [
     <NestedTable :rows="element.uncertParameters ?? []" :columns="COLUMNS">
       <template #cell-definitionUrl="{ row }">
         <a
-          v-if="row.definitionUrl"
-          :href="row.definitionUrl"
+          v-if="isHttpUrl(row.definitionUrl)"
+          :href="row.definitionUrl!"
           target="_blank"
           rel="noopener"
           class="text-link hover:underline"
-          >{{ row.definitionUrl.split("/").pop() }}</a
+          >{{ row.definitionUrl!.split("/").pop() }}</a
         >
-        <span v-else class="text-gray-400">-</span>
+        <ValueText v-else :value="row.definitionUrl" />
       </template>
       <template #cell-math="{ row }"><MathView :math="row.math" /></template>
     </NestedTable>

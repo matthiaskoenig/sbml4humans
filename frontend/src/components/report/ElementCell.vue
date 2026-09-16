@@ -47,7 +47,8 @@ const unitsLatex = computed(() => {
 
 <template>
   <template v-if="column.kind === 'id'">
-    <span class="font-mono font-medium">{{ text ?? "-" }}</span>
+    <span v-if="text" class="font-mono font-medium">{{ text }}</span>
+    <ValueText v-else :value="text" mono />
   </template>
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
   <ValueText v-else-if="column.kind === 'number' || column.kind === 'count'" :value="numberValue" />
