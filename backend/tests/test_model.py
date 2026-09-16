@@ -1,6 +1,22 @@
 """Tests of the report data model."""
 
-from sbml4humans.model import CVTerm, Math, SBase
+from sbml4humans.model import (
+    AlgebraicRule,
+    AssignmentRule,
+    Compartment,
+    CVTerm,
+    Edge,
+    EdgeKind,
+    LinkGraph,
+    Math,
+    Model,
+    Node,
+    RateRule,
+    Report,
+    SBase,
+    SBMLDocument,
+    Species,
+)
 
 
 def test_json_uses_camel_case() -> None:
@@ -39,3 +55,67 @@ def test_math_and_cvterm() -> None:
     assert (
         cvterm.model_dump(mode="json", by_alias=True)["resources"] == cvterm.resources
     )
+
+
+def _model() -> Model:
+    """A model with one compartment and species."""
+    return Model(
+        pk="m/Model:m",
+        id="m",
+        kind="model",
+        list_of_compartments=[Compartment(pk="m/Compartment:c", id="c", size=1.0)],
+        list_of_species=[Species(pk="m/Species:s", id="s", compartment="c")],
+        list_of_rules=[
+            AssignmentRule(pk="m/AssignmentRule:r1", variable="s", math=None),
+            RateRule(pk="m/RateRule:r2", variable="c", math=None),
+            AlgebraicRule(pk="m/AlgebraicRule:r3", math=None),
+        ],
+    )
+
+
+def test_sbml_type_is_fixed_per_class() -> None:
+    """Every object carries its sbml type as literal."""
+    species = Species(pk="m/Species:s", id="s", compartment="c")
+    assert species.sbml_type == "Species"
+    assert species.model_dump(mode="json", by_alias=True)["sbmlType"] == "Species"
+
+
+def test_rules_are_discriminated_by_sbml_type() -> None:
+    """The rules of a model validate back into their classes."""
+    data = _model().model_dump(mode="json", by_alias=True)
+    model = Model.model_validate(data)
+    assert [type(r).__name__ for r in model.list_of_rules] == [
+        "AssignmentRule",
+        "RateRule",
+        "AlgebraicRule",
+    ]
+
+
+def test_report_round_trip() -> None:
+    """A report dumps to JSON and validates back unchanged."""
+    graph = LinkGraph(
+        nodes={
+            "m/Species:s": Node(
+                pk="m/Species:s", sbml_type="Species", id="s", model="m/Model:m"
+            ),
+            "m/Compartment:c": Node(
+                pk="m/Compartment:c", sbml_type="Compartment", id="c", model="m/Model:m"
+            ),
+        },
+        edges=[
+            Edge(
+                source="m/Species:s",
+                target="m/Compartment:c",
+                kind=EdgeKind.COMPARTMENT,
+            )
+        ],
+    )
+    report = Report(
+        document=SBMLDocument(pk="document/SBMLDocument:document", level=3, version=2),
+        models=[_model()],
+        link_graph=graph,
+    )
+    data = report.model_dump(mode="json", by_alias=True)
+    assert data["linkGraph"]["edges"][0]["kind"] == "compartment"
+    assert data["models"][0]["listOfSpecies"][0]["compartment"] == "c"
+    assert Report.model_validate(data) == report
