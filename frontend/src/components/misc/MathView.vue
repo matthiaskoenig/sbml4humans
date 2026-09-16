@@ -6,10 +6,14 @@ import type { Math } from "@/api/types";
 
 const props = defineProps<{ math: Math | null | undefined; display?: boolean }>();
 
+/** KaTeX has no metrics for the micro sign of the report and warns about it. */
+const normalize = (latex: string): string => latex.replaceAll("\u00b5", "\\mu ");
+
 const html = computed(() =>
   props.math
-    ? katex.renderToString(props.math.latex, {
+    ? katex.renderToString(normalize(props.math.latex), {
         throwOnError: false,
+        strict: "ignore",
         displayMode: props.display ?? false,
         output: "html",
       })

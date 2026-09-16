@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onBeforeUnmount, ref, watch } from "vue";
 
 import { useReportView } from "@/report/view";
 
@@ -18,6 +18,9 @@ watch(text, (value) => {
   clearTimeout(timer);
   timer = setTimeout(() => void view.setSearch(value), 150);
 });
+
+// a pending search must not write the query of this page into the route of the next one
+onBeforeUnmount(() => clearTimeout(timer));
 </script>
 
 <template>

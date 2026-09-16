@@ -4,8 +4,17 @@ import { computed } from "vue";
 
 const props = defineProps<{ latex: string | null | undefined; units?: string | null }>();
 
+/** KaTeX has no metrics for the micro sign of the report and warns about it. */
+const normalized = computed(() => props.latex?.replaceAll("\u00b5", "\\mu "));
+
 const html = computed(() =>
-  props.latex ? katex.renderToString(props.latex, { throwOnError: false, output: "html" }) : "",
+  normalized.value
+    ? katex.renderToString(normalized.value, {
+        throwOnError: false,
+        strict: "ignore",
+        output: "html",
+      })
+    : "",
 );
 </script>
 

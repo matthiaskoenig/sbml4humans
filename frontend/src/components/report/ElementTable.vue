@@ -9,7 +9,16 @@ import { columnsOf } from "@/report/columns";
 import { useReportView } from "@/report/view";
 
 const VIRTUAL_ROWS = 200;
+/** The height of a virtualised row. The scroller places every row at `index * itemSize`,
+ * so the row has to be exactly this high; a cell with a one line KaTeX fraction measures
+ * 34 px, which leaves the 36 px of the scroller without clipping it. */
 const ROW_HEIGHT = 36;
+
+/** A virtualised row is pinned to `ROW_HEIGHT`: the padding of the cell moves into the
+ * wrapper, which clips content taller than one line, for example a nested fraction. The
+ * wrapper leaves the 1 px bottom border of the row, so the row measures `ROW_HEIGHT`. */
+const VIRTUAL_CELL = { style: { paddingTop: "0px", paddingBottom: "0px" } };
+const VIRTUAL_CONTENT = { height: `${ROW_HEIGHT - 1}px` };
 
 const props = defineProps<{ type: ElementType; rows: SbmlElement[] }>();
 const view = useReportView();
@@ -50,9 +59,18 @@ function onSelect(row: SbmlElement | null): void {
       :header="column.header"
       :sortable="column.kind !== 'math' && column.kind !== 'units'"
       :style="column.width ? { width: column.width } : undefined"
+      :pt="virtual ? { bodyCell: VIRTUAL_CELL } : undefined"
     >
       <template #body="{ data }">
-        <ElementCell :row="data as SbmlElement" :column="column" />
+        <div
+          v-if="virtual"
+          class="flex items-center overflow-hidden"
+          :style="VIRTUAL_CONTENT"
+          data-testid="virtual-cell"
+        >
+          <ElementCell :row="data as SbmlElement" :column="column" />
+        </div>
+        <ElementCell v-else :row="data as SbmlElement" :column="column" />
       </template>
     </Column>
   </DataTable>
