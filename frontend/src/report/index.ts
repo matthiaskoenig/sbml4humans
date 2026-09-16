@@ -73,8 +73,12 @@ export class ReportIndex {
     return this.byModel.get(modelId) ?? new Map();
   }
 
+  /** The id of the containing model. The node only carries the model's pk, so this resolves
+   * that pk one more hop to the model's id. */
   modelOf(pk: string): string | null {
-    return this.nodes.get(pk)?.model ?? null;
+    const modelPk = this.nodes.get(pk)?.model;
+    if (!modelPk) return null;
+    return this.nodes.get(modelPk)?.id ?? this.elements.get(modelPk)?.id ?? null;
   }
 
   /** The edges from the element to the elements it references. */

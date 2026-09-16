@@ -90,9 +90,19 @@ describe("ReportIndex", () => {
   });
 
   it("tells the model of an element", () => {
-    // node.model holds the pk of the containing model, not its id (backend links.py: model=model_pk)
     const species = repressilator.mainModel!.listOfSpecies![0]!;
-    expect(repressilator.modelOf(species.pk)).toBe(repressilator.mainModel!.pk);
+    expect(repressilator.modelOf(species.pk)).toBe("BIOMD0000000012");
     expect(repressilator.modelOf("nope")).toBeNull();
+
+    // a nested element (a species reference) resolves to the same model id as its reaction
+    const reaction = repressilator.mainModel!.listOfReactions!.find(
+      (r) => r.listOfReactants!.length > 0,
+    )!;
+    const reactant = reaction.listOfReactants![0]!;
+    expect(repressilator.modelOf(reactant.pk)).toBe("BIOMD0000000012");
+
+    // an element of a model definition resolves to the model definition's id, not the main model's
+    const m1Species = definitions.model("m1")!.listOfSpecies![0];
+    if (m1Species) expect(definitions.modelOf(m1Species.pk)).toBe("m1");
   });
 });
