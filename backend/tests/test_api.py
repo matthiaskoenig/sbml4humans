@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
-from sbmlutils.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 from sbml4humans import __version__, api
+from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
 def _check_error(data: dict[str, Any], info: dict[str, str] | None = None) -> None:

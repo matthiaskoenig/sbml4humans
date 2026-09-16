@@ -5,11 +5,6 @@ from pathlib import Path
 
 import pytest
 from pymetadata.omex import Omex
-from sbmlutils.resources import (
-    BIOMODELS_CURATED_PATH,
-    OMEX_ICGMODEL,
-    REPRESSILATOR_SBML,
-)
 
 from sbml4humans.examples import (
     ExampleMetaData,
@@ -18,6 +13,11 @@ from sbml4humans.examples import (
     example_from_sbml,
     load_examples,
     main_sbml_entry,
+)
+from sbml4humans.resources import (
+    BIOMODELS_CURATED_PATH,
+    OMEX_ICGMODEL,
+    REPRESSILATOR_SBML,
 )
 
 
@@ -92,9 +92,8 @@ def test_main_sbml_entry_without_sbml() -> None:
 
 
 def test_biomodel_examples_available() -> None:
-    """The curated biomodels of sbmlutils are served if available."""
-    if not BIOMODELS_CURATED_PATH.is_dir():
-        pytest.skip("curated biomodels are not available")
+    """The curated biomodels are served."""
+    assert BIOMODELS_CURATED_PATH.is_dir()
     examples = biomodel_examples(count=2)
     assert [e.id for e in examples] == ["BIOMD0000000001", "BIOMD0000000002"]
 

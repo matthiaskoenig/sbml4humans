@@ -1,7 +1,7 @@
 """Example models served by the api.
 
-The examples are the models shipped with sbmlutils and, if available, the
-first curated biomodels. They are read once on first use.
+The examples are the models of `sbml4humans.resources`: the example models of
+sbmlutils and the first curated biomodels. They are read once on first use.
 """
 
 import logging
@@ -12,7 +12,8 @@ import libsbml
 from pydantic import BaseModel, Field, FilePath
 from pymetadata.omex import ManifestEntry, Omex
 from sbmlutils.io import read_sbml
-from sbmlutils.resources import (
+
+from sbml4humans.resources import (
     API_EXAMPLES_MODEL,
     API_EXAMPLES_OMEX,
     BIOMODELS_CURATED_PATH,
@@ -81,8 +82,8 @@ def biomodel_examples(
 ) -> list[ExampleMetaData]:
     """Read the metadata of the first curated biomodels.
 
-    The curated biomodels are not part of the sbmlutils distribution, missing
-    archives are skipped. The example of a biomodel is its main SBML model.
+    Missing archives are skipped. The example of a biomodel is its main SBML
+    model.
     """
     if not biomodels_dir.is_dir():
         logger.warning("No curated biomodels found in '%s'", biomodels_dir)

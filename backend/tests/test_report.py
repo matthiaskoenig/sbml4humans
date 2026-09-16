@@ -4,7 +4,9 @@ import gzip
 from pathlib import Path
 
 import pytest
-from sbmlutils.resources import (
+
+from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
+from sbml4humans.resources import (
     API_EXAMPLES_MODEL,
     API_EXAMPLES_OMEX,
     BIOMODELS_CURATED_PATH,
@@ -12,8 +14,6 @@ from sbmlutils.resources import (
     REPRESSILATOR_SBML,
     sbml_paths_idfn,
 )
-
-from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
 
 
 BIOMODELS = sorted(BIOMODELS_CURATED_PATH.glob("BIOMD*.omex"))[:10]
