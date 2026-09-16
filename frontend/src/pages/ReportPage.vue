@@ -76,6 +76,10 @@ const counts = computed(
 const visibleSections = computed(() =>
   sections.value.filter((s) => s.visible && s.rows.length > 0),
 );
+/** A model without any element is empty, it does not hide its elements behind the filters. */
+const emptyMessage = computed(() =>
+  sections.value.every((s) => s.total === 0) ? "This model has no elements." : "No elements match.",
+);
 
 const selectedPk = computed(() => view.state.value.pk);
 watch([selectedPk, index], ([pk, current]) => {
@@ -138,7 +142,7 @@ watch([selectedPk, index], ([pk, current]) => {
               class="p-8 text-center text-sm text-gray-500"
               data-testid="no-matches"
             >
-              No elements match.
+              {{ emptyMessage }}
             </p>
             <ElementSection
               v-for="section in visibleSections"
