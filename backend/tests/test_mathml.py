@@ -120,3 +120,15 @@ def test_math_symbols() -> None:
     """The symbols of a math are the names of its ASTNodes, without functions."""
     astnode = libsbml.parseL3Formula("piecewise(f(x, 2), x > y, time)")
     assert mathml.math_symbols(astnode) == {"f", "x", "y", "time"}
+
+
+def test_math_symbols_of_lambda_without_bound_variables() -> None:
+    """The bound variables of a lambda are no symbols of the math."""
+    astnode = libsbml.parseL3Formula("lambda(x, y, x * k + y)")
+    assert mathml.math_symbols(astnode) == {"k"}
+
+
+def test_math_symbols_of_nested_lambda() -> None:
+    """The bound variables of a nested lambda are no symbols either."""
+    astnode = libsbml.parseL3Formula("lambda(x, lambda(y, x * y * k))")
+    assert mathml.math_symbols(astnode) == {"k"}

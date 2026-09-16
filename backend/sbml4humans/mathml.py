@@ -123,9 +123,19 @@ def math_info(astnode: libsbml.ASTNode) -> Math:
 def math_symbols(astnode: libsbml.ASTNode) -> set[str]:
     """The names referenced by a math: variables, function names and csymbols.
 
+    The bound variables of a lambda are local to it and are no references, only
+    the symbols of its body are reported.
+
     The `time` csymbol is reported by libsbml as name `time`, it is kept and
     simply never resolves to an element.
     """
+    if astnode.getType() == libsbml.AST_LAMBDA and astnode.getNumChildren() > 0:
+        # the children of a lambda are its bound variables and, as last child,
+        # its body
+        last = astnode.getNumChildren() - 1
+        bvars = {astnode.getChild(k).getName() for k in range(last)}
+        return math_symbols(astnode.getChild(last)) - bvars
+
     symbols: set[str] = set()
     if astnode.isName() or (astnode.isFunction() and astnode.isUserFunction()):
         symbols.add(astnode.getName())

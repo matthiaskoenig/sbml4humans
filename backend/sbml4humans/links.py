@@ -89,11 +89,6 @@ def _nested(model: Model) -> Iterator[SBase]:
             yield from reaction.kinetic_law.list_of_local_parameters
 
 
-def _uncertainties(sbase: SBase) -> Iterator[SBase]:
-    """The uncertainty nodes of an element."""
-    yield from sbase.uncertainties
-
-
 class LinkGraphBuilder:
     """Collects the nodes and edges of a report."""
 
@@ -125,7 +120,7 @@ class LinkGraphBuilder:
             name=sbase.name,
             model=model_pk,
         )
-        for uncertainty in _uncertainties(sbase):
+        for uncertainty in sbase.uncertainties:
             self._add_node(uncertainty, model_pk)
 
     def _collect_nodes(self) -> None:
@@ -165,11 +160,21 @@ class LinkGraphBuilder:
             return
         self.edges.append(Edge(source=source.pk, target=target, kind=kind))
 
-    def _units_edge(self, source: SBase, sid: str | None, index: ModelIndex) -> None:
-        """Add the units edge when the sid is a unit definition of the model."""
+    def _units_edge(
+        self,
+        source: SBase,
+        sid: str | None,
+        index: ModelIndex,
+        kind: EdgeKind = EdgeKind.UNITS,
+    ) -> None:
+        """Add the edge when the sid is a unit definition of the model.
+
+        The kind is `units` for a units attribute and `port` for the unitRef of
+        a port.
+        """
         if sid is not None and sid in index.units:
             self.edges.append(
-                Edge(source=source.pk, target=index.units[sid], kind=EdgeKind.UNITS)
+                Edge(source=source.pk, target=index.units[sid], kind=kind)
             )
 
     def _math_edges(
@@ -200,6 +205,13 @@ class LinkGraphBuilder:
     def _model_edges(self, model: Model) -> None:
         """The edges of all elements of a model."""
         index = self.indices[model.pk]
+        # every element carries the comp and distrib extensions, the model itself
+        # can be replaced as well
+        for element in [model, *_nested(model)]:
+            self._comp_edges(element, index)
+            for uncertainty in element.uncertainties:
+                self._math_edges(uncertainty, index)
+
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             self._units_edge(model, getattr(model, f"{key}_units"), index)
         if model.conversion_factor is not None:
@@ -211,18 +223,15 @@ class LinkGraphBuilder:
             self._math_edges(fd, index)
         for c in model.list_of_compartments:
             self._units_edge(c, c.units, index)
-            self._comp_edges(c, index)
         for s in model.list_of_species:
             self._edge(s, s.compartment, EdgeKind.COMPARTMENT, index)
-            self._units_edge(s, s.units, index)
+            self._units_edge(s, s.substance_units, index)
             if s.conversion_factor is not None:
                 self._edge(
                     s, s.conversion_factor.sid, EdgeKind.CONVERSION_FACTOR, index
                 )
-            self._comp_edges(s, index)
         for p in model.list_of_parameters:
             self._units_edge(p, p.units, index)
-            self._comp_edges(p, index)
         for ia in model.list_of_initial_assignments:
             self._edge(ia, ia.symbol, EdgeKind.SYMBOL, index)
             self._math_edges(ia, index)
@@ -251,7 +260,7 @@ class LinkGraphBuilder:
         for port in model.list_of_ports:
             self._edge(port, port.id_ref, EdgeKind.PORT, index)
             if port.unit_ref is not None:
-                self._units_edge(port, port.unit_ref, index)
+                self._units_edge(port, port.unit_ref, index, kind=EdgeKind.PORT)
             self._meta_id_edge(port, port.meta_id_ref, model)
         for gp in model.list_of_gene_products:
             self._edge(gp, gp.associated_species, EdgeKind.ASSOCIATED_SPECIES, index)
@@ -280,7 +289,6 @@ class LinkGraphBuilder:
             self._edge(reaction, sr.species, EdgeKind.PRODUCT, index)
         for m in reaction.list_of_modifiers:
             self._edge(reaction, m.species, EdgeKind.MODIFIER, index)
-        self._comp_edges(reaction, index)
         if reaction.fbc is not None:
             self._edge(
                 reaction, reaction.fbc.lower_flux_bound, EdgeKind.FLUX_BOUND, index
@@ -299,7 +307,6 @@ class LinkGraphBuilder:
     def _event_edges(self, event: Event, index: ModelIndex) -> None:
         """The edges of an event: the symbols of trigger, priority and delay, the assignments."""
         self._math_edges(event, index)
-        self._comp_edges(event, index)
         for ea in event.list_of_event_assignments:
             self._edge(ea, ea.variable, EdgeKind.VARIABLE, index)
             self._math_edges(ea, index)
