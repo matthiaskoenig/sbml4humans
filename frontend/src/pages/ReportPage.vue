@@ -2,10 +2,18 @@
 import { computed, provide, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import type { SbmlElement, ElementType } from "@/api/types";
 import AppBar from "@/components/layout/AppBar.vue";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import LoadingState from "@/components/layout/LoadingState.vue";
+import SplitPane from "@/components/layout/SplitPane.vue";
+import ContextBar from "@/components/report/ContextBar.vue";
+import ElementSection from "@/components/report/ElementSection.vue";
+import SearchBox from "@/components/report/SearchBox.vue";
+import TypeRail, { type TypeCount } from "@/components/report/TypeRail.vue";
+import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 import { ReportIndexKey } from "@/report/context";
+import { matches } from "@/report/search";
 import { useReportView } from "@/report/view";
 import { useReportStore } from "@/stores/report";
 
@@ -38,10 +46,60 @@ const model = computed(() => {
   const requested = view.state.value.model;
   return (requested ? current.model(requested) : null) ?? current.mainModel;
 });
+
+/** The elements of the current model per type, filtered by the search. */
+const sections = computed(() => {
+  const current = index.value;
+  const currentModel = model.value;
+  if (!current || !currentModel?.id) return [];
+  const byType = current.byType(currentModel.id);
+  const { q, types } = view.state.value;
+  return ELEMENT_TYPES.map((info) => {
+    const all = byType.get(info.type) ?? [];
+    const rows = q.trim() ? all.filter((element) => matches(element, q)) : all;
+    return {
+      type: info.type,
+      rows,
+      total: all.length,
+      visible: types === null || types.includes(info.type),
+    };
+  });
+});
+
+const counts = computed(
+  () =>
+    new Map<ElementType, TypeCount>(
+      sections.value.map((s) => [s.type, { total: s.total, matched: s.rows.length }]),
+    ),
+);
+const visibleSections = computed(() =>
+  sections.value.filter((s) => s.visible && s.rows.length > 0),
+);
+
+const selectedPk = computed(() => view.state.value.pk);
+watch([selectedPk, index], ([pk, current]) => {
+  if (pk && current && !current.has(pk)) {
+    console.warn(`The selected element ${pk} is not part of the report`);
+    void view.select(null, "replace");
+  }
+});
 </script>
 
 <template>
-  <AppBar />
+  <AppBar>
+    <template #context>
+      <ContextBar
+        v-if="index && model && entry"
+        :index="index"
+        :entries="store.entries"
+        :entry="entry"
+        :model="model"
+      />
+    </template>
+    <template #actions>
+      <SearchBox v-if="index" />
+    </template>
+  </AppBar>
   <LoadingState v-if="store.loading" :message="`Loading ${store.source?.name ?? 'report'}`" />
   <ErrorState v-else-if="store.error" :error="store.error" />
   <div
@@ -52,10 +110,53 @@ const model = computed(() => {
     <p>No report loaded.</p>
     <RouterLink to="/" class="text-link hover:underline">Load a model</RouterLink>
   </div>
-  <main v-else class="flex min-h-0 flex-1 flex-col p-4" data-testid="report-page">
-    <p class="text-sm text-gray-600">
-      {{ store.source?.name }}: entry {{ entry }}, model {{ model?.id }},
-      {{ index?.elements.size }} elements
-    </p>
-  </main>
+  <SplitPane
+    v-else-if="index && model"
+    direction="horizontal"
+    storage-key="rail"
+    :initial="240"
+    :min="160"
+    data-testid="report-page"
+  >
+    <template #first>
+      <TypeRail :index="index" :model="model" :counts="counts" />
+    </template>
+    <template #second>
+      <SplitPane
+        direction="vertical"
+        storage-key="inspector"
+        :initial="320"
+        :min="160"
+        sized-pane="second"
+        :collapsed="!selectedPk"
+      >
+        <template #first>
+          <div class="h-full overflow-y-auto px-4 pb-8" data-testid="tables">
+            <p
+              v-if="visibleSections.length === 0"
+              class="p-8 text-center text-sm text-gray-500"
+              data-testid="no-matches"
+            >
+              No elements match.
+            </p>
+            <ElementSection
+              v-for="section in visibleSections"
+              :key="section.type"
+              :type="section.type"
+              :rows="section.rows as SbmlElement[]"
+              :total="section.total"
+            />
+          </div>
+        </template>
+        <template #second>
+          <div
+            class="h-full overflow-hidden border-t border-gray-200 bg-gray-50 p-3 text-sm"
+            data-testid="inspector"
+          >
+            Selected: <span class="font-mono">{{ selectedPk }}</span>
+          </div>
+        </template>
+      </SplitPane>
+    </template>
+  </SplitPane>
 </template>
