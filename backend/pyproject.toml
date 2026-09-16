@@ -25,6 +25,7 @@ dependencies = [
     "python-multipart>=0.0.32",
     # downloading models from urls
     "httpx>=0.28.1",
+    "pydantic>=2.12",
 ]
 
 [project.urls]
