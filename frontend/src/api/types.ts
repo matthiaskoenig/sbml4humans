@@ -1,0 +1,97 @@
+/** The report types generated from the JSON schema plus the unions the components work with. */
+import type {
+  AlgebraicRule,
+  AssignmentRule,
+  Compartment,
+  Constraint,
+  Event,
+  EventAssignment,
+  ExternalModelDefinition,
+  FunctionDefinition,
+  GeneProduct,
+  InitialAssignment,
+  KineticLaw,
+  LocalParameter,
+  Model,
+  ModifierSpeciesReference,
+  Objective,
+  Parameter,
+  Port,
+  RateRule,
+  Reaction,
+  SBMLDocument,
+  Species,
+  SpeciesReference,
+  Submodel,
+  Uncertainty,
+  UnitDefinition,
+} from "@/types/report";
+
+export type * from "@/types/report";
+
+/** The objects of the document group of the rail. */
+export type DocumentElement = SBMLDocument | Model | ExternalModelDefinition;
+
+/** The objects with a table of their own. */
+export type SbmlElement =
+  | FunctionDefinition
+  | UnitDefinition
+  | Compartment
+  | Species
+  | Parameter
+  | InitialAssignment
+  | AssignmentRule
+  | RateRule
+  | AlgebraicRule
+  | Constraint
+  | Reaction
+  | Event
+  | Submodel
+  | Port
+  | GeneProduct
+  | Objective;
+
+/** The objects nested in another object, reachable through the inspector only. */
+export type NestedElement =
+  | SpeciesReference
+  | ModifierSpeciesReference
+  | KineticLaw
+  | LocalParameter
+  | EventAssignment
+  | Uncertainty;
+
+export type SBase = DocumentElement | SbmlElement | NestedElement;
+export type Rule = AssignmentRule | RateRule | AlgebraicRule;
+
+export type SbmlType = NonNullable<SBase["sbmlType"]>;
+export type ElementType = NonNullable<SbmlElement["sbmlType"]>;
+export type DocumentElementType = NonNullable<DocumentElement["sbmlType"]>;
+export type NestedElementType = NonNullable<NestedElement["sbmlType"]>;
+
+/** The keys of the SBML lists of a model. */
+export type ModelListKey = {
+  [K in keyof Model]-?: K extends `listOf${string}` ? K : never;
+}[keyof Model];
+
+/** `GET /api/examples` entry. */
+export interface ExampleMetaData {
+  id: string;
+  name: string | null;
+  description: string | null;
+  packages: string[];
+}
+
+/** `GET /api/annotation_resource` body (snake_case, as pymetadata returns it). */
+export interface AnnotationInfo {
+  resource: string;
+  resource_normalized: string | null;
+  collection: string | null;
+  term: string | null;
+  label: string | null;
+  description: string | null;
+  url: string | null;
+  synonyms: string[];
+  xrefs: string[];
+  errors: string[];
+  warnings: string[];
+}
