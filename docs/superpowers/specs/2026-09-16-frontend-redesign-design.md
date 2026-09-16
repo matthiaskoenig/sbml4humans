@@ -27,9 +27,9 @@ Replace the Vue CLI 4 frontend, which expects the old untyped report and does no
 
 ## Stack
 
-- The current releases at the time of writing: Vite 8, Vue 3.5 with `<script setup>` and TypeScript strict, node 24 (`.nvmrc`, Dockerfiles, CI). Every dependency starts at its current release and is pinned by `package-lock.json`.
+- The current releases at the time of writing: Vite 8, Vue 3.5 with `<script setup>` and TypeScript strict, node 24 (`.nvmrc`, Dockerfiles, CI). Every dependency starts at its current release and is pinned by `package-lock.json`. Exceptions: TypeScript stays at 5.9 because `typescript-eslint` supports TypeScript below 6.1 only, and PrimeVue at 4.5.5 (see below).
 - Pinia 4 for state, Vue Router 5 for routes.
-- PrimeVue 5 in unstyled mode with the `tailwindcss-primeui` plugin and Tailwind CSS 4 (`@tailwindcss/vite`), PrimeIcons. No Font Awesome.
+- PrimeVue 4 (4.5.5, the last MIT release; PrimeVue 5 is a commercial product with a license key and its terms direct open source projects to PrimeVue 4) in unstyled mode with the `tailwindcss-primeui` plugin and Tailwind CSS 4 (`@tailwindcss/vite`), PrimeIcons. No Font Awesome. Only the DataTable, the Select and the Tooltip directive come from PrimeVue, every other control is a native element styled with Tailwind.
 - KaTeX renders the `latex` of every `Math` and of every units latex; the `formula` string is shown in a tooltip and is copyable.
 - `json-schema-to-typescript` generates `frontend/src/types/report.ts` from `frontend/src/schema/report.schema.json` through `npm run types`. The generated file is committed; the CI regenerates it and fails on a diff, like the schema job of the backend.
 - ESLint flat config with `eslint-plugin-vue` and `typescript-eslint`, Prettier, `vue-tsc --noEmit` for type checking.
@@ -67,7 +67,7 @@ One generic `ElementTable` driven by a column definition per type replaces the p
 | `/examples/:id` | the report of an example from `GET /api/examples/:id` |
 | `/report` | with `url` in the query the report from `GET /api/url?url=`, otherwise the response of the last upload or paste held in the store |
 
-The report page reads its view state from the query and writes every change back as a pushed route:
+The report page reads its view state from the query and writes every change back to the route, `q` with a replaced route (one history entry per keystroke would bury the detail history), everything else as a pushed route:
 
 | query | meaning | default |
 | --- | --- | --- |
