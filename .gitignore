@@ -16,3 +16,6 @@ frontend/dist/
 .vscode/
 *~
 .DS_Store
+
+# brainstorming sessions of the superpowers plugin
+.superpowers/
