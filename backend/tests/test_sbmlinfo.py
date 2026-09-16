@@ -132,6 +132,19 @@ def test_document_without_model() -> None:
     assert report.models == []
 
 
+def test_model_without_id_is_scoped_by_its_key() -> None:
+    """A model without id uses its metaId as scope of the pks."""
+    report = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">'
+        '<model metaid="meta_m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/>'
+        "</listOfCompartments></model></sbml>"
+    )
+    model = report.models[0]
+    assert model.pk == "meta_m/Model:meta_m"
+    assert model.list_of_compartments[0].pk == "meta_m/Compartment:c"
+
+
 def test_sbo_is_added_as_cvterm() -> None:
     """The SBO term of an element is reported as BQB_IS annotation."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "annotation.xml")

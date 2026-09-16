@@ -142,19 +142,21 @@ class SBMLDocumentInfo:
         """The name of the libsbml class of the element."""
         return type(sbase).__name__
 
+    @staticmethod
+    def _key(sbase: libsbml.SBase) -> str:
+        """The bare key of an element: its id, else metaId, else xml digest."""
+        if sbase.isSetId():
+            return sbase.getId()
+        if sbase.isSetMetaId():
+            return sbase.getMetaId()
+        return hashlib.sha1(sbase.toSBML().encode("utf-8")).hexdigest()
+
     def _pk(self, sbase: libsbml.SBase, scope: str | None = None) -> str:
         """The primary key `<scope>/<type>:<id>` of an element.
 
         The id falls back to the metaId and then to the digest of the xml.
         """
-        key: str
-        if sbase.isSetId():
-            key = sbase.getId()
-        elif sbase.isSetMetaId():
-            key = sbase.getMetaId()
-        else:
-            key = hashlib.sha1(sbase.toSBML().encode("utf-8")).hexdigest()
-        return f"{scope or self.scope}/{self._sbml_type(sbase)}:{key}"
+        return f"{scope or self.scope}/{self._sbml_type(sbase)}:{self._key(sbase)}"
 
     def sbase(self, sbase: libsbml.SBase, scope: str | None = None) -> dict[str, Any]:
         """The fields of `SBase` of an element, for the constructor of its class."""
@@ -281,9 +283,7 @@ class SBMLDocumentInfo:
         self, model: libsbml.Model, kind: Literal["model", "modelDefinition"]
     ) -> Model:
         """A model or model definition with the lists of its elements."""
-        self.scope = (
-            model.getId() if model.isSetId() else self._pk(model, DOCUMENT_SCOPE)
-        )
+        self.scope = self._key(model)
         fields = self.sbase(model)
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             sid = _attribute(model, f"{key}Units")
