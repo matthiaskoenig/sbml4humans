@@ -11,6 +11,7 @@ from functools import lru_cache
 import libsbml
 import lxml.etree as ET  # ty: ignore[unresolved-import]
 
+from sbml4humans.model import Math
 from sbml4humans.resources import XSLT_DIR
 
 
@@ -110,3 +111,24 @@ def _fix_mathit_symbols(tex_str: str) -> str:
         )
 
     return tex_str
+
+
+def math_info(astnode: libsbml.ASTNode) -> Math:
+    """The math of a node as latex and as L3 formula string."""
+    return Math(
+        latex=astnode_to_latex(astnode), formula=libsbml.formulaToL3String(astnode)
+    )
+
+
+def math_symbols(astnode: libsbml.ASTNode) -> set[str]:
+    """The names referenced by a math: variables, function names and csymbols.
+
+    The `time` csymbol is reported by libsbml as name `time`, it is kept and
+    simply never resolves to an element.
+    """
+    symbols: set[str] = set()
+    if astnode.isName() or (astnode.isFunction() and astnode.isUserFunction()):
+        symbols.add(astnode.getName())
+    for k in range(astnode.getNumChildren()):
+        symbols |= math_symbols(astnode.getChild(k))
+    return symbols

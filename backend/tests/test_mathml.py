@@ -106,3 +106,17 @@ def test_piecewise_to_latex() -> None:
 def test_symbol_to_latex(symbol: str, expected: str) -> None:
     """Symbols are rendered with greek letters and subscripts."""
     assert mathml.symbol_to_latex(symbol) == expected
+
+
+def test_math_info() -> None:
+    """The math of a node is rendered as latex and as formula."""
+    astnode = libsbml.parseL3Formula("k1 * S1 / (KM + S1)")
+    info = mathml.math_info(astnode)
+    assert info.formula == "k1 * S1 / (KM + S1)"
+    assert r"\mathit{S1}" in info.latex
+
+
+def test_math_symbols() -> None:
+    """The symbols of a math are the names of its ASTNodes, without functions."""
+    astnode = libsbml.parseL3Formula("piecewise(f(x, 2), x > y, time)")
+    assert mathml.math_symbols(astnode) == {"f", "x", "y", "time"}
