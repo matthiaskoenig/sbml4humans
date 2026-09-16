@@ -62,6 +62,24 @@ def test_cors(client: TestClient) -> None:
     assert response.headers["access-control-allow-origin"] == "*"
 
 
+def test_cors_error_response(client: TestClient) -> None:
+    """An error payload also carries the CORS headers of the request origin."""
+    response = client.get(
+        "/api/examples/nope", headers={"Origin": "https://example.org"}
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "*"
+    _check_error(response.json(), info={})
+
+
+def test_cors_validation_error_response(client: TestClient) -> None:
+    """A validation error payload also carries the CORS headers of the request origin."""
+    response = client.get("/api/url", headers={"Origin": "https://example.org"})
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "*"
+    _check_error(response.json(), info={})
+
+
 def test_examples(client: TestClient) -> None:
     """The example list contains the metadata without server paths."""
     response = client.get("/api/examples")
