@@ -1,6 +1,6 @@
 """The http api of sbml4humans.
 
-Run with `uvicorn sbml4humans.api:api`.
+Served with `uvicorn sbml4humans.api:api`.
 
 Error contract: the frontend expects every response with status 200. Failures
 are reported in the body as `{"errors": [message, traceback], "warnings": [],
@@ -14,7 +14,6 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import httpx
-import uvicorn
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
@@ -151,12 +150,3 @@ async def report_from_content(request: Request) -> dict[str, Any]:
 def annotation_resource(resource: str) -> dict[str, Any]:
     """Resolve the information of an annotation resource (url or MIRIAM urn)."""
     return annotation_info(resource)
-
-
-def main() -> None:
-    """Serve the api for development with reload."""
-    uvicorn.run("sbml4humans.api:api", host="localhost", port=1444, reload=True)
-
-
-if __name__ == "__main__":
-    main()

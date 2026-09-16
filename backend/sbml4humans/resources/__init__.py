@@ -1,14 +1,16 @@
 """Resources of sbml4humans: the example models served by the api.
 
-The models were copied from the resources of sbmlutils, so that the api does not
-depend on the sbmlutils checkout (the curated biomodels are not part of the
-sbmlutils distribution).
+The models are the example models and the first curated biomodels, the xslt
+stylesheets render the math of the report.
 """
 
 from pathlib import Path
 
 
 RESOURCES_DIR = Path(__file__).parent
+
+# stylesheets of the content MathML -> presentation MathML -> latex conversion
+XSLT_DIR = RESOURCES_DIR / "xslt"
 
 # -------------------------------------------------------------------------------------
 # COMBINE archives
@@ -56,7 +58,7 @@ FBC_DIR = MODELS_DIR / "fbc"
 FBC_ECOLI_CORE_SBML = FBC_DIR / "e_coli_core.xml.gz"
 FBC_RECON3D_SBML = FBC_DIR / "Recon3D.xml.gz"
 
-# the models of the sbmlutils examples
+# small example models, one per SBML feature
 EXAMPLES_DIR = RESOURCES_DIR / "examples"
 EXAMPLE_IDS: list[str] = [
     "algebraic_rule",
@@ -112,8 +114,3 @@ API_EXAMPLES_MODEL: list[Path] = [
 # -------------------------------------------------------------------------------------
 # the archives of the first curated biomodels (BIOMD0000000001, ...)
 BIOMODELS_CURATED_PATH = RESOURCES_DIR / "biomodels"
-
-
-def sbml_paths_idfn(sbml_path: Path) -> str:
-    """Name of a model path in parametrized tests."""
-    return sbml_path.name

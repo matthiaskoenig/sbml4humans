@@ -12,7 +12,6 @@ from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
-    sbml_paths_idfn,
 )
 
 
@@ -33,7 +32,7 @@ def _check_report(data: dict) -> None:
         assert report["debug"]["jsonReportTime"].endswith(" [s]")
 
 
-@pytest.mark.parametrize("path", PATHS, ids=sbml_paths_idfn)
+@pytest.mark.parametrize("path", PATHS, ids=lambda path: path.name)
 def test_report_for_path(path: Path) -> None:
     """Report data is created for all examples."""
     assert path.is_file()

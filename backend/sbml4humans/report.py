@@ -1,7 +1,7 @@
 """Report data for SBML models and COMBINE archives.
 
 The report of a model is the JSON representation created by
-`sbmlutils.report.sbmlinfo.SBMLDocumentInfo`. A single SBML file is wrapped in
+`sbml4humans.sbmlinfo.SBMLDocumentInfo`. A single SBML file is wrapped in
 a COMBINE archive with one master model, so that the frontend always receives
 an archive manifest with one report per SBML entry.
 """
@@ -15,7 +15,8 @@ from pathlib import Path
 from typing import Any
 
 from pymetadata.omex import EntryFormat, ManifestEntry, Omex
-from sbmlutils.report.sbmlinfo import SBMLDocumentInfo
+
+from sbml4humans.sbmlinfo import SBMLDocumentInfo
 
 
 logger = logging.getLogger(__name__)

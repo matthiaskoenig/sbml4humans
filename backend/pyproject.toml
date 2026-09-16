@@ -5,15 +5,20 @@ build-backend = "hatchling.build"
 [project]
 name = "sbml4humans"
 dynamic = ["version"]
-description = "The http api of sbml4humans, a thin layer over the SBML report of sbmlutils."
+description = "The http api of sbml4humans, the human readable report of SBML models."
 requires-python = ">=3.14"
 license = "MIT"
 authors = [
     {name = "Matthias König", email = "konigmatt@googlemail.com"},
 ]
 dependencies = [
-    # the report and the example models
-    "sbmlutils>=0.10.0",
+    # the report: libsbml reads the models, lxml renders the math with xslt,
+    # pint formats the units, pymetadata handles combine archives and annotations
+    "python-libsbml>=5.21.1",
+    "lxml>=6.0.0",
+    "numpy>=2.2.2",
+    "pint>=0.25.3",
+    "pymetadata>=0.6.2",
     # the http api
     "fastapi>=0.141.1",
     "uvicorn>=0.52.4",
@@ -33,12 +38,6 @@ dev = [
     "ruff>=0.16.6",
     "ty>=0.0.78",
 ]
-
-[tool.uv.sources]
-# development runs against the sbmlutils checkout next to this repository, so
-# that the api serves the latest report of sbmlutils (the released package on
-# PyPI satisfies the dependency as well)
-sbmlutils = { path = "../../sbmlutils", editable = true }
 
 [tool.hatch.version]
 path = "sbml4humans/__init__.py"
@@ -73,7 +72,7 @@ line-length = 88
 target-version = "py314"
 
 [tool.ruff.lint]
-# the rule set of sbmlutils: Pyflakes (`F`) and a subset of pycodestyle (`E`), plus:
+# Pyflakes (`F`) and a subset of pycodestyle (`E`), plus:
 #   W    pycodestyle warnings
 #   I    import sorting
 #   D    docstrings (google convention, see [tool.ruff.lint.pydocstyle])

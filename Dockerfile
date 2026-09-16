@@ -7,21 +7,13 @@ FROM python:3.14-slim
 
 WORKDIR /code
 
-# git for the sbmlutils checkout
+# libsbml links against libexpat, which the slim image does not ship
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends git \
+    && apt-get install -y --no-install-recommends libexpat1 \
     && rm -rf /var/lib/apt/lists/*
 
-# the report itself (`sbmlutils.report.sbmlinfo`) comes from the latest develop
-# branch of sbmlutils, the api only serves it over http. The checkout lives
-# outside of /code, which docker compose mounts the repository over.
-ARG SBMLUTILS_BRANCH=develop
-# the current commit of the branch busts the build cache whenever develop moves,
-# so that rebuilds pick up the latest version
-ADD https://api.github.com/repos/matthiaskoenig/sbmlutils/git/refs/heads/${SBMLUTILS_BRANCH} /opt/sbmlutils-ref.json
-RUN git clone --depth 1 --branch ${SBMLUTILS_BRANCH} https://github.com/matthiaskoenig/sbmlutils.git /opt/sbmlutils \
-    && pip install --no-cache-dir --upgrade -e /opt/sbmlutils
-
+# the package is installed editable, docker compose mounts the repository over
+# /code so that the container serves the working tree
 COPY ./backend /code/backend
 RUN pip install --no-cache-dir --upgrade -e /code/backend
 

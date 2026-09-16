@@ -1,6 +1,6 @@
 """The http api of sbml4humans.
 
-The report itself is created by `sbmlutils.report.sbmlinfo`, this package only
+`sbml4humans.sbmlinfo` creates the report of an SBML document, `sbml4humans.api`
 serves it over http for the sbml4humans frontend.
 """
 

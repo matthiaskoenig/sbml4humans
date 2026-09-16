@@ -4,16 +4,15 @@ The Vue 3 application of [SBML4Humans](https://sbml4humans.de), the interactive 
 
 ## Development
 
-The frontend talks to the backend api on port 1444, so start the backend first. Both repositories must be checked out next to each other (`sbml4humans` and `sbmlutils`), the backend develops against the sbmlutils checkout:
+The frontend talks to the backend api on port 1444, so start the backend first.
 
 ```bash
 git clone https://github.com/matthiaskoenig/sbml4humans.git
-git clone https://github.com/matthiaskoenig/sbmlutils.git
 ```
 
 ### Backend api
 
-The backend is the `sbml4humans` Python package in `../backend`, it requires Python 3.14 and [uv](https://docs.astral.sh/uv/). `uv sync` installs the pinned dependencies and the `../../sbmlutils` checkout as an editable package, so that the api serves the latest report of sbmlutils:
+The backend is the `sbml4humans` Python package in `../backend`, it requires Python 3.14 and [uv](https://docs.astral.sh/uv/). `uv sync` installs the pinned dependencies of `uv.lock` and the package:
 
 ```bash
 cd backend
@@ -21,12 +20,7 @@ uv sync
 uv run uvicorn sbml4humans.api:api --reload --port 1444
 ```
 
-Check that the api is running on <http://localhost:1444/api/examples>. To develop against the latest local sbmlutils update the checkout and sync again, code changes of the checkout are live without a reinstall, `uv sync` only picks up changed dependencies of sbmlutils and updates `uv.lock`:
-
-```bash
-git -C ../sbmlutils pull
-uv sync
-```
+Check that the api is running on <http://localhost:1444/api/examples>.
 
 ### Frontend
 
@@ -53,7 +47,7 @@ npm run test:e2e   # cypress
 
 ### Docker compose
 
-Both services can also run in containers from the repository root, the backend then installs sbmlutils from its `develop` branch on GitHub:
+Both services can also run in containers from the repository root:
 
 ```bash
 sudo docker compose -f docker-compose-develop.yml build --no-cache
@@ -64,7 +58,7 @@ The frontend answers on <http://localhost:8083>, the api on <http://localhost:14
 
 ## Technology
 
-- Backend api: [FastAPI](https://fastapi.tiangolo.com/), a thin http layer over the report of the [sbmlutils](https://github.com/matthiaskoenig/sbmlutils) Python package.
+- Backend api: [FastAPI](https://fastapi.tiangolo.com/) serving the report, which is created with [libsbml](https://sbml.org/software/libsbml/), lxml, pint and pymetadata.
 - Frontend: [Vue.js 3](https://vuejs.org/) with TypeScript and SCSS, [Vuex](https://vuex.vuejs.org/) for the state, [Vue Router](https://router.vuejs.org/) for the routes.
 - UI components: [PrimeVue](https://primevue.org/) with PrimeFlex and PrimeIcons, Font Awesome icons, KaTeX for the math.
 - Vue devtools: the [Vue.js devtools](https://devtools.vuejs.org/) browser extension works with the development server.

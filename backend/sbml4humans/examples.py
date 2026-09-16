@@ -1,7 +1,7 @@
 """Example models served by the api.
 
-The examples are the models of `sbml4humans.resources`: the example models of
-sbmlutils and the first curated biomodels. They are read once on first use.
+The examples are the models of `sbml4humans.resources`: the example models and
+the first curated biomodels. They are read once on first use.
 """
 
 import logging
@@ -11,13 +11,13 @@ from pathlib import Path
 import libsbml
 from pydantic import BaseModel, Field, FilePath
 from pymetadata.omex import ManifestEntry, Omex
-from sbmlutils.io import read_sbml
 
 from sbml4humans.resources import (
     API_EXAMPLES_MODEL,
     API_EXAMPLES_OMEX,
     BIOMODELS_CURATED_PATH,
 )
+from sbml4humans.sbml import read_sbml
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ def example_from_sbml(
     Raises:
         ValueError: if the file contains no model.
     """
-    doc: libsbml.SBMLDocument = read_sbml(sbml_path, validate=False)
+    doc: libsbml.SBMLDocument = read_sbml(sbml_path)
     model: libsbml.Model | None = doc.getModel()
     if model is None:
         raise ValueError(f"Model could not be read for '{sbml_path}'")
