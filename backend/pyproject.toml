@@ -19,13 +19,13 @@ dependencies = [
     "numpy>=2.2.2",
     "pint>=0.25.3",
     "pymetadata>=0.6.2",
+    "pydantic>=2.12",
     # the http api
     "fastapi>=0.141.1",
     "uvicorn>=0.52.4",
     "python-multipart>=0.0.32",
     # downloading models from urls
     "httpx>=0.28.1",
-    "pydantic>=2.12",
 ]
 
 [project.urls]

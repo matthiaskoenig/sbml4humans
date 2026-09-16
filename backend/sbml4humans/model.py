@@ -5,8 +5,6 @@ the `Report` of a document and the `LinkGraph` connecting the objects. Python
 uses snake_case, the JSON of the frontend camelCase (`by_alias=True`).
 """
 
-from __future__ import annotations
-
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
