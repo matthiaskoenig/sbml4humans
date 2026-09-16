@@ -63,6 +63,20 @@ describe("annotations", () => {
     expect(wrapper.get("[data-testid=cvterm-resource]").text()).toContain("urn:miriam:x");
   });
 
+  it("requests a rejected resource exactly once even after the component re-renders", async () => {
+    vi.mocked(client.getAnnotationResource).mockRejectedValue(new client.ApiError("boom"));
+    const wrapper = mount(CvTermList, {
+      props: { cvterms: [{ qualifier: "BQB_IS", resources: ["urn:miriam:x"] }] },
+    });
+    await flushPromises();
+    await wrapper.setProps({
+      cvterms: [{ qualifier: "BQB_IS", resources: ["urn:miriam:x"] }],
+    });
+    await flushPromises();
+    expect(wrapper.get("[data-testid=cvterm-resource]").text()).toContain("urn:miriam:x");
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(1);
+  });
+
   it("sanitises the notes", () => {
     const wrapper = mount(NotesView, {
       props: {

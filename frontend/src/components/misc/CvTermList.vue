@@ -6,12 +6,14 @@ import type { AnnotationInfo, CVTerm } from "@/api/types";
 
 const props = defineProps<{ cvterms: CVTerm[] }>();
 const resolved = reactive(new Map<string, AnnotationInfo | null>());
+// Non reactive: which resources were already requested, so a display reset can never re-trigger a fetch.
+const started = new Set<string>();
 
 watchEffect(() => {
   for (const term of props.cvterms) {
     for (const resource of term.resources) {
-      if (resolved.has(resource)) continue;
-      resolved.set(resource, null);
+      if (started.has(resource)) continue;
+      started.add(resource);
       resolveAnnotation(resource)
         .then((info) => resolved.set(resource, info))
         .catch(() => undefined);

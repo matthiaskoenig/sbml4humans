@@ -23,6 +23,11 @@ watch(
   () => props.pk,
   () => (showXml.value = false),
 );
+const xmlEmptyMessage = computed(() =>
+  element.value?.sbmlType === "SBMLDocument" || element.value?.sbmlType === "Model"
+    ? "The XML of the document and the model is not part of the report."
+    : "No XML available.",
+);
 </script>
 
 <template>
@@ -67,7 +72,7 @@ watch(
       </button>
     </header>
     <div v-if="showXml" class="min-h-0 flex-1 overflow-hidden p-3">
-      <XmlView :xml="element.xml" />
+      <XmlView :xml="element.xml" :empty-message="xmlEmptyMessage" />
     </div>
     <div v-else class="grid min-h-0 flex-1 grid-cols-3 divide-x divide-gray-200">
       <div class="overflow-y-auto p-3"><AttributesColumn :element="element" /></div>
