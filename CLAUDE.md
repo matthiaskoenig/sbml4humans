@@ -6,7 +6,7 @@ This file provides guidance when working with code in this repository.
 
 `sbml4humans` is the web application behind [sbml4humans.de](https://sbml4humans.de): interactive, human readable reports of SBML models. It consists of a FastAPI backend (`backend/`, the `sbml4humans` Python package) and a Vue 3 frontend (`frontend/`). The backend creates the report of a document (`sbmlinfo.SBMLDocumentInfo`) and serves it over http, the frontend renders the dictionary it returns. The report is self-contained: the repository has no dependency on any SBML model building library, do not add one.
 
-The backend requires python >= 3.14 and is packaged with hatchling (version read from `backend/sbml4humans/__init__.py`). Runtime dependencies are `python-libsbml` (reading the models), `lxml` (the xslt rendering of the math), `pint` (units), `numpy`, `pymetadata` (COMBINE archives, annotation resolution), `fastapi`, `uvicorn`, `python-multipart` (uploads) and `httpx` (downloading models from urls). The frontend is a Vue CLI 4 project (webpack 4) with TypeScript, Vuex, Vue Router and PrimeVue.
+The backend requires python >= 3.14 and is packaged with hatchling (version read from `backend/sbml4humans/__init__.py`). Runtime dependencies are `python-libsbml` (reading the models), `lxml` (the xslt rendering of the math), `pint` (units), `numpy`, `pymetadata` (COMBINE archives, annotation resolution), `pydantic` (the report data model), `fastapi`, `uvicorn`, `python-multipart` (uploads) and `httpx` (downloading models from urls). The frontend is a Vue CLI 4 project (webpack 4) with TypeScript, Vuex, Vue Router and PrimeVue.
 
 ## Commands
 
@@ -18,6 +18,7 @@ uv run pytest                                    # all tests
 uv run pytest tests/test_api.py::test_examples   # single test
 uv run ruff check . && uv run ruff format --check .
 uv run ty check                                  # type check, warnings are errors
+uv run python -m sbml4humans.schema              # regenerate the JSON schema after a model change
 
 # dependency changes go through uv and are committed with uv.lock
 uv add <package>
@@ -44,11 +45,11 @@ Releases: the version of sbml4humans is the version of the backend package, `fro
 
 **`backend/sbml4humans/api.py` - the http api.** A FastAPI app `api` with CORS open to every origin. Endpoints: `GET /api/examples` (metadata of the examples), `GET /api/examples/{id}` (report of an example), `POST /api/file` (upload), `GET /api/url` (download and report), `POST /api/content` (raw SBML in the body) and `GET /api/annotation_resource` (resolves an annotation resource via pymetadata). The lifespan handler loads the examples on startup. Report creation is synchronous and CPU bound, the async endpoint delegates to `run_in_threadpool`.
 
-**`sbmlinfo.py`, `mathml.py`, `units.py`, `sbml.py` - the report.** `SBMLDocumentInfo` walks a `libsbml.SBMLDocument` and produces the dictionary the frontend renders: every element with its readable equation, its math as latex, its unit as `mmol/min/l` and its annotations; every element gets a primary key (`pk`) so the report can link between elements. `mathml.py` renders the content MathML of libsbml through two xslt stylesheets in `resources/xslt/` (content MathML -> presentation MathML -> latex) and cleans up the latex with the heuristics of `_fix_mathit_symbols`; `units.py` formats a `UnitDefinition` with pint; `sbml.py` is `read_sbml` (path or SBML string, errors are logged and leave a document without model). The qualifiers of the annotations (`BQB`, `BQM`) and the resolution of annotation resources come from pymetadata, they are not redefined here. Changes to the structure of the dictionary must be mirrored in the frontend components.
+**`model.py`, `sbmlinfo.py`, `links.py` - the report.** `model.py` is the pydantic data model: one class per SBML object with the attributes of the specification (`Species`, `Reaction` with `SpeciesReference` and `KineticLaw`, the comp and fbc objects), `Model` with the SBML lists (`list_of_species`, ...), `Report{document, models, external_model_definitions, link_graph}`. Python is snake_case, JSON camelCase (`model_dump(mode="json", by_alias=True)`). `sbmlinfo.SBMLDocumentInfo` walks the libsbml document and builds the objects, math as `Math{latex, formula}` (`mathml.py`) and units as latex (`units.py`), and records the symbols of every math. `links.build_link_graph` turns the report into `LinkGraph{nodes, edges}`: every SBase is a node with `pk = "<model id>/<type>:<id>"`, every reference (compartment, reactant, variable, units, math symbols, modelRef, port, flux bounds, ...) an `Edge{source, target, kind}` from the referencing to the referenced object; unresolvable references are logged, never edges. `schema.py` writes the JSON schema of `ReportResponse` to `frontend/src/schema/report.schema.json`, run it after every model change (the CI diffs it).
 
 **Error contract.** The frontend expects every response with status 200. Every failure, including validation errors, is answered by `error_response` with status 200 and a body `{"errors": [message, traceback], "warnings": [], "info": {query parameters}}`. The tests run the `TestClient` with `raise_server_exceptions=False` to test this contract, keep it that way.
 
-**`report.py` - the archive layer.** `report_for_path`/`report_for_bytes` accept SBML (plain or gzipped) and COMBINE archives (omex, one report per SBML entry of the manifest) and wrap the dictionaries of `SBMLDocumentInfo` with the manifest.
+**`report.py` - the archive layer.** `report_for_path`/`report_for_bytes` accept SBML (plain or gzipped) and COMBINE archives (omex, one report per SBML entry of the manifest) and wrap the `Report` of every SBML entry with the manifest into a `ReportResponse`.
 
 **`examples.py` - the examples.** `load_examples` collects the example models of `sbml4humans/resources/` (`API_EXAMPLES_MODEL`, `API_EXAMPLES_OMEX`, the first 49 curated BioModels in `BIOMODELS_CURATED_PATH`) into `ExampleMetaData` (pydantic). The resources ship in the package.
 

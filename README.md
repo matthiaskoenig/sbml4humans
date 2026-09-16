@@ -40,7 +40,7 @@ uv sync
 uv run uvicorn sbml4humans.api:api --reload --port 1444
 ```
 
-`uv sync` creates `backend/.venv` with the pinned dependencies of `uv.lock` and installs `sbml4humans` editable. The api answers on port 1444, e.g. <http://localhost:1444/api/examples>, the OpenAPI documentation on <http://localhost:1444/docs>. With `--reload` the server restarts on changes in `backend/`. A dependency change goes through `uv add`/`uv lock`, commit the updated `uv.lock` with it, the CI installs from the lock.
+`uv sync` creates `backend/.venv` with the pinned dependencies of `uv.lock` and installs `sbml4humans` editable. The api answers on port 1444, e.g. <http://localhost:1444/api/examples>, the OpenAPI documentation on <http://localhost:1444/docs>. With `--reload` the server restarts on changes in `backend/`. A dependency change goes through `uv add`/`uv lock`, commit the updated `uv.lock` with it, the CI installs from the lock. The JSON schema of the api response is generated from the pydantic model into `frontend/src/schema/report.schema.json` with `uv run python -m sbml4humans.schema`.
 
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every push:
 
