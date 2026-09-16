@@ -4,7 +4,12 @@ import libsbml
 import pytest
 
 from sbml4humans.model import Model, Report
-from sbml4humans.resources import EXAMPLES_DIR, REPRESSILATOR_SBML
+from sbml4humans.resources import (
+    COMP_ICG_BODY,
+    EXAMPLES_DIR,
+    FBC_ECOLI_CORE_SBML,
+    REPRESSILATOR_SBML,
+)
 from sbml4humans.sbml import read_sbml
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 from sbml4humans.units import udef_to_string
@@ -208,3 +213,68 @@ def _units(definition: str) -> list[tuple[int, int, int, float]]:
         "meter^3": [(libsbml.UNIT_KIND_METRE, 3, 0, 1.0)],
         "dimensionless": [(libsbml.UNIT_KIND_DIMENSIONLESS, 1, 0, 1.0)],
     }[definition]
+
+
+def test_comp_model_definitions() -> None:
+    """Model definitions are further models of the report."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "model_definitions.xml")
+    assert [(m.id, m.kind) for m in report.models] == [
+        ("model_definitions", "model"),
+        ("m1", "modelDefinition"),
+    ]
+    assert report.models[1].list_of_species[0].pk.startswith("m1/Species:")
+
+
+def test_comp_submodels_ports_and_replacements() -> None:
+    """Submodels, ports, external model definitions and replacements are reported."""
+    report = SBMLDocumentInfo.from_sbml(COMP_ICG_BODY)
+    model = report.models[0]
+    assert [(s.id, s.model_ref) for s in model.list_of_submodels] == [("LI", "liver")]
+    assert [
+        (e.id, e.source, e.model_ref) for e in report.external_model_definitions
+    ] == [("liver", "icg_liver.xml", "icg_liver")]
+    assert (
+        report.external_model_definitions[0].pk
+        == "document/ExternalModelDefinition:liver"
+    )
+    port = model.list_of_ports[0]
+    assert (port.id, port.id_ref) == ("Vre_tissue_port", "Vre_tissue")
+    species = next(s for s in model.list_of_species if s.id == "Cli_plasma_icg")
+    assert species.comp is not None
+    replaced = species.comp.replaced_elements[0]
+    assert (replaced.submodel_ref, replaced.sbase_ref.port_ref) == (
+        "LI",
+        "icg_ext_port",
+    )
+
+
+def test_fbc() -> None:
+    """Flux bounds, gene product associations, gene products and objectives are reported."""
+    report = SBMLDocumentInfo.from_sbml(FBC_ECOLI_CORE_SBML)
+    model = report.models[0]
+    reaction = next(r for r in model.list_of_reactions if r.id == "R_PFK")
+    assert reaction.fbc is not None
+    assert reaction.fbc.lower_flux_bound == "cobra_0_bound"
+    assert reaction.fbc.upper_flux_bound == "cobra_default_ub"
+    assert reaction.fbc.gene_product_association == "(b3916 or b1723)"
+    assert sorted(reaction.fbc.gene_products) == ["G_b1723", "G_b3916"]
+    assert len(model.list_of_gene_products) == 137
+    objective = model.list_of_objectives[0]
+    assert objective.id == "obj"
+    assert [(f.reaction, f.coefficient) for f in objective.list_of_flux_objectives] == [
+        ("R_BIOMASS_Ecoli_core_w_GAM", 1.0)
+    ]
+
+
+def test_distrib_uncertainties() -> None:
+    """Uncertainties of the distrib package are reported with their parameters."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "distrib_uncertainties.xml")
+    model = report.models[0]
+    with_uncertainty = [
+        e for e in model.list_of_parameters + model.list_of_species if e.uncertainties
+    ]
+    assert with_uncertainty
+    uncertainty = with_uncertainty[0].uncertainties[0]
+    assert uncertainty.sbml_type == "Uncertainty"
+    assert uncertainty.uncert_parameters
+    assert uncertainty.uncert_parameters[0].type is not None

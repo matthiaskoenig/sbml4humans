@@ -29,6 +29,7 @@ from sbml4humans.model import (
     Event,
     EventAssignment,
     ExternalModelDefinition,
+    FluxObjective,
     FunctionDefinition,
     GeneProduct,
     InitialAssignment,
@@ -45,7 +46,10 @@ from sbml4humans.model import (
     RateRule,
     Reaction,
     ReactionFbc,
+    ReplacedBy,
+    ReplacedElement,
     Report,
+    SBaseRef,
     SBMLDocument,
     Species,
     SpeciesFbc,
@@ -53,6 +57,7 @@ from sbml4humans.model import (
     Submodel,
     Trigger,
     Uncertainty,
+    UncertParameter,
     UnitDefinition,
 )
 from sbml4humans.sbml import read_sbml
@@ -550,20 +555,43 @@ class SBMLDocumentInfo:
         )
 
     # ---------------------------------------------------------------------------------
-    # comp, fbc, distrib (Task 5)
+    # comp
     # ---------------------------------------------------------------------------------
-    def comp_sbase(self, sbase: libsbml.SBase) -> CompSBase | None:
-        """The comp extension of an element."""
-        return None
+    @staticmethod
+    def _sbase_ref(ref: libsbml.SBaseRef) -> SBaseRef:
+        """The comp reference of an element."""
+        return SBaseRef(
+            port_ref=_attribute(ref, "portRef"),
+            id_ref=_attribute(ref, "idRef"),
+            unit_ref=_attribute(ref, "unitRef"),
+            meta_id_ref=_attribute(ref, "metaIdRef"),
+        )
 
-    def uncertainties(self, sbase: libsbml.SBase) -> list[Uncertainty]:
-        """The distrib uncertainties of an element."""
-        return []
+    def comp_sbase(self, sbase: libsbml.SBase) -> CompSBase | None:
+        """The comp extension of an element: replaced by and replaced elements."""
+        plugin = sbase.getPlugin("comp")
+        if not plugin or not isinstance(plugin, libsbml.CompSBasePlugin):
+            return None
+        replaced_by = None
+        if plugin.isSetReplacedBy():
+            rb: libsbml.ReplacedBy = plugin.getReplacedBy()
+            replaced_by = ReplacedBy(
+                submodel_ref=rb.getSubmodelRef(), sbase_ref=self._sbase_ref(rb)
+            )
+        replaced_elements = [
+            ReplacedElement(
+                submodel_ref=re.getSubmodelRef(), sbase_ref=self._sbase_ref(re)
+            )
+            for re in plugin.getListOfReplacedElements() or []
+        ]
+        if replaced_by is None and not replaced_elements:
+            return None
+        return CompSBase(replaced_by=replaced_by, replaced_elements=replaced_elements)
 
     def external_model_definition(
         self, emd: libsbml.ExternalModelDefinition
     ) -> ExternalModelDefinition:
-        """A comp external model definition."""
+        """A comp external model definition, scoped to the document."""
         return ExternalModelDefinition(
             **self.sbase(emd, scope=DOCUMENT_SCOPE),
             source=emd.getSource(),
@@ -572,20 +600,122 @@ class SBMLDocumentInfo:
 
     def submodels(self, model: libsbml.Model) -> list[Submodel]:
         """The comp submodels of a model."""
-        return []
+        plugin: libsbml.CompModelPlugin | None = model.getPlugin("comp")
+        if not plugin:
+            return []
+        return [
+            Submodel(
+                **self.sbase(s),
+                model_ref=s.getModelRef(),
+                time_conversion_factor=_attribute(s, "timeConversionFactor"),
+                extent_conversion_factor=_attribute(s, "extentConversionFactor"),
+                list_of_deletions=[self._sbase_ref(d) for d in s.getListOfDeletions()],
+            )
+            for s in plugin.getListOfSubmodels()
+        ]
 
     def ports(self, model: libsbml.Model) -> list[Port]:
         """The comp ports of a model."""
-        return []
+        plugin: libsbml.CompModelPlugin | None = model.getPlugin("comp")
+        if not plugin:
+            return []
+        return [
+            Port(**self.sbase(p), **self._sbase_ref(p).model_dump())
+            for p in plugin.getListOfPorts()
+        ]
 
+    # ---------------------------------------------------------------------------------
+    # fbc
+    # ---------------------------------------------------------------------------------
     def gene_products(self, model: libsbml.Model) -> list[GeneProduct]:
         """The fbc gene products of a model."""
-        return []
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return []
+        return [
+            GeneProduct(
+                **self.sbase(gp),
+                label=_attribute(gp, "label"),
+                associated_species=_attribute(gp, "associatedSpecies"),
+            )
+            for gp in plugin.getListOfGeneProducts()
+        ]
 
     def objectives(self, model: libsbml.Model) -> list[Objective]:
         """The fbc objectives of a model."""
-        return []
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return []
+        return [
+            Objective(
+                **self.sbase(o),
+                type=_attribute(o, "type"),
+                list_of_flux_objectives=[
+                    FluxObjective(
+                        reaction=f.getReaction(), coefficient=f.getCoefficient()
+                    )
+                    for f in o.getListOfFluxObjectives()
+                ],
+            )
+            for o in plugin.getListOfObjectives()
+        ]
 
     def reaction_fbc(self, r: libsbml.Reaction) -> ReactionFbc | None:
-        """The fbc extension of a reaction."""
-        return None
+        """The fbc extension of a reaction: bounds and gene product association."""
+        plugin: libsbml.FbcReactionPlugin | None = r.getPlugin("fbc")
+        if not plugin:
+            return None
+        association = None
+        gene_products: list[str] = []
+        if plugin.isSetGeneProductAssociation():
+            root: libsbml.FbcAssociation = (
+                plugin.getGeneProductAssociation().getAssociation()
+            )
+            association = root.toInfix()
+            gene_products = sorted(self._gene_product_refs(root))
+        return ReactionFbc(
+            lower_flux_bound=_attribute(plugin, "lowerFluxBound"),
+            upper_flux_bound=_attribute(plugin, "upperFluxBound"),
+            gene_product_association=association,
+            gene_products=gene_products,
+        )
+
+    @staticmethod
+    def _gene_product_refs(association: libsbml.FbcAssociation) -> set[str]:
+        """The gene product ids referenced by an association tree."""
+        if isinstance(association, libsbml.GeneProductRef):
+            return {association.getGeneProduct()}
+        refs: set[str] = set()
+        # FbcAnd and FbcOr, the only other subclasses of FbcAssociation, expose
+        # getNumAssociations/getAssociation; the libsbml stubs do not declare them
+        # on the base class.
+        for k in range(association.getNumAssociations()):  # ty: ignore[unresolved-attribute]
+            refs |= SBMLDocumentInfo._gene_product_refs(
+                association.getAssociation(k)  # ty: ignore[unresolved-attribute]
+            )
+        return refs
+
+    # ---------------------------------------------------------------------------------
+    # distrib
+    # ---------------------------------------------------------------------------------
+    def uncertainties(self, sbase: libsbml.SBase) -> list[Uncertainty]:
+        """The distrib uncertainties of an element."""
+        plugin = sbase.getPlugin("distrib")
+        if not plugin or not isinstance(plugin, libsbml.DistribSBasePlugin):
+            return []
+        uncertainties = []
+        for u in plugin.getListOfUncertainties():
+            fields = self.sbase(u)
+            parameters = [
+                UncertParameter(
+                    var=_attribute(p, "var"),
+                    value=_number(_attribute(p, "value")),
+                    units=_attribute(p, "units"),
+                    type=p.getTypeAsString() if p.isSetType() else None,
+                    definition_url=_attribute(p, "definitionURL"),
+                    math=self.math(fields["pk"], _attribute(p, "math")),
+                )
+                for p in u.getListOfUncertParameters()
+            ]
+            uncertainties.append(Uncertainty(**fields, uncert_parameters=parameters))
+        return uncertainties
