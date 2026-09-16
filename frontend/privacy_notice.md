@@ -6,7 +6,7 @@ By using the Online SBML4Humans facilities of [sbml4humans.de](https://sbml4huma
 
 ## Can you avoid submitting any information?
 
-If you prefer to have greater privacy, you can avoid using the Online SBML4Humans by downloading [sbmlutils](https://github.com/matthiaskoenig/sbmlutils) (which contains the report engine) and running [sbmlutils](https://github.com/matthiaskoenig/sbmlutils) on your own private computer. This avoids the need to enter any information to this online service or uploading any models to [sbml4humans.de](https://sbml4humans.de). 
+If you prefer to have greater privacy, you can avoid using the Online SBML4Humans by downloading [SBML4Humans](https://github.com/matthiaskoenig/sbml4humans) and running it on your own private computer. This avoids the need to enter any information to this online service or uploading any models to [sbml4humans.de](https://sbml4humans.de). 
 
 ## What information does this service gather?
 

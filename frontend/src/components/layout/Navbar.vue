@@ -50,12 +50,12 @@ export default defineComponent({
                 {
                     label: "Report issue",
                     icon: "pi pi-fw pi-pencil",
-                    url: "https://github.com/matthiaskoenig/sbmlutils/issues/new/choose",
+                    url: "https://github.com/matthiaskoenig/sbml4humans/issues/new/choose",
                 },
                 {
                     label: "Source",
                     icon: "pi pi-fw pi-github",
-                    url: "https://github.com/matthiaskoenig/sbmlutils",
+                    url: "https://github.com/matthiaskoenig/sbml4humans",
                 },
             ],
         };

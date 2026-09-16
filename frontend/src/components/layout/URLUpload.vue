@@ -74,7 +74,7 @@ export default defineComponent({
         example_url(): string {
             return (
                 VUE_APP_FRONTENDURL +
-                "/model_url?url=https://raw.githubusercontent.com/matthiaskoenig/sbmlutils/develop/src/sbmlutils/resources/models/glucose/Hepatic_glucose_3.xml"
+                "/model_url?url=https://raw.githubusercontent.com/matthiaskoenig/sbml4humans/main/backend/sbml4humans/resources/models/glucose/Hepatic_glucose_3.xml"
             );
         },
     },

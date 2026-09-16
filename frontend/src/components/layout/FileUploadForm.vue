@@ -21,7 +21,7 @@
         <p class="p-pt-3" style="font-size: smaller">
             By using any part of this service, you agree to the terms of the
             <a
-                href="https://github.com/matthiaskoenig/sbmlutils/blob/develop/sbml4humans/privacy_notice.md"
+                href="https://github.com/matthiaskoenig/sbml4humans/blob/main/frontend/privacy_notice.md"
                 target="_blank"
                 >privacy notice</a
             >.

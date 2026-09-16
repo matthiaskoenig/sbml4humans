@@ -33,14 +33,12 @@
                         </a>
                         is to provide an interactive and reactive report for SBML models
                         which allows humans (experts as well as beginners) to easily
-                        comprehend the content of a model. SBML4Humans is part of the
+                        comprehend the content of a model. SBML4Humans is developed on
                         <a
                             target="_blank"
-                            href="https://github.com/matthiaskoenig/sbmlutils"
-                        >
-                            sbmlutils
-                        </a>
-                        project.<br />
+                            href="https://github.com/matthiaskoenig/sbml4humans"
+                            >GitHub</a
+                        >.<br />
                         If you use SBML4Humans in your work cite<br />
                         <a
                             href="https://zenodo.org/badge/latestdoi/55952847"

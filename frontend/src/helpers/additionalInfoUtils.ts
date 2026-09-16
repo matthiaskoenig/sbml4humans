@@ -38,7 +38,7 @@ export function checkAPIResponse(response: any): void {
     if (response.data["errors"]) {
         alert(
             "An error occurred. Please report this on\n" +
-                "https://github.com/matthiaskoenig/sbmlutils/issues/new\n" +
+                "https://github.com/matthiaskoenig/sbml4humans/issues/new\n" +
                 "so we can improve the service.\n\n" +
                 JSON.stringify(response.data, null, 1)
         );
