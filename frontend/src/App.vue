@@ -1,19 +1,9 @@
+<script setup lang="ts"></script>
+
 <template>
-    <navbar class="navbar-fixed" />
-    <router-view class="router-view" />
+  <div class="flex h-full flex-col">
+    <main class="flex min-h-0 flex-1 flex-col">
+      <h1 class="p-4 text-xl font-semibold">SBML4Humans</h1>
+    </main>
+  </div>
 </template>
-
-<script lang="ts">
-import Navbar from "@/components/layout/Navbar.vue";
-
-export default {
-    name: "app",
-    components: {
-        Navbar,
-    },
-};
-</script>
-
-<style lang="scss">
-@import "@/assets/styles/scss/App.scss";
-</style>
