@@ -29,6 +29,7 @@ globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObse
 
 const index = new ReportIndex(loadReport("repressilator"));
 const species = index.byType("BIOMD0000000012").get("Species") as Species[];
+const icgBody = new ReportIndex(loadReport("icg_body"));
 
 describe("ElementTable", () => {
   it("renders a row per element with the id, a compartment link and marks", async () => {
@@ -116,5 +117,25 @@ describe("ElementCell", () => {
     const placeholder = mountCell(parameter, units);
     expect(placeholder.find("[data-testid=units]").exists()).toBe(false);
     expect(placeholder.text()).toBe("-");
+  });
+
+  it("shows a unit id once when the units link has no renderable latex", () => {
+    const dimensionless = icgBody.mainModel!.listOfParameters!.find(
+      (p) => p.id === "Fblood",
+    ) as Parameter;
+    expect(dimensionless.unitsLatex).toBe("-");
+    const wrapper = mount(ElementCell, {
+      props: {
+        row: dimensionless,
+        column: { field: "units", header: "units", kind: "link", link: "units" },
+      },
+      global: {
+        plugins: [router],
+        directives: { tooltip: Tooltip },
+        provide: { [ReportIndexKey as symbol]: ref(icgBody) },
+      },
+    });
+    expect(wrapper.text()).toBe(dimensionless.units);
+    expect(wrapper.find("[data-testid=units]").exists()).toBe(false);
   });
 });

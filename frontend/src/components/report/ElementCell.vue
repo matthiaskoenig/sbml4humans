@@ -5,6 +5,7 @@ import type { SbmlElement, Math } from "@/api/types";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
+import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { fieldValue, type ColumnDef } from "@/report/columns";
@@ -29,8 +30,9 @@ const targetPk = computed(() =>
     : null,
 );
 
-/** Kind "link" with units: the latex of the units sits next to the id. UnitsView renders the
- * dash of a dimensionless or missing latex as the placeholder itself. */
+/** Kind "link" with units: the latex of the units sits next to the id. UnitsLink hides the
+ * units latex entirely when it is null, empty or the report's "-" placeholder, so the id is
+ * never followed by a redundant dash or a repeated id. */
 const unitsLatex = computed(() => {
   if (props.column.link !== "units") return null;
   const latex = fieldValue(
@@ -52,10 +54,7 @@ const unitsLatex = computed(() => {
   <MathView v-else-if="column.kind === 'math'" :math="mathValue" />
   <UnitsView v-else-if="column.kind === 'units'" :latex="text" />
   <template v-else-if="column.kind === 'link'">
-    <span v-if="column.link === 'units'" class="inline-flex items-center gap-2">
-      <ElementLink :pk="targetPk" :label="text" />
-      <UnitsView :latex="unitsLatex" :units="text" />
-    </span>
+    <UnitsLink v-if="column.link === 'units'" :pk="targetPk" :label="text" :latex="unitsLatex" />
     <ElementLink v-else :pk="targetPk" :label="text" />
   </template>
   <ValueText v-else :value="displayText" :mono="column.field === 'equation'" />

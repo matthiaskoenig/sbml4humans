@@ -3,6 +3,7 @@ import type { Species } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
+import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
@@ -23,13 +24,11 @@ const index = useReportIndex();
     ><ValueText :value="element.initialConcentration"
   /></AttributeRow>
   <AttributeRow label="substance units">
-    <span class="inline-flex items-center gap-2">
-      <ElementLink
-        :pk="index?.resolve(element.pk, 'units', element.substanceUnits)"
-        :label="element.substanceUnits"
-      />
-      <UnitsView :latex="element.unitsLatex" />
-    </span>
+    <UnitsLink
+      :pk="index?.resolve(element.pk, 'units', element.substanceUnits)"
+      :label="element.substanceUnits"
+      :latex="element.unitsLatex"
+    />
   </AttributeRow>
   <AttributeRow label="only substance units"
     ><BooleanMark :value="element.hasOnlySubstanceUnits"

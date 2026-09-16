@@ -31,8 +31,8 @@ watch(
   >
     <header class="flex h-10 shrink-0 items-center gap-2 border-b border-gray-200 px-3 text-sm">
       <TypeMark v-if="element.sbmlType" :type="element.sbmlType" size="md" />
-      <span class="text-gray-500" data-testid="inspector-type" :title="label">{{
-        element.sbmlType
+      <span class="text-gray-500" data-testid="inspector-type" :title="element.sbmlType">{{
+        label
       }}</span>
       <span class="font-mono font-semibold" data-testid="inspector-id">{{
         element.id ?? element.metaId ?? element.pk

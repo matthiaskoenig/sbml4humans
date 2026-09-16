@@ -2,7 +2,7 @@
 import type { Model } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
-import UnitsView from "@/components/misc/UnitsView.vue";
+import UnitsLink from "@/components/misc/UnitsLink.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
 
@@ -25,10 +25,7 @@ const resolve = (id: string | null | undefined) =>
 <template>
   <AttributeRow label="kind">{{ element.kind ?? "model" }}</AttributeRow>
   <AttributeRow v-for="[label, idKey, latexKey] in UNITS" :key="idKey" :label="`${label} units`">
-    <span class="inline-flex items-center gap-2">
-      <ElementLink :pk="resolve(element[idKey])" :label="element[idKey]" />
-      <UnitsView :latex="element[latexKey]" />
-    </span>
+    <UnitsLink :pk="resolve(element[idKey])" :label="element[idKey]" :latex="element[latexKey]" />
   </AttributeRow>
   <AttributeRow label="conversion factor">
     <template v-if="element.conversionFactor">
