@@ -55,7 +55,7 @@ jobs:
           diff /tmp/report.schema.json ../frontend/src/schema/report.schema.json
 
   release:
-    needs: test
+    needs: [test, schema]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 10

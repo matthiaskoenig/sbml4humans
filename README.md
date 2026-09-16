@@ -64,6 +64,8 @@ npm run serve
 
 The development server runs on <http://localhost:3456> and talks to the backend api on port 1444 (`frontend/.env.development`).
 
+The api returns the typed `ReportResponse`, while the current frontend still expects the old untyped report dictionary and is replaced by the frontend redesign (a separate project); until then the frontend does not render reports.
+
 ## Releases
 
 The version of sbml4humans is the version of the backend package in
