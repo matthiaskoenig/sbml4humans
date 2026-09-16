@@ -35,9 +35,9 @@ dev = [
 ]
 
 [tool.uv.sources]
-# development runs against the sbmlutils checkout next to this repository: it
-# provides the curated biomodels served as examples, which are not part of the
-# sbmlutils distribution on PyPI
+# development runs against the sbmlutils checkout next to this repository, so
+# that the api serves the latest report of sbmlutils (the released package on
+# PyPI satisfies the dependency as well)
 sbmlutils = { path = "../../sbmlutils", editable = true }
 
 [tool.hatch.version]

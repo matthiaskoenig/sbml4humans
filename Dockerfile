@@ -12,10 +12,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/*
 
-# the report itself (`sbmlutils.report.sbmlinfo`) and the example models come
-# from the latest develop branch of sbmlutils, the api only serves them over http.
-# The checkout is installed editable, so that the curated biomodels served as
-# examples are available (they are excluded from the sbmlutils wheel). It lives
+# the report itself (`sbmlutils.report.sbmlinfo`) comes from the latest develop
+# branch of sbmlutils, the api only serves it over http. The checkout lives
 # outside of /code, which docker compose mounts the repository over.
 ARG SBMLUTILS_BRANCH=develop
 # the current commit of the branch busts the build cache whenever develop moves,
