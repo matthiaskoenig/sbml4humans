@@ -33,6 +33,27 @@ jobs:
         working-directory: backend
         run: uv run pytest
 
+  schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          python-version: "3.14"
+          enable-cache: true
+      - name: Install the backend
+        working-directory: backend
+        run: uv sync
+      - name: Check that the committed JSON schema is current
+        working-directory: backend
+        run: |
+          uv run python -m sbml4humans.schema /tmp/report.schema.json
+          diff /tmp/report.schema.json ../frontend/src/schema/report.schema.json
+
   release:
     needs: test
     if: startsWith(github.ref, 'refs/tags/')

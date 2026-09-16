@@ -1,0 +1,5068 @@
+{
+  "$defs": {
+    "AlgebraicRule": {
+      "description": "An algebraic rule.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "AlgebraicRule",
+          "default": "AlgebraicRule",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "AlgebraicRule",
+      "type": "object"
+    },
+    "AssignmentRule": {
+      "description": "An assignment rule of a variable.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "AssignmentRule",
+          "default": "AssignmentRule",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        }
+      },
+      "required": [
+        "pk",
+        "variable"
+      ],
+      "title": "AssignmentRule",
+      "type": "object"
+    },
+    "CVTerm": {
+      "description": "An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.",
+      "properties": {
+        "qualifier": {
+          "title": "Qualifier",
+          "type": "string"
+        },
+        "resources": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Resources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "qualifier",
+        "resources"
+      ],
+      "title": "CVTerm",
+      "type": "object"
+    },
+    "CompSBase": {
+      "description": "The comp extension of an element.",
+      "properties": {
+        "replacedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReplacedBy"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "replacedElements": {
+          "items": {
+            "$ref": "#/$defs/ReplacedElement"
+          },
+          "title": "Replacedelements",
+          "type": "array"
+        }
+      },
+      "title": "CompSBase",
+      "type": "object"
+    },
+    "Compartment": {
+      "description": "A compartment.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Compartment",
+          "default": "Compartment",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "spatialDimensions": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spatialdimensions"
+        },
+        "size": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Size"
+        },
+        "constant": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Constant"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        },
+        "unitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unitslatex"
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Compartment",
+      "type": "object"
+    },
+    "Constraint": {
+      "description": "A constraint with its message.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Constraint",
+          "default": "Constraint",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Constraint",
+      "type": "object"
+    },
+    "ConversionFactor": {
+      "description": "The conversion factor parameter of a model or species.",
+      "properties": {
+        "sid": {
+          "title": "Sid",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        }
+      },
+      "required": [
+        "sid"
+      ],
+      "title": "ConversionFactor",
+      "type": "object"
+    },
+    "Creator": {
+      "description": "A creator of the model history.",
+      "properties": {
+        "givenName": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Givenname"
+        },
+        "familyName": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Familyname"
+        },
+        "organization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Organization"
+        },
+        "email": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Email"
+        }
+      },
+      "title": "Creator",
+      "type": "object"
+    },
+    "Debug": {
+      "description": "Timing information of a report.",
+      "properties": {
+        "jsonReportTime": {
+          "title": "Jsonreporttime",
+          "type": "string"
+        }
+      },
+      "required": [
+        "jsonReportTime"
+      ],
+      "title": "Debug",
+      "type": "object"
+    },
+    "Edge": {
+      "description": "A directed reference from one object to another.",
+      "properties": {
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "title": "Target",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/EdgeKind"
+        }
+      },
+      "required": [
+        "source",
+        "target",
+        "kind"
+      ],
+      "title": "Edge",
+      "type": "object"
+    },
+    "EdgeKind": {
+      "description": "The kinds of references between objects.",
+      "enum": [
+        "compartment",
+        "reactant",
+        "product",
+        "modifier",
+        "variable",
+        "symbol",
+        "units",
+        "conversionFactor",
+        "fluxBound",
+        "geneProduct",
+        "associatedSpecies",
+        "fluxObjective",
+        "modelRef",
+        "port",
+        "replacedBy",
+        "replacedElement",
+        "math"
+      ],
+      "title": "EdgeKind",
+      "type": "string"
+    },
+    "Event": {
+      "description": "An event with trigger, priority, delay and assignments.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Event",
+          "default": "Event",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "useValuesFromTriggerTime": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Usevaluesfromtriggertime"
+        },
+        "trigger": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Trigger"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "priority": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "delay": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "listOfEventAssignments": {
+          "items": {
+            "$ref": "#/$defs/EventAssignment"
+          },
+          "title": "Listofeventassignments",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Event",
+      "type": "object"
+    },
+    "EventAssignment": {
+      "description": "An assignment executed by an event.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "EventAssignment",
+          "default": "EventAssignment",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk",
+        "variable"
+      ],
+      "title": "EventAssignment",
+      "type": "object"
+    },
+    "ExternalModelDefinition": {
+      "description": "A comp reference to a model in another document.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "ExternalModelDefinition",
+          "default": "ExternalModelDefinition",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "modelRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Modelref"
+        }
+      },
+      "required": [
+        "pk",
+        "source"
+      ],
+      "title": "ExternalModelDefinition",
+      "type": "object"
+    },
+    "FluxObjective": {
+      "description": "A weighted reaction of an objective.",
+      "properties": {
+        "reaction": {
+          "title": "Reaction",
+          "type": "string"
+        },
+        "coefficient": {
+          "title": "Coefficient",
+          "type": "number"
+        }
+      },
+      "required": [
+        "reaction",
+        "coefficient"
+      ],
+      "title": "FluxObjective",
+      "type": "object"
+    },
+    "FunctionDefinition": {
+      "description": "A function definition with its lambda.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "FunctionDefinition",
+          "default": "FunctionDefinition",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "FunctionDefinition",
+      "type": "object"
+    },
+    "GeneProduct": {
+      "description": "An fbc gene product.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "GeneProduct",
+          "default": "GeneProduct",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Label"
+        },
+        "associatedSpecies": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Associatedspecies"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "GeneProduct",
+      "type": "object"
+    },
+    "InitialAssignment": {
+      "description": "An initial assignment of a symbol.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "InitialAssignment",
+          "default": "InitialAssignment",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "symbol": {
+          "title": "Symbol",
+          "type": "string"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        }
+      },
+      "required": [
+        "pk",
+        "symbol"
+      ],
+      "title": "InitialAssignment",
+      "type": "object"
+    },
+    "KineticLaw": {
+      "description": "The kinetic law of a reaction.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "KineticLaw",
+          "default": "KineticLaw",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        },
+        "listOfLocalParameters": {
+          "items": {
+            "$ref": "#/$defs/LocalParameter"
+          },
+          "title": "Listoflocalparameters",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "KineticLaw",
+      "type": "object"
+    },
+    "LinkGraph": {
+      "description": "All objects of a report and the references between them.",
+      "properties": {
+        "nodes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/Node"
+          },
+          "title": "Nodes",
+          "type": "object"
+        },
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/Edge"
+          },
+          "title": "Edges",
+          "type": "array"
+        }
+      },
+      "title": "LinkGraph",
+      "type": "object"
+    },
+    "LocalParameter": {
+      "description": "A local parameter of a kinetic law.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "LocalParameter",
+          "default": "LocalParameter",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        },
+        "unitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unitslatex"
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "LocalParameter",
+      "type": "object"
+    },
+    "Math": {
+      "description": "The math of an element as latex and as L3 formula string.",
+      "properties": {
+        "latex": {
+          "title": "Latex",
+          "type": "string"
+        },
+        "formula": {
+          "title": "Formula",
+          "type": "string"
+        }
+      },
+      "required": [
+        "latex",
+        "formula"
+      ],
+      "title": "Math",
+      "type": "object"
+    },
+    "Model": {
+      "description": "A model or comp model definition with the lists of its elements.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Model",
+          "default": "Model",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "kind": {
+          "default": "model",
+          "enum": [
+            "model",
+            "modelDefinition"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "substanceUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Substanceunits"
+        },
+        "substanceUnitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Substanceunitslatex"
+        },
+        "timeUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timeunits"
+        },
+        "timeUnitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timeunitslatex"
+        },
+        "volumeUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Volumeunits"
+        },
+        "volumeUnitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Volumeunitslatex"
+        },
+        "areaUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Areaunits"
+        },
+        "areaUnitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Areaunitslatex"
+        },
+        "lengthUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lengthunits"
+        },
+        "lengthUnitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lengthunitslatex"
+        },
+        "extentUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extentunits"
+        },
+        "extentUnitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extentunitslatex"
+        },
+        "conversionFactor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConversionFactor"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "listOfFunctionDefinitions": {
+          "items": {
+            "$ref": "#/$defs/FunctionDefinition"
+          },
+          "title": "Listoffunctiondefinitions",
+          "type": "array"
+        },
+        "listOfUnitDefinitions": {
+          "items": {
+            "$ref": "#/$defs/UnitDefinition"
+          },
+          "title": "Listofunitdefinitions",
+          "type": "array"
+        },
+        "listOfCompartments": {
+          "items": {
+            "$ref": "#/$defs/Compartment"
+          },
+          "title": "Listofcompartments",
+          "type": "array"
+        },
+        "listOfSpecies": {
+          "items": {
+            "$ref": "#/$defs/Species"
+          },
+          "title": "Listofspecies",
+          "type": "array"
+        },
+        "listOfParameters": {
+          "items": {
+            "$ref": "#/$defs/Parameter"
+          },
+          "title": "Listofparameters",
+          "type": "array"
+        },
+        "listOfInitialAssignments": {
+          "items": {
+            "$ref": "#/$defs/InitialAssignment"
+          },
+          "title": "Listofinitialassignments",
+          "type": "array"
+        },
+        "listOfRules": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "AlgebraicRule": "#/$defs/AlgebraicRule",
+                "AssignmentRule": "#/$defs/AssignmentRule",
+                "RateRule": "#/$defs/RateRule"
+              },
+              "propertyName": "sbmlType"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/AssignmentRule"
+              },
+              {
+                "$ref": "#/$defs/RateRule"
+              },
+              {
+                "$ref": "#/$defs/AlgebraicRule"
+              }
+            ]
+          },
+          "title": "Listofrules",
+          "type": "array"
+        },
+        "listOfConstraints": {
+          "items": {
+            "$ref": "#/$defs/Constraint"
+          },
+          "title": "Listofconstraints",
+          "type": "array"
+        },
+        "listOfReactions": {
+          "items": {
+            "$ref": "#/$defs/Reaction"
+          },
+          "title": "Listofreactions",
+          "type": "array"
+        },
+        "listOfEvents": {
+          "items": {
+            "$ref": "#/$defs/Event"
+          },
+          "title": "Listofevents",
+          "type": "array"
+        },
+        "listOfSubmodels": {
+          "items": {
+            "$ref": "#/$defs/Submodel"
+          },
+          "title": "Listofsubmodels",
+          "type": "array"
+        },
+        "listOfPorts": {
+          "items": {
+            "$ref": "#/$defs/Port"
+          },
+          "title": "Listofports",
+          "type": "array"
+        },
+        "listOfGeneProducts": {
+          "items": {
+            "$ref": "#/$defs/GeneProduct"
+          },
+          "title": "Listofgeneproducts",
+          "type": "array"
+        },
+        "listOfObjectives": {
+          "items": {
+            "$ref": "#/$defs/Objective"
+          },
+          "title": "Listofobjectives",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Model",
+      "type": "object"
+    },
+    "ModelHistory": {
+      "description": "The history of an element: creators and dates.",
+      "properties": {
+        "creators": {
+          "items": {
+            "$ref": "#/$defs/Creator"
+          },
+          "title": "Creators",
+          "type": "array"
+        },
+        "createdDate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Createddate"
+        },
+        "modifiedDates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Modifieddates",
+          "type": "array"
+        }
+      },
+      "title": "ModelHistory",
+      "type": "object"
+    },
+    "ModifierSpeciesReference": {
+      "description": "A modifier of a reaction.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "ModifierSpeciesReference",
+          "default": "ModifierSpeciesReference",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "species": {
+          "title": "Species",
+          "type": "string"
+        }
+      },
+      "required": [
+        "pk",
+        "species"
+      ],
+      "title": "ModifierSpeciesReference",
+      "type": "object"
+    },
+    "Node": {
+      "description": "A node of the link graph: one SBML object.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        }
+      },
+      "required": [
+        "pk",
+        "sbmlType"
+      ],
+      "title": "Node",
+      "type": "object"
+    },
+    "Objective": {
+      "description": "An fbc objective.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Objective",
+          "default": "Objective",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Type"
+        },
+        "listOfFluxObjectives": {
+          "items": {
+            "$ref": "#/$defs/FluxObjective"
+          },
+          "title": "Listoffluxobjectives",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Objective",
+      "type": "object"
+    },
+    "Package": {
+      "description": "An SBML package used by the document.",
+      "properties": {
+        "prefix": {
+          "title": "Prefix",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "prefix",
+        "version"
+      ],
+      "title": "Package",
+      "type": "object"
+    },
+    "Parameter": {
+      "description": "A global parameter.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Parameter",
+          "default": "Parameter",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "constant": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Constant"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        },
+        "unitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unitslatex"
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Parameter",
+      "type": "object"
+    },
+    "Port": {
+      "description": "A comp port referencing an element of the model.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Port",
+          "default": "Port",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "portRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Portref"
+        },
+        "idRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idref"
+        },
+        "unitRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unitref"
+        },
+        "metaIdRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaidref"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Port",
+      "type": "object"
+    },
+    "RateRule": {
+      "description": "A rate rule of a variable.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "RateRule",
+          "default": "RateRule",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "variable": {
+          "title": "Variable",
+          "type": "string"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        }
+      },
+      "required": [
+        "pk",
+        "variable"
+      ],
+      "title": "RateRule",
+      "type": "object"
+    },
+    "Reaction": {
+      "description": "A reaction with its participants and kinetic law.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Reaction",
+          "default": "Reaction",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "reversible": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reversible"
+        },
+        "fast": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Fast"
+        },
+        "compartment": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Compartment"
+        },
+        "listOfReactants": {
+          "items": {
+            "$ref": "#/$defs/SpeciesReference"
+          },
+          "title": "Listofreactants",
+          "type": "array"
+        },
+        "listOfProducts": {
+          "items": {
+            "$ref": "#/$defs/SpeciesReference"
+          },
+          "title": "Listofproducts",
+          "type": "array"
+        },
+        "listOfModifiers": {
+          "items": {
+            "$ref": "#/$defs/ModifierSpeciesReference"
+          },
+          "title": "Listofmodifiers",
+          "type": "array"
+        },
+        "kineticLaw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/KineticLaw"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "equation": {
+          "title": "Equation",
+          "type": "string"
+        },
+        "fbc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReactionFbc"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk",
+        "equation"
+      ],
+      "title": "Reaction",
+      "type": "object"
+    },
+    "ReactionFbc": {
+      "description": "The fbc extension of a reaction.\n\n`gene_products` are the ids referenced by the association, so that the\nlink graph does not parse the infix string.",
+      "properties": {
+        "lowerFluxBound": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lowerfluxbound"
+        },
+        "upperFluxBound": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Upperfluxbound"
+        },
+        "geneProductAssociation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Geneproductassociation"
+        },
+        "geneProducts": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Geneproducts",
+          "type": "array"
+        }
+      },
+      "title": "ReactionFbc",
+      "type": "object"
+    },
+    "ReplacedBy": {
+      "description": "The element of a submodel which replaces this element.",
+      "properties": {
+        "submodelRef": {
+          "title": "Submodelref",
+          "type": "string"
+        },
+        "sbaseRef": {
+          "$ref": "#/$defs/SBaseRef"
+        }
+      },
+      "required": [
+        "submodelRef",
+        "sbaseRef"
+      ],
+      "title": "ReplacedBy",
+      "type": "object"
+    },
+    "ReplacedElement": {
+      "description": "An element of a submodel which this element replaces.",
+      "properties": {
+        "submodelRef": {
+          "title": "Submodelref",
+          "type": "string"
+        },
+        "sbaseRef": {
+          "$ref": "#/$defs/SBaseRef"
+        }
+      },
+      "required": [
+        "submodelRef",
+        "sbaseRef"
+      ],
+      "title": "ReplacedElement",
+      "type": "object"
+    },
+    "Report": {
+      "description": "The report of one SBML document.",
+      "properties": {
+        "document": {
+          "$ref": "#/$defs/SBMLDocument"
+        },
+        "models": {
+          "items": {
+            "$ref": "#/$defs/Model"
+          },
+          "title": "Models",
+          "type": "array"
+        },
+        "externalModelDefinitions": {
+          "items": {
+            "$ref": "#/$defs/ExternalModelDefinition"
+          },
+          "title": "Externalmodeldefinitions",
+          "type": "array"
+        },
+        "linkGraph": {
+          "$ref": "#/$defs/LinkGraph"
+        }
+      },
+      "required": [
+        "document"
+      ],
+      "title": "Report",
+      "type": "object"
+    },
+    "ReportEntry": {
+      "description": "The report of one SBML entry of an archive.",
+      "properties": {
+        "report": {
+          "$ref": "#/$defs/Report"
+        },
+        "debug": {
+          "$ref": "#/$defs/Debug"
+        }
+      },
+      "required": [
+        "report",
+        "debug"
+      ],
+      "title": "ReportEntry",
+      "type": "object"
+    },
+    "SBMLDocument": {
+      "description": "The document: level, version and the packages it uses.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "SBMLDocument",
+          "default": "SBMLDocument",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "level": {
+          "title": "Level",
+          "type": "integer"
+        },
+        "version": {
+          "title": "Version",
+          "type": "integer"
+        },
+        "packages": {
+          "items": {
+            "$ref": "#/$defs/Package"
+          },
+          "title": "Packages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk",
+        "level",
+        "version"
+      ],
+      "title": "SBMLDocument",
+      "type": "object"
+    },
+    "SBaseRef": {
+      "description": "A comp reference to an element by port, id, unit or metaId.",
+      "properties": {
+        "portRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Portref"
+        },
+        "idRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idref"
+        },
+        "unitRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unitref"
+        },
+        "metaIdRef": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaidref"
+        }
+      },
+      "title": "SBaseRef",
+      "type": "object"
+    },
+    "Species": {
+      "description": "A species.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Species",
+          "default": "Species",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "compartment": {
+          "title": "Compartment",
+          "type": "string"
+        },
+        "initialAmount": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Initialamount"
+        },
+        "initialConcentration": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Initialconcentration"
+        },
+        "substanceUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Substanceunits"
+        },
+        "hasOnlySubstanceUnits": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hasonlysubstanceunits"
+        },
+        "boundaryCondition": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Boundarycondition"
+        },
+        "constant": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Constant"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        },
+        "unitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unitslatex"
+        },
+        "derivedUnits": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derivedunits"
+        },
+        "conversionFactor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ConversionFactor"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "fbc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SpeciesFbc"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk",
+        "compartment"
+      ],
+      "title": "Species",
+      "type": "object"
+    },
+    "SpeciesFbc": {
+      "description": "The fbc extension of a species.",
+      "properties": {
+        "chemicalFormula": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Chemicalformula"
+        },
+        "charge": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Charge"
+        }
+      },
+      "title": "SpeciesFbc",
+      "type": "object"
+    },
+    "SpeciesReference": {
+      "description": "A reactant or product of a reaction.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "SpeciesReference",
+          "default": "SpeciesReference",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "species": {
+          "title": "Species",
+          "type": "string"
+        },
+        "stoichiometry": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stoichiometry"
+        },
+        "constant": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Constant"
+        }
+      },
+      "required": [
+        "pk",
+        "species"
+      ],
+      "title": "SpeciesReference",
+      "type": "object"
+    },
+    "Submodel": {
+      "description": "A comp submodel instantiating a model definition.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Submodel",
+          "default": "Submodel",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "modelRef": {
+          "title": "Modelref",
+          "type": "string"
+        },
+        "timeConversionFactor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timeconversionfactor"
+        },
+        "extentConversionFactor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Extentconversionfactor"
+        },
+        "listOfDeletions": {
+          "items": {
+            "$ref": "#/$defs/SBaseRef"
+          },
+          "title": "Listofdeletions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk",
+        "modelRef"
+      ],
+      "title": "Submodel",
+      "type": "object"
+    },
+    "Trigger": {
+      "description": "The trigger of an event.",
+      "properties": {
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "initialValue": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Initialvalue"
+        },
+        "persistent": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Persistent"
+        }
+      },
+      "title": "Trigger",
+      "type": "object"
+    },
+    "UncertParameter": {
+      "description": "A parameter of a distrib uncertainty.",
+      "properties": {
+        "var": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Var"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "units": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Units"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Type"
+        },
+        "definitionUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Definitionurl"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "UncertParameter",
+      "type": "object"
+    },
+    "Uncertainty": {
+      "description": "A distrib uncertainty of an element.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Uncertainty",
+          "default": "Uncertainty",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "uncertParameters": {
+          "items": {
+            "$ref": "#/$defs/UncertParameter"
+          },
+          "title": "Uncertparameters",
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Uncertainty",
+      "type": "object"
+    },
+    "UnitDefinition": {
+      "description": "A unit definition with its rendered units.",
+      "properties": {
+        "pk": {
+          "title": "Pk",
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "UnitDefinition",
+          "default": "UnitDefinition",
+          "title": "Sbmltype",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Metaid"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sbo"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "title": "Cvterms",
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xml"
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "title": "Uncertainties",
+          "type": "array"
+        },
+        "unitsLatex": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unitslatex"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "UnitDefinition",
+      "type": "object"
+    }
+  },
+  "description": "The response of the api: the manifest and one report per SBML entry.",
+  "properties": {
+    "uid": {
+      "title": "Uid",
+      "type": "string"
+    },
+    "manifest": {
+      "additionalProperties": true,
+      "title": "Manifest",
+      "type": "object"
+    },
+    "reports": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ReportEntry"
+      },
+      "title": "Reports",
+      "type": "object"
+    }
+  },
+  "required": [
+    "uid",
+    "manifest",
+    "reports"
+  ],
+  "title": "ReportResponse",
+  "type": "object"
+}
