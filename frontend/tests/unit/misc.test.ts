@@ -5,6 +5,7 @@ import { ref } from "vue";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
+import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
@@ -63,6 +64,29 @@ describe("misc components", () => {
     expect(wrapper.find(".katex").exists()).toBe(true);
     expect(
       mount(MathView, { props: { math: null }, global: { directives: { tooltip } } }).text(),
+    ).toBe("-");
+  });
+
+  it("renders a dash latex as the placeholder, not a KaTeX minus", () => {
+    expect(
+      mount(UnitsView, { props: { latex: "mole" }, global: { directives: { tooltip } } })
+        .find("[data-testid=units]")
+        .exists(),
+    ).toBe(true);
+    const placeholder = mount(UnitsView, {
+      props: { latex: "-" },
+      global: { directives: { tooltip } },
+    });
+    expect(placeholder.find("[data-testid=units]").exists()).toBe(false);
+    expect(placeholder.text()).toBe("-");
+    expect(
+      mount(UnitsView, {
+        props: { latex: "-", units: "mole" },
+        global: { directives: { tooltip } },
+      }).text(),
+    ).toBe("mole");
+    expect(
+      mount(UnitsView, { props: { latex: null }, global: { directives: { tooltip } } }).text(),
     ).toBe("-");
   });
 

@@ -3,6 +3,7 @@ import { computed, provide, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import type { SbmlElement, ElementType } from "@/api/types";
+import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import AppBar from "@/components/layout/AppBar.vue";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import LoadingState from "@/components/layout/LoadingState.vue";
@@ -149,12 +150,7 @@ watch([selectedPk, index], ([pk, current]) => {
           </div>
         </template>
         <template #second>
-          <div
-            class="h-full overflow-hidden border-t border-gray-200 bg-gray-50 p-3 text-sm"
-            data-testid="inspector"
-          >
-            Selected: <span class="font-mono">{{ selectedPk }}</span>
-          </div>
+          <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
         </template>
       </SplitPane>
     </template>

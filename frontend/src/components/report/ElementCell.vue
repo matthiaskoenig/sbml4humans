@@ -9,18 +9,7 @@ import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { fieldValue, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
-
-/** The report writes the reaction equation with numeric character references (`&#10142;`
- * for the arrow), which read as markup in a text cell. */
-function decodeReferences(value: string): string {
-  return value.replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)));
-}
-
-/** "-" is the report's latex of a dimensionless or missing unit: render the placeholder
- * of an empty cell instead of a KaTeX minus. */
-function unitsOf(latex: unknown): string | null {
-  return typeof latex === "string" && latex !== "" && latex !== "-" ? latex : null;
-}
+import { decodeReferences } from "@/report/text";
 
 const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
 const index = useReportIndex();
@@ -40,7 +29,8 @@ const targetPk = computed(() =>
     : null,
 );
 
-/** Kind "link" with units: the latex of the units sits next to the id. */
+/** Kind "link" with units: the latex of the units sits next to the id. UnitsView renders the
+ * dash of a dimensionless or missing latex as the placeholder itself. */
 const unitsLatex = computed(() => {
   if (props.column.link !== "units") return null;
   const latex = fieldValue(
@@ -49,7 +39,7 @@ const unitsLatex = computed(() => {
       ? "unitsLatex"
       : `${props.column.field}Latex`,
   );
-  return unitsOf(latex);
+  return typeof latex === "string" ? latex : null;
 });
 </script>
 
@@ -60,9 +50,9 @@ const unitsLatex = computed(() => {
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
   <ValueText v-else-if="column.kind === 'number' || column.kind === 'count'" :value="numberValue" />
   <MathView v-else-if="column.kind === 'math'" :math="mathValue" />
-  <UnitsView v-else-if="column.kind === 'units'" :latex="unitsOf(text)" />
+  <UnitsView v-else-if="column.kind === 'units'" :latex="text" />
   <template v-else-if="column.kind === 'link'">
-    <span v-if="unitsLatex" class="inline-flex items-center gap-2">
+    <span v-if="column.link === 'units'" class="inline-flex items-center gap-2">
       <ElementLink :pk="targetPk" :label="text" />
       <UnitsView :latex="unitsLatex" :units="text" />
     </span>

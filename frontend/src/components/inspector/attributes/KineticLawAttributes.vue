@@ -1,0 +1,31 @@
+<script setup lang="ts">
+import type { KineticLaw } from "@/api/types";
+import AttributeRow from "@/components/inspector/AttributeRow.vue";
+import NestedTable from "@/components/inspector/NestedTable.vue";
+import ElementLink from "@/components/misc/ElementLink.vue";
+import MathView from "@/components/misc/MathView.vue";
+import UnitsView from "@/components/misc/UnitsView.vue";
+
+defineProps<{ element: KineticLaw }>();
+
+const COLUMNS = [
+  { key: "id", header: "id" },
+  { key: "value", header: "value" },
+  { key: "unitsLatex", header: "units" },
+  { key: "derivedUnits", header: "derived units" },
+];
+</script>
+
+<template>
+  <AttributeRow label="math"><MathView :math="element.math" display /></AttributeRow>
+  <AttributeRow label="derived units"><UnitsView :latex="element.derivedUnits" /></AttributeRow>
+  <AttributeRow label="local parameters">
+    <NestedTable :rows="element.listOfLocalParameters ?? []" :columns="COLUMNS">
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" :label="row.id" /></template>
+      <template #cell-unitsLatex="{ row }"
+        ><UnitsView :latex="row.unitsLatex" :units="row.units"
+      /></template>
+      <template #cell-derivedUnits="{ row }"><UnitsView :latex="row.derivedUnits" /></template>
+    </NestedTable>
+  </AttributeRow>
+</template>
