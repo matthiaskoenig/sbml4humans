@@ -22,7 +22,14 @@ def _check_report(data: dict[str, Any]) -> None:
     """Check report data returned by the api."""
     assert "errors" not in data
     assert set(data) == {"uid", "manifest", "reports"}
-    assert data["reports"]
+    for entry in data["reports"].values():
+        assert set(entry) == {"report", "debug"}
+        assert set(entry["report"]) == {
+            "document",
+            "models",
+            "externalModelDefinitions",
+            "linkGraph",
+        }
 
 
 def test_openapi(client: TestClient) -> None:

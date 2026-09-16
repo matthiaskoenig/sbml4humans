@@ -23,6 +23,7 @@ from fastapi.responses import JSONResponse
 from sbml4humans import __version__
 from sbml4humans.annotations import annotation_info
 from sbml4humans.examples import ExampleMetaData, load_examples
+from sbml4humans.model import ReportResponse
 from sbml4humans.report import report_for_bytes, report_for_path
 
 
@@ -124,26 +125,31 @@ def example(example_id: str) -> dict[str, Any]:
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    return report_for_path(example.file)
+    return _dump(report_for_path(example.file))
 
 
 @api.post("/api/file", tags=["reports"])
 def report_from_file(source: UploadFile) -> dict[str, Any]:
     """Create the report data of an uploaded SBML file or COMBINE archive."""
-    return report_for_bytes(source.file.read())
+    return _dump(report_for_bytes(source.file.read()))
 
 
 @api.get("/api/url", tags=["reports"])
 def report_from_url(url: str) -> dict[str, Any]:
     """Create the report data of an SBML file or COMBINE archive behind a url."""
-    return report_for_bytes(download(url))
+    return _dump(report_for_bytes(download(url)))
 
 
 @api.post("/api/content", tags=["reports"])
 async def report_from_content(request: Request) -> dict[str, Any]:
     """Create the report data of the SBML content in the request body."""
     content = await request.body()
-    return await run_in_threadpool(report_for_bytes, content)
+    return _dump(await run_in_threadpool(report_for_bytes, content))
+
+
+def _dump(response: ReportResponse) -> dict[str, Any]:
+    """The JSON of a response with camelCase keys."""
+    return response.model_dump(mode="json", by_alias=True)
 
 
 @api.get("/api/annotation_resource", tags=["metadata"])

@@ -106,10 +106,15 @@ class SBMLDocumentInfo:
         self.scope = DOCUMENT_SCOPE
         self.report: Report
 
+    @staticmethod
+    def read(source: Path | str) -> libsbml.SBMLDocument:
+        """Read the document of a path or an SBML string."""
+        return read_sbml(source)
+
     @classmethod
     def from_sbml(cls, source: Path | str) -> Report:
         """The report of the document at a path or in an SBML string."""
-        return cls.from_doc(read_sbml(source))
+        return cls.from_doc(cls.read(source))
 
     @classmethod
     def from_doc(cls, doc: libsbml.SBMLDocument) -> Report:
