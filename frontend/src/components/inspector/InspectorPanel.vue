@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 
+import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
+import XmlView from "@/components/misc/XmlView.vue";
 import { typeInfo } from "@/data/sbmlTypes";
 import { useReportIndex } from "@/report/context";
 import { useReportView } from "@/report/view";
@@ -64,15 +66,13 @@ watch(
         <i class="pi pi-times text-xs" />
       </button>
     </header>
-    <div v-if="showXml" class="min-h-0 flex-1 overflow-auto p-3" data-testid="xml-view">
-      <pre class="font-mono text-xs">{{ element.xml }}</pre>
+    <div v-if="showXml" class="min-h-0 flex-1 overflow-hidden p-3">
+      <XmlView :xml="element.xml" />
     </div>
     <div v-else class="grid min-h-0 flex-1 grid-cols-3 divide-x divide-gray-200">
       <div class="overflow-y-auto p-3"><AttributesColumn :element="element" /></div>
       <div class="overflow-y-auto p-3"><LinksColumn :pk="element.pk" /></div>
-      <div class="overflow-y-auto p-3 text-sm text-gray-400" data-testid="annotations-column">
-        Annotations follow in Task 11
-      </div>
+      <div class="overflow-y-auto p-3"><AnnotationsColumn :element="element" /></div>
     </div>
   </aside>
 </template>
