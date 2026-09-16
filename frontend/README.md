@@ -1,18 +1,10 @@
 # SBML4Humans frontend
 
-The Vue 3 application of [SBML4Humans](https://sbml4humans.de), the interactive report of SBML models. It renders the report the backend api in `../backend` serves, see the [main README](../README.md) for the repository layout, the docker compose setup and the releases.
+The Vue 3 application of [SBML4Humans](https://sbml4humans.de), the interactive report of SBML models. It renders the typed report the backend api in `../backend` serves, see the [main README](../README.md) for the repository layout, the docker compose setup and the releases.
 
 ## Development
 
-The frontend talks to the backend api on port 1444, so start the backend first.
-
-```bash
-git clone https://github.com/matthiaskoenig/sbml4humans.git
-```
-
-### Backend api
-
-The backend is the `sbml4humans` Python package in `../backend`, it requires Python 3.14 and [uv](https://docs.astral.sh/uv/). `uv sync` installs the pinned dependencies of `uv.lock` and the package:
+The frontend talks to the backend api on port 1444, so start the backend first:
 
 ```bash
 cd backend
@@ -20,45 +12,43 @@ uv sync
 uv run uvicorn sbml4humans.api:api --reload --port 1444
 ```
 
-Check that the api is running on <http://localhost:1444/api/examples>.
-
-### Frontend
-
-The frontend builds with Vue CLI 4 (webpack 4) and `node-sass`, which require node 14, the version of `.nvmrc` and of the docker containers. With [nvm](https://github.com/nvm-sh/nvm):
+The frontend needs node 24 (`.nvmrc`), e.g. with [nvm](https://github.com/nvm-sh/nvm):
 
 ```bash
 cd frontend
 nvm install    # reads .nvmrc, once
 nvm use
 npm ci
-npm run serve
+npm run dev
 ```
 
-The development server runs on <http://localhost:3456> and hot reloads on changes; the api url is configured in `.env.development`, the production url in `.env.production`. Further scripts:
+The development server runs on <http://localhost:3456> and hot reloads on changes; the api url is `VITE_API_URL` in `.env.development`, the production url in `.env.production`. Further scripts:
 
 ```bash
-npm run build      # production build into dist/
-npm run lint       # eslint with prettier
-npm run test:unit  # jest
-npm run test:e2e   # cypress
+npm run build      # type check and production build into dist/
+npm run typecheck  # vue-tsc
+npm run lint       # eslint and prettier --check
+npm run format     # prettier --write
+npm run test:unit  # vitest
+npm run test:e2e   # playwright against the running backend (npx playwright install chromium once)
+npm run types      # regenerate src/types/report.ts from src/schema/report.schema.json
+npm run fixtures   # record tests/fixtures/*.json from the running backend
 ```
 
-`package-lock.json` is committed and the containers install with `npm ci`, so every build gets the same versions. `npm install` updates the lock within the ranges of `package.json`, commit the changed lock with the change that needed it. A dependency whose new release breaks the webpack 4 build is capped in `package.json`, e.g. `vue-router` below 4.6.4, which ships optional chaining that webpack 4 cannot parse.
+`package-lock.json` is committed and the containers install with `npm ci`, so every build gets the same versions. Commit the changed lock with the change that needed it.
 
-### Docker compose
+## Layout
 
-Both services can also run in containers from the repository root:
-
-```bash
-sudo docker compose -f docker-compose-develop.yml build --no-cache
-sudo docker compose -f docker-compose-develop.yml up
-```
-
-The frontend answers on <http://localhost:8083>, the api on <http://localhost:1444>.
+- `src/api/`: the fetch client with the error contract and the report types (generated, `npm run types`).
+- `src/stores/`: the Pinia stores of the report and the examples.
+- `src/report/`: `ReportIndex` (every element by pk, the edges of the link graph), the search, the view state of the report page (route query) and the table columns per element type.
+- `src/pages/`: home (upload, url, paste), examples, report.
+- `src/components/`: `layout/` (app bar, split panes, states), `input/`, `report/` (context bar, type rail, search, element tables), `inspector/` (attributes per type, links, annotations), `misc/` (math, units, links, notes, xml).
+- `src/data/`: order, labels, colours and icons of the SBML types and the edge kinds.
+- `tests/unit/` (vitest with the recorded fixtures), `tests/e2e/` (playwright).
 
 ## Technology
 
-- Backend api: [FastAPI](https://fastapi.tiangolo.com/) serving the report, which is created with [libsbml](https://sbml.org/software/libsbml/), lxml, pint and pymetadata.
-- Frontend: [Vue.js 3](https://vuejs.org/) with TypeScript and SCSS, [Vuex](https://vuex.vuejs.org/) for the state, [Vue Router](https://router.vuejs.org/) for the routes.
-- UI components: [PrimeVue](https://primevue.org/) with PrimeFlex and PrimeIcons, Font Awesome icons, KaTeX for the math.
-- Vue devtools: the [Vue.js devtools](https://devtools.vuejs.org/) browser extension works with the development server.
+- [Vite](https://vite.dev/) 8, [Vue 3](https://vuejs.org/) with `<script setup>` and TypeScript, [Pinia](https://pinia.vuejs.org/), [Vue Router](https://router.vuejs.org/).
+- [PrimeVue](https://primevue.org/) 4 in unstyled mode (DataTable, Select, Tooltip) with [Tailwind CSS](https://tailwindcss.com/) 4 and PrimeIcons, [KaTeX](https://katex.org/) for the math and units, DOMPurify for the notes.
+- ESLint, Prettier, `vue-tsc`, Vitest, Playwright.

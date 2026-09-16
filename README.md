@@ -8,7 +8,7 @@ The report is self-contained: the backend reads the model with libsbml and rende
 
 | path | content |
 | --- | --- |
-| `frontend/` | the Vue 3 application (TypeScript, Vuex, Vue Router, PrimeVue) |
+| `frontend/` | the Vue 3 application (Vite, TypeScript, Pinia, Vue Router, PrimeVue unstyled with Tailwind CSS) |
 | `backend/` | the `sbml4humans` Python package: the report of a document (`sbmlinfo`, `mathml`, `units`) and the FastAPI api which serves it |
 | `nginx/` | the proxy configuration of sbml4humans.de |
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
@@ -52,19 +52,26 @@ uv run ty check
 
 ### Frontend
 
-The frontend builds with Vue CLI 4 and `node-sass`, which need node 14 (`frontend/.nvmrc`), e.g. with [nvm](https://github.com/nvm-sh/nvm):
+The frontend needs node 24 (`frontend/.nvmrc`), e.g. with [nvm](https://github.com/nvm-sh/nvm):
 
 ```bash
 cd frontend
 nvm install    # reads .nvmrc, once
 nvm use
 npm ci
-npm run serve
+npm run dev
 ```
 
 The development server runs on <http://localhost:3456> and talks to the backend api on port 1444 (`frontend/.env.development`).
 
-The api returns the typed `ReportResponse`, while the current frontend still expects the old untyped report dictionary and is replaced by the frontend redesign (a separate project); until then the frontend does not render reports.
+Linting, type checks, unit and end to end tests run from the `frontend` directory, the same checks run as GitHub Actions on every push:
+
+```bash
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run test:e2e
+```
 
 ## Releases
 

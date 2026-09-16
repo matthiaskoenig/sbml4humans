@@ -4,9 +4,9 @@ This file provides guidance when working with code in this repository.
 
 ## Project
 
-`sbml4humans` is the web application behind [sbml4humans.de](https://sbml4humans.de): interactive, human readable reports of SBML models. It consists of a FastAPI backend (`backend/`, the `sbml4humans` Python package) and a Vue 3 frontend (`frontend/`). The backend creates the report of a document (`sbmlinfo.SBMLDocumentInfo`) and serves it over http as the typed `ReportResponse`. The current Vue frontend still expects the old untyped report dictionary and is replaced by the frontend redesign, a separate project; until then the frontend does not render reports. The report is self-contained: the repository has no dependency on any SBML model building library, do not add one.
+`sbml4humans` is the web application behind [sbml4humans.de](https://sbml4humans.de): interactive, human readable reports of SBML models. It consists of a FastAPI backend (`backend/`, the `sbml4humans` Python package) and a Vue 3 frontend (`frontend/`). The backend creates the report of a document (`sbmlinfo.SBMLDocumentInfo`) and serves it over http as the typed `ReportResponse`. The Vue frontend renders the typed report: one table per element type, a search, and an inspector that follows the link graph. The report is self-contained: the repository has no dependency on any SBML model building library, do not add one.
 
-The backend requires python >= 3.14 and is packaged with hatchling (version read from `backend/sbml4humans/__init__.py`). Runtime dependencies are `python-libsbml` (reading the models), `lxml` (the xslt rendering of the math), `pint` (units), `numpy`, `pymetadata` (COMBINE archives, annotation resolution), `pydantic` (the report data model), `fastapi`, `uvicorn`, `python-multipart` (uploads) and `httpx` (downloading models from urls). The frontend is a Vue CLI 4 project (webpack 4) with TypeScript, Vuex, Vue Router and PrimeVue.
+The backend requires python >= 3.14 and is packaged with hatchling (version read from `backend/sbml4humans/__init__.py`). Runtime dependencies are `python-libsbml` (reading the models), `lxml` (the xslt rendering of the math), `pint` (units), `numpy`, `pymetadata` (COMBINE archives, annotation resolution), `pydantic` (the report data model), `fastapi`, `uvicorn`, `python-multipart` (uploads) and `httpx` (downloading models from urls). The frontend is a Vite 8 project (node 24) with Vue 3.5, TypeScript, Pinia, Vue Router 5 and PrimeVue 4 in unstyled mode with Tailwind CSS 4.
 
 ## Commands
 
@@ -23,21 +23,24 @@ uv run python -m sbml4humans.schema              # regenerate the JSON schema af
 # dependency changes go through uv and are committed with uv.lock
 uv add <package>
 
-# frontend, from frontend/ (node 14, see .nvmrc)
+# frontend, from frontend/ (node 24, see .nvmrc)
 nvm use
 npm ci           # from package-lock.json, npm install updates the lock
-npm run serve      # http://localhost:3456, api on http://localhost:1444 (.env.development)
-npm run build      # production build into dist/
+npm run dev        # http://localhost:3456, api on http://localhost:1444 (.env.development)
+npm run build      # type check and production build into dist/
 npm run lint
+npm run typecheck
 npm run test:unit
-npm run test:e2e
+npm run test:e2e   # backend on port 1444 required
+npm run types      # regenerate src/types/report.ts after a schema change, the CI diffs it
+npm run fixtures   # regenerate tests/fixtures/*.json after a model change, by hand
 
 # both services in containers, from the repository root
 sudo docker compose -f docker-compose-develop.yml build --no-cache
 sudo docker compose -f docker-compose-develop.yml up   # frontend :8083, api :1444
 ```
 
-`main` is the only branch. The CI (`.github/workflows/`) runs `pytest` (`ci.yml`), `ruff` and `ty` on every push; a tag runs the tests and then creates the GitHub release from `release-notes/<tag>.md`.
+`main` is the only branch. The CI (`.github/workflows/`) runs `pytest` (`ci.yml`), `ruff` and `ty` on every push, and in `ci.yml` also the frontend lint, type check, unit tests and build (`frontend`) and the Playwright end to end tests (`e2e`); the release job needs `test`, `schema`, `frontend` and `e2e` and, on a tag, creates the GitHub release from `release-notes/<tag>.md`.
 
 Releases: the version of sbml4humans is the version of the backend package, `frontend/package.json` follows it. Write `release-notes/<version>.md` first, then from `backend/` run `uv run bump-my-version bump [major|minor|patch]`, which updates both files, commits and tags; `git push origin main --tags` triggers the release workflow. Never edit the version by hand.
 
@@ -53,15 +56,15 @@ Releases: the version of sbml4humans is the version of the backend package, `fro
 
 **`examples.py` - the examples.** `load_examples` collects the example models of `sbml4humans/resources/` (`API_EXAMPLES_MODEL`, `API_EXAMPLES_OMEX`, the first 49 curated BioModels in `BIOMODELS_CURATED_PATH`) into `ExampleMetaData` (pydantic). The resources ship in the package.
 
-**`frontend/src`.** `main.ts` creates the app; `router/index.ts` the routes; `store/index.ts` the single Vuex store, which fetches the report from the api (`VUE_APP_APIURL`) and holds the current report and the search state. `components/layout/` is the page frame (navbar, upload forms, about), `components/sbml/` one component per SBML element type of the report, `components/tables/` the tables and `components/sbmlmisc/` the shared pieces (math, annotations, notes). `helpers/` holds the report initialization and the lookups, `data/` the static tables of the SBML element types, their colors and the Font Awesome icons.
+**`frontend/src`.** `api/` is the fetch client with the error contract (`ApiError`) and the report types, generated into `types/report.ts` by `npm run types`. `stores/` are the Pinia stores of the report and the examples. `report/` holds `ReportIndex` (every element by pk, the edges of the link graph), `search` and `query` (the search and the view state of the report page kept in the route query) and `columns/` (the table columns per element type). `pages/` are the routed pages: home (upload, url, paste), examples, report. `components/` is split into `layout/` (app bar, split panes, states), `input/` (the upload forms), `report/` (context bar, type rail, search, element tables) and `inspector/` (attributes per type, links, annotations) and `misc/` (math, units, links, notes, xml, shared across the other groups). `data/` holds the order, labels, colours and icons of the SBML element types and the edge kinds.
 
-**Deployment.** `Dockerfile` (backend) installs the package editable into a `python:3.14-slim` image, `frontend/Dockerfile-develop` and `Dockerfile-production` build the frontend on node 14, `nginx/` is the proxy of sbml4humans.de and `deploy.md`/`deploy.sh` describe the server. The production compose file is `docker-compose-production.yml`.
+**Deployment.** `Dockerfile` (backend) installs the package editable into a `python:3.14-slim` image, `frontend/Dockerfile-develop` and `Dockerfile-production` build the frontend on node 24, `nginx/` is the proxy of sbml4humans.de and `deploy.md`/`deploy.sh` describe the server. The production compose file is `docker-compose-production.yml`.
 
 ## Conventions
 
 - Type checking is done with [ty](https://docs.astral.sh/ty/), `error-on-warning = true` means the backend must stay at zero diagnostics. Suppress a diagnostic with a rule-specific `# ty: ignore[rule-name]`, never a blanket `# type: ignore`. Ruff runs with the rule set listed in `backend/pyproject.toml` (google style docstrings, isort, pyupgrade, bugbear, lazy `%s` logging), every module, class and function is annotated and has a docstring.
 - The backend logs through `logging.getLogger(__name__)` and never configures logging (uvicorn does). libsbml has no type stubs and builds its objects through SWIG, so annotate libsbml objects explicitly and use the getters (`getId()`) rather than the attributes SWIG synthesizes.
 - `uv.lock` is committed and the CI installs from it, every dependency change is committed with the updated lock.
-- The frontend needs node 14 (`frontend/.nvmrc`): Vue CLI 4 is webpack 4, which cannot parse modern syntax such as optional chaining in dependencies, and `node-sass` 4 does not build on newer node. `package-lock.json` is committed (lockfile version 1, written by the npm 6 of node 14) and the containers install with `npm ci`; commit the lock with every dependency change. A release of a dependency that breaks the build is capped in `package.json` (`vue-router` `<4.6.4`), verify with `npm run build` after changing ranges.
+- The frontend needs node 24 (`frontend/.nvmrc`). `package-lock.json` is committed and the containers install with `npm ci`; commit the lock with every dependency change. TypeScript stays at `~5.9.3` while `typescript-eslint` supports TypeScript below 6.1 only; PrimeVue stays at `^4.5.5` (MIT, PrimeVue 5 is commercial). Components resolve cross references through `ReportIndex` and never build a pk from an id. Every element an end to end test uses carries a `data-testid`.
 - Markdown carries no hard line wraps: a paragraph, a list item or a table row is a single line. Never use the em dash, use a plain dash.
 - Release notes go in `release-notes/<version>.md` before the version is bumped, the file is the body of the GitHub release.
