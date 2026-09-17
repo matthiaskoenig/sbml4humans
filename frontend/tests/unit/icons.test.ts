@@ -1,9 +1,9 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 
+import LoadingState from "@/components/layout/LoadingState.vue";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
-import LoadingState from "@/components/layout/LoadingState.vue";
 import { DOCUMENT_TYPES, ELEMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 
 describe("icons", () => {

@@ -77,7 +77,7 @@ A native `<table class="w-full border-collapse text-sm">`. The classes of the Pr
 `src/components/input/SelectInput.vue`:
 
 - props `modelValue: string`, `options: { label: string; value: string }[]`; emits `update:modelValue` with the value of the chosen option; attributes (e.g. `data-testid`) fall through to the `<select>`
-- a wrapper `span` (`relative inline-flex`) with the `<select>` (`appearance-none rounded border border-gray-300 bg-white py-1 pr-7 pl-2 text-sm hover:border-gray-400 cursor-pointer max-w-72 truncate`) and a `ChevronDown` icon (`pointer-events-none absolute right-2 size-3 text-gray-500`)
+- a wrapper `span` (`relative inline-flex items-center`, which centres the absolutely positioned chevron) with the `<select>` (`appearance-none rounded border border-gray-300 bg-white py-1 pr-7 pl-2 text-sm hover:border-gray-400 cursor-pointer max-w-72 truncate`) and a `ChevronDown` icon (`pointer-events-none absolute right-2 size-3 text-gray-500`)
 - `ContextBar.vue` uses it for the entry and the model with the options it computes today
 
 The list of a native select is drawn by the browser.
