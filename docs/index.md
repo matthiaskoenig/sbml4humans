@@ -8,7 +8,7 @@
 
 SBML is an XML format, and XML is written for programs. A model file states everything and shows nothing: the mathematics is content MathML, a unit is a product of base units spread over several elements, a species is a line of attributes among thousands of other lines, and an annotation is a URI in an RDF block. Reading a model in a text editor means reassembling it in your head, and a model of a genome scale reconstruction cannot be read that way at all.
 
-The Google Summer of Code project which started this application put it as follows: "a Human readable interactive report which conveys the SBML information and content of a model is urgently needed" ([NRNB GoogleSummerOfCode issue #164](https://github.com/nrnb/GoogleSummerOfCode/issues/164)). That is what sbml4humans is: the view of a model which the file itself does not give you. It does not edit models and it does not simulate them, it reads them.
+The Google Summer of Code project which started this application was proposed because a human readable, interactive report which conveys the information and the content of an SBML model was urgently needed ([NRNB GoogleSummerOfCode issue #164](https://github.com/nrnb/GoogleSummerOfCode/issues/164)). That is what sbml4humans is: the view of a model which the file itself does not give you. It does not edit models and it does not simulate them, it reads them.
 
 It is written for the people who have to read models rather than write them:
 
@@ -18,7 +18,7 @@ It is written for the people who have to read models rather than write them:
 
 ## What a report shows
 
-A report is one page per model. The rail on the left lists every element type with the number of elements of that type, the tables in the middle show the elements of each type with the columns which matter for that type, and the inspector shows one element in full: its attributes, everything it references and everything which references it, its notes, its annotations and its history, and the raw XML when that is what you need. Every column header, every attribute label and every type carries a one sentence explanation on hover, and every type links its page in the reference.
+A report is one page per model. The rail on the left lists every element type with the number of elements of that type, the tables in the middle show the elements of each type with the columns which matter for that type, and the inspector shows one element in full: its attributes, everything it references and everything which references it, its notes, its annotations and its history, and the raw XML when that is what you need. Every column header, every attribute label, every mark of a type and every group of links carries a one sentence explanation on hover, and the type in the header of the inspector links its page in the reference.
 
 [Reading a report](report.md) walks through all of it.
 
@@ -36,6 +36,6 @@ If a term of a report is unfamiliar, the [reference](reference/index.md) explain
 
 ## Funding and license
 
-sbml4humans was started as the Google Summer of Code 2021 project "Interactive SBML report for Humans" by Sankha Das, mentored by Matthias König and Ralf Steuer within the [National Resource for Network Biology](https://nrnb.org/). It is developed at [github.com/matthiaskoenig/sbml4humans](https://github.com/matthiaskoenig/sbml4humans) under the MIT license, and it is funded by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 [QuaLiPerF](https://qualiperf.de).
+sbml4humans was started in 2021 as the project "Interactive SBML report for Humans" by Sankha Das, mentored by Matthias König and Ralf Steuer, as part of the Google Summer of Code programme of the [National Resource for Network Biology](https://nrnb.org/) (NRNB). It is developed at [github.com/matthiaskoenig/sbml4humans](https://github.com/matthiaskoenig/sbml4humans) under the MIT license, and it is funded by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 [QuaLiPerF](https://qualiperf.de).
 
 The sources this documentation is written from are listed under [References](references.md).

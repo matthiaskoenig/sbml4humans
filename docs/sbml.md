@@ -1,12 +1,12 @@
 # SBML
 
-The Systems Biology Markup Language (SBML) is the format sbml4humans reads. This page is the background a report assumes: what SBML is, how a model is built from its elements, what the Level 3 packages add, and how a model carries its metadata. The [reference](reference/index.md) explains every element type and every attribute a report shows, one page per type; the sources of this page are listed under [References](references.md).
+The Systems Biology Markup Language ([SBML](https://sbml.org)) is the format sbml4humans reads. This page is the background a report assumes: what SBML is, how a model is built from its elements, what the Level 3 packages add, and how a model carries its metadata. The [reference](reference/index.md) explains every element type and every attribute a report shows, one page per type; the sources of this page are listed under [References](references.md).
 
 ## What SBML is
 
 SBML is a machine readable format for computational models of biological processes. It is written in XML, it belongs to no single program, and it is what lets a model which was built in one tool be simulated, analysed and published with another (Keating et al. 2020, [doi:10.15252/msb.20199110](https://doi.org/10.15252/msb.20199110)). The alternative is a model which exists only in the file format of the program it was written in, or as equations printed in a paper, and neither can be executed by anyone else.
 
-A model in SBML is not written as a system of equations. It is written as biology: entities which are located in containers and are acted upon by processes (Keating et al. 2020). The entities are the [species](reference/species.md), the containers are the [compartments](reference/compartment.md), the processes are the [reactions](reference/reaction.md), and the equations a simulator integrates follow from that description. This is why the same file can be simulated, checked for consistency, drawn as a network and read by a person.
+A model in SBML does not have to be written as a system of equations, and usually is not. It is written as biology: entities which are located in containers and are acted upon by processes (Keating et al. 2020). The entities are the [species](reference/species.md), the containers are the [compartments](reference/compartment.md), the processes are the [reactions](reference/reaction.md), and the equations a simulator integrates follow from that description. This is why the same file can be simulated, checked for consistency, drawn as a network and read by a person.
 
 The format is defined by a specification document, not by an implementation. Everything a report of sbml4humans shows is taken from that specification, which is why every reference page names the section it comes from.
 
@@ -38,6 +38,8 @@ Every one of these elements carries the [common attributes](reference/sbase.md) 
 
 A package of Level 3 adds elements and attributes for a domain which not every model needs. A file declares the packages it uses and whether understanding them is required to interpret the model, so that a tool knows what it is looking at instead of failing on unknown elements. This is what makes Level 3 an extensible format rather than one language which grows with every new need (Keating et al. 2020).
 
+These are the packages with a published specification; further ones, among them arrays, dyn and spatial, exist as drafts.
+
 | package | what it adds |
 | --- | --- |
 | [comp](reference/comp.md) | hierarchical model composition: a model is built out of other models, which are instantiated as submodels and connected through ports and replacements |
@@ -49,7 +51,7 @@ A package of Level 3 adds elements and attributes for a domain which not every m
 | multi | multistate, multicomponent and multicompartment species: species with an internal state and components, and the rules which generate their reactions |
 | qual | qualitative models: species with discrete levels and processes which are transitions between them, for example logical models |
 
-Of these packages sbml4humans reads comp, fbc and distrib, which are the three the table links to their reference page. It shows the [submodels](reference/submodel.md), the [ports](reference/port.md) and the [external model definitions](reference/externalmodeldefinition.md) of comp, the [gene products](reference/geneproduct.md) and the [objectives](reference/objective.md) of fbc, and the [uncertainties](reference/uncertainty.md) of distrib, each as a section of the report, together with the attributes these packages add to the elements of the core.
+Of these packages sbml4humans reads comp, fbc and distrib, which are the three the table links to their reference page. The [submodels](reference/submodel.md) and the [ports](reference/port.md) of comp and the [gene products](reference/geneproduct.md) and the [objectives](reference/objective.md) of fbc become sections of the report like the types of the core. The [external model definitions](reference/externalmodeldefinition.md) of comp belong to the document and are listed with it at the top of the type rail, and an [uncertainty](reference/uncertainty.md) of distrib belongs to the element whose value it describes and is shown in the inspector of that element. The attributes these three packages add to the elements of the core are shown with the other attributes of the element.
 
 The packages a file declares are shown in the context bar of the report, whether the report reads them or not, and the type rail offers the element types of a package only when the file declares it. What another package adds is not lost: it stays in the XML of the element which carries it, which the inspector shows.
 
@@ -61,11 +63,11 @@ The notes of an element are XHTML written for human readers, for example the der
 
 A MIRIAM style annotation is a set of controlled vocabulary terms, each of which is a qualifier and the resources it relates the element to. The qualifier states the relation and comes from one of two BioModels.net namespaces: a biological qualifier such as `bqbiol:is`, `bqbiol:hasPart` or `bqbiol:isVersionOf` relates the biological entity the element stands for to the resource, a model qualifier such as `bqmodel:is` or `bqmodel:isDerivedFrom` relates the model itself to it. The distinction matters: `bqbiol:is` on a species says the species is that molecule, `bqmodel:is` on a model says the model is that entry in a model database.
 
-A resource is a URI which identifies an entry of a database, usually of the form `https://identifiers.org/<collection>/<identifier>`, for example `https://identifiers.org/uniprot/P12999` or `https://identifiers.org/chebi/CHEBI:17234`. The registry behind [identifiers.org](https://registry.identifiers.org/) resolves such a URI to the databases which hold the entry. The report shows every resource as a link and asks its backend to resolve the identifier, so that the annotations column shows what the entry is called instead of the identifier alone.
+A resource is a URI which identifies an entry of a database, usually of the form `https://identifiers.org/<collection>/<identifier>`, for example `https://identifiers.org/uniprot/P12999` or `https://identifiers.org/chebi/CHEBI:17234`. Older files write the same reference as a MIRIAM URN, for example `urn:miriam:kegg.compound:C00046`, which the repressilator example of the application uses; the report links such a URN to the same entry. The registry behind [identifiers.org](https://registry.identifiers.org/) resolves the identifier to the databases which hold the entry. The report asks its backend to do that for the first hundred resources of an element, so that the annotations column shows what an entry is called instead of the identifier alone, and resolves the rest on a click.
 
 Independently of these annotations, every element may carry a term of the [Systems Biology Ontology](https://www.ebi.ac.uk/ols4/ontologies/sbo) in its `sbo` attribute. The ontology names what an element is in the vocabulary of systems biology, for example `SBO:0000247` for a simple chemical or `SBO:0000185` for a transport reaction, which is a statement about the role of the element in the model rather than about the molecule it represents. The report links the term to its entry and also lists it among the annotations of the element.
 
-The third kind of metadata is the history of the SBML encoding: who created the file, with which organization and mail address, when it was created and when it was modified. The report shows it below the notes of an element.
+Besides the qualifiers, the RDF annotation carries the history of the SBML encoding, in elements of its own which stand in front of them: who created it, with which organization and mail address, when it was created and when it was modified. It is the history of the encoding, not of the model the encoding stands for. The report shows it below the notes of an element.
 
 ## COMBINE archives
 
