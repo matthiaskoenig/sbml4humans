@@ -48,7 +48,7 @@ path = "sbml4humans/__init__.py"
 # the version of sbml4humans is the version of the backend package, the frontend
 # follows it. Run from this directory: `uv run bump-my-version bump minor`.
 # No tag: the bump is merged into develop with squash or rebase, which rewrites
-# the commit, so the tag is created on develop after the merge (see README.md)
+# the commit, so the tag is created on develop after the merge (see docs/development.md)
 current_version = "0.3.0"
 commit = true
 tag = false
