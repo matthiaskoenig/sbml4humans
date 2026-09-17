@@ -43,6 +43,12 @@ const header = (table: ReturnType<typeof mount>, title: string) =>
 const ids = (table: ReturnType<typeof mount>) =>
   table.findAll("tbody tr[data-pk]").map((row) => row.find("td").text());
 const nextFrame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+/** Dispatches a keydown that bubbles, so the default prevention of the row is observable. */
+function pressKey(target: Element, key: string): KeyboardEvent {
+  const event = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true });
+  target.dispatchEvent(event);
+  return event;
+}
 
 afterEach(() => {
   wrapper?.unmount();
@@ -83,6 +89,19 @@ describe("ElementTable", () => {
     expect(header(table, "id").attributes("aria-sort")).toBe("none");
     expect(header(table, "initial amount").attributes("aria-sort")).toBe("ascending");
     expect(ids(table)).toEqual(["PX", "PY", "PZ", "X", "Z", "Y"]);
+  });
+
+  it("sorts new rows with the current sort", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(species.slice(0, 4));
+    await header(table, "id").get("[data-testid=sort-button]").trigger("click");
+    await header(table, "id").get("[data-testid=sort-button]").trigger("click");
+    expect(ids(table)).toEqual(["X", "PZ", "PY", "PX"]);
+
+    // a search or a type toggle passes new rows
+    await table.setProps({ rows: species });
+    expect(header(table, "id").attributes("aria-sort")).toBe("descending");
+    expect(ids(table)).toEqual(["Z", "Y", "X", "PZ", "PY", "PX"]);
   });
 
   it("has no sort for the units columns", async () => {
@@ -138,6 +157,44 @@ describe("ElementTable", () => {
     await flushPromises();
     expect(router.currentRoute.value.query.pk).toBe(species[1]!.pk);
     expect(table.findAll("tbody tr[data-pk]")[1]!.attributes("tabindex")).toBe("0");
+  });
+
+  it("toggles the selection with Space", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(species);
+    const row = () => table.findAll("tbody tr[data-pk]")[2]!;
+    const space = pressKey(row().element, " ");
+    expect(space.defaultPrevented).toBe(true);
+    await flushPromises();
+    expect(router.currentRoute.value.query.pk).toBe(species[2]!.pk);
+    expect(row().attributes("aria-selected")).toBe("true");
+
+    pressKey(row().element, " ");
+    await flushPromises();
+    expect(router.currentRoute.value.query.pk).toBeUndefined();
+    expect(row().attributes("aria-selected")).toBe("false");
+  });
+
+  it("clears the selection with Enter on the selected row", async () => {
+    await router.push(`/examples/BIOMD0000000012?pk=${encodeURIComponent(species[3]!.pk)}`);
+    const table = mountTable(species);
+    const row = () => table.findAll("tbody tr[data-pk]")[3]!;
+    expect(row().attributes("aria-selected")).toBe("true");
+    pressKey(row().element, "Enter");
+    await flushPromises();
+    expect(router.currentRoute.value.query.pk).toBeUndefined();
+    expect(row().attributes("aria-selected")).toBe("false");
+  });
+
+  it("leaves the keys on a link in a row to the link", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(species);
+    const link = table.findAll("tbody tr[data-pk]")[0]!.get("[data-testid=element-link]");
+    const enter = pressKey(link.element, "Enter");
+    await flushPromises();
+    expect(enter.defaultPrevented).toBe(false);
+    expect(router.currentRoute.value.query.pk).toBeUndefined();
+    expect(table.findAll("tbody tr[data-pk]")[0]!.attributes("aria-selected")).toBe("false");
   });
 });
 
