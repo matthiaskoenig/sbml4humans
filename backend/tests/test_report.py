@@ -2,14 +2,27 @@
 
 import gzip
 from collections import Counter
+from pathlib import Path
 
 import pytest
 from pydantic import BaseModel
+from pymetadata.omex import Omex
 
 from sbml4humans.examples import ExampleMetaData, load_examples
 from sbml4humans.model import ReportResponse, SBase
 from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
-from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
+from sbml4humans.resources import (
+    BIOMODELS_CURATED_PATH,
+    OMEX_ICGMODEL,
+    REPRESSILATOR_SBML,
+)
+
+
+# `ExampleMetaData.file` of a curated biomodel is its extracted main SBML file
+# (`examples.py::biomodel_examples`), so `test_report_for_path` below never
+# exercises `Omex.from_omex` on these archives' real, multi-file manifests.
+# Kept to ten archives so the suite stays fast.
+BIOMODEL_ARCHIVES = sorted(BIOMODELS_CURATED_PATH.glob("BIOMD*.omex"))[:10]
 
 
 def _collect_pks(obj: object) -> list[str]:
@@ -61,6 +74,22 @@ def test_report_for_path(example: ExampleMetaData) -> None:
     """Report data, unique pks and a consistent link graph for every example."""
     assert example.file.is_file()
     _check_report(report_for_path(example.file))
+
+
+@pytest.mark.parametrize("path", BIOMODEL_ARCHIVES, ids=lambda p: p.name)
+def test_report_for_biomodel_archive(path: Path) -> None:
+    """Report data for a curated BioModels archive read directly.
+
+    Reading the archive itself, rather than its extracted main SBML file,
+    exercises `Omex.from_omex` on a real multi-file manifest (the omex entry,
+    `manifest.xml`, the SBML model, possibly more).
+    """
+    response = report_for_path(path)
+    _check_report(response)
+    assert any(e.location.endswith(".xml") for e in response.manifest.entries)
+    archive = Omex.from_omex(path)
+    if any(e.master for e in archive.manifest.entries):
+        assert any(e.master for e in response.manifest.entries)
 
 
 def test_report_for_sbml_file() -> None:
