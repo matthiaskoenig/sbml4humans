@@ -1,8 +1,7 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { set } from "vue-gtag";
 import type * as vueGtag from "vue-gtag";
-import type { Router } from "vue-router";
-import type { RouteLocationNormalizedGeneric } from "vue-router";
+import type { RouteLocationNormalizedGeneric, Router } from "vue-router";
 
 import { gtagSettings } from "@/analytics";
 
@@ -11,16 +10,18 @@ vi.mock("vue-gtag", async (importOriginal) => {
   return { ...original, set: vi.fn() };
 });
 
-/** A route carrying the query a report page uses: a private model url with a token, a search
- * term and a permalink id. `route.path` itself never contains the query (vue-router keeps the
- * query in `route.query` and `route.fullPath`), which is exactly why building the reported
- * location from `route.path` keeps it out. */
+/** The query a report page carries: a private model url with a token and a search term. */
+const QUERY = "?url=https%3A%2F%2Fprivate.example%2Fmodel.xml%3Ftoken%3Dsecret&q=abc";
+
+/** A route carrying the query of a report page. `route.path` itself never contains the query
+ * (vue-router keeps the query in `route.query` and `route.fullPath`), which is exactly why
+ * building the reported location from `route.path` keeps it out. */
 function buildRoute(): RouteLocationNormalizedGeneric {
   return {
     path: "/report",
-    fullPath: "/report?url=https%3A%2F%2Fprivate.example%2Fmodel.xml%3Ftoken%3Dsecret&q=abc",
+    fullPath: `/report${QUERY}`,
     query: { url: "https://private.example/model.xml?token=secret", q: "abc" },
-    hash: "",
+    hash: "#frag",
     name: "report",
     params: {},
     matched: [],
@@ -30,18 +31,21 @@ function buildRoute(): RouteLocationNormalizedGeneric {
 }
 
 describe("gtagSettings", () => {
+  beforeEach(() => {
+    // the page the settings are built on carries the query and a hash too, so a location built
+    // from `window.location.href` differs from the expected one
+    window.history.replaceState({}, "", `/report${QUERY}#frag`);
+    vi.mocked(set).mockClear();
+  });
+
   it("builds a template whose page_location and page_path carry no query", () => {
     const settings = gtagSettings({} as Router);
-    const route = buildRoute();
     const template = settings.pageTracker?.template;
     if (typeof template !== "function") throw new Error("expected a template function");
-    const result = template(route);
+    const result = template(buildRoute());
     if (!result || !("page_path" in result)) throw new Error("expected a Pageview result");
     expect(result.page_path).toBe("/report");
-    expect(result.page_path).not.toContain("?");
-    expect(result.page_location).not.toContain("?");
-    expect(result.page_location).not.toContain("token");
-    expect(result.page_location).not.toContain("private.example");
+    expect(result.page_location).toBe(`${window.location.origin}/report`);
   });
 
   it("sets page_title from the route name", () => {
@@ -55,9 +59,8 @@ describe("gtagSettings", () => {
 
   it("builds a config with a page_location that carries no query", () => {
     const settings = gtagSettings({} as Router);
-    expect(settings.config).toBeDefined();
-    const location = (settings.config as { page_location?: string }).page_location;
-    expect(location).not.toContain("?");
+    const location = (settings.config as { page_location?: string } | undefined)?.page_location;
+    expect(location).toBe(`${window.location.origin}/report`);
   });
 
   it("the router:track:before hook calls vue-gtag's set with a page_location without query", () => {
@@ -66,13 +69,6 @@ describe("gtagSettings", () => {
     if (!hook) throw new Error("expected a router:track:before hook");
     hook(buildRoute());
     expect(set).toHaveBeenCalledTimes(1);
-    const call = vi.mocked(set).mock.calls[0];
-    if (!call) throw new Error("expected set to have been called");
-    const config = call[0];
-    const location = (config as { page_location?: string }).page_location;
-    expect(location).toBeDefined();
-    expect(location).not.toContain("?");
-    expect(location).not.toContain("token");
-    expect(location).not.toContain("private.example");
+    expect(set).toHaveBeenCalledWith({ page_location: `${window.location.origin}/report` });
   });
 });

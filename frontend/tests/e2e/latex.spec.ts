@@ -1,8 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-/* An assignment rule whose math sums many <ci> terms: the generated latex is well past
- * MAX_LATEX_LENGTH (checked below), so the assignment rule table must show it as text instead
- * of rendering it with KaTeX. */
+/** An assignment rule whose math sums TERM_COUNT `<ci>` terms: the backend turns it into 11,090
+ * characters of LaTeX, well past MAX_LATEX_LENGTH, so the assignment rule table must show it as
+ * text instead of rendering it with KaTeX. The backend's conversion of the math to LaTeX fails
+ * for a flat sum of about 1,000 terms, which keeps the count below that. */
 const TERM_COUNT = 800;
 const parameters = Array.from(
   { length: TERM_COUNT },

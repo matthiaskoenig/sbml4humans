@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-/* A model whose notes carry markup outside the set `sanitizeNotes` allows: a `<style>` element,
+/** A model whose notes carry markup outside the set `sanitizeNotes` allows: a `<style>` element,
  * a `position: fixed` element that overlaps the app bar, a form, and a paragraph and an image
  * that are the actual content of the notes. The attribute selector inside the `<style>` element
  * is unquoted because libsbml escapes quotes inside a `<style>` element of a notes string. The

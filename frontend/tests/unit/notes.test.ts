@@ -63,11 +63,13 @@ describe("sanitizeNotes", () => {
     const html = sanitizeNotes(
       `<p action="https://example.invalid/collect" formaction="https://example.invalid/collect">x</p>` +
         `<div popover="manual" popovertarget="y" popovertargetaction="show">y</div>` +
-        `<div commandfor="z" command="show-modal">z</div>`,
+        `<div commandfor="z" command="show-modal">z</div>` +
+        `<p id="app-tooltip" name="note">n</p>`,
     );
     expect(html).toContain("<p>x</p>");
     expect(html).toContain("<div>y</div>");
     expect(html).toContain("<div>z</div>");
+    expect(html).toContain("<p>n</p>");
     expect(html).not.toContain("action=");
     expect(html).not.toContain("formaction=");
     expect(html).not.toContain("popover=");
@@ -75,6 +77,8 @@ describe("sanitizeNotes", () => {
     expect(html).not.toContain("popovertargetaction=");
     expect(html).not.toContain("command=");
     expect(html).not.toContain("commandfor=");
+    expect(html).not.toContain("id=");
+    expect(html).not.toContain("name=");
   });
 
   it("keeps script, event handlers and javascript hrefs removed as the profile already does", () => {

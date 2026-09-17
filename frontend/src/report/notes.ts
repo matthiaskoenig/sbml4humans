@@ -13,9 +13,10 @@ purifier.addHook("afterSanitizeAttributes", (node) => {
 /** Sanitises the xhtml of an SBase's notes for use with `v-html`. On top of DOMPurify's `html`
  * profile this forbids the elements and attributes real notes do not use: `style`, the form
  * elements (`form`, `input`, `button`, `textarea`, `select`, `option`, `optgroup`, `datalist`,
- * `fieldset`, `legend`, `output`), `dialog`, `audio` and `video`, and the attributes that start
- * a form submission or drive a popover or command invoker (`action`, `formaction`, `popover`,
- * `popovertarget`, `popovertargetaction`, `command`, `commandfor`). */
+ * `fieldset`, `legend`, `output`), `dialog`, `audio` and `video`, the attributes that start a
+ * form submission or drive a popover or command invoker (`action`, `formaction`, `popover`,
+ * `popovertarget`, `popovertargetaction`, `command`, `commandfor`), and `id` and `name`, so an
+ * element of the notes never takes the id or name of an element of the app. */
 export function sanitizeNotes(html: string): string {
   return purifier.sanitize(html, {
     USE_PROFILES: { html: true },
@@ -44,6 +45,8 @@ export function sanitizeNotes(html: string): string {
       "popovertargetaction",
       "command",
       "commandfor",
+      "id",
+      "name",
     ],
   });
 }

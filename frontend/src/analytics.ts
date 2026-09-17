@@ -1,5 +1,4 @@
-import { set } from "vue-gtag";
-import type { createGtag } from "vue-gtag";
+import { set, type createGtag } from "vue-gtag";
 import type { RouteLocationNormalizedGeneric, Router } from "vue-router";
 
 /** vue-gtag does not export its settings type, so it is recovered from `createGtag`, the
