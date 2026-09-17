@@ -98,7 +98,11 @@ export function postContent(text: string): Promise<ReportResponse> {
   });
 }
 
-/** Resolve an annotation resource (identifiers.org and similar) via pymetadata. */
+/** Resolve an annotation resource (identifiers.org and similar) via pymetadata. Aborts after 15
+ * seconds, so a request the annotation service never answers still fails like any other error
+ * instead of holding its resolve queue slot forever. */
 export function getAnnotationResource(resource: string): Promise<AnnotationInfo> {
-  return request<AnnotationInfo>(`/annotation_resource?resource=${encodeURIComponent(resource)}`);
+  return request<AnnotationInfo>(`/annotation_resource?resource=${encodeURIComponent(resource)}`, {
+    signal: AbortSignal.timeout(15_000),
+  });
 }

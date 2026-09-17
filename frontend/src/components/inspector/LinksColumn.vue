@@ -2,7 +2,7 @@
 import { computed } from "vue";
 
 import type { Edge, EdgeKind } from "@/api/types";
-import ElementLink from "@/components/misc/ElementLink.vue";
+import LinksGroup from "@/components/inspector/LinksGroup.vue";
 import { EDGE_KINDS, edgeKindLabel } from "@/data/edgeKinds";
 import { useReportIndex } from "@/report/context";
 
@@ -34,15 +34,7 @@ const referencedBy = computed(() => group(index.value?.referencedBy(props.pk) ??
       <p v-if="references.length === 0" class="text-gray-400">none</p>
       <dl v-for="g in references" :key="g.kind" class="mb-2">
         <dt class="text-xs text-gray-500">{{ g.label }}</dt>
-        <dd class="flex flex-wrap gap-1">
-          <ElementLink
-            v-for="targetPk in g.pks"
-            :key="targetPk"
-            :pk="targetPk"
-            mark
-            class="rounded border border-gray-200 bg-white px-1.5 py-0.5"
-          />
-        </dd>
+        <LinksGroup :pks="g.pks" />
       </dl>
     </section>
     <section data-testid="links-referenced-by">
@@ -52,15 +44,7 @@ const referencedBy = computed(() => group(index.value?.referencedBy(props.pk) ??
       <p v-if="referencedBy.length === 0" class="text-gray-400">none</p>
       <dl v-for="g in referencedBy" :key="g.kind" class="mb-2">
         <dt class="text-xs text-gray-500">{{ g.label }}</dt>
-        <dd class="flex flex-wrap gap-1">
-          <ElementLink
-            v-for="sourcePk in g.pks"
-            :key="sourcePk"
-            :pk="sourcePk"
-            mark
-            class="rounded border border-gray-200 bg-white px-1.5 py-0.5"
-          />
-        </dd>
+        <LinksGroup :pks="g.pks" />
       </dl>
     </section>
   </div>

@@ -1,36 +1,54 @@
 <script setup lang="ts">
-import katex from "katex";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 import type { Math } from "@/api/types";
+import { renderLatex } from "@/report/latex";
 
 const props = defineProps<{ math: Math | null | undefined; display?: boolean }>();
 
-/** KaTeX has no metrics for the micro sign of the report and warns about it. */
-const normalize = (latex: string): string => latex.replaceAll("\u00b5", "\\mu ");
+/** Set once the "render formula" button of the display mode is clicked, for this instance only.
+ * Reset whenever the math changes, so a parent that reuses the component instance for another
+ * element (an inspector attributes component keyed only by type, not by pk) does not carry the
+ * choice over to a formula it was never clicked for. */
+const forceUnlimited = ref(false);
+watch(
+  () => props.math,
+  () => {
+    forceUnlimited.value = false;
+  },
+);
 
+/** Null when the formula is too long to render by default and has not been forced yet, or when
+ * KaTeX throws. */
 const html = computed(() =>
   props.math
-    ? katex.renderToString(normalize(props.math.latex), {
-        throwOnError: false,
-        strict: "ignore",
-        displayMode: props.display ?? false,
-        output: "html",
+    ? renderLatex(props.math.latex, {
+        display: props.display ?? false,
+        unlimited: forceUnlimited.value,
       })
-    : "",
+    : null,
 );
+
+const truncatedFormula = computed(() => {
+  const formula = props.math?.formula ?? "";
+  // trimEnd() drops a trailing space the slice may end on, so the ellipsis stays on the same
+  // line as the text instead of wrapping onto its own.
+  return formula.length > 120 ? `${formula.slice(0, 120).trimEnd()}…` : formula;
+});
 
 function copy(event: MouseEvent): void {
   if (!props.math) return;
   event.stopPropagation();
-  void navigator.clipboard?.writeText(props.math.formula);
+  // a formula can contain line breaks the tooltip does not show, so every run of whitespace
+  // collapses to a single space before it is copied.
+  void navigator.clipboard?.writeText(props.math.formula.replace(/\s+/g, " "));
 }
 </script>
 
 <template>
   <span v-if="!math" class="text-gray-400">-</span>
   <span
-    v-else
+    v-else-if="html !== null"
     v-tooltip.bottom="`${math.formula} (click to copy)`"
     class="cursor-copy"
     :class="{ 'block overflow-x-auto': display }"
@@ -39,5 +57,23 @@ function copy(event: MouseEvent): void {
   >
     <!-- eslint-disable-next-line vue/no-v-html -->
     <span v-html="html" />
+  </span>
+  <span v-else class="flex flex-col items-start gap-1">
+    <span
+      v-tooltip.bottom="`${math.formula} (click to copy)`"
+      class="cursor-copy font-mono"
+      data-testid="math-text"
+      @click="copy"
+      >{{ truncatedFormula }}</span
+    >
+    <button
+      v-if="display"
+      type="button"
+      class="text-xs text-link hover:underline"
+      data-testid="math-render"
+      @click.stop="forceUnlimited = true"
+    >
+      render formula
+    </button>
   </span>
 </template>
