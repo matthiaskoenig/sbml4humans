@@ -42,7 +42,7 @@ The tooltip is broken today: the pass through classes are configured under `pt.t
 A native `<table class="w-full border-collapse text-sm">`. The classes of the PrimeVue pass through options move into the template unchanged:
 
 - `thead`: `sticky top-0 z-10 bg-gray-50`, header row `border-b border-gray-200`
-- header cell: `px-3 py-2 text-left font-medium text-gray-600 whitespace-nowrap select-none`, content `flex items-center gap-1`, sort icon `size-3 text-gray-400`
+- header cell: `px-3 py-2 text-left font-medium text-gray-600 whitespace-nowrap select-none`, content `flex items-center gap-1`, sort icon `-mx-px size-3.5 text-gray-400` with `stroke-width` 2.25
 - body row: `cursor-pointer border-b border-gray-100`, selected `bg-selected`, otherwise `hover:bg-gray-50`
 - body cell: `px-3 py-1.5 align-top whitespace-nowrap`
 - a column with a `width` keeps it as inline style
@@ -50,9 +50,9 @@ A native `<table class="w-full border-collapse text-sm">`. The classes of the Pr
 ### Sorting
 
 - A column is sortable unless its kind is `math` or `units`, as today.
-- The header of a sortable column is a `<button type="button">` (full cell content, no button styling) with the title and the sort icon. The `<th>` carries `aria-sort` (`ascending`, `descending`, `none` for the sortable columns without sort).
+- The header of a sortable column is a `<button type="button">` (`w-full`, the full width of the cell content, no button styling) with the title and the sort icon. The `<th>` carries `aria-sort` (`ascending`, `descending`, `none` for the sortable columns without sort).
 - One sort at a time, state `{ field, order: 1 | -1 } | null`, initially `null` (the order of the report). The first click on a column sorts ascending, every further click on the same column toggles the order, a click on another column sorts that one ascending.
-- Icons: `ArrowUpDown` unsorted, `ArrowUpNarrowWide` ascending, `ArrowDownWideNarrow` descending.
+- Icons: `ArrowUpDown` unsorted, `ArrowUpNarrowWide` ascending, `ArrowDownWideNarrow` descending. They are 14 px with a `stroke-width` of 2.25 (1.3 px), which draws a 12 px glyph like the 12 px sort icons of PrimeVue, and `-mx-px` keeps their layout width at 12 px, so the columns keep their widths.
 - The comparison lives in `src/report/sort.ts` and has the semantics of PrimeVue 4 (`@primeuix/utils` `sort` with `nullSortOrder` 1): a value is empty when it is `null`, `undefined`, `""`, an empty array or an empty plain object; empty values sort last in both orders; two strings compare with `Intl.Collator(undefined, { numeric: true })`; other values compare with `<` and `>`. The values are read with `fieldValue` of `src/report/columns`. The sort is stable, a new `rows` prop (search, type toggles) is sorted with the current state.
 
 ### Selection
@@ -121,7 +121,7 @@ The list of a native select is drawn by the browser.
 | Objective | `pi-bullseye` | `Target` |
 | Uncertainty | `pi-question-circle` | `CircleQuestionMark` |
 
-Other icons: `pi-search` `Search`, `pi-upload` `Upload`, `pi-times` `X`, `pi-spin pi-spinner` `LoaderCircle` with `animate-spin`, `pi-check` `Check`. The sizes follow the font sizes of the PrimeIcons they replace: `TypeMark` `size-2.5` (sm) and `size-3.5` (md), search, close and check `size-3`, upload and spinner `size-6`. Icons which are decoration get `aria-hidden="true"`, the check mark of `BooleanMark` keeps `aria-label="true"` with `role="img"`.
+Other icons: `pi-search` `Search`, `pi-upload` `Upload`, `pi-times` `X`, `pi-spin pi-spinner` `LoaderCircle` with `animate-spin`, `pi-check` `Check`. The sizes follow the font sizes of the PrimeIcons they replace: `TypeMark` `size-2.5` (sm) and `size-3.5` (md), search and close `size-3`, upload and spinner `size-6`. The check is `inline-block size-3.25 align-[-2px]`: inline on the baseline like the glyph of the font icon, its 11 x 8 px glyph covers the pixels of the 12 px `pi-check`. Icons which are decoration get `aria-hidden="true"`, the check mark of `BooleanMark` keeps `aria-label="true"` with `role="img"`.
 
 ## Build
 

@@ -29,6 +29,8 @@ describe("icons", () => {
 
   it("labels the check mark of a true value", () => {
     const check = mount(BooleanMark, { props: { value: true } }).get("svg");
+    // inline, the check sits on the text instead of the top of the line
+    expect(check.classes()).toEqual(expect.arrayContaining(["inline-block", "size-3.25"]));
     expect(check.attributes("aria-label")).toBe("true");
     expect(check.attributes("role")).toBe("img");
     expect(check.attributes("aria-hidden")).toBeUndefined();

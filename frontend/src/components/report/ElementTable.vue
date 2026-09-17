@@ -19,6 +19,9 @@ const ROW_HEIGHT = 36;
 const VIEWPORT_ROWS = 15;
 /** The rows rendered above and below the viewport of a windowed table. */
 const OVERSCAN = 5;
+/** The stroke of the 14 px sort icon (1.3 px): its glyph is 12 px wide and high, and the
+ * `-mx-px` of the icon keeps its layout width at 12 px. */
+const SORT_ICON_STROKE = 2.25;
 /** A click on these elements of a row does not change the selection. */
 const INTERACTIVE = "a, button, input, select, textarea, [contenteditable]";
 
@@ -190,12 +193,16 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
             <button
               v-if="sortable(column)"
               type="button"
-              class="flex cursor-pointer items-center gap-1 rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-link"
+              class="flex w-full cursor-pointer items-center gap-1 rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-link"
               data-testid="sort-button"
               @click="toggleSort(column)"
             >
               <span>{{ column.header }}</span>
-              <component :is="sortIcon(column)" class="size-3 text-gray-400" />
+              <component
+                :is="sortIcon(column)"
+                class="-mx-px size-3.5 text-gray-400"
+                :stroke-width="SORT_ICON_STROKE"
+              />
             </button>
             <span v-else class="flex items-center gap-1">{{ column.header }}</span>
           </th>
