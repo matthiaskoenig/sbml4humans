@@ -8,7 +8,7 @@ SBML is an XML format, and XML is written for programs: the mathematics of a mod
 
 ## Features
 
-- one table per element type with the columns which matter for that type, sortable by every column and fast even for a genome scale reconstruction with tens of thousands of elements
+- one table per element type with the columns which matter for that type, sorted by a click on a column header, and fast even for a genome scale reconstruction with tens of thousands of elements
 - a search over the whole model and a rail which counts the elements of every type and filters the tables by type
 - an inspector which shows one element in full: its attributes, the elements it references and the elements which reference it, its notes, its annotations and its history, and the raw XML of the element
 - the mathematics typeset as formulas instead of MathML, and the units of every quantity rendered, including the units the report derives
