@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Select from "primevue/select";
 import { computed } from "vue";
 
 import type { Model } from "@/api/types";
+import SelectInput from "@/components/input/SelectInput.vue";
 import type { ReportIndex } from "@/report/index";
 import { useReportView } from "@/report/view";
 
@@ -25,24 +25,20 @@ const packages = computed(
 
 <template>
   <div class="flex min-w-0 items-center gap-3 text-sm">
-    <Select
+    <SelectInput
       v-if="entries.length > 1"
       :model-value="entry"
       :options="entryOptions"
-      option-label="label"
-      option-value="value"
       data-testid="entry-select"
       @update:model-value="(value: string) => view.setEntry(value)"
     />
     <span v-else class="truncate font-mono text-gray-700" data-testid="entry-name">{{
       entry
     }}</span>
-    <Select
+    <SelectInput
       v-if="index.models.length > 1"
       :model-value="model.id ?? ''"
       :options="modelOptions"
-      option-label="label"
-      option-value="value"
       data-testid="model-select"
       @update:model-value="(value: string) => view.setModel(value)"
     />

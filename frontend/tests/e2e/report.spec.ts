@@ -64,17 +64,16 @@ test.describe("repressilator", () => {
 
 test("the archive dropdown switches the entry", async ({ page }) => {
   await openExample(page, "CompModels");
-  await expect(page.getByTestId("entry-select")).toBeVisible();
-  await page.getByTestId("entry-select").click();
-  await page.getByRole("option", { name: "./models/omex_minimal.xml" }).click();
-  expect(query(page, "entry")).toBe("./models/omex_minimal.xml");
-  await expect(page.getByTestId("model-name")).toHaveText("omex_minimal");
+  const select = page.getByTestId("entry-select");
+  await expect(select).toHaveValue("./models/omex_minimal.xml");
+  await select.selectOption("./models/omex_comp.xml");
+  await expect(page.getByTestId("model-name")).toHaveText("omex_comp");
+  expect(query(page, "entry")).toBe("./models/omex_comp.xml");
 });
 
 test("the model dropdown switches to a model definition", async ({ page }) => {
   await openExample(page, "model_definitions (model_definitions.xml)");
-  await page.getByTestId("model-select").click();
-  await page.getByRole("option", { name: /m1/ }).click();
-  expect(query(page, "model")).toBe("m1");
+  await page.getByTestId("model-select").selectOption("m1");
   await expect(page.getByTestId("rail-model")).toContainText("m1");
+  expect(query(page, "model")).toBe("m1");
 });
