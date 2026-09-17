@@ -5,12 +5,10 @@ import { createServer } from "node:http";
 export const REPOSITORY = new URL("../../../", import.meta.url).pathname;
 export const REPRESSILATOR_FILE = `${REPOSITORY}backend/sbml4humans/resources/models/repressilator/BIOMD0000000012_urn.xml`;
 
-/** Open the report of an example and wait for the tables. Creating the report is CPU bound in
- * the backend, and the specs run in parallel against the same backend, so a large model needs
- * more than the default expect timeout. */
+/** Open the report of an example and wait for the tables. */
 export async function openExample(page: Page, id: string): Promise<void> {
   await page.goto(`/examples/${encodeURIComponent(id)}`);
-  await expect(page.getByTestId("report-page")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId("report-page")).toBeVisible();
 }
 
 export function query(page: Page, key: string): string | null {

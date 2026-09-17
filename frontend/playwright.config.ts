@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 3456;
+const CHROME = { ...devices["Desktop Chrome"], viewport: { width: 1600, height: 1000 } };
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -22,7 +23,16 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"], viewport: { width: 1600, height: 1000 } },
+      testIgnore: /examples-walk/,
+      use: CHROME,
+    },
+    // the walk over every example runs alone, after the other specs: creating a report is CPU
+    // bound in the backend, which the parallel workers of the other specs would compete for
+    {
+      name: "examples-walk",
+      testMatch: /examples-walk/,
+      dependencies: ["chromium"],
+      use: CHROME,
     },
   ],
 });

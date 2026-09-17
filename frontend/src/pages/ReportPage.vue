@@ -35,7 +35,9 @@ watch(
  * after a reload, or when the route is entered with the report of an example still loaded, the
  * page shows the empty state instead of a report that does not belong to the route. */
 const showsReport = computed(() => {
-  if (route.name !== "report" || typeof route.query.url === "string") return true;
+  // an empty `url=` loads nothing, the watcher above skips it too
+  const url = route.query.url;
+  if (route.name !== "report" || (typeof url === "string" && url !== "")) return true;
   const kind = store.source?.kind;
   return kind === "file" || kind === "content";
 });

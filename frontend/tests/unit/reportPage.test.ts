@@ -27,8 +27,8 @@ globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObse
 
 let wrapper: ReturnType<typeof mount> | null = null;
 
-async function mountReport() {
-  await router.push("/report");
+async function mountReport(query: Record<string, string> = {}) {
+  await router.push({ path: "/report", query });
   await router.isReady();
   wrapper = mount(ReportPage, {
     global: {
@@ -58,6 +58,15 @@ describe("ReportPage", () => {
     await store.loadExample("BIOMD0000000012");
     expect(store.response).not.toBeNull();
     const page = await mountReport();
+    expect(page.find("[data-testid=no-report]").exists()).toBe(true);
+    expect(page.find("[data-testid=report-page]").exists()).toBe(false);
+  });
+
+  it("shows the empty state on /report with an empty url", async () => {
+    vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
+    const store = useReportStore();
+    await store.loadExample("BIOMD0000000012");
+    const page = await mountReport({ url: "" });
     expect(page.find("[data-testid=no-report]").exists()).toBe(true);
     expect(page.find("[data-testid=report-page]").exists()).toBe(false);
   });
