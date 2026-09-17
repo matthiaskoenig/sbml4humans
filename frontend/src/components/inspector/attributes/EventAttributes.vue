@@ -18,19 +18,28 @@ const ASSIGNMENT_COLUMNS = [
 </script>
 
 <template>
-  <AttributeRow label="values from trigger time"
+  <AttributeRow
+    label="values from trigger time"
+    :type="element.sbmlType"
+    field="useValuesFromTriggerTime"
     ><BooleanMark :value="element.useValuesFromTriggerTime"
   /></AttributeRow>
-  <AttributeRow label="trigger"><MathView :math="element.trigger?.math" display /></AttributeRow>
-  <AttributeRow label="trigger initial value"
+  <AttributeRow label="trigger" :type="element.sbmlType" field="trigger.math"
+    ><MathView :math="element.trigger?.math" display
+  /></AttributeRow>
+  <AttributeRow label="trigger initial value" :type="element.sbmlType" field="trigger.initialValue"
     ><BooleanMark :value="element.trigger?.initialValue"
   /></AttributeRow>
-  <AttributeRow label="trigger persistent"
+  <AttributeRow label="trigger persistent" :type="element.sbmlType" field="trigger.persistent"
     ><BooleanMark :value="element.trigger?.persistent"
   /></AttributeRow>
-  <AttributeRow label="priority"><MathView :math="element.priority" /></AttributeRow>
-  <AttributeRow label="delay"><MathView :math="element.delay" /></AttributeRow>
-  <AttributeRow label="event assignments">
+  <AttributeRow label="priority" :type="element.sbmlType" field="priority"
+    ><MathView :math="element.priority"
+  /></AttributeRow>
+  <AttributeRow label="delay" :type="element.sbmlType" field="delay"
+    ><MathView :math="element.delay"
+  /></AttributeRow>
+  <AttributeRow label="event assignments" :type="element.sbmlType" field="listOfEventAssignments">
     <NestedTable :rows="element.listOfEventAssignments ?? []" :columns="ASSIGNMENT_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.variable"

@@ -24,13 +24,19 @@ const speciesPk = computed(() =>
 </script>
 
 <template>
-  <AttributeRow label="reaction"
+  <AttributeRow label="reaction" :type="element.sbmlType" field="reaction"
     ><ElementLink :pk="parent?.reaction.pk" :label="parent?.reaction.id ?? '-'"
   /></AttributeRow>
-  <AttributeRow label="role">{{ parent?.kind ?? "-" }}</AttributeRow>
-  <AttributeRow label="species"
+  <AttributeRow label="role" :type="element.sbmlType" field="role">{{
+    parent?.kind ?? "-"
+  }}</AttributeRow>
+  <AttributeRow label="species" :type="element.sbmlType" field="species"
     ><ElementLink :pk="speciesPk" :label="element.species"
   /></AttributeRow>
-  <AttributeRow label="stoichiometry"><ValueText :value="element.stoichiometry" /></AttributeRow>
-  <AttributeRow label="constant"><BooleanMark :value="element.constant" /></AttributeRow>
+  <AttributeRow label="stoichiometry" :type="element.sbmlType" field="stoichiometry"
+    ><ValueText :value="element.stoichiometry"
+  /></AttributeRow>
+  <AttributeRow label="constant" :type="element.sbmlType" field="constant"
+    ><BooleanMark :value="element.constant"
+  /></AttributeRow>
 </template>

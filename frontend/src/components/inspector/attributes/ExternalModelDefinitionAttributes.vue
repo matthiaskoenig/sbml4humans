@@ -7,6 +7,10 @@ defineProps<{ element: ExternalModelDefinition }>();
 </script>
 
 <template>
-  <AttributeRow label="source"><ValueText :value="element.source" mono /></AttributeRow>
-  <AttributeRow label="model ref"><ValueText :value="element.modelRef" mono /></AttributeRow>
+  <AttributeRow label="source" :type="element.sbmlType" field="source"
+    ><ValueText :value="element.source" mono
+  /></AttributeRow>
+  <AttributeRow label="model ref" :type="element.sbmlType" field="modelRef"
+    ><ValueText :value="element.modelRef" mono
+  /></AttributeRow>
 </template>

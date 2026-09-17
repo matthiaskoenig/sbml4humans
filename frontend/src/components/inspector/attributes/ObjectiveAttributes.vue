@@ -16,8 +16,10 @@ const COLUMNS = [
 </script>
 
 <template>
-  <AttributeRow label="type"><ValueText :value="element.type" /></AttributeRow>
-  <AttributeRow label="flux objectives">
+  <AttributeRow label="type" :type="element.sbmlType" field="type"
+    ><ValueText :value="element.type"
+  /></AttributeRow>
+  <AttributeRow label="flux objectives" :type="element.sbmlType" field="listOfFluxObjectives">
     <NestedTable :rows="element.listOfFluxObjectives ?? []" :columns="COLUMNS">
       <template #cell-reaction="{ row }">
         <ElementLink

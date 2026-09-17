@@ -5,6 +5,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from 
 import type { ElementType, SbmlElement } from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
 import { columnsOf, type ColumnDef } from "@/report/columns";
+import { attributeEntry } from "@/report/glossary";
 import { rowWindow } from "@/report/rowWindow";
 import { sortRows, type SortState } from "@/report/sort";
 import { useReportView } from "@/report/view";
@@ -192,6 +193,7 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
           >
             <button
               v-if="sortable(column)"
+              v-tooltip.bottom="attributeEntry(type, column.field)?.summary"
               type="button"
               class="flex w-full cursor-pointer items-center gap-1 rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-link"
               data-testid="sort-button"
@@ -204,7 +206,12 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
                 :stroke-width="SORT_ICON_STROKE"
               />
             </button>
-            <span v-else class="flex items-center gap-1">{{ column.header }}</span>
+            <span
+              v-else
+              v-tooltip.bottom="attributeEntry(type, column.field)?.summary"
+              class="flex items-center gap-1"
+              >{{ column.header }}</span
+            >
           </th>
         </tr>
       </thead>

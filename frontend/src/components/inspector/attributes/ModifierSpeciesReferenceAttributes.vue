@@ -21,10 +21,10 @@ const speciesPk = computed(() =>
 </script>
 
 <template>
-  <AttributeRow label="reaction"
+  <AttributeRow label="reaction" :type="element.sbmlType" field="reaction"
     ><ElementLink :pk="parent?.reaction.pk" :label="parent?.reaction.id ?? '-'"
   /></AttributeRow>
-  <AttributeRow label="species"
+  <AttributeRow label="species" :type="element.sbmlType" field="species"
     ><ElementLink :pk="speciesPk" :label="element.species"
   /></AttributeRow>
 </template>

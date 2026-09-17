@@ -5,6 +5,7 @@ import type { Edge, EdgeKind } from "@/api/types";
 import LinksGroup from "@/components/inspector/LinksGroup.vue";
 import { EDGE_KINDS, edgeKindLabel } from "@/data/edgeKinds";
 import { useReportIndex } from "@/report/context";
+import { linkEntry } from "@/report/glossary";
 
 const props = defineProps<{ pk: string }>();
 const index = useReportIndex();
@@ -33,7 +34,9 @@ const referencedBy = computed(() => group(index.value?.referencedBy(props.pk) ??
       <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">References</h3>
       <p v-if="references.length === 0" class="text-gray-400">none</p>
       <dl v-for="g in references" :key="g.kind" class="mb-2">
-        <dt class="text-xs text-gray-500">{{ g.label }}</dt>
+        <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
+          {{ g.label }}
+        </dt>
         <LinksGroup :pks="g.pks" />
       </dl>
     </section>
@@ -43,7 +46,9 @@ const referencedBy = computed(() => group(index.value?.referencedBy(props.pk) ??
       </h3>
       <p v-if="referencedBy.length === 0" class="text-gray-400">none</p>
       <dl v-for="g in referencedBy" :key="g.kind" class="mb-2">
-        <dt class="text-xs text-gray-500">{{ g.label }}</dt>
+        <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
+          {{ g.label }}
+        </dt>
         <LinksGroup :pks="g.pks" />
       </dl>
     </section>

@@ -7,5 +7,7 @@ defineProps<{ element: FunctionDefinition }>();
 </script>
 
 <template>
-  <AttributeRow label="math"><MathView :math="element.math" display /></AttributeRow>
+  <AttributeRow label="math" :type="element.sbmlType" field="math"
+    ><MathView :math="element.math" display
+  /></AttributeRow>
 </template>

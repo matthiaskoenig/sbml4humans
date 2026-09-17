@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { DOCS_URL } from "@/report/glossary";
+</script>
 
 <template>
   <header
@@ -13,6 +15,14 @@
     </div>
     <div class="flex items-center gap-3">
       <slot name="actions" />
+      <a
+        :href="DOCS_URL"
+        target="_blank"
+        rel="noopener"
+        class="text-sm text-gray-600 hover:text-link"
+        data-testid="app-bar-docs"
+        >Documentation</a
+      >
       <RouterLink :to="{ name: 'examples' }" class="text-sm text-gray-600 hover:text-link"
         >Examples</RouterLink
       >

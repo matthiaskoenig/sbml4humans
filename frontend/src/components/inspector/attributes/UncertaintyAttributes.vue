@@ -19,7 +19,7 @@ const COLUMNS = [
 </script>
 
 <template>
-  <AttributeRow label="uncert parameters">
+  <AttributeRow label="uncert parameters" :type="element.sbmlType" field="uncertParameters">
     <NestedTable :rows="element.uncertParameters ?? []" :columns="COLUMNS">
       <template #cell-definitionUrl="{ row }">
         <a

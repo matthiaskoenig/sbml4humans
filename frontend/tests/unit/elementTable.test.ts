@@ -7,6 +7,7 @@ import ElementCell from "@/components/report/ElementCell.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
 import { vTooltip } from "@/directives/tooltip";
 import { columnsOf, type ColumnDef } from "@/report/columns";
+import { attributeEntry } from "@/report/glossary";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
@@ -68,6 +69,15 @@ describe("ElementTable", () => {
     expect(link.exists()).toBe(true);
     expect(link.text()).toBe(species[0]!.compartment);
     expect(table.findAll("thead th").map((th) => th.text())).toContain("compartment");
+  });
+
+  it("shows the summary of the column's attribute as the tooltip of its header", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(species);
+    await header(table, "id").get("[data-testid=sort-button]").trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      attributeEntry("Species", "id")?.summary,
+    );
   });
 
   it("sorts by a click on the header and toggles the order", async () => {

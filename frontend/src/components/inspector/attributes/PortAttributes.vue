@@ -14,16 +14,18 @@ const target = () =>
 </script>
 
 <template>
-  <AttributeRow label="port ref"><ValueText :value="element.portRef" mono /></AttributeRow>
-  <AttributeRow label="id ref">
+  <AttributeRow label="port ref" :type="element.sbmlType" field="portRef"
+    ><ValueText :value="element.portRef" mono
+  /></AttributeRow>
+  <AttributeRow label="id ref" :type="element.sbmlType" field="idRef">
     <ElementLink v-if="element.idRef" :pk="target()" :label="element.idRef" />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="unit ref">
+  <AttributeRow label="unit ref" :type="element.sbmlType" field="unitRef">
     <ElementLink v-if="element.unitRef" :pk="target()" :label="element.unitRef" />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="meta id ref">
+  <AttributeRow label="meta id ref" :type="element.sbmlType" field="metaIdRef">
     <ElementLink v-if="element.metaIdRef" :pk="target()" :label="element.metaIdRef" />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>

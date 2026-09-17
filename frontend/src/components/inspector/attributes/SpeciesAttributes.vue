@@ -13,32 +13,43 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="compartment">
+  <AttributeRow label="compartment" :type="element.sbmlType" field="compartment">
     <ElementLink
       :pk="index?.resolve(element.pk, 'compartment', element.compartment)"
       :label="element.compartment"
     />
   </AttributeRow>
-  <AttributeRow label="initial amount"><ValueText :value="element.initialAmount" /></AttributeRow>
-  <AttributeRow label="initial concentration"
+  <AttributeRow label="initial amount" :type="element.sbmlType" field="initialAmount"
+    ><ValueText :value="element.initialAmount"
+  /></AttributeRow>
+  <AttributeRow label="initial concentration" :type="element.sbmlType" field="initialConcentration"
     ><ValueText :value="element.initialConcentration"
   /></AttributeRow>
-  <AttributeRow label="substance units">
+  <AttributeRow label="substance units" :type="element.sbmlType" field="substanceUnits">
     <UnitsLink
       :pk="index?.resolve(element.pk, 'units', element.substanceUnits)"
       :label="element.substanceUnits"
       :latex="element.unitsLatex"
     />
   </AttributeRow>
-  <AttributeRow label="only substance units"
+  <AttributeRow label="only substance units" :type="element.sbmlType" field="hasOnlySubstanceUnits"
     ><BooleanMark :value="element.hasOnlySubstanceUnits"
   /></AttributeRow>
-  <AttributeRow label="boundary condition"
+  <AttributeRow label="boundary condition" :type="element.sbmlType" field="boundaryCondition"
     ><BooleanMark :value="element.boundaryCondition"
   /></AttributeRow>
-  <AttributeRow label="constant"><BooleanMark :value="element.constant" /></AttributeRow>
-  <AttributeRow label="derived units"><UnitsView :latex="element.derivedUnits" /></AttributeRow>
-  <AttributeRow v-if="element.conversionFactor" label="conversion factor">
+  <AttributeRow label="constant" :type="element.sbmlType" field="constant"
+    ><BooleanMark :value="element.constant"
+  /></AttributeRow>
+  <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
+    ><UnitsView :latex="element.derivedUnits"
+  /></AttributeRow>
+  <AttributeRow
+    v-if="element.conversionFactor"
+    label="conversion factor"
+    :type="element.sbmlType"
+    field="conversionFactor"
+  >
     <ElementLink
       :pk="index?.resolve(element.pk, 'conversionFactor', element.conversionFactor.sid)"
       :label="element.conversionFactor.sid"
@@ -46,9 +57,11 @@ const index = useReportIndex();
     <ValueText :value="element.conversionFactor.value" />
   </AttributeRow>
   <template v-if="element.fbc">
-    <AttributeRow label="chemical formula"
+    <AttributeRow label="chemical formula" :type="element.sbmlType" field="fbc.chemicalFormula"
       ><ValueText :value="element.fbc.chemicalFormula" mono
     /></AttributeRow>
-    <AttributeRow label="charge"><ValueText :value="element.fbc.charge" /></AttributeRow>
+    <AttributeRow label="charge" :type="element.sbmlType" field="fbc.charge"
+      ><ValueText :value="element.fbc.charge"
+    /></AttributeRow>
   </template>
 </template>

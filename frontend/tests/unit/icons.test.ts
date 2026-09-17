@@ -5,6 +5,8 @@ import LoadingState from "@/components/layout/LoadingState.vue";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import { DOCUMENT_TYPES, ELEMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
+import { vTooltip } from "@/directives/tooltip";
+import { typeEntry } from "@/report/glossary";
 
 describe("icons", () => {
   it("renders the svg icon of every type in both sizes", () => {
@@ -13,7 +15,6 @@ describe("icons", () => {
       const svg = small.get("svg");
       expect(svg.classes(), info.type).toContain("size-2.5");
       expect(svg.attributes("aria-hidden")).toBe("true");
-      expect(small.attributes("title")).toBe(info.label);
       expect(
         mount(TypeMark, { props: { type: info.type, size: "md" } })
           .get("svg")
@@ -25,6 +26,17 @@ describe("icons", () => {
         .get("svg")
         .classes(),
     ).toContain("lucide-arrow-right-left");
+  });
+
+  it("shows the summary of the type as a tooltip", async () => {
+    const wrapper = mount(TypeMark, {
+      props: { type: "Species" },
+      attachTo: document.body,
+      global: { directives: { tooltip: vTooltip } },
+    });
+    await wrapper.trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(typeEntry("Species")?.summary);
+    wrapper.unmount();
   });
 
   it("labels the check mark of a true value", () => {

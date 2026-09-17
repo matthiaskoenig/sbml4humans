@@ -55,8 +55,10 @@ const replacedElements = computed(() =>
 
 <template>
   <dl data-testid="attributes-column">
-    <AttributeRow label="metaId"><ValueText :value="element.metaId" mono /></AttributeRow>
-    <AttributeRow label="sbo">
+    <AttributeRow label="metaId" :type="element.sbmlType" field="metaId"
+      ><ValueText :value="element.metaId" mono
+    /></AttributeRow>
+    <AttributeRow label="sbo" :type="element.sbmlType" field="sbo">
       <a
         v-if="sboUrl"
         :href="sboUrl"
@@ -68,13 +70,23 @@ const replacedElements = computed(() =>
       <span v-else class="text-gray-400">-</span>
     </AttributeRow>
     <template v-if="element.comp">
-      <AttributeRow v-if="element.comp.replacedBy" label="replaced by">
+      <AttributeRow
+        v-if="element.comp.replacedBy"
+        label="replaced by"
+        :type="element.sbmlType"
+        field="comp.replacedBy"
+      >
         <ElementLink :pk="replacedBySubmodel" :label="element.comp.replacedBy.submodelRef" />
         <span class="ml-2 font-mono text-gray-600">{{
           sbaseRefLabel(element.comp.replacedBy.sbaseRef)
         }}</span>
       </AttributeRow>
-      <AttributeRow v-if="replacedElements.length" label="replaced elements">
+      <AttributeRow
+        v-if="replacedElements.length"
+        label="replaced elements"
+        :type="element.sbmlType"
+        field="comp.replacedElements"
+      >
         <NestedTable
           :rows="replacedElements"
           :columns="[
@@ -89,7 +101,12 @@ const replacedElements = computed(() =>
       </AttributeRow>
     </template>
     <component :is="component" v-if="component" :element="element" />
-    <AttributeRow v-if="uncertainties.length" label="uncertainties">
+    <AttributeRow
+      v-if="uncertainties.length"
+      label="uncertainties"
+      :type="element.sbmlType"
+      field="uncertainties"
+    >
       <NestedTable :rows="uncertainties" :columns="uncertaintyColumns">
         <template #cell-id="{ row }"><ElementLink :pk="row.pk" :label="row.id" /></template>
       </NestedTable>

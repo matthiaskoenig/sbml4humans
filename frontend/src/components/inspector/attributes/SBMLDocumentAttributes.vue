@@ -6,9 +6,13 @@ defineProps<{ element: SBMLDocument }>();
 </script>
 
 <template>
-  <AttributeRow label="level">{{ element.level }}</AttributeRow>
-  <AttributeRow label="version">{{ element.version }}</AttributeRow>
-  <AttributeRow label="packages">
+  <AttributeRow label="level" :type="element.sbmlType" field="level">{{
+    element.level
+  }}</AttributeRow>
+  <AttributeRow label="version" :type="element.sbmlType" field="version">{{
+    element.version
+  }}</AttributeRow>
+  <AttributeRow label="packages" :type="element.sbmlType" field="packages">
     <span v-if="!element.packages?.length" class="text-gray-400">-</span>
     <span
       v-for="pkg in element.packages"
