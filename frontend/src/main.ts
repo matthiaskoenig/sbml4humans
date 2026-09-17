@@ -2,6 +2,7 @@ import { createPinia } from "pinia";
 import { createApp } from "vue";
 import { createGtag } from "vue-gtag";
 
+import { gtagSettings } from "@/analytics";
 import App from "@/App.vue";
 import { vTooltip } from "@/directives/tooltip";
 import { router } from "@/router";
@@ -13,7 +14,7 @@ app.use(router);
 app.directive("tooltip", vTooltip);
 
 if (import.meta.env.PROD) {
-  app.use(createGtag({ tagId: "G-TZ6E25RS0Q", pageTracker: { router } }));
+  app.use(createGtag(gtagSettings(router)));
 }
 
 app.mount("#app");
