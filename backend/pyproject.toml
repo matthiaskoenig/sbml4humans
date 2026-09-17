@@ -38,6 +38,7 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.16.6",
     "ty>=0.0.78",
+    "zensical>=0.0.60",
 ]
 
 [tool.hatch.version]

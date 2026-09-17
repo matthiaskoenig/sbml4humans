@@ -13,6 +13,9 @@ frontend/dist/
 frontend/playwright-report/
 frontend/test-results/
 
+# the documentation site built by zensical
+site/
+
 # editors, operating system
 .idea/
 .vscode/

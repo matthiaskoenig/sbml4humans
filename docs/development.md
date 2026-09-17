@@ -1,8 +1,4 @@
-# SBML4Humans
-
-[SBML4Humans](https://sbml4humans.de) renders [SBML](https://sbml.org) models as interactive, human readable reports: a Vue frontend on top of a FastAPI backend which creates the report of a model with [libsbml](https://sbml.org/software/libsbml/).
-
-The report is self-contained: the backend reads the model with libsbml and renders the math, units and annotations itself.
+# Development
 
 ## Repository layout
 
@@ -12,7 +8,7 @@ The report is self-contained: the backend reads the model with libsbml and rende
 | `backend/` | the `sbml4humans` Python package: the report of a document (`sbmlinfo`, `mathml`, `units`) and the FastAPI api which serves it |
 | `nginx/` | the proxy configuration of sbml4humans.de |
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
-| `deploy.sh`, `docker-purge.sh` | deployment of the server, see [Deployment](docs/deployment.md) |
+| `deploy.sh`, `docker-purge.sh` | deployment of the server, see [Deployment](deployment.md) |
 
 ## Development
 
@@ -73,6 +69,17 @@ npm run test:unit
 npm run test:e2e
 ```
 
+### Documentation
+
+The documentation is this Zensical site, built from the sources in `docs/` with the configuration in `zensical.toml`, from the repository root:
+
+```bash
+uv run --project backend zensical serve   # live preview
+uv run --project backend zensical build --clean   # build into site/
+```
+
+`site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. The reference pages under `docs/reference/` are generated, not written by hand: `python -m sbml4humans.glossary` regenerates them from the glossary in `glossary/`.
+
 ## Branches and pull requests
 
 - **`develop`** is the branch everything is integrated into.
@@ -83,13 +90,14 @@ Work happens on short lived branches off `develop`, which GitHub deletes after t
 A pull request can only be merged once the required checks are green:
 
 | check      | workflow   | content                                                                                    |
-| ---------- | ---------- | ------------------------------------------------------------------------------------------ |
+| ---------- | ---------- | ------------------------------------------------------------------------------------------- |
 | `test`     | `ci.yml`   | `pytest` of the backend                                                                     |
 | `schema`   | `ci.yml`   | the committed JSON schema of the report is current                                         |
 | `frontend` | `ci.yml`   | the generated types are current, lint, type check, unit tests and the build of the frontend |
 | `e2e`      | `ci.yml`   | the Playwright end to end tests against the backend                                        |
 | `ruff`     | `ruff.yml` | `ruff check` and `ruff format --check` of the backend                                      |
 | `ty`       | `ty.yml`   | `ty check` of the backend                                                                  |
+| `docs`     | `docs.yml` | the documentation site builds                                                              |
 
 Further rules of a pull request:
 
@@ -104,7 +112,7 @@ The protection is implemented with [repository rulesets](https://docs.github.com
 
 | ruleset        | applies to | rules                                                                                                                                                                                                                                 |
 | -------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `develop.json` | `develop`  | pull request required, the six checks above, resolved conversations, linear history, no force push, no deletion. **No bypass, for anybody.**                                                                                         |
+| `develop.json` | `develop`  | pull request required, the checks above, resolved conversations, linear history, no force push, no deletion. **No bypass, for anybody.**                                                                                         |
 | `main.json`    | `main`     | no force push, no deletion, no bypass. The fast-forward of the release workflow needs none, only a force push would be rejected. `main` follows `develop`, whose history carries merge commits from before merge commits were disabled, so `main` cannot require a linear history |
 | `tags.json`    | all tags   | a tag cannot be deleted or moved, so a release tag keeps pointing at what was released                                                                                                                                               |
 
@@ -134,14 +142,3 @@ The version of sbml4humans is the version of the backend package in `backend/sbm
     ```
 
     This starts the `CI` workflow, which runs the checks, creates the [GitHub release](https://github.com/matthiaskoenig/sbml4humans/releases) from `release-notes/x.y.z.md` and fast-forwards `main` to the tagged commit. Check the version before pushing, a tag cannot be moved or deleted afterwards.
-
-## Funding
-
-SBML4Humans was funded as part of [Google Summer of Code 2021](https://summerofcode.withgoogle.com/).
-
-## License
-
-- Source Code: [MIT](https://opensource.org/license/MIT), the full text is in [LICENSE](LICENSE)
-- Documentation: [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)
-
-&copy; 2021-2026 Matthias König
