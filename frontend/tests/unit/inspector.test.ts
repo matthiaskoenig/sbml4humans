@@ -4,12 +4,13 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
-import type { Reaction, Species, Uncertainty } from "@/api/types";
+import type { Reaction, Species, Submodel, Uncertainty } from "@/api/types";
 import { primevueOptions } from "@/assets/primevue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
+import SubmodelAttributes from "@/components/inspector/attributes/SubmodelAttributes.vue";
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { ReportIndexKey } from "@/report/context";
@@ -82,6 +83,21 @@ describe("inspector", () => {
     expect(pks).toContain(
       repressilator.resolve(reaction.pk, "reactant", reaction.listOfReactants![0]!.species),
     );
+  });
+
+  it("shows an unresolved submodel conversion factor as plain text, not a link", () => {
+    // no comp fixture sets a conversionFactor (`grep timeConversionFactor` over the resources
+    // finds no hits, per the backend follow-up), so every submodel exercises this negative case.
+    const compModels = new ReportIndex(loadReport("comp_models", "./models/omex_comp.xml"));
+    const submodel = compModels.mainModel!.listOfSubmodels!.find(
+      (sm) => sm.timeConversionFactor === null,
+    ) as Submodel;
+    const wrapper = mountWith(SubmodelAttributes, { element: submodel }, compModels);
+    const row = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "time conversion factor")!;
+    expect(row.find("a").exists()).toBe(false);
+    expect(row.find("dd").text()).toBe("-");
   });
 
   it("groups the links by kind in both directions", async () => {

@@ -1,5 +1,5 @@
 {
-  "uid": "cef28d707c6b43d5acf833b411dd6ac2",
+  "uid": "27f359aa9dca485da5c13fdcad4c4d43",
   "manifest": {
     "entries": [
       {
@@ -4533,7 +4533,7 @@
                 "listOfReactants": [],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:16182ad3a3cc40dfc110e0b17bf1b260c53f94a6",
+                    "pk": "icg_body/SpeciesReference:iv_icg.product.Cve_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4552,7 +4552,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:8c02a0907ac7a9cee40763a2a36abeca061721b7",
+                  "pk": "icg_body/KineticLaw:iv_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -4571,7 +4571,7 @@
                   "derivedUnits": "\\frac{mol}{60.0 ks}",
                   "listOfLocalParameters": []
                 },
-                "equation": " &#10142; Cve_icg",
+                "equation": " ➞ Cve_icg",
                 "fbc": null
               },
               {
@@ -4607,7 +4607,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:f4cf1fd5a32c1f5ea3aa3c8492f133ba5cb6530d",
+                    "pk": "icg_body/SpeciesReference:Flow_ar_arre_icg.reactant.Car_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4626,7 +4626,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:f31f87fa7ba004f65100b9f7a1cca8d89eaf7963",
+                    "pk": "icg_body/SpeciesReference:Flow_ar_arre_icg.product.Cre_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4645,7 +4645,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:995adf5fd16ba73b46ee80690dc92cdaadd95a5e",
+                  "pk": "icg_body/KineticLaw:Flow_ar_arre_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -4664,7 +4664,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Car_icg &#10142; Cre_plasma_icg",
+                "equation": "Car_icg ➞ Cre_plasma_icg",
                 "fbc": null
               },
               {
@@ -4700,7 +4700,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:f31f87fa7ba004f65100b9f7a1cca8d89eaf7963",
+                    "pk": "icg_body/SpeciesReference:Flow_re_ve_icg.reactant.Cre_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4719,7 +4719,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:16182ad3a3cc40dfc110e0b17bf1b260c53f94a6",
+                    "pk": "icg_body/SpeciesReference:Flow_re_ve_icg.product.Cve_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4738,7 +4738,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:c26c9a5f59402ab6d2694820ccc3a2377aac78ef",
+                  "pk": "icg_body/KineticLaw:Flow_re_ve_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -4757,7 +4757,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Cre_plasma_icg &#10142; Cve_icg",
+                "equation": "Cre_plasma_icg ➞ Cve_icg",
                 "fbc": null
               },
               {
@@ -4794,7 +4794,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:f4cf1fd5a32c1f5ea3aa3c8492f133ba5cb6530d",
+                    "pk": "icg_body/SpeciesReference:Flow_ar_argi_icg.reactant.Car_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4813,7 +4813,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:7c774cfdf65abf20d3d03444ea9821505b6aaf4a",
+                    "pk": "icg_body/SpeciesReference:Flow_ar_argi_icg.product.Cgi_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4832,7 +4832,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:95cb68caa2f308f3a91068ef7fe4ccb517649e08",
+                  "pk": "icg_body/KineticLaw:Flow_ar_argi_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -4851,7 +4851,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Car_icg &#10142; Cgi_plasma_icg",
+                "equation": "Car_icg ➞ Cgi_plasma_icg",
                 "fbc": null
               },
               {
@@ -4888,7 +4888,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:7c774cfdf65abf20d3d03444ea9821505b6aaf4a",
+                    "pk": "icg_body/SpeciesReference:Flow_gi_po_icg.reactant.Cgi_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4907,7 +4907,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:9964b4a3143534a444072ebff10187d6f85c7d79",
+                    "pk": "icg_body/SpeciesReference:Flow_gi_po_icg.product.Cpo_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4926,7 +4926,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:ce86250c8b4662e672f45245afffec004e219d66",
+                  "pk": "icg_body/KineticLaw:Flow_gi_po_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -4945,7 +4945,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Cgi_plasma_icg &#10142; Cpo_icg",
+                "equation": "Cgi_plasma_icg ➞ Cpo_icg",
                 "fbc": null
               },
               {
@@ -4973,7 +4973,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:f4cf1fd5a32c1f5ea3aa3c8492f133ba5cb6530d",
+                    "pk": "icg_body/SpeciesReference:Flow_arli_li_icg.reactant.Car_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -4992,7 +4992,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:c3bb342dedf9a081e87e898c4c9aa9f039e106e3",
+                    "pk": "icg_body/SpeciesReference:Flow_arli_li_icg.product.Cli_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5011,7 +5011,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:1946bdc911e43e94ffc586695e73613dd6d727ef",
+                  "pk": "icg_body/KineticLaw:Flow_arli_li_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5030,7 +5030,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Car_icg &#10142; Cli_plasma_icg",
+                "equation": "Car_icg ➞ Cli_plasma_icg",
                 "fbc": null
               },
               {
@@ -5058,7 +5058,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:f4cf1fd5a32c1f5ea3aa3c8492f133ba5cb6530d",
+                    "pk": "icg_body/SpeciesReference:Flow_arli_hv_icg.reactant.Car_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5077,7 +5077,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:5a4c12050f161462fea942c2f2349a779b049727",
+                    "pk": "icg_body/SpeciesReference:Flow_arli_hv_icg.product.Chv_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5096,7 +5096,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:ba685e803d6ea9c3f9672c8162490e4a794d3eec",
+                  "pk": "icg_body/KineticLaw:Flow_arli_hv_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5115,7 +5115,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Car_icg &#10142; Chv_icg",
+                "equation": "Car_icg ➞ Chv_icg",
                 "fbc": null
               },
               {
@@ -5143,7 +5143,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:9964b4a3143534a444072ebff10187d6f85c7d79",
+                    "pk": "icg_body/SpeciesReference:Flow_po_li_icg.reactant.Cpo_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5162,7 +5162,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:c3bb342dedf9a081e87e898c4c9aa9f039e106e3",
+                    "pk": "icg_body/SpeciesReference:Flow_po_li_icg.product.Cli_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5181,7 +5181,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:047c5ea42cfa2a6cc54c031e493f541926c1b89d",
+                  "pk": "icg_body/KineticLaw:Flow_po_li_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5200,7 +5200,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Cpo_icg &#10142; Cli_plasma_icg",
+                "equation": "Cpo_icg ➞ Cli_plasma_icg",
                 "fbc": null
               },
               {
@@ -5228,7 +5228,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:9964b4a3143534a444072ebff10187d6f85c7d79",
+                    "pk": "icg_body/SpeciesReference:Flow_po_hv_icg.reactant.Cpo_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5247,7 +5247,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:5a4c12050f161462fea942c2f2349a779b049727",
+                    "pk": "icg_body/SpeciesReference:Flow_po_hv_icg.product.Chv_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5266,7 +5266,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:54f2bde2236a58d09955c8af71a221ff36be7cec",
+                  "pk": "icg_body/KineticLaw:Flow_po_hv_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5285,7 +5285,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Cpo_icg &#10142; Chv_icg",
+                "equation": "Cpo_icg ➞ Chv_icg",
                 "fbc": null
               },
               {
@@ -5313,7 +5313,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:c3bb342dedf9a081e87e898c4c9aa9f039e106e3",
+                    "pk": "icg_body/SpeciesReference:Flow_li_hv_icg.reactant.Cli_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5332,7 +5332,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:5a4c12050f161462fea942c2f2349a779b049727",
+                    "pk": "icg_body/SpeciesReference:Flow_li_hv_icg.product.Chv_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5351,7 +5351,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:4a1803bdaf12605a40abeab76cd3c3e5e5974388",
+                  "pk": "icg_body/KineticLaw:Flow_li_hv_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5370,7 +5370,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Cli_plasma_icg &#10142; Chv_icg",
+                "equation": "Cli_plasma_icg ➞ Chv_icg",
                 "fbc": null
               },
               {
@@ -5398,7 +5398,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:5a4c12050f161462fea942c2f2349a779b049727",
+                    "pk": "icg_body/SpeciesReference:Flow_hv_ve_icg.reactant.Chv_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5417,7 +5417,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:16182ad3a3cc40dfc110e0b17bf1b260c53f94a6",
+                    "pk": "icg_body/SpeciesReference:Flow_hv_ve_icg.product.Cve_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5436,7 +5436,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:912b5ec930cb02542e8fcfdd4ab77feb68229097",
+                  "pk": "icg_body/KineticLaw:Flow_hv_ve_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5455,7 +5455,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Chv_icg &#10142; Cve_icg",
+                "equation": "Chv_icg ➞ Cve_icg",
                 "fbc": null
               },
               {
@@ -5483,7 +5483,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:16182ad3a3cc40dfc110e0b17bf1b260c53f94a6",
+                    "pk": "icg_body/SpeciesReference:Flow_ve_lu_icg.reactant.Cve_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5502,7 +5502,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:6f6738fd1cd4ff3ac60a8e37a084ddac6ba483c6",
+                    "pk": "icg_body/SpeciesReference:Flow_ve_lu_icg.product.Clu_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5521,7 +5521,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:c5b7f4db4b8af127aa07435b5fb76962cb78d807",
+                  "pk": "icg_body/KineticLaw:Flow_ve_lu_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5540,7 +5540,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Cve_icg &#10142; Clu_plasma_icg",
+                "equation": "Cve_icg ➞ Clu_plasma_icg",
                 "fbc": null
               },
               {
@@ -5568,7 +5568,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "icg_body/SpeciesReference:6f6738fd1cd4ff3ac60a8e37a084ddac6ba483c6",
+                    "pk": "icg_body/SpeciesReference:Flow_lu_ar_icg.reactant.Clu_plasma_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5587,7 +5587,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "icg_body/SpeciesReference:f4cf1fd5a32c1f5ea3aa3c8492f133ba5cb6530d",
+                    "pk": "icg_body/SpeciesReference:Flow_lu_ar_icg.product.Car_icg",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -5606,7 +5606,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "icg_body/KineticLaw:fa2d81d098ed1444b846b8b696a98afdfe6224bd",
+                  "pk": "icg_body/KineticLaw:Flow_lu_ar_icg.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -5625,7 +5625,7 @@
                   "derivedUnits": "\\frac{mmol}{min}",
                   "listOfLocalParameters": []
                 },
-                "equation": "Clu_plasma_icg &#10142; Car_icg",
+                "equation": "Clu_plasma_icg ➞ Car_icg",
                 "fbc": null
               }
             ],
@@ -7420,8 +7420,8 @@
               "name": "iv icg",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:16182ad3a3cc40dfc110e0b17bf1b260c53f94a6": {
-              "pk": "icg_body/SpeciesReference:16182ad3a3cc40dfc110e0b17bf1b260c53f94a6",
+            "icg_body/SpeciesReference:iv_icg.product.Cve_icg": {
+              "pk": "icg_body/SpeciesReference:iv_icg.product.Cve_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -7434,15 +7434,15 @@
               "name": "inflow rest icg",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:f4cf1fd5a32c1f5ea3aa3c8492f133ba5cb6530d": {
-              "pk": "icg_body/SpeciesReference:f4cf1fd5a32c1f5ea3aa3c8492f133ba5cb6530d",
+            "icg_body/SpeciesReference:Flow_ar_arre_icg.reactant.Car_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_ar_arre_icg.reactant.Car_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:f31f87fa7ba004f65100b9f7a1cca8d89eaf7963": {
-              "pk": "icg_body/SpeciesReference:f31f87fa7ba004f65100b9f7a1cca8d89eaf7963",
+            "icg_body/SpeciesReference:Flow_ar_arre_icg.product.Cre_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_ar_arre_icg.product.Cre_plasma_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -7455,6 +7455,20 @@
               "name": "outflow rest icg",
               "model": "icg_body/Model:icg_body"
             },
+            "icg_body/SpeciesReference:Flow_re_ve_icg.reactant.Cre_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_re_ve_icg.reactant.Cre_plasma_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_re_ve_icg.product.Cve_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_re_ve_icg.product.Cve_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
             "icg_body/Reaction:Flow_ar_argi_icg": {
               "pk": "icg_body/Reaction:Flow_ar_argi_icg",
               "sbmlType": "Reaction",
@@ -7462,8 +7476,15 @@
               "name": "inflow gastrointestinal tract icg",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:7c774cfdf65abf20d3d03444ea9821505b6aaf4a": {
-              "pk": "icg_body/SpeciesReference:7c774cfdf65abf20d3d03444ea9821505b6aaf4a",
+            "icg_body/SpeciesReference:Flow_ar_argi_icg.reactant.Car_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_ar_argi_icg.reactant.Car_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_ar_argi_icg.product.Cgi_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_ar_argi_icg.product.Cgi_plasma_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -7476,8 +7497,15 @@
               "name": "outflow gastrointestinal tract icg",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:9964b4a3143534a444072ebff10187d6f85c7d79": {
-              "pk": "icg_body/SpeciesReference:9964b4a3143534a444072ebff10187d6f85c7d79",
+            "icg_body/SpeciesReference:Flow_gi_po_icg.reactant.Cgi_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_gi_po_icg.reactant.Cgi_plasma_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_gi_po_icg.product.Cpo_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_gi_po_icg.product.Cpo_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -7490,8 +7518,15 @@
               "name": "arterial inflow liver icg",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:c3bb342dedf9a081e87e898c4c9aa9f039e106e3": {
-              "pk": "icg_body/SpeciesReference:c3bb342dedf9a081e87e898c4c9aa9f039e106e3",
+            "icg_body/SpeciesReference:Flow_arli_li_icg.reactant.Car_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_arli_li_icg.reactant.Car_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_arli_li_icg.product.Cli_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_arli_li_icg.product.Cli_plasma_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -7504,8 +7539,15 @@
               "name": "flow arterial shunts",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:5a4c12050f161462fea942c2f2349a779b049727": {
-              "pk": "icg_body/SpeciesReference:5a4c12050f161462fea942c2f2349a779b049727",
+            "icg_body/SpeciesReference:Flow_arli_hv_icg.reactant.Car_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_arli_hv_icg.reactant.Car_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_arli_hv_icg.product.Chv_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_arli_hv_icg.product.Chv_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -7518,11 +7560,39 @@
               "name": "outflow po icg",
               "model": "icg_body/Model:icg_body"
             },
+            "icg_body/SpeciesReference:Flow_po_li_icg.reactant.Cpo_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_po_li_icg.reactant.Cpo_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_po_li_icg.product.Cli_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_po_li_icg.product.Cli_plasma_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
             "icg_body/Reaction:Flow_po_hv_icg": {
               "pk": "icg_body/Reaction:Flow_po_hv_icg",
               "sbmlType": "Reaction",
               "id": "Flow_po_hv_icg",
               "name": "flow portal shunts",
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_po_hv_icg.reactant.Cpo_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_po_hv_icg.reactant.Cpo_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_po_hv_icg.product.Chv_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_po_hv_icg.product.Chv_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
               "model": "icg_body/Model:icg_body"
             },
             "icg_body/Reaction:Flow_li_hv_icg": {
@@ -7532,11 +7602,39 @@
               "name": "outflow liver icg",
               "model": "icg_body/Model:icg_body"
             },
+            "icg_body/SpeciesReference:Flow_li_hv_icg.reactant.Cli_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_li_hv_icg.reactant.Cli_plasma_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_li_hv_icg.product.Chv_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_li_hv_icg.product.Chv_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
             "icg_body/Reaction:Flow_hv_ve_icg": {
               "pk": "icg_body/Reaction:Flow_hv_ve_icg",
               "sbmlType": "Reaction",
               "id": "Flow_hv_ve_icg",
               "name": "outflow hepatic vein icg",
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_hv_ve_icg.reactant.Chv_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_hv_ve_icg.reactant.Chv_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_hv_ve_icg.product.Cve_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_hv_ve_icg.product.Cve_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
               "model": "icg_body/Model:icg_body"
             },
             "icg_body/Reaction:Flow_ve_lu_icg": {
@@ -7546,8 +7644,15 @@
               "name": "inflow lung icg",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/SpeciesReference:6f6738fd1cd4ff3ac60a8e37a084ddac6ba483c6": {
-              "pk": "icg_body/SpeciesReference:6f6738fd1cd4ff3ac60a8e37a084ddac6ba483c6",
+            "icg_body/SpeciesReference:Flow_ve_lu_icg.reactant.Cve_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_ve_lu_icg.reactant.Cve_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_ve_lu_icg.product.Clu_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_ve_lu_icg.product.Clu_plasma_icg",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -7558,6 +7663,20 @@
               "sbmlType": "Reaction",
               "id": "Flow_lu_ar_icg",
               "name": "outflow lung icg",
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_lu_ar_icg.reactant.Clu_plasma_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_lu_ar_icg.reactant.Clu_plasma_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/SpeciesReference:Flow_lu_ar_icg.product.Car_icg": {
+              "pk": "icg_body/SpeciesReference:Flow_lu_ar_icg.product.Car_icg",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
               "model": "icg_body/Model:icg_body"
             },
             "icg_body/Submodel:LI": {
@@ -7679,92 +7798,92 @@
               "name": "Port of Chv_icg",
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:8c02a0907ac7a9cee40763a2a36abeca061721b7": {
-              "pk": "icg_body/KineticLaw:8c02a0907ac7a9cee40763a2a36abeca061721b7",
+            "icg_body/KineticLaw:iv_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:iv_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:995adf5fd16ba73b46ee80690dc92cdaadd95a5e": {
-              "pk": "icg_body/KineticLaw:995adf5fd16ba73b46ee80690dc92cdaadd95a5e",
+            "icg_body/KineticLaw:Flow_ar_arre_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_ar_arre_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:c26c9a5f59402ab6d2694820ccc3a2377aac78ef": {
-              "pk": "icg_body/KineticLaw:c26c9a5f59402ab6d2694820ccc3a2377aac78ef",
+            "icg_body/KineticLaw:Flow_re_ve_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_re_ve_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:95cb68caa2f308f3a91068ef7fe4ccb517649e08": {
-              "pk": "icg_body/KineticLaw:95cb68caa2f308f3a91068ef7fe4ccb517649e08",
+            "icg_body/KineticLaw:Flow_ar_argi_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_ar_argi_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:ce86250c8b4662e672f45245afffec004e219d66": {
-              "pk": "icg_body/KineticLaw:ce86250c8b4662e672f45245afffec004e219d66",
+            "icg_body/KineticLaw:Flow_gi_po_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_gi_po_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:1946bdc911e43e94ffc586695e73613dd6d727ef": {
-              "pk": "icg_body/KineticLaw:1946bdc911e43e94ffc586695e73613dd6d727ef",
+            "icg_body/KineticLaw:Flow_arli_li_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_arli_li_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:ba685e803d6ea9c3f9672c8162490e4a794d3eec": {
-              "pk": "icg_body/KineticLaw:ba685e803d6ea9c3f9672c8162490e4a794d3eec",
+            "icg_body/KineticLaw:Flow_arli_hv_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_arli_hv_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:047c5ea42cfa2a6cc54c031e493f541926c1b89d": {
-              "pk": "icg_body/KineticLaw:047c5ea42cfa2a6cc54c031e493f541926c1b89d",
+            "icg_body/KineticLaw:Flow_po_li_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_po_li_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:54f2bde2236a58d09955c8af71a221ff36be7cec": {
-              "pk": "icg_body/KineticLaw:54f2bde2236a58d09955c8af71a221ff36be7cec",
+            "icg_body/KineticLaw:Flow_po_hv_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_po_hv_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:4a1803bdaf12605a40abeab76cd3c3e5e5974388": {
-              "pk": "icg_body/KineticLaw:4a1803bdaf12605a40abeab76cd3c3e5e5974388",
+            "icg_body/KineticLaw:Flow_li_hv_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_li_hv_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:912b5ec930cb02542e8fcfdd4ab77feb68229097": {
-              "pk": "icg_body/KineticLaw:912b5ec930cb02542e8fcfdd4ab77feb68229097",
+            "icg_body/KineticLaw:Flow_hv_ve_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_hv_ve_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:c5b7f4db4b8af127aa07435b5fb76962cb78d807": {
-              "pk": "icg_body/KineticLaw:c5b7f4db4b8af127aa07435b5fb76962cb78d807",
+            "icg_body/KineticLaw:Flow_ve_lu_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_ve_lu_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "icg_body/Model:icg_body"
             },
-            "icg_body/KineticLaw:fa2d81d098ed1444b846b8b696a98afdfe6224bd": {
-              "pk": "icg_body/KineticLaw:fa2d81d098ed1444b846b8b696a98afdfe6224bd",
+            "icg_body/KineticLaw:Flow_lu_ar_icg.kineticLaw": {
+              "pk": "icg_body/KineticLaw:Flow_lu_ar_icg.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
@@ -9263,17 +9382,17 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:8c02a0907ac7a9cee40763a2a36abeca061721b7",
+              "source": "icg_body/KineticLaw:iv_icg.kineticLaw",
               "target": "icg_body/Parameter:IVDOSE_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:8c02a0907ac7a9cee40763a2a36abeca061721b7",
+              "source": "icg_body/KineticLaw:iv_icg.kineticLaw",
               "target": "icg_body/Parameter:Ki_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:8c02a0907ac7a9cee40763a2a36abeca061721b7",
+              "source": "icg_body/KineticLaw:iv_icg.kineticLaw",
               "target": "icg_body/Parameter:Mr_icg",
               "kind": "math"
             },
@@ -9288,12 +9407,12 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:995adf5fd16ba73b46ee80690dc92cdaadd95a5e",
+              "source": "icg_body/KineticLaw:Flow_ar_arre_icg.kineticLaw",
               "target": "icg_body/Species:Car_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:995adf5fd16ba73b46ee80690dc92cdaadd95a5e",
+              "source": "icg_body/KineticLaw:Flow_ar_arre_icg.kineticLaw",
               "target": "icg_body/Parameter:Qre",
               "kind": "math"
             },
@@ -9308,12 +9427,12 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:c26c9a5f59402ab6d2694820ccc3a2377aac78ef",
+              "source": "icg_body/KineticLaw:Flow_re_ve_icg.kineticLaw",
               "target": "icg_body/Species:Cre_plasma_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:c26c9a5f59402ab6d2694820ccc3a2377aac78ef",
+              "source": "icg_body/KineticLaw:Flow_re_ve_icg.kineticLaw",
               "target": "icg_body/Parameter:Qre",
               "kind": "math"
             },
@@ -9328,12 +9447,12 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:95cb68caa2f308f3a91068ef7fe4ccb517649e08",
+              "source": "icg_body/KineticLaw:Flow_ar_argi_icg.kineticLaw",
               "target": "icg_body/Species:Car_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:95cb68caa2f308f3a91068ef7fe4ccb517649e08",
+              "source": "icg_body/KineticLaw:Flow_ar_argi_icg.kineticLaw",
               "target": "icg_body/Parameter:Qgi",
               "kind": "math"
             },
@@ -9348,12 +9467,12 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:ce86250c8b4662e672f45245afffec004e219d66",
+              "source": "icg_body/KineticLaw:Flow_gi_po_icg.kineticLaw",
               "target": "icg_body/Species:Cgi_plasma_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:ce86250c8b4662e672f45245afffec004e219d66",
+              "source": "icg_body/KineticLaw:Flow_gi_po_icg.kineticLaw",
               "target": "icg_body/Parameter:Qgi",
               "kind": "math"
             },
@@ -9368,17 +9487,17 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:1946bdc911e43e94ffc586695e73613dd6d727ef",
+              "source": "icg_body/KineticLaw:Flow_arli_li_icg.kineticLaw",
               "target": "icg_body/Species:Car_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:1946bdc911e43e94ffc586695e73613dd6d727ef",
+              "source": "icg_body/KineticLaw:Flow_arli_li_icg.kineticLaw",
               "target": "icg_body/Parameter:Qha",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:1946bdc911e43e94ffc586695e73613dd6d727ef",
+              "source": "icg_body/KineticLaw:Flow_arli_li_icg.kineticLaw",
               "target": "icg_body/Parameter:f_shunts",
               "kind": "math"
             },
@@ -9393,17 +9512,17 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:ba685e803d6ea9c3f9672c8162490e4a794d3eec",
+              "source": "icg_body/KineticLaw:Flow_arli_hv_icg.kineticLaw",
               "target": "icg_body/Species:Car_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:ba685e803d6ea9c3f9672c8162490e4a794d3eec",
+              "source": "icg_body/KineticLaw:Flow_arli_hv_icg.kineticLaw",
               "target": "icg_body/Parameter:Qha",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:ba685e803d6ea9c3f9672c8162490e4a794d3eec",
+              "source": "icg_body/KineticLaw:Flow_arli_hv_icg.kineticLaw",
               "target": "icg_body/Parameter:f_shunts",
               "kind": "math"
             },
@@ -9418,17 +9537,17 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:047c5ea42cfa2a6cc54c031e493f541926c1b89d",
+              "source": "icg_body/KineticLaw:Flow_po_li_icg.kineticLaw",
               "target": "icg_body/Species:Cpo_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:047c5ea42cfa2a6cc54c031e493f541926c1b89d",
+              "source": "icg_body/KineticLaw:Flow_po_li_icg.kineticLaw",
               "target": "icg_body/Parameter:Qpo",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:047c5ea42cfa2a6cc54c031e493f541926c1b89d",
+              "source": "icg_body/KineticLaw:Flow_po_li_icg.kineticLaw",
               "target": "icg_body/Parameter:f_shunts",
               "kind": "math"
             },
@@ -9443,17 +9562,17 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:54f2bde2236a58d09955c8af71a221ff36be7cec",
+              "source": "icg_body/KineticLaw:Flow_po_hv_icg.kineticLaw",
               "target": "icg_body/Species:Cpo_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:54f2bde2236a58d09955c8af71a221ff36be7cec",
+              "source": "icg_body/KineticLaw:Flow_po_hv_icg.kineticLaw",
               "target": "icg_body/Parameter:Qpo",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:54f2bde2236a58d09955c8af71a221ff36be7cec",
+              "source": "icg_body/KineticLaw:Flow_po_hv_icg.kineticLaw",
               "target": "icg_body/Parameter:f_shunts",
               "kind": "math"
             },
@@ -9468,22 +9587,22 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:4a1803bdaf12605a40abeab76cd3c3e5e5974388",
+              "source": "icg_body/KineticLaw:Flow_li_hv_icg.kineticLaw",
               "target": "icg_body/Species:Cli_plasma_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:4a1803bdaf12605a40abeab76cd3c3e5e5974388",
+              "source": "icg_body/KineticLaw:Flow_li_hv_icg.kineticLaw",
               "target": "icg_body/Parameter:Qha",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:4a1803bdaf12605a40abeab76cd3c3e5e5974388",
+              "source": "icg_body/KineticLaw:Flow_li_hv_icg.kineticLaw",
               "target": "icg_body/Parameter:Qpo",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:4a1803bdaf12605a40abeab76cd3c3e5e5974388",
+              "source": "icg_body/KineticLaw:Flow_li_hv_icg.kineticLaw",
               "target": "icg_body/Parameter:f_shunts",
               "kind": "math"
             },
@@ -9498,12 +9617,12 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:912b5ec930cb02542e8fcfdd4ab77feb68229097",
+              "source": "icg_body/KineticLaw:Flow_hv_ve_icg.kineticLaw",
               "target": "icg_body/Species:Chv_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:912b5ec930cb02542e8fcfdd4ab77feb68229097",
+              "source": "icg_body/KineticLaw:Flow_hv_ve_icg.kineticLaw",
               "target": "icg_body/Parameter:Qh",
               "kind": "math"
             },
@@ -9518,12 +9637,12 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:c5b7f4db4b8af127aa07435b5fb76962cb78d807",
+              "source": "icg_body/KineticLaw:Flow_ve_lu_icg.kineticLaw",
               "target": "icg_body/Species:Cve_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:c5b7f4db4b8af127aa07435b5fb76962cb78d807",
+              "source": "icg_body/KineticLaw:Flow_ve_lu_icg.kineticLaw",
               "target": "icg_body/Parameter:Qlu",
               "kind": "math"
             },
@@ -9538,12 +9657,12 @@
               "kind": "product"
             },
             {
-              "source": "icg_body/KineticLaw:fa2d81d098ed1444b846b8b696a98afdfe6224bd",
+              "source": "icg_body/KineticLaw:Flow_lu_ar_icg.kineticLaw",
               "target": "icg_body/Species:Clu_plasma_icg",
               "kind": "math"
             },
             {
-              "source": "icg_body/KineticLaw:fa2d81d098ed1444b846b8b696a98afdfe6224bd",
+              "source": "icg_body/KineticLaw:Flow_lu_ar_icg.kineticLaw",
               "target": "icg_body/Parameter:Qlu",
               "kind": "math"
             },
@@ -9636,7 +9755,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.588 [s]"
+        "jsonReportTime": "0.586 [s]"
       }
     }
   }

@@ -7,8 +7,18 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
   Submodel: [
     ...ID_COLUMNS,
     { field: "modelRef", header: "model", kind: "link", link: "modelRef" },
-    { field: "timeConversionFactor", header: "time conversion factor", kind: "text" },
-    { field: "extentConversionFactor", header: "extent conversion factor", kind: "text" },
+    {
+      field: "timeConversionFactor",
+      header: "time conversion factor",
+      kind: "link",
+      link: "conversionFactor",
+    },
+    {
+      field: "extentConversionFactor",
+      header: "extent conversion factor",
+      kind: "link",
+      link: "conversionFactor",
+    },
     { field: "listOfDeletions.length", header: "deletions", kind: "count" },
   ],
   Port: [

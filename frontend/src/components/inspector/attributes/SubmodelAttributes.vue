@@ -3,7 +3,6 @@ import type { Submodel } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
-import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
 
 defineProps<{ element: Submodel }>();
@@ -24,12 +23,18 @@ const DELETION_COLUMNS = [
       :label="element.modelRef"
     />
   </AttributeRow>
-  <AttributeRow label="time conversion factor"
-    ><ValueText :value="element.timeConversionFactor" mono
-  /></AttributeRow>
-  <AttributeRow label="extent conversion factor"
-    ><ValueText :value="element.extentConversionFactor" mono
-  /></AttributeRow>
+  <AttributeRow label="time conversion factor">
+    <ElementLink
+      :pk="index?.resolve(element.pk, 'conversionFactor', element.timeConversionFactor)"
+      :label="element.timeConversionFactor"
+    />
+  </AttributeRow>
+  <AttributeRow label="extent conversion factor">
+    <ElementLink
+      :pk="index?.resolve(element.pk, 'conversionFactor', element.extentConversionFactor)"
+      :label="element.extentConversionFactor"
+    />
+  </AttributeRow>
   <AttributeRow label="deletions"
     ><NestedTable :rows="element.listOfDeletions ?? []" :columns="DELETION_COLUMNS"
   /></AttributeRow>

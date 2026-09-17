@@ -3,12 +3,28 @@ import { describe, expect, it } from "vitest";
 import type { Reaction, Species } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 
-import { loadReport } from "./fixtures";
+import { loadFixture, loadReport, type FixtureName } from "./fixtures";
 
 const repressilator = new ReportIndex(loadReport("repressilator"));
 const icgBody = new ReportIndex(loadReport("icg_body"));
 const definitions = new ReportIndex(loadReport("model_definitions"));
 const distrib = new ReportIndex(loadReport("distrib_uncertainties"));
+
+const FIXTURE_NAMES: FixtureName[] = [
+  "repressilator",
+  "icg_body",
+  "fbc_example",
+  "model_definitions",
+  "comp_models",
+  "distrib_uncertainties",
+];
+
+/** Every report entry of every fixture, indexed - `comp_models` alone carries three entries. */
+function allReportIndexes(): ReportIndex[] {
+  return FIXTURE_NAMES.flatMap((name) =>
+    Object.values(loadFixture(name).reports).map((entry) => new ReportIndex(entry.report)),
+  );
+}
 
 describe("ReportIndex", () => {
   it("indexes the document, the models and every element by pk", () => {
@@ -111,5 +127,29 @@ describe("ReportIndex", () => {
     // an element of a model definition resolves to the model definition's id, not the main model's
     const m1Species = definitions.model("m1")!.listOfSpecies![0];
     if (m1Species) expect(definitions.modelOf(m1Species.pk)).toBe("m1");
+  });
+
+  it("keys every species and modifier reference pk uniquely within its report", () => {
+    // the backend derives a nested reference's pk from its parent reaction, not a digest of its
+    // own content: `parentReaction` relies on that to find exactly one owning reaction per pk.
+    let checked = 0;
+    for (const index of allReportIndexes()) {
+      const pks: string[] = [];
+      for (const model of index.models) {
+        const reactions = (index.byType(model.id ?? "").get("Reaction") ?? []) as Reaction[];
+        for (const reaction of reactions) {
+          for (const reference of [
+            ...(reaction.listOfReactants ?? []),
+            ...(reaction.listOfProducts ?? []),
+            ...(reaction.listOfModifiers ?? []),
+          ]) {
+            pks.push(reference.pk);
+          }
+        }
+      }
+      expect(new Set(pks).size).toBe(pks.length);
+      checked += pks.length;
+    }
+    expect(checked).toBeGreaterThan(50);
   });
 });

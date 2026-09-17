@@ -1,5 +1,5 @@
 {
-  "uid": "1a062265b7e4463db2b781f750c74a34",
+  "uid": "43968939db4b43b19a58777279156b2b",
   "manifest": {
     "entries": [
       {
@@ -457,7 +457,7 @@
                 "compartment": "bioreactor",
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:ad24248fbfa42bb96f02710230471b2c6a30f71a",
+                    "pk": "fbc_example/SpeciesReference:v1.reactant.Ac",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -474,7 +474,7 @@
                     "constant": true
                   },
                   {
-                    "pk": "fbc_example/SpeciesReference:b1327c3ed80f5ba990a55e469e449454962739d3",
+                    "pk": "fbc_example/SpeciesReference:v1.reactant.O2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -493,7 +493,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "fbc_example/SpeciesReference:cad7260afad3d92cade06d28f12833e780a12ce6",
+                    "pk": "fbc_example/SpeciesReference:v1.product.X",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -512,7 +512,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "39.43 Ac + 35.0 O2 &#10142; X",
+                "equation": "39.43 Ac + 35.0 O2 ➞ X",
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
@@ -538,7 +538,7 @@
                 "compartment": "bioreactor",
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:fc14c8060e37ba01c087b7ddbcaad34a7b56edec",
+                    "pk": "fbc_example/SpeciesReference:v2.reactant.Glcxt",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -555,7 +555,7 @@
                     "constant": true
                   },
                   {
-                    "pk": "fbc_example/SpeciesReference:534336d571f4aeb59aead3461e5f17b523e03e21",
+                    "pk": "fbc_example/SpeciesReference:v2.reactant.O2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -574,7 +574,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "fbc_example/SpeciesReference:cad7260afad3d92cade06d28f12833e780a12ce6",
+                    "pk": "fbc_example/SpeciesReference:v2.product.X",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -593,7 +593,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "9.46 Glcxt + 12.92 O2 &#10142; X",
+                "equation": "9.46 Glcxt + 12.92 O2 ➞ X",
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
@@ -619,7 +619,7 @@
                 "compartment": "bioreactor",
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:7483aa02b7121f298453196eb3d6f041df23ae9e",
+                    "pk": "fbc_example/SpeciesReference:v3.reactant.Glcxt",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -636,7 +636,7 @@
                     "constant": true
                   },
                   {
-                    "pk": "fbc_example/SpeciesReference:e5127e7f57be956b9ca94cb59238b3d98d5e6e5b",
+                    "pk": "fbc_example/SpeciesReference:v3.reactant.O2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -655,7 +655,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "fbc_example/SpeciesReference:a99d0b763d5404ffed5162d1b4181a696922e58e",
+                    "pk": "fbc_example/SpeciesReference:v3.product.Ac",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -672,7 +672,7 @@
                     "constant": true
                   },
                   {
-                    "pk": "fbc_example/SpeciesReference:cad7260afad3d92cade06d28f12833e780a12ce6",
+                    "pk": "fbc_example/SpeciesReference:v3.product.X",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -691,7 +691,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "9.84 Glcxt + 12.73 O2 &#10142; 1.24 Ac + X",
+                "equation": "9.84 Glcxt + 12.73 O2 ➞ 1.24 Ac + X",
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
@@ -717,7 +717,7 @@
                 "compartment": "bioreactor",
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:0d850237e046fd47708f0d7a6c04810ac8af851c",
+                    "pk": "fbc_example/SpeciesReference:v4.reactant.Glcxt",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -736,7 +736,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "fbc_example/SpeciesReference:26332a0fdf955d6641705f8590fa1f2eb849e3b8",
+                    "pk": "fbc_example/SpeciesReference:v4.product.Ac",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -753,7 +753,7 @@
                     "constant": true
                   },
                   {
-                    "pk": "fbc_example/SpeciesReference:cad7260afad3d92cade06d28f12833e780a12ce6",
+                    "pk": "fbc_example/SpeciesReference:v4.product.X",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -772,7 +772,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "19.23 Glcxt &#10142; 12.12 Ac + X",
+                "equation": "19.23 Glcxt ➞ 12.12 Ac + X",
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
@@ -805,7 +805,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:b5b68976f40aa05e206cb360cd7b689052a1e366",
+                    "pk": "fbc_example/SpeciesReference:EX_Ac.reactant.Ac",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -825,7 +825,7 @@
                 "listOfProducts": [],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "Ac &#10142; ",
+                "equation": "Ac ➞ ",
                 "fbc": {
                   "lowerFluxBound": "lb_inf",
                   "upperFluxBound": "ub_inf",
@@ -858,7 +858,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:4133c896a2aeba52178ab5e7eb0ab135a6179710",
+                    "pk": "fbc_example/SpeciesReference:EX_O2.reactant.O2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -878,7 +878,7 @@
                 "listOfProducts": [],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "O2 &#10142; ",
+                "equation": "O2 ➞ ",
                 "fbc": {
                   "lowerFluxBound": "o2_import",
                   "upperFluxBound": "zero",
@@ -911,7 +911,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:967bbb59999b827222cceb87e2c1bb78c4404c24",
+                    "pk": "fbc_example/SpeciesReference:EX_Glcxt.reactant.Glcxt",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -931,7 +931,7 @@
                 "listOfProducts": [],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "Glcxt &#10142; ",
+                "equation": "Glcxt ➞ ",
                 "fbc": {
                   "lowerFluxBound": "glc_import",
                   "upperFluxBound": "zero",
@@ -964,7 +964,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "fbc_example/SpeciesReference:cad7260afad3d92cade06d28f12833e780a12ce6",
+                    "pk": "fbc_example/SpeciesReference:EX_X.reactant.X",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -984,7 +984,7 @@
                 "listOfProducts": [],
                 "listOfModifiers": [],
                 "kineticLaw": null,
-                "equation": "X &#10142; ",
+                "equation": "X ➞ ",
                 "fbc": {
                   "lowerFluxBound": "lb_inf",
                   "upperFluxBound": "ub_inf",
@@ -1163,22 +1163,22 @@
               "name": "v1 (39.43 Ac + 35 O2 -> X)",
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:ad24248fbfa42bb96f02710230471b2c6a30f71a": {
-              "pk": "fbc_example/SpeciesReference:ad24248fbfa42bb96f02710230471b2c6a30f71a",
+            "fbc_example/SpeciesReference:v1.reactant.Ac": {
+              "pk": "fbc_example/SpeciesReference:v1.reactant.Ac",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:b1327c3ed80f5ba990a55e469e449454962739d3": {
-              "pk": "fbc_example/SpeciesReference:b1327c3ed80f5ba990a55e469e449454962739d3",
+            "fbc_example/SpeciesReference:v1.reactant.O2": {
+              "pk": "fbc_example/SpeciesReference:v1.reactant.O2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:cad7260afad3d92cade06d28f12833e780a12ce6": {
-              "pk": "fbc_example/SpeciesReference:cad7260afad3d92cade06d28f12833e780a12ce6",
+            "fbc_example/SpeciesReference:v1.product.X": {
+              "pk": "fbc_example/SpeciesReference:v1.product.X",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1191,15 +1191,22 @@
               "name": "v2 (9.46 Glcxt + 12.92 O2 -> X)",
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:fc14c8060e37ba01c087b7ddbcaad34a7b56edec": {
-              "pk": "fbc_example/SpeciesReference:fc14c8060e37ba01c087b7ddbcaad34a7b56edec",
+            "fbc_example/SpeciesReference:v2.reactant.Glcxt": {
+              "pk": "fbc_example/SpeciesReference:v2.reactant.Glcxt",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:534336d571f4aeb59aead3461e5f17b523e03e21": {
-              "pk": "fbc_example/SpeciesReference:534336d571f4aeb59aead3461e5f17b523e03e21",
+            "fbc_example/SpeciesReference:v2.reactant.O2": {
+              "pk": "fbc_example/SpeciesReference:v2.reactant.O2",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/SpeciesReference:v2.product.X": {
+              "pk": "fbc_example/SpeciesReference:v2.product.X",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1212,22 +1219,29 @@
               "name": "v3 (9.84 Glcxt + 12.73 O2 -> 1.24 Ac + X)",
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:7483aa02b7121f298453196eb3d6f041df23ae9e": {
-              "pk": "fbc_example/SpeciesReference:7483aa02b7121f298453196eb3d6f041df23ae9e",
+            "fbc_example/SpeciesReference:v3.reactant.Glcxt": {
+              "pk": "fbc_example/SpeciesReference:v3.reactant.Glcxt",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:e5127e7f57be956b9ca94cb59238b3d98d5e6e5b": {
-              "pk": "fbc_example/SpeciesReference:e5127e7f57be956b9ca94cb59238b3d98d5e6e5b",
+            "fbc_example/SpeciesReference:v3.reactant.O2": {
+              "pk": "fbc_example/SpeciesReference:v3.reactant.O2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:a99d0b763d5404ffed5162d1b4181a696922e58e": {
-              "pk": "fbc_example/SpeciesReference:a99d0b763d5404ffed5162d1b4181a696922e58e",
+            "fbc_example/SpeciesReference:v3.product.Ac": {
+              "pk": "fbc_example/SpeciesReference:v3.product.Ac",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/SpeciesReference:v3.product.X": {
+              "pk": "fbc_example/SpeciesReference:v3.product.X",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1240,15 +1254,22 @@
               "name": "v4 (19.23 Glcxt -> 12.12 Ac + X)",
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:0d850237e046fd47708f0d7a6c04810ac8af851c": {
-              "pk": "fbc_example/SpeciesReference:0d850237e046fd47708f0d7a6c04810ac8af851c",
+            "fbc_example/SpeciesReference:v4.reactant.Glcxt": {
+              "pk": "fbc_example/SpeciesReference:v4.reactant.Glcxt",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:26332a0fdf955d6641705f8590fa1f2eb849e3b8": {
-              "pk": "fbc_example/SpeciesReference:26332a0fdf955d6641705f8590fa1f2eb849e3b8",
+            "fbc_example/SpeciesReference:v4.product.Ac": {
+              "pk": "fbc_example/SpeciesReference:v4.product.Ac",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/SpeciesReference:v4.product.X": {
+              "pk": "fbc_example/SpeciesReference:v4.product.X",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1261,8 +1282,8 @@
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:b5b68976f40aa05e206cb360cd7b689052a1e366": {
-              "pk": "fbc_example/SpeciesReference:b5b68976f40aa05e206cb360cd7b689052a1e366",
+            "fbc_example/SpeciesReference:EX_Ac.reactant.Ac": {
+              "pk": "fbc_example/SpeciesReference:EX_Ac.reactant.Ac",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1275,8 +1296,8 @@
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:4133c896a2aeba52178ab5e7eb0ab135a6179710": {
-              "pk": "fbc_example/SpeciesReference:4133c896a2aeba52178ab5e7eb0ab135a6179710",
+            "fbc_example/SpeciesReference:EX_O2.reactant.O2": {
+              "pk": "fbc_example/SpeciesReference:EX_O2.reactant.O2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1289,8 +1310,8 @@
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
-            "fbc_example/SpeciesReference:967bbb59999b827222cceb87e2c1bb78c4404c24": {
-              "pk": "fbc_example/SpeciesReference:967bbb59999b827222cceb87e2c1bb78c4404c24",
+            "fbc_example/SpeciesReference:EX_Glcxt.reactant.Glcxt": {
+              "pk": "fbc_example/SpeciesReference:EX_Glcxt.reactant.Glcxt",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1300,6 +1321,13 @@
               "pk": "fbc_example/Reaction:EX_X",
               "sbmlType": "Reaction",
               "id": "EX_X",
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/SpeciesReference:EX_X.reactant.X": {
+              "pk": "fbc_example/SpeciesReference:EX_X.reactant.X",
+              "sbmlType": "SpeciesReference",
+              "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             },
@@ -1606,7 +1634,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.011 [s]"
+        "jsonReportTime": "0.009 [s]"
       }
     }
   }

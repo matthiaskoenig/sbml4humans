@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 import type { EdgeKind, Reaction } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
@@ -10,7 +8,6 @@ import MathView from "@/components/misc/MathView.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
-import { decodeReferences } from "@/report/text";
 
 const props = defineProps<{ element: Reaction }>();
 const index = useReportIndex();
@@ -25,7 +22,6 @@ const MODIFIER_COLUMNS = PARTICIPANT_COLUMNS.slice(0, 2);
 
 const species = (kind: EdgeKind, id: string) =>
   index.value?.resolve(props.element.pk, kind, id) ?? null;
-const equation = computed(() => decodeReferences(props.element.equation));
 </script>
 
 <template>
@@ -38,7 +34,7 @@ const equation = computed(() => decodeReferences(props.element.equation));
     />
   </AttributeRow>
   <AttributeRow label="equation"
-    ><span class="font-mono">{{ equation }}</span></AttributeRow
+    ><span class="font-mono">{{ element.equation }}</span></AttributeRow
   >
   <AttributeRow label="reactants">
     <NestedTable :rows="element.listOfReactants ?? []" :columns="PARTICIPANT_COLUMNS">

@@ -1,5 +1,5 @@
 {
-  "uid": "920357f040b74dbea77f32f189c5734c",
+  "uid": "5f435b2d2d614075820481e774fabd74",
   "manifest": {
     "entries": [
       {
@@ -1150,7 +1150,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": "X &#10142; ",
+                "equation": "X ➞ ",
                 "fbc": null
               },
               {
@@ -1230,7 +1230,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": "Y &#10142; ",
+                "equation": "Y ➞ ",
                 "fbc": null
               },
               {
@@ -1310,7 +1310,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": "Z &#10142; ",
+                "equation": "Z ➞ ",
                 "fbc": null
               },
               {
@@ -1413,7 +1413,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": " &#10142; PX",
+                "equation": " ➞ PX",
                 "fbc": null
               },
               {
@@ -1516,7 +1516,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": " &#10142; PY",
+                "equation": " ➞ PY",
                 "fbc": null
               },
               {
@@ -1619,7 +1619,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": " &#10142; PZ",
+                "equation": " ➞ PZ",
                 "fbc": null
               },
               {
@@ -1699,7 +1699,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": "PX &#10142; ",
+                "equation": "PX ➞ ",
                 "fbc": null
               },
               {
@@ -1779,7 +1779,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": "PY &#10142; ",
+                "equation": "PY ➞ ",
                 "fbc": null
               },
               {
@@ -1859,7 +1859,7 @@
                   "derivedUnits": "item",
                   "listOfLocalParameters": []
                 },
-                "equation": "PZ &#10142; ",
+                "equation": "PZ ➞ ",
                 "fbc": null
               },
               {
@@ -1955,7 +1955,7 @@
                   "derivedUnits": "\\frac{1}{item}",
                   "listOfLocalParameters": []
                 },
-                "equation": " &#10142; X",
+                "equation": " ➞ X",
                 "fbc": null
               },
               {
@@ -2051,7 +2051,7 @@
                   "derivedUnits": "\\frac{1}{item}",
                   "listOfLocalParameters": []
                 },
-                "equation": " &#10142; Y",
+                "equation": " ➞ Y",
                 "fbc": null
               },
               {
@@ -2147,7 +2147,7 @@
                   "derivedUnits": "\\frac{1}{item}",
                   "listOfLocalParameters": []
                 },
-                "equation": " &#10142; Z",
+                "equation": " ➞ Z",
                 "fbc": null
               }
             ],
@@ -3140,7 +3140,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.155 [s]"
+        "jsonReportTime": "0.164 [s]"
       }
     }
   }

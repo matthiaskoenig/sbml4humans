@@ -10,14 +10,12 @@ import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { fieldValue, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
-import { decodeReferences } from "@/report/text";
 
 const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
 const index = useReportIndex();
 
 const value = computed(() => fieldValue(props.row, props.column.field));
 const text = computed(() => (typeof value.value === "string" ? value.value : null));
-const displayText = computed(() => (text.value === null ? null : decodeReferences(text.value)));
 // the casts live here: a union type in a template expression is read as a deprecated filter
 const booleanValue = computed(() => (typeof value.value === "boolean" ? value.value : null));
 const numberValue = computed(() => (typeof value.value === "number" ? value.value : null));
@@ -58,5 +56,5 @@ const unitsLatex = computed(() => {
     <UnitsLink v-if="column.link === 'units'" :pk="targetPk" :label="text" :latex="unitsLatex" />
     <ElementLink v-else :pk="targetPk" :label="text" />
   </template>
-  <ValueText v-else :value="displayText" :mono="column.field === 'equation'" />
+  <ValueText v-else :value="text" :mono="column.field === 'equation'" />
 </template>

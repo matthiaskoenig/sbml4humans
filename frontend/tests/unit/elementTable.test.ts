@@ -103,11 +103,11 @@ describe("ElementCell", () => {
     });
   }
 
-  it("renders the equation with the character references of the report decoded", () => {
-    expect(reaction.equation).toContain("&#");
+  it("renders the equation of the fixture verbatim", () => {
+    expect(reaction.equation).toContain("\u279e");
     expect(
       mountCell(reaction, { field: "equation", header: "equation", kind: "text" }).text(),
-    ).toBe("X \u279e");
+    ).toBe(reaction.equation.trim());
   });
 
   it("renders the latex of a dimensionless unit as the placeholder", () => {

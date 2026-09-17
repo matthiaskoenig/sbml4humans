@@ -1,5 +1,5 @@
 {
-  "uid": "e84899fcfdc54444b2e109304f28aa7e",
+  "uid": "0a90aa2108d74928ad58b66162800ac9",
   "manifest": {
     "entries": [
       {
@@ -611,7 +611,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:2823a6d309dc002d2a7ecd0b5cec546ab8e24284",
+                    "pk": "omex_comp/SpeciesReference:J0.reactant.S0",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -630,7 +630,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+                    "pk": "omex_comp/SpeciesReference:J0.product.S1",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -649,7 +649,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+                  "pk": "omex_comp/KineticLaw:J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -668,7 +668,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S0 &#8646; S1",
+                "equation": "S0 ⇆ S1",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -694,7 +694,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+                    "pk": "omex_comp/SpeciesReference:J1.reactant.S1",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -713,7 +713,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+                    "pk": "omex_comp/SpeciesReference:J1.product.S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -732,7 +732,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+                  "pk": "omex_comp/KineticLaw:J1.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -751,7 +751,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S1 &#8646; S2",
+                "equation": "S1 ⇆ S2",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -777,7 +777,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+                    "pk": "omex_comp/SpeciesReference:J2.reactant.S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -796,7 +796,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85",
+                    "pk": "omex_comp/SpeciesReference:J2.product.S3",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -815,7 +815,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+                  "pk": "omex_comp/KineticLaw:J2.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -834,7 +834,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S2 &#8646; S3",
+                "equation": "S2 ⇆ S3",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -860,7 +860,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85",
+                    "pk": "omex_comp/SpeciesReference:J3.reactant.S3",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -879,7 +879,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:43652b40b081f7901090f13977dc828659da9407",
+                    "pk": "omex_comp/SpeciesReference:J3.product.S4",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -898,7 +898,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+                  "pk": "omex_comp/KineticLaw:J3.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -917,7 +917,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S3 &#8646; S4",
+                "equation": "S3 ⇆ S4",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -943,7 +943,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:2823a6d309dc002d2a7ecd0b5cec546ab8e24284",
+                    "pk": "omex_comp/SpeciesReference:submodel0__J0.reactant.S0",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -962,7 +962,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:58266e0542d739435c0f7b8332e0752a4ec2917d",
+                    "pk": "omex_comp/SpeciesReference:submodel0__J0.product.submodel0__S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -981,7 +981,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:bb6fafd8d919fcdfdf4c0b59e788d0b78e8d5bd9",
+                  "pk": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -1000,7 +1000,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S0 &#10142; submodel0__S2",
+                "equation": "S0 ➞ submodel0__S2",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -1026,7 +1026,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+                    "pk": "omex_comp/SpeciesReference:submodel1__J0.reactant.S1",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1045,7 +1045,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:c0946e94e2a3bdfe52b28a06e3a81f47147da166",
+                    "pk": "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1064,7 +1064,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:1c6df414bb35569ea6e8a9a16081232ca3198b9a",
+                  "pk": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -1083,7 +1083,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S1 &#10142; submodel1__S2",
+                "equation": "S1 ➞ submodel1__S2",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -1109,7 +1109,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+                    "pk": "omex_comp/SpeciesReference:submodel2__J0.reactant.S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1128,7 +1128,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:f60c06b01f0bba7c21c09e3584cef538bc210160",
+                    "pk": "omex_comp/SpeciesReference:submodel2__J0.product.submodel2__S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1147,7 +1147,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:8efdd75835a73c75aa91d6652ebfc6c2aa0a83f8",
+                  "pk": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -1166,7 +1166,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S2 &#10142; submodel2__S2",
+                "equation": "S2 ➞ submodel2__S2",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -1192,7 +1192,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85",
+                    "pk": "omex_comp/SpeciesReference:submodel3__J0.reactant.S3",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1211,7 +1211,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:a3bbdbe20a6d988a94db1caa62d7517126410f9a",
+                    "pk": "omex_comp/SpeciesReference:submodel3__J0.product.submodel3__S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1230,7 +1230,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:9277ada1a4e50bca3ef5efcc978ccb651f0aeee2",
+                  "pk": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -1249,7 +1249,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S3 &#10142; submodel3__S2",
+                "equation": "S3 ➞ submodel3__S2",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -1275,7 +1275,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:43652b40b081f7901090f13977dc828659da9407",
+                    "pk": "omex_comp/SpeciesReference:submodel4__J0.reactant.S4",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1294,7 +1294,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:f24fd03e0b4dd2481b717e9c8d2e6b12e26d3f44",
+                    "pk": "omex_comp/SpeciesReference:submodel4__J0.product.submodel4__S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -1313,7 +1313,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:cc9f51bdff562f8f33b998a4b3cd7d1d9ccf97be",
+                  "pk": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -1332,7 +1332,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S4 &#10142; submodel4__S2",
+                "equation": "S4 ➞ submodel4__S2",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -1519,15 +1519,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:2823a6d309dc002d2a7ecd0b5cec546ab8e24284": {
-              "pk": "omex_comp/SpeciesReference:2823a6d309dc002d2a7ecd0b5cec546ab8e24284",
+            "omex_comp/SpeciesReference:J0.reactant.S0": {
+              "pk": "omex_comp/SpeciesReference:J0.reactant.S0",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319": {
-              "pk": "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+            "omex_comp/SpeciesReference:J0.product.S1": {
+              "pk": "omex_comp/SpeciesReference:J0.product.S1",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1540,8 +1540,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8": {
-              "pk": "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+            "omex_comp/SpeciesReference:J1.reactant.S1": {
+              "pk": "omex_comp/SpeciesReference:J1.reactant.S1",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:J1.product.S2": {
+              "pk": "omex_comp/SpeciesReference:J1.product.S2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1554,8 +1561,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85": {
-              "pk": "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85",
+            "omex_comp/SpeciesReference:J2.reactant.S2": {
+              "pk": "omex_comp/SpeciesReference:J2.reactant.S2",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:J2.product.S3": {
+              "pk": "omex_comp/SpeciesReference:J2.product.S3",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1568,8 +1582,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:43652b40b081f7901090f13977dc828659da9407": {
-              "pk": "omex_comp/SpeciesReference:43652b40b081f7901090f13977dc828659da9407",
+            "omex_comp/SpeciesReference:J3.reactant.S3": {
+              "pk": "omex_comp/SpeciesReference:J3.reactant.S3",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:J3.product.S4": {
+              "pk": "omex_comp/SpeciesReference:J3.product.S4",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1582,8 +1603,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:58266e0542d739435c0f7b8332e0752a4ec2917d": {
-              "pk": "omex_comp/SpeciesReference:58266e0542d739435c0f7b8332e0752a4ec2917d",
+            "omex_comp/SpeciesReference:submodel0__J0.reactant.S0": {
+              "pk": "omex_comp/SpeciesReference:submodel0__J0.reactant.S0",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:submodel0__J0.product.submodel0__S2": {
+              "pk": "omex_comp/SpeciesReference:submodel0__J0.product.submodel0__S2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1596,8 +1624,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:c0946e94e2a3bdfe52b28a06e3a81f47147da166": {
-              "pk": "omex_comp/SpeciesReference:c0946e94e2a3bdfe52b28a06e3a81f47147da166",
+            "omex_comp/SpeciesReference:submodel1__J0.reactant.S1": {
+              "pk": "omex_comp/SpeciesReference:submodel1__J0.reactant.S1",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2": {
+              "pk": "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1610,8 +1645,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:f60c06b01f0bba7c21c09e3584cef538bc210160": {
-              "pk": "omex_comp/SpeciesReference:f60c06b01f0bba7c21c09e3584cef538bc210160",
+            "omex_comp/SpeciesReference:submodel2__J0.reactant.S2": {
+              "pk": "omex_comp/SpeciesReference:submodel2__J0.reactant.S2",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:submodel2__J0.product.submodel2__S2": {
+              "pk": "omex_comp/SpeciesReference:submodel2__J0.product.submodel2__S2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1624,8 +1666,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:a3bbdbe20a6d988a94db1caa62d7517126410f9a": {
-              "pk": "omex_comp/SpeciesReference:a3bbdbe20a6d988a94db1caa62d7517126410f9a",
+            "omex_comp/SpeciesReference:submodel3__J0.reactant.S3": {
+              "pk": "omex_comp/SpeciesReference:submodel3__J0.reactant.S3",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:submodel3__J0.product.submodel3__S2": {
+              "pk": "omex_comp/SpeciesReference:submodel3__J0.product.submodel3__S2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -1638,71 +1687,78 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:f24fd03e0b4dd2481b717e9c8d2e6b12e26d3f44": {
-              "pk": "omex_comp/SpeciesReference:f24fd03e0b4dd2481b717e9c8d2e6b12e26d3f44",
+            "omex_comp/SpeciesReference:submodel4__J0.reactant.S4": {
+              "pk": "omex_comp/SpeciesReference:submodel4__J0.reactant.S4",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71": {
-              "pk": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+            "omex_comp/SpeciesReference:submodel4__J0.product.submodel4__S2": {
+              "pk": "omex_comp/SpeciesReference:submodel4__J0.product.submodel4__S2",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/KineticLaw:J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59": {
-              "pk": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+            "omex_comp/KineticLaw:J1.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J1.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017": {
-              "pk": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+            "omex_comp/KineticLaw:J2.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J2.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a": {
-              "pk": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+            "omex_comp/KineticLaw:J3.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J3.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:bb6fafd8d919fcdfdf4c0b59e788d0b78e8d5bd9": {
-              "pk": "omex_comp/KineticLaw:bb6fafd8d919fcdfdf4c0b59e788d0b78e8d5bd9",
+            "omex_comp/KineticLaw:submodel0__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:1c6df414bb35569ea6e8a9a16081232ca3198b9a": {
-              "pk": "omex_comp/KineticLaw:1c6df414bb35569ea6e8a9a16081232ca3198b9a",
+            "omex_comp/KineticLaw:submodel1__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:8efdd75835a73c75aa91d6652ebfc6c2aa0a83f8": {
-              "pk": "omex_comp/KineticLaw:8efdd75835a73c75aa91d6652ebfc6c2aa0a83f8",
+            "omex_comp/KineticLaw:submodel2__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:9277ada1a4e50bca3ef5efcc978ccb651f0aeee2": {
-              "pk": "omex_comp/KineticLaw:9277ada1a4e50bca3ef5efcc978ccb651f0aeee2",
+            "omex_comp/KineticLaw:submodel3__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:cc9f51bdff562f8f33b998a4b3cd7d1d9ccf97be": {
-              "pk": "omex_comp/KineticLaw:cc9f51bdff562f8f33b998a4b3cd7d1d9ccf97be",
+            "omex_comp/KineticLaw:submodel4__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
@@ -1771,17 +1827,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+              "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+              "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S0",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+              "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S1",
               "kind": "math"
             },
@@ -1796,17 +1852,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+              "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+              "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S1",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+              "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S2",
               "kind": "math"
             },
@@ -1821,17 +1877,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+              "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+              "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S2",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+              "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S3",
               "kind": "math"
             },
@@ -1846,17 +1902,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+              "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+              "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S3",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+              "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S4",
               "kind": "math"
             },
@@ -1871,12 +1927,12 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:bb6fafd8d919fcdfdf4c0b59e788d0b78e8d5bd9",
+              "source": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
               "target": "omex_comp/Species:submodel0__S2",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:bb6fafd8d919fcdfdf4c0b59e788d0b78e8d5bd9",
+              "source": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel0__k1",
               "kind": "math"
             },
@@ -1891,12 +1947,12 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:1c6df414bb35569ea6e8a9a16081232ca3198b9a",
+              "source": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
               "target": "omex_comp/Species:submodel1__S2",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:1c6df414bb35569ea6e8a9a16081232ca3198b9a",
+              "source": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel1__k1",
               "kind": "math"
             },
@@ -1911,12 +1967,12 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:8efdd75835a73c75aa91d6652ebfc6c2aa0a83f8",
+              "source": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
               "target": "omex_comp/Species:submodel2__S2",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:8efdd75835a73c75aa91d6652ebfc6c2aa0a83f8",
+              "source": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel2__k1",
               "kind": "math"
             },
@@ -1931,12 +1987,12 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:9277ada1a4e50bca3ef5efcc978ccb651f0aeee2",
+              "source": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
               "target": "omex_comp/Species:submodel3__S2",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:9277ada1a4e50bca3ef5efcc978ccb651f0aeee2",
+              "source": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel3__k1",
               "kind": "math"
             },
@@ -1951,12 +2007,12 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:cc9f51bdff562f8f33b998a4b3cd7d1d9ccf97be",
+              "source": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
               "target": "omex_comp/Species:submodel4__S2",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:cc9f51bdff562f8f33b998a4b3cd7d1d9ccf97be",
+              "source": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel4__k1",
               "kind": "math"
             }
@@ -2161,7 +2217,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_minimal/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+                    "pk": "omex_minimal/SpeciesReference:J0.reactant.S1",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -2180,7 +2236,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_minimal/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+                    "pk": "omex_minimal/SpeciesReference:J0.product.S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -2199,7 +2255,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_minimal/KineticLaw:05c817b27c1ff66a55097c8b9c1d9749c5570d1b",
+                  "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -2218,7 +2274,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S1 &#10142; S2",
+                "equation": "S1 ➞ S2",
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
@@ -2337,15 +2393,15 @@
               "name": null,
               "model": "omex_minimal/Model:omex_minimal"
             },
-            "omex_minimal/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319": {
-              "pk": "omex_minimal/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+            "omex_minimal/SpeciesReference:J0.reactant.S1": {
+              "pk": "omex_minimal/SpeciesReference:J0.reactant.S1",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "omex_minimal/Model:omex_minimal"
             },
-            "omex_minimal/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8": {
-              "pk": "omex_minimal/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+            "omex_minimal/SpeciesReference:J0.product.S2": {
+              "pk": "omex_minimal/SpeciesReference:J0.product.S2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -2365,8 +2421,8 @@
               "name": "Port of S1",
               "model": "omex_minimal/Model:omex_minimal"
             },
-            "omex_minimal/KineticLaw:05c817b27c1ff66a55097c8b9c1d9749c5570d1b": {
-              "pk": "omex_minimal/KineticLaw:05c817b27c1ff66a55097c8b9c1d9749c5570d1b",
+            "omex_minimal/KineticLaw:J0.kineticLaw": {
+              "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
@@ -2395,12 +2451,12 @@
               "kind": "product"
             },
             {
-              "source": "omex_minimal/KineticLaw:05c817b27c1ff66a55097c8b9c1d9749c5570d1b",
+              "source": "omex_minimal/KineticLaw:J0.kineticLaw",
               "target": "omex_minimal/Species:S2",
               "kind": "math"
             },
             {
-              "source": "omex_minimal/KineticLaw:05c817b27c1ff66a55097c8b9c1d9749c5570d1b",
+              "source": "omex_minimal/KineticLaw:J0.kineticLaw",
               "target": "omex_minimal/Parameter:k1",
               "kind": "math"
             },
@@ -2418,7 +2474,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.008 [s]"
       }
     },
     "./models/omex_comp.xml": {
@@ -2877,7 +2933,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:2823a6d309dc002d2a7ecd0b5cec546ab8e24284",
+                    "pk": "omex_comp/SpeciesReference:J0.reactant.S0",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -2896,7 +2952,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+                    "pk": "omex_comp/SpeciesReference:J0.product.S1",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -2915,7 +2971,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+                  "pk": "omex_comp/KineticLaw:J0.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -2934,7 +2990,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S0 &#8646; S1",
+                "equation": "S0 ⇆ S1",
                 "fbc": null
               },
               {
@@ -2955,7 +3011,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+                    "pk": "omex_comp/SpeciesReference:J1.reactant.S1",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -2974,7 +3030,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+                    "pk": "omex_comp/SpeciesReference:J1.product.S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -2993,7 +3049,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+                  "pk": "omex_comp/KineticLaw:J1.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -3012,7 +3068,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S1 &#8646; S2",
+                "equation": "S1 ⇆ S2",
                 "fbc": null
               },
               {
@@ -3033,7 +3089,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+                    "pk": "omex_comp/SpeciesReference:J2.reactant.S2",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -3052,7 +3108,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85",
+                    "pk": "omex_comp/SpeciesReference:J2.product.S3",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -3071,7 +3127,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+                  "pk": "omex_comp/KineticLaw:J2.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -3090,7 +3146,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S2 &#8646; S3",
+                "equation": "S2 ⇆ S3",
                 "fbc": null
               },
               {
@@ -3111,7 +3167,7 @@
                 "compartment": null,
                 "listOfReactants": [
                   {
-                    "pk": "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85",
+                    "pk": "omex_comp/SpeciesReference:J3.reactant.S3",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -3130,7 +3186,7 @@
                 ],
                 "listOfProducts": [
                   {
-                    "pk": "omex_comp/SpeciesReference:43652b40b081f7901090f13977dc828659da9407",
+                    "pk": "omex_comp/SpeciesReference:J3.product.S4",
                     "sbmlType": "SpeciesReference",
                     "id": null,
                     "metaId": null,
@@ -3149,7 +3205,7 @@
                 ],
                 "listOfModifiers": [],
                 "kineticLaw": {
-                  "pk": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+                  "pk": "omex_comp/KineticLaw:J3.kineticLaw",
                   "sbmlType": "KineticLaw",
                   "id": null,
                   "metaId": null,
@@ -3168,7 +3224,7 @@
                   "derivedUnits": "-",
                   "listOfLocalParameters": []
                 },
-                "equation": "S3 &#8646; S4",
+                "equation": "S3 ⇆ S4",
                 "fbc": null
               }
             ],
@@ -3487,15 +3543,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:2823a6d309dc002d2a7ecd0b5cec546ab8e24284": {
-              "pk": "omex_comp/SpeciesReference:2823a6d309dc002d2a7ecd0b5cec546ab8e24284",
+            "omex_comp/SpeciesReference:J0.reactant.S0": {
+              "pk": "omex_comp/SpeciesReference:J0.reactant.S0",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319": {
-              "pk": "omex_comp/SpeciesReference:c000595d03822b9d608ab2af12abe45a1d472319",
+            "omex_comp/SpeciesReference:J0.product.S1": {
+              "pk": "omex_comp/SpeciesReference:J0.product.S1",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -3508,8 +3564,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8": {
-              "pk": "omex_comp/SpeciesReference:45904a5f41556c8462c8aaecf160f6c6cd3863b8",
+            "omex_comp/SpeciesReference:J1.reactant.S1": {
+              "pk": "omex_comp/SpeciesReference:J1.reactant.S1",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:J1.product.S2": {
+              "pk": "omex_comp/SpeciesReference:J1.product.S2",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -3522,8 +3585,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85": {
-              "pk": "omex_comp/SpeciesReference:9257848a7c8c3fe4a4d2f50c57b9bfcd140c5e85",
+            "omex_comp/SpeciesReference:J2.reactant.S2": {
+              "pk": "omex_comp/SpeciesReference:J2.reactant.S2",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:J2.product.S3": {
+              "pk": "omex_comp/SpeciesReference:J2.product.S3",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -3536,8 +3606,15 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/SpeciesReference:43652b40b081f7901090f13977dc828659da9407": {
-              "pk": "omex_comp/SpeciesReference:43652b40b081f7901090f13977dc828659da9407",
+            "omex_comp/SpeciesReference:J3.reactant.S3": {
+              "pk": "omex_comp/SpeciesReference:J3.reactant.S3",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/SpeciesReference:J3.product.S4": {
+              "pk": "omex_comp/SpeciesReference:J3.product.S4",
               "sbmlType": "SpeciesReference",
               "id": null,
               "name": null,
@@ -3578,29 +3655,29 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71": {
-              "pk": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+            "omex_comp/KineticLaw:J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J0.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59": {
-              "pk": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+            "omex_comp/KineticLaw:J1.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J1.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017": {
-              "pk": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+            "omex_comp/KineticLaw:J2.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J2.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
-            "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a": {
-              "pk": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+            "omex_comp/KineticLaw:J3.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J3.kineticLaw",
               "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
@@ -3694,17 +3771,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+              "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+              "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S0",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:ac1790e9a28e5687f2cf7bf68ba7a0a006577f71",
+              "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S1",
               "kind": "math"
             },
@@ -3719,17 +3796,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+              "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+              "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S1",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:07e919f8a028e6705b19a6244d5f1bfee708ab59",
+              "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S2",
               "kind": "math"
             },
@@ -3744,17 +3821,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+              "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+              "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S2",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:5179a0cc182d2411291db207a0314f016662a017",
+              "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S3",
               "kind": "math"
             },
@@ -3769,17 +3846,17 @@
               "kind": "product"
             },
             {
-              "source": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+              "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+              "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S3",
               "kind": "math"
             },
             {
-              "source": "omex_comp/KineticLaw:d6a32da6c46b2db2b5f57617c149b02183a5521a",
+              "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S4",
               "kind": "math"
             },
