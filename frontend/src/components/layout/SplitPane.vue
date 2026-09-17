@@ -22,6 +22,9 @@ const horizontal = computed(() => props.direction === "horizontal");
 
 let dragging = false;
 
+/** One arrow key press, in px. */
+const STEP = 16;
+
 function onPointerDown(event: PointerEvent): void {
   dragging = true;
   (event.target as HTMLElement).setPointerCapture(event.pointerId);
@@ -48,6 +51,26 @@ function onPointerUp(): void {
 
 onBeforeUnmount(onPointerUp);
 
+/** The keyboard path of the separator: the arrow keys along the split move it by `STEP`, within
+ * the same bounds as the drag, and remember the size like the end of a drag does. */
+function onKeyDown(event: KeyboardEvent): void {
+  const keys = horizontal.value ? ["ArrowLeft", "ArrowRight"] : ["ArrowUp", "ArrowDown"];
+  const index = keys.indexOf(event.key);
+  if (index < 0) return;
+  event.preventDefault();
+  // right and down move the separator towards the end, which grows the first pane
+  const towardsEnd = index === 1;
+  const delta = (towardsEnd ? STEP : -STEP) * (props.sizedPane === "first" ? 1 : -1);
+  const rect = container.value?.getBoundingClientRect();
+  const total = (horizontal.value ? rect?.width : rect?.height) ?? 0;
+  // an unmeasured container (no layout yet) only keeps the lower bound
+  const max = total > 0 ? Math.max(total - props.min, props.min) : Number.POSITIVE_INFINITY;
+  size.value = Math.min(Math.max(size.value + delta, props.min), max);
+  writeStorage(key.value, String(Math.round(size.value)));
+}
+
+const valueNow = computed(() => Math.round(size.value));
+
 const sizedStyle = computed(() => ({
   flex: `0 0 ${size.value}px`,
   [horizontal.value ? "width" : "height"]: `${size.value}px`,
@@ -72,7 +95,12 @@ const sizedStyle = computed(() => ({
         class="shrink-0 bg-gray-200 hover:bg-gray-400"
         :class="horizontal ? 'w-1 cursor-col-resize' : 'h-1 cursor-row-resize'"
         role="separator"
+        tabindex="0"
+        aria-label="resize the panes"
+        :aria-orientation="horizontal ? 'vertical' : 'horizontal'"
+        :aria-valuenow="valueNow"
         data-testid="split-handle"
+        @keydown="onKeyDown"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
         @pointerup="onPointerUp"

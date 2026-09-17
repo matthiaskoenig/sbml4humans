@@ -44,7 +44,9 @@ function isVisible(type: ElementType): boolean {
 
 function toggle(type: ElementType): void {
   const all = types.value.map((info) => info.type);
-  const current = visible.value ?? all;
+  // a `types=` of an older url can name a type the document does not declare, dropping those
+  // keeps the toggle a filter over the declared types instead of clearing the filter entirely
+  const current = visible.value?.filter((t) => all.includes(t)) ?? all;
   const next = current.includes(type)
     ? current.filter((t) => t !== type)
     : all.filter((t) => t === type || current.includes(t));

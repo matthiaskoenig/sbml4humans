@@ -1,7 +1,17 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
-import { REPRESSILATOR_FILE } from "./helpers";
+import { REPRESSILATOR_FILE, serveModel } from "./helpers";
+
+let model: { url: string; close: () => Promise<void> };
+
+test.beforeAll(async () => {
+  model = await serveModel();
+});
+
+test.afterAll(async () => {
+  await model.close();
+});
 
 test("uploads a file", async ({ page }) => {
   await page.goto("/");
@@ -22,8 +32,7 @@ test("pastes SBML content", async ({ page }) => {
 });
 
 test("loads a url and remembers it", async ({ page }) => {
-  const url =
-    "https://www.ebi.ac.uk/biomodels/model/download/BIOMD0000000012?filename=BIOMD0000000012_url.xml";
+  const url = model.url;
   await page.goto("/");
   await page.getByTestId("home-tab-url").click();
   await page.getByTestId("url-input").fill(url);

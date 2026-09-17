@@ -33,12 +33,7 @@ const targetPk = computed(() =>
  * never followed by a redundant dash or a repeated id. */
 const unitsLatex = computed(() => {
   if (props.column.link !== "units") return null;
-  const latex = fieldValue(
-    props.row,
-    props.column.field === "units" || props.column.field === "substanceUnits"
-      ? "unitsLatex"
-      : `${props.column.field}Latex`,
-  );
+  const latex = fieldValue(props.row, props.column.latexField ?? `${props.column.field}Latex`);
   return typeof latex === "string" ? latex : null;
 });
 </script>

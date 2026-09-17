@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeUnmount, ref } from "vue";
 
 const props = withDefaults(
   defineProps<{ xml: string | null | undefined; emptyMessage?: string }>(),
   { emptyMessage: "No XML available." },
 );
 const state = ref<"idle" | "copied" | "failed">("idle");
+let reset: ReturnType<typeof setTimeout> | null = null;
 
 async function copy(): Promise<void> {
   if (!props.xml) return;
@@ -15,8 +16,13 @@ async function copy(): Promise<void> {
   } catch {
     state.value = "failed";
   }
-  setTimeout(() => (state.value = "idle"), 1500);
+  if (reset !== null) clearTimeout(reset);
+  reset = setTimeout(() => (state.value = "idle"), 1500);
 }
+
+onBeforeUnmount(() => {
+  if (reset !== null) clearTimeout(reset);
+});
 </script>
 
 <template>

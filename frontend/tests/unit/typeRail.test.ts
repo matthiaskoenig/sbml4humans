@@ -36,4 +36,27 @@ describe("TypeRail", () => {
     await flushPromises();
     expect(router.currentRoute.value.query.types).toBeUndefined();
   });
+
+  it("drops an undeclared type of the route instead of clearing the filter", async () => {
+    await router.push({ path: "/examples/BIOMD0000000012", query: {} });
+    const wrapper = mountRail();
+    const declared = wrapper
+      .findAll("[data-testid^=rail-type-]")
+      .map((row) => row.attributes("data-testid")!.replace("rail-type-", ""));
+    expect(declared).toContain("Reaction");
+    expect(declared).not.toContain("Submodel");
+
+    // a `types=` of an older url of a comp document, carried over to this core only model
+    await router.push({
+      path: "/examples/BIOMD0000000012",
+      query: { types: [...declared, "Submodel"].join(",") },
+    });
+    await flushPromises();
+    await wrapper.find("[data-testid=rail-toggle-Reaction]").trigger("change");
+    await flushPromises();
+    expect(router.currentRoute.value.query.types).toBe(
+      declared.filter((type) => type !== "Reaction").join(","),
+    );
+    wrapper.unmount();
+  });
 });

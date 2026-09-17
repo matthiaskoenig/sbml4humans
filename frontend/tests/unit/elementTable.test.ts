@@ -9,7 +9,7 @@ import type { Parameter, Reaction, SbmlElement, Species } from "@/api/types";
 import { primevueOptions } from "@/assets/primevue";
 import ElementCell from "@/components/report/ElementCell.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
-import type { ColumnDef } from "@/report/columns";
+import { columnsOf, type ColumnDef } from "@/report/columns";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
@@ -117,6 +117,25 @@ describe("ElementCell", () => {
     const placeholder = mountCell(parameter, units);
     expect(placeholder.find("[data-testid=units]").exists()).toBe(false);
     expect(placeholder.text()).toBe("-");
+  });
+
+  it("renders the latex of the substance units next to the unit id", () => {
+    const species = icgBody.mainModel!.listOfSpecies!.find(
+      (element) => element.id === "Cre_plasma_icg",
+    ) as Species;
+    expect(species.substanceUnits).toBe("mmole");
+    expect(species.unitsLatex).toBe("mmol");
+    const column = columnsOf("Species").find((c) => c.field === "substanceUnits")!;
+    const wrapper = mount(ElementCell, {
+      props: { row: species, column },
+      global: {
+        plugins: [router],
+        directives: { tooltip: Tooltip },
+        provide: { [ReportIndexKey as symbol]: ref(icgBody) },
+      },
+    });
+    expect(wrapper.text()).toContain(species.substanceUnits);
+    expect(wrapper.find("[data-testid=units]").exists()).toBe(true);
   });
 
   it("shows a unit id once when the units link has no renderable latex", () => {

@@ -21,6 +21,22 @@ describe("XmlView", () => {
     expect(wrapper.find("[data-testid=xml-copy]").exists()).toBe(false);
   });
 
+  it("clears the pending state reset when it is unmounted", async () => {
+    vi.useFakeTimers();
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+      configurable: true,
+    });
+    const wrapper = mount(XmlView, { props: { xml: "<model/>" } });
+    await wrapper.get("[data-testid=xml-copy]").trigger("click");
+    await flushPromises();
+    expect(wrapper.get("[data-testid=xml-copy]").text()).toBe("Copied");
+    expect(vi.getTimerCount()).toBe(1);
+    wrapper.unmount();
+    expect(vi.getTimerCount()).toBe(0);
+    vi.useRealTimers();
+  });
+
   it("shows a failed state when the clipboard write rejects", async () => {
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText: vi.fn().mockRejectedValue(new Error("denied")) },

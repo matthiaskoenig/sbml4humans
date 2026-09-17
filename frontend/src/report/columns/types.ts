@@ -10,7 +10,8 @@ export interface ColumnDef {
   kind: CellKind;
   /** Kind "link": the edge kind that resolves the referenced element. */
   link?: EdgeKind;
-  /** Kind "units": the field with the latex, default `${field}Latex`. */
+  /** Kind "units" and kind "link" with `link: "units"`: the field holding the latex of the
+   * units, default `${field}Latex`. */
   latexField?: string;
   width?: string;
 }

@@ -31,6 +31,15 @@ watch(
   { immediate: true },
 );
 
+/** `/report` holds the report of an upload or of pasted content, which only lives in the store:
+ * after a reload, or when the route is entered with the report of an example still loaded, the
+ * page shows the empty state instead of a report that does not belong to the route. */
+const showsReport = computed(() => {
+  if (route.name !== "report" || typeof route.query.url === "string") return true;
+  const kind = store.source?.kind;
+  return kind === "file" || kind === "content";
+});
+
 /** The entry of the route if it exists, else the default entry. */
 const entry = computed(() => {
   const requested = view.state.value.entry;
@@ -108,7 +117,7 @@ watch([selectedPk, index], ([pk, current]) => {
   <LoadingState v-if="store.loading" :message="`Loading ${store.source?.name ?? 'report'}`" />
   <ErrorState v-else-if="store.error" :error="store.error" />
   <div
-    v-else-if="!store.response"
+    v-else-if="!store.response || !showsReport"
     class="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-gray-600"
     data-testid="no-report"
   >

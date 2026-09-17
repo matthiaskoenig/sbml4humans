@@ -34,6 +34,11 @@ describe("columns", () => {
               const head = column.field.split(".")[0]!;
               expect(Object.keys(element), `${type}.${column.field}`).toContain(head);
               fieldValue(element, column.field);
+              if (column.latexField) {
+                const latexHead = column.latexField.split(".")[0]!;
+                expect(Object.keys(element), `${type}.${column.latexField}`).toContain(latexHead);
+                fieldValue(element, column.latexField);
+              }
               checked += 1;
             }
           }

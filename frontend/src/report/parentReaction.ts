@@ -12,7 +12,9 @@ export function parentReaction(
 ): { reaction: Reaction; kind: ParentReactionKind } | null {
   const modelId = index?.modelOf(pk);
   if (!index || !modelId) return null;
-  const reactions = (index.byType(modelId).get("Reaction") ?? []) as Reaction[];
+  const reactions = (index.byType(modelId).get("Reaction") ?? []).filter(
+    (element): element is Reaction => element.sbmlType === "Reaction",
+  );
   for (const reaction of reactions) {
     if (reaction.listOfReactants?.some((r) => r.pk === pk)) return { reaction, kind: "reactant" };
     if (reaction.listOfProducts?.some((r) => r.pk === pk)) return { reaction, kind: "product" };

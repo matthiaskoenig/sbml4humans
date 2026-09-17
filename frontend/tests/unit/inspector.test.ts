@@ -137,6 +137,40 @@ describe("inspector", () => {
     expect(wrapper.text()).toContain("javascript:alert(1)");
   });
 
+  it("shows the sbaseRef of a replacedBy by unit ref when it names no port or id", () => {
+    const species = repressilator.mainModel!.listOfSpecies![0] as Species;
+    const replaced: Species = {
+      ...species,
+      comp: {
+        ...species.comp,
+        replacedBy: { submodelRef: "submodel1", sbaseRef: { unitRef: "mmole" } },
+      },
+    };
+    const wrapper = mountWith(AttributesColumn, { element: replaced }, repressilator);
+    const row = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "replaced by")!;
+    expect(row.find("dd").text()).toContain("mmole");
+  });
+
+  it("closes the XML view again when another element is selected", async () => {
+    const species = repressilator.mainModel!.listOfSpecies!;
+    // mounted directly, not through `mountWith`, to keep the props typed for `setProps`
+    const wrapper = mount(InspectorPanel, {
+      props: { pk: species[0]!.pk },
+      global: {
+        plugins: [router, [PrimeVue, primevueOptions]],
+        directives: { tooltip: Tooltip },
+        provide: { [ReportIndexKey as symbol]: ref(repressilator) },
+      },
+    });
+    await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
+    expect(wrapper.find("[data-testid=xml-view]").exists()).toBe(true);
+    await wrapper.setProps({ pk: species[1]!.pk });
+    expect(wrapper.find("[data-testid=xml-view]").exists()).toBe(false);
+    expect(wrapper.get("[data-testid=inspector-id]").text()).toBe(species[1]!.id);
+  });
+
   it("renders the header of the panel", async () => {
     const species = repressilator.mainModel!.listOfSpecies![0] as Species;
     const wrapper = mountWith(InspectorPanel, { pk: species.pk }, repressilator);

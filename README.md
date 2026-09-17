@@ -94,7 +94,7 @@ SBML4Humans was funded as part of [Google Summer of Code 2021](https://summerofc
 
 ## License
 
-- Source Code: [MIT](https://opensource.org/license/MIT)
+- Source Code: [MIT](https://opensource.org/license/MIT), the full text is in [LICENSE](LICENSE)
 - Documentation: [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)
 
 &copy; 2021-2026 Matthias König
