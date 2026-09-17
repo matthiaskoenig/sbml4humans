@@ -8,12 +8,14 @@ module reads the glossary and writes the two generated artefacts:
   application shows as tooltips,
 * `docs/reference/*.md`, the reference pages of the documentation site.
 
-Run `python -m sbml4humans.glossary` after a change of the glossary or of the
-report model and commit both outputs. `python -m sbml4humans.glossary --check`
-regenerates into a temporary directory and fails when a committed file is
-stale, when a type or a field of the report model has no entry, when a type
-entry of the glossary is not a type of the report, when a link of a description
-does not resolve or when a page references a missing image.
+Run `uv run python -m sbml4humans.glossary` from `backend/` after a change of
+the glossary or of the report model and commit both outputs.
+`uv run python -m sbml4humans.glossary --check` regenerates into a temporary
+directory and fails when a committed file is stale, when a type or a field of
+the report model has no entry, when a type or an attribute entry of the
+glossary is not a type or a field of the report, when a link of a description
+does not resolve to a page or to an anchor of one, when a page references a
+missing image or when the navigation of the site does not list a generated page.
 """
 
 import json
@@ -35,10 +37,15 @@ REFERENCE_DIR = Path("docs/reference")
 DOCS_DIR = Path("docs")
 SCHEMA_PATH = Path("frontend/src/schema/report.schema.json")
 EDGE_KINDS_PATH = Path("frontend/src/data/edgeKinds.ts")
+SITE_PATH = Path("zensical.toml")
 
 INDEX_PAGE = "index.md"
 LINKS_PAGE = "links.md"
 CONCEPTS_PAGE = "concepts.md"
+
+# the headings of a generated type page below its title; their anchors are
+# taken before the attributes of the page get theirs
+PAGE_HEADINGS = ("Attributes", "In the report", "Related elements", "Specification")
 
 # the packages of the report in the order of the reference index
 PACKAGES: Mapping[str, str] = {
@@ -100,6 +107,9 @@ _LINK = re.compile(r"(?<!!)\[([^\]]*)\]\(([^)\s]+)\)")
 _IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
 _EXTERNAL = re.compile(r"^(https?:|mailto:|#|/)")
 _EDGE_KINDS = re.compile(r"EDGE_KINDS[^=]*=\s*\[(?P<kinds>[^\]]*)\]")
+_HEADING = re.compile(r"^#{1,6}\s+(?P<text>.*?)\s*(?:\{#(?P<id>[^}\s]+)\})?\s*$")
+_ELEMENT_ID = re.compile(r'\bid="([^"]+)"')
+_FENCE = re.compile(r"^\s*(```|~~~)")
 
 
 class GlossaryError(Exception):
@@ -144,19 +154,62 @@ class Entry:
         """The file name of the reference page of a type, without the suffix."""
         return self.key.lower()
 
-    @property
-    def anchor(self) -> str:
-        """The anchor of the entry on the page which shows it."""
-        return anchor(self.label)
-
 
 def anchor(label: str) -> str:
     """The anchor of a label on its page: lower case, spaces become dashes.
 
     It is the anchor the headings of the generated pages get, and the anchor the
-    application builds when it links a label into the reference.
+    links of the site point at.
     """
     return re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+
+
+def _entry_anchors(entries: Iterable[Entry], reserved: Iterable[str]) -> dict[str, str]:
+    """The anchor of every entry of one page, by key and unique within the page.
+
+    The first entry with a label keeps the anchor of the label, every further
+    entry with the same label gets a numbered suffix: a reaction explains both
+    the kinetic law of the model and the formula the report renders from it,
+    both labelled "kinetic law", and the two blocks need two ids.
+
+    Args:
+        entries: the entries of the page, in the order they are rendered in.
+        reserved: the anchors the page already carries, its headings.
+    """
+    used = set(reserved)
+    anchors: dict[str, str] = {}
+    for entry in entries:
+        base = anchor(entry.label)
+        candidate, index = base, 1
+        while candidate in used:
+            index += 1
+            candidate = f"{base}-{index}"
+        used.add(candidate)
+        anchors[entry.key] = candidate
+    return anchors
+
+
+def _anchors_of(page: str) -> list[str]:
+    """Every anchor a markdown page offers, in the order of the page.
+
+    A heading carries the anchor of its text, or the identifier an attribute
+    list `{#id}` gives it, and an element written as HTML carries the id of its
+    `id` attribute. The anchors are not made unique here, so that a page which
+    offers one of them twice stays visible to the test which forbids it.
+    """
+    anchors: list[str] = []
+    fenced = False
+    for line in page.splitlines():
+        if _FENCE.match(line):
+            fenced = not fenced
+            continue
+        if fenced:
+            continue
+        heading = _HEADING.match(line) if line.startswith("#") else None
+        if heading is not None:
+            anchors.append(heading.group("id") or anchor(heading.group("text")))
+        anchors.extend(_ELEMENT_ID.findall(line))
+    return anchors
 
 
 @dataclass(frozen=True, slots=True)
@@ -167,6 +220,8 @@ class Glossary:
     types: Mapping[str, Entry]
     links: Mapping[str, Entry]
     concepts: Mapping[str, Entry]
+    # the file every key was read from, for the messages of the checks
+    owners: Mapping[str, Path] = field(default_factory=dict)
 
     @classmethod
     def from_directory(cls, path: Path) -> Self:
@@ -219,8 +274,10 @@ class Glossary:
             key: _entry(key, table, f"concepts.{key}", owners, nested=True)
             for key, table in data.get("concepts", {}).items()
         }
-        glossary = cls(specs=specs, types=types, links=links, concepts=concepts)
-        glossary._validate_references(owners)
+        glossary = cls(
+            specs=specs, types=types, links=links, concepts=concepts, owners=owners
+        )
+        glossary._validate_references()
         return glossary
 
     def entries(self) -> Iterator[tuple[str, Entry]]:
@@ -241,41 +298,91 @@ class Glossary:
             f"{entry.slug}.md" for entry in self.types.values()
         }
 
+    def page_of(self, key: str) -> str:
+        """The generated page an entry is rendered on.
+
+        Args:
+            key: the dotted key of the entry, as `entries` yields it.
+
+        Returns:
+            The file name of the page, for example `species.md`.
+        """
+        section, _, rest = key.partition(".")
+        if section == "types":
+            return f"{self.types[rest.split('.', 1)[0]].slug}.md"
+        return LINKS_PAGE if section == "links" else CONCEPTS_PAGE
+
     def validate_links(self, root: Path | None = None) -> None:
         """Check that every link of a description and every image resolves.
 
+        A link to a reference page names a page the glossary generates, a link
+        which starts with `../` a page of the documentation outside the
+        reference, and a fragment an anchor of the page it points into, which is
+        the page the entry itself is rendered on when the target is a bare
+        `#anchor`.
+
         Args:
-            root: the repository root. When it is given, every image of every
-                page under `docs/` has to exist as well.
+            root: the repository root. When it is given, a page outside the
+                reference and every image of every page under `docs/` have to
+                exist as well.
 
         Raises:
             GlossaryError: when a `[text](target.md)` link of a description does
-                not name a generated page, or when an image is missing.
+                not name a generated page or an anchor of one, or when an image
+                is missing.
         """
-        pages = self.pages()
+        anchors = {
+            name: set(_anchors_of(page))
+            for name, page in _reference_pages(self).items()
+        }
         problems: list[str] = []
         for key, entry in self.entries():
             for text, target in _LINK.findall(entry.description):
-                if _EXTERNAL.match(target):
-                    continue
-                page = target.split("#", 1)[0]
-                if page.startswith("../"):
-                    # a page of the site outside the reference, for example
-                    # `../sbml.md`; it exists when the documentation is built
-                    if root is not None and not (root / DOCS_DIR / page[3:]).is_file():
-                        problems.append(
-                            f"{key}: the link [{text}]({target}) does not resolve to a "
-                            f"page of the documentation"
-                        )
-                elif page not in pages:
+                problem = _link_problem(target, anchors, self.page_of(key), root)
+                if problem is not None:
                     problems.append(
-                        f"{key}: the link [{text}]({target}) does not resolve to a "
-                        f"reference page"
+                        f"{key}: the link [{text}]({target}) {problem}",
                     )
         if root is not None:
             problems.extend(_missing_images(root))
         if problems:
             raise GlossaryError("\n".join(["broken links:", *problems]))
+
+    def validate_navigation(self, root: Path) -> None:
+        """Check that the navigation of the site lists every generated page.
+
+        A type which is added to the glossary generates a page, which zensical
+        builds and finds by its links, but which stays out of the navigation
+        until `zensical.toml` names it.
+
+        Args:
+            root: the repository root.
+
+        Raises:
+            GlossaryError: with the pages the navigation does not list, or when
+                the configuration of the site cannot be read.
+        """
+        try:
+            configuration = tomllib.loads(_read(root / SITE_PATH))
+        except tomllib.TOMLDecodeError as error:
+            raise GlossaryError(f"{SITE_PATH}: {error}") from error
+        project = configuration.get("project", {})
+        listed = set(_navigation_pages(project.get("nav", [])))
+        missing = [
+            path
+            for name in sorted(self.pages())
+            if (path := f"{REFERENCE_DIR.name}/{name}") not in listed
+        ]
+        if missing:
+            raise GlossaryError(
+                "\n".join(
+                    [
+                        f"the navigation of {SITE_PATH} does not list every "
+                        f"generated page:",
+                        *missing,
+                    ]
+                )
+            )
 
     def validate_coverage(self, root: Path) -> None:
         """Check that the glossary explains everything the report shows.
@@ -289,14 +396,19 @@ class Glossary:
         trigger of an event, needs an entry `<property>.<field>` for every one
         of its fields. Every kind of `edgeKinds.ts` needs a link entry, and in
         the other direction every type entry of the glossary is a type of the
-        report, except the shared attributes and the three packages.
+        report, except the shared attributes and the three packages, and every
+        attribute entry of a type names a field of that type, except a field of
+        the `report` package, which the application derives and which the report
+        model therefore does not carry.
 
         Args:
             root: the repository root.
 
         Raises:
-            GlossaryError: with the list of everything which has no entry, or
-                when the report model or the edge kinds cannot be read.
+            GlossaryError: with the list of everything which has no entry or
+                which the report does not have, when no definition of the report
+                model carries the shared properties, or when the report model or
+                the edge kinds cannot be read.
         """
         missing: list[str] = []
         schema = json.loads(_read(root / SCHEMA_PATH))
@@ -308,9 +420,23 @@ class Glossary:
             for name, definition in sorted(defs.items())
             if set(definition.get("properties", {})) >= SBASE_PROPERTIES
         }
+        if not definitions:
+            raise GlossaryError(
+                f"no definition of {SCHEMA_PATH} carries the properties of an SBase, "
+                f"so the report model cannot be read: update SBASE_PROPERTIES "
+                f"({', '.join(sorted(SBASE_PROPERTIES))}) to the fields of `SBase` "
+                f"in model.py"
+            )
         common = set.intersection(*(set(p) for p in definitions.values()))
         # the shared properties are the same in every definition
-        shared_properties: Mapping[str, Any] = next(iter(definitions.values()), {})
+        shared_properties: Mapping[str, Any] = next(iter(definitions.values()))
+        known_fields = {
+            name: _known_fields(defs, properties)
+            for name, properties in definitions.items()
+        }
+        known_fields["SBase"] = _known_fields(
+            defs, {name: shared_properties[name] for name in common}
+        )
 
         def covered(*names: str) -> bool:
             """Whether one of the names is explained somewhere in the glossary."""
@@ -333,9 +459,16 @@ class Glossary:
                 for field_name in _fields(defs, properties, property_name):
                     if field_name not in entry.attributes and not covered(field_name):
                         missing.append(f"the field {name}.{field_name} has no entry")
-        for key in self.types:
+        for key, entry in self.types.items():
             if key not in definitions and key not in NON_ELEMENT_TYPES:
                 missing.append(f"the type {key} is not a type of the report")
+            fields = known_fields.get(key)
+            if fields is None:
+                continue
+            for name, attribute in entry.attributes.items():
+                if name not in fields and attribute.package != "report":
+                    where = _where(f"types.{key}.attributes.{name}", self.owners)
+                    missing.append(f"{where} is not a field of {key} in the report")
         for kind in _edge_kinds(root / EDGE_KINDS_PATH):
             if kind not in self.links:
                 missing.append(f"the link kind {kind} has no entry")
@@ -344,19 +477,20 @@ class Glossary:
                 "\n".join(["the glossary does not cover the report:", *missing])
             )
 
-    def _validate_references(self, owners: Mapping[str, Path]) -> None:
+    def _validate_references(self) -> None:
         """Check that every `spec` and every `related` entry exists."""
         for key, entry in self.entries():
             if entry.spec is not None and entry.spec.doc not in self.specs:
                 raise GlossaryError(
-                    f"{_where(key, owners)}: the spec document '{entry.spec.doc}' is "
-                    f"not defined, known documents are "
+                    f"{_where(key, self.owners)}: the spec document "
+                    f"'{entry.spec.doc}' is not defined, known documents are "
                     f"{', '.join(sorted(self.specs)) or 'none'}"
                 )
             for name in entry.related:
                 if name not in self.types:
                     raise GlossaryError(
-                        f"{_where(key, owners)}: the related type '{name}' has no entry"
+                        f"{_where(key, self.owners)}: the related type '{name}' has "
+                        f"no entry"
                     )
 
 
@@ -415,6 +549,18 @@ def _string(
     value = table.get(key)
     if not isinstance(value, str) or not value.strip():
         raise GlossaryError(f"{_where(path, owners)}: '{key}' is missing")
+    return value.strip()
+
+
+def _optional_string(
+    path: str, table: Mapping[str, Any], key: str, owners: Mapping[str, Path]
+) -> str | None:
+    """One optional string of an entry, absent or a string with a value."""
+    value = table.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        raise GlossaryError(f"{_where(path, owners)}: '{key}' is not a string")
     return value.strip()
 
 
@@ -494,7 +640,7 @@ def _entry(
         description=_string(path, table, "description", owners),
         package=str(table.get("package", "core")),
         spec=None if spec is None else _spec_ref(spec, f"{path}.spec", owners),
-        type=table.get("type"),
+        type=_optional_string(path, table, "type", owners),
         related=tuple(related),
         attributes={
             name: _entry(
@@ -557,6 +703,23 @@ def _fields(
     return [f"{name}.{field}" for field in nested]
 
 
+def _known_fields(defs: Mapping[str, Any], properties: Mapping[str, Any]) -> set[str]:
+    """Every name an attribute entry of a type may carry.
+
+    The property itself, which an entry may explain as a whole, the names
+    `_fields` asks an entry for, and `<property>.<field>` of an element the
+    property holds, which the report shows as a column of its own.
+    """
+    names: set[str] = set()
+    for name, schema in properties.items():
+        names.add(name)
+        names.update(_fields(defs, properties, name))
+        referenced = _ref(schema)
+        nested = defs.get(referenced, {}).get("properties", {}) if referenced else {}
+        names.update(f"{name}.{field_name}" for field_name in nested)
+    return names
+
+
 def _missing_images(root: Path) -> list[str]:
     """Every image a page under `docs/` references and which does not exist."""
     problems: list[str] = []
@@ -569,6 +732,55 @@ def _missing_images(root: Path) -> list[str]:
                 relative = page.relative_to(root)
                 problems.append(f"{relative}: the image ![{text}]({target}) is missing")
     return problems
+
+
+def _link_problem(
+    target: str,
+    anchors: Mapping[str, set[str]],
+    home: str,
+    root: Path | None,
+) -> str | None:
+    """What is wrong with the target of a link of a description, or nothing.
+
+    Args:
+        target: the target of the link, as the description writes it.
+        anchors: the anchors of every generated reference page, by file name.
+        home: the page the description is rendered on, the page a bare `#anchor`
+            points into.
+        root: the repository root, when a page outside the reference can be read.
+    """
+    page, _, fragment = target.partition("#")
+    if page and _EXTERNAL.match(page):
+        return None
+    if page.startswith("../"):
+        # a page of the site outside the reference, for example `../sbml.md`;
+        # it exists when the documentation is built
+        if root is None:
+            return None
+        path = root / DOCS_DIR / page[3:]
+        if not path.is_file():
+            return "does not resolve to a page of the documentation"
+        if fragment and fragment not in set(_anchors_of(_read(path))):
+            return "does not resolve to an anchor of that page"
+        return None
+    page = page or home
+    if page not in anchors:
+        return "does not resolve to a reference page"
+    if fragment and fragment not in anchors[page]:
+        return f"does not resolve to an anchor of {page}"
+    return None
+
+
+def _navigation_pages(nav: Any) -> Iterator[str]:
+    """Every page the navigation of the site names, however deeply it is nested."""
+    if isinstance(nav, str):
+        yield nav
+    elif isinstance(nav, list):
+        for item in nav:
+            yield from _navigation_pages(item)
+    elif isinstance(nav, Mapping):
+        for value in nav.values():
+            yield from _navigation_pages(value)
 
 
 def _sentence(summary: str) -> str:
@@ -609,13 +821,17 @@ def _table_rows(header: Iterable[str], rows: Iterable[Iterable[str]]) -> list[st
 
 
 def _attribute_rows(
-    glossary: Glossary, attributes: Iterable[Entry], *, with_spec: bool
+    glossary: Glossary,
+    attributes: Iterable[Entry],
+    anchors: Mapping[str, str],
+    *,
+    with_spec: bool,
 ) -> list[list[str]]:
     """One row per attribute, its label linking the block which describes it."""
     rows = []
     for attribute in attributes:
         row = [
-            f"[{_cell(attribute.label)}](#{attribute.anchor})",
+            f"[{_cell(attribute.label)}](#{anchors[attribute.key]})",
             f"`{attribute.type}`" if attribute.type else "-",
             _cell(attribute.summary),
         ]
@@ -625,18 +841,19 @@ def _attribute_rows(
     return rows
 
 
-def _attribute_details(attributes: Iterable[Entry]) -> list[str]:
-    """One block per attribute: its label as the anchor, then its description.
+def _attribute_details(
+    attributes: Iterable[Entry], anchors: Mapping[str, str]
+) -> list[str]:
+    """One block per attribute: its anchor and its label, then its description.
 
     The table above is the index, the blocks are what a reader of a single
-    attribute wants, and the anchor of the block is what the application links
-    when it sends a reader from a column header or from a row of the inspector
-    into the reference.
+    attribute wants, and the anchor of the block is what the row of the table
+    and every link of the site point at.
     """
     lines: list[str] = []
     for attribute in attributes:
         lines += [
-            f'<span id="{attribute.anchor}"></span>**{attribute.label}**',
+            f'<span id="{anchors[attribute.key]}"></span>**{attribute.label}**',
             "",
             attribute.description,
             "",
@@ -664,7 +881,15 @@ def render_type_page(glossary: Glossary, entry: Entry) -> str:
     ]
 
     attributes = [a for a in entry.attributes.values() if a.package != "report"]
-    rows = _attribute_rows(glossary, attributes, with_spec=True)
+    report_fields = [a for a in entry.attributes.values() if a.package == "report"]
+    # the anchors of the page, the headings first: two attributes of one type
+    # may share a label, and every block of the page needs an id of its own
+    anchors = _entry_anchors(
+        [*attributes, *report_fields],
+        [anchor(entry.label), *(anchor(heading) for heading in PAGE_HEADINGS)],
+    )
+
+    rows = _attribute_rows(glossary, attributes, anchors, with_spec=True)
     if rows:
         lines += ["## Attributes", ""]
         lines += _table_rows(["attribute", "type", "meaning", "specification"], rows)
@@ -675,15 +900,14 @@ def render_type_page(glossary: Glossary, entry: Entry) -> str:
             "[common attributes](sbase.md) of `SBase`.",
             "",
         ]
-    lines += _attribute_details(attributes)
+    lines += _attribute_details(attributes, anchors)
 
-    report_fields = [a for a in entry.attributes.values() if a.package == "report"]
-    rows = _attribute_rows(glossary, report_fields, with_spec=False)
+    rows = _attribute_rows(glossary, report_fields, anchors, with_spec=False)
     if rows:
         lines += ["## In the report", ""]
         lines += _table_rows(["field", "type", "meaning"], rows)
         lines += [""]
-        lines += _attribute_details(report_fields)
+        lines += _attribute_details(report_fields, anchors)
 
     if entry.related:
         lines += ["## Related elements", ""]
@@ -787,8 +1011,9 @@ def render_json(glossary: Glossary) -> dict[str, Any]:
 
     Returns:
         The content of `frontend/src/data/glossary.json`, sorted by key. The
-        `page` of an entry is the path of its reference page below the url of
-        the documentation site.
+        `page` of a type is the path of its reference page below the url of the
+        documentation site, which the inspector links; a link kind and a concept
+        carry the label and the summary of their tooltip and nothing else.
     """
     return {
         "types": {
@@ -804,21 +1029,29 @@ def render_json(glossary: Glossary) -> dict[str, Any]:
             }
             for name, entry in sorted(glossary.types.items())
         },
-        "links": _render_json_entries(glossary.links, LINKS_PAGE),
-        "concepts": _render_json_entries(glossary.concepts, CONCEPTS_PAGE),
+        "links": _render_json_entries(glossary.links),
+        "concepts": _render_json_entries(glossary.concepts),
     }
 
 
-def _render_json_entries(entries: Mapping[str, Entry], page: str) -> dict[str, Any]:
-    """The link kinds or the concepts of the json, with the anchor of their page."""
+def _render_json_entries(entries: Mapping[str, Entry]) -> dict[str, Any]:
+    """The link kinds or the concepts of the json, the tooltips of the application."""
     return {
-        key: {
-            "label": entry.label,
-            "summary": entry.summary,
-            "page": f"{REFERENCE_DIR.name}/{Path(page).stem}/#{entry.anchor}",
-        }
+        key: {"label": entry.label, "summary": entry.summary}
         for key, entry in sorted(entries.items())
     }
+
+
+def _reference_pages(glossary: Glossary) -> dict[str, str]:
+    """Every generated reference page with its markdown, by file name."""
+    pages = {
+        INDEX_PAGE: render_index_page(glossary),
+        LINKS_PAGE: render_links_page(glossary),
+        CONCEPTS_PAGE: render_concepts_page(glossary),
+    }
+    for entry in glossary.types.values():
+        pages[f"{entry.slug}.md"] = render_type_page(glossary, entry)
+    return pages
 
 
 def _files(glossary: Glossary) -> dict[Path, str]:
@@ -826,12 +1059,9 @@ def _files(glossary: Glossary) -> dict[Path, str]:
     files: dict[Path, str] = {
         JSON_PATH: json.dumps(render_json(glossary), indent=2, ensure_ascii=False)
         + "\n",
-        REFERENCE_DIR / INDEX_PAGE: render_index_page(glossary),
-        REFERENCE_DIR / LINKS_PAGE: render_links_page(glossary),
-        REFERENCE_DIR / CONCEPTS_PAGE: render_concepts_page(glossary),
     }
-    for entry in glossary.types.values():
-        files[REFERENCE_DIR / f"{entry.slug}.md"] = render_type_page(glossary, entry)
+    for name, page in _reference_pages(glossary).items():
+        files[REFERENCE_DIR / name] = page
     return files
 
 
@@ -913,6 +1143,7 @@ def main(argv: list[str]) -> int:
             lambda: check(root, glossary),
             lambda: glossary.validate_coverage(root),
             lambda: glossary.validate_links(root),
+            lambda: glossary.validate_navigation(root),
         )
         problems: list[str] = []
         for validate in checks:

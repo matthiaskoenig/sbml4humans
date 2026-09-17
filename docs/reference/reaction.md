@@ -94,12 +94,12 @@ The report writes the association of a reaction as this expression and links eve
 
 | field | type | meaning |
 | --- | --- | --- |
-| [kinetic law](#kinetic-law) | `Math` | the rate formula of the reaction's kinetic law, rendered |
+| [kinetic law](#kinetic-law-2) | `Math` | the rate formula of the reaction's kinetic law, rendered |
 | [derived units](#derived-units) | `latex` | the units the report derives for the rate formula of the kinetic law |
 | [equation](#equation) | `string` | the reaction written as a chemical equation |
 | [gene products](#gene-products) | `list` | the gene products named by the association of the reaction |
 
-<span id="kinetic-law"></span>**kinetic law**
+<span id="kinetic-law-2"></span>**kinetic law**
 
 The table of reactions shows the formula of the [kinetic law](kineticlaw.md) directly in its own column "kinetic law", so a reader does not have to open the reaction to see how fast it runs. It is the same formula the inspector renders under "math" of the kinetic law; a reaction without a kinetic law shows a dash.
 

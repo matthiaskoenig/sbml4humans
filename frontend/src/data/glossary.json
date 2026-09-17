@@ -773,130 +773,105 @@
   "links": {
     "associatedSpecies": {
       "label": "associated species",
-      "summary": "the species a gene product stands for",
-      "page": "reference/links/#associated-species"
+      "summary": "the species a gene product stands for"
     },
     "compartment": {
       "label": "compartment",
-      "summary": "the compartment a species is located in or a reaction takes place in",
-      "page": "reference/links/#compartment"
+      "summary": "the compartment a species is located in or a reaction takes place in"
     },
     "conversionFactor": {
       "label": "conversion factor",
-      "summary": "the parameter which converts the values of an element",
-      "page": "reference/links/#conversion-factor"
+      "summary": "the parameter which converts the values of an element"
     },
     "fluxBound": {
       "label": "flux bound",
-      "summary": "the parameter which bounds the flux of a reaction",
-      "page": "reference/links/#flux-bound"
+      "summary": "the parameter which bounds the flux of a reaction"
     },
     "fluxObjective": {
       "label": "flux objective",
-      "summary": "a reaction which appears in an objective function",
-      "page": "reference/links/#flux-objective"
+      "summary": "a reaction which appears in an objective function"
     },
     "geneProduct": {
       "label": "gene product",
-      "summary": "a gene product the association of a reaction names",
-      "page": "reference/links/#gene-product"
+      "summary": "a gene product the association of a reaction names"
     },
     "math": {
       "label": "math",
-      "summary": "an element a formula refers to",
-      "page": "reference/links/#math"
+      "summary": "an element a formula refers to"
     },
     "modelRef": {
       "label": "model reference",
-      "summary": "the model a submodel instantiates",
-      "page": "reference/links/#model-reference"
+      "summary": "the model a submodel instantiates"
     },
     "modifier": {
       "label": "modifier",
-      "summary": "a species which influences a reaction without being consumed",
-      "page": "reference/links/#modifier"
+      "summary": "a species which influences a reaction without being consumed"
     },
     "port": {
       "label": "port",
-      "summary": "the element a port names",
-      "page": "reference/links/#port"
+      "summary": "the element a port names"
     },
     "product": {
       "label": "product",
-      "summary": "a species a reaction produces",
-      "page": "reference/links/#product"
+      "summary": "a species a reaction produces"
     },
     "reactant": {
       "label": "reactant",
-      "summary": "a species a reaction consumes",
-      "page": "reference/links/#reactant"
+      "summary": "a species a reaction consumes"
     },
     "replacedBy": {
       "label": "replaced by",
-      "summary": "the submodel which holds the element replacing this one",
-      "page": "reference/links/#replaced-by"
+      "summary": "the submodel which holds the element replacing this one"
     },
     "replacedElement": {
       "label": "replaced element",
-      "summary": "the submodel which holds an element this one replaces",
-      "page": "reference/links/#replaced-element"
+      "summary": "the submodel which holds an element this one replaces"
     },
     "symbol": {
       "label": "symbol",
-      "summary": "the element whose initial value an initial assignment computes",
-      "page": "reference/links/#symbol"
+      "summary": "the element whose initial value an initial assignment computes"
     },
     "units": {
       "label": "units",
-      "summary": "the unit definition an element declares its units with",
-      "page": "reference/links/#units"
+      "summary": "the unit definition an element declares its units with"
     },
     "variable": {
       "label": "variable",
-      "summary": "the element whose value a rule or an event assignment sets",
-      "page": "reference/links/#variable"
+      "summary": "the element whose value a rule or an event assignment sets"
     }
   },
   "concepts": {
     "derivedUnits": {
       "label": "derived units",
-      "summary": "the units of a quantity or of a formula as they follow from the model",
-      "page": "reference/concepts/#derived-units"
+      "summary": "the units of a quantity or of a formula as they follow from the model"
     },
     "equation": {
       "label": "equation",
-      "summary": "the reaction written as a chemical equation",
-      "page": "reference/concepts/#equation"
+      "summary": "the reaction written as a chemical equation"
     },
     "manifest": {
       "label": "manifest",
-      "summary": "the entries of the COMBINE archive a report was built from",
-      "page": "reference/concepts/#manifest"
+      "summary": "the entries of the COMBINE archive a report was built from"
     },
     "math": {
       "label": "rendered math",
-      "summary": "the formula of an element as the report renders it",
-      "page": "reference/concepts/#rendered-math"
+      "summary": "the formula of an element as the report renders it"
     },
     "modelKind": {
       "label": "model kind",
-      "summary": "whether a model is the model of the document or a model definition",
-      "page": "reference/concepts/#model-kind"
+      "summary": "whether a model is the model of the document or a model definition"
     },
     "pk": {
       "label": "primary key",
-      "summary": "the identifier the report gives to every element it shows",
-      "page": "reference/concepts/#primary-key"
+      "summary": "the identifier the report gives to every element it shows"
     },
     "sbmlType": {
       "label": "sbml type",
-      "summary": "the kind of element, which decides how the report shows it",
-      "page": "reference/concepts/#sbml-type"
+      "summary": "the kind of element, which decides how the report shows it"
     },
     "unitsLatex": {
       "label": "rendered units",
-      "summary": "the units an element declares, rendered as a formula",
-      "page": "reference/concepts/#rendered-units"
+      "summary": "the units an element declares, rendered as a formula"
     }
   }
 }
