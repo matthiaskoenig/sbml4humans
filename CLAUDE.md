@@ -40,9 +40,9 @@ sudo docker compose -f docker-compose-develop.yml build --no-cache
 sudo docker compose -f docker-compose-develop.yml up   # frontend :8083, api :1444
 ```
 
-`main` is the only branch. The CI (`.github/workflows/`) runs `pytest` (`ci.yml`), `ruff` and `ty` on every push, and in `ci.yml` also the frontend lint, type check, unit tests and build (`frontend`) and the Playwright end to end tests (`e2e`); the release job needs `test`, `schema`, `frontend` and `e2e` and, on a tag, creates the GitHub release from `release-notes/<tag>.md`.
+`develop` takes every change through a pull request; direct pushes are rejected by the rulesets in `.github/rulesets/` (applied with `.github/rulesets/apply.sh`), which require the `test`, `schema`, `frontend`, `e2e`, `ruff` and `ty` checks and allow only squash or rebase merges. `main` only tracks the latest release and is fast-forwarded by the `sync-main` job of `ci.yml`, never by hand; tags cannot be moved or deleted. The CI (`.github/workflows/`) runs `pytest` (`ci.yml`), `ruff` and `ty` on every pull request and push to `develop` and `main`, and in `ci.yml` also the frontend lint, type check, unit tests and build (`frontend`) and the Playwright end to end tests (`e2e`); the release job needs `test`, `schema`, `frontend` and `e2e` and, on a tag, creates the GitHub release from `release-notes/<tag>.md`.
 
-Releases: the version of sbml4humans is the version of the backend package, `frontend/package.json` follows it. Write `release-notes/<version>.md` first, then from `backend/` run `uv run bump-my-version bump [major|minor|patch]`, which updates both files, commits and tags; `git push origin main --tags` triggers the release workflow. Never edit the version by hand.
+Releases: the version of sbml4humans is the version of the backend package, `frontend/package.json` follows it. Write `release-notes/<version>.md` first, then from `backend/` run `uv run bump-my-version bump [major|minor|patch]`, which updates both files and commits without tagging (`tag = false`, a squash merge would rewrite the commit). The bump goes through a pull request like every change, and the tag is created on `develop` after the merge; pushing it triggers the release workflow. Steps in the Releases section of `README.md`. Never edit the version by hand.
 
 ## Architecture
 
