@@ -90,8 +90,10 @@ export interface AnnotationInfo {
   label: string | null;
   description: string | null;
   url: string | null;
-  synonyms: string[];
-  xrefs: string[];
+  /** synonyms and cross references of the term, as objects of the ontology service; the report
+   * shows neither of them. */
+  synonyms: unknown[];
+  xrefs: unknown[];
   errors: string[];
   warnings: string[];
 }

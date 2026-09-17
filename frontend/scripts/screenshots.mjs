@@ -132,7 +132,9 @@ const annotationsColumn = page.getByTestId("annotations-column");
 await expect(annotationsColumn.locator('a[href="https://identifiers.org/CHEBI:31696"]')).toHaveText(
   "indocyanine green",
 );
-await shotFitted("inspector-annotations", annotationsColumn);
+// the annotations of the column alone: its notes and history follow below the visible area of
+// the panel, where they would be cut off in the middle of a line
+await shotFitted("inspector-annotations", annotationsColumn.locator("section").first());
 
 // archive-entries.png: the top bar of a COMBINE archive report offers its entries for selection.
 await open("CompModels");
