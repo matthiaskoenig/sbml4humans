@@ -121,6 +121,17 @@ describe("ElementTable", () => {
     expect(derived.attributes("aria-sort")).toBeUndefined();
   });
 
+  it("shows the summary as the tooltip of a non sortable header too", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const derived = header(mountTable(species), "derived units");
+    // the non sortable header has no button, the tooltip sits on the plain span instead
+    expect(derived.find("[data-testid=sort-button]").exists()).toBe(false);
+    await derived.get("span").trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      attributeEntry("Species", "derivedUnits")?.summary,
+    );
+  });
+
   it("selects a row by a click and clears the selection by a second click", async () => {
     await router.push("/examples/BIOMD0000000012");
     const table = mountTable(species);

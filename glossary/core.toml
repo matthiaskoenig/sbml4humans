@@ -1044,6 +1044,24 @@ The [kinetic law](kineticlaw.md) holds the rate formula of the reaction and the 
 The report shows the rendered formula in the column "kinetic law" and the whole kinetic law in the inspector of the reaction.
 """
 
+[types.Reaction.attributes."kineticLaw.math"]
+label = "kinetic law"
+package = "report"
+type = "Math"
+summary = "the rate formula of the reaction's kinetic law, rendered"
+description = """
+The table of reactions shows the formula of the [kinetic law](kineticlaw.md) directly in its own column "kinetic law", so a reader does not have to open the reaction to see how fast it runs. It is the same formula the inspector renders under "math" of the kinetic law; a reaction without a kinetic law shows a dash.
+"""
+
+[types.Reaction.attributes."kineticLaw.derivedUnits"]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units the report derives for the rate formula of the kinetic law"
+description = """
+The report derives the units of the [kinetic law](kineticlaw.md)'s formula from the units of the quantities it uses, and shows them in the column "derived units" of the table of reactions, next to the formula. They should be the extent units of the model divided by its time units, which is the check a modeller wants to make on a rate law.
+"""
+
 [types.Reaction.attributes.equation]
 label = "equation"
 package = "report"

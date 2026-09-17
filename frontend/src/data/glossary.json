@@ -510,6 +510,14 @@
           "label": "kinetic law",
           "summary": "the formula which gives the speed of the reaction"
         },
+        "kineticLaw.derivedUnits": {
+          "label": "derived units",
+          "summary": "the units the report derives for the rate formula of the kinetic law"
+        },
+        "kineticLaw.math": {
+          "label": "kinetic law",
+          "summary": "the rate formula of the reaction's kinetic law, rendered"
+        },
         "listOfModifiers": {
           "label": "modifiers",
           "summary": "the species which influence the reaction without being consumed"

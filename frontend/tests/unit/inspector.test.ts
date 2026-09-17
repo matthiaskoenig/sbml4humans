@@ -13,7 +13,7 @@ import UncertaintyAttributes from "@/components/inspector/attributes/Uncertainty
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
-import { attributeEntry, linkEntry } from "@/report/glossary";
+import { attributeEntry, linkEntry, referenceUrl } from "@/report/glossary";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
@@ -262,6 +262,17 @@ describe("inspector", () => {
     expect(wrapper.get("[data-testid=inspector-type]").text()).toBe("Species");
     expect(wrapper.get("[data-testid=inspector-id]").text()).toBe(species.id);
     expect(wrapper.find("[data-testid=inspector-close]").exists()).toBe(true);
+  });
+
+  it("links the type of the header to its reference page", async () => {
+    const species = repressilator.mainModel!.listOfSpecies![0] as Species;
+    const wrapper = mountWith(InspectorPanel, { pk: species.pk }, repressilator);
+    const link = wrapper.get("[data-testid=inspector-type-link]");
+    expect(link.attributes("href")).toBe(referenceUrl("Species"));
+    expect(link.attributes("target")).toBe("_blank");
+    expect(link.attributes("rel")).toBe("noopener");
+    expect(link.get("svg").classes()).toContain("lucide-external-link");
+    expect(link.get("[data-testid=inspector-type]").text()).toBe("Species");
   });
 
   const COLUMNS = [{ key: "id", header: "id" }];
