@@ -17,6 +17,10 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 | products | `list` | <span id="products"></span>the species the reaction produces, with their stoichiometry | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | modifiers | `list` | <span id="modifiers"></span>the species which influence the reaction without being consumed | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | kinetic law | `KineticLaw` | <span id="kinetic-law"></span>the formula which gives the speed of the reaction | [Section 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| fbc | `ReactionFbc` | <span id="fbc"></span>the flux bounds and the gene association which fbc adds to a reaction | [Section 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| lower flux bound | `SIdRef` | <span id="lower-flux-bound"></span>the parameter which holds the smallest flux the reaction may carry | [Section 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| upper flux bound | `SIdRef` | <span id="upper-flux-bound"></span>the parameter which holds the largest flux the reaction may carry | [Section 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| gene product association | `string` | <span id="gene-product-association"></span>the logical expression of the genes under which the reaction can run | [Section 3.9](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -25,6 +29,7 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 | field | type | meaning |
 | --- | --- | --- |
 | equation | `string` | <span id="equation"></span>the reaction written as a chemical equation |
+| gene products | `list` | <span id="gene-products"></span>the gene products named by the association of the reaction |
 
 ## Related elements
 

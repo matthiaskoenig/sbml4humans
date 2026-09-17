@@ -27,6 +27,10 @@ The report shows the model as the root of the report, its lists as the sections 
 | constraints | `list` | <span id="constraints"></span>the constraints of the model | [Section 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | reactions | `list` | <span id="reactions"></span>the reactions of the model | [Section 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | events | `list` | <span id="events"></span>the events of the model | [Section 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| submodels | `list` | <span id="submodels"></span>the models which this model instantiates | [Section 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| ports | `list` | <span id="ports"></span>the elements of the model which are meant to be used from outside | [Section 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| gene products | `list` | <span id="gene-products"></span>the genes and gene products the reactions of the model depend on | [Section 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| objectives | `list` | <span id="objectives"></span>the objective functions of the constraint based model | [Section 3.3.1](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

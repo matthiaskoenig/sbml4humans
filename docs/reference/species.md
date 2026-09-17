@@ -18,6 +18,9 @@ The report shows the initial quantity of a species, its units, the flags which s
 | boundary condition | `boolean` | <span id="boundary-condition"></span>whether the quantity of the species is left unchanged by the reactions | [Section 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | constant | `boolean` | <span id="constant"></span>whether the quantity of the species stays fixed during a simulation | [Section 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | conversion factor | `SIdRef` | <span id="conversion-factor"></span>the parameter which converts the extent of a reaction into the quantity of the species | [Section 4.6.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| fbc | `SpeciesFbc` | <span id="fbc"></span>the chemical formula and the charge which fbc adds to a species | [Section 3.4](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| chemical formula | `string` | <span id="chemical-formula"></span>the elemental composition of the species | [Section 3.4](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| charge | `double` | <span id="charge"></span>the charge of the species, counted in electrons | [Section 3.4](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

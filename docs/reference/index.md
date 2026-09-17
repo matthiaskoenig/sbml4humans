@@ -28,3 +28,27 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Local parameter](localparameter.md) | a named value which only one kinetic law uses |
 | [Event](event.md) | an instantaneous change of the model when a condition becomes true |
 | [Event assignment](eventassignment.md) | the new value an event gives to one element of the model |
+
+## Hierarchical models (comp)
+
+| element | meaning |
+| --- | --- |
+| [Hierarchical Model Composition (comp)](comp.md) | the package which builds a model out of other models |
+| [External model definition](externalmodeldefinition.md) | a model of another SBML file which this document can instantiate |
+| [Submodel](submodel.md) | the instantiation of another model inside this model |
+| [Port](port.md) | an element of the model which other models are meant to connect to |
+
+## Flux balance constraints (fbc)
+
+| element | meaning |
+| --- | --- |
+| [Flux Balance Constraints (fbc)](fbc.md) | the package which describes a constraint based model |
+| [Gene product](geneproduct.md) | a gene or one of its products which the reactions of the model depend on |
+| [Objective](objective.md) | the function a flux balance analysis maximises or minimises |
+
+## Distributions (distrib)
+
+| element | meaning |
+| --- | --- |
+| [Distributions (distrib)](distrib.md) | the package which records the uncertainty of a value |
+| [Uncertainty](uncertainty.md) | a set of statistical measures of the value of an element |

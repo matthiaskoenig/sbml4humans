@@ -1017,7 +1017,7 @@ summary = "the species which influence the reaction without being consumed"
 description = """
 A modifier is a [modifier species reference](modifierspeciesreference.md): a catalyst, an inhibitor or an activator which appears in the kinetic law but is neither created nor destroyed. Modifiers have no stoichiometry.
 
-The report lists the modifiers in the inspector of the reaction and writes them above the arrow of the equation.
+The report lists the modifiers in the inspector of the reaction, with a link to every species; they are not part of the equation, which shows what a reaction consumes and produces.
 """
 
 [types.Reaction.attributes.kineticLaw]

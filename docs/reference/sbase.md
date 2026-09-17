@@ -17,6 +17,10 @@ The report shows these attributes for every element: the id and the name in the 
 | notes | `XHTML` | <span id="notes"></span>the free text the model author wrote about the element | [Section 3.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | annotations | `list` | <span id="annotations"></span>the controlled vocabulary terms which link the element to database entries | [Section 6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | history | `ModelHistory` | <span id="history"></span>who created the element and when it was modified | [Section 6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| replacements | `CompSBase` | <span id="replacements"></span>how the element replaces an element of a submodel or is replaced by one | [Section 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| replaced by | `ReplacedBy` | <span id="replaced-by"></span>the element of a submodel which takes the place of this element | [Section 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| replaced elements | `list` | <span id="replaced-elements"></span>the elements of submodels which this element takes the place of | [Section 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| uncertainties | `list` | <span id="uncertainties"></span>the statistical measures of the value of the element | [Section 3.9](https://sbml.org/documents/specifications/level-3/version-1/distrib/) |
 
 ## In the report
 

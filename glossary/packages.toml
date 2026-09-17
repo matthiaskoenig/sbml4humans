@@ -1,0 +1,547 @@
+# The glossary of the SBML Level 3 packages the report supports and of the
+# elements they add: comp (hierarchical model composition), fbc (flux balance
+# constraints) and distrib (distributions). It follows the format of
+# `core.toml`: the summary becomes a tooltip of the application, the
+# description becomes a reference page of the documentation site. Run
+# `uv run python -m sbml4humans.glossary` after a change and commit the
+# generated files.
+#
+# The prose is written from the package specification named in the `spec` of
+# the entry. `summary` is one sentence without a final period, `description` is
+# markdown without hard line wraps.
+
+[specs.comp]
+label = "SBML Level 3 Package: Hierarchical Model Composition (comp)"
+citation = "Smith et al. 2013, Version 1 Release 3"
+url = "https://sbml.org/documents/specifications/level-3/version-1/comp/"
+
+[specs.fbc]
+label = "SBML Level 3 Package: Flux Balance Constraints (fbc)"
+citation = "Olivier et al. 2026, Version 3 Release 1"
+url = "https://sbml.org/documents/specifications/level-3/version-1/fbc/"
+
+[specs.distrib]
+label = "SBML Level 3 Package: Distributions (distrib)"
+citation = "Smith et al. 2020, Version 1 Release 1"
+url = "https://sbml.org/documents/specifications/level-3/version-1/distrib/"
+
+
+# ----------------------------------------------------------------------------
+# the packages themselves
+# ----------------------------------------------------------------------------
+[types.comp]
+label = "Hierarchical Model Composition (comp)"
+package = "comp"
+spec = { doc = "comp" }
+summary = "the package which builds a model out of other models"
+description = """
+A package of SBML Level 3 adds elements and attributes for a domain which not every model needs, and declares itself in the file so that a reader knows whether it has to understand them; this is what makes Level 3 modular instead of one growing language ([Keating et al. 2020](https://doi.org/10.15252/msb.20199110)).
+
+The comp package adds composition. A [submodel](submodel.md) instantiates another model, a [port](port.md) marks the elements through which other models are meant to interact with it, a deletion removes what does not belong in the new context, and a replacement glues an element of the containing model onto an element of a submodel. The models which are instantiated are either model definitions of the same file or [external model definitions](externalmodeldefinition.md) pointing at another file.
+
+The report shows the model definitions of a document next to its main model, the submodels and the ports of a model as sections of their own, and the replacements of an element in its inspector.
+"""
+related = ["ExternalModelDefinition", "Submodel", "Port", "Model"]
+
+[types.fbc]
+label = "Flux Balance Constraints (fbc)"
+package = "fbc"
+spec = { doc = "fbc" }
+summary = "the package which describes a constraint based model"
+description = """
+A constraint based model does not integrate rate laws over time. It assumes a steady state and chooses the fluxes of the reactions so that an objective function becomes extremal while every flux stays within its bounds, which is what flux balance analysis does with a genome scale reconstruction.
+
+The fbc package holds what such a model needs beyond the core: the lower and the upper flux bound of a [reaction](reaction.md), the [objectives](objective.md) with their flux objectives, the [gene products](geneproduct.md) and the association which relates them to a reaction, and the chemical formula and the charge of a [species](species.md).
+
+The report shows the gene products and the objectives of a model as sections of their own and the fbc attributes of a species and of a reaction in their inspector.
+"""
+related = ["GeneProduct", "Objective", "Species", "Reaction"]
+
+[types.distrib]
+label = "Distributions (distrib)"
+package = "distrib"
+spec = { doc = "distrib" }
+summary = "the package which records the uncertainty of a value"
+description = """
+The distrib package attaches statistical measures to the elements of a model which have a mathematical meaning: a mean, a standard deviation, a variance, a confidence interval or the distribution a value was drawn from. The measures describe the value at the moment it is computed, not how it changes during a simulation.
+
+They do not affect the mathematics of the model. They are a controlled format for the provenance of a number, which a modeller would otherwise write into the notes of an element, and a tool may use them as it uses any other annotation.
+
+The report shows the [uncertainties](uncertainty.md) of an element in its inspector and every uncertainty as an element of its own.
+"""
+related = ["Uncertainty", "Parameter", "Species"]
+
+
+# ----------------------------------------------------------------------------
+# what the packages add to every element
+# ----------------------------------------------------------------------------
+[types.SBase.attributes.comp]
+label = "replacements"
+package = "comp"
+type = "CompSBase"
+spec = { doc = "comp", section = "3.6" }
+summary = "how the element replaces an element of a submodel or is replaced by one"
+description = """
+Replacements are the glue of a composed model. An element may state that it replaces elements of submodels, in which case every reference to those elements points at it afterwards, or that it is itself replaced by an element of a submodel. Two elements of different submodels are connected by letting one element of the containing model replace both.
+
+The report shows the rows "replaced by" and "replaced elements" in the inspector of every element which carries them.
+"""
+
+[types.SBase.attributes."comp.replacedBy"]
+label = "replaced by"
+package = "comp"
+type = "ReplacedBy"
+spec = { doc = "comp", section = "3.6.4" }
+summary = "the element of a submodel which takes the place of this element"
+description = """
+An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the same four ways a [port](port.md) names an element.
+
+The report links the submodel and shows the named element next to it.
+"""
+
+[types.SBase.attributes."comp.replacedElements"]
+label = "replaced elements"
+package = "comp"
+type = "list"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "the elements of submodels which this element takes the place of"
+description = """
+Every entry names a submodel and one element inside it which this element replaces. It is how a species of the containing model is connected to the species of two submodels: the containing species replaces both, and the three become one pool.
+
+The report lists the submodel and the named element of every replacement in the inspector.
+"""
+
+[types.SBase.attributes.uncertainties]
+label = "uncertainties"
+package = "distrib"
+type = "list"
+spec = { doc = "distrib", section = "3.9" }
+summary = "the statistical measures of the value of the element"
+description = """
+Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
+
+The report lists the uncertainties of an element in its inspector with the number of their parameters, and shows every [uncertainty](uncertainty.md) as an element of its own.
+"""
+
+
+# ----------------------------------------------------------------------------
+# what the packages add to the model
+# ----------------------------------------------------------------------------
+[types.Model.attributes.listOfSubmodels]
+label = "submodels"
+package = "comp"
+type = "list"
+spec = { doc = "comp", section = "3.4.1" }
+summary = "the models which this model instantiates"
+description = """
+Every [submodel](submodel.md) instantiates a model definition of the document or a model of another file. A model without submodels is a model in the usual sense; a model with submodels stands for everything its submodels contain, after the deletions and the replacements have been applied.
+
+The report shows the submodels of a model as a section of the report.
+"""
+
+[types.Model.attributes.listOfPorts]
+label = "ports"
+package = "comp"
+type = "list"
+spec = { doc = "comp", section = "3.4.2" }
+summary = "the elements of the model which are meant to be used from outside"
+description = """
+A [port](port.md) declares one element of the model as an intended point of interaction, the way a socket declares the interface of a device. Ports are advisory: nothing prevents a containing model from reaching into the model directly, but a modeller is asked to respect the interface.
+
+The report shows the ports of a model as a section of the report.
+"""
+
+[types.Model.attributes.listOfGeneProducts]
+label = "gene products"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc", section = "3.3.2" }
+summary = "the genes and gene products the reactions of the model depend on"
+description = """
+Every [gene product](geneproduct.md) stands for one gene or one of its products and carries the label under which the reconstruction knows it. The reactions name them in their gene product association.
+
+The report shows the gene products of a model as a section of the report.
+"""
+
+[types.Model.attributes.listOfObjectives]
+label = "objectives"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc", section = "3.3.1" }
+summary = "the objective functions of the constraint based model"
+description = """
+A model may define several [objectives](objective.md) and declares one of them as the active objective, the function which an analysis optimises unless it is told otherwise. The others are kept so that a model can carry the alternatives it was studied with.
+
+The report shows the objectives of a model as a section of the report.
+"""
+
+
+# ----------------------------------------------------------------------------
+# what fbc adds to a species and to a reaction
+# ----------------------------------------------------------------------------
+[types.Species.attributes.fbc]
+label = "fbc"
+package = "fbc"
+type = "SpeciesFbc"
+spec = { doc = "fbc", section = "3.4" }
+summary = "the chemical formula and the charge which fbc adds to a species"
+description = """
+A constraint based model needs the elemental composition and the charge of a species to check that its reactions are balanced. Both are annotations of the species in the sense that they do not enter the mathematics of the model.
+
+The report shows them in the inspector of a species of a model which uses fbc.
+"""
+
+[types.Species.attributes."fbc.chemicalFormula"]
+label = "chemical formula"
+package = "fbc"
+type = "string"
+spec = { doc = "fbc", section = "3.4" }
+summary = "the elemental composition of the species"
+description = """
+The formula should consist of atomic names of the periodic table, ordered by the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, each followed by its count. `C10H12N5O13P3` is such a formula. Where a compound has an undefined or generic component, the symbols `R` and `X` stand for it.
+
+The report shows the formula in the inspector of the species.
+"""
+
+[types.Species.attributes."fbc.charge"]
+label = "charge"
+package = "fbc"
+type = "double"
+spec = { doc = "fbc", section = "3.4" }
+summary = "the charge of the species, counted in electrons"
+description = """
+The charge is given in electrons, not in coulombs. Since Version 3 of the package it may be a value which is not an integer, because a species may stand for a pseudoisomer or an aggregate molecule; such values reduce the accuracy of a balancing check and should be used with care.
+
+The report shows the charge in the inspector of the species.
+"""
+
+[types.Reaction.attributes.fbc]
+label = "fbc"
+package = "fbc"
+type = "ReactionFbc"
+spec = { doc = "fbc", section = "3.8" }
+summary = "the flux bounds and the gene association which fbc adds to a reaction"
+description = """
+The fbc package extends a reaction with the two parameters which bound its flux and with the gene product association which says under which genes it can run. Together with the [objective](objective.md) of the model they are what a flux balance analysis needs.
+
+The report shows the bounds, the association and the gene products it names in the inspector of a reaction of a model which uses fbc.
+"""
+
+[types.Reaction.attributes."fbc.lowerFluxBound"]
+label = "lower flux bound"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc", section = "3.8" }
+summary = "the parameter which holds the smallest flux the reaction may carry"
+description = """
+The bound is not a number but the identifier of a constant [parameter](parameter.md) of the model, so that many reactions can share one bound and a scenario is changed in one place. An irreversible reaction has a lower bound of zero.
+
+The report links the parameter in the inspector of the reaction.
+"""
+
+[types.Reaction.attributes."fbc.upperFluxBound"]
+label = "upper flux bound"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc", section = "3.8" }
+summary = "the parameter which holds the largest flux the reaction may carry"
+description = """
+Like the lower bound it names a constant [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
+
+The report links the parameter in the inspector of the reaction.
+"""
+
+[types.Reaction.attributes."fbc.geneProductAssociation"]
+label = "gene product association"
+package = "fbc"
+type = "string"
+spec = { doc = "fbc", section = "3.9" }
+summary = "the logical expression of the genes under which the reaction can run"
+description = """
+An association relates gene products with the operators `and` and `or`: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
+
+The report writes the association of a reaction as this expression and links every [gene product](geneproduct.md) it names.
+"""
+
+[types.Reaction.attributes."fbc.geneProducts"]
+label = "gene products"
+package = "report"
+type = "list"
+summary = "the gene products named by the association of the reaction"
+description = """
+The report collects the gene products of the association tree of the reaction, so that they can be linked without parsing the expression. The list carries every gene product once, in the order of its identifier, and says nothing about how they are combined; the association does that.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the elements of comp
+# ----------------------------------------------------------------------------
+[types.ExternalModelDefinition]
+label = "External model definition"
+package = "comp"
+spec = { doc = "comp", section = "3.3.2" }
+summary = "a model of another SBML file which this document can instantiate"
+description = """
+An external model definition makes a model of another file available under an identifier of this document, so that a [submodel](submodel.md) can instantiate it. It is a declaration, not a use: it says where the file is and which model inside it is meant. The identifier belongs to this document and is not the identifier of the model it points at.
+
+The report shows the external model definitions of a document next to its models. It does not open the file they point at, so what it shows is the declaration, not the model behind it.
+"""
+related = ["Submodel", "Model", "comp"]
+
+[types.ExternalModelDefinition.attributes.source]
+label = "source"
+package = "comp"
+type = "anyURI"
+spec = { doc = "comp", section = "3.3.2" }
+summary = "the location of the SBML file which holds the model"
+description = """
+The source is a URI, which may be a URL, a URN or a location relative to this document. The whole file at that location is referenced and it has to be an SBML Level 3 document.
+
+The report shows the source in the inspector of the external model definition.
+"""
+
+[types.ExternalModelDefinition.attributes.modelRef]
+label = "model ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.3.2" }
+summary = "the identifier of the model inside the referenced file"
+description = """
+The reference names a model or another external model definition of the document at the source. When it is not set, the main model of that file is meant, which is the case a model without an identifier leaves. Following a chain of external model definitions has to end at a model.
+
+The report shows the reference in the inspector; it is not resolved to an element, the referenced file is not read.
+"""
+
+[types.Submodel]
+label = "Submodel"
+package = "comp"
+spec = { doc = "comp", section = "3.5" }
+summary = "the instantiation of another model inside this model"
+description = """
+A submodel is a use of a model definition: everything the referenced model contains becomes part of the composed model. Before it is instantiated, the referenced model may be modified in two ways. Deletions remove the elements which do not belong in the new context, for example an initial assignment which the containing model provides itself, and conversion factors rescale the time and the reaction extent of the submodel to the scales of the containing model.
+
+Loops are not allowed: a model may not instantiate itself, directly or through a chain of submodels.
+
+The report links the model a submodel instantiates, shows its two conversion factors and lists its deletions.
+"""
+related = ["Model", "ExternalModelDefinition", "Port", "comp"]
+
+[types.Submodel.attributes.modelRef]
+label = "model ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.5.1" }
+summary = "the model which this submodel instantiates"
+description = """
+The reference names a [model](model.md) definition or an [external model definition](externalmodeldefinition.md) of the same document. It is required, a submodel without it has nothing to instantiate.
+
+The report links the model in the column "model" and in the inspector of the submodel.
+"""
+
+[types.Submodel.attributes.timeConversionFactor]
+label = "time conversion factor"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.5.1" }
+summary = "the parameter which converts the time of the submodel into the time of this model"
+description = """
+The factor is the identifier of a constant, dimensionless [parameter](parameter.md) of the containing model. One unit of time in the submodel multiplied by the factor is one unit of time here, and every reference to time of the submodel is converted with it: the time and delay symbols, the delays of events, the rate rules and the kinetic laws. The factors of nested submodels multiply.
+
+The report links the parameter in the column "time conversion factor" and in the inspector.
+"""
+
+[types.Submodel.attributes.extentConversionFactor]
+label = "extent conversion factor"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.5.1" }
+summary = "the parameter which converts the reaction extent of the submodel into the extent of this model"
+description = """
+The extent of a reaction is how much of it has happened, which is what a kinetic law is the rate of. Like the time conversion factor this attribute names a constant, dimensionless [parameter](parameter.md) of the containing model, so that a submodel written in millimole can be used in a model written in mole.
+
+The report links the parameter in the column "extent conversion factor" and in the inspector.
+"""
+
+[types.Submodel.attributes.listOfDeletions]
+label = "deletions"
+package = "comp"
+type = "list"
+spec = { doc = "comp", section = "3.5.3" }
+summary = "the elements which are removed from the model before it is instantiated"
+description = """
+A deletion names one element of the referenced model which is not wanted in this context. The removal is conceptual: the submodel is everything of the referenced model minus the deleted elements, and minus what depends on them. Every deletion names its element the same four ways a [port](port.md) does, by port, identifier, unit identifier or meta id.
+
+The report shows the number of deletions in the column "deletions" and the four references of every deletion in the inspector.
+"""
+
+[types.Port]
+label = "Port"
+package = "comp"
+spec = { doc = "comp", section = "3.4.3" }
+summary = "an element of the model which other models are meant to connect to"
+description = """
+A port gives a name to one element of the model and declares it as an intended point of interaction, so that a model which includes this one connects to the port instead of reaching into the model. Port identifiers live in a namespace of their own, which is why a port may carry the same identifier as an element of the model.
+
+Exactly one of the four references of a port is set, and each of them names the element in a different way. The use of ports is advisory in this version of the package, nothing enforces it.
+
+The report shows which element a port names, links it, and lists the ports of a model in a section of their own.
+"""
+related = ["Submodel", "Model", "comp"]
+
+[types.Port.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port which this reference names"
+description = """
+A port reference names a port instead of an element, which is how a composed model passes on the interface of one of its parts. Port identifiers are a namespace of their own, and the reference is resolved among the ports of the model the reference reaches into, not among the ports of this model.
+
+The report shows the port reference as text; it does not follow it into another model.
+"""
+
+[types.Port.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which this port names, by its identifier"
+description = """
+This is the usual way to define a port: the identifier of the species, the parameter, the compartment or the reaction which the port stands for. Since a port of a model must name an element of that same model, the identifier is resolved in this model.
+
+The report links the element the port names.
+"""
+
+[types.Port.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which this port names"
+description = """
+Unit identifiers live in a namespace of their own, so naming a [unit definition](unitdefinition.md) needs an attribute of its own. The units which SBML reserves cannot be named here: they can neither be replaced nor deleted.
+
+The report links the unit definition the port names.
+"""
+
+[types.Port.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which this port names, by its meta id"
+description = """
+Every element of a file may carry a meta id, and this is the way to name an element which has no identifier, for example a rule or a reaction which was written without one.
+
+The report searches the element with that meta id in the model and links it.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the elements of fbc
+# ----------------------------------------------------------------------------
+[types.GeneProduct]
+label = "Gene product"
+package = "fbc"
+spec = { doc = "fbc", section = "3.5" }
+summary = "a gene or one of its products which the reactions of the model depend on"
+description = """
+A gene product stands for a gene, a transcript or a protein which has to be present for a reaction to run. It exists so that the gene associations of a genome scale reconstruction, which used to be written into the notes of a reaction, have a place of their own and can be referenced.
+
+Because the identifiers of a reconstruction do not follow the rules of an SBML identifier, a gene product carries them in its label, and it is recommended that it also carries an annotation which identifies the gene in a database.
+
+The report shows the gene products of a model in a section of their own, with a link to the associated species, and links them from every reaction which names them.
+"""
+related = ["Reaction", "Species", "fbc"]
+
+[types.GeneProduct.attributes.label]
+label = "label"
+package = "fbc"
+type = "string"
+spec = { doc = "fbc", section = "3.5" }
+summary = "the identifier under which the source of the model knows the gene"
+description = """
+The label carries the gene identifier as it is written in the reconstruction, for example `b3670` or `Rv0649`. It is required, because the identifier of the gene product itself has to follow the rules of an SBML identifier and the gene identifier usually does not.
+
+The report shows the label in the column "label" and in the inspector.
+"""
+
+[types.GeneProduct.attributes.associatedSpecies]
+label = "associated species"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc", section = "3.5" }
+summary = "the species of the model which stands for this gene product"
+description = """
+Some reconstructions model a gene product as a [species](species.md) which participates in reactions. The attribute connects the two, and when it is set it names an existing species of the model.
+
+The report links the species in the column "associated species" and in the inspector.
+"""
+
+[types.Objective]
+label = "Objective"
+package = "fbc"
+spec = { doc = "fbc", section = "3.6" }
+summary = "the function a flux balance analysis maximises or minimises"
+description = """
+An objective is a direction, "maximize" or "minimize", together with a weighted sum of reaction fluxes, its flux objectives. It is what turns a network with bounds into a solvable optimisation problem: the fluxes are chosen within the bounds of the reactions so that this sum becomes extremal.
+
+The classical objective of a genome scale model is a single term of coefficient one on the biomass reaction, which asks for the flux distribution with the fastest growth.
+
+The report shows the objectives of a model in a section of their own and lists the reaction and the coefficient of every flux objective, with a link to the reaction.
+"""
+related = ["Reaction", "Parameter", "fbc"]
+
+[types.Objective.attributes.type]
+label = "type"
+package = "fbc"
+type = "FbcType"
+spec = { doc = "fbc", section = "3.6" }
+summary = "whether the objective is maximised or minimised"
+description = """
+The type is the sense of the optimality constraint and is either `maximize` or `minimize`. It is required, an objective without it is not defined.
+
+The report shows the type in the column "type" and in the inspector.
+"""
+
+[types.Objective.attributes.listOfFluxObjectives]
+label = "flux objectives"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc", section = "3.7" }
+summary = "the reactions of the objective with their coefficient"
+description = """
+A flux objective is one term of the objective function: the [reaction](reaction.md) whose flux is meant and the coefficient the flux is weighted with. An objective which is defined has at least one of them.
+
+The report shows the number of flux objectives in the column "flux objectives" and the table of the reactions with their coefficients in the inspector, with a link to every reaction.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the elements of distrib
+# ----------------------------------------------------------------------------
+[types.Uncertainty]
+label = "Uncertainty"
+package = "distrib"
+spec = { doc = "distrib", section = "3.10" }
+summary = "a set of statistical measures of the value of an element"
+description = """
+An uncertainty collects the measures which belong together, for example the mean and the standard deviation of one experiment. Every measure appears at most once in it, so measures from another source belong into another uncertainty of the same element.
+
+The measures do not affect a simulation. They say where a number comes from and how well it is known, which is what a reader of a published model wants to see and what a sampling of the parameters of a model needs.
+
+The report shows every uncertainty as an element of its own, with the table of its parameters, and lists the uncertainties of an element in its inspector.
+"""
+related = ["Parameter", "Species", "distrib"]
+
+[types.Uncertainty.attributes.uncertParameters]
+label = "uncert parameters"
+package = "distrib"
+type = "list"
+spec = { doc = "distrib", section = "3.11" }
+summary = "the statistical measures which make up the uncertainty"
+description = """
+Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` or `externalParameter` carries the math of the distribution and a definition url instead of a value.
+
+The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
+"""

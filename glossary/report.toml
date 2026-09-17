@@ -1,0 +1,242 @@
+# The glossary of what the report adds to a model: the kinds of the links
+# between the elements and the fields the report computes. It follows the
+# format of `core.toml`: the summary becomes a tooltip of the application, the
+# description becomes a section of `docs/reference/links.md` or of
+# `docs/reference/concepts.md`. Run `uv run python -m sbml4humans.glossary`
+# after a change and commit the generated files.
+#
+# The link kinds are those of `frontend/src/data/edgeKinds.ts` and carry the
+# label the inspector shows for the group. `summary` is one sentence without a
+# final period, `description` is markdown without hard line wraps.
+
+# ----------------------------------------------------------------------------
+# the kinds of the links between the elements of a report
+# ----------------------------------------------------------------------------
+[links.compartment]
+label = "compartment"
+summary = "the compartment a species is located in or a reaction takes place in"
+description = """
+Every [species](species.md) names the compartment it is located in, and a [reaction](reaction.md) may name the compartment it takes place in.
+
+The link is shown under "References" of the species or of the reaction, and under "Referenced by" of the compartment, which is where every species of a compartment can be seen at once.
+"""
+
+[links.reactant]
+label = "reactant"
+summary = "a species a reaction consumes"
+description = """
+The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its reactants names, not from the [species reference](speciesreference.md), so that the participants of a reaction are seen on the reaction itself.
+
+It is shown under "References" of the reaction and under "Referenced by" of the species, where it answers which reactions consume it.
+"""
+
+[links.product]
+label = "product"
+summary = "a species a reaction produces"
+description = """
+The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its products names.
+
+It is shown under "References" of the reaction and under "Referenced by" of the species, where it answers which reactions produce it.
+"""
+
+[links.modifier]
+label = "modifier"
+summary = "a species which influences a reaction without being consumed"
+description = """
+The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its modifiers names: a catalyst, an inhibitor or an activator.
+
+It is shown under "References" of the reaction and under "Referenced by" of the species. A species which is a modifier of a reaction usually also appears in the math of its kinetic law, which is a link of the kind "math".
+"""
+
+[links.variable]
+label = "variable"
+summary = "the element whose value a rule or an event assignment sets"
+description = """
+An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference.
+
+The link is shown under "References" of the rule or of the assignment, and under "Referenced by" of the element, where it shows what determines its value.
+"""
+
+[links.symbol]
+label = "symbol"
+summary = "the element whose initial value an initial assignment computes"
+description = """
+An [initial assignment](initialassignment.md) names the element it computes in its symbol. It is the same relation as the variable of a rule, at the start of the simulation instead of during it, and the specification gives it a name of its own.
+
+The link is shown under "References" of the initial assignment and under "Referenced by" of the element.
+"""
+
+[links.units]
+label = "units"
+summary = "the unit definition an element declares its units with"
+description = """
+A [model](model.md), a [compartment](compartment.md), a [species](species.md), a [parameter](parameter.md) and a [local parameter](localparameter.md) may name a [unit definition](unitdefinition.md) of the model in one of their units attributes. A units attribute which names a base unit of SBML instead of a unit definition produces no link, because there is no element to link to.
+
+The link is shown under "References" of the element and under "Referenced by" of the unit definition, where it shows which elements are measured in it.
+"""
+
+[links.conversionFactor]
+label = "conversion factor"
+summary = "the parameter which converts the values of an element"
+description = """
+A [model](model.md) and a [species](species.md) name a conversion factor parameter for the amounts of species, and a [submodel](submodel.md) names one for its time and one for its reaction extent. In every case the link goes to a constant [parameter](parameter.md) of the model.
+
+It is shown under "References" of the element and under "Referenced by" of the parameter.
+"""
+
+[links.fluxBound]
+label = "flux bound"
+summary = "the parameter which bounds the flux of a reaction"
+description = """
+A [reaction](reaction.md) of a model which uses fbc names the [parameter](parameter.md) of its lower and of its upper flux bound. Both links are of this kind, which parameter is which bound is shown in the attributes of the reaction.
+
+The link is shown under "References" of the reaction and under "Referenced by" of the parameter, where it shows which reactions a bound belongs to.
+"""
+
+[links.geneProduct]
+label = "gene product"
+summary = "a gene product the association of a reaction names"
+description = """
+The link goes from the [reaction](reaction.md) to every [gene product](geneproduct.md) of its gene product association, whatever the structure of the expression is.
+
+It is shown under "References" of the reaction and under "Referenced by" of the gene product, which is how the reactions of a gene are found.
+"""
+
+[links.associatedSpecies]
+label = "associated species"
+summary = "the species a gene product stands for"
+description = """
+A [gene product](geneproduct.md) may name the [species](species.md) which represents it in the reaction network, which is how some reconstructions encode gene products.
+
+The link is shown under "References" of the gene product and under "Referenced by" of the species.
+"""
+
+[links.fluxObjective]
+label = "flux objective"
+summary = "a reaction which appears in an objective function"
+description = """
+The link goes from the [objective](objective.md) to every [reaction](reaction.md) one of its flux objectives names. The coefficient the flux is weighted with is shown in the attributes of the objective, not on the link.
+
+It is shown under "References" of the objective and under "Referenced by" of the reaction, where it says that this reaction is what the model optimises.
+"""
+
+[links.modelRef]
+label = "model reference"
+summary = "the model a submodel instantiates"
+description = """
+A [submodel](submodel.md) names the model it instantiates, which is either a [model](model.md) definition of the document or an [external model definition](externalmodeldefinition.md). The reference is resolved against the models of the document, not within one model, because model identifiers live in a namespace of the document.
+
+The link is shown under "References" of the submodel and under "Referenced by" of the model, where it shows who uses it.
+"""
+
+[links.port]
+label = "port"
+summary = "the element a port names"
+description = """
+A [port](port.md) names exactly one element of its model, by its identifier, by the identifier of a unit definition or by its meta id. All three produce a link of this kind; a port which names a port of a submodel instead is not resolved, because the element lies inside another model.
+
+The link is shown under "References" of the port and under "Referenced by" of the element, where it says that the element is part of the interface of the model.
+"""
+
+[links.replacedBy]
+label = "replaced by"
+summary = "the submodel which holds the element replacing this one"
+description = """
+An element which is replaced names the [submodel](submodel.md) whose element takes its place. The link goes to the submodel, because that is the element of this model which the reference names; which element inside the submodel is meant is shown in the attributes.
+
+It is shown under "References" of the replaced element and under "Referenced by" of the submodel.
+"""
+
+[links.replacedElement]
+label = "replaced element"
+summary = "the submodel which holds an element this one replaces"
+description = """
+An element may replace elements of submodels, and names the [submodel](submodel.md) of every one of them. It is the opposite direction of "replaced by" and the usual way a composed model connects its parts.
+
+The link is shown under "References" of the replacing element and under "Referenced by" of the submodel.
+"""
+
+[links.math]
+label = "math"
+summary = "an element a formula refers to"
+description = """
+Every formula of a model refers to elements by their identifier: the species and the parameters of a kinetic law, the elements a rule or a trigger reads, the function definition a formula calls. The report collects these symbols of every formula and links each of them to the element it names, resolving the local parameters of a kinetic law before the elements of the model. The arguments of a function definition are local to it and are no references, and a symbol which names nothing, such as the symbol of time, produces no link.
+
+The link is shown under "References" of the element which carries the formula and under "Referenced by" of the element the formula uses, where it answers in which equations a species or a parameter occurs.
+"""
+
+
+# ----------------------------------------------------------------------------
+# what the report computes on top of the model
+# ----------------------------------------------------------------------------
+[concepts.pk]
+label = "primary key"
+summary = "the identifier the report gives to every element it shows"
+description = """
+SBML identifies an element by its id, which is unique within one model, and many elements of a model have no id at all. The report therefore builds a key of its own for every element, of the form `<scope>/<type>:<id>`: the scope, which is the model the element belongs to or the document for an element of the document, the type of the element and its id. An element without an id falls back to its meta id, then to a key derived from its parent and its position, and finally to a digest of its XML, so that two reactants of one reaction without ids stay distinct.
+
+The primary key is what the links of a report point at, what the url of a report names when an element is selected and what the inspector shows when an element has neither an id nor a meta id.
+"""
+
+[concepts.sbmlType]
+label = "sbml type"
+summary = "the kind of element, which decides how the report shows it"
+description = """
+Every element of a report carries the name of its SBML class, for example `Species`, `AssignmentRule` or `Objective`. The report groups the elements of a model by it, and it decides the section of the report, the colour and the icon of the type mark, the columns of the table and the attributes the inspector shows.
+
+The type is shown as the mark in front of every element, as the header of every section of the report and in the header of the inspector.
+"""
+
+[concepts.derivedUnits]
+label = "derived units"
+summary = "the units of a quantity or of a formula as they follow from the model"
+description = """
+A model does not have to declare units everywhere: a compartment, a species or a parameter inherits the units of the model when it declares none, and the units of a formula follow from the units of the elements it uses. The report derives the units which follow from the model, reduces them to base units with their exponent, scale and multiplier, and renders the result as a formula.
+
+Derived units are shown in the column "derived units" of the tables and in the inspector. They are the fastest check whether a kinetic law is dimensionally what it should be, because the derived units of a kinetic law are amount per time when the law is right.
+"""
+
+[concepts.equation]
+label = "equation"
+summary = "the reaction written as a chemical equation"
+description = """
+The report writes every reaction as its reactants, an arrow and its products, with the stoichiometry in front of a species when it is not one and the identifier of the species reference when the stoichiometry is set by a rule instead of by a number. The arrow is a double arrow when the reaction is reversible and a single arrow when it is not.
+
+The equation is a column of the table of reactions and a row of the inspector of a reaction, and it is what makes a list of reactions readable without opening any of them.
+"""
+
+[concepts.math]
+label = "rendered math"
+summary = "the formula of an element as the report renders it"
+description = """
+SBML stores a formula as content MathML, which is precise and unreadable. The report turns it into the typeset formula a textbook would print, with fractions, powers, subscripts for the parts of a name and greek letters where a name is one, and keeps the same expression as an infix formula next to it, so that it can be read and copied as text.
+
+The rendered formula is the column "math" of the tables of rules, function definitions, constraints and events, the kinetic law of a reaction, and the mathematics shown in the inspector. Where a formula names an element of the model, the report also links that element as a link of the kind "math".
+"""
+
+[concepts.unitsLatex]
+label = "rendered units"
+summary = "the units an element declares, rendered as a formula"
+description = """
+A units attribute names a unit definition, and a unit definition is a list of base units with an exponent, a scale and a multiplier. The report resolves the reference and renders the product as a formula, so that a table shows millimole over litre as a fraction instead of the identifier `mmol_per_l`, next to the identifier it comes from.
+
+The rendered units appear in the units columns of the tables, in the units of the inspector and as the whole content of the table of unit definitions.
+"""
+
+[concepts.modelKind]
+label = "model kind"
+summary = "whether a model is the model of the document or a model definition"
+description = """
+A document contains at most one model, but the comp package adds model definitions, which exist to be instantiated by a submodel and are not simulated themselves. The report reads both and marks every model as `model` or `modelDefinition`.
+
+The kind is shown in the attributes of a model. The report opens the model of the document first and lets the model definitions be selected next to it.
+"""
+
+[concepts.manifest]
+label = "manifest"
+summary = "the entries of the COMBINE archive a report was built from"
+description = """
+A COMBINE archive holds the files of a modelling study with a manifest which names every entry, its format and whether it is a master file. The report is built for every SBML entry of the archive, and a plain SBML file which is submitted on its own is wrapped in an archive with one master entry, so that a report always comes with a manifest.
+
+The manifest decides which report is shown first, the master entry, and is what the report offers when an archive holds more than one model.
+"""

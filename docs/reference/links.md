@@ -1,3 +1,139 @@
 # Link kinds
 
 An element of a report references other elements, and is referenced by others. The inspector groups both directions by kind under "References" and "Referenced by", the tables link the referenced element directly.
+
+## compartment
+
+The compartment a species is located in or a reaction takes place in.
+
+Every [species](species.md) names the compartment it is located in, and a [reaction](reaction.md) may name the compartment it takes place in.
+
+The link is shown under "References" of the species or of the reaction, and under "Referenced by" of the compartment, which is where every species of a compartment can be seen at once.
+
+## reactant
+
+A species a reaction consumes.
+
+The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its reactants names, not from the [species reference](speciesreference.md), so that the participants of a reaction are seen on the reaction itself.
+
+It is shown under "References" of the reaction and under "Referenced by" of the species, where it answers which reactions consume it.
+
+## product
+
+A species a reaction produces.
+
+The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its products names.
+
+It is shown under "References" of the reaction and under "Referenced by" of the species, where it answers which reactions produce it.
+
+## modifier
+
+A species which influences a reaction without being consumed.
+
+The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its modifiers names: a catalyst, an inhibitor or an activator.
+
+It is shown under "References" of the reaction and under "Referenced by" of the species. A species which is a modifier of a reaction usually also appears in the math of its kinetic law, which is a link of the kind "math".
+
+## variable
+
+The element whose value a rule or an event assignment sets.
+
+An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference.
+
+The link is shown under "References" of the rule or of the assignment, and under "Referenced by" of the element, where it shows what determines its value.
+
+## symbol
+
+The element whose initial value an initial assignment computes.
+
+An [initial assignment](initialassignment.md) names the element it computes in its symbol. It is the same relation as the variable of a rule, at the start of the simulation instead of during it, and the specification gives it a name of its own.
+
+The link is shown under "References" of the initial assignment and under "Referenced by" of the element.
+
+## units
+
+The unit definition an element declares its units with.
+
+A [model](model.md), a [compartment](compartment.md), a [species](species.md), a [parameter](parameter.md) and a [local parameter](localparameter.md) may name a [unit definition](unitdefinition.md) of the model in one of their units attributes. A units attribute which names a base unit of SBML instead of a unit definition produces no link, because there is no element to link to.
+
+The link is shown under "References" of the element and under "Referenced by" of the unit definition, where it shows which elements are measured in it.
+
+## conversion factor
+
+The parameter which converts the values of an element.
+
+A [model](model.md) and a [species](species.md) name a conversion factor parameter for the amounts of species, and a [submodel](submodel.md) names one for its time and one for its reaction extent. In every case the link goes to a constant [parameter](parameter.md) of the model.
+
+It is shown under "References" of the element and under "Referenced by" of the parameter.
+
+## flux bound
+
+The parameter which bounds the flux of a reaction.
+
+A [reaction](reaction.md) of a model which uses fbc names the [parameter](parameter.md) of its lower and of its upper flux bound. Both links are of this kind, which parameter is which bound is shown in the attributes of the reaction.
+
+The link is shown under "References" of the reaction and under "Referenced by" of the parameter, where it shows which reactions a bound belongs to.
+
+## gene product
+
+A gene product the association of a reaction names.
+
+The link goes from the [reaction](reaction.md) to every [gene product](geneproduct.md) of its gene product association, whatever the structure of the expression is.
+
+It is shown under "References" of the reaction and under "Referenced by" of the gene product, which is how the reactions of a gene are found.
+
+## associated species
+
+The species a gene product stands for.
+
+A [gene product](geneproduct.md) may name the [species](species.md) which represents it in the reaction network, which is how some reconstructions encode gene products.
+
+The link is shown under "References" of the gene product and under "Referenced by" of the species.
+
+## flux objective
+
+A reaction which appears in an objective function.
+
+The link goes from the [objective](objective.md) to every [reaction](reaction.md) one of its flux objectives names. The coefficient the flux is weighted with is shown in the attributes of the objective, not on the link.
+
+It is shown under "References" of the objective and under "Referenced by" of the reaction, where it says that this reaction is what the model optimises.
+
+## model reference
+
+The model a submodel instantiates.
+
+A [submodel](submodel.md) names the model it instantiates, which is either a [model](model.md) definition of the document or an [external model definition](externalmodeldefinition.md). The reference is resolved against the models of the document, not within one model, because model identifiers live in a namespace of the document.
+
+The link is shown under "References" of the submodel and under "Referenced by" of the model, where it shows who uses it.
+
+## port
+
+The element a port names.
+
+A [port](port.md) names exactly one element of its model, by its identifier, by the identifier of a unit definition or by its meta id. All three produce a link of this kind; a port which names a port of a submodel instead is not resolved, because the element lies inside another model.
+
+The link is shown under "References" of the port and under "Referenced by" of the element, where it says that the element is part of the interface of the model.
+
+## replaced by
+
+The submodel which holds the element replacing this one.
+
+An element which is replaced names the [submodel](submodel.md) whose element takes its place. The link goes to the submodel, because that is the element of this model which the reference names; which element inside the submodel is meant is shown in the attributes.
+
+It is shown under "References" of the replaced element and under "Referenced by" of the submodel.
+
+## replaced element
+
+The submodel which holds an element this one replaces.
+
+An element may replace elements of submodels, and names the [submodel](submodel.md) of every one of them. It is the opposite direction of "replaced by" and the usual way a composed model connects its parts.
+
+The link is shown under "References" of the replacing element and under "Referenced by" of the submodel.
+
+## math
+
+An element a formula refers to.
+
+Every formula of a model refers to elements by their identifier: the species and the parameters of a kinetic law, the elements a rule or a trigger reads, the function definition a formula calls. The report collects these symbols of every formula and links each of them to the element it names, resolving the local parameters of a kinetic law before the elements of the model. The arguments of a function definition are local to it and are no references, and a symbol which names nothing, such as the symbol of time, produces no link.
+
+The link is shown under "References" of the element which carries the formula and under "Referenced by" of the element the formula uses, where it answers in which equations a species or a parameter occurs.

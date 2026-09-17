@@ -136,6 +136,22 @@
         }
       }
     },
+    "ExternalModelDefinition": {
+      "label": "External model definition",
+      "summary": "a model of another SBML file which this document can instantiate",
+      "package": "comp",
+      "page": "reference/externalmodeldefinition/",
+      "attributes": {
+        "modelRef": {
+          "label": "model ref",
+          "summary": "the identifier of the model inside the referenced file"
+        },
+        "source": {
+          "label": "source",
+          "summary": "the location of the SBML file which holds the model"
+        }
+      }
+    },
     "FunctionDefinition": {
       "label": "Function definition",
       "summary": "a named function which the mathematics of the model can call",
@@ -145,6 +161,22 @@
         "math": {
           "label": "math",
           "summary": "the formula of the function, with its arguments"
+        }
+      }
+    },
+    "GeneProduct": {
+      "label": "Gene product",
+      "summary": "a gene or one of its products which the reactions of the model depend on",
+      "package": "fbc",
+      "page": "reference/geneproduct/",
+      "attributes": {
+        "associatedSpecies": {
+          "label": "associated species",
+          "summary": "the species of the model which stands for this gene product"
+        },
+        "label": {
+          "label": "label",
+          "summary": "the identifier under which the source of the model knows the gene"
         }
       }
     },
@@ -266,13 +298,25 @@
           "label": "function definitions",
           "summary": "the user defined functions of the model"
         },
+        "listOfGeneProducts": {
+          "label": "gene products",
+          "summary": "the genes and gene products the reactions of the model depend on"
+        },
         "listOfInitialAssignments": {
           "label": "initial assignments",
           "summary": "the initial assignments of the model"
         },
+        "listOfObjectives": {
+          "label": "objectives",
+          "summary": "the objective functions of the constraint based model"
+        },
         "listOfParameters": {
           "label": "parameters",
           "summary": "the global parameters of the model"
+        },
+        "listOfPorts": {
+          "label": "ports",
+          "summary": "the elements of the model which are meant to be used from outside"
         },
         "listOfReactions": {
           "label": "reactions",
@@ -285,6 +329,10 @@
         "listOfSpecies": {
           "label": "species",
           "summary": "the species of the model"
+        },
+        "listOfSubmodels": {
+          "label": "submodels",
+          "summary": "the models which this model instantiates"
         },
         "listOfUnitDefinitions": {
           "label": "unit definitions",
@@ -328,6 +376,22 @@
         }
       }
     },
+    "Objective": {
+      "label": "Objective",
+      "summary": "the function a flux balance analysis maximises or minimises",
+      "package": "fbc",
+      "page": "reference/objective/",
+      "attributes": {
+        "listOfFluxObjectives": {
+          "label": "flux objectives",
+          "summary": "the reactions of the objective with their coefficient"
+        },
+        "type": {
+          "label": "type",
+          "summary": "whether the objective is maximised or minimised"
+        }
+      }
+    },
     "Parameter": {
       "label": "Parameter",
       "summary": "a named value which the mathematics of the model can use",
@@ -353,6 +417,30 @@
         "value": {
           "label": "value",
           "summary": "the value of the parameter at the start of the simulation"
+        }
+      }
+    },
+    "Port": {
+      "label": "Port",
+      "summary": "an element of the model which other models are meant to connect to",
+      "package": "comp",
+      "page": "reference/port/",
+      "attributes": {
+        "idRef": {
+          "label": "id ref",
+          "summary": "the element which this port names, by its identifier"
+        },
+        "metaIdRef": {
+          "label": "meta id ref",
+          "summary": "the element which this port names, by its meta id"
+        },
+        "portRef": {
+          "label": "port ref",
+          "summary": "the port which this reference names"
+        },
+        "unitRef": {
+          "label": "unit ref",
+          "summary": "the unit definition which this port names"
         }
       }
     },
@@ -393,6 +481,26 @@
         "fast": {
           "label": "fast",
           "summary": "whether the reaction was declared to be much faster than the others"
+        },
+        "fbc": {
+          "label": "fbc",
+          "summary": "the flux bounds and the gene association which fbc adds to a reaction"
+        },
+        "fbc.geneProductAssociation": {
+          "label": "gene product association",
+          "summary": "the logical expression of the genes under which the reaction can run"
+        },
+        "fbc.geneProducts": {
+          "label": "gene products",
+          "summary": "the gene products named by the association of the reaction"
+        },
+        "fbc.lowerFluxBound": {
+          "label": "lower flux bound",
+          "summary": "the parameter which holds the smallest flux the reaction may carry"
+        },
+        "fbc.upperFluxBound": {
+          "label": "upper flux bound",
+          "summary": "the parameter which holds the largest flux the reaction may carry"
         },
         "kineticLaw": {
           "label": "kinetic law",
@@ -442,6 +550,18 @@
       "package": "core",
       "page": "reference/sbase/",
       "attributes": {
+        "comp": {
+          "label": "replacements",
+          "summary": "how the element replaces an element of a submodel or is replaced by one"
+        },
+        "comp.replacedBy": {
+          "label": "replaced by",
+          "summary": "the element of a submodel which takes the place of this element"
+        },
+        "comp.replacedElements": {
+          "label": "replaced elements",
+          "summary": "the elements of submodels which this element takes the place of"
+        },
         "cvterms": {
           "label": "annotations",
           "summary": "the controlled vocabulary terms which link the element to database entries"
@@ -469,6 +589,10 @@
         "sbo": {
           "label": "sbo",
           "summary": "the term of the Systems Biology Ontology which classifies the element"
+        },
+        "uncertainties": {
+          "label": "uncertainties",
+          "summary": "the statistical measures of the value of the element"
         },
         "xml": {
           "label": "xml",
@@ -501,6 +625,18 @@
         "derivedUnits": {
           "label": "derived units",
           "summary": "the units of the quantity of the species as the report derives them"
+        },
+        "fbc": {
+          "label": "fbc",
+          "summary": "the chemical formula and the charge which fbc adds to a species"
+        },
+        "fbc.charge": {
+          "label": "charge",
+          "summary": "the charge of the species, counted in electrons"
+        },
+        "fbc.chemicalFormula": {
+          "label": "chemical formula",
+          "summary": "the elemental composition of the species"
         },
         "hasOnlySubstanceUnits": {
           "label": "only substance units",
@@ -544,6 +680,42 @@
         }
       }
     },
+    "Submodel": {
+      "label": "Submodel",
+      "summary": "the instantiation of another model inside this model",
+      "package": "comp",
+      "page": "reference/submodel/",
+      "attributes": {
+        "extentConversionFactor": {
+          "label": "extent conversion factor",
+          "summary": "the parameter which converts the reaction extent of the submodel into the extent of this model"
+        },
+        "listOfDeletions": {
+          "label": "deletions",
+          "summary": "the elements which are removed from the model before it is instantiated"
+        },
+        "modelRef": {
+          "label": "model ref",
+          "summary": "the model which this submodel instantiates"
+        },
+        "timeConversionFactor": {
+          "label": "time conversion factor",
+          "summary": "the parameter which converts the time of the submodel into the time of this model"
+        }
+      }
+    },
+    "Uncertainty": {
+      "label": "Uncertainty",
+      "summary": "a set of statistical measures of the value of an element",
+      "package": "distrib",
+      "page": "reference/uncertainty/",
+      "attributes": {
+        "uncertParameters": {
+          "label": "uncert parameters",
+          "summary": "the statistical measures which make up the uncertainty"
+        }
+      }
+    },
     "UnitDefinition": {
       "label": "Unit definition",
       "summary": "a named unit built from the base units of SBML",
@@ -555,8 +727,156 @@
           "summary": "the composed unit rendered as a formula"
         }
       }
+    },
+    "comp": {
+      "label": "Hierarchical Model Composition (comp)",
+      "summary": "the package which builds a model out of other models",
+      "package": "comp",
+      "page": "reference/comp/",
+      "attributes": {}
+    },
+    "distrib": {
+      "label": "Distributions (distrib)",
+      "summary": "the package which records the uncertainty of a value",
+      "package": "distrib",
+      "page": "reference/distrib/",
+      "attributes": {}
+    },
+    "fbc": {
+      "label": "Flux Balance Constraints (fbc)",
+      "summary": "the package which describes a constraint based model",
+      "package": "fbc",
+      "page": "reference/fbc/",
+      "attributes": {}
     }
   },
-  "links": {},
-  "concepts": {}
+  "links": {
+    "associatedSpecies": {
+      "label": "associated species",
+      "summary": "the species a gene product stands for",
+      "page": "reference/links/#associated-species"
+    },
+    "compartment": {
+      "label": "compartment",
+      "summary": "the compartment a species is located in or a reaction takes place in",
+      "page": "reference/links/#compartment"
+    },
+    "conversionFactor": {
+      "label": "conversion factor",
+      "summary": "the parameter which converts the values of an element",
+      "page": "reference/links/#conversion-factor"
+    },
+    "fluxBound": {
+      "label": "flux bound",
+      "summary": "the parameter which bounds the flux of a reaction",
+      "page": "reference/links/#flux-bound"
+    },
+    "fluxObjective": {
+      "label": "flux objective",
+      "summary": "a reaction which appears in an objective function",
+      "page": "reference/links/#flux-objective"
+    },
+    "geneProduct": {
+      "label": "gene product",
+      "summary": "a gene product the association of a reaction names",
+      "page": "reference/links/#gene-product"
+    },
+    "math": {
+      "label": "math",
+      "summary": "an element a formula refers to",
+      "page": "reference/links/#math"
+    },
+    "modelRef": {
+      "label": "model reference",
+      "summary": "the model a submodel instantiates",
+      "page": "reference/links/#model-reference"
+    },
+    "modifier": {
+      "label": "modifier",
+      "summary": "a species which influences a reaction without being consumed",
+      "page": "reference/links/#modifier"
+    },
+    "port": {
+      "label": "port",
+      "summary": "the element a port names",
+      "page": "reference/links/#port"
+    },
+    "product": {
+      "label": "product",
+      "summary": "a species a reaction produces",
+      "page": "reference/links/#product"
+    },
+    "reactant": {
+      "label": "reactant",
+      "summary": "a species a reaction consumes",
+      "page": "reference/links/#reactant"
+    },
+    "replacedBy": {
+      "label": "replaced by",
+      "summary": "the submodel which holds the element replacing this one",
+      "page": "reference/links/#replaced-by"
+    },
+    "replacedElement": {
+      "label": "replaced element",
+      "summary": "the submodel which holds an element this one replaces",
+      "page": "reference/links/#replaced-element"
+    },
+    "symbol": {
+      "label": "symbol",
+      "summary": "the element whose initial value an initial assignment computes",
+      "page": "reference/links/#symbol"
+    },
+    "units": {
+      "label": "units",
+      "summary": "the unit definition an element declares its units with",
+      "page": "reference/links/#units"
+    },
+    "variable": {
+      "label": "variable",
+      "summary": "the element whose value a rule or an event assignment sets",
+      "page": "reference/links/#variable"
+    }
+  },
+  "concepts": {
+    "derivedUnits": {
+      "label": "derived units",
+      "summary": "the units of a quantity or of a formula as they follow from the model",
+      "page": "reference/concepts/#derived-units"
+    },
+    "equation": {
+      "label": "equation",
+      "summary": "the reaction written as a chemical equation",
+      "page": "reference/concepts/#equation"
+    },
+    "manifest": {
+      "label": "manifest",
+      "summary": "the entries of the COMBINE archive a report was built from",
+      "page": "reference/concepts/#manifest"
+    },
+    "math": {
+      "label": "rendered math",
+      "summary": "the formula of an element as the report renders it",
+      "page": "reference/concepts/#rendered-math"
+    },
+    "modelKind": {
+      "label": "model kind",
+      "summary": "whether a model is the model of the document or a model definition",
+      "page": "reference/concepts/#model-kind"
+    },
+    "pk": {
+      "label": "primary key",
+      "summary": "the identifier the report gives to every element it shows",
+      "page": "reference/concepts/#primary-key"
+    },
+    "sbmlType": {
+      "label": "sbml type",
+      "summary": "the kind of element, which decides how the report shows it",
+      "page": "reference/concepts/#sbml-type"
+    },
+    "unitsLatex": {
+      "label": "rendered units",
+      "summary": "the units an element declares, rendered as a formula",
+      "page": "reference/concepts/#rendered-units"
+    }
+  }
 }
