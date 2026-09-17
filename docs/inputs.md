@@ -28,7 +28,7 @@ An SBML file is read as a single [document](reference/sbmldocument.md) with one 
 
 ## The examples
 
-The examples page lists the models the backend ships with, with a filter above the list which searches the id, the name and the description of an example. A card shows the id of the example, a name, a description and badges. For a model the name is the name of the model, the description is the first lines of its notes and the badges are the packages the file declares. For one of the four COMBINE archives the name is the name of the archive file, the description is the manifest of the archive and the single badge says `OMEX`.
+The examples page lists the models the backend ships with, with a filter above the list which searches the id, the name and the description of an example. A card shows the id of the example, a name, a description and badges. For a model the name is the name of the model, the description is the first lines of its notes and the badges are the packages the file declares. For one of the four COMBINE archives the name is the file name without its extension, the description is the manifest of the archive and the single badge says `OMEX`.
 
 ![The examples page, with a filter above a grid of example cards](images/examples.png)
 
@@ -39,6 +39,8 @@ The examples are of five kinds:
 - constraint based reconstructions which use the fbc package: the core model of *E. coli* and Recon3D, the human reconstruction, which is large enough to show what a report does with tens of thousands of elements
 - the first curated models of [BioModels](https://www.ebi.ac.uk/biomodels/), each read from its COMBINE archive
 - four COMBINE archives, among them `CompModels`, which holds several SBML entries and is the example to look at when you want to see how an archive is shown
+
+The kinds overlap: the repressilator is listed twice, once as the published model `BIOMD0000000012 (BIOMD0000000012_urn.xml)`, whose annotations are written as MIRIAM URNs, and once as the curated BioModels entry `BIOMD0000000012`, read from its archive.
 
 The id of an example which is a model is the id of the model with the name of its file behind it, for example `icg_body (icg_body.xml)`; a model of BioModels keeps its accession, for example `BIOMD0000000012`; an archive is named by its file without the extension, for example `CompModels`. An example opens at the address `/examples/<id>`, so a report of an example can be linked and bookmarked.
 

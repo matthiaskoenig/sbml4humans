@@ -8,7 +8,7 @@ SBML is an XML format, and XML is written for programs: the mathematics of a mod
 
 ## Features
 
-- one table per element type with the columns which matter for that type, sorted by a click on a column header, and fast even for a genome scale reconstruction with tens of thousands of elements
+- one table per element type with the columns which matter for that type, sorted by a click on a column header except for the columns of rendered mathematics and of rendered units, and fast even for a genome scale reconstruction with tens of thousands of elements
 - a search over the whole model and a rail which counts the elements of every type and filters the tables by type
 - an inspector which shows one element in full: its attributes, the elements it references and the elements which reference it, its notes, its annotations and its history, and the raw XML of the element
 - the mathematics typeset as formulas instead of MathML, and the units of every quantity rendered, including the units the report derives
@@ -16,7 +16,7 @@ SBML is an XML format, and XML is written for programs: the mathematics of a mod
 - SBML of any level and version, plain or gzipped, and COMBINE archives with one report per SBML entry
 - the comp, fbc and distrib packages of SBML Level 3
 - example models which ship with the backend, from small models of a single feature over published models to the human reconstruction Recon3D
-- every column, attribute, type and link kind explained where it is shown, from the same glossary the reference of the documentation is generated from
+- every column of the element tables, every attribute row of the inspector, every type and every kind of link explained where it is shown, from the same glossary the reference of the documentation is generated from
 - the state of a report, that is the selected element, the search and the filter of types, is part of its url, so a report can be linked as it stands
 
 ## Documentation
@@ -34,7 +34,7 @@ The sources of the site are in [`docs/`](docs), the site is built with [Zensical
 
 ## Funding
 
-SBML4Humans was funded as part of [Google Summer of Code 2021](https://summerofcode.withgoogle.com/).
+SBML4Humans was funded by [Google Summer of Code 2021](https://summerofcode.withgoogle.com/). Matthias König is supported by the Federal Ministry of Education and Research (BMBF, Germany) within the research network Systems Medicine of the Liver ([LiSyM](https://lisym.org/), grant number 031L0054) and by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 "[QuaLiPerF](https://qualiperf.de) (Quantifying Liver Perfusion-Function Relationship in Complex Resection - A Systems Medicine Approach)" by grant number 436883643.
 
 ## License
 

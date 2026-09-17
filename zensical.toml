@@ -1,5 +1,5 @@
 [project]
-site_name = "sbml4humans"
+site_name = "SBML4Humans"
 site_url = "https://matthiaskoenig.github.io/sbml4humans/"
 site_description = "Interactive, human readable reports of SBML models"
 site_author = "Matthias König"
@@ -41,13 +41,13 @@ nav = [
       { "Local parameter" = "reference/localparameter.md" },
       { "Event assignment" = "reference/eventassignment.md" },
     ] },
-    { "Hierarchical models (comp)" = [
+    { "Hierarchical Model Composition (comp)" = [
       { "Hierarchical Model Composition (comp)" = "reference/comp.md" },
       { "External model definition" = "reference/externalmodeldefinition.md" },
       { "Submodel" = "reference/submodel.md" },
       { "Port" = "reference/port.md" },
     ] },
-    { "Flux balance constraints (fbc)" = [
+    { "Flux Balance Constraints (fbc)" = [
       { "Flux Balance Constraints (fbc)" = "reference/fbc.md" },
       { "Gene product" = "reference/geneproduct.md" },
       { "Objective" = "reference/objective.md" },

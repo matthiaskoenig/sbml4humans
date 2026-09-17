@@ -1,4 +1,4 @@
-# sbml4humans
+# SBML4Humans
 
 [SBML4Humans](https://sbml4humans.de) renders [SBML](sbml.md) models as interactive, human readable reports. Give it a model and it gives you a page which shows what the model contains: its compartments, species, reactions, rules and events, the mathematics of the model as typeset formulas, the units it computes from the file, the references between the elements, and the annotations resolved to the entries they point at.
 
@@ -8,17 +8,17 @@
 
 SBML is an XML format, and XML is written for programs. A model file states everything and shows nothing: the mathematics is content MathML, a unit is a product of base units spread over several elements, a species is a line of attributes among thousands of other lines, and an annotation is a URI in an RDF block. Reading a model in a text editor means reassembling it in your head, and a model of a genome scale reconstruction cannot be read that way at all.
 
-The Google Summer of Code project which started this application was proposed because a human readable, interactive report which conveys the information and the content of an SBML model was urgently needed ([NRNB GoogleSummerOfCode issue #164](https://github.com/nrnb/GoogleSummerOfCode/issues/164)). That is what sbml4humans is: the view of a model which the file itself does not give you. It does not edit models and it does not simulate them, it reads them.
+The Google Summer of Code project which started this application was proposed because a human readable, interactive report which conveys the information and the content of an SBML model was urgently needed ([NRNB GoogleSummerOfCode issue #164](https://github.com/nrnb/GoogleSummerOfCode/issues/164)). That is what SBML4Humans is: the view of a model which the file itself does not give you. It does not edit models and it does not simulate them, it reads them.
 
 It is written for the people who have to read models rather than write them:
 
 - modellers who open a model they did not build, or their own model after a year, and need to know what is in it
 - reviewers and curators who check whether a model is annotated, whether its units are consistent and whether it says what the paper says
-- students and lecturers who learn what SBML is, because every element of the report is explained where it is shown
+- students and lecturers who learn what SBML is, because the report explains its types, the columns of its tables and the attributes of its inspector where it shows them
 
 ## What a report shows
 
-A report is one page per model. The rail on the left lists every element type with the number of elements of that type, the tables in the middle show the elements of each type with the columns which matter for that type, and the inspector shows one element in full: its attributes, everything it references and everything which references it, its notes, its annotations and its history, and the raw XML when that is what you need. Every column header, every attribute label, every mark of a type and every group of links carries a one sentence explanation on hover, and the type in the header of the inspector links its page in the reference.
+A report is one page per model. The rail on the left lists every element type with the number of elements of that type, the tables in the middle show the elements of each type with the columns which matter for that type, and the inspector shows one element in full: its attributes, everything it references and everything which references it, its notes, its annotations and its history, and the raw XML when that is what you need. Every column header of an element table, every attribute label of the inspector, every mark of a type and every group of links carries a one sentence explanation on hover, and the type in the header of the inspector links its page in the reference.
 
 [Reading a report](report.md) walks through all of it.
 
@@ -36,6 +36,10 @@ If a term of a report is unfamiliar, the [reference](reference/index.md) explain
 
 ## Funding and license
 
-sbml4humans was started in 2021 as the project "Interactive SBML report for Humans" by Sankha Das, mentored by Matthias König and Ralf Steuer, as part of the Google Summer of Code programme of the [National Resource for Network Biology](https://nrnb.org/) (NRNB). It is developed at [github.com/matthiaskoenig/sbml4humans](https://github.com/matthiaskoenig/sbml4humans) under the MIT license, and it is funded by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 [QuaLiPerF](https://qualiperf.de).
+SBML4Humans was started in 2021 as the project "Interactive SBML report for Humans" by Sankha Das, mentored by Matthias König and Ralf Steuer, with the [National Resource for Network Biology](https://nrnb.org/) (NRNB) as the mentoring organisation. It is developed at [github.com/matthiaskoenig/sbml4humans](https://github.com/matthiaskoenig/sbml4humans).
+
+SBML4Humans was funded by [Google Summer of Code 2021](https://summerofcode.withgoogle.com/). Matthias König is supported by the Federal Ministry of Education and Research (BMBF, Germany) within the research network Systems Medicine of the Liver ([LiSyM](https://lisym.org/), grant number 031L0054) and by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 "[QuaLiPerF](https://qualiperf.de) (Quantifying Liver Perfusion-Function Relationship in Complex Resection - A Systems Medicine Approach)" by grant number 436883643.
+
+The source code is under the [MIT](https://opensource.org/license/MIT) license, this documentation under [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
 
 The sources this documentation is written from are listed under [References](references.md).
