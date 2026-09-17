@@ -8,9 +8,16 @@ type TooltipValue = string | null | undefined;
 
 const PLACEMENTS = ["top", "bottom", "left", "right"] as const;
 
+/** The tooltip of an explanation, which is a sentence, in the font of the application. */
+const CLASS =
+  "fixed top-0 left-0 z-50 max-w-md rounded bg-gray-900 px-2 py-1 text-xs break-words text-white shadow";
+/** `v-tooltip.mono`: the tooltip of an id, a value or a formula, in the font they are shown in. */
+const MONO_CLASS = `${CLASS} font-mono`;
+
 interface TooltipTarget {
   text: TooltipValue;
   placement: Placement;
+  mono: boolean;
   show: () => void;
   hide: () => void;
 }
@@ -25,8 +32,7 @@ function tooltipElement(): HTMLDivElement {
     tooltip = document.createElement("div");
     tooltip.id = TOOLTIP_ID;
     tooltip.setAttribute("role", "tooltip");
-    tooltip.className =
-      "fixed top-0 left-0 z-50 max-w-md rounded bg-gray-900 px-2 py-1 font-mono text-xs break-words text-white shadow";
+    tooltip.className = CLASS;
     tooltip.hidden = true;
     document.body.appendChild(tooltip);
   }
@@ -64,6 +70,7 @@ function show(el: HTMLElement): void {
   owner = el;
   const tip = tooltipElement();
   tip.textContent = target.text;
+  tip.className = target.mono ? MONO_CLASS : CLASS;
   tip.hidden = false;
   el.setAttribute("aria-describedby", TOOLTIP_ID);
   document.addEventListener("keydown", onKeydown);
@@ -82,12 +89,14 @@ function hide(el?: HTMLElement): void {
 }
 
 /** `v-tooltip.bottom="text"`: a tooltip on hover and keyboard focus, positioned with
- * Floating UI so that it stays in the viewport. An empty text shows no tooltip. */
+ * Floating UI so that it stays in the viewport. An empty text shows no tooltip. The text is an
+ * explanation in the font of the application, `v-tooltip.mono` an id, a value or a formula. */
 export const vTooltip: Directive<HTMLElement, TooltipValue> = {
   mounted(el, binding) {
     const target: TooltipTarget = {
       text: binding.value,
       placement: placementOf(binding),
+      mono: binding.modifiers.mono === true,
       show: () => show(el),
       hide: () => hide(el),
     };
@@ -102,12 +111,15 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
     if (!target) return;
     target.text = binding.value;
     target.placement = placementOf(binding);
+    target.mono = binding.modifiers.mono === true;
     if (owner !== el) return;
     if (!target.text) {
       hide(el);
       return;
     }
-    tooltipElement().textContent = target.text;
+    const tip = tooltipElement();
+    tip.textContent = target.text;
+    tip.className = target.mono ? MONO_CLASS : CLASS;
     void position(el, target.placement);
   },
   beforeUnmount(el) {

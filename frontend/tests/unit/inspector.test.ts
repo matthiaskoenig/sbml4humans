@@ -18,6 +18,7 @@ import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
+import { summaryOf } from "./summary";
 
 const fixtures = [
   "repressilator",
@@ -94,8 +95,9 @@ describe("inspector", () => {
       .findAll("[data-testid=attribute-row]")
       .find((r) => r.find("dt").text() === "compartment")!;
     await row.get("dt").trigger("mouseenter");
+    // the tooltip names the truncated label of the row before it explains it
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
-      attributeEntry("Species", "compartment")?.summary,
+      `compartment: ${summaryOf(attributeEntry("Species", "compartment"), "Species.compartment")}`,
     );
   });
 
@@ -116,7 +118,7 @@ describe("inspector", () => {
       .find((d) => d.text() === "compartment")!;
     await dt.trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
-      linkEntry("compartment")?.summary,
+      summaryOf(linkEntry("compartment"), "the link kind compartment"),
     );
   });
 

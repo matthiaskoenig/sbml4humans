@@ -114,9 +114,9 @@ describe("glossary", () => {
   });
 
   it("builds the url of a reference page", () => {
+    // the page of the type, which the inspector links; the anchors of the attributes are used
+    // by the links inside the site, not by the application
     expect(referenceUrl("Species")).toBe(`${DOCS_URL}reference/species/`);
-    expect(referenceUrl("Species", "initialAmount")).toBe(
-      `${DOCS_URL}reference/species/#initial-amount`,
-    );
+    expect(referenceUrl("Reaction")).toBe(`${DOCS_URL}reference/reaction/`);
   });
 });

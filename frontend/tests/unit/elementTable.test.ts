@@ -13,6 +13,7 @@ import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
+import { summaryOf } from "./summary";
 
 // jsdom does not implement scrollIntoView.
 Element.prototype.scrollIntoView ??= function () {};
@@ -76,7 +77,7 @@ describe("ElementTable", () => {
     const table = mountTable(species);
     await header(table, "id").get("[data-testid=sort-button]").trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
-      attributeEntry("Species", "id")?.summary,
+      summaryOf(attributeEntry("Species", "id"), "Species.id"),
     );
   });
 
@@ -128,7 +129,7 @@ describe("ElementTable", () => {
     expect(derived.find("[data-testid=sort-button]").exists()).toBe(false);
     await derived.get("span").trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
-      attributeEntry("Species", "derivedUnits")?.summary,
+      summaryOf(attributeEntry("Species", "derivedUnits"), "Species.derivedUnits"),
     );
   });
 

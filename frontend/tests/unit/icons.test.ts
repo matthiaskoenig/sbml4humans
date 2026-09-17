@@ -8,13 +8,18 @@ import { DOCUMENT_TYPES, ELEMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
 import { typeEntry } from "@/report/glossary";
 
+import { summaryOf } from "./summary";
+
 describe("icons", () => {
   it("renders the svg icon of every type in both sizes", () => {
     for (const info of [...DOCUMENT_TYPES, ...ELEMENT_TYPES, ...NESTED_TYPES]) {
       const small = mount(TypeMark, { props: { type: info.type } });
       const svg = small.get("svg");
       expect(svg.classes(), info.type).toContain("size-2.5");
+      // the icon itself carries no text, the mark around it is the image and names the type
       expect(svg.attributes("aria-hidden")).toBe("true");
+      expect(small.attributes("role"), info.type).toBe("img");
+      expect(small.attributes("aria-label"), info.type).toBe(info.label);
       expect(
         mount(TypeMark, { props: { type: info.type, size: "md" } })
           .get("svg")
@@ -28,14 +33,16 @@ describe("icons", () => {
     ).toContain("lucide-arrow-right-left");
   });
 
-  it("shows the summary of the type as a tooltip", async () => {
+  it("names the type and shows its summary as a tooltip", async () => {
     const wrapper = mount(TypeMark, {
       props: { type: "Species" },
       attachTo: document.body,
       global: { directives: { tooltip: vTooltip } },
     });
     await wrapper.trigger("mouseenter");
-    expect(document.getElementById("app-tooltip")?.textContent).toBe(typeEntry("Species")?.summary);
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      `Species: ${summaryOf(typeEntry("Species"), "the type Species")}`,
+    );
     wrapper.unmount();
   });
 

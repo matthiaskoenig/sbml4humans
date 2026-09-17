@@ -49,7 +49,7 @@ function copy(event: MouseEvent): void {
   <span v-if="!math" class="text-gray-400">-</span>
   <span
     v-else-if="html !== null"
-    v-tooltip.bottom="`${math.formula} (click to copy)`"
+    v-tooltip.bottom.mono="`${math.formula} (click to copy)`"
     class="cursor-copy"
     :class="{ 'block overflow-x-auto': display }"
     data-testid="math"
@@ -60,7 +60,7 @@ function copy(event: MouseEvent): void {
   </span>
   <span v-else class="flex flex-col items-start gap-1">
     <span
-      v-tooltip.bottom="`${math.formula} (click to copy)`"
+      v-tooltip.bottom.mono="`${math.formula} (click to copy)`"
       class="cursor-copy font-mono"
       data-testid="math-text"
       @click="copy"

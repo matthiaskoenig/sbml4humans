@@ -23,7 +23,7 @@ const full = computed(() =>
   <span v-if="text === null" class="text-gray-400">-</span>
   <span
     v-else
-    v-tooltip.bottom="full"
+    v-tooltip.bottom.mono="full"
     :class="{ 'font-mono': mono || typeof value === 'number' }"
     >{{ text }}</span
   >
