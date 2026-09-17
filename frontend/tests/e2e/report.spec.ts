@@ -96,7 +96,7 @@ test.describe("repressilator", () => {
 
 test("the archive dropdown switches the entry", async ({ page }) => {
   await openExample(page, "CompModels");
-  const select = page.getByTestId("entry-select");
+  const select = page.getByRole("combobox", { name: "archive entry", exact: true });
   await expect(select).toHaveValue("./models/omex_minimal.xml");
   await select.selectOption("./models/omex_comp.xml");
   await expect(page.getByTestId("model-name")).toHaveText("omex_comp");
@@ -105,7 +105,7 @@ test("the archive dropdown switches the entry", async ({ page }) => {
 
 test("the model dropdown switches to a model definition", async ({ page }) => {
   await openExample(page, "model_definitions (model_definitions.xml)");
-  await page.getByTestId("model-select").selectOption("m1");
+  await page.getByRole("combobox", { name: "model", exact: true }).selectOption("m1");
   await expect(page.getByTestId("rail-model")).toContainText("m1");
   expect(query(page, "model")).toBe("m1");
 });

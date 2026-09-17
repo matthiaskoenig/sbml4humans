@@ -29,6 +29,7 @@ const packages = computed(
       v-if="entries.length > 1"
       :model-value="entry"
       :options="entryOptions"
+      aria-label="archive entry"
       data-testid="entry-select"
       @update:model-value="(value: string) => view.setEntry(value)"
     />
@@ -39,6 +40,7 @@ const packages = computed(
       v-if="index.models.length > 1"
       :model-value="model.id ?? ''"
       :options="modelOptions"
+      aria-label="model"
       data-testid="model-select"
       @update:model-value="(value: string) => view.setModel(value)"
     />

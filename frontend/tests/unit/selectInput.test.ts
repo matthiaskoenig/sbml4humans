@@ -9,13 +9,15 @@ const options = [
 ];
 
 describe("SelectInput", () => {
-  it("renders the options with the selected value on the select", () => {
+  it("renders the options with the selected value and the attributes on the select", () => {
     const wrapper = mount(SelectInput, {
       props: { modelValue: "m1", options },
-      attrs: { "data-testid": "model-select" },
+      attrs: { "aria-label": "model", "data-testid": "model-select" },
     });
     const select = wrapper.get("select");
+    expect(select.attributes("aria-label")).toBe("model");
     expect(select.attributes("data-testid")).toBe("model-select");
+    expect(wrapper.attributes("aria-label")).toBeUndefined();
     expect(wrapper.findAll("option").map((option) => option.text())).toEqual([
       "./models/omex_minimal.xml",
       "m1 (definition)",
