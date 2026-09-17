@@ -60,7 +60,7 @@ A native `<table class="w-full border-collapse text-sm">`. The classes of the Pr
 - The selected row is the row whose `pk` is `view.state.value.pk`, as today.
 - A click on a row selects it (`view.select(pk)`), a click on the selected row clears the selection (`view.select(null)`).
 - A click whose target is inside `a`, `button`, `input`, `select`, `textarea` or `[contenteditable]` of the row is ignored (`ElementLink` and `MathView` stop the propagation already, this keeps other controls safe).
-- Keyboard: roving tabindex over the rows in view. The selected row has `tabindex="0"` when it is in view, otherwise the first row in view; all other rows `-1`. ArrowDown and ArrowUp move the focus to the next or previous row (in a windowed table the viewport scrolls to keep it visible), Enter and Space toggle the selection of the focused row. Rows carry `aria-selected`.
+- Keyboard: roving tabindex over the rows in view. The row the keyboard focus last moved to has `tabindex="0"` when it is in view, otherwise the selected row when it is in view, otherwise the first row in view; all other rows `-1`. ArrowDown and ArrowUp move the focus to the next or previous row (in a windowed table the viewport scrolls to keep it visible), Enter and Space toggle the selection of the focused row. Rows carry `aria-selected`.
 - A focused row shows a focus ring (`focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-link`).
 
 ### Windowing

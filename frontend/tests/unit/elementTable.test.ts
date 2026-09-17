@@ -13,6 +13,9 @@ import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
 
+// jsdom does not implement scrollIntoView.
+Element.prototype.scrollIntoView ??= function () {};
+
 /** The row height ElementTable pins a windowed row to. */
 const ROW_HEIGHT = 36;
 
@@ -182,6 +185,70 @@ describe("ElementTable windowing", () => {
     expect(table.find("[data-testid=spacer-after]").exists()).toBe(false);
     expect(table.findAll("tbody tr[data-pk]")).toHaveLength(species.length);
   });
+
+  it("scrolls the viewport when the arrow keys move the focus outside it", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(many);
+    (table.element as HTMLElement).scrollTop = ROW_HEIGHT * 500;
+    await table.trigger("scroll");
+    await nextFrame();
+    await flushPromises();
+
+    // the first rendered row (virtual:495) is above the viewport (which starts at
+    // virtual:500); ArrowUp moves to virtual:494, further above the render window too
+    const first = table.findAll("tbody tr[data-pk]")[0]!;
+    expect(first.attributes("data-pk")).toBe("virtual:495");
+    await first.trigger("keydown", { key: "ArrowUp" });
+    await flushPromises();
+    expect(document.activeElement).toBe(table.get('[data-pk="virtual:494"]').element);
+    expect((table.element as HTMLElement).scrollTop).toBe(494 * ROW_HEIGHT);
+
+    // ArrowDown from the last rendered row moves past the render window's far edge too
+    const last = table.findAll("tbody tr[data-pk]").at(-1)!;
+    await last.trigger("keydown", { key: "ArrowDown" });
+    await flushPromises();
+    const lastIndex = Number(last.attributes("data-pk")!.split(":")[1]) + 1;
+    expect(document.activeElement).toBe(table.get(`[data-pk="virtual:${lastIndex}"]`).element);
+    expect((table.element as HTMLElement).scrollTop).toBe(500 * ROW_HEIGHT);
+  });
+
+  it("gives the roving tabindex to the first row of the viewport, not the overscan above it", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(many);
+    (table.element as HTMLElement).scrollTop = ROW_HEIGHT * 500;
+    await table.trigger("scroll");
+    await nextFrame();
+    await flushPromises();
+    const rows = table.findAll("tbody tr[data-pk]");
+    expect(rows[0]!.attributes("data-pk")).toBe("virtual:495");
+    const tabbable = rows.filter((row) => row.attributes("tabindex") === "0");
+    expect(tabbable).toHaveLength(1);
+    expect(tabbable[0]!.attributes("data-pk")).toBe("virtual:500");
+  });
+
+  it("resyncs the scroll position once the table returns to windowing after a short spell", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(many);
+    (table.element as HTMLElement).scrollTop = ROW_HEIGHT * 500;
+    await table.trigger("scroll");
+    await nextFrame();
+    await flushPromises();
+
+    // a search that thins the rows below the threshold, then the browser resets the
+    // scroll of the now unscrollable table
+    await table.setProps({ rows: species });
+    (table.element as HTMLElement).scrollTop = 0;
+    await table.trigger("scroll");
+    await nextFrame();
+    await flushPromises();
+
+    // clearing the search brings the rows back above the threshold
+    await table.setProps({ rows: many });
+    await flushPromises();
+    const rows = table.findAll("tbody tr[data-pk]");
+    expect(rows[0]!.attributes("data-pk")).toBe("virtual:0");
+    expect(table.find("[data-testid=spacer-before]").exists()).toBe(false);
+  });
 });
 
 describe("ElementCell", () => {
@@ -201,7 +268,7 @@ describe("ElementCell", () => {
   }
 
   it("renders the equation of the fixture verbatim", () => {
-    expect(reaction.equation).toContain("➞");
+    expect(reaction.equation).toContain("\u279e");
     expect(
       mountCell(reaction, { field: "equation", header: "equation", kind: "text" }).text(),
     ).toBe(reaction.equation.trim());

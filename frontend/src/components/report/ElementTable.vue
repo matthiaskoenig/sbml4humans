@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowDownWideNarrowIcon, ArrowUpDownIcon, ArrowUpNarrowWideIcon } from "@lucide/vue";
-import { computed, nextTick, onBeforeUnmount, ref, type Component } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from "vue";
 
 import type { ElementType, SbmlElement } from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
@@ -37,7 +37,7 @@ let frame = 0;
 
 /** One update of the window per animation frame. */
 function onScroll(): void {
-  if (!virtual.value || frame) return;
+  if (frame) return;
   frame = requestAnimationFrame(() => {
     frame = 0;
     scrollTop.value = scroller.value?.scrollTop ?? 0;
@@ -45,6 +45,18 @@ function onScroll(): void {
 }
 
 onBeforeUnmount(() => cancelAnimationFrame(frame));
+
+/** The scroll position can drift when the table switches between windowed and short,
+ * for example a search that thins the rows resets the scroll of the browser without a
+ * scroll event we catch in time; resync it once the mode or the rows change instead of
+ * trusting only the last scroll event. */
+watch(
+  [virtual, () => props.rows],
+  () => {
+    scrollTop.value = scroller.value?.scrollTop ?? 0;
+  },
+  { flush: "post" },
+);
 
 const range = computed(() =>
   virtual.value
@@ -94,14 +106,25 @@ function onRowClick(event: MouseEvent, row: SbmlElement): void {
 const activePk = ref<string | null>(null);
 const rowElements = new Map<string, HTMLElement>();
 
-/** The one row reachable by tab: the last focused row, else the selected row, else the
- * first row, each only when it is rendered. */
+/** The rows actually in view, without the overscan the render window adds around it; a
+ * short table's viewport is every row it renders. */
+const viewport = computed(() =>
+  virtual.value
+    ? rowWindow(scrollTop.value, sorted.value.length, ROW_HEIGHT, ROW_HEIGHT * VIEWPORT_ROWS, 0)
+    : { start: 0, end: sorted.value.length, before: 0, after: 0 },
+);
+
+/** The one row reachable by tab: the row the keyboard focus last moved to when it is in
+ * the viewport, else the selected row when it is in the viewport, else the first row in
+ * the viewport. The overscan rows a windowed table renders around the viewport are never
+ * tabbable on their own, so tabbing into a scrolled table cannot land above it. */
 const tabbablePk = computed(() => {
-  const rendered = new Set(visible.value.map((row) => row.pk));
+  const inView = sorted.value.slice(viewport.value.start, viewport.value.end);
+  const inViewPks = new Set(inView.map((row) => row.pk));
   for (const pk of [activePk.value, selectedPk.value]) {
-    if (pk && rendered.has(pk)) return pk;
+    if (pk && inViewPks.has(pk)) return pk;
   }
-  return visible.value[0]?.pk ?? null;
+  return inView[0]?.pk ?? null;
 });
 
 function setRowElement(pk: string, element: unknown): void {
@@ -109,19 +132,35 @@ function setRowElement(pk: string, element: unknown): void {
   else rowElements.delete(pk);
 }
 
+/** Scrolls the windowed table so the row at `index` lies inside the viewport, moving the
+ * render window (and so `rowElements`) with it before the caller awaits a tick. */
+function scrollIndexIntoView(index: number): void {
+  if (!virtual.value || !scroller.value) return;
+  const viewportHeight = ROW_HEIGHT * VIEWPORT_ROWS;
+  const rowTop = index * ROW_HEIGHT;
+  const rowBottom = rowTop + ROW_HEIGHT;
+  const viewTop = scroller.value.scrollTop;
+  const viewBottom = viewTop + viewportHeight;
+  if (rowTop < viewTop) scroller.value.scrollTop = rowTop;
+  else if (rowBottom > viewBottom) scroller.value.scrollTop = rowBottom - viewportHeight;
+  scrollTop.value = scroller.value.scrollTop;
+}
+
 async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: number): Promise<void> {
   // keys on a link or another control inside the row are theirs
   if (event.target !== event.currentTarget) return;
   if (event.key === "ArrowDown" || event.key === "ArrowUp") {
     event.preventDefault();
-    const next = sorted.value[index + (event.key === "ArrowDown" ? 1 : -1)];
+    const nextIndex = index + (event.key === "ArrowDown" ? 1 : -1);
+    const next = sorted.value[nextIndex];
     if (!next) return;
-    activePk.value = next.pk;
+    scrollIndexIntoView(nextIndex);
     await nextTick();
     const element = rowElements.get(next.pk);
-    element?.focus({ preventScroll: true });
-    // jsdom has no scrollIntoView
-    element?.scrollIntoView?.({ block: "nearest" });
+    if (!element) return;
+    activePk.value = next.pk;
+    element.focus({ preventScroll: true });
+    element.scrollIntoView({ block: "nearest" });
   } else if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
     toggleSelection(row);
