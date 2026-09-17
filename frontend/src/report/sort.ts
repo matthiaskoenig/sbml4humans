@@ -1,0 +1,38 @@
+import { fieldValue } from "@/report/columns";
+
+export type SortOrder = 1 | -1;
+
+/** The sort of an element table: one column, ascending (1) or descending (-1). */
+export interface SortState {
+  field: string;
+  order: SortOrder;
+}
+
+const collator = new Intl.Collator(undefined, { numeric: true });
+
+/** Empty for the sort: null, undefined, the empty string, an empty array or object. */
+export function isEmptyValue(value: unknown): boolean {
+  if (value === null || value === undefined || value === "") return true;
+  if (Array.isArray(value)) return value.length === 0;
+  return typeof value === "object" && !(value instanceof Date) && Object.keys(value).length === 0;
+}
+
+/** Compare two values of a column for `order`, with the semantics of the PrimeVue 4
+ * DataTable the tables had before: empty values last in both orders, strings with numeric
+ * collation (`x2` before `x10`), every other value with `<` and `>`. */
+export function compareValues(a: unknown, b: unknown, order: SortOrder): number {
+  const emptyA = isEmptyValue(a);
+  const emptyB = isEmptyValue(b);
+  if (emptyA || emptyB) return emptyA === emptyB ? 0 : emptyA ? 1 : -1;
+  if (typeof a === "string" && typeof b === "string") return order * collator.compare(a, b);
+  const x = a as number;
+  const y = b as number;
+  return order * (x < y ? -1 : x > y ? 1 : 0);
+}
+
+/** The rows sorted by `sort` (stable), a copy in the order of the report without a sort. */
+export function sortRows<T extends object>(rows: readonly T[], sort: SortState | null): T[] {
+  if (!sort) return [...rows];
+  const values = new Map(rows.map((row) => [row, fieldValue(row, sort.field)]));
+  return [...rows].sort((a, b) => compareValues(values.get(a), values.get(b), sort.order));
+}
