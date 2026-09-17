@@ -1,0 +1,58 @@
+# A small glossary in the format of `glossary/` used by the tests of the
+# generator. It is not the glossary of the application.
+
+[specs.l3v2]
+label = "SBML Level 3 Version 2 Core"
+citation = "Hucka et al. 2019, J Integr Bioinform 16(2):20190021"
+url = "https://sbml.org/documents/specifications/level-3/version-2/core/"
+
+[types.Species]
+label = "Species"
+package = "core"
+spec = { doc = "l3v2", section = "4.6" }
+summary = "a pool of a chemical entity in a compartment"
+description = """
+A species is a pool of entities which the model treats as indistinguishable, for example a metabolite or a protein. Every species is located in a [Compartment](compartment.md).
+"""
+related = ["Compartment"]
+
+[types.Species.attributes.initialAmount]
+label = "initial amount"
+type = "double"
+spec = { doc = "l3v2", section = "4.6.4" }
+summary = "the amount of the species when the simulation starts"
+description = """
+The initial amount is the quantity of the species at the start of a simulation, in the substance units of the species.
+"""
+
+[types.Species.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "units"
+summary = "the units of the species as the report derives them"
+description = """
+The report derives the units of the species from its substance units and from the size of its compartment.
+"""
+
+[types.Compartment]
+label = "Compartment"
+package = "core"
+spec = { doc = "l3v2", section = "4.5" }
+summary = "a bounded space in which species are located"
+description = """
+A compartment is the space a species lives in, for example the cytosol of a cell.
+"""
+
+[links.compartment]
+label = "compartment"
+summary = "the compartment an element is located in"
+description = """
+The inspector of a species shows the compartment it is located in under "References".
+"""
+
+[concepts.derivedUnits]
+label = "derived units"
+summary = "the units the report derives for an element"
+description = """
+The report derives the units of an element from the units of the quantities of its model, and shows them as a rendered formula.
+"""

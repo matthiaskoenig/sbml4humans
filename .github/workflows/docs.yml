@@ -37,6 +37,8 @@ jobs:
         # the dev group, which zensical is part of, is installed by default
         working-directory: backend
         run: uv sync
+      - name: Check that the generated reference is current
+        run: uv run --project backend python -m sbml4humans.glossary --check
       - name: Build the documentation
         run: uv run --project backend zensical build --clean
       - name: Upload the site

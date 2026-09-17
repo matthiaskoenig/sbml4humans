@@ -1,0 +1,562 @@
+{
+  "types": {
+    "AlgebraicRule": {
+      "label": "Algebraic rule",
+      "summary": "an equation which has to hold at every moment of the simulation",
+      "package": "core",
+      "page": "reference/algebraicrule/",
+      "attributes": {
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the expression as the report derives them"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the expression which has to be zero"
+        }
+      }
+    },
+    "AssignmentRule": {
+      "label": "Assignment rule",
+      "summary": "a formula which holds at every moment of the simulation",
+      "package": "core",
+      "page": "reference/assignmentrule/",
+      "attributes": {
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the formula as the report derives them"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the formula which computes the value of the variable"
+        },
+        "variable": {
+          "label": "variable",
+          "summary": "the element the rule assigns to"
+        }
+      }
+    },
+    "Compartment": {
+      "label": "Compartment",
+      "summary": "a bounded space in which species are located",
+      "package": "core",
+      "page": "reference/compartment/",
+      "attributes": {
+        "constant": {
+          "label": "constant",
+          "summary": "whether the size of the compartment stays fixed during a simulation"
+        },
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the size as the report derives them"
+        },
+        "size": {
+          "label": "size",
+          "summary": "the size of the compartment at the start of the simulation"
+        },
+        "spatialDimensions": {
+          "label": "spatial dimensions",
+          "summary": "the number of dimensions of the compartment"
+        },
+        "units": {
+          "label": "units",
+          "summary": "the units of the size of the compartment"
+        },
+        "unitsLatex": {
+          "label": "rendered units",
+          "summary": "the units of the size rendered as a formula"
+        }
+      }
+    },
+    "Constraint": {
+      "label": "Constraint",
+      "summary": "a condition which a valid simulation of the model has to satisfy",
+      "package": "core",
+      "page": "reference/constraint/",
+      "attributes": {
+        "math": {
+          "label": "math",
+          "summary": "the condition which has to stay true"
+        },
+        "message": {
+          "label": "message",
+          "summary": "the text which is shown when the condition is violated"
+        }
+      }
+    },
+    "Event": {
+      "label": "Event",
+      "summary": "an instantaneous change of the model when a condition becomes true",
+      "package": "core",
+      "page": "reference/event/",
+      "attributes": {
+        "delay": {
+          "label": "delay",
+          "summary": "the formula which gives the time between the trigger and the execution"
+        },
+        "listOfEventAssignments": {
+          "label": "event assignments",
+          "summary": "the changes the event makes when it is executed"
+        },
+        "priority": {
+          "label": "priority",
+          "summary": "the formula which orders this event against other events of the same moment"
+        },
+        "trigger": {
+          "label": "trigger",
+          "summary": "the condition whose change from false to true fires the event"
+        },
+        "trigger.initialValue": {
+          "label": "trigger initial value",
+          "summary": "whether the condition is taken to be true just before the simulation starts"
+        },
+        "trigger.persistent": {
+          "label": "trigger persistent",
+          "summary": "whether the event is still executed when its condition becomes false again before execution"
+        },
+        "useValuesFromTriggerTime": {
+          "label": "values from trigger time",
+          "summary": "whether the assignments use the values of the moment the event was triggered"
+        }
+      }
+    },
+    "EventAssignment": {
+      "label": "Event assignment",
+      "summary": "the new value an event gives to one element of the model",
+      "package": "core",
+      "page": "reference/eventassignment/",
+      "attributes": {
+        "math": {
+          "label": "math",
+          "summary": "the formula which computes the new value"
+        },
+        "variable": {
+          "label": "variable",
+          "summary": "the element the assignment changes"
+        }
+      }
+    },
+    "FunctionDefinition": {
+      "label": "Function definition",
+      "summary": "a named function which the mathematics of the model can call",
+      "package": "core",
+      "page": "reference/functiondefinition/",
+      "attributes": {
+        "math": {
+          "label": "math",
+          "summary": "the formula of the function, with its arguments"
+        }
+      }
+    },
+    "InitialAssignment": {
+      "label": "Initial assignment",
+      "summary": "a formula which computes the value of an element at the start of the simulation",
+      "package": "core",
+      "page": "reference/initialassignment/",
+      "attributes": {
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the formula as the report derives them"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the formula which computes the initial value"
+        },
+        "symbol": {
+          "label": "symbol",
+          "summary": "the element whose initial value the assignment computes"
+        }
+      }
+    },
+    "KineticLaw": {
+      "label": "Kinetic law",
+      "summary": "the formula which gives the speed of a reaction",
+      "package": "core",
+      "page": "reference/kineticlaw/",
+      "attributes": {
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the rate formula as the report derives them"
+        },
+        "listOfLocalParameters": {
+          "label": "local parameters",
+          "summary": "the parameters which only this kinetic law uses"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the rate formula of the reaction"
+        }
+      }
+    },
+    "LocalParameter": {
+      "label": "Local parameter",
+      "summary": "a named value which only one kinetic law uses",
+      "package": "core",
+      "page": "reference/localparameter/",
+      "attributes": {
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the value as the report derives them"
+        },
+        "units": {
+          "label": "units",
+          "summary": "the units of the value of the local parameter"
+        },
+        "unitsLatex": {
+          "label": "rendered units",
+          "summary": "the units of the local parameter rendered as a formula"
+        },
+        "value": {
+          "label": "value",
+          "summary": "the value of the local parameter"
+        }
+      }
+    },
+    "Model": {
+      "label": "Model",
+      "summary": "the container of everything a model is made of",
+      "package": "core",
+      "page": "reference/model/",
+      "attributes": {
+        "areaUnits": {
+          "label": "area units",
+          "summary": "the units of the size of the compartments with two dimensions"
+        },
+        "areaUnitsLatex": {
+          "label": "rendered area units",
+          "summary": "the area units of the model rendered as a formula"
+        },
+        "conversionFactor": {
+          "label": "conversion factor",
+          "summary": "the parameter which converts between the units of a species and the extent of a reaction"
+        },
+        "extentUnits": {
+          "label": "extent units",
+          "summary": "the units in which the extent of a reaction is measured"
+        },
+        "extentUnitsLatex": {
+          "label": "rendered extent units",
+          "summary": "the extent units of the model rendered as a formula"
+        },
+        "kind": {
+          "label": "kind",
+          "summary": "whether the model is the model of the document or a model definition"
+        },
+        "lengthUnits": {
+          "label": "length units",
+          "summary": "the units of the size of the compartments with one dimension"
+        },
+        "lengthUnitsLatex": {
+          "label": "rendered length units",
+          "summary": "the length units of the model rendered as a formula"
+        },
+        "listOfCompartments": {
+          "label": "compartments",
+          "summary": "the compartments of the model"
+        },
+        "listOfConstraints": {
+          "label": "constraints",
+          "summary": "the constraints of the model"
+        },
+        "listOfEvents": {
+          "label": "events",
+          "summary": "the events of the model"
+        },
+        "listOfFunctionDefinitions": {
+          "label": "function definitions",
+          "summary": "the user defined functions of the model"
+        },
+        "listOfInitialAssignments": {
+          "label": "initial assignments",
+          "summary": "the initial assignments of the model"
+        },
+        "listOfParameters": {
+          "label": "parameters",
+          "summary": "the global parameters of the model"
+        },
+        "listOfReactions": {
+          "label": "reactions",
+          "summary": "the reactions of the model"
+        },
+        "listOfRules": {
+          "label": "rules",
+          "summary": "the assignment, rate and algebraic rules of the model"
+        },
+        "listOfSpecies": {
+          "label": "species",
+          "summary": "the species of the model"
+        },
+        "listOfUnitDefinitions": {
+          "label": "unit definitions",
+          "summary": "the units the model defines"
+        },
+        "substanceUnits": {
+          "label": "substance units",
+          "summary": "the units of the amounts of the species which do not declare their own"
+        },
+        "substanceUnitsLatex": {
+          "label": "rendered substance units",
+          "summary": "the substance units of the model rendered as a formula"
+        },
+        "timeUnits": {
+          "label": "time units",
+          "summary": "the unit in which time is measured in the model"
+        },
+        "timeUnitsLatex": {
+          "label": "rendered time units",
+          "summary": "the time units of the model rendered as a formula"
+        },
+        "volumeUnits": {
+          "label": "volume units",
+          "summary": "the units of the size of the compartments with three dimensions"
+        },
+        "volumeUnitsLatex": {
+          "label": "rendered volume units",
+          "summary": "the volume units of the model rendered as a formula"
+        }
+      }
+    },
+    "ModifierSpeciesReference": {
+      "label": "Modifier species reference",
+      "summary": "the participation of a species in a reaction as a modifier",
+      "package": "core",
+      "page": "reference/modifierspeciesreference/",
+      "attributes": {
+        "species": {
+          "label": "species",
+          "summary": "the species which modifies the reaction"
+        }
+      }
+    },
+    "Parameter": {
+      "label": "Parameter",
+      "summary": "a named value which the mathematics of the model can use",
+      "package": "core",
+      "page": "reference/parameter/",
+      "attributes": {
+        "constant": {
+          "label": "constant",
+          "summary": "whether the value of the parameter stays fixed during a simulation"
+        },
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the value as the report derives them"
+        },
+        "units": {
+          "label": "units",
+          "summary": "the units of the value of the parameter"
+        },
+        "unitsLatex": {
+          "label": "rendered units",
+          "summary": "the units of the parameter rendered as a formula"
+        },
+        "value": {
+          "label": "value",
+          "summary": "the value of the parameter at the start of the simulation"
+        }
+      }
+    },
+    "RateRule": {
+      "label": "Rate rule",
+      "summary": "a formula which gives the rate of change of an element",
+      "package": "core",
+      "page": "reference/raterule/",
+      "attributes": {
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the formula as the report derives them"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the formula which computes the rate of change"
+        },
+        "variable": {
+          "label": "variable",
+          "summary": "the element whose rate of change the rule gives"
+        }
+      }
+    },
+    "Reaction": {
+      "label": "Reaction",
+      "summary": "a process which changes the quantities of species",
+      "package": "core",
+      "page": "reference/reaction/",
+      "attributes": {
+        "compartment": {
+          "label": "compartment",
+          "summary": "the compartment in which the reaction takes place"
+        },
+        "equation": {
+          "label": "equation",
+          "summary": "the reaction written as a chemical equation"
+        },
+        "fast": {
+          "label": "fast",
+          "summary": "whether the reaction was declared to be much faster than the others"
+        },
+        "kineticLaw": {
+          "label": "kinetic law",
+          "summary": "the formula which gives the speed of the reaction"
+        },
+        "listOfModifiers": {
+          "label": "modifiers",
+          "summary": "the species which influence the reaction without being consumed"
+        },
+        "listOfProducts": {
+          "label": "products",
+          "summary": "the species the reaction produces, with their stoichiometry"
+        },
+        "listOfReactants": {
+          "label": "reactants",
+          "summary": "the species the reaction consumes, with their stoichiometry"
+        },
+        "reversible": {
+          "label": "reversible",
+          "summary": "whether the reaction can also run backwards"
+        }
+      }
+    },
+    "SBMLDocument": {
+      "label": "Document",
+      "summary": "the container of an SBML file, with its level, version and packages",
+      "package": "core",
+      "page": "reference/sbmldocument/",
+      "attributes": {
+        "level": {
+          "label": "level",
+          "summary": "the level of SBML the file is written in"
+        },
+        "packages": {
+          "label": "packages",
+          "summary": "the Level 3 packages the file uses, with their version"
+        },
+        "version": {
+          "label": "version",
+          "summary": "the version of the level the file is written in"
+        }
+      }
+    },
+    "SBase": {
+      "label": "SBase",
+      "summary": "the attributes every element of an SBML model carries",
+      "package": "core",
+      "page": "reference/sbase/",
+      "attributes": {
+        "cvterms": {
+          "label": "annotations",
+          "summary": "the controlled vocabulary terms which link the element to database entries"
+        },
+        "history": {
+          "label": "history",
+          "summary": "who created the element and when it was modified"
+        },
+        "id": {
+          "label": "id",
+          "summary": "the identifier other elements of the model use to reference the element"
+        },
+        "metaId": {
+          "label": "meta id",
+          "summary": "the identifier the annotations of the element point at"
+        },
+        "name": {
+          "label": "name",
+          "summary": "the readable name of the element"
+        },
+        "notes": {
+          "label": "notes",
+          "summary": "the free text the model author wrote about the element"
+        },
+        "sbo": {
+          "label": "sbo",
+          "summary": "the term of the Systems Biology Ontology which classifies the element"
+        },
+        "xml": {
+          "label": "xml",
+          "summary": "the element as it is written in the SBML file"
+        }
+      }
+    },
+    "Species": {
+      "label": "Species",
+      "summary": "a pool of a chemical entity in a compartment",
+      "package": "core",
+      "page": "reference/species/",
+      "attributes": {
+        "boundaryCondition": {
+          "label": "boundary condition",
+          "summary": "whether the quantity of the species is left unchanged by the reactions"
+        },
+        "compartment": {
+          "label": "compartment",
+          "summary": "the compartment the species is located in"
+        },
+        "constant": {
+          "label": "constant",
+          "summary": "whether the quantity of the species stays fixed during a simulation"
+        },
+        "conversionFactor": {
+          "label": "conversion factor",
+          "summary": "the parameter which converts the extent of a reaction into the quantity of the species"
+        },
+        "derivedUnits": {
+          "label": "derived units",
+          "summary": "the units of the quantity of the species as the report derives them"
+        },
+        "hasOnlySubstanceUnits": {
+          "label": "only substance units",
+          "summary": "whether the identifier of the species stands for an amount instead of a concentration"
+        },
+        "initialAmount": {
+          "label": "initial amount",
+          "summary": "the amount of the species when the simulation starts"
+        },
+        "initialConcentration": {
+          "label": "initial concentration",
+          "summary": "the concentration of the species when the simulation starts"
+        },
+        "substanceUnits": {
+          "label": "substance units",
+          "summary": "the units of the amount of the species"
+        },
+        "unitsLatex": {
+          "label": "rendered substance units",
+          "summary": "the substance units of the species rendered as a formula"
+        }
+      }
+    },
+    "SpeciesReference": {
+      "label": "Species reference",
+      "summary": "the participation of a species in a reaction as a reactant or a product",
+      "package": "core",
+      "page": "reference/speciesreference/",
+      "attributes": {
+        "constant": {
+          "label": "constant",
+          "summary": "whether the stoichiometry stays fixed during a simulation"
+        },
+        "species": {
+          "label": "species",
+          "summary": "the species which participates in the reaction"
+        },
+        "stoichiometry": {
+          "label": "stoichiometry",
+          "summary": "how much of the species one reaction event consumes or produces"
+        }
+      }
+    },
+    "UnitDefinition": {
+      "label": "Unit definition",
+      "summary": "a named unit built from the base units of SBML",
+      "package": "core",
+      "page": "reference/unitdefinition/",
+      "attributes": {
+        "unitsLatex": {
+          "label": "units",
+          "summary": "the composed unit rendered as a formula"
+        }
+      }
+    }
+  },
+  "links": {},
+  "concepts": {}
+}
