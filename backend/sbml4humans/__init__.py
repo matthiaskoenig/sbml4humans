@@ -4,4 +4,4 @@
 serves it over http for the sbml4humans frontend.
 """
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
