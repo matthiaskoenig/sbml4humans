@@ -1,6 +1,5 @@
 import PrimeVue from "primevue/config";
 import DataTable from "primevue/datatable";
-import Tooltip from "primevue/tooltip";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
@@ -9,6 +8,7 @@ import type { Parameter, Reaction, SbmlElement, Species } from "@/api/types";
 import { primevueOptions } from "@/assets/primevue";
 import ElementCell from "@/components/report/ElementCell.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
+import { vTooltip } from "@/directives/tooltip";
 import { columnsOf, type ColumnDef } from "@/report/columns";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
@@ -38,7 +38,7 @@ describe("ElementTable", () => {
       props: { type: "Species", rows: species },
       global: {
         plugins: [router, [PrimeVue, primevueOptions]],
-        directives: { tooltip: Tooltip },
+        directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(index) },
       },
     });
@@ -59,7 +59,7 @@ describe("ElementTable virtual scrolling", () => {
       props: { type: "Species", rows },
       global: {
         plugins: [router, [PrimeVue, primevueOptions]],
-        directives: { tooltip: Tooltip },
+        directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(index) },
       },
     });
@@ -97,7 +97,7 @@ describe("ElementCell", () => {
       props: { row, column },
       global: {
         plugins: [router],
-        directives: { tooltip: Tooltip },
+        directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(index) },
       },
     });
@@ -130,7 +130,7 @@ describe("ElementCell", () => {
       props: { row: species, column },
       global: {
         plugins: [router],
-        directives: { tooltip: Tooltip },
+        directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(icgBody) },
       },
     });
@@ -150,7 +150,7 @@ describe("ElementCell", () => {
       },
       global: {
         plugins: [router],
-        directives: { tooltip: Tooltip },
+        directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(icgBody) },
       },
     });

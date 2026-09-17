@@ -1,11 +1,11 @@
 import PrimeVue from "primevue/config";
-import Tooltip from "primevue/tooltip";
 import { createPinia, setActivePinia } from "pinia";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as client from "@/api/client";
 import { primevueOptions } from "@/assets/primevue";
+import { vTooltip } from "@/directives/tooltip";
 import ReportPage from "@/pages/ReportPage.vue";
 import { router } from "@/router";
 import { useReportStore } from "@/stores/report";
@@ -33,7 +33,7 @@ async function mountReport(query: Record<string, string> = {}) {
   wrapper = mount(ReportPage, {
     global: {
       plugins: [router, [PrimeVue, primevueOptions]],
-      directives: { tooltip: Tooltip },
+      directives: { tooltip: vTooltip },
     },
   });
   await flushPromises();

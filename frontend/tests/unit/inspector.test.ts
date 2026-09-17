@@ -1,5 +1,4 @@
 import PrimeVue from "primevue/config";
-import Tooltip from "primevue/tooltip";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
@@ -13,6 +12,7 @@ import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import SubmodelAttributes from "@/components/inspector/attributes/SubmodelAttributes.vue";
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
+import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
@@ -36,7 +36,7 @@ function mountWith(component: unknown, props: Record<string, unknown>, index: Re
       props,
       global: {
         plugins: [router, [PrimeVue, primevueOptions]],
-        directives: { tooltip: Tooltip },
+        directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(index) },
       },
     } as never,
@@ -160,7 +160,7 @@ describe("inspector", () => {
       props: { pk: species[0]!.pk },
       global: {
         plugins: [router, [PrimeVue, primevueOptions]],
-        directives: { tooltip: Tooltip },
+        directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(repressilator) },
       },
     });
