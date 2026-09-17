@@ -29,12 +29,14 @@ function cancelPending(): void {
   for (const controller of controllers.values()) controller.abort();
   controllers.clear();
   started.clear();
+  resolved.clear();
 }
 
-// cancel the not yet started resolves of the previous list and forget what it requested
-// whenever the resources this list shows change (another element selected) or the component
-// unmounts, so a queue slot is never held for a resource nobody looks at anymore and the
-// resource is requestable again once it matters again.
+// cancel the not yet started resolves of the previous list, forget what it requested and drop
+// what it resolved, whenever the resources this list shows change (another element selected) or
+// the component unmounts, so a queue slot is never held for a resource nobody looks at anymore,
+// the resource is requestable again once it matters again, and a label from the previous list
+// never shows for a resource this list has not resolved itself.
 watch(() => props.resources, cancelPending);
 onBeforeUnmount(cancelPending);
 
@@ -57,12 +59,7 @@ watchEffect(() => {
     const current = (): boolean => controllers.get(resource) === controller;
     resolveAnnotation(resource, controller.signal)
       .then((info) => resolved.set(resource, info))
-      .catch((error: unknown) => {
-        // a resolve dropped from the queue before its request started can be requested again
-        if (error instanceof DOMException && error.name === "AbortError" && current()) {
-          started.delete(resource);
-        }
-      })
+      .catch(() => undefined)
       .finally(() => {
         if (current()) controllers.delete(resource);
       });

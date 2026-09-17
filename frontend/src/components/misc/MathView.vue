@@ -31,7 +31,9 @@ const html = computed(() =>
 
 const truncatedFormula = computed(() => {
   const formula = props.math?.formula ?? "";
-  return formula.length > 120 ? `${formula.slice(0, 120)}…` : formula;
+  // trimEnd() drops a trailing space the slice may end on, so the ellipsis stays on the same
+  // line as the text instead of wrapping onto its own.
+  return formula.length > 120 ? `${formula.slice(0, 120).trimEnd()}…` : formula;
 });
 
 function copy(event: MouseEvent): void {

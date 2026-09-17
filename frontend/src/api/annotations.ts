@@ -105,6 +105,9 @@ export function resolveAnnotation(resource: string, signal?: AbortSignal): Promi
 
 /** For the tests. */
 export function resetAnnotationCache(): void {
+  // a queued entry keeps an abort listener on every caller's signal; without removing them a
+  // signal left over from an earlier test could later abort and drop an entry of another test
+  for (const queued of queue.values()) queued.listeners.abort();
   cache.clear();
   queue.clear();
   active = 0;

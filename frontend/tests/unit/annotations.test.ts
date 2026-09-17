@@ -207,6 +207,30 @@ describe("annotations", () => {
     await expect(later).resolves.toMatchObject({ label: "label of urn:queued" });
   });
 
+  it("removes the abort listeners of every queued entry on reset, so an old signal cannot drop a later queued resolve of the same resource", async () => {
+    holdRequests();
+    BUSY.forEach((resource) => resolveAnnotation(resource));
+    const controller = new AbortController();
+    resolveAnnotation("urn:reset", controller.signal).catch(() => undefined);
+    expect(requestsOf("urn:reset")).toBe(0);
+
+    resetAnnotationCache();
+    const settlers = holdRequests();
+    // fill the concurrent slots again, so the resource requested next stays queued rather than
+    // starting right away
+    BUSY.forEach((resource) => resolveAnnotation(resource));
+    const again = resolveAnnotation("urn:reset");
+    expect(requestsOf("urn:reset")).toBe(0);
+
+    // aborting the old, pre-reset signal must not touch the newly queued entry
+    controller.abort();
+    await flushPromises();
+
+    await settleAll(settlers);
+    expect(requestsOf("urn:reset")).toBe(1);
+    await expect(again).resolves.toMatchObject({ label: "label of urn:reset" });
+  });
+
   it("keeps a started resolve running and cached when its callers abort", async () => {
     const settlers = holdRequests();
     const controller = new AbortController();
@@ -503,6 +527,46 @@ describe("annotations", () => {
     await settleAll(settlers);
     expect(requestsOf("urn:again")).toBe(0);
     expect(wrapper.get("[data-testid=cvterm-resource]").text()).toContain("label of urn:last");
+  });
+
+  it("clears the resolved labels and the resolve all count of a term the automatic budget skipped once its element is revisited", async () => {
+    vi.mocked(client.getAnnotationResource).mockResolvedValue(info);
+    const termsOf = (element: string) =>
+      Array.from({ length: 3 }, (_, i) => ({
+        qualifier: "BQB_IS",
+        resources: Array.from({ length: 50 }, (_, j) => `urn:${element}:term${i}:${j}`),
+      }));
+    const first = termsOf("first");
+    const wrapper = mount(CvTermList, { props: { cvterms: first } });
+    await flushPromises();
+    await wrapper.get("[data-testid=resolve-all]").trigger("click");
+    await flushPromises();
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(150);
+
+    // another element is selected, then the first one again: the budget applies again and the
+    // third term's resources fall outside it, same as on the first visit
+    await wrapper.setProps({ cvterms: termsOf("second") });
+    await flushPromises();
+    await wrapper.setProps({ cvterms: first });
+    await flushPromises();
+    expect(wrapper.get("[data-testid=resolve-all]").text()).toBe("resolve all (50)");
+
+    const thirdTerm = wrapper.findAll("[data-testid=cvterm]")[2]!;
+    const resources = thirdTerm.findAll("[data-testid=cvterm-resource]");
+    expect(resources).toHaveLength(50);
+    for (const [index, resource] of resources.entries()) {
+      expect(resource.get("a").text()).toBe(first[2]!.resources[index]);
+    }
+
+    // resolve all requests nothing new: the resources of the third term are already cached from
+    // the first visit, and clicking resolves them from that cache
+    const requestsBefore = vi.mocked(client.getAnnotationResource).mock.calls.length;
+    await wrapper.get("[data-testid=resolve-all]").trigger("click");
+    await flushPromises();
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(requestsBefore);
+    for (const resource of thirdTerm.findAll("[data-testid=cvterm-resource]")) {
+      expect(resource.get("a").text()).toBe("water");
+    }
   });
 
   it("sanitises the notes", () => {

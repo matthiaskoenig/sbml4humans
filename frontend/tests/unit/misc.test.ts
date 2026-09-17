@@ -83,7 +83,10 @@ describe("misc components", () => {
       global: { directives: { tooltip: vTooltip } },
     });
     const text = wrapper.get("[data-testid=math-text]");
-    expect(text.text()).toBe(`${formula.slice(0, 120)}…`);
+    // the 120th character of this formula is the space before the next term, so the truncation
+    // must trim it before appending the ellipsis, or the ellipsis wraps onto its own line
+    expect(formula[119]).toBe(" ");
+    expect(text.text()).toBe(`${formula.slice(0, 120).trimEnd()}…`);
     await text.trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(`${formula} (click to copy)`);
     await text.trigger("mouseleave");
