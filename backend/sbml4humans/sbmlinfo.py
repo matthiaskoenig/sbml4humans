@@ -162,11 +162,19 @@ class SBMLDocumentInfo:
         the xml, which is byte identical for siblings such as two reactant
         references without ids and would otherwise collide.
 
-        `use_id` is False for an `EventAssignment`: libsbml aliases its
-        `getId()`/`isSetId()` to the `variable` attribute, which is not a
-        genuine id and, unlike the `symbol` of an initial assignment or the
-        `variable` of a rule, is not unique across the events of a model (two
-        events may assign the same variable), so it is not trusted here.
+        `use_id` is False when the id, though set, is not a globally unique
+        identity and must not be used for the pk:
+
+        * an `EventAssignment`: libsbml aliases its `getId()`/`isSetId()` to
+          the `variable` attribute, which is not a genuine id and, unlike the
+          `symbol` of an initial assignment or the `variable` of a rule, is
+          not unique across the events of a model (two events may assign the
+          same variable).
+        * a `LocalParameter`: its id is a genuine id, required by SBML, but
+          scoped to its own kinetic law, not to the model (two kinetic laws
+          may each have a local parameter of the same id), so `key` (which
+          includes the kinetic law) is used for the pk instead; the `id`
+          field of the report object still carries the local parameter id.
         """
         if use_id and sbase.isSetId():
             return sbase.getId()
@@ -530,13 +538,18 @@ class SBMLDocumentInfo:
         self, klaw: libsbml.KineticLaw, model: libsbml.Model, reaction_key: str
     ) -> KineticLaw:
         """The kinetic law of a reaction with its local parameters."""
-        fields = self.sbase(klaw, key=f"{reaction_key}.kineticLaw")
+        kinetic_law_key = f"{reaction_key}.kineticLaw"
+        fields = self.sbase(klaw, key=kinetic_law_key)
         local_parameters = []
         for lp in klaw.getListOfLocalParameters():
             units = _attribute(lp, "units")
             local_parameters.append(
                 LocalParameter(
-                    **self.sbase(lp),
+                    **self.sbase(
+                        lp,
+                        key=f"{kinetic_law_key}.{lp.getId()}",
+                        use_id=False,
+                    ),
                     value=_number(_attribute(lp, "value")),
                     units=units,
                     units_latex=self.units(units, model),

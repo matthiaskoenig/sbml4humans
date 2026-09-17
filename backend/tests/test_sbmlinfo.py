@@ -5,7 +5,7 @@ import json
 import libsbml
 import pytest
 
-from sbml4humans.model import Model, Report
+from sbml4humans.model import EdgeKind, Model, Report
 from sbml4humans.resources import (
     COMP_ICG_BODY,
     EXAMPLES_DIR,
@@ -347,11 +347,15 @@ def test_distrib_uncertainties() -> None:
 
 
 def test_reactant_pks_are_unique_across_reactions() -> None:
-    """Species references without ids of two reactions get distinct pks.
+    """Species references and local parameters without model-wide ids differ.
 
     Species references without an id are byte identical xml across reactions
     consuming the same species, so the digest fallback of the pk used to
-    collide; the pk is now keyed by the reaction and the side instead.
+    collide; the pk is now keyed by the reaction and the side instead. A
+    local parameter has a genuine id, but it is scoped to its own kinetic
+    law, so two kinetic laws with a same-named local parameter (`k`) used to
+    collide the same way; the pk is now keyed by the kinetic law too, and the
+    math of each kinetic law links to its own local parameter.
     """
     sbml = (
         '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" '
@@ -364,18 +368,46 @@ def test_reactant_pks_are_unique_across_reactions() -> None:
         "</listOfSpecies><listOfReactions>"
         '<reaction id="r1" reversible="false"><listOfReactants>'
         '<speciesReference species="s" constant="true"/>'
-        "</listOfReactants></reaction>"
+        "</listOfReactants><kineticLaw>"
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><ci> k </ci></math>'
+        '<listOfLocalParameters><localParameter id="k" value="1"/>'
+        "</listOfLocalParameters></kineticLaw></reaction>"
         '<reaction id="r2" reversible="false"><listOfReactants>'
         '<speciesReference species="s" constant="true"/>'
-        "</listOfReactants></reaction>"
+        "</listOfReactants><kineticLaw>"
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><ci> k </ci></math>'
+        '<listOfLocalParameters><localParameter id="k" value="2"/>'
+        "</listOfLocalParameters></kineticLaw></reaction>"
         "</listOfReactions></model></sbml>"
     )
     report = SBMLDocumentInfo.from_sbml(sbml)
-    reactant_pks = [
-        r.list_of_reactants[0].pk for r in report.models[0].list_of_reactions
-    ]
+    reactions = report.models[0].list_of_reactions
+    reactant_pks = [r.list_of_reactants[0].pk for r in reactions]
     assert reactant_pks == [
         "m/SpeciesReference:r1.reactant.s",
         "m/SpeciesReference:r2.reactant.s",
     ]
     assert len(reactant_pks) == len(set(reactant_pks))
+
+    klaw1, klaw2 = reactions[0].kinetic_law, reactions[1].kinetic_law
+    assert klaw1 is not None
+    assert klaw2 is not None
+    local_parameters = [
+        klaw1.list_of_local_parameters[0],
+        klaw2.list_of_local_parameters[0],
+    ]
+    assert [lp.id for lp in local_parameters] == ["k", "k"]
+    local_parameter_pks = [lp.pk for lp in local_parameters]
+    assert local_parameter_pks == [
+        "m/LocalParameter:r1.kineticLaw.k",
+        "m/LocalParameter:r2.kineticLaw.k",
+    ]
+    assert len(local_parameter_pks) == len(set(local_parameter_pks))
+
+    math_edges = {
+        (e.source, e.target) for e in report.link_graph.edges if e.kind == EdgeKind.MATH
+    }
+    assert math_edges == {
+        (klaw1.pk, local_parameter_pks[0]),
+        (klaw2.pk, local_parameter_pks[1]),
+    }

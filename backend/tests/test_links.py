@@ -322,7 +322,7 @@ def test_local_parameter_shadows_global_parameter(synthetic_fbc: Report) -> None
     klaw = synthetic_fbc.models[0].list_of_reactions[0].kinetic_law
     assert klaw is not None
     assert _edges(synthetic_fbc, source=klaw.pk) == {
-        (klaw.pk, "synth/LocalParameter:k", "math"),
+        (klaw.pk, "synth/LocalParameter:r.kineticLaw.k", "math"),
         (klaw.pk, "synth/Species:s", "math"),
     }
 

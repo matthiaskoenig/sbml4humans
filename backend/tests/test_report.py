@@ -1,7 +1,7 @@
 """Tests of the report creation."""
 
 import gzip
-from pathlib import Path
+from collections import Counter
 
 import pytest
 from pydantic import BaseModel
@@ -9,17 +9,7 @@ from pydantic import BaseModel
 from sbml4humans.examples import ExampleMetaData, load_examples
 from sbml4humans.model import ReportResponse, SBase
 from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
-from sbml4humans.resources import (
-    API_EXAMPLES_MODEL,
-    API_EXAMPLES_OMEX,
-    BIOMODELS_CURATED_PATH,
-    OMEX_ICGMODEL,
-    REPRESSILATOR_SBML,
-)
-
-
-BIOMODELS = sorted(BIOMODELS_CURATED_PATH.glob("BIOMD*.omex"))[:10]
-PATHS = API_EXAMPLES_OMEX + API_EXAMPLES_MODEL + BIOMODELS
+from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
 def _collect_pks(obj: object) -> list[str]:
@@ -40,7 +30,11 @@ def _collect_pks(obj: object) -> list[str]:
 
 
 def _check_report(response: ReportResponse) -> None:
-    """Check the structure of the report response of a path."""
+    """Check the report response: its structure, unique pks and link graph.
+
+    No two elements of a report, nor two link graph nodes, share a pk, and
+    the nodes of the link graph are exactly the elements of the report.
+    """
     assert len(response.uid) == 32
     assert response.manifest.entries
     assert all(e.location and e.format for e in response.manifest.entries)
@@ -50,13 +44,23 @@ def _check_report(response: ReportResponse) -> None:
         assert location.startswith("./")
         assert entry.report.document.level in {1, 2, 3}
         assert entry.debug.json_report_time.endswith(" [s]")
+        pks = _collect_pks(entry.report)
+        duplicates = {pk for pk, count in Counter(pks).items() if count > 1}
+        assert not duplicates, f"{location}: duplicate pks {duplicates}"
+        nodes = entry.report.link_graph.nodes
+        assert all(key == node.pk for key, node in nodes.items())
+        element_pks = set(pks)
+        node_pks = set(nodes)
+        assert node_pks == element_pks, (
+            f"{location}: node pks and element pks differ by {node_pks ^ element_pks}"
+        )
 
 
-@pytest.mark.parametrize("path", PATHS, ids=lambda path: path.name)
-def test_report_for_path(path: Path) -> None:
-    """Report data is created for all examples."""
-    assert path.is_file()
-    _check_report(report_for_path(path))
+@pytest.mark.parametrize("example", list(load_examples().values()), ids=lambda e: e.id)
+def test_report_for_path(example: ExampleMetaData) -> None:
+    """Report data, unique pks and a consistent link graph for every example."""
+    assert example.file.is_file()
+    _check_report(report_for_path(example.file))
 
 
 def test_report_for_sbml_file() -> None:
@@ -134,16 +138,3 @@ def test_uid_differs_between_reports() -> None:
     uid1 = report_for_path(REPRESSILATOR_SBML).uid
     uid2 = report_for_path(REPRESSILATOR_SBML).uid
     assert uid1 != uid2
-
-
-@pytest.mark.parametrize("example", list(load_examples().values()), ids=lambda e: e.id)
-def test_pks_are_unique_for_every_example(example: ExampleMetaData) -> None:
-    """No two elements of a report, nor two link graph nodes, share a pk."""
-    response = report_for_path(example.file)
-    for location, entry in response.reports.items():
-        pks = _collect_pks(entry.report)
-        duplicates = {pk for pk in pks if pks.count(pk) > 1}
-        assert not duplicates, f"{example.id} ({location}): duplicate pks {duplicates}"
-        nodes = entry.report.link_graph.nodes
-        assert all(key == node.pk for key, node in nodes.items())
-        assert len(nodes) == len(set(pks))
