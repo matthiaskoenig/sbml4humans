@@ -60,6 +60,38 @@ test.describe("repressilator", () => {
     await page.getByTestId("inspector-xml-toggle").click();
     await expect(page.getByTestId("xml-view")).toContainText("<species");
   });
+
+  test("a click on a column header sorts the rows", async ({ page }) => {
+    const table = page.getByTestId("table-Species");
+    const ids = () => table.locator("tbody tr[data-pk] td:first-child").allInnerTexts();
+    const sortById = table.getByRole("button", { name: "id", exact: true });
+    const idHeader = table.locator("thead th").first();
+    await sortById.click();
+    await expect(idHeader).toHaveAttribute("aria-sort", "ascending");
+    expect(await ids()).toEqual(["PX", "PY", "PZ", "X", "Y", "Z"]);
+    await sortById.click();
+    await expect(idHeader).toHaveAttribute("aria-sort", "descending");
+    expect(await ids()).toEqual(["Z", "Y", "X", "PZ", "PY", "PX"]);
+  });
+
+  test("hovering a formula shows its tooltip below it", async ({ page }) => {
+    const math = page.getByTestId("table-Reaction").getByTestId("math").first();
+    // a scroll hides the tooltip: scroll first and let the scroll events pass before hovering
+    await math.scrollIntoViewIfNeeded();
+    await page.evaluate(
+      () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+    );
+    await math.hover();
+    const tooltip = page.getByRole("tooltip");
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toContainText("(click to copy)");
+    const anchor = (await math.boundingBox())!;
+    const box = (await tooltip.boundingBox())!;
+    expect(box.y).toBeGreaterThanOrEqual(anchor.y + anchor.height);
+    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    await page.mouse.move(0, 0);
+    await expect(tooltip).toBeHidden();
+  });
 });
 
 test("the archive dropdown switches the entry", async ({ page }) => {

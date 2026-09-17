@@ -1,10 +1,8 @@
-import PrimeVue from "primevue/config";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
 import type { Reaction, Species, Submodel, Uncertainty } from "@/api/types";
-import { primevueOptions } from "@/assets/primevue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
@@ -35,7 +33,7 @@ function mountWith(component: unknown, props: Record<string, unknown>, index: Re
     {
       props,
       global: {
-        plugins: [router, [PrimeVue, primevueOptions]],
+        plugins: [router],
         directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(index) },
       },
@@ -159,7 +157,7 @@ describe("inspector", () => {
     const wrapper = mount(InspectorPanel, {
       props: { pk: species[0]!.pk },
       global: {
-        plugins: [router, [PrimeVue, primevueOptions]],
+        plugins: [router],
         directives: { tooltip: vTooltip },
         provide: { [ReportIndexKey as symbol]: ref(repressilator) },
       },

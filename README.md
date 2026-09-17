@@ -8,7 +8,7 @@ The report is self-contained: the backend reads the model with libsbml and rende
 
 | path | content |
 | --- | --- |
-| `frontend/` | the Vue 3 application (Vite, TypeScript, Pinia, Vue Router, PrimeVue unstyled with Tailwind CSS) |
+| `frontend/` | the Vue 3 application (Vite, TypeScript, Pinia, Vue Router, Tailwind CSS, Lucide icons) |
 | `backend/` | the `sbml4humans` Python package: the report of a document (`sbmlinfo`, `mathml`, `units`) and the FastAPI api which serves it |
 | `nginx/` | the proxy configuration of sbml4humans.de |
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |

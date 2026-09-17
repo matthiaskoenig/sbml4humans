@@ -17,9 +17,8 @@ export function isEmptyValue(value: unknown): boolean {
   return typeof value === "object" && !(value instanceof Date) && Object.keys(value).length === 0;
 }
 
-/** Compare two values of a column for `order`, with the semantics of the PrimeVue 4
- * DataTable the tables had before: empty values last in both orders, strings with numeric
- * collation (`x2` before `x10`), every other value with `<` and `>`. */
+/** Compare two values of a column for `order`: empty values last in both orders, strings with
+ * numeric collation (`x2` before `x10`), every other value with `<` and `>`. */
 export function compareValues(a: unknown, b: unknown, order: SortOrder): number {
   const emptyA = isEmptyValue(a);
   const emptyB = isEmptyValue(b);

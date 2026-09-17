@@ -1,10 +1,8 @@
-import PrimeVue from "primevue/config";
 import { createPinia, setActivePinia } from "pinia";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as client from "@/api/client";
-import { primevueOptions } from "@/assets/primevue";
 import { vTooltip } from "@/directives/tooltip";
 import ReportPage from "@/pages/ReportPage.vue";
 import { router } from "@/router";
@@ -17,14 +15,6 @@ vi.mock("@/api/client", async (importOriginal) => {
   return { ...original, getExample: vi.fn(), postContent: vi.fn() };
 });
 
-// jsdom has no ResizeObserver, which the PrimeVue virtual scroller observes the table with
-class ResizeObserverStub {
-  observe(): void {}
-  unobserve(): void {}
-  disconnect(): void {}
-}
-globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObserver;
-
 let wrapper: ReturnType<typeof mount> | null = null;
 
 async function mountReport(query: Record<string, string> = {}) {
@@ -32,7 +22,7 @@ async function mountReport(query: Record<string, string> = {}) {
   await router.isReady();
   wrapper = mount(ReportPage, {
     global: {
-      plugins: [router, [PrimeVue, primevueOptions]],
+      plugins: [router],
       directives: { tooltip: vTooltip },
     },
   });
