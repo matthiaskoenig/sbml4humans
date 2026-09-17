@@ -156,8 +156,12 @@ test.describe("a windowed table", () => {
   }
 
   test.beforeEach(async ({ page }) => {
+    // creating the report of this model is CPU bound in the backend, and on CI the parallel
+    // workers of the other specs compete for the runner's CPU, so this example gets the same
+    // two minutes as the walk over every example in `examples-walk.spec.ts`.
+    test.setTimeout(150_000);
     // 249 parameters: the smallest example with more than 200 rows of one type
-    await openExample(page, "dex_body (dex_body_flat.xml)");
+    await openExample(page, "dex_body (dex_body_flat.xml)", 120_000);
     const scroller = page.getByTestId("table-Parameter");
     await scroller.scrollIntoViewIfNeeded();
     await scroller.evaluate((element, top) => (element.scrollTop = top), 100 * ROW_HEIGHT);
