@@ -79,7 +79,7 @@ test.describe("repressilator", () => {
     // a scroll hides the tooltip: scroll first and let the scroll events pass before hovering
     await math.scrollIntoViewIfNeeded();
     await page.evaluate(
-      () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+      "new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))",
     );
     await math.hover();
     const tooltip = page.getByRole("tooltip");
