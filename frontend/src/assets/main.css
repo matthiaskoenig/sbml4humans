@@ -23,12 +23,22 @@ body {
   font-size: 1em;
 }
 
-/* The sanitised html of an SBase's notes (headings, lists, tables, pre/code, images, ...). */
+/* The sanitised html of an SBase's notes (headings, lists, tables, pre/code, images, ...).
+ * `contain: paint` makes this box the containing block of a fixed or absolutely positioned
+ * element inside the notes, so it is clipped to the notes box instead of covering the page, and
+ * `overflow-x: auto` lets content wider than the box scroll instead of being clipped away. */
 .notes-html {
-  @apply max-w-none text-sm leading-relaxed break-words;
+  @apply max-w-none overflow-x-auto text-sm leading-relaxed break-words contain-paint;
 }
 .notes-html a {
   @apply text-link underline;
+}
+/* `contain: paint` on `.notes-html` clips anything painted outside its box, which otherwise cuts
+ * off the browser's default focus ring of a link sitting at the edge of the box. This draws an
+ * explicit ring two pixels inside the border edge instead, the same way `ElementTable` already
+ * does it, so the ring stays fully inside the box without covering the link's own text. */
+.notes-html a:focus-visible {
+  @apply outline-2 -outline-offset-2 outline-link;
 }
 .notes-html blockquote {
   @apply my-1 border-l-2 border-gray-300 pl-2 text-gray-600;

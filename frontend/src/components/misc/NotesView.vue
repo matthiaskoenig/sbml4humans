@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import DOMPurify from "dompurify";
 import { computed } from "vue";
 
+import { sanitizeNotes } from "@/report/notes";
+
 const props = defineProps<{ notes: string | null | undefined }>();
-const html = computed(() =>
-  props.notes ? DOMPurify.sanitize(props.notes, { USE_PROFILES: { html: true } }) : "",
-);
+const html = computed(() => (props.notes ? sanitizeNotes(props.notes) : ""));
 </script>
 
 <template>
