@@ -1,3 +1,61 @@
 # Loading a model
 
-The documentation is being written.
+A report is created from a model you provide. The home page offers three ways to do that, and the examples page offers models which are already there. Whatever the input is, it is sent to the backend, which reads it with libsbml and answers with the data the report is built from. The file is written to a temporary file for that and is deleted with the request, it is not stored.
+
+## The three inputs
+
+The home page has a tab for each input: "Upload", "URL" and "Paste".
+
+<!-- screenshot: home-inputs -->
+
+**Upload** takes a file from your computer. Drop it onto the dashed area or use "Choose a file" and pick it in the file dialog, which offers the extensions `.xml`, `.sbml`, `.gz`, `.omex` and `.zip`. The report opens as soon as it is created.
+
+**URL** takes the web address of a model, for example the download link of a model of BioModels or the raw url of a file in a git repository. The backend downloads the address, follows redirects and gives up after 60 seconds. The address you entered last is kept in your browser and is filled in the next time you open the page.
+
+**Paste** takes the content of an SBML file as text. Paste the XML into the text area and press "Create report". This is the fastest way to look at a model which is in your clipboard or which you have just edited in a text editor.
+
+## The accepted formats
+
+The backend recognises three kinds of input, and it recognises them by their content, not by the name of the file:
+
+| input | what it is |
+| --- | --- |
+| SBML | an XML file of any SBML level and version which libsbml can read |
+| gzipped SBML | the same file compressed with gzip, which is how large models are usually shipped |
+| COMBINE archive | a zip file with a manifest, usually with the extension `.omex`, holding one or more SBML files next to the other files of a study |
+
+An SBML file is read as a single [document](reference/sbmldocument.md) with one [model](reference/model.md) in it. A COMBINE archive is read entry by entry: the report holds one report per SBML entry of the archive, and the context bar of the report switches between them, as [Reading a report](report.md#archives-and-models) describes. A file which is not an archive is wrapped in an archive with one entry, so that both cases behave the same.
+
+## The examples
+
+The examples page lists the models the backend ships with, with a filter above the list which searches the id, the name and the description of an example. A card shows the id of the example, its name, the first lines of the notes of the model and the packages the file declares.
+
+<!-- screenshot: examples -->
+
+The examples are of five kinds:
+
+- small models which each show one feature of SBML and are named after it, among them `algebraic_rule`, `notes`, `species`, `unit_definitions` and `distrib_uncertainties`
+- published models, for example the repressilator, a model of hepatic glucose metabolism, and the physiologically based models of indocyanine green, dextromethorphan and sparteine, which use the comp package to build a body out of organ models
+- constraint based reconstructions which use the fbc package: the core model of *E. coli* and Recon3D, the human reconstruction, which is large enough to show what a report does with tens of thousands of elements
+- the first curated models of [BioModels](https://www.ebi.ac.uk/biomodels/), each read from its COMBINE archive
+- four COMBINE archives, among them `CompModels`, which holds several SBML entries and is the example to look at when you want to see how an archive is shown
+
+The id of an example is the id of its model with the name of its file behind it, for example `icg_body (icg_body.xml)`; a model of BioModels keeps its accession, for example `BIOMD0000000012`. An example opens at the address `/examples/<id>`, so a report of an example can be linked and bookmarked.
+
+## Sharing a report
+
+A report which was created from a url keeps that url in its own address, as `/report?url=<the url of the model>`. Anyone who opens that address gets the same report, because the backend downloads the model again. The state of the report, that is the selected element, the search and the filter of types, is part of the address as well; [The url of a report](report.md#the-url-of-a-report) lists the parameters.
+
+A report which was created from an upload or from pasted content cannot be shared this way, because the model exists only in the browser tab it was loaded in. Reloading such a page shows "No report loaded" and the link back to the home page.
+
+## When a model cannot be read
+
+The application shows what went wrong instead of an empty report. The message comes from the backend and the errors of libsbml are part of it, so a file which is not valid SBML is reported with the line and the reason libsbml gives:
+
+- a file which contains no model at all is reported as "No SBML model could be read", followed by the error log of libsbml
+- a url which cannot be downloaded is reported with the status of the request
+- a backend which is not running is reported as not reachable, which is what a local development setup shows when only the frontend was started
+
+"Show details" below the message opens the full traceback of the backend, which is worth reading when the message alone does not say enough, and worth including when you report a problem.
+
+Warnings of libsbml do not stop a report. A model which libsbml reads despite its errors is shown, with the elements it could read.
