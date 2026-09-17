@@ -126,13 +126,14 @@ describe("inspector", () => {
     expect(wrapper.text()).toContain("none");
   });
 
-  it("shows the first 50 links of a group and the rest after show all", async () => {
+  it("shows the first 50 links of a group and the rest after show all, which then disappears", async () => {
     const pks = Array.from({ length: 60 }, (_, i) => `pk-${i}`);
     const wrapper = mountWith(LinksColumn, { pk: "root" }, fakeLinksIndex({ root: pks }));
     const references = wrapper.get("[data-testid=links-references]");
     expect(references.findAll("[data-testid=element-link]")).toHaveLength(50);
     await references.get("[data-testid=show-all]").trigger("click");
     expect(references.findAll("[data-testid=element-link]")).toHaveLength(60);
+    expect(references.find("[data-testid=show-all]").exists()).toBe(false);
   });
 
   it("shows no show all button for a group of 50 or fewer links", () => {
@@ -231,21 +232,27 @@ describe("inspector", () => {
   const COLUMNS = [{ key: "id", header: "id" }];
   const rowsOf = (n: number, prefix: string) =>
     Array.from({ length: n }, (_, i) => ({ id: `${prefix}${i}` }));
+  const mountTable = (rows: { id: string }[]) =>
+    mount(NestedTable, {
+      props: { rows, columns: COLUMNS },
+      global: { directives: { tooltip: vTooltip } },
+    });
 
-  it("shows the first 50 rows of a nested table and the rest after show all", async () => {
-    const wrapper = mount(NestedTable, { props: { rows: rowsOf(60, "r"), columns: COLUMNS } });
+  it("shows the first 50 rows of a nested table and the rest after show all, which then disappears", async () => {
+    const wrapper = mountTable(rowsOf(60, "r"));
     expect(wrapper.findAll("tbody tr")).toHaveLength(50);
     await wrapper.get("[data-testid=show-all]").trigger("click");
     expect(wrapper.findAll("tbody tr")).toHaveLength(60);
+    expect(wrapper.find("[data-testid=show-all]").exists()).toBe(false);
   });
 
   it("shows no show all button for a nested table of 50 or fewer rows", () => {
-    const wrapper = mount(NestedTable, { props: { rows: rowsOf(50, "r"), columns: COLUMNS } });
+    const wrapper = mountTable(rowsOf(50, "r"));
     expect(wrapper.find("[data-testid=show-all]").exists()).toBe(false);
   });
 
   it("resets show all when the rows change to another element's rows", async () => {
-    const wrapper = mount(NestedTable, { props: { rows: rowsOf(60, "a"), columns: COLUMNS } });
+    const wrapper = mountTable(rowsOf(60, "a"));
     await wrapper.get("[data-testid=show-all]").trigger("click");
     expect(wrapper.findAll("tbody tr")).toHaveLength(60);
 

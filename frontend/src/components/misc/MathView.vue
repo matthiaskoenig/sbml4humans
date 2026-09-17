@@ -56,7 +56,7 @@ function copy(event: MouseEvent): void {
     <!-- eslint-disable-next-line vue/no-v-html -->
     <span v-html="html" />
   </span>
-  <span v-else class="flex items-center gap-2">
+  <span v-else class="flex flex-col items-start gap-1">
     <span
       v-tooltip.bottom="`${math.formula} (click to copy)`"
       class="cursor-copy font-mono"

@@ -6,12 +6,10 @@ export const LIST_LIMIT = 50;
 export interface LimitedList<T> {
   /** The items to render: the first LIST_LIMIT until `showAll` is called, all of them after. */
   shown: ComputedRef<T[]>;
-  /** The number of items `shown` currently leaves out. */
+  /** The number of items `shown` currently leaves out: 0 once `showAll` is called. */
   hiddenCount: ComputedRef<number>;
   /** Reveal the rest of the list. */
   showAll: () => void;
-  /** Whether `showAll` has been called for the current list. */
-  expanded: ComputedRef<boolean>;
 }
 
 /** The first LIST_LIMIT items of a reactive list, the count of the rest, and an action that
@@ -25,11 +23,12 @@ export function useLimitedList<T>(items: () => T[]): LimitedList<T> {
     expanded.value = false;
   });
   const shown = computed(() => (expanded.value ? list.value : list.value.slice(0, LIST_LIMIT)));
-  const hiddenCount = computed(() => Math.max(0, list.value.length - LIST_LIMIT));
+  const hiddenCount = computed(() =>
+    expanded.value ? 0 : Math.max(0, list.value.length - LIST_LIMIT),
+  );
   return {
     shown,
     hiddenCount,
     showAll: () => (expanded.value = true),
-    expanded: computed(() => expanded.value),
   };
 }

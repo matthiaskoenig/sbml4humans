@@ -11,14 +11,16 @@ const { shown, hiddenCount, showAll } = useLimitedList(() => props.pks);
 </script>
 
 <template>
-  <dd class="flex flex-wrap gap-1">
-    <ElementLink
-      v-for="pk in shown"
-      :key="pk"
-      :pk="pk"
-      mark
-      class="rounded border border-gray-200 bg-white px-1.5 py-0.5"
-    />
+  <dd>
+    <div class="flex flex-wrap gap-1">
+      <ElementLink
+        v-for="pk in shown"
+        :key="pk"
+        :pk="pk"
+        mark
+        class="rounded border border-gray-200 bg-white px-1.5 py-0.5"
+      />
+    </div>
+    <ShowAllButton v-if="hiddenCount > 0" :count="hiddenCount" class="mb-1" @click="showAll" />
   </dd>
-  <ShowAllButton v-if="hiddenCount > 0" :count="hiddenCount" class="mb-1" @click="showAll" />
 </template>

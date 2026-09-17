@@ -8,14 +8,14 @@ import { useLimitedList } from "@/report/limitedList";
 import { isHttpUrl } from "@/report/text";
 
 /** The resources of one CV term of `CvTermList`, shown and resolved up to LIST_LIMIT at a time:
- * a reaction of Recon3D carries up to 258 of them. `autoResolveLimit` restricts the automatic
- * resolution to that many of the shown resources, in order, until this term's own "show all" is
- * clicked: a resource shown beyond the limit renders as an unresolved link, without a label,
- * until it is requested by a later show all click or the element-wide budget frees up again for
- * another element. */
+ * a reaction of Recon3D carries up to 258 of them. Only the first `autoResolveLimit` shown
+ * resources resolve, in order: a resource shown beyond the limit renders as an unresolved link,
+ * without a label, until `CvTermList` lifts the limit, which it does for a click on this term's
+ * own "show all" (emitted as `showAll`) or on the element's "resolve all". */
 const props = withDefaults(defineProps<{ resources: string[]; autoResolveLimit?: number }>(), {
   autoResolveLimit: Infinity,
 });
+const emit = defineEmits<{ showAll: [] }>();
 const resolved = reactive(new Map<string, AnnotationInfo | null>());
 // Non reactive: which resources were already requested, so a display reset can never re-trigger
 // a fetch. Keyed by the resource itself, so a component instance the inspector reuses for another
@@ -38,21 +38,34 @@ function cancelPending(): void {
 watch(() => props.resources, cancelPending);
 onBeforeUnmount(cancelPending);
 
-const { shown, hiddenCount, showAll, expanded } = useLimitedList(() => props.resources);
+const { shown, hiddenCount, showAll } = useLimitedList(() => props.resources);
+
+function showAllResources(): void {
+  showAll();
+  emit("showAll");
+}
 
 watchEffect(() => {
-  // once this term is expanded by its own show all, every shown resource resolves: revealing it
-  // was a user action and is not bound by the automatic resolution budget.
-  const limit = expanded.value ? Infinity : props.autoResolveLimit;
+  const limit = props.autoResolveLimit;
   shown.value.forEach((resource, index) => {
     if (started.has(resource) || index >= limit) return;
     started.add(resource);
     const controller = new AbortController();
     controllers.set(resource, controller);
+    // the bookkeeping of a settled resolve only applies while it is still this list's resolve of
+    // the resource: after a list change the list may already have requested the resource again
+    const current = (): boolean => controllers.get(resource) === controller;
     resolveAnnotation(resource, controller.signal)
       .then((info) => resolved.set(resource, info))
-      .catch(() => undefined)
-      .finally(() => controllers.delete(resource));
+      .catch((error: unknown) => {
+        // a resolve dropped from the queue before its request started can be requested again
+        if (error instanceof DOMException && error.name === "AbortError" && current()) {
+          started.delete(resource);
+        }
+      })
+      .finally(() => {
+        if (current()) controllers.delete(resource);
+      });
   });
 });
 
@@ -85,5 +98,10 @@ function href(resource: string): string {
       </p>
     </li>
   </ul>
-  <ShowAllButton v-if="hiddenCount > 0" :count="hiddenCount" class="mt-1" @click="showAll" />
+  <ShowAllButton
+    v-if="hiddenCount > 0"
+    :count="hiddenCount"
+    class="mt-1 ml-2"
+    @click="showAllResources"
+  />
 </template>

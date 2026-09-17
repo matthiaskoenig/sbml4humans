@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
 import { MAX_AUTO_RESOLVES } from "@/api/annotations";
 import type { CVTerm } from "@/api/types";
@@ -29,9 +29,34 @@ const autoResolveLimits = computed<number[]>(() => {
   });
 });
 
+/** Set by a click on "resolve all": every shown resource resolves. */
+const resolveAll = ref(false);
+/** The indexes of the terms whose own "show all" was clicked: such a term resolves every
+ * resource it shows. */
+const expandedTerms = reactive(new Set<number>());
+// both clicks are user actions for the terms of one element, so the budget applies again to the
+// terms of another element
+watch(
+  () => props.cvterms,
+  () => {
+    resolveAll.value = false;
+    expandedTerms.clear();
+  },
+);
+
 function autoResolveLimit(index: number): number {
+  if (resolveAll.value || expandedTerms.has(index)) return Infinity;
   return autoResolveLimits.value[index] ?? Infinity;
 }
+
+/** The number of shown resources the budget leaves unresolved. */
+const unresolvedCount = computed(() =>
+  shownTerms.value.reduce(
+    (count, term, index) =>
+      count + Math.max(0, Math.min(LIST_LIMIT, term.resources.length) - autoResolveLimit(index)),
+    0,
+  ),
+);
 </script>
 
 <template>
@@ -40,14 +65,21 @@ function autoResolveLimit(index: number): number {
     <ul class="flex flex-col gap-2">
       <li v-for="(term, i) in shownTerms" :key="i" data-testid="cvterm">
         <p class="font-mono text-xs text-gray-500">{{ term.qualifier }}</p>
-        <CvTermResourceList :resources="term.resources" :auto-resolve-limit="autoResolveLimit(i)" />
+        <CvTermResourceList
+          :resources="term.resources"
+          :auto-resolve-limit="autoResolveLimit(i)"
+          @show-all="expandedTerms.add(i)"
+        />
       </li>
     </ul>
-    <ShowAllButton
-      v-if="hiddenTermsCount > 0"
-      :count="hiddenTermsCount"
-      class="mt-1"
-      @click="showAllTerms"
-    />
+    <div v-if="hiddenTermsCount > 0 || unresolvedCount > 0" class="mt-1 flex gap-3">
+      <ShowAllButton v-if="hiddenTermsCount > 0" :count="hiddenTermsCount" @click="showAllTerms" />
+      <ShowAllButton
+        v-if="unresolvedCount > 0"
+        label="resolve all"
+        :count="unresolvedCount"
+        @click="resolveAll = true"
+      />
+    </div>
   </template>
 </template>
