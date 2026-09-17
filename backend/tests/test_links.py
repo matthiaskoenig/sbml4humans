@@ -1,0 +1,387 @@
+"""Tests of the link graph."""
+
+import logging
+
+import libsbml
+import pytest
+
+from sbml4humans.model import Edge, EdgeKind, Report
+from sbml4humans.resources import (
+    COMP_ICG_BODY,
+    EXAMPLES_DIR,
+    FBC_ECOLI_CORE_SBML,
+    REPRESSILATOR_SBML,
+)
+from sbml4humans.sbmlinfo import SBMLDocumentInfo
+
+
+def _edges(
+    report: Report, source: str | None = None, kind: EdgeKind | None = None
+) -> set[tuple[str, str, str]]:
+    """The edges of the report as tuples, filtered by source and kind."""
+    return {
+        (e.source, e.target, e.kind.value)
+        for e in report.link_graph.edges
+        if (source is None or e.source == source) and (kind is None or e.kind == kind)
+    }
+
+
+@pytest.fixture(scope="module")
+def repressilator() -> Report:
+    """The report of the repressilator."""
+    return SBMLDocumentInfo.from_sbml(REPRESSILATOR_SBML)
+
+
+def test_every_sbase_is_a_node(repressilator: Report) -> None:
+    """Document, model, elements and nested elements are nodes."""
+    nodes = repressilator.link_graph.nodes
+    model = repressilator.models[0]
+    assert repressilator.document.pk in nodes
+    assert model.pk in nodes
+    assert nodes[model.pk].model is None
+    species = model.list_of_species[0]
+    assert nodes[species.pk].model == model.pk
+    assert nodes[species.pk].sbml_type == "Species"
+    reaction = model.list_of_reactions[0]
+    assert reaction.list_of_reactants[0].pk in nodes
+    assert reaction.kinetic_law is not None
+    assert reaction.kinetic_law.pk in nodes
+
+
+def test_edges_reference_nodes(repressilator: Report) -> None:
+    """Every edge connects two existing nodes."""
+    nodes = repressilator.link_graph.nodes
+    for edge in repressilator.link_graph.edges:
+        assert edge.source in nodes
+        assert edge.target in nodes
+
+
+def test_reaction_edges(repressilator: Report) -> None:
+    """A reaction links to its species and the symbols of its kinetic law."""
+    m = "BIOMD0000000012"
+    reaction = f"{m}/Reaction:Reaction1"
+    assert _edges(repressilator, source=reaction) == {
+        (reaction, f"{m}/Species:X", "reactant"),
+    }
+    kinetic_law = repressilator.models[0].list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    assert _edges(repressilator, source=kinetic_law.pk) == {
+        (kinetic_law.pk, f"{m}/Parameter:kd_mRNA", "math"),
+        (kinetic_law.pk, f"{m}/Species:X", "math"),
+    }
+
+
+def test_species_and_rule_edges(repressilator: Report) -> None:
+    """Species link to their compartment, rules to their variable and symbols."""
+    m = "BIOMD0000000012"
+    assert (f"{m}/Species:PX", f"{m}/Compartment:cell", "compartment") in _edges(
+        repressilator
+    )
+    variable_edges = _edges(repressilator, kind=EdgeKind.VARIABLE)
+    assert len(variable_edges) == 9
+    assert all(t.startswith(f"{m}/Parameter:") for _, t, _ in variable_edges)
+    assert _edges(repressilator, kind=EdgeKind.MATH)
+
+
+def test_units_edges() -> None:
+    """Units attributes link to the unit definitions of the model."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "reaction_with_units.xml")
+    m = "reaction_with_units"
+    units_edges = _edges(report, kind=EdgeKind.UNITS)
+    assert units_edges
+    assert all(t.startswith(f"{m}/UnitDefinition:") for _, t, _ in units_edges)
+
+
+def test_comp_edges() -> None:
+    """Submodels, ports and replacements are edges."""
+    report = SBMLDocumentInfo.from_sbml(COMP_ICG_BODY)
+    m = "icg_body"
+    assert (
+        f"{m}/Submodel:LI",
+        "document/ExternalModelDefinition:liver",
+        "modelRef",
+    ) in _edges(report)
+    assert (
+        f"{m}/Port:Vre_tissue_port",
+        f"{m}/Compartment:Vre_tissue",
+        "port",
+    ) in _edges(report)
+    assert (
+        f"{m}/Species:Cli_plasma_icg",
+        f"{m}/Submodel:LI",
+        "replacedElement",
+    ) in _edges(report)
+
+
+def test_fbc_edges() -> None:
+    """Flux bounds, gene products and objectives are edges."""
+    report = SBMLDocumentInfo.from_sbml(FBC_ECOLI_CORE_SBML)
+    m = "e_coli_core"
+    reaction = f"{m}/Reaction:R_PFK"
+    edges = _edges(report, source=reaction)
+    assert (reaction, f"{m}/Parameter:cobra_0_bound", "fluxBound") in edges
+    assert (reaction, f"{m}/Parameter:cobra_default_ub", "fluxBound") in edges
+    assert (reaction, f"{m}/GeneProduct:G_b3916", "geneProduct") in edges
+    assert (
+        f"{m}/Objective:obj",
+        f"{m}/Reaction:R_BIOMASS_Ecoli_core_w_GAM",
+        "fluxObjective",
+    ) in _edges(report)
+
+
+def test_dangling_reference_is_logged(caplog: pytest.LogCaptureFixture) -> None:
+    """An unresolvable reference produces no edge and a warning."""
+    sbml = """<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+      <model id="m">
+        <listOfCompartments><compartment id="c" constant="true"/></listOfCompartments>
+        <listOfSpecies><species id="s" compartment="missing" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/></listOfSpecies>
+      </model>
+    </sbml>"""
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        report = SBMLDocumentInfo.from_sbml(sbml)
+    assert _edges(report, kind=EdgeKind.COMPARTMENT) == set()
+    assert "missing" in caplog.text
+
+
+def test_edge_is_hashable() -> None:
+    """Edges compare by value and equal edges have equal hashes."""
+    edge = Edge(source="a", target="b", kind=EdgeKind.MATH)
+    same = Edge(source="a", target="b", kind=EdgeKind.MATH)
+    assert edge == same
+    assert hash(edge) == hash(same)
+    assert len({edge, same}) == 1
+
+
+# -------------------------------------------------------------------------------------
+# synthetic models: one reference kind per model, built as SBML string
+# -------------------------------------------------------------------------------------
+def _mathml(formula: str) -> str:
+    """The content MathML of an L3 formula, for embedding in an SBML string."""
+    astnode = libsbml.parseL3Formula(formula)
+    assert astnode is not None, libsbml.getLastParseL3Error()
+    xml: str = libsbml.writeMathMLToString(astnode)
+    return xml.replace('<?xml version="1.0" encoding="UTF-8"?>', "").strip()
+
+
+SYNTHETIC_FBC_SBML = f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2"
+      level="3" version="1" fbc:required="false">
+  <model id="synth" conversionFactor="cf" fbc:strict="false">
+    <listOfFunctionDefinitions>
+      <functionDefinition id="f">{_mathml("lambda(x, x * k)")}</functionDefinition>
+    </listOfFunctionDefinitions>
+    <listOfCompartments>
+      <compartment id="c" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="s" compartment="c" initialAmount="1" hasOnlySubstanceUnits="false"
+               boundaryCondition="false" constant="false" conversionFactor="cf_s"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="x" value="1" constant="true"/>
+      <parameter id="k" value="2" constant="true"/>
+      <parameter id="cf" value="1" constant="true"/>
+      <parameter id="cf_s" value="1" constant="true"/>
+    </listOfParameters>
+    <listOfInitialAssignments>
+      <initialAssignment symbol="s">{_mathml("k")}</initialAssignment>
+    </listOfInitialAssignments>
+    <listOfReactions>
+      <reaction id="r" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="s" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <kineticLaw>
+          {_mathml("k * s")}
+          <listOfLocalParameters>
+            <localParameter id="k" value="3"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+    <fbc:listOfGeneProducts>
+      <fbc:geneProduct fbc:id="g" fbc:label="g" fbc:associatedSpecies="s"/>
+    </fbc:listOfGeneProducts>
+  </model>
+</sbml>"""
+
+SYNTHETIC_COMP_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      level="3" version="1" comp:required="true">
+  <model id="top">
+    <listOfUnitDefinitions>
+      <unitDefinition id="per_second">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+        <comp:listOfReplacedElements>
+          <comp:replacedElement comp:idRef="per_second" comp:submodelRef="sm"/>
+        </comp:listOfReplacedElements>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment metaid="meta_c" id="c" spatialDimensions="3" size="1"
+                   constant="true">
+        <comp:replacedBy comp:idRef="c" comp:submodelRef="sm"/>
+      </compartment>
+    </listOfCompartments>
+    <listOfParameters>
+      <parameter id="ctime" value="1" constant="true"/>
+      <parameter id="cextent" value="1" constant="true"/>
+    </listOfParameters>
+    <comp:listOfSubmodels>
+      <comp:submodel comp:id="sm" comp:modelRef="sub"
+                     comp:timeConversionFactor="ctime"
+                     comp:extentConversionFactor="cextent"/>
+    </comp:listOfSubmodels>
+    <comp:listOfPorts>
+      <comp:port comp:id="unit_port" comp:unitRef="per_second"/>
+      <comp:port comp:id="meta_port" comp:metaIdRef="meta_c"/>
+    </comp:listOfPorts>
+  </model>
+  <comp:listOfModelDefinitions>
+    <comp:modelDefinition id="sub">
+      <listOfCompartments>
+        <compartment id="c" spatialDimensions="3" size="1" constant="true"/>
+      </listOfCompartments>
+    </comp:modelDefinition>
+  </comp:listOfModelDefinitions>
+</sbml>"""
+
+SYNTHETIC_DISTRIB_SBML = f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:distrib="http://www.sbml.org/sbml/level3/version1/distrib/version1"
+      level="3" version="1" distrib:required="true">
+  <model id="unc">
+    <listOfParameters>
+      <parameter id="p1" value="1" constant="true">
+        <distrib:listOfUncertainties>
+          <distrib:uncertainty>
+            <distrib:uncertParameter distrib:type="mean">
+              {_mathml("2 * p2")}
+            </distrib:uncertParameter>
+          </distrib:uncertainty>
+        </distrib:listOfUncertainties>
+      </parameter>
+      <parameter id="p2" value="2" constant="true"/>
+    </listOfParameters>
+  </model>
+</sbml>"""
+
+
+@pytest.fixture(scope="module")
+def synthetic_fbc() -> Report:
+    """The report of the synthetic core and fbc model."""
+    return SBMLDocumentInfo.from_sbml(SYNTHETIC_FBC_SBML)
+
+
+@pytest.fixture(scope="module")
+def synthetic_comp() -> Report:
+    """The report of the synthetic comp model."""
+    return SBMLDocumentInfo.from_sbml(SYNTHETIC_COMP_SBML)
+
+
+def test_bound_variables_are_no_math_edges(synthetic_fbc: Report) -> None:
+    """A bound variable of a lambda does not link to the parameter of its name."""
+    fd = synthetic_fbc.models[0].list_of_function_definitions[0]
+    assert _edges(synthetic_fbc, source=fd.pk) == {
+        (fd.pk, "synth/Parameter:k", "math"),
+    }
+
+
+def test_associated_species_edge(synthetic_fbc: Report) -> None:
+    """A gene product links to its associated species."""
+    gp = synthetic_fbc.models[0].list_of_gene_products[0]
+    assert _edges(synthetic_fbc, source=gp.pk) == {
+        (gp.pk, "synth/Species:s", "associatedSpecies"),
+    }
+
+
+def test_symbol_edge(synthetic_fbc: Report) -> None:
+    """An initial assignment links to its symbol and to the symbols of its math."""
+    ia = synthetic_fbc.models[0].list_of_initial_assignments[0]
+    assert _edges(synthetic_fbc, source=ia.pk) == {
+        (ia.pk, "synth/Species:s", "symbol"),
+        (ia.pk, "synth/Parameter:k", "math"),
+    }
+
+
+def test_conversion_factor_edges(synthetic_fbc: Report) -> None:
+    """The model and a species link to their conversion factor parameter."""
+    model = synthetic_fbc.models[0]
+    assert _edges(synthetic_fbc, kind=EdgeKind.CONVERSION_FACTOR) == {
+        (model.pk, "synth/Parameter:cf", "conversionFactor"),
+        ("synth/Species:s", "synth/Parameter:cf_s", "conversionFactor"),
+    }
+
+
+def test_local_parameter_shadows_global_parameter(synthetic_fbc: Report) -> None:
+    """The math of a kinetic law resolves its symbols against the local parameters."""
+    klaw = synthetic_fbc.models[0].list_of_reactions[0].kinetic_law
+    assert klaw is not None
+    assert _edges(synthetic_fbc, source=klaw.pk) == {
+        (klaw.pk, "synth/LocalParameter:r.kineticLaw.k", "math"),
+        (klaw.pk, "synth/Species:s", "math"),
+    }
+
+
+def test_replaced_by_edge(synthetic_comp: Report) -> None:
+    """An element replaced by an element of a submodel links to the submodel."""
+    assert (
+        "top/Compartment:c",
+        "top/Submodel:sm",
+        "replacedBy",
+    ) in _edges(synthetic_comp)
+
+
+def test_replacement_edges_of_every_element(synthetic_comp: Report) -> None:
+    """Replacements are edges for every element type, not only the core lists."""
+    assert (
+        "top/UnitDefinition:per_second",
+        "top/Submodel:sm",
+        "replacedElement",
+    ) in _edges(synthetic_comp)
+
+
+def test_port_unit_ref_edge(synthetic_comp: Report) -> None:
+    """A port referencing a unit definition is a port edge, not a units edge."""
+    assert _edges(synthetic_comp, source="top/Port:unit_port") == {
+        ("top/Port:unit_port", "top/UnitDefinition:per_second", "port"),
+    }
+
+
+def test_port_meta_id_ref_edge(synthetic_comp: Report) -> None:
+    """A port referencing an element by metaId links to the element."""
+    assert _edges(synthetic_comp, source="top/Port:meta_port") == {
+        ("top/Port:meta_port", "top/Compartment:c", "port"),
+    }
+
+
+def test_submodel_edge_to_model_definition(synthetic_comp: Report) -> None:
+    """A submodel links to the model definition it instantiates."""
+    definition = synthetic_comp.models[1]
+    assert _edges(synthetic_comp, kind=EdgeKind.MODEL_REF) == {
+        ("top/Submodel:sm", definition.pk, "modelRef"),
+    }
+
+
+def test_submodel_conversion_factor_edges(synthetic_comp: Report) -> None:
+    """A submodel links to the time and extent conversion factors of its model."""
+    assert _edges(
+        synthetic_comp, source="top/Submodel:sm", kind=EdgeKind.CONVERSION_FACTOR
+    ) == {
+        ("top/Submodel:sm", "top/Parameter:ctime", "conversionFactor"),
+        ("top/Submodel:sm", "top/Parameter:cextent", "conversionFactor"),
+    }
+
+
+def test_uncertainty_math_edge() -> None:
+    """The math of an uncertainty links to the elements it references."""
+    report = SBMLDocumentInfo.from_sbml(SYNTHETIC_DISTRIB_SBML)
+    uncertainty = report.models[0].list_of_parameters[0].uncertainties[0]
+    assert uncertainty.pk in report.link_graph.nodes
+    assert _edges(report, source=uncertainty.pk) == {
+        (uncertainty.pk, "unc/Parameter:p2", "math"),
+    }

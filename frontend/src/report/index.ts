@@ -1,0 +1,148 @@
+import type {
+  Edge,
+  EdgeKind,
+  SbmlElement,
+  ElementType,
+  ExternalModelDefinition,
+  Model,
+  Node,
+  Report,
+  SBMLDocument,
+  SBase,
+} from "@/api/types";
+import { ELEMENT_TYPES } from "@/data/sbmlTypes";
+
+function push<K, V>(map: Map<K, V[]>, key: K, value: V): void {
+  const list = map.get(key);
+  if (list) list.push(value);
+  else map.set(key, [value]);
+}
+
+/** Lookups over one report: every element by pk, the elements of a model by type, the edges in both directions. */
+export class ReportIndex {
+  readonly report: Report;
+  readonly elements = new Map<string, SBase>();
+  readonly nodes = new Map<string, Node>();
+  private readonly outgoing = new Map<string, Edge[]>();
+  private readonly incoming = new Map<string, Edge[]>();
+  private readonly byModel = new Map<string, Map<ElementType, SbmlElement[]>>();
+
+  constructor(report: Report) {
+    this.report = report;
+    this.add(report.document);
+    for (const definition of report.externalModelDefinitions ?? []) this.add(definition);
+    for (const model of report.models ?? []) this.addModel(model);
+    for (const node of Object.values(report.linkGraph?.nodes ?? {})) this.nodes.set(node.pk, node);
+    for (const edge of report.linkGraph?.edges ?? []) {
+      push(this.outgoing, edge.source, edge);
+      push(this.incoming, edge.target, edge);
+    }
+  }
+
+  get document(): SBMLDocument {
+    return this.report.document;
+  }
+
+  get models(): Model[] {
+    return this.report.models ?? [];
+  }
+
+  get externalModelDefinitions(): ExternalModelDefinition[] {
+    return this.report.externalModelDefinitions ?? [];
+  }
+
+  /** The model of kind "model", else the first model definition. */
+  get mainModel(): Model | null {
+    return this.models.find((model) => model.kind === "model") ?? this.models[0] ?? null;
+  }
+
+  model(id: string): Model | null {
+    return this.models.find((model) => model.id === id) ?? null;
+  }
+
+  get(pk: string): SBase | undefined {
+    return this.elements.get(pk);
+  }
+
+  has(pk: string): boolean {
+    return this.elements.has(pk);
+  }
+
+  /** The elements of the model grouped by type, every element type present, in list order. */
+  byType(modelId: string): ReadonlyMap<ElementType, SbmlElement[]> {
+    return this.byModel.get(modelId) ?? new Map();
+  }
+
+  /** The id of the containing model. The node only carries the model's pk, so this resolves
+   * that pk one more hop to the model's id. */
+  modelOf(pk: string): string | null {
+    const modelPk = this.nodes.get(pk)?.model;
+    if (!modelPk) return null;
+    return this.nodes.get(modelPk)?.id ?? this.elements.get(modelPk)?.id ?? null;
+  }
+
+  /** The edges from the element to the elements it references. */
+  references(pk: string): Edge[] {
+    return this.outgoing.get(pk) ?? [];
+  }
+
+  /** The edges from the elements referencing the element. */
+  referencedBy(pk: string): Edge[] {
+    return this.incoming.get(pk) ?? [];
+  }
+
+  /** The pk of the element with the id, or failing that the metaId, referenced by the source
+   * through an edge of the kind, if any. */
+  resolve(sourcePk: string, kind: EdgeKind, id: string | null | undefined): string | null {
+    if (!id) return null;
+    for (const edge of this.references(sourcePk)) {
+      if (edge.kind !== kind) continue;
+      const target = this.nodes.get(edge.target);
+      const element = this.elements.get(edge.target);
+      if (target?.id === id || element?.id === id || element?.metaId === id) return edge.target;
+    }
+    return null;
+  }
+
+  private add(element: SBase): void {
+    this.elements.set(element.pk, element);
+    for (const uncertainty of element.uncertainties ?? []) this.add(uncertainty);
+  }
+
+  private addModel(model: Model): void {
+    this.add(model);
+    const byType = new Map<ElementType, SbmlElement[]>();
+    for (const info of ELEMENT_TYPES) {
+      const list = (model[info.listKey] ?? []) as SbmlElement[];
+      byType.set(
+        info.type,
+        list.filter((element) => element.sbmlType === info.type),
+      );
+    }
+    for (const elements of byType.values()) {
+      for (const element of elements) this.addElement(element);
+    }
+    if (model.id) this.byModel.set(model.id, byType);
+  }
+
+  private addElement(element: SbmlElement): void {
+    this.add(element);
+    switch (element.sbmlType) {
+      case "Reaction":
+        for (const reference of element.listOfReactants ?? []) this.add(reference);
+        for (const reference of element.listOfProducts ?? []) this.add(reference);
+        for (const reference of element.listOfModifiers ?? []) this.add(reference);
+        if (element.kineticLaw) {
+          this.add(element.kineticLaw);
+          for (const parameter of element.kineticLaw.listOfLocalParameters ?? [])
+            this.add(parameter);
+        }
+        break;
+      case "Event":
+        for (const assignment of element.listOfEventAssignments ?? []) this.add(assignment);
+        break;
+      default:
+        break;
+    }
+  }
+}

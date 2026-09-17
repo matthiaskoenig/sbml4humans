@@ -1,6 +1,6 @@
 """The http api of sbml4humans.
 
-Run with `uvicorn sbml4humans.api:api`.
+Served with `uvicorn sbml4humans.api:api`.
 
 Error contract: the frontend expects every response with status 200. Failures
 are reported in the body as `{"errors": [message, traceback], "warnings": [],
@@ -14,16 +14,18 @@ from contextlib import asynccontextmanager
 from typing import Any
 
 import httpx
-import uvicorn
 from fastapi import FastAPI, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.middleware.base import RequestResponseEndpoint
+from starlette.responses import Response
 
 from sbml4humans import __version__
 from sbml4humans.annotations import annotation_info
 from sbml4humans.examples import ExampleMetaData, load_examples
+from sbml4humans.model import ReportResponse
 from sbml4humans.report import report_for_bytes, report_for_path
 
 
@@ -74,13 +76,6 @@ api = FastAPI(
     lifespan=lifespan,
 )
 
-api.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 def error_response(request: Request, exc: Exception) -> JSONResponse:
     """Report an exception to the frontend in the body of a 200 response."""
@@ -98,6 +93,35 @@ def error_response(request: Request, exc: Exception) -> JSONResponse:
     )
 
 
+@api.middleware("http")
+async def error_response_middleware(
+    request: Request, call_next: RequestResponseEndpoint
+) -> Response:
+    """Turn an exception of any endpoint into an error response.
+
+    Starlette's own exception handling runs in the outermost
+    `ServerErrorMiddleware`, outside the `CORSMiddleware` added below, so its
+    responses carry no CORS headers. This middleware is added before the
+    `CORSMiddleware`, which makes it the innermost one (Starlette wraps
+    middleware in the order they are added, most recent outermost), so the
+    `CORSMiddleware` wraps it and adds its headers to the error response as it
+    would to any other response.
+    """
+    try:
+        return await call_next(request)
+    except Exception as exc:
+        return error_response(request, exc)
+
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Safety net for exceptions raised outside the middleware stack above, for
+# example during request parsing before `error_response_middleware` runs.
 api.add_exception_handler(Exception, error_response)
 api.add_exception_handler(RequestValidationError, error_response)
 
@@ -119,44 +143,60 @@ def examples() -> dict[str, list[dict[str, Any]]]:
     }
 
 
-@api.get("/api/examples/{example_id}", tags=["examples"])
+@api.get(
+    "/api/examples/{example_id}",
+    tags=["examples"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 def example(example_id: str) -> dict[str, Any]:
     """Create the report data of an example."""
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    return report_for_path(example.file)
+    return _dump(report_for_path(example.file))
 
 
-@api.post("/api/file", tags=["reports"])
+@api.post(
+    "/api/file",
+    tags=["reports"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 def report_from_file(source: UploadFile) -> dict[str, Any]:
     """Create the report data of an uploaded SBML file or COMBINE archive."""
-    return report_for_bytes(source.file.read())
+    return _dump(report_for_bytes(source.file.read()))
 
 
-@api.get("/api/url", tags=["reports"])
+@api.get(
+    "/api/url",
+    tags=["reports"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 def report_from_url(url: str) -> dict[str, Any]:
     """Create the report data of an SBML file or COMBINE archive behind a url."""
-    return report_for_bytes(download(url))
+    return _dump(report_for_bytes(download(url)))
 
 
-@api.post("/api/content", tags=["reports"])
+@api.post(
+    "/api/content",
+    tags=["reports"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
 async def report_from_content(request: Request) -> dict[str, Any]:
     """Create the report data of the SBML content in the request body."""
     content = await request.body()
-    return await run_in_threadpool(report_for_bytes, content)
+    return _dump(await run_in_threadpool(report_for_bytes, content))
+
+
+def _dump(response: ReportResponse) -> dict[str, Any]:
+    """The JSON of a response with camelCase keys."""
+    return response.model_dump(mode="json", by_alias=True)
 
 
 @api.get("/api/annotation_resource", tags=["metadata"])
 def annotation_resource(resource: str) -> dict[str, Any]:
     """Resolve the information of an annotation resource (url or MIRIAM urn)."""
     return annotation_info(resource)
-
-
-def main() -> None:
-    """Serve the api for development with reload."""
-    uvicorn.run("sbml4humans.api:api", host="localhost", port=1444, reload=True)
-
-
-if __name__ == "__main__":
-    main()

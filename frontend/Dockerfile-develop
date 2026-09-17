@@ -1,8 +1,7 @@
-FROM node:14 AS build-stage
-# RUN apk add g++ make py3-pip
+FROM node:24 AS build-stage
 WORKDIR /app
 COPY package*.json /app/
-RUN npm install
+RUN npm ci
 COPY . /app/
 EXPOSE 3456
-CMD npm run serve
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

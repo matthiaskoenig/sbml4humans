@@ -10,9 +10,14 @@ __pycache__/
 # node
 node_modules/
 frontend/dist/
+frontend/playwright-report/
+frontend/test-results/
 
 # editors, operating system
 .idea/
 .vscode/
 *~
 .DS_Store
+
+# brainstorming sessions of the superpowers plugin
+.superpowers/

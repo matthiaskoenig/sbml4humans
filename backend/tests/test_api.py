@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
-from sbmlutils.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 from sbml4humans import __version__, api
+from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
 def _check_error(data: dict[str, Any], info: dict[str, str] | None = None) -> None:
@@ -22,16 +22,37 @@ def _check_report(data: dict[str, Any]) -> None:
     """Check report data returned by the api."""
     assert "errors" not in data
     assert set(data) == {"uid", "manifest", "reports"}
-    assert data["reports"]
+    assert set(data["manifest"]) == {"entries"}
+    for entry in data["manifest"]["entries"]:
+        assert set(entry) == {"location", "format", "master"}
+    for entry in data["reports"].values():
+        assert set(entry) == {"report", "debug"}
+        assert set(entry["report"]) == {
+            "document",
+            "models",
+            "externalModelDefinitions",
+            "linkGraph",
+        }
 
 
 def test_openapi(client: TestClient) -> None:
     """The api describes itself."""
     response = client.get("/openapi.json")
     assert response.status_code == 200
-    info = response.json()["info"]
+    schema = response.json()
+    info = schema["info"]
     assert info["title"] == "sbml4humans"
     assert info["version"] == __version__
+    for path, method in [
+        ("/api/examples/{example_id}", "get"),
+        ("/api/file", "post"),
+        ("/api/url", "get"),
+        ("/api/content", "post"),
+    ]:
+        content = schema["paths"][path][method]["responses"]["200"]["content"]
+        assert content["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/ReportResponse"
+        }
 
 
 def test_cors(client: TestClient) -> None:
@@ -39,6 +60,24 @@ def test_cors(client: TestClient) -> None:
     response = client.get("/api/examples", headers={"Origin": "https://example.org"})
     assert response.status_code == 200
     assert response.headers["access-control-allow-origin"] == "*"
+
+
+def test_cors_error_response(client: TestClient) -> None:
+    """An error payload also carries the CORS headers of the request origin."""
+    response = client.get(
+        "/api/examples/nope", headers={"Origin": "https://example.org"}
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "*"
+    _check_error(response.json(), info={})
+
+
+def test_cors_validation_error_response(client: TestClient) -> None:
+    """A validation error payload also carries the CORS headers of the request origin."""
+    response = client.get("/api/url", headers={"Origin": "https://example.org"})
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "*"
+    _check_error(response.json(), info={})
 
 
 def test_examples(client: TestClient) -> None:

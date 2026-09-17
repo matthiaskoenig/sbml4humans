@@ -10,8 +10,6 @@
 #   sudo docker compose -f docker-compose-develop.yml up
 # -----------------------------------------------------------------------------
 volumes:
-  vue_dist:
-    driver: local
   node_modules:
     driver: local
 
@@ -37,4 +35,3 @@ services:
     volumes:
       - ./frontend:/app
       - node_modules:/app/node_modules/
-      - vue_dist:/usr/share/nginx/html

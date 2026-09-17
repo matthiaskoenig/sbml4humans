@@ -1,0 +1,97 @@
+@import "tailwindcss";
+@import "tailwindcss-primeui";
+@import "primeicons/primeicons.css";
+@import "katex/dist/katex.min.css";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --color-link: #1d4ed8;
+  --color-link-hover: #1e40af;
+  --color-selected: #dbeafe;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  @apply bg-white text-gray-900 antialiased;
+}
+
+.katex {
+  font-size: 1em;
+}
+
+/* The sanitised html of an SBase's notes (headings, lists, tables, pre/code, images, ...). */
+.notes-html {
+  @apply max-w-none text-sm leading-relaxed break-words;
+}
+.notes-html a {
+  @apply text-link underline;
+}
+.notes-html blockquote {
+  @apply my-1 border-l-2 border-gray-300 pl-2 text-gray-600;
+}
+.notes-html code {
+  @apply font-mono text-xs;
+}
+.notes-html dd {
+  @apply mb-1 ml-4;
+}
+.notes-html dt {
+  @apply font-semibold;
+}
+.notes-html h1 {
+  @apply mt-3 mb-1 text-base font-semibold;
+}
+.notes-html h1:first-child {
+  @apply mt-0;
+}
+.notes-html h2 {
+  @apply mt-3 mb-1 text-sm font-semibold;
+}
+.notes-html h3 {
+  @apply mt-2 mb-1 text-sm font-semibold;
+}
+.notes-html h4 {
+  @apply mt-2 mb-1 text-sm font-semibold;
+}
+.notes-html h5 {
+  @apply mt-2 mb-1 text-xs font-semibold;
+}
+.notes-html h6 {
+  @apply mt-2 mb-1 text-xs font-semibold;
+}
+.notes-html hr {
+  @apply my-3 border-gray-200;
+}
+.notes-html img {
+  @apply my-1 max-w-full;
+}
+.notes-html li {
+  @apply my-0.5;
+}
+.notes-html ol {
+  @apply my-1 list-decimal pl-5;
+}
+.notes-html p {
+  @apply my-1;
+}
+.notes-html pre {
+  @apply my-1 overflow-x-auto rounded bg-gray-50 p-2 break-words whitespace-pre-wrap;
+}
+.notes-html table {
+  @apply my-2 w-full border-collapse;
+}
+.notes-html td {
+  @apply border border-gray-200 px-2 py-1 align-top;
+}
+.notes-html th {
+  @apply border border-gray-200 bg-gray-50 px-2 py-1 text-left;
+}
+.notes-html ul {
+  @apply my-1 list-disc pl-5;
+}

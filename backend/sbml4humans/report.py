@@ -1,9 +1,8 @@
 """Report data for SBML models and COMBINE archives.
 
-The report of a model is the JSON representation created by
-`sbmlutils.report.sbmlinfo.SBMLDocumentInfo`. A single SBML file is wrapped in
-a COMBINE archive with one master model, so that the frontend always receives
-an archive manifest with one report per SBML entry.
+The report of a model is the `Report` created by `SBMLDocumentInfo`. A single
+SBML file is wrapped in a COMBINE archive with one master model, so that the
+frontend always receives an archive manifest with one report per SBML entry.
 """
 
 import gzip
@@ -12,10 +11,18 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
-from typing import Any
 
-from pymetadata.omex import EntryFormat, ManifestEntry, Omex
-from sbmlutils.report.sbmlinfo import SBMLDocumentInfo
+from pymetadata.omex import EntryFormat, Omex
+from pymetadata.omex import ManifestEntry as OmexManifestEntry
+
+from sbml4humans.model import (
+    Debug,
+    Manifest,
+    ManifestEntry,
+    ReportEntry,
+    ReportResponse,
+)
+from sbml4humans.sbmlinfo import SBMLDocumentInfo
 
 
 logger = logging.getLogger(__name__)
@@ -25,8 +32,8 @@ SBML_LOCATION = "./model.xml"
 GZIP_MAGIC = b"\x1f\x8b"
 
 
-def report_for_sbml(source: Path | str, uid: str = "") -> dict[str, Any]:
-    """Create the report data of a single SBML document.
+def report_for_sbml(source: Path | str, uid: str = "") -> ReportEntry:
+    """Create the report of a single SBML document.
 
     Args:
         source: path to an SBML file or SBML string.
@@ -36,23 +43,20 @@ def report_for_sbml(source: Path | str, uid: str = "") -> dict[str, Any]:
         ValueError: if no model could be read from the source.
     """
     start = time.perf_counter()
-    info = SBMLDocumentInfo.from_sbml(source=source)
+    info = SBMLDocumentInfo(SBMLDocumentInfo.read(source))
     if info.doc.getModel() is None:
         raise ValueError(
             f"No SBML model could be read from '{source}':\n"
             f"{info.doc.getErrorLog().toString()}"
         )
+    report = info.build()
     elapsed = round(time.perf_counter() - start, 3)
     logger.info("report created for '%s' in %s s", uid, elapsed)
-
-    return {
-        "report": info.info,
-        "debug": {"jsonReportTime": f"{elapsed} [s]"},
-    }
+    return ReportEntry(report=report, debug=Debug(json_report_time=f"{elapsed} [s]"))
 
 
-def report_for_path(path: Path) -> dict[str, Any]:
-    """Create the report data of an SBML file or a COMBINE archive.
+def report_for_path(path: Path) -> ReportResponse:
+    """Create the reports of an SBML file or a COMBINE archive.
 
     Returns the archive manifest and one report per SBML entry of the archive.
     """
@@ -63,15 +67,19 @@ def report_for_path(path: Path) -> dict[str, Any]:
         for entry in omex.manifest.entries
         if entry.is_sbml()
     }
-    return {
-        "uid": uid,
-        "manifest": omex.manifest.model_dump(),
-        "reports": reports,
-    }
+    manifest = Manifest(
+        entries=[
+            ManifestEntry(
+                location=entry.location, format=str(entry.format), master=entry.master
+            )
+            for entry in omex.manifest.entries
+        ]
+    )
+    return ReportResponse(uid=uid, manifest=manifest, reports=reports)
 
 
-def report_for_bytes(content: bytes) -> dict[str, Any]:
-    """Create the report data of the content of an SBML file or COMBINE archive.
+def report_for_bytes(content: bytes) -> ReportResponse:
+    """Create the reports of the content of an SBML file or COMBINE archive.
 
     The content is written to a temporary file, so that archives (zip files)
     as well as plain or gzipped SBML are handled by `report_for_path`.
@@ -102,7 +110,7 @@ def _omex_for_path(path: Path) -> Omex:
         omex = Omex()
         omex.add_entry(
             entry_path=sbml_path,
-            entry=ManifestEntry(
+            entry=OmexManifestEntry(
                 location=SBML_LOCATION, format=EntryFormat.SBML, master=True
             ),
         )
