@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { SearchIcon } from "@lucide/vue";
 import { onBeforeUnmount, ref, watch } from "vue";
 
 import { useReportView } from "@/report/view";
@@ -25,8 +26,8 @@ onBeforeUnmount(() => clearTimeout(timer));
 
 <template>
   <div class="relative">
-    <i
-      class="pi pi-search pointer-events-none absolute top-1/2 left-2 -translate-y-1/2 text-xs text-gray-400"
+    <SearchIcon
+      class="pointer-events-none absolute top-1/2 left-2 size-3 -translate-y-1/2 text-gray-400"
     />
     <input
       v-model="text"

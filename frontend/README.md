@@ -50,5 +50,5 @@ npm run fixtures   # record tests/fixtures/*.json from the running backend
 ## Technology
 
 - [Vite](https://vite.dev/) 8, [Vue 3](https://vuejs.org/) with `<script setup>` and TypeScript, [Pinia](https://pinia.vuejs.org/), [Vue Router](https://router.vuejs.org/).
-- [PrimeVue](https://primevue.org/) 4 in unstyled mode (DataTable, Select, Tooltip) with [Tailwind CSS](https://tailwindcss.com/) 4 and PrimeIcons, [KaTeX](https://katex.org/) for the math and units, DOMPurify for the notes.
+- [Tailwind CSS](https://tailwindcss.com/) 4 for the styling with [Lucide](https://lucide.dev/) icons and [Floating UI](https://floating-ui.com/) for the tooltips; the tables, the dropdowns and the tooltip directive are components of the application. [KaTeX](https://katex.org/) renders the math and units, DOMPurify sanitises the notes.
 - ESLint, Prettier, `vue-tsc`, Vitest, Playwright.

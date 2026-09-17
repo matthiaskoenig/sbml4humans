@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { UploadIcon } from "@lucide/vue";
 import { ref } from "vue";
 
 const emit = defineEmits<{ submit: [file: File] }>();
@@ -25,7 +26,7 @@ function onDrop(event: DragEvent): void {
     @dragleave.prevent="dragging = false"
     @drop.prevent="onDrop"
   >
-    <i class="pi pi-upload text-2xl text-gray-400" />
+    <UploadIcon class="size-6 text-gray-400" />
     <p class="text-sm text-gray-600">Drop an SBML file or a COMBINE archive here, or</p>
     <button
       type="button"

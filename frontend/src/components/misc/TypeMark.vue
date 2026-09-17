@@ -11,11 +11,11 @@ const info = computed(() => typeInfo(props.type));
 <template>
   <span
     class="inline-flex shrink-0 items-center justify-center rounded-sm text-gray-800"
-    :class="size === 'sm' ? 'size-4 text-[10px]' : 'size-6 text-sm'"
+    :class="size === 'sm' ? 'size-4' : 'size-6'"
     :style="{ backgroundColor: info.color }"
     :title="info.label"
     data-testid="type-mark"
   >
-    <i class="pi" :class="info.icon" />
+    <component :is="info.icon" :class="size === 'sm' ? 'size-2.5' : 'size-3.5'" />
   </span>
 </template>

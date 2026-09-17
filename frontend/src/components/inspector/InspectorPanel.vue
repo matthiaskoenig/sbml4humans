@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { XIcon } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 
 import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
@@ -68,7 +69,7 @@ const xmlEmptyMessage = computed(() =>
         data-testid="inspector-close"
         @click="view.select(null)"
       >
-        <i class="pi pi-times text-xs" />
+        <XIcon class="size-3" />
       </button>
     </header>
     <div v-if="showXml" class="min-h-0 flex-1 overflow-hidden p-3">

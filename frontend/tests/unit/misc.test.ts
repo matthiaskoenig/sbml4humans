@@ -34,7 +34,7 @@ describe("misc components", () => {
   it("renders booleans as marks", () => {
     expect(
       mount(BooleanMark, { props: { value: true } })
-        .find(".pi-check")
+        .find("svg")
         .exists(),
     ).toBe(true);
     expect(mount(BooleanMark, { props: { value: false } }).text()).toBe("-");

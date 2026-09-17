@@ -39,7 +39,7 @@ describe("sbml types", () => {
     for (const info of all) {
       expect(typeInfo(info.type)).toBe(info);
       expect(info.color).toMatch(/^#[0-9a-f]{6}$/);
-      expect(info.icon).toMatch(/^pi-/);
+      expect(info.icon, info.type).toBeDefined();
     }
   });
 
