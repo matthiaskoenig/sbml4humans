@@ -10,15 +10,25 @@ The report shows the rendered equation and the units it produces; which element 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| math | `Math` | <span id="math"></span>the expression which has to be zero | [Section 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | the expression which has to be zero | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="math"></span>**math**
+
+The math is an arbitrary expression which returns a number, and the rule says that this number is zero at all times.
+
+The report renders the expression in the column "math" and in the inspector.
 
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| derived units | `latex` | <span id="derived-units"></span>the units of the expression as the report derives them |
+| [derived units](#derived-units) | `latex` | the units of the expression as the report derives them |
+
+<span id="derived-units"></span>**derived units**
+
+The report derives the units of the expression from the units of the quantities it uses. The terms of an equation should all have the same units.
 
 ## Related elements
 

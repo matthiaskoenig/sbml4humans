@@ -12,10 +12,22 @@ The report shows the objectives of a model in a section of their own and lists t
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| type | `FbcType` | <span id="type"></span>whether the objective is maximised or minimised | [Section 3.6](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| flux objectives | `list` | <span id="flux-objectives"></span>the reactions of the objective with their coefficient | [Section 3.7](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [type](#type) | `FbcType` | whether the objective is maximised or minimised | [fbc 3.6](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [flux objectives](#flux-objectives) | `list` | the reactions of the objective with their coefficient | [fbc 3.7](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="type"></span>**type**
+
+The type is the sense of the optimality constraint and is either `maximize` or `minimize`. It is required, an objective without it is not defined.
+
+The report shows the type in the column "type" and in the inspector.
+
+<span id="flux-objectives"></span>**flux objectives**
+
+A flux objective is one term of the objective function: the [reaction](reaction.md) whose flux is meant and the coefficient the flux is weighted with. An objective which is defined has at least one of them.
+
+The report shows the number of flux objectives in the column "flux objectives" and the table of the reactions with their coefficients in the inspector, with a link to every reaction.
 
 ## Related elements
 
@@ -25,4 +37,4 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints (fbc)](https://sbml.org/documents/specifications/level-3/version-1/fbc/), Section 3.6 (Olivier et al. 2026, Version 3 Release 1).
+[SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1](https://sbml.org/documents/specifications/level-3/version-1/fbc/), Section 3.6 (Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082).

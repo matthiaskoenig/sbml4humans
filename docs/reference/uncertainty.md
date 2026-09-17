@@ -12,9 +12,15 @@ The report shows every uncertainty as an element of its own, with the table of i
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| uncert parameters | `list` | <span id="uncert-parameters"></span>the statistical measures which make up the uncertainty | [Section 3.11](https://sbml.org/documents/specifications/level-3/version-1/distrib/) |
+| [uncert parameters](#uncert-parameters) | `list` | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/documents/specifications/level-3/version-1/distrib/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="uncert-parameters"></span>**uncert parameters**
+
+Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` or `externalParameter` carries the math of the distribution and a definition url instead of a value.
+
+The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
 
 ## Related elements
 
@@ -24,4 +30,4 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 ## Specification
 
-[SBML Level 3 Package: Distributions (distrib)](https://sbml.org/documents/specifications/level-3/version-1/distrib/), Section 3.10 (Smith et al. 2020, Version 1 Release 1).
+[The Distributions Package for SBML Level 3, Version 1 Release 1](https://sbml.org/documents/specifications/level-3/version-1/distrib/), Section 3.10 (Smith et al. 2020, J Integr Bioinform 17(2-3):20200018).

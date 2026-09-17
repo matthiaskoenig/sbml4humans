@@ -10,16 +10,32 @@ The report shows the variable, the rendered formula and the units the formula pr
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| variable | `SIdRef` | <span id="variable"></span>the element whose rate of change the rule gives | [Section 4.9.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| math | `Math` | <span id="math"></span>the formula which computes the rate of change | [Section 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [variable](#variable) | `SIdRef` | the element whose rate of change the rule gives | [core 4.9.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | the formula which computes the rate of change | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="variable"></span>**variable**
+
+The variable names the compartment, species, species reference or parameter which changes. It must not be constant, and no other rule may determine the same variable.
+
+The report links the named element in the column "variable" and in the inspector.
+
+<span id="math"></span>**math**
+
+The math is an arbitrary expression which returns a number. Its units should be the units of the variable divided by the time units of the model.
+
+The report renders the formula in the column "math" and in the inspector.
 
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| derived units | `latex` | <span id="derived-units"></span>the units of the formula as the report derives them |
+| [derived units](#derived-units) | `latex` | the units of the formula as the report derives them |
+
+<span id="derived-units"></span>**derived units**
+
+The report derives the units of the formula from the units of the quantities it uses. They should be the units of the variable per unit of time of the model.
 
 ## Related elements
 

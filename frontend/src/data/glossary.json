@@ -55,7 +55,7 @@
           "summary": "the size of the compartment at the start of the simulation"
         },
         "spatialDimensions": {
-          "label": "spatial dimensions",
+          "label": "dimensions",
           "summary": "the number of dimensions of the compartment"
         },
         "units": {
@@ -102,16 +102,16 @@
           "label": "priority",
           "summary": "the formula which orders this event against other events of the same moment"
         },
-        "trigger": {
+        "trigger.initialValue": {
+          "label": "initial value",
+          "summary": "whether the condition is taken to be true just before the simulation starts"
+        },
+        "trigger.math": {
           "label": "trigger",
           "summary": "the condition whose change from false to true fires the event"
         },
-        "trigger.initialValue": {
-          "label": "trigger initial value",
-          "summary": "whether the condition is taken to be true just before the simulation starts"
-        },
         "trigger.persistent": {
-          "label": "trigger persistent",
+          "label": "persistent",
           "summary": "whether the event is still executed when its condition becomes false again before execution"
         },
         "useValuesFromTriggerTime": {
@@ -370,6 +370,10 @@
       "package": "core",
       "page": "reference/modifierspeciesreference/",
       "attributes": {
+        "reaction": {
+          "label": "reaction",
+          "summary": "the reaction which lists this modifier"
+        },
         "species": {
           "label": "species",
           "summary": "the species which modifies the reaction"
@@ -575,7 +579,7 @@
           "summary": "the identifier other elements of the model use to reference the element"
         },
         "metaId": {
-          "label": "meta id",
+          "label": "metaId",
           "summary": "the identifier the annotations of the element point at"
         },
         "name": {
@@ -669,6 +673,14 @@
         "constant": {
           "label": "constant",
           "summary": "whether the stoichiometry stays fixed during a simulation"
+        },
+        "reaction": {
+          "label": "reaction",
+          "summary": "the reaction which lists this species reference"
+        },
+        "role": {
+          "label": "role",
+          "summary": "whether the reference is a reactant, a product or a modifier of its reaction"
         },
         "species": {
           "label": "species",

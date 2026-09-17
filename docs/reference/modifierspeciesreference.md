@@ -10,9 +10,27 @@ The report shows a modifier species reference with a link to its reaction and to
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| species | `SIdRef` | <span id="species"></span>the species which modifies the reaction | [Section 4.11.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [species](#species) | `SIdRef` | the species which modifies the reaction | [core 4.11.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="species"></span>**species**
+
+The value is the identifier of a species of the model. Every species which appears in the kinetic law of a reaction has to be declared as a reactant, a product or a modifier of it.
+
+The report links the species in the list of modifiers of the reaction and in the inspector.
+
+## In the report
+
+| field | type | meaning |
+| --- | --- | --- |
+| [reaction](#reaction) | `Reaction` | the reaction which lists this modifier |
+
+<span id="reaction"></span>**reaction**
+
+A modifier species reference is written inside the list of modifiers of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it.
+
+The reaction is the first row of the inspector of a modifier species reference.
 
 ## Related elements
 

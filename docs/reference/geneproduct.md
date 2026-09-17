@@ -12,10 +12,22 @@ The report shows the gene products of a model in a section of their own, with a 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| label | `string` | <span id="label"></span>the identifier under which the source of the model knows the gene | [Section 3.5](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| associated species | `SIdRef` | <span id="associated-species"></span>the species of the model which stands for this gene product | [Section 3.5](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [label](#label) | `string` | the identifier under which the source of the model knows the gene | [fbc 3.5](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [associated species](#associated-species) | `SIdRef` | the species of the model which stands for this gene product | [fbc 3.5](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="label"></span>**label**
+
+The label carries the gene identifier as it is written in the reconstruction, for example `b3670` or `Rv0649`. It is required, because the identifier of the gene product itself has to follow the rules of an SBML identifier and the gene identifier usually does not.
+
+The report shows the label in the column "label" and in the inspector.
+
+<span id="associated-species"></span>**associated species**
+
+Some reconstructions model a gene product as a [species](species.md) which participates in reactions. The attribute connects the two, and when it is set it names an existing species of the model.
+
+The report links the species in the column "associated species" and in the inspector.
 
 ## Related elements
 
@@ -25,4 +37,4 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints (fbc)](https://sbml.org/documents/specifications/level-3/version-1/fbc/), Section 3.5 (Olivier et al. 2026, Version 3 Release 1).
+[SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1](https://sbml.org/documents/specifications/level-3/version-1/fbc/), Section 3.5 (Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082).

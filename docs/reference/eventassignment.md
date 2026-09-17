@@ -10,10 +10,22 @@ The report shows an event assignment as an element of its own, with a link to th
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| variable | `SIdRef` | <span id="variable"></span>the element the assignment changes | [Section 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| math | `Math` | <span id="math"></span>the formula which computes the new value | [Section 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [variable](#variable) | `SIdRef` | the element the assignment changes | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | the formula which computes the new value | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="variable"></span>**variable**
+
+The variable names the compartment, species, species reference or parameter which receives the new value. It must not be constant.
+
+The report links the named element in the table of the event and in the inspector.
+
+<span id="math"></span>**math**
+
+The math is an arbitrary expression over the elements of the model. Whether it is evaluated when the event triggers or when it is executed is decided by the flag "values from trigger time" of the event.
+
+The report renders the formula in the table of the event and in the inspector.
 
 ## Related elements
 

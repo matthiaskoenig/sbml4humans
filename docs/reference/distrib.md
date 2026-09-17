@@ -16,4 +16,4 @@ The report shows the [uncertainties](uncertainty.md) of an element in its inspec
 
 ## Specification
 
-[SBML Level 3 Package: Distributions (distrib)](https://sbml.org/documents/specifications/level-3/version-1/distrib/) (Smith et al. 2020, Version 1 Release 1).
+[The Distributions Package for SBML Level 3, Version 1 Release 1](https://sbml.org/documents/specifications/level-3/version-1/distrib/) (Smith et al. 2020, J Integr Bioinform 17(2-3):20200018).

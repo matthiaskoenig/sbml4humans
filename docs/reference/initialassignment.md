@@ -10,16 +10,32 @@ The report shows the element which is assigned, the rendered formula and the uni
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| symbol | `SIdRef` | <span id="symbol"></span>the element whose initial value the assignment computes | [Section 4.8.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| math | `Math` | <span id="math"></span>the formula which computes the initial value | [Section 4.8.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [symbol](#symbol) | `SIdRef` | the element whose initial value the assignment computes | [core 4.8.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | the formula which computes the initial value | [core 4.8.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="symbol"></span>**symbol**
+
+The symbol names the compartment, species, species reference or parameter which receives the value. It is called symbol rather than variable because an initial assignment may also set an element which is constant.
+
+The report links the named element in the column "symbol" and in the inspector.
+
+<span id="math"></span>**math**
+
+The math is an arbitrary expression over the elements of the model. Its units should be the units of the element it assigns to.
+
+The report renders the formula in the column "math" and in the inspector.
 
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| derived units | `latex` | <span id="derived-units"></span>the units of the formula as the report derives them |
+| [derived units](#derived-units) | `latex` | the units of the formula as the report derives them |
+
+<span id="derived-units"></span>**derived units**
+
+The report derives the units of the formula from the units of the quantities it uses and renders them as a formula. Comparing them with the units of the assigned element is the quickest check of an initial assignment.
 
 ## Related elements
 

@@ -12,12 +12,36 @@ The report shows which element a port names, links it, and lists the ports of a 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| port ref | `PortSIdRef` | <span id="port-ref"></span>the port which this reference names | [Section 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| id ref | `SIdRef` | <span id="id-ref"></span>the element which this port names, by its identifier | [Section 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| unit ref | `UnitSIdRef` | <span id="unit-ref"></span>the unit definition which this port names | [Section 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| meta id ref | `IDREF` | <span id="meta-id-ref"></span>the element which this port names, by its meta id | [Section 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [port ref](#port-ref) | `PortSIdRef` | the port which this reference names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [id ref](#id-ref) | `SIdRef` | the element which this port names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unit ref](#unit-ref) | `UnitSIdRef` | the unit definition which this port names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [meta id ref](#meta-id-ref) | `IDREF` | the element which this port names, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="port-ref"></span>**port ref**
+
+A port reference names a port instead of an element. A port may not name another port of its own model, so a model which passes on the interface of one of its parts names the submodel and reaches into it with the nested reference of the package, whose port reference then names the port inside that submodel. Port identifiers are a namespace of their own, and the reference is resolved among the ports of the model it reaches into.
+
+The report shows the port reference as text; it does not follow it into another model.
+
+<span id="id-ref"></span>**id ref**
+
+This is the usual way to define a port: the identifier of the species, the parameter, the compartment or the reaction which the port stands for. Since a port of a model must name an element of that same model, the identifier is resolved in this model.
+
+The report links the element the port names.
+
+<span id="unit-ref"></span>**unit ref**
+
+Unit identifiers live in a namespace of their own, so naming a [unit definition](unitdefinition.md) needs an attribute of its own. The units which SBML reserves cannot be named here: they can neither be replaced nor deleted.
+
+The report links the unit definition the port names.
+
+<span id="meta-id-ref"></span>**meta id ref**
+
+Every element of a file may carry a meta id, and this is the way to name an element which has no identifier, for example a rule or a reaction which was written without one.
+
+The report searches the element with that meta id in the model and links it.
 
 ## Related elements
 
@@ -27,4 +51,4 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 ## Specification
 
-[SBML Level 3 Package: Hierarchical Model Composition (comp)](https://sbml.org/documents/specifications/level-3/version-1/comp/), Section 3.4.3 (Smith et al. 2013, Version 1 Release 3).
+[SBML Level 3 Package: Hierarchical Model Composition, Version 1 Release 3](https://sbml.org/documents/specifications/level-3/version-1/comp/), Section 3.4.3 (Smith et al. 2015, J Integr Bioinform 12(2):268).

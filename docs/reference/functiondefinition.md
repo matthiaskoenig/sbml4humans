@@ -10,9 +10,15 @@ The report shows the body of the function as rendered mathematics, in the table 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| math | `Math` | <span id="math"></span>the formula of the function, with its arguments | [Section 4.3.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | the formula of the function, with its arguments | [core 4.3.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="math"></span>**math**
+
+The math of a function definition is a MathML lambda expression: it declares the arguments and the expression which is computed from them. It is the only place in SBML core where a lambda is allowed.
+
+The report renders the formula and shows it in the column "math" and in the inspector.
 
 ## Related elements
 

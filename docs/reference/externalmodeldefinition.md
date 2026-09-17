@@ -10,10 +10,22 @@ The report shows the external model definitions of a document next to its models
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| source | `anyURI` | <span id="source"></span>the location of the SBML file which holds the model | [Section 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| model ref | `SIdRef` | <span id="model-ref"></span>the identifier of the model inside the referenced file | [Section 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [source](#source) | `anyURI` | the location of the SBML file which holds the model | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [model ref](#model-ref) | `SIdRef` | the identifier of the model inside the referenced file | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="source"></span>**source**
+
+The source is a URI, which may be a URL, a URN or a location relative to this document. The whole file at that location is referenced and it has to be an SBML Level 3 Version 1 document; earlier levels and versions are not supported by the package.
+
+The report shows the source in the inspector of the external model definition.
+
+<span id="model-ref"></span>**model ref**
+
+The reference names a model or another external model definition of the document at the source. When it is not set, the main model of that file is meant, which is the case a model without an identifier leaves. Following a chain of external model definitions has to end at a model.
+
+The report shows the reference in the inspector; it is not resolved to an element, the referenced file is not read.
 
 ## Related elements
 
@@ -23,4 +35,4 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 ## Specification
 
-[SBML Level 3 Package: Hierarchical Model Composition (comp)](https://sbml.org/documents/specifications/level-3/version-1/comp/), Section 3.3.2 (Smith et al. 2013, Version 1 Release 3).
+[SBML Level 3 Package: Hierarchical Model Composition, Version 1 Release 3](https://sbml.org/documents/specifications/level-3/version-1/comp/), Section 3.3.2 (Smith et al. 2015, J Integr Bioinform 12(2):268).

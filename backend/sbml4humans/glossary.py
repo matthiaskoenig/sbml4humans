@@ -11,8 +11,9 @@ module reads the glossary and writes the two generated artefacts:
 Run `python -m sbml4humans.glossary` after a change of the glossary or of the
 report model and commit both outputs. `python -m sbml4humans.glossary --check`
 regenerates into a temporary directory and fails when a committed file is
-stale, when a type or a field of the report model has no entry, when a link of
-a description does not resolve or when a page references a missing image.
+stale, when a type or a field of the report model has no entry, when a type
+entry of the glossary is not a type of the report, when a link of a description
+does not resolve or when a page references a missing image.
 """
 
 import json
@@ -65,6 +66,17 @@ SBASE_PROPERTIES = frozenset(
     }
 )
 
+# the objects an element of the report carries which the report shows as one
+# value: a rendered formula, the history block, a parameter with its value.
+# The entry of the field explains them. Every other object an element carries
+# inline, the comp and the fbc extensions and the trigger of an event, is shown
+# field by field, so every one of its fields needs an entry `<field>.<name>`.
+SINGLE_VALUE_DEFINITIONS = frozenset({"ConversionFactor", "Math", "ModelHistory"})
+
+# the type entries which are not an element type of the report: the shared
+# attributes of `SBase` and the three packages, which have a page of their own
+NON_ELEMENT_TYPES = frozenset({"SBase", "comp", "fbc", "distrib"})
+
 _ENTRY_KEYS = frozenset(
     {
         "label",
@@ -81,7 +93,7 @@ _ATTRIBUTE_KEYS = frozenset(
     {"label", "summary", "description", "package", "spec", "type"}
 )
 _SPEC_KEYS = frozenset({"doc", "section"})
-_SPEC_DOCUMENT_KEYS = frozenset({"label", "citation", "url"})
+_SPEC_DOCUMENT_KEYS = frozenset({"label", "short", "citation", "url"})
 _SECTIONS = ("specs", "types", "links", "concepts")
 
 _LINK = re.compile(r"(?<!!)\[([^\]]*)\]\(([^)\s]+)\)")
@@ -102,6 +114,7 @@ class SpecDocument:
     label: str
     citation: str
     url: str
+    short: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -246,7 +259,15 @@ class Glossary:
                 if _EXTERNAL.match(target):
                     continue
                 page = target.split("#", 1)[0]
-                if page not in pages:
+                if page.startswith("../"):
+                    # a page of the site outside the reference, for example
+                    # `../sbml.md`; it exists when the documentation is built
+                    if root is not None and not (root / DOCS_DIR / page[3:]).is_file():
+                        problems.append(
+                            f"{key}: the link [{text}]({target}) does not resolve to a "
+                            f"page of the documentation"
+                        )
+                elif page not in pages:
                     problems.append(
                         f"{key}: the link [{text}]({target}) does not resolve to a "
                         f"reference page"
@@ -263,43 +284,58 @@ class Glossary:
         type entry and every property of it needs an attribute entry, either on
         the type itself, on the shared `SBase` attributes or as a concept of the
         report. A property which every type carries is explained once, as a
-        shared attribute or as a concept. Every kind of `edgeKinds.ts` needs a
-        link entry.
+        shared attribute or as a concept. A property which holds an object the
+        report shows field by field, the comp and the fbc extensions or the
+        trigger of an event, needs an entry `<property>.<field>` for every one
+        of its fields. Every kind of `edgeKinds.ts` needs a link entry, and in
+        the other direction every type entry of the glossary is a type of the
+        report, except the shared attributes and the three packages.
 
         Args:
             root: the repository root.
 
         Raises:
-            GlossaryError: with the list of everything which has no entry.
+            GlossaryError: with the list of everything which has no entry, or
+                when the report model or the edge kinds cannot be read.
         """
         missing: list[str] = []
-        schema = json.loads((root / SCHEMA_PATH).read_text(encoding="utf-8"))
+        schema = json.loads(_read(root / SCHEMA_PATH))
+        defs: Mapping[str, Any] = schema.get("$defs", {})
         shared = self.types.get("SBase")
         shared_attributes = shared.attributes if shared else {}
         definitions = {
             name: definition.get("properties", {})
-            for name, definition in sorted(schema.get("$defs", {}).items())
+            for name, definition in sorted(defs.items())
             if set(definition.get("properties", {})) >= SBASE_PROPERTIES
         }
         common = set.intersection(*(set(p) for p in definitions.values()))
+        # the shared properties are the same in every definition
+        shared_properties: Mapping[str, Any] = next(iter(definitions.values()), {})
+
+        def covered(*names: str) -> bool:
+            """Whether one of the names is explained somewhere in the glossary."""
+            return any(
+                name in shared_attributes or name in self.concepts for name in names
+            )
+
         for property_name in sorted(common):
-            if property_name in shared_attributes or property_name in self.concepts:
-                continue
-            missing.append(f"the shared field {property_name} has no entry")
+            for field_name in _fields(defs, shared_properties, property_name):
+                if not covered(field_name):
+                    missing.append(f"the shared field {field_name} has no entry")
         for name, properties in definitions.items():
             entry = self.types.get(name)
             if entry is None:
                 missing.append(f"the type {name} of the report has no entry")
                 continue
             for property_name in properties:
-                if (
-                    property_name in common
-                    or property_name in entry.attributes
-                    or property_name in shared_attributes
-                    or property_name in self.concepts
-                ):
+                if property_name in common:
                     continue
-                missing.append(f"the field {name}.{property_name} has no entry")
+                for field_name in _fields(defs, properties, property_name):
+                    if field_name not in entry.attributes and not covered(field_name):
+                        missing.append(f"the field {name}.{field_name} has no entry")
+        for key in self.types:
+            if key not in definitions and key not in NON_ELEMENT_TYPES:
+                missing.append(f"the type {key} is not a type of the report")
         for kind in _edge_kinds(root / EDGE_KINDS_PATH):
             if kind not in self.links:
                 missing.append(f"the link kind {kind} has no entry")
@@ -403,11 +439,13 @@ def _spec_document(
     """One document of the `specs` table."""
     table = _table(path, value, owners)
     _known_keys(path, table, _SPEC_DOCUMENT_KEYS, owners)
+    short = table.get("short")
     return SpecDocument(
         key=key,
         label=_string(path, table, "label", owners),
         citation=_string(path, table, "citation", owners),
         url=_string(path, table, "url", owners),
+        short=_string(path, table, "short", owners) if short is not None else key,
     )
 
 
@@ -469,12 +507,54 @@ def _entry(
     )
 
 
+def _read(path: Path) -> str:
+    """The content of a file the check reads, as a message instead of an OSError."""
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError as error:
+        raise GlossaryError(f"{path} cannot be read: {error}") from error
+
+
 def _edge_kinds(path: Path) -> list[str]:
     """The `EDGE_KINDS` array of the frontend."""
-    match = _EDGE_KINDS.search(path.read_text(encoding="utf-8"))
+    match = _EDGE_KINDS.search(_read(path))
     if match is None:
         raise GlossaryError(f"{path}: no EDGE_KINDS array")
     return re.findall(r'"([^"]+)"', match.group("kinds"))
+
+
+def _ref(schema: Any) -> str | None:
+    """The definition a property references directly, not through a list."""
+    if not isinstance(schema, Mapping):
+        return None
+    target = schema.get("$ref")
+    if isinstance(target, str):
+        return target.rsplit("/", 1)[-1]
+    for option in schema.get("anyOf", []):
+        name = _ref(option)
+        if name is not None:
+            return name
+    return None
+
+
+def _fields(
+    defs: Mapping[str, Any], properties: Mapping[str, Any], name: str
+) -> list[str]:
+    """The names the property of a report type needs an entry for.
+
+    A property which holds a value, a list or an element of its own is one
+    entry. A property which holds an object the report shows field by field,
+    the comp or the fbc extension of an element or the trigger of an event, is
+    explained field by field as `<property>.<field>`.
+    """
+    referenced = _ref(properties.get(name))
+    if referenced is None or referenced in SINGLE_VALUE_DEFINITIONS:
+        return [name]
+    nested = defs.get(referenced, {}).get("properties", {})
+    if not nested or set(nested) >= SBASE_PROPERTIES:
+        # an element of the report, which has a type entry and a page of its own
+        return [name]
+    return [f"{name}.{field}" for field in nested]
 
 
 def _missing_images(root: Path) -> list[str]:
@@ -502,11 +582,16 @@ def _cell(text: str | None) -> str:
 
 
 def _spec_link(glossary: Glossary, spec: SpecRef | None) -> str:
-    """The specification section of an entry as a link into the document."""
+    """The specification section of an entry as a link into the document.
+
+    The label names the document and the section, for example `core 4.6.3` or
+    `comp 3.4`, so that a table of a type which mixes the core specification
+    with a package says which document a section belongs to.
+    """
     if spec is None:
         return "-"
     document = glossary.specs[spec.doc]
-    label = f"Section {spec.section}" if spec.section else document.label
+    label = f"{document.short} {spec.section}" if spec.section else document.short
     return f"[{label}]({document.url})"
 
 
@@ -526,22 +611,37 @@ def _table_rows(header: Iterable[str], rows: Iterable[Iterable[str]]) -> list[st
 def _attribute_rows(
     glossary: Glossary, attributes: Iterable[Entry], *, with_spec: bool
 ) -> list[list[str]]:
-    """One row per attribute.
-
-    A markdown table has no place for the id of a row, so the anchor of an
-    attribute, which the application links to, opens its meaning.
-    """
+    """One row per attribute, its label linking the block which describes it."""
     rows = []
     for attribute in attributes:
         row = [
-            _cell(attribute.label),
+            f"[{_cell(attribute.label)}](#{attribute.anchor})",
             f"`{attribute.type}`" if attribute.type else "-",
-            f'<span id="{attribute.anchor}"></span>{_cell(attribute.summary)}',
+            _cell(attribute.summary),
         ]
         if with_spec:
             row.append(_spec_link(glossary, attribute.spec))
         rows.append(row)
     return rows
+
+
+def _attribute_details(attributes: Iterable[Entry]) -> list[str]:
+    """One block per attribute: its label as the anchor, then its description.
+
+    The table above is the index, the blocks are what a reader of a single
+    attribute wants, and the anchor of the block is what the application links
+    when it sends a reader from a column header or from a row of the inspector
+    into the reference.
+    """
+    lines: list[str] = []
+    for attribute in attributes:
+        lines += [
+            f'<span id="{attribute.anchor}"></span>**{attribute.label}**',
+            "",
+            attribute.description,
+            "",
+        ]
+    return lines
 
 
 def render_type_page(glossary: Glossary, entry: Entry) -> str:
@@ -569,12 +669,13 @@ def render_type_page(glossary: Glossary, entry: Entry) -> str:
         lines += ["## Attributes", ""]
         lines += _table_rows(["attribute", "type", "meaning", "specification"], rows)
         lines += [""]
-        if entry.key != "SBase" and "SBase" in glossary.types:
-            lines += [
-                "Every element of a model also carries the "
-                "[common attributes](sbase.md) of `SBase`.",
-                "",
-            ]
+    if entry.key not in NON_ELEMENT_TYPES and "SBase" in glossary.types:
+        lines += [
+            "Every element of a model also carries the "
+            "[common attributes](sbase.md) of `SBase`.",
+            "",
+        ]
+    lines += _attribute_details(attributes)
 
     report_fields = [a for a in entry.attributes.values() if a.package == "report"]
     rows = _attribute_rows(glossary, report_fields, with_spec=False)
@@ -582,6 +683,7 @@ def render_type_page(glossary: Glossary, entry: Entry) -> str:
         lines += ["## In the report", ""]
         lines += _table_rows(["field", "type", "meaning"], rows)
         lines += [""]
+        lines += _attribute_details(report_fields)
 
     if entry.related:
         lines += ["## Related elements", ""]

@@ -10,10 +10,22 @@ The report shows the rendered condition and the message which explains a violati
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| math | `Math` | <span id="math"></span>the condition which has to stay true | [Section 4.10.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| message | `XHTML` | <span id="message"></span>the text which is shown when the condition is violated | [Section 4.10.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | the condition which has to stay true | [core 4.10.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [message](#message) | `XHTML` | the text which is shown when the condition is violated | [core 4.10.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="math"></span>**math**
+
+The math is an expression which returns a boolean value. It is checked at the start of the simulation and at every moment after it.
+
+The report renders the condition in the column "math" and in the inspector.
+
+<span id="message"></span>**message**
+
+The message is XHTML written for the user of a simulation, for example "the concentration of S1 left the range of the rate law". It is the place where the model author explains why the constraint exists.
+
+The report shows the message next to the condition.
 
 ## Related elements
 

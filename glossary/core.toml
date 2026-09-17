@@ -10,6 +10,7 @@
 
 [specs.l3v2]
 label = "SBML Level 3 Version 2 Core"
+short = "core"
 citation = "Hucka et al. 2019, J Integr Bioinform 16(2):20190021"
 url = "https://sbml.org/documents/specifications/level-3/version-2/core/"
 
@@ -56,7 +57,7 @@ The report shows the name in the second column of every table, next to the id.
 """
 
 [types.SBase.attributes.metaId]
-label = "meta id"
+label = "metaId"
 type = "ID"
 spec = { doc = "l3v2", section = "3.2.3" }
 summary = "the identifier the annotations of the element point at"
@@ -176,7 +177,7 @@ package = "core"
 spec = { doc = "l3v2", section = "4.2" }
 summary = "the container of everything a model is made of"
 description = """
-The model holds the lists of every element: the unit definitions, the compartments, the species, the parameters, the initial assignments, the rules, the constraints, the reactions and the events. It also sets the units which the elements inherit when they do not declare their own, in particular the unit of time, which exists nowhere else.
+The model holds the lists of every element: the function definitions, the unit definitions, the compartments, the species, the parameters, the initial assignments, the rules, the constraints, the reactions and the events. It also sets the units which the elements inherit when they do not declare their own, in particular the unit of time, which exists nowhere else.
 
 The report shows the model as the root of the report, its lists as the sections of the report, and its units in the attributes of the inspector.
 """
@@ -210,7 +211,9 @@ package = "report"
 type = "latex"
 summary = "the substance units of the model rendered as a formula"
 description = """
-The report resolves the unit definition the model references and renders it as a formula, so that `mmol_per_l` is shown as the product of its base units instead of as an identifier.
+The report resolves the unit definition which the model declares for the amounts of its species and renders it as a formula, so that `mmol` is shown as the unit itself instead of as an identifier.
+
+It is shown next to the substance units in the attributes of the model.
 """
 
 [types.Model.attributes.timeUnits]
@@ -230,7 +233,9 @@ package = "report"
 type = "latex"
 summary = "the time units of the model rendered as a formula"
 description = """
-The report resolves the unit definition the model references and renders it as a formula next to its identifier.
+The report resolves the unit definition which the model declares for time and renders it as a formula. Since the unit of time is declared nowhere else, this is where a reader sees whether a simulation runs in seconds, in minutes or in hours.
+
+It is shown next to the time units in the attributes of the model.
 """
 
 [types.Model.attributes.volumeUnits]
@@ -250,7 +255,9 @@ package = "report"
 type = "latex"
 summary = "the volume units of the model rendered as a formula"
 description = """
-The report resolves the unit definition the model references and renders it as a formula next to its identifier.
+The report resolves the unit definition which the model declares for the size of its compartments with three dimensions and renders it as a formula.
+
+It is shown next to the volume units in the attributes of the model.
 """
 
 [types.Model.attributes.areaUnits]
@@ -270,7 +277,9 @@ package = "report"
 type = "latex"
 summary = "the area units of the model rendered as a formula"
 description = """
-The report resolves the unit definition the model references and renders it as a formula next to its identifier.
+The report resolves the unit definition which the model declares for the size of its compartments with two dimensions and renders it as a formula.
+
+It is shown next to the area units in the attributes of the model.
 """
 
 [types.Model.attributes.lengthUnits]
@@ -290,7 +299,9 @@ package = "report"
 type = "latex"
 summary = "the length units of the model rendered as a formula"
 description = """
-The report resolves the unit definition the model references and renders it as a formula next to its identifier.
+The report resolves the unit definition which the model declares for the size of its compartments with one dimension and renders it as a formula.
+
+It is shown next to the length units in the attributes of the model.
 """
 
 [types.Model.attributes.extentUnits]
@@ -310,7 +321,9 @@ package = "report"
 type = "latex"
 summary = "the extent units of the model rendered as a formula"
 description = """
-The report resolves the unit definition the model references and renders it as a formula next to its identifier.
+The report resolves the unit definition which the model declares for the extent of its reactions and renders it as a formula. Together with the time units it says what the rate of every kinetic law is measured in.
+
+It is shown next to the extent units in the attributes of the model.
 """
 
 [types.Model.attributes.conversionFactor]
@@ -497,7 +510,7 @@ The report shows the size of a compartment, the units of that size and the units
 related = ["Model", "Species", "UnitDefinition"]
 
 [types.Compartment.attributes.spatialDimensions]
-label = "spatial dimensions"
+label = "dimensions"
 type = "double"
 spec = { doc = "l3v2", section = "4.5.2" }
 summary = "the number of dimensions of the compartment"
@@ -1037,11 +1050,108 @@ package = "report"
 type = "string"
 summary = "the reaction written as a chemical equation"
 description = """
-The report builds the equation from the reactants, the products and the modifiers of the reaction, with the stoichiometries in front of the species and a single or double arrow according to the flag "reversible". It is the fastest way to see what a reaction does without opening it.
+The report builds the equation from the reactants and the products of the reaction, with the stoichiometries in front of the species and a single or a double arrow according to the flag "reversible". The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
 
 The equation is a column of the table of reactions and a row of the inspector.
 """
 
+# ----------------------------------------------------------------------------
+# events
+# ----------------------------------------------------------------------------
+[types.Event]
+label = "Event"
+package = "core"
+spec = { doc = "l3v2", section = "4.12" }
+summary = "an instantaneous change of the model when a condition becomes true"
+description = """
+An event describes a discontinuous change: when its trigger turns from false to true, the assignments of the event are executed and set new values for compartments, species, stoichiometries or parameters. A dose which is given at a fixed time, a switch which flips at a threshold or a medium which is exchanged are events. The change can be delayed, and a priority decides which of several simultaneous events is executed first.
+
+The report shows the rendered trigger, the priority and the delay of an event, the flags of its trigger and the table of its assignments.
+"""
+related = ["EventAssignment", "Parameter", "Species"]
+
+[types.Event.attributes.useValuesFromTriggerTime]
+label = "values from trigger time"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.1" }
+summary = "whether the assignments use the values of the moment the event was triggered"
+description = """
+An event which is delayed is triggered at one moment and executed at another, and the two moments can give different values. With "true" the formulas of the assignments are evaluated when the event triggers, with "false" when it is executed.
+
+The report shows the flag as a mark in the column "values from trigger time".
+"""
+
+[types.Event.attributes."trigger.math"]
+label = "trigger"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition whose change from false to true fires the event"
+description = """
+The trigger holds an expression which returns a boolean value, and the event fires at the moment that expression turns from false to true. It can fire again whenever the expression makes that transition again. An event without a trigger can never fire.
+
+The report renders the condition in the column "trigger" and in the inspector.
+"""
+
+[types.Event.attributes."trigger.initialValue"]
+label = "initial value"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the condition is taken to be true just before the simulation starts"
+description = """
+To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
+
+The report shows the flag as a mark, in the column "initial value" and in the inspector.
+"""
+
+[types.Event.attributes."trigger.persistent"]
+label = "persistent"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the event is still executed when its condition becomes false again before execution"
+description = """
+Between the moment an event triggers and the moment it is executed, its condition may turn false again, because the event is delayed or because another event changed the model. With "true" the assignments are carried out anyway, with "false" the event is dropped.
+
+The report shows the flag as a mark, in the column "persistent" and in the inspector.
+"""
+
+[types.Event.attributes.priority]
+label = "priority"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the formula which orders this event against other events of the same moment"
+description = """
+When several events are executed at the same moment, the one with the higher priority goes first; a larger number means a higher priority and the value is dimensionless. An event without a priority has none, and the order of simultaneous events is then not fixed.
+
+The report renders the priority in the column "priority" and in the inspector.
+"""
+
+[types.Event.attributes.delay]
+label = "delay"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the formula which gives the time between the trigger and the execution"
+description = """
+The delay is evaluated at the moment the event triggers and has to be a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
+
+The report renders the delay in the column "delay" and in the inspector.
+"""
+
+[types.Event.attributes.listOfEventAssignments]
+label = "event assignments"
+type = "list"
+spec = { doc = "l3v2", section = "4.12.5" }
+summary = "the changes the event makes when it is executed"
+description = """
+The list holds the [event assignments](eventassignment.md) of the event, each of which sets one element of the model to the value of a formula.
+
+The report counts the assignments in the column "assignments" and shows them as a table in the inspector of the event.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the nested elements: the participants of a reaction, the kinetic law with its
+# local parameters and the assignments of an event
+# ----------------------------------------------------------------------------
 [types.SpeciesReference]
 label = "Species reference"
 package = "core"
@@ -1087,6 +1197,28 @@ A constant species reference keeps its stoichiometry for the whole simulation an
 The report shows the flag as a mark in the inspector of the species reference.
 """
 
+[types.SpeciesReference.attributes.reaction]
+label = "reaction"
+package = "report"
+type = "Reaction"
+summary = "the reaction which lists this species reference"
+description = """
+A species reference is written inside the list of reactants or of products of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it.
+
+The reaction is the first row of the inspector of a species reference.
+"""
+
+[types.SpeciesReference.attributes.role]
+label = "role"
+package = "report"
+type = "string"
+summary = "whether the reference is a reactant, a product or a modifier of its reaction"
+description = """
+SBML says the role of a participant by the list it stands in and not by an attribute of its own. The report looks up the list which holds the reference and shows the role as `reactant`, `product` or, for a [modifier species reference](modifierspeciesreference.md), `modifier`.
+
+The role is shown in the inspector, below the reaction.
+"""
+
 [types.ModifierSpeciesReference]
 label = "Modifier species reference"
 package = "core"
@@ -1109,6 +1241,18 @@ The value is the identifier of a species of the model. Every species which appea
 
 The report links the species in the list of modifiers of the reaction and in the inspector.
 """
+
+[types.ModifierSpeciesReference.attributes.reaction]
+label = "reaction"
+package = "report"
+type = "Reaction"
+summary = "the reaction which lists this modifier"
+description = """
+A modifier species reference is written inside the list of modifiers of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it.
+
+The reaction is the first row of the inspector of a modifier species reference.
+"""
+
 
 [types.KineticLaw]
 label = "Kinetic law"
@@ -1159,7 +1303,7 @@ package = "core"
 spec = { doc = "l3v2", section = "4.11.6" }
 summary = "a named value which only one kinetic law uses"
 description = """
-A local parameter is defined inside a kinetic law and can only be used by its formula, which keeps a constant that belongs to one reaction out of the global parameters. Its identifier lives in the namespace of the reaction and takes precedence over a global element of the same name inside the formula.
+A local parameter is defined inside a kinetic law, which keeps a constant that belongs to one reaction out of the global parameters. Its identifier is scoped to the whole reaction: within that reaction it shadows an element of the model with the same identifier, and in SBML core the math of the kinetic law is the only place which can read it. It can never be the target of an initial assignment, of a rule or of an event assignment.
 
 The report shows a local parameter as an element of its own, with its value, its units and the reaction it belongs to.
 """
@@ -1205,98 +1349,6 @@ description = """
 The report resolves the units of the local parameter and renders them as a formula, so that the units of a rate constant can be compared with the units the rate law needs.
 """
 
-
-# ----------------------------------------------------------------------------
-# events
-# ----------------------------------------------------------------------------
-[types.Event]
-label = "Event"
-package = "core"
-spec = { doc = "l3v2", section = "4.12" }
-summary = "an instantaneous change of the model when a condition becomes true"
-description = """
-An event describes a discontinuous change: when its trigger turns from false to true, the assignments of the event are executed and set new values for compartments, species, stoichiometries or parameters. A dose which is given at a fixed time, a switch which flips at a threshold or a medium which is exchanged are events. The change can be delayed, and a priority decides which of several simultaneous events is executed first.
-
-The report shows the rendered trigger, the priority and the delay of an event, the flags of its trigger and the table of its assignments.
-"""
-related = ["EventAssignment", "Parameter", "Species"]
-
-[types.Event.attributes.useValuesFromTriggerTime]
-label = "values from trigger time"
-type = "boolean"
-spec = { doc = "l3v2", section = "4.12.1" }
-summary = "whether the assignments use the values of the moment the event was triggered"
-description = """
-An event which is delayed is triggered at one moment and executed at another, and the two moments can give different values. With "true" the formulas of the assignments are evaluated when the event triggers, with "false" when it is executed.
-
-The report shows the flag as a mark in the column "values from trigger time".
-"""
-
-[types.Event.attributes.trigger]
-label = "trigger"
-type = "Trigger"
-spec = { doc = "l3v2", section = "4.12.2" }
-summary = "the condition whose change from false to true fires the event"
-description = """
-The trigger holds an expression which returns a boolean value, and the event fires at the moment that expression turns from false to true. It can fire again whenever the expression makes that transition again. An event without a trigger can never fire.
-
-The report renders the condition in the column "trigger" and in the inspector.
-"""
-
-[types.Event.attributes."trigger.initialValue"]
-label = "trigger initial value"
-type = "boolean"
-spec = { doc = "l3v2", section = "4.12.2" }
-summary = "whether the condition is taken to be true just before the simulation starts"
-description = """
-To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
-
-The report shows the flag as a mark, in the column "initial value" and in the inspector.
-"""
-
-[types.Event.attributes."trigger.persistent"]
-label = "trigger persistent"
-type = "boolean"
-spec = { doc = "l3v2", section = "4.12.2" }
-summary = "whether the event is still executed when its condition becomes false again before execution"
-description = """
-Between the moment an event triggers and the moment it is executed, its condition may turn false again, because the event is delayed or because another event changed the model. With "true" the assignments are carried out anyway, with "false" the event is dropped.
-
-The report shows the flag as a mark, in the column "persistent" and in the inspector.
-"""
-
-[types.Event.attributes.priority]
-label = "priority"
-type = "Math"
-spec = { doc = "l3v2", section = "4.12.3" }
-summary = "the formula which orders this event against other events of the same moment"
-description = """
-When several events are executed at the same moment, the one with the higher priority goes first; a larger number means a higher priority and the value is dimensionless. An event without a priority has none, and the order of simultaneous events is then not fixed.
-
-The report renders the priority in the column "priority" and in the inspector.
-"""
-
-[types.Event.attributes.delay]
-label = "delay"
-type = "Math"
-spec = { doc = "l3v2", section = "4.12.4" }
-summary = "the formula which gives the time between the trigger and the execution"
-description = """
-The delay is evaluated at the moment the event triggers and has to be a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
-
-The report renders the delay in the column "delay" and in the inspector.
-"""
-
-[types.Event.attributes.listOfEventAssignments]
-label = "event assignments"
-type = "list"
-spec = { doc = "l3v2", section = "4.12.5" }
-summary = "the changes the event makes when it is executed"
-description = """
-The list holds the [event assignments](eventassignment.md) of the event, each of which sets one element of the model to the value of a formula.
-
-The report counts the assignments in the column "assignments" and shows them as a table in the inspector of the event.
-"""
 
 [types.EventAssignment]
 label = "Event assignment"

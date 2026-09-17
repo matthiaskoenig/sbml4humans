@@ -9,20 +9,30 @@
 # The prose is written from the package specification named in the `spec` of
 # the entry. `summary` is one sentence without a final period, `description` is
 # markdown without hard line wraps.
+#
+# Every key of `types` is the name of a type of the report model
+# (`frontend/src/schema/report.schema.json`), so that a typo cannot generate a
+# page which no element of a report reaches. The only exceptions are the shared
+# attributes `SBase` and the three package entries `comp`, `fbc` and `distrib`
+# below, which describe a package instead of an element and have a page of
+# their own; `--check` rejects every other key.
 
 [specs.comp]
-label = "SBML Level 3 Package: Hierarchical Model Composition (comp)"
-citation = "Smith et al. 2013, Version 1 Release 3"
+label = "SBML Level 3 Package: Hierarchical Model Composition, Version 1 Release 3"
+short = "comp"
+citation = "Smith et al. 2015, J Integr Bioinform 12(2):268"
 url = "https://sbml.org/documents/specifications/level-3/version-1/comp/"
 
 [specs.fbc]
-label = "SBML Level 3 Package: Flux Balance Constraints (fbc)"
-citation = "Olivier et al. 2026, Version 3 Release 1"
+label = "SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1"
+short = "fbc"
+citation = "Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082"
 url = "https://sbml.org/documents/specifications/level-3/version-1/fbc/"
 
 [specs.distrib]
-label = "SBML Level 3 Package: Distributions (distrib)"
-citation = "Smith et al. 2020, Version 1 Release 1"
+label = "The Distributions Package for SBML Level 3, Version 1 Release 1"
+short = "distrib"
+citation = "Smith et al. 2020, J Integr Bioinform 17(2-3):20200018"
 url = "https://sbml.org/documents/specifications/level-3/version-1/distrib/"
 
 
@@ -206,11 +216,11 @@ The report shows the formula in the inspector of the species.
 [types.Species.attributes."fbc.charge"]
 label = "charge"
 package = "fbc"
-type = "double"
+type = "integer"
 spec = { doc = "fbc", section = "3.4" }
 summary = "the charge of the species, counted in electrons"
 description = """
-The charge is given in electrons, not in coulombs. Since Version 3 of the package it may be a value which is not an integer, because a species may stand for a pseudoisomer or an aggregate molecule; such values reduce the accuracy of a balancing check and should be used with care.
+The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Together with the chemical formula it is what a check of the charge balance of a reaction needs.
 
 The report shows the charge in the inspector of the species.
 """
@@ -234,7 +244,7 @@ type = "SIdRef"
 spec = { doc = "fbc", section = "3.8" }
 summary = "the parameter which holds the smallest flux the reaction may carry"
 description = """
-The bound is not a number but the identifier of a constant [parameter](parameter.md) of the model, so that many reactions can share one bound and a scenario is changed in one place. An irreversible reaction has a lower bound of zero.
+The bound is not a number but the identifier of a [parameter](parameter.md) of the model, so that many reactions can share one bound and a scenario is changed in one place. A model which sets `strict` of the fbc package has to give every reaction both bounds, and every bound has to be a constant parameter with a value which is neither missing nor infinite in the direction which would remove the bound; without `strict` a bound may be computed during a simulation.
 
 The report links the parameter in the inspector of the reaction.
 """
@@ -246,7 +256,7 @@ type = "SIdRef"
 spec = { doc = "fbc", section = "3.8" }
 summary = "the parameter which holds the largest flux the reaction may carry"
 description = """
-Like the lower bound it names a constant [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
+Like the lower bound it names a [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
 
 The report links the parameter in the inspector of the reaction.
 """
@@ -295,7 +305,7 @@ type = "anyURI"
 spec = { doc = "comp", section = "3.3.2" }
 summary = "the location of the SBML file which holds the model"
 description = """
-The source is a URI, which may be a URL, a URN or a location relative to this document. The whole file at that location is referenced and it has to be an SBML Level 3 document.
+The source is a URI, which may be a URL, a URN or a location relative to this document. The whole file at that location is referenced and it has to be an SBML Level 3 Version 1 document; earlier levels and versions are not supported by the package.
 
 The report shows the source in the inspector of the external model definition.
 """
@@ -395,7 +405,7 @@ type = "PortSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
 summary = "the port which this reference names"
 description = """
-A port reference names a port instead of an element, which is how a composed model passes on the interface of one of its parts. Port identifiers are a namespace of their own, and the reference is resolved among the ports of the model the reference reaches into, not among the ports of this model.
+A port reference names a port instead of an element. A port may not name another port of its own model, so a model which passes on the interface of one of its parts names the submodel and reaches into it with the nested reference of the package, whose port reference then names the port inside that submodel. Port identifiers are a namespace of their own, and the reference is resolved among the ports of the model it reaches into.
 
 The report shows the port reference as text; it does not follow it into another model.
 """

@@ -17,4 +17,4 @@ The report shows the model definitions of a document next to its main model, the
 
 ## Specification
 
-[SBML Level 3 Package: Hierarchical Model Composition (comp)](https://sbml.org/documents/specifications/level-3/version-1/comp/) (Smith et al. 2013, Version 1 Release 3).
+[SBML Level 3 Package: Hierarchical Model Composition, Version 1 Release 3](https://sbml.org/documents/specifications/level-3/version-1/comp/) (Smith et al. 2015, J Integr Bioinform 12(2):268).

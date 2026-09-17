@@ -10,11 +10,29 @@ The report shows one document per file of a submission, and a [Model](model.md) 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| level | `positiveInteger` | <span id="level"></span>the level of SBML the file is written in | [Section 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| version | `positiveInteger` | <span id="version"></span>the version of the level the file is written in | [Section 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| packages | `list` | <span id="packages"></span>the Level 3 packages the file uses, with their version | [Section 4.1.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [level](#level) | `positiveInteger` | the level of SBML the file is written in | [core 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [version](#version) | `positiveInteger` | the version of the level the file is written in | [core 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [packages](#packages) | `list` | the Level 3 packages the file uses, with their version | [core 4.1.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="level"></span>**level**
+
+A level is a major edition of the language; Level 3 is the current one and is the only level which supports packages. All constructs of a lower level can be mapped to Level 3, but a file of one level is not a file of another.
+
+The report shows the level in the attributes of the document.
+
+<span id="version"></span>**version**
+
+A version is a minor revision within a level which corrects and refines the language. The `fast` attribute of a reaction, for example, exists in Level 3 Version 1 and is removed in Version 2.
+
+The report shows the version next to the level in the attributes of the document.
+
+<span id="packages"></span>**packages**
+
+Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc and distrib and shows the elements they add.
+
+The report lists the prefix and the version of every declared package in the attributes of the document.
 
 ## Related elements
 

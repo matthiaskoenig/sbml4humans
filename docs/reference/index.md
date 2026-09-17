@@ -22,11 +22,11 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Algebraic rule](algebraicrule.md) | an equation which has to hold at every moment of the simulation |
 | [Constraint](constraint.md) | a condition which a valid simulation of the model has to satisfy |
 | [Reaction](reaction.md) | a process which changes the quantities of species |
+| [Event](event.md) | an instantaneous change of the model when a condition becomes true |
 | [Species reference](speciesreference.md) | the participation of a species in a reaction as a reactant or a product |
 | [Modifier species reference](modifierspeciesreference.md) | the participation of a species in a reaction as a modifier |
 | [Kinetic law](kineticlaw.md) | the formula which gives the speed of a reaction |
 | [Local parameter](localparameter.md) | a named value which only one kinetic law uses |
-| [Event](event.md) | an instantaneous change of the model when a condition becomes true |
 | [Event assignment](eventassignment.md) | the new value an event gives to one element of the model |
 
 ## Hierarchical models (comp)

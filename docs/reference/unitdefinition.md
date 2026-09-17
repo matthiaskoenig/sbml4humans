@@ -6,11 +6,19 @@ A unit definition composes a unit from base units, each raised to an exponent, s
 
 The report renders every unit definition as a formula instead of listing its parts, both in the table and in the inspector.
 
+Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| units | `latex` | <span id="units"></span>the composed unit rendered as a formula |
+| [units](#units) | `latex` | the composed unit rendered as a formula |
+
+<span id="units"></span>**units**
+
+The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example as mmol l^-1 s^-1.
+
+The rendered unit is the column "units" of the table of unit definitions and the row "units" of the inspector.
 
 ## Related elements
 

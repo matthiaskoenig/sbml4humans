@@ -10,26 +10,102 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| reversible | `boolean` | <span id="reversible"></span>whether the reaction can also run backwards | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| fast | `boolean` | <span id="fast"></span>whether the reaction was declared to be much faster than the others | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| compartment | `SIdRef` | <span id="compartment"></span>the compartment in which the reaction takes place | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| reactants | `list` | <span id="reactants"></span>the species the reaction consumes, with their stoichiometry | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| products | `list` | <span id="products"></span>the species the reaction produces, with their stoichiometry | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| modifiers | `list` | <span id="modifiers"></span>the species which influence the reaction without being consumed | [Section 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| kinetic law | `KineticLaw` | <span id="kinetic-law"></span>the formula which gives the speed of the reaction | [Section 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| fbc | `ReactionFbc` | <span id="fbc"></span>the flux bounds and the gene association which fbc adds to a reaction | [Section 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| lower flux bound | `SIdRef` | <span id="lower-flux-bound"></span>the parameter which holds the smallest flux the reaction may carry | [Section 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| upper flux bound | `SIdRef` | <span id="upper-flux-bound"></span>the parameter which holds the largest flux the reaction may carry | [Section 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| gene product association | `string` | <span id="gene-product-association"></span>the logical expression of the genes under which the reaction can run | [Section 3.9](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [reversible](#reversible) | `boolean` | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [fast](#fast) | `boolean` | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [compartment](#compartment) | `SIdRef` | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [reactants](#reactants) | `list` | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [products](#products) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [modifiers](#modifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [kinetic law](#kinetic-law) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [gene product association](#gene-product-association) | `string` | the logical expression of the genes under which the reaction can run | [fbc 3.9](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
+
+<span id="reversible"></span>**reversible**
+
+The flag says whether the process can proceed in both directions. It does not change the equations of a simulation, it is an assertion which structural analyses such as elementary mode analysis rely on, and which says that the rate of an irreversible reaction never becomes negative.
+
+The report shows the flag as a mark in the column "reversible" and writes the equation with a double arrow when it is set.
+
+<span id="fast"></span>**fast**
+
+In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a quasi steady state immediately. The attribute was removed in Level 3 Version 2, where the speed of every reaction is given by its kinetic law alone.
+
+The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written.
+
+<span id="compartment"></span>**compartment**
+
+The compartment is optional and has no effect on the equations of the model; it helps a reader, a visualisation or a tool which checks a rate law to know where the process happens.
+
+The report links the compartment in the column "compartment" and in the inspector.
+
+<span id="reactants"></span>**reactants**
+
+Every reactant is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event consumes. A reaction has at least one reactant or one product.
+
+The report lists the reactants in the inspector of the reaction, with a link to every species, and writes them on the left of the equation.
+
+<span id="products"></span>**products**
+
+Every product is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event produces.
+
+The report lists the products in the inspector of the reaction and writes them on the right of the equation.
+
+<span id="modifiers"></span>**modifiers**
+
+A modifier is a [modifier species reference](modifierspeciesreference.md): a catalyst, an inhibitor or an activator which appears in the kinetic law but is neither created nor destroyed. Modifiers have no stoichiometry.
+
+The report lists the modifiers in the inspector of the reaction, with a link to every species; they are not part of the equation, which shows what a reaction consumes and produces.
+
+<span id="kinetic-law"></span>**kinetic law**
+
+The [kinetic law](kineticlaw.md) holds the rate formula of the reaction and the local parameters it uses. It is optional, and a reaction without one has no defined speed, which different simulators treat differently.
+
+The report shows the rendered formula in the column "kinetic law" and the whole kinetic law in the inspector of the reaction.
+
+<span id="fbc"></span>**fbc**
+
+The fbc package extends a reaction with the two parameters which bound its flux and with the gene product association which says under which genes it can run. Together with the [objective](objective.md) of the model they are what a flux balance analysis needs.
+
+The report shows the bounds, the association and the gene products it names in the inspector of a reaction of a model which uses fbc.
+
+<span id="lower-flux-bound"></span>**lower flux bound**
+
+The bound is not a number but the identifier of a [parameter](parameter.md) of the model, so that many reactions can share one bound and a scenario is changed in one place. A model which sets `strict` of the fbc package has to give every reaction both bounds, and every bound has to be a constant parameter with a value which is neither missing nor infinite in the direction which would remove the bound; without `strict` a bound may be computed during a simulation.
+
+The report links the parameter in the inspector of the reaction.
+
+<span id="upper-flux-bound"></span>**upper flux bound**
+
+Like the lower bound it names a [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
+
+The report links the parameter in the inspector of the reaction.
+
+<span id="gene-product-association"></span>**gene product association**
+
+An association relates gene products with the operators `and` and `or`: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
+
+The report writes the association of a reaction as this expression and links every [gene product](geneproduct.md) it names.
 
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| equation | `string` | <span id="equation"></span>the reaction written as a chemical equation |
-| gene products | `list` | <span id="gene-products"></span>the gene products named by the association of the reaction |
+| [equation](#equation) | `string` | the reaction written as a chemical equation |
+| [gene products](#gene-products) | `list` | the gene products named by the association of the reaction |
+
+<span id="equation"></span>**equation**
+
+The report builds the equation from the reactants and the products of the reaction, with the stoichiometries in front of the species and a single or a double arrow according to the flag "reversible". The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
+
+The equation is a column of the table of reactions and a row of the inspector.
+
+<span id="gene-products"></span>**gene products**
+
+The report collects the gene products of the association tree of the reaction, so that they can be linked without parsing the expression. The list carries every gene product once, in the order of its identifier, and says nothing about how they are combined; the association does that.
 
 ## Related elements
 

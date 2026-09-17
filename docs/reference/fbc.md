@@ -17,4 +17,4 @@ The report shows the gene products and the objectives of a model as sections of 
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints (fbc)](https://sbml.org/documents/specifications/level-3/version-1/fbc/) (Olivier et al. 2026, Version 3 Release 1).
+[SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1](https://sbml.org/documents/specifications/level-3/version-1/fbc/) (Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082).
