@@ -5,10 +5,11 @@ import { createServer } from "node:http";
 export const REPOSITORY = new URL("../../../", import.meta.url).pathname;
 export const REPRESSILATOR_FILE = `${REPOSITORY}backend/sbml4humans/resources/models/repressilator/BIOMD0000000012_urn.xml`;
 
-/** Open the report of an example and wait for the tables. */
-export async function openExample(page: Page, id: string): Promise<void> {
+/** Open the report of an example and wait for the tables. Without a `timeout` the configured
+ * expect timeout applies, only the walk over every example needs a longer one. */
+export async function openExample(page: Page, id: string, timeout?: number): Promise<void> {
   await page.goto(`/examples/${encodeURIComponent(id)}`);
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expect(page.getByTestId("report-page")).toBeVisible({ timeout });
 }
 
 export function query(page: Page, key: string): string | null {
