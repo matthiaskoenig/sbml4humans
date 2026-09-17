@@ -48,6 +48,8 @@ describe("inspector", () => {
     }
   });
 
+  // one mount per element of all fixtures, which takes more than the default 5 s on the
+  // GitHub runner while the other test files run in parallel
   it("renders the attributes of every element of the fixtures without error", async () => {
     await router.push("/examples/x");
     let rendered = 0;
@@ -60,7 +62,7 @@ describe("inspector", () => {
       }
     }
     expect(rendered).toBeGreaterThan(300);
-  });
+  }, 30_000);
 
   it("shows the species attributes with a compartment link", async () => {
     await router.push("/examples/BIOMD0000000012");
