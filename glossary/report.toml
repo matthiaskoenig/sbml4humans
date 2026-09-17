@@ -200,7 +200,7 @@ Derived units are shown in the column "derived units" of the tables and in the i
 label = "equation"
 summary = "the reaction written as a chemical equation"
 description = """
-The report writes every reaction as its reactants, an arrow and its products, with the stoichiometry in front of a species when it is not one and the identifier of the species reference when the stoichiometry is set by a rule instead of by a number. The arrow is a double arrow when the reaction is reversible and a single arrow when it is not.
+The report writes every reaction as its reactants, an arrow and its products, with the stoichiometry in front of a species when it is not one, a minus in front of it when the stoichiometry is minus one, and the identifier of the species reference, or a question mark, when the stoichiometry is set by a rule instead of by a number. The arrow is a double arrow when the reaction is reversible and a single arrow when it is not.
 
 The equation is a column of the table of reactions and a row of the inspector of a reaction, and it is what makes a list of reactions readable without opening any of them.
 """
@@ -238,5 +238,5 @@ summary = "the entries of the COMBINE archive a report was built from"
 description = """
 A COMBINE archive holds the files of a modelling study with a manifest which names every entry, its format and whether it is a master file. The report is built for every SBML entry of the archive, and a plain SBML file which is submitted on its own is wrapped in an archive with one master entry, so that a report always comes with a manifest.
 
-The manifest decides which report is shown first, the master entry, and is what the report offers when an archive holds more than one model.
+The manifest decides which report is shown first: the master entry when that entry has a report, and the first entry otherwise, because an archive does not have to mark one. It is also what the report offers when an archive holds more than one model.
 """

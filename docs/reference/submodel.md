@@ -12,14 +12,14 @@ The report links the model a submodel instantiates, shows its two conversion fac
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [model ref](#model-ref) | `SIdRef` | the model which this submodel instantiates | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [model](#model) | `SIdRef` | the model which this submodel instantiates | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [time conversion factor](#time-conversion-factor) | `SIdRef` | the parameter which converts the time of the submodel into the time of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [extent conversion factor](#extent-conversion-factor) | `SIdRef` | the parameter which converts the reaction extent of the submodel into the extent of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [deletions](#deletions) | `list` | the elements which are removed from the model before it is instantiated | [comp 3.5.3](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="model-ref"></span>**model ref**
+<span id="model"></span>**model**
 
 The reference names a [model](model.md) definition or an [external model definition](externalmodeldefinition.md) of the same document. It is required, a submodel without it has nothing to instantiate.
 

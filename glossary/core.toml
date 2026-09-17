@@ -492,7 +492,7 @@ package = "report"
 type = "latex"
 summary = "the composed unit rendered as a formula"
 description = """
-The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example as mmol l^-1 s^-1.
+The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example millimole per litre per second as a fraction.
 
 The rendered unit is the column "units" of the table of unit definitions and the row "units" of the inspector.
 """
@@ -655,7 +655,7 @@ type = "boolean"
 spec = { doc = "l3v2", section = "4.6.6" }
 summary = "whether the quantity of the species stays fixed during a simulation"
 description = """
-A constant species keeps its quantity for the whole simulation, whatever happens around it, and only an initial assignment may set it. Together with the boundary condition, the flag says whether the species is a variable of the model or a given value.
+A constant species keeps its amount for the whole simulation, whatever happens around it, and only an initial assignment may set it. Its concentration may still change, because the compartment it is located in may change size. Together with the boundary condition, the flag says whether the species is a variable of the model or a given value.
 
 The report shows the flag as a mark in the column "constant".
 """
@@ -1068,7 +1068,7 @@ package = "report"
 type = "string"
 summary = "the reaction written as a chemical equation"
 description = """
-The report builds the equation from the reactants and the products of the reaction, with the stoichiometries in front of the species and a single or a double arrow according to the flag "reversible". The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
+The report builds the equation from the reactants and the products of the reaction, with a single or a double arrow according to the flag "reversible". A stoichiometry of one is left out, a stoichiometry of minus one becomes a minus in front of the species, and a stoichiometry which is no number, because a rule or an initial assignment sets it, is replaced by the identifier of the species reference, or by a question mark when it has none. The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
 
 The equation is a column of the table of reactions and a row of the inspector.
 """
@@ -1155,7 +1155,7 @@ The report renders the delay in the column "delay" and in the inspector.
 """
 
 [types.Event.attributes.listOfEventAssignments]
-label = "event assignments"
+label = "assignments"
 type = "list"
 spec = { doc = "l3v2", section = "4.12.5" }
 summary = "the changes the event makes when it is executed"

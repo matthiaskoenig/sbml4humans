@@ -16,7 +16,7 @@ The report shows the rendered trigger, the priority and the delay of an event, t
 | [persistent](#persistent) | `boolean` | whether the event is still executed when its condition becomes false again before execution | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [priority](#priority) | `Math` | the formula which orders this event against other events of the same moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [delay](#delay) | `Math` | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [event assignments](#event-assignments) | `list` | the changes the event makes when it is executed | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [assignments](#assignments) | `list` | the changes the event makes when it is executed | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -56,7 +56,7 @@ The delay is evaluated at the moment the event triggers and has to be a value wh
 
 The report renders the delay in the column "delay" and in the inspector.
 
-<span id="event-assignments"></span>**event assignments**
+<span id="assignments"></span>**assignments**
 
 The list holds the [event assignments](eventassignment.md) of the event, each of which sets one element of the model to the value of a formula.
 

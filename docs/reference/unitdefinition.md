@@ -16,7 +16,7 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 <span id="units"></span>**units**
 
-The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example as mmol l^-1 s^-1.
+The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example millimole per litre per second as a fraction.
 
 The rendered unit is the column "units" of the table of unit definitions and the row "units" of the inspector.
 

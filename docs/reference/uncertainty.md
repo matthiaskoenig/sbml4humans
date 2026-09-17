@@ -12,13 +12,13 @@ The report shows every uncertainty as an element of its own, with the table of i
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [uncert parameters](#uncert-parameters) | `list` | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/documents/specifications/level-3/version-1/distrib/) |
+| [uncert parameters](#uncert-parameters) | `list` | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
 <span id="uncert-parameters"></span>**uncert parameters**
 
-Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` or `externalParameter` carries the math of the distribution and a definition url instead of a value.
+Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 
 The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
 
@@ -30,4 +30,4 @@ The report lists the type, the variable, the value, the units, the definition an
 
 ## Specification
 
-[The Distributions Package for SBML Level 3, Version 1 Release 1](https://sbml.org/documents/specifications/level-3/version-1/distrib/), Section 3.10 (Smith et al. 2020, J Integr Bioinform 17(2-3):20200018).
+[The Distributions Package for SBML Level 3, Version 1 Release 1](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf), Section 3.10 (Smith et al. 2020, J Integr Bioinform 17(2-3):20200018).

@@ -95,7 +95,7 @@
           "summary": "the formula which gives the time between the trigger and the execution"
         },
         "listOfEventAssignments": {
-          "label": "event assignments",
+          "label": "assignments",
           "summary": "the changes the event makes when it is executed"
         },
         "priority": {
@@ -715,7 +715,7 @@
           "summary": "the elements which are removed from the model before it is instantiated"
         },
         "modelRef": {
-          "label": "model ref",
+          "label": "model",
           "summary": "the model which this submodel instantiates"
         },
         "timeConversionFactor": {

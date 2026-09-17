@@ -18,9 +18,9 @@ The report shows the initial quantity of a species, its units, the flags which s
 | [boundary condition](#boundary-condition) | `boolean` | whether the quantity of the species is left unchanged by the reactions | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [constant](#constant) | `boolean` | whether the quantity of the species stays fixed during a simulation | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [conversion factor](#conversion-factor) | `SIdRef` | the parameter which converts the extent of a reaction into the quantity of the species | [core 4.6.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `SpeciesFbc` | the chemical formula and the charge which fbc adds to a species | [fbc 3.4](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| [chemical formula](#chemical-formula) | `string` | the elemental composition of the species | [fbc 3.4](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| [charge](#charge) | `integer` | the charge of the species, counted in electrons | [fbc 3.4](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [fbc](#fbc) | `SpeciesFbc` | the chemical formula and the charge which fbc adds to a species | [fbc 3.4](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [chemical formula](#chemical-formula) | `string` | the elemental composition of the species | [fbc 3.4](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [charge](#charge) | `integer` | the charge of the species, counted in electrons | [fbc 3.4](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -62,7 +62,7 @@ The report shows the flag as a mark in the column "boundary condition".
 
 <span id="constant"></span>**constant**
 
-A constant species keeps its quantity for the whole simulation, whatever happens around it, and only an initial assignment may set it. Together with the boundary condition, the flag says whether the species is a variable of the model or a given value.
+A constant species keeps its amount for the whole simulation, whatever happens around it, and only an initial assignment may set it. Its concentration may still change, because the compartment it is located in may change size. Together with the boundary condition, the flag says whether the species is a variable of the model or a given value.
 
 The report shows the flag as a mark in the column "constant".
 
@@ -80,7 +80,7 @@ The report shows them in the inspector of a species of a model which uses fbc.
 
 <span id="chemical-formula"></span>**chemical formula**
 
-The formula should consist of atomic names of the periodic table, ordered by the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, each followed by its count. `C10H12N5O13P3` is such a formula. Where a compound has an undefined or generic component, the symbols `R` and `X` stand for it.
+The formula must consist only of atomic names of the periodic table or user defined compounds, each of which takes the form of a single capital letter followed by zero or more lowercase letters, with an integer behind a symbol where more than one atom is present. The order should follow the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, and every element including hydrogen in alphabetical order when the formula contains no carbon. `C10H12N5O13P3` is such a formula.
 
 The report shows the formula in the inspector of the species.
 

@@ -20,7 +20,7 @@ The report shows these attributes for every element: the id and the name in the 
 | [replacements](#replacements) | `CompSBase` | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [replaced by](#replaced-by) | `ReplacedBy` | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [replaced elements](#replaced-elements) | `list` | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [uncertainties](#uncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/documents/specifications/level-3/version-1/distrib/) |
+| [uncertainties](#uncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
 

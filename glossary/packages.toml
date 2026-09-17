@@ -27,13 +27,13 @@ url = "https://sbml.org/documents/specifications/level-3/version-1/comp/"
 label = "SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1"
 short = "fbc"
 citation = "Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082"
-url = "https://sbml.org/documents/specifications/level-3/version-1/fbc/"
+url = "https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf"
 
 [specs.distrib]
 label = "The Distributions Package for SBML Level 3, Version 1 Release 1"
 short = "distrib"
 citation = "Smith et al. 2020, J Integr Bioinform 17(2-3):20200018"
-url = "https://sbml.org/documents/specifications/level-3/version-1/distrib/"
+url = "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf"
 
 
 # ----------------------------------------------------------------------------
@@ -208,7 +208,7 @@ type = "string"
 spec = { doc = "fbc", section = "3.4" }
 summary = "the elemental composition of the species"
 description = """
-The formula should consist of atomic names of the periodic table, ordered by the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, each followed by its count. `C10H12N5O13P3` is such a formula. Where a compound has an undefined or generic component, the symbols `R` and `X` stand for it.
+The formula must consist only of atomic names of the periodic table or user defined compounds, each of which takes the form of a single capital letter followed by zero or more lowercase letters, with an integer behind a symbol where more than one atom is present. The order should follow the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, and every element including hydrogen in alphabetical order when the formula contains no carbon. `C10H12N5O13P3` is such a formula.
 
 The report shows the formula in the inspector of the species.
 """
@@ -337,7 +337,7 @@ The report links the model a submodel instantiates, shows its two conversion fac
 related = ["Model", "ExternalModelDefinition", "Port", "comp"]
 
 [types.Submodel.attributes.modelRef]
-label = "model ref"
+label = "model"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.5.1" }
@@ -551,7 +551,7 @@ type = "list"
 spec = { doc = "distrib", section = "3.11" }
 summary = "the statistical measures which make up the uncertainty"
 description = """
-Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` or `externalParameter` carries the math of the distribution and a definition url instead of a value.
+Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 
 The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
 """

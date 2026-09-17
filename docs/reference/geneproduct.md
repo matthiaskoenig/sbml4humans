@@ -12,8 +12,8 @@ The report shows the gene products of a model in a section of their own, with a 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [label](#label) | `string` | the identifier under which the source of the model knows the gene | [fbc 3.5](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| [associated species](#associated-species) | `SIdRef` | the species of the model which stands for this gene product | [fbc 3.5](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [label](#label) | `string` | the identifier under which the source of the model knows the gene | [fbc 3.5](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [associated species](#associated-species) | `SIdRef` | the species of the model which stands for this gene product | [fbc 3.5](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -37,4 +37,4 @@ The report links the species in the column "associated species" and in the inspe
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1](https://sbml.org/documents/specifications/level-3/version-1/fbc/), Section 3.5 (Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082).
+[SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf), Section 3.5 (Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082).

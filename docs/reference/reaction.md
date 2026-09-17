@@ -17,10 +17,10 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 | [products](#products) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [modifiers](#modifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [kinetic law](#kinetic-law) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc 3.8](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
-| [gene product association](#gene-product-association) | `string` | the logical expression of the genes under which the reaction can run | [fbc 3.9](https://sbml.org/documents/specifications/level-3/version-1/fbc/) |
+| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [gene product association](#gene-product-association) | `string` | the logical expression of the genes under which the reaction can run | [fbc 3.9](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -109,7 +109,7 @@ The report derives the units of the [kinetic law](kineticlaw.md)'s formula from 
 
 <span id="equation"></span>**equation**
 
-The report builds the equation from the reactants and the products of the reaction, with the stoichiometries in front of the species and a single or a double arrow according to the flag "reversible". The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
+The report builds the equation from the reactants and the products of the reaction, with a single or a double arrow according to the flag "reversible". A stoichiometry of one is left out, a stoichiometry of minus one becomes a minus in front of the species, and a stoichiometry which is no number, because a rule or an initial assignment sets it, is replaced by the identifier of the species reference, or by a question mark when it has none. The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
 
 The equation is a column of the table of reactions and a row of the inspector.
 
