@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { LoaderCircleIcon } from "@lucide/vue";
+
 defineProps<{ message: string }>();
 </script>
 
@@ -7,7 +9,7 @@ defineProps<{ message: string }>();
     class="flex flex-1 flex-col items-center justify-center gap-3 p-8 text-gray-600"
     data-testid="loading-state"
   >
-    <i class="pi pi-spin pi-spinner text-2xl" />
+    <LoaderCircleIcon class="size-6 animate-spin" />
     <p class="text-sm">{{ message }}</p>
   </div>
 </template>
