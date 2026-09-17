@@ -10,6 +10,8 @@ export interface LimitedList<T> {
   hiddenCount: ComputedRef<number>;
   /** Reveal the rest of the list. */
   showAll: () => void;
+  /** Whether `showAll` has been called for the current list. */
+  expanded: ComputedRef<boolean>;
 }
 
 /** The first LIST_LIMIT items of a reactive list, the count of the rest, and an action that
@@ -24,5 +26,10 @@ export function useLimitedList<T>(items: () => T[]): LimitedList<T> {
   });
   const shown = computed(() => (expanded.value ? list.value : list.value.slice(0, LIST_LIMIT)));
   const hiddenCount = computed(() => Math.max(0, list.value.length - LIST_LIMIT));
-  return { shown, hiddenCount, showAll: () => (expanded.value = true) };
+  return {
+    shown,
+    hiddenCount,
+    showAll: () => (expanded.value = true),
+    expanded: computed(() => expanded.value),
+  };
 }

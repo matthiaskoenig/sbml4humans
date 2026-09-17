@@ -114,6 +114,20 @@ describe("api client", () => {
     expect(info.label).toBe("water");
   });
 
+  it("aborts an annotation resource request after 15 seconds", async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValue(
+          jsonResponse({ resource: "https://identifiers.org/chebi/CHEBI:15377", label: "water" }),
+        ),
+    );
+    await getAnnotationResource("https://identifiers.org/chebi/CHEBI:15377");
+    expect(timeoutSpy).toHaveBeenCalledWith(15_000);
+  });
+
   it("fixtures carry the report response shape", () => {
     const response = loadFixture("repressilator");
     expect(response.manifest.entries?.some((entry) => entry.master)).toBe(true);
