@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 
 import type { Math } from "@/api/types";
 import { renderLatex } from "@/report/latex";
 
 const props = defineProps<{ math: Math | null | undefined; display?: boolean }>();
 
-/** Set once the "render formula" button of the display mode is clicked, for this instance only. */
+/** Set once the "render formula" button of the display mode is clicked, for this instance only.
+ * Reset whenever the math changes, so a parent that reuses the component instance for another
+ * element (an inspector attributes component keyed only by type, not by pk) does not carry the
+ * choice over to a formula it was never clicked for. */
 const forceUnlimited = ref(false);
+watch(
+  () => props.math,
+  () => {
+    forceUnlimited.value = false;
+  },
+);
 
 /** Null when the formula is too long to render by default and has not been forced yet, or when
  * KaTeX throws. */

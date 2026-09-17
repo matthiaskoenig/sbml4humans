@@ -20,9 +20,13 @@ export function renderLatex(
   latex: string,
   options: { display?: boolean; unlimited?: boolean } = {},
 ): string | null {
-  if (!options.unlimited && latex.length > MAX_LATEX_LENGTH) return null;
+  const normalized = normalize(latex);
+  // the cap applies to the normalised latex: the micro sign expands to "\mu " (four characters
+  // for one), so checking the raw latex would let a formula reach KaTeX at close to four times
+  // MAX_LATEX_LENGTH.
+  if (!options.unlimited && normalized.length > MAX_LATEX_LENGTH) return null;
   try {
-    return katex.renderToString(normalize(latex), {
+    return katex.renderToString(normalized, {
       throwOnError: false,
       strict: "ignore",
       output: "html",

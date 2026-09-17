@@ -35,4 +35,20 @@ describe("renderLatex", () => {
     expect(html).not.toBeNull();
     expect(html).not.toContain("<a");
   });
+
+  it("returns null when the normalised latex exceeds MAX_LATEX_LENGTH, even though the raw latex does not", () => {
+    // every micro sign expands to "\mu " (4 characters), so this string is under the cap before
+    // normalisation and over it after.
+    const latex = "\u00b5".repeat(MAX_LATEX_LENGTH - 10);
+    expect(latex.length).toBeLessThan(MAX_LATEX_LENGTH);
+    const spy = vi.spyOn(katex, "renderToString");
+    expect(renderLatex(latex)).toBeNull();
+    expect(spy).not.toHaveBeenCalled();
+    spy.mockRestore();
+  });
+
+  it("renders such a latex when unlimited", () => {
+    const latex = "\u00b5".repeat(MAX_LATEX_LENGTH - 10);
+    expect(renderLatex(latex, { unlimited: true })).not.toBeNull();
+  });
 });

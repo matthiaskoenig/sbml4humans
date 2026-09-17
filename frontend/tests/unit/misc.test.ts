@@ -94,6 +94,28 @@ describe("misc components", () => {
     expect(wrapper.find(".katex").exists()).toBe(true);
   });
 
+  it("resets the render-on-demand state when the math prop changes", async () => {
+    const terms = Array.from({ length: 3000 }, (_, i) => i);
+    const first = {
+      latex: terms.map((i) => `x_{${i}}`).join(" + "),
+      formula: terms.map((i) => `x${i}`).join(" + "),
+    };
+    const second = {
+      latex: terms.map((i) => `y_{${i}}`).join(" + "),
+      formula: terms.map((i) => `y${i}`).join(" + "),
+    };
+    const wrapper = mount(MathView, {
+      props: { math: first, display: true },
+      global: { directives: { tooltip: vTooltip } },
+    });
+    await wrapper.get("[data-testid=math-render]").trigger("click");
+    expect(wrapper.find(".katex").exists()).toBe(true);
+
+    await wrapper.setProps({ math: second });
+    expect(wrapper.find("[data-testid=math-text]").exists()).toBe(true);
+    expect(wrapper.find(".katex").exists()).toBe(false);
+  });
+
   it("copies the formula with every run of whitespace collapsed to a single space", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
