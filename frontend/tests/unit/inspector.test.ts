@@ -6,6 +6,7 @@ import type { Reaction, Species, Submodel, Uncertainty } from "@/api/types";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
+import NestedTable from "@/components/inspector/NestedTable.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import SubmodelAttributes from "@/components/inspector/attributes/SubmodelAttributes.vue";
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
@@ -26,6 +27,17 @@ const fixtures = [
 ] as const;
 const indexes = fixtures.map((name) => new ReportIndex(loadReport(name)));
 const repressilator = indexes[0]!;
+
+/** A minimal index for the links list size tests: one "compartment" edge per target pk out of
+ * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
+function fakeLinksIndex(bySource: Record<string, string[]>): ReportIndex {
+  return {
+    references: (pk: string) =>
+      (bySource[pk] ?? []).map((target) => ({ source: pk, target, kind: "compartment" as const })),
+    referencedBy: () => [],
+    get: (pk: string) => ({ pk, id: pk, metaId: null, sbmlType: undefined }),
+  } as unknown as ReportIndex;
+}
 
 function mountWith(component: unknown, props: Record<string, unknown>, index: ReportIndex) {
   return mount(
@@ -114,6 +126,43 @@ describe("inspector", () => {
     expect(wrapper.text()).toContain("none");
   });
 
+  it("shows the first 50 links of a group and the rest after show all", async () => {
+    const pks = Array.from({ length: 60 }, (_, i) => `pk-${i}`);
+    const wrapper = mountWith(LinksColumn, { pk: "root" }, fakeLinksIndex({ root: pks }));
+    const references = wrapper.get("[data-testid=links-references]");
+    expect(references.findAll("[data-testid=element-link]")).toHaveLength(50);
+    await references.get("[data-testid=show-all]").trigger("click");
+    expect(references.findAll("[data-testid=element-link]")).toHaveLength(60);
+  });
+
+  it("shows no show all button for a group of 50 or fewer links", () => {
+    const pks = Array.from({ length: 50 }, (_, i) => `pk-${i}`);
+    const wrapper = mountWith(LinksColumn, { pk: "root" }, fakeLinksIndex({ root: pks }));
+    expect(wrapper.find("[data-testid=show-all]").exists()).toBe(false);
+  });
+
+  it("resets show all when another element of the same kind is selected", async () => {
+    const index = fakeLinksIndex({
+      a: Array.from({ length: 60 }, (_, i) => `a-${i}`),
+      b: Array.from({ length: 60 }, (_, i) => `b-${i}`),
+    });
+    // mounted directly, not through `mountWith`, to keep the props typed for `setProps`
+    const wrapper = mount(LinksColumn, {
+      props: { pk: "a" },
+      global: {
+        plugins: [router],
+        directives: { tooltip: vTooltip },
+        provide: { [ReportIndexKey as symbol]: ref(index) },
+      },
+    });
+    await wrapper.get("[data-testid=show-all]").trigger("click");
+    expect(wrapper.findAll("[data-testid=element-link]")).toHaveLength(60);
+
+    await wrapper.setProps({ pk: "b" });
+    expect(wrapper.findAll("[data-testid=element-link]")).toHaveLength(50);
+    expect(wrapper.get("[data-testid=show-all]").text()).toBe("show all (10)");
+  });
+
   it("never renders the uncertainty definition url as a link unless it is http(s)", () => {
     const distrib = indexes[fixtures.indexOf("distrib_uncertainties")]!;
     const uncertainty = [...distrib.elements.values()].find(
@@ -177,5 +226,31 @@ describe("inspector", () => {
     expect(wrapper.get("[data-testid=inspector-type]").text()).toBe("Species");
     expect(wrapper.get("[data-testid=inspector-id]").text()).toBe(species.id);
     expect(wrapper.find("[data-testid=inspector-close]").exists()).toBe(true);
+  });
+
+  const COLUMNS = [{ key: "id", header: "id" }];
+  const rowsOf = (n: number, prefix: string) =>
+    Array.from({ length: n }, (_, i) => ({ id: `${prefix}${i}` }));
+
+  it("shows the first 50 rows of a nested table and the rest after show all", async () => {
+    const wrapper = mount(NestedTable, { props: { rows: rowsOf(60, "r"), columns: COLUMNS } });
+    expect(wrapper.findAll("tbody tr")).toHaveLength(50);
+    await wrapper.get("[data-testid=show-all]").trigger("click");
+    expect(wrapper.findAll("tbody tr")).toHaveLength(60);
+  });
+
+  it("shows no show all button for a nested table of 50 or fewer rows", () => {
+    const wrapper = mount(NestedTable, { props: { rows: rowsOf(50, "r"), columns: COLUMNS } });
+    expect(wrapper.find("[data-testid=show-all]").exists()).toBe(false);
+  });
+
+  it("resets show all when the rows change to another element's rows", async () => {
+    const wrapper = mount(NestedTable, { props: { rows: rowsOf(60, "a"), columns: COLUMNS } });
+    await wrapper.get("[data-testid=show-all]").trigger("click");
+    expect(wrapper.findAll("tbody tr")).toHaveLength(60);
+
+    await wrapper.setProps({ rows: rowsOf(60, "b") });
+    expect(wrapper.findAll("tbody tr")).toHaveLength(50);
+    expect(wrapper.get("[data-testid=show-all]").text()).toBe("show all (10)");
   });
 });
