@@ -75,10 +75,20 @@ The documentation is this Zensical site, built from the sources in `docs/` with 
 
 ```bash
 uv run --project backend zensical serve   # live preview
-uv run --project backend zensical build --clean   # build into site/
+uv run --project backend zensical build --clean --strict   # build into site/
 ```
 
-`site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. The reference pages under `docs/reference/` are generated, not written by hand: `python -m sbml4humans.glossary` regenerates them from the glossary in `glossary/`.
+`--strict` aborts the build on a warning, i.e. on a link or an anchor of a page which does not resolve; the `documentation` workflow builds the site the same way, so a broken link fails the check instead of reaching the published page.
+
+`site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. The reference pages under `docs/reference/` and the tooltips of the application (`frontend/src/data/glossary.json`) are generated, not written by hand, from the glossary in `glossary/`:
+
+```bash
+cd backend
+uv run python -m sbml4humans.glossary           # regenerate both, commit the result
+uv run python -m sbml4humans.glossary --check   # the check of the documentation workflow
+```
+
+`--check` regenerates into a temporary directory and fails when a committed file is not current, when a type or a field of the report model has no entry, when a type or an attribute entry explains something the report does not have, when a link of a description does not resolve to a page or to an anchor of one, when a page references a missing image, or when the navigation in `zensical.toml` does not list a generated page.
 
 The screenshots of `docs/images/` are taken by `frontend/scripts/screenshots.mjs` against a running backend and a running dev server:
 
@@ -88,7 +98,7 @@ cd frontend && npx vite --port 3456 &
 cd frontend && npm run screenshots
 ```
 
-The images are committed like any other source file. Rerun the script and commit the result after a change of the user interface that a screenshot shows, so the documentation keeps matching what the application looks like.
+The images are committed like any other source file. Nothing compares them with the application: the check of the documentation only verifies that an image a page references exists, so a screenshot which shows an interface that no longer exists passes every check. Rerun the script and commit the result after a change of the user interface that a screenshot shows, so the documentation keeps matching what the application looks like.
 
 ## Branches and pull requests
 
