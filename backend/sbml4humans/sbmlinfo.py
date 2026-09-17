@@ -153,12 +153,27 @@ class SBMLDocumentInfo:
         return type(sbase).__name__
 
     @staticmethod
-    def _key(sbase: libsbml.SBase) -> str:
-        """The bare key of an element: its id, else metaId, else xml digest."""
-        if sbase.isSetId():
+    def _key(sbase: libsbml.SBase, key: str | None = None, use_id: bool = True) -> str:
+        """The bare key of an element: its id, else metaId, else `key` or a digest.
+
+        `key` is a deterministic key derived from the parent of a nested
+        element without an id or metaId (a species reference, a kinetic law,
+        an event assignment, an uncertainty, ...). It replaces the digest of
+        the xml, which is byte identical for siblings such as two reactant
+        references without ids and would otherwise collide.
+
+        `use_id` is False for an `EventAssignment`: libsbml aliases its
+        `getId()`/`isSetId()` to the `variable` attribute, which is not a
+        genuine id and, unlike the `symbol` of an initial assignment or the
+        `variable` of a rule, is not unique across the events of a model (two
+        events may assign the same variable), so it is not trusted here.
+        """
+        if use_id and sbase.isSetId():
             return sbase.getId()
         if sbase.isSetMetaId():
             return sbase.getMetaId()
+        if key is not None:
+            return key
         return hashlib.sha1(sbase.toSBML().encode("utf-8")).hexdigest()
 
     def _pk(
@@ -166,15 +181,17 @@ class SBMLDocumentInfo:
         sbase: libsbml.SBase,
         scope: str | None = None,
         sbml_type: str | None = None,
+        key: str | None = None,
+        use_id: bool = True,
     ) -> str:
         """The primary key `<scope>/<type>:<id>` of an element.
 
         The type is the `sbml_type` of the report object, which differs from the
         libsbml class for a comp model definition. The id falls back to the
-        metaId and then to the digest of the xml.
+        metaId, then to `key` and finally to the digest of the xml.
         """
         type_ = sbml_type or self._sbml_type(sbase)
-        return f"{scope or self.scope}/{type_}:{self._key(sbase)}"
+        return f"{scope or self.scope}/{type_}:{self._key(sbase, key, use_id)}"
 
     def sbase(
         self,
@@ -182,16 +199,22 @@ class SBMLDocumentInfo:
         scope: str | None = None,
         sbml_type: str | None = None,
         pk: str | None = None,
+        key: str | None = None,
+        use_id: bool = True,
     ) -> dict[str, Any]:
         """The fields of `SBase` of an element, for the constructor of its class.
 
         A known pk is passed in, every other pk is built from scope and type.
+        A nested element without an id or metaId uses `key`, derived from its
+        parent, instead of the digest of its xml (see `_key`).
         """
         xml = None
         if sbase.getTypeCode() not in {libsbml.SBML_DOCUMENT, libsbml.SBML_MODEL}:
             xml = sbase.toSBML()
         return {
-            "pk": pk if pk is not None else self._pk(sbase, scope, sbml_type),
+            "pk": pk
+            if pk is not None
+            else self._pk(sbase, scope, sbml_type, key, use_id),
             "id": sbase.getId() if sbase.isSetId() else None,
             "meta_id": sbase.getMetaId() if sbase.isSetMetaId() else None,
             "name": sbase.getName() if sbase.isSetName() else None,
@@ -201,7 +224,7 @@ class SBMLDocumentInfo:
             "history": self.history(sbase),
             "xml": xml,
             "comp": self.comp_sbase(sbase),
-            "uncertainties": self.uncertainties(sbase),
+            "uncertainties": self.uncertainties(sbase, self._key(sbase, key, use_id)),
         }
 
     @staticmethod
@@ -464,40 +487,50 @@ class SBMLDocumentInfo:
     def reaction(self, r: libsbml.Reaction, model: libsbml.Model) -> Reaction:
         """A reaction with its participants, kinetic law and fbc extension."""
         fields = self.sbase(r)
+        reaction_key = self._key(r)
         return Reaction(
             **fields,
             reversible=_attribute(r, "reversible"),
             fast=_attribute(r, "fast"),
             compartment=_attribute(r, "compartment"),
             list_of_reactants=[
-                self.species_reference(sr) for sr in r.getListOfReactants()
+                self.species_reference(sr, f"{reaction_key}.reactant.{sr.getSpecies()}")
+                for sr in r.getListOfReactants()
             ],
             list_of_products=[
-                self.species_reference(sr) for sr in r.getListOfProducts()
+                self.species_reference(sr, f"{reaction_key}.product.{sr.getSpecies()}")
+                for sr in r.getListOfProducts()
             ],
             list_of_modifiers=[
-                ModifierSpeciesReference(**self.sbase(m), species=m.getSpecies())
+                ModifierSpeciesReference(
+                    **self.sbase(m, key=f"{reaction_key}.modifier.{m.getSpecies()}"),
+                    species=m.getSpecies(),
+                )
                 for m in r.getListOfModifiers()
             ],
-            kinetic_law=self.kinetic_law(r.getKineticLaw(), model)
+            kinetic_law=self.kinetic_law(r.getKineticLaw(), model, reaction_key)
             if r.isSetKineticLaw()
             else None,
             equation=self._equation(r),
             fbc=self.reaction_fbc(r),
         )
 
-    def species_reference(self, sr: libsbml.SpeciesReference) -> SpeciesReference:
-        """A reactant or product."""
+    def species_reference(
+        self, sr: libsbml.SpeciesReference, key: str
+    ) -> SpeciesReference:
+        """A reactant or product, `key` names it within its reaction and side."""
         return SpeciesReference(
-            **self.sbase(sr),
+            **self.sbase(sr, key=key),
             species=sr.getSpecies(),
             stoichiometry=_number(_attribute(sr, "stoichiometry")),
             constant=_attribute(sr, "constant"),
         )
 
-    def kinetic_law(self, klaw: libsbml.KineticLaw, model: libsbml.Model) -> KineticLaw:
+    def kinetic_law(
+        self, klaw: libsbml.KineticLaw, model: libsbml.Model, reaction_key: str
+    ) -> KineticLaw:
         """The kinetic law of a reaction with its local parameters."""
-        fields = self.sbase(klaw)
+        fields = self.sbase(klaw, key=f"{reaction_key}.kineticLaw")
         local_parameters = []
         for lp in klaw.getListOfLocalParameters():
             units = _attribute(lp, "units")
@@ -519,10 +552,10 @@ class SBMLDocumentInfo:
 
     @staticmethod
     def _equation(reaction: libsbml.Reaction) -> str:
-        """The readable equation: half equations and an arrow entity."""
+        """The readable equation: half equations and a plain unicode arrow."""
         left = SBMLDocumentInfo._half_equation(reaction.getListOfReactants())
         right = SBMLDocumentInfo._half_equation(reaction.getListOfProducts())
-        sep = "&#8646;" if reaction.getReversible() else "&#10142;"
+        sep = "⇆" if reaction.getReversible() else "➞"
         return " ".join([left, sep, right])
 
     @staticmethod
@@ -551,6 +584,7 @@ class SBMLDocumentInfo:
         """An event with trigger, priority, delay and assignments."""
         fields = self.sbase(e)
         pk = fields["pk"]
+        event_key = self._key(e)
         trigger = None
         if e.isSetTrigger():
             t: libsbml.Trigger = e.getTrigger()
@@ -561,7 +595,9 @@ class SBMLDocumentInfo:
             )
         assignments = []
         for ea in e.getListOfEventAssignments():
-            ea_fields = self.sbase(ea)
+            ea_fields = self.sbase(
+                ea, key=f"{event_key}.{ea.getVariable()}", use_id=False
+            )
             assignments.append(
                 EventAssignment(
                     **ea_fields,
@@ -729,14 +765,19 @@ class SBMLDocumentInfo:
     # ---------------------------------------------------------------------------------
     # distrib
     # ---------------------------------------------------------------------------------
-    def uncertainties(self, sbase: libsbml.SBase) -> list[Uncertainty]:
-        """The distrib uncertainties of an element."""
+    def uncertainties(self, sbase: libsbml.SBase, parent_key: str) -> list[Uncertainty]:
+        """The distrib uncertainties of an element, keyed by parent and position.
+
+        `parent_key` is the `_key` of `sbase`, an uncertainty without an id or
+        metaId is keyed by its position in the list instead of the digest of
+        its xml.
+        """
         plugin = sbase.getPlugin("distrib")
         if not plugin or not isinstance(plugin, libsbml.DistribSBasePlugin):
             return []
         uncertainties = []
-        for u in plugin.getListOfUncertainties():
-            fields = self.sbase(u)
+        for index, u in enumerate(plugin.getListOfUncertainties()):
+            fields = self.sbase(u, key=f"{parent_key}.uncertainty.{index}")
             parameters = [
                 UncertParameter(
                     var=_attribute(p, "var"),

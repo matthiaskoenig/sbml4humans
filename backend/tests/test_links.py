@@ -227,8 +227,14 @@ SYNTHETIC_COMP_SBML = """<?xml version="1.0" encoding="UTF-8"?>
         <comp:replacedBy comp:idRef="c" comp:submodelRef="sm"/>
       </compartment>
     </listOfCompartments>
+    <listOfParameters>
+      <parameter id="ctime" value="1" constant="true"/>
+      <parameter id="cextent" value="1" constant="true"/>
+    </listOfParameters>
     <comp:listOfSubmodels>
-      <comp:submodel comp:id="sm" comp:modelRef="sub"/>
+      <comp:submodel comp:id="sm" comp:modelRef="sub"
+                     comp:timeConversionFactor="ctime"
+                     comp:extentConversionFactor="cextent"/>
     </comp:listOfSubmodels>
     <comp:listOfPorts>
       <comp:port comp:id="unit_port" comp:unitRef="per_second"/>
@@ -358,6 +364,16 @@ def test_submodel_edge_to_model_definition(synthetic_comp: Report) -> None:
     definition = synthetic_comp.models[1]
     assert _edges(synthetic_comp, kind=EdgeKind.MODEL_REF) == {
         ("top/Submodel:sm", definition.pk, "modelRef"),
+    }
+
+
+def test_submodel_conversion_factor_edges(synthetic_comp: Report) -> None:
+    """A submodel links to the time and extent conversion factors of its model."""
+    assert _edges(
+        synthetic_comp, source="top/Submodel:sm", kind=EdgeKind.CONVERSION_FACTOR
+    ) == {
+        ("top/Submodel:sm", "top/Parameter:ctime", "conversionFactor"),
+        ("top/Submodel:sm", "top/Parameter:cextent", "conversionFactor"),
     }
 
 

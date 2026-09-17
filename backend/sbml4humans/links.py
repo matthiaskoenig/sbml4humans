@@ -257,6 +257,18 @@ class LinkGraphBuilder:
                 self.edges.append(
                     Edge(source=submodel.pk, target=target, kind=EdgeKind.MODEL_REF)
                 )
+            self._edge(
+                submodel,
+                submodel.time_conversion_factor,
+                EdgeKind.CONVERSION_FACTOR,
+                index,
+            )
+            self._edge(
+                submodel,
+                submodel.extent_conversion_factor,
+                EdgeKind.CONVERSION_FACTOR,
+                index,
+            )
         for port in model.list_of_ports:
             self._edge(port, port.id_ref, EdgeKind.PORT, index)
             if port.unit_ref is not None:

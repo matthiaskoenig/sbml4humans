@@ -4,8 +4,10 @@ import gzip
 from pathlib import Path
 
 import pytest
+from pydantic import BaseModel
 
-from sbml4humans.model import ReportResponse
+from sbml4humans.examples import ExampleMetaData, load_examples
+from sbml4humans.model import ReportResponse, SBase
 from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
 from sbml4humans.resources import (
     API_EXAMPLES_MODEL,
@@ -18,6 +20,23 @@ from sbml4humans.resources import (
 
 BIOMODELS = sorted(BIOMODELS_CURATED_PATH.glob("BIOMD*.omex"))[:10]
 PATHS = API_EXAMPLES_OMEX + API_EXAMPLES_MODEL + BIOMODELS
+
+
+def _collect_pks(obj: object) -> list[str]:
+    """The pk of every `SBase` nested anywhere in a pydantic report object."""
+    pks: list[str] = []
+    if isinstance(obj, SBase):
+        pks.append(obj.pk)
+    if isinstance(obj, BaseModel):
+        for name in type(obj).model_fields:
+            pks.extend(_collect_pks(getattr(obj, name)))
+    elif isinstance(obj, dict):
+        for item in obj.values():
+            pks.extend(_collect_pks(item))
+    elif isinstance(obj, list | tuple):
+        for item in obj:
+            pks.extend(_collect_pks(item))
+    return pks
 
 
 def _check_report(response: ReportResponse) -> None:
@@ -115,3 +134,16 @@ def test_uid_differs_between_reports() -> None:
     uid1 = report_for_path(REPRESSILATOR_SBML).uid
     uid2 = report_for_path(REPRESSILATOR_SBML).uid
     assert uid1 != uid2
+
+
+@pytest.mark.parametrize("example", list(load_examples().values()), ids=lambda e: e.id)
+def test_pks_are_unique_for_every_example(example: ExampleMetaData) -> None:
+    """No two elements of a report, nor two link graph nodes, share a pk."""
+    response = report_for_path(example.file)
+    for location, entry in response.reports.items():
+        pks = _collect_pks(entry.report)
+        duplicates = {pk for pk in pks if pks.count(pk) > 1}
+        assert not duplicates, f"{example.id} ({location}): duplicate pks {duplicates}"
+        nodes = entry.report.link_graph.nodes
+        assert all(key == node.pk for key, node in nodes.items())
+        assert len(nodes) == len(set(pks))

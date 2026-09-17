@@ -61,7 +61,7 @@ def test_reaction(repressilator: Report) -> None:
     assert reaction.id == "Reaction1"
     assert [r.species for r in reaction.list_of_reactants] == ["X"]
     assert reaction.list_of_products == []
-    assert reaction.equation == "X &#10142; "
+    assert reaction.equation == "X ➞ "
     assert reaction.kinetic_law is not None
     assert reaction.kinetic_law.math is not None
     assert reaction.kinetic_law.math.formula == "kd_mRNA * X"
@@ -83,10 +83,10 @@ def test_variable_stoichiometry() -> None:
     """Reactions with variable (NaN) stoichiometry get an equation."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "reaction.xml")
     equations = {r.id: r.equation for r in report.models[0].list_of_reactions}
-    assert equations["v1"] == "x &#10142; y"
-    assert equations["v2"] == "x &#10142; 2.0 y"
-    assert equations["v3"] == "f1 x &#10142; f2 y"
-    assert equations["v4"] == "v4_x x &#10142; v4_y y"
+    assert equations["v1"] == "x ➞ y"
+    assert equations["v2"] == "x ➞ 2.0 y"
+    assert equations["v3"] == "f1 x ➞ f2 y"
+    assert equations["v4"] == "v4_x x ➞ v4_y y"
 
 
 def test_nan_values_become_none() -> None:
@@ -344,3 +344,38 @@ def test_distrib_uncertainties() -> None:
     assert uncertainty.sbml_type == "Uncertainty"
     assert uncertainty.uncert_parameters
     assert uncertainty.uncert_parameters[0].type is not None
+
+
+def test_reactant_pks_are_unique_across_reactions() -> None:
+    """Species references without ids of two reactions get distinct pks.
+
+    Species references without an id are byte identical xml across reactions
+    consuming the same species, so the digest fallback of the pk used to
+    collide; the pk is now keyed by the reaction and the side instead.
+    """
+    sbml = (
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" '
+        'level="3" version="2">'
+        '<model id="m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/>'
+        "</listOfCompartments><listOfSpecies>"
+        '<species id="s" compartment="c" hasOnlySubstanceUnits="false" '
+        'boundaryCondition="false" constant="false"/>'
+        "</listOfSpecies><listOfReactions>"
+        '<reaction id="r1" reversible="false"><listOfReactants>'
+        '<speciesReference species="s" constant="true"/>'
+        "</listOfReactants></reaction>"
+        '<reaction id="r2" reversible="false"><listOfReactants>'
+        '<speciesReference species="s" constant="true"/>'
+        "</listOfReactants></reaction>"
+        "</listOfReactions></model></sbml>"
+    )
+    report = SBMLDocumentInfo.from_sbml(sbml)
+    reactant_pks = [
+        r.list_of_reactants[0].pk for r in report.models[0].list_of_reactions
+    ]
+    assert reactant_pks == [
+        "m/SpeciesReference:r1.reactant.s",
+        "m/SpeciesReference:r2.reactant.s",
+    ]
+    assert len(reactant_pks) == len(set(reactant_pks))

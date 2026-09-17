@@ -308,7 +308,12 @@ class ReactionFbc(ReportModel):
 
 
 class Reaction(SBase):
-    """A reaction with its participants and kinetic law."""
+    """A reaction with its participants and kinetic law.
+
+    `equation` is the readable equation, its half equations joined by a plain
+    unicode arrow: "⇆" (U+21C6) for a reversible reaction, "➞" (U+279E)
+    otherwise.
+    """
 
     sbml_type: Literal["Reaction"] = "Reaction"
     reversible: bool | None = None
