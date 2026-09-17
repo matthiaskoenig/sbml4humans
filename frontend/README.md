@@ -1,6 +1,6 @@
 # SBML4Humans frontend
 
-The Vue 3 application of [SBML4Humans](https://sbml4humans.de), the interactive report of SBML models. It renders the typed report the backend api in `../backend` serves, see the [main README](../README.md) for the repository layout, the docker compose setup and the releases.
+The Vue 3 application of [SBML4Humans](https://sbml4humans.de), the interactive report of SBML models. It renders the typed report the backend api in `../backend` serves. The documentation of the application is at [matthiaskoenig.github.io/sbml4humans](https://matthiaskoenig.github.io/sbml4humans/), the repository layout, the docker compose setup, the checks, the branches and the releases are in [`docs/development.md`](../docs/development.md).
 
 ## Development
 
@@ -25,14 +25,15 @@ npm run dev
 The development server runs on <http://localhost:3456> and hot reloads on changes; the api url is `VITE_API_URL` in `.env.development`, the production url in `.env.production`. Further scripts:
 
 ```bash
-npm run build      # type check and production build into dist/
-npm run typecheck  # vue-tsc
-npm run lint       # eslint and prettier --check
-npm run format     # prettier --write
-npm run test:unit  # vitest
-npm run test:e2e   # playwright against the running backend (npx playwright install chromium once)
-npm run types      # regenerate src/types/report.ts from src/schema/report.schema.json
-npm run fixtures   # record tests/fixtures/*.json from the running backend
+npm run build        # type check and production build into dist/
+npm run typecheck    # vue-tsc
+npm run lint         # eslint and prettier --check
+npm run format       # prettier --write
+npm run test:unit    # vitest
+npm run test:e2e     # playwright against the running backend (npx playwright install chromium once)
+npm run types        # regenerate src/types/report.ts from src/schema/report.schema.json
+npm run fixtures     # record tests/fixtures/*.json from the running backend
+npm run screenshots  # retake docs/images/*.png against the running backend and the dev server
 ```
 
 `package-lock.json` is committed and the containers install with `npm ci`, so every build gets the same versions. Commit the changed lock with the change that needed it.
