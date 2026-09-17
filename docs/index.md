@@ -2,7 +2,7 @@
 
 [SBML4Humans](https://sbml4humans.de) renders [SBML](sbml.md) models as interactive, human readable reports. Give it a model and it gives you a page which shows what the model contains: its compartments, species, reactions, rules and events, the mathematics of the model as typeset formulas, the units it computes from the file, the references between the elements, and the annotations resolved to the entries they point at.
 
-<!-- screenshot: report-overview -->
+![The report of the repressilator model, with the type rail, the element tables and the inspector of a selected species](images/report-overview.png)
 
 ## Why it exists
 

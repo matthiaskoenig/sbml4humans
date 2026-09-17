@@ -6,7 +6,7 @@ A report is created from a model you provide. The home page offers three ways to
 
 The home page has a tab for each input: "Upload", "URL" and "Paste".
 
-<!-- screenshot: home-inputs -->
+![The home page, on the Upload tab, with the URL and Paste tabs next to it](images/home-inputs.png)
 
 **Upload** takes a file from your computer. Drop it onto the dashed area or use "Choose a file" and pick it in the file dialog, which offers the extensions `.xml`, `.sbml`, `.gz`, `.omex` and `.zip`. The report opens as soon as it is created.
 
@@ -30,7 +30,7 @@ An SBML file is read as a single [document](reference/sbmldocument.md) with one 
 
 The examples page lists the models the backend ships with, with a filter above the list which searches the id, the name and the description of an example. A card shows the id of the example, a name, a description and badges. For a model the name is the name of the model, the description is the first lines of its notes and the badges are the packages the file declares. For one of the four COMBINE archives the name is the name of the archive file, the description is the manifest of the archive and the single badge says `OMEX`.
 
-<!-- screenshot: examples -->
+![The examples page, with a filter above a grid of example cards](images/examples.png)
 
 The examples are of five kinds:
 

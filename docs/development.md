@@ -80,6 +80,16 @@ uv run --project backend zensical build --clean   # build into site/
 
 `site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. The reference pages under `docs/reference/` are generated, not written by hand: `python -m sbml4humans.glossary` regenerates them from the glossary in `glossary/`.
 
+The screenshots of `docs/images/` are taken by `frontend/scripts/screenshots.mjs` against a running backend and a running dev server:
+
+```bash
+cd backend && uv run uvicorn sbml4humans.api:api --port 1444 &
+cd frontend && npx vite --port 3456 &
+cd frontend && npm run screenshots
+```
+
+The images are committed like any other source file. Rerun the script and commit the result after a change of the user interface that a screenshot shows, so the documentation keeps matching what the application looks like.
+
 ## Branches and pull requests
 
 - **`develop`** is the branch everything is integrated into.
