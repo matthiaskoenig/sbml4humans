@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 import BooleanMark from "@/components/misc/BooleanMark.vue";
@@ -7,8 +7,10 @@ import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
+import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
+import { MAX_LATEX_LENGTH } from "@/report/latex";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
@@ -31,6 +33,10 @@ function mountWithIndex(component: unknown, props: Record<string, unknown>) {
 }
 
 describe("misc components", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders booleans as marks", () => {
     expect(
       mount(BooleanMark, { props: { value: true } })
@@ -65,6 +71,48 @@ describe("misc components", () => {
     expect(
       mount(MathView, { props: { math: null }, global: { directives: { tooltip } } }).text(),
     ).toBe("-");
+  });
+
+  it("shows a formula longer than MAX_LATEX_LENGTH as truncated text and renders it on demand", async () => {
+    const terms = Array.from({ length: 3000 }, (_, i) => i);
+    const formula = terms.map((i) => `x${i}`).join(" + ");
+    const latex = terms.map((i) => `x_{${i}}`).join(" + ");
+    expect(latex.length).toBeGreaterThan(MAX_LATEX_LENGTH);
+    const wrapper = mount(MathView, {
+      props: { math: { latex, formula }, display: true },
+      global: { directives: { tooltip: vTooltip } },
+    });
+    const text = wrapper.get("[data-testid=math-text]");
+    expect(text.text()).toBe(`${formula.slice(0, 120)}…`);
+    await text.trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(`${formula} (click to copy)`);
+    await text.trigger("mouseleave");
+
+    const button = wrapper.get("[data-testid=math-render]");
+    await button.trigger("click");
+    expect(wrapper.find("[data-testid=math-text]").exists()).toBe(false);
+    expect(wrapper.find(".katex").exists()).toBe(true);
+  });
+
+  it("copies the formula with every run of whitespace collapsed to a single space", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { value: { writeText }, configurable: true });
+    const wrapper = mount(MathView, {
+      props: { math: { latex: "\\frac{a}{b}", formula: "a  /\n b" } },
+      global: { directives: { tooltip: vTooltip } },
+    });
+    await wrapper.get("[data-testid=math]").trigger("click");
+    expect(writeText).toHaveBeenCalledWith("a / b");
+  });
+
+  it("shows the unit id text when the latex is longer than MAX_LATEX_LENGTH", () => {
+    const latex = "mole^{2}".repeat(MAX_LATEX_LENGTH);
+    const wrapper = mount(UnitsView, {
+      props: { latex, units: "mole^2" },
+      global: { directives: { tooltip } },
+    });
+    expect(wrapper.find("[data-testid=units]").exists()).toBe(false);
+    expect(wrapper.text()).toBe("mole^2");
   });
 
   it("renders a dash latex as the placeholder, not a KaTeX minus", () => {
