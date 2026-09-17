@@ -1,23 +1,26 @@
 # Development
 
-## Repository layout
-
-| path | content |
-| --- | --- |
-| `frontend/` | the Vue 3 application (Vite, TypeScript, Pinia, Vue Router, Tailwind CSS, Lucide icons) |
-| `backend/` | the `sbml4humans` Python package: the report of a document (`sbmlinfo`, `mathml`, `units`) and the FastAPI api which serves it |
-| `nginx/` | the proxy configuration of sbml4humans.de |
-| `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
-| `deploy.sh`, `docker-purge.sh` | deployment of the server, see [Deployment](deployment.md) |
-
-## Development
+Everything below starts from a clone of the repository:
 
 ```bash
 git clone https://github.com/matthiaskoenig/sbml4humans.git
 cd sbml4humans
 ```
 
-### Frontend and backend with docker compose
+## Repository layout
+
+| path | content |
+| --- | --- |
+| `frontend/` | the Vue 3 application (Vite, TypeScript, Pinia, Vue Router, Tailwind CSS, Lucide icons) |
+| `backend/` | the `sbml4humans` Python package: the report of a document (`sbmlinfo`, `mathml`, `units`) and the FastAPI api which serves it |
+| `glossary/` | the glossary the reference pages of the documentation and the explanations of the application are generated from |
+| `docs/`, `zensical.toml` | the pages and the configuration of the documentation site |
+| `release-notes/` | one file per version, the body of its GitHub release |
+| `nginx/` | the proxy configuration of sbml4humans.de |
+| `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
+| `deploy.sh`, `docker-purge.sh` | deployment of the server, see [Deployment](deployment.md) |
+
+## Frontend and backend with docker compose
 
 ```bash
 sudo docker compose -f docker-compose-develop.yml build --no-cache
@@ -26,7 +29,7 @@ sudo docker compose -f docker-compose-develop.yml up
 
 The frontend answers on <http://localhost:8083>, the api on <http://localhost:1444>.
 
-### Backend
+## Backend
 
 The backend is the `sbml4humans` Python package in `backend/`, it requires Python 3.14 and [uv](https://docs.astral.sh/uv/). The report is created with libsbml, lxml (the math), pint (the units) and pymetadata (COMBINE archives and annotations); the example models are part of the package (`backend/sbml4humans/resources/`).
 
@@ -46,7 +49,7 @@ uv run ruff check . && uv run ruff format --check .
 uv run ty check
 ```
 
-### Frontend
+## Frontend
 
 The frontend needs node 24 (`frontend/.nvmrc`), e.g. with [nvm](https://github.com/nvm-sh/nvm):
 
@@ -69,7 +72,7 @@ npm run test:unit
 npm run test:e2e
 ```
 
-### Documentation
+## Documentation
 
 The documentation is this Zensical site, built from the sources in `docs/` with the configuration in `zensical.toml`, from the repository root:
 
@@ -146,7 +149,7 @@ The script is idempotent: it updates the rulesets which exist and creates the mi
 
 ## Releases
 
-The version of sbml4humans is the version of the backend package in `backend/sbml4humans/__init__.py`, the frontend `package.json` follows it. A release is made from `develop`. Since `develop` only accepts pull requests, the release is prepared on a branch and tagged once that pull request is merged:
+The version of SBML4Humans is the version of the backend package in `backend/sbml4humans/__init__.py`, the frontend `package.json` follows it. A release is made from `develop`. Since `develop` only accepts pull requests, the release is prepared on a branch and tagged once that pull request is merged:
 
 1. branch off `develop`: `git switch -c release/x.y.z origin/develop`
 2. write the release notes for the version in `release-notes/x.y.z.md`
