@@ -40,6 +40,10 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [External model definition](externalmodeldefinition.md) | a model of another SBML file which this document can instantiate |
 | [Submodel](submodel.md) | the instantiation of another model inside this model |
 | [Port](port.md) | an element of the model which other models are meant to connect to |
+| [Reference](sbaseref.md) | a link of a chain which reaches into a submodel of a submodel |
+| [Deletion](deletion.md) | an element which is removed from a submodel before it is instantiated |
+| [Replaced element](replacedelement.md) | an element of a submodel which the element carrying it takes the place of |
+| [Replaced by](replacedby.md) | the element of a submodel which takes the place of the element carrying it |
 
 ## Flux balance constraints (fbc)
 

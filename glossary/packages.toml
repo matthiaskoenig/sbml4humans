@@ -446,6 +446,334 @@ Every element of a file may carry a meta id, and this is the way to name an elem
 The report searches the element with that meta id in the model and links it.
 """
 
+[types.Port.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches from the named submodel into the model it instantiates"
+description = """
+A port which names a submodel of its model can reach through it with a [nested reference](sbaseref.md), so that the port stands for an element buried inside that submodel. The chain may be of any length, one link per submodel it passes.
+
+The report shows the chain in the inspector of the port and links the element at its end.
+"""
+
+[types.ExternalModelDefinition.attributes.md5]
+label = "md5"
+package = "comp"
+type = "string"
+spec = { doc = "comp", section = "3.3.2" }
+summary = "the checksum of the document at the source"
+description = """
+The checksum is optional and is the md5 sum of the whole file at the source, as it was when the model was written. It is how a reader tells whether the file they reach is the file the composed model was built against, which matters when the source is a URL that somebody else maintains.
+
+The report shows the checksum in the inspector of the external model definition; it does not fetch the file and cannot check it.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the references of comp: the deletions and the replacements
+# ----------------------------------------------------------------------------
+[types.SBaseRef]
+label = "Reference"
+package = "comp"
+spec = { doc = "comp", section = "3.7" }
+summary = "a link of a chain which reaches into a submodel of a submodel"
+description = """
+A reference names one element of a model in one of four ways: by [port](port.md), by identifier, by unit identifier or by meta id, and exactly one of the four is set.
+
+A [port](port.md), a [deletion](deletion.md), a [replaced element](replacedelement.md) and a [replaced by](replacedby.md) are references themselves. Where one of them has to reach an element which sits deeper than the submodel it names, it carries a reference of this class, which names an element of the model that submodel instantiates, and that reference may carry the next one. The chain is how a model reaches an element of a sub-submodel which no port of its own exposes.
+
+The report shows the chain in the inspector of the element which starts it and resolves it to the element at its end.
+"""
+related = ["Port", "Deletion", "ReplacedElement", "ReplacedBy", "comp"]
+
+[types.SBaseRef.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the model which this link of the chain names"
+description = """
+The reference names a [port](port.md) of the model the submodel above it instantiates. Port identifiers are a namespace of their own, so a port may carry the identifier of an element of the same model without naming it.
+"""
+
+[types.SBaseRef.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which this link of the chain names, by its identifier"
+description = """
+The reference names an element of the model the submodel above it instantiates. When that element is a [submodel](submodel.md) again, the next link of the chain reaches into it.
+"""
+
+[types.SBaseRef.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which this link of the chain names"
+description = """
+Unit identifiers live in a namespace of their own, so naming a [unit definition](unitdefinition.md) needs an attribute of its own. The units which SBML reserves cannot be named here: they can neither be replaced nor deleted.
+"""
+
+[types.SBaseRef.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which this link of the chain names, by its meta id"
+description = """
+Every element of a file may carry a meta id, and this is the way to name an element which has no identifier of its own, for example a rule or a reaction written without one.
+"""
+
+[types.SBaseRef.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the next link of the chain, one submodel deeper"
+description = """
+A reference which names a [submodel](submodel.md) carries the reference which names the element inside it. There is no limit to the depth of the chain.
+"""
+
+[types.Deletion]
+label = "Deletion"
+package = "comp"
+spec = { doc = "comp", section = "3.5.3" }
+summary = "an element which is removed from a submodel before it is instantiated"
+description = """
+A deletion names one element of the model a [submodel](submodel.md) instantiates and removes it from the composed model. It is how a model uses a part of another model: the initial assignment which the containing model provides itself, the reaction which does not belong in the new context, the parameter which is set from outside.
+
+The removal reaches further than the named element. Everything which depends on it goes with it: a species takes the species references which name it, and with them the reactions which become meaningless, and a compartment takes the species inside it.
+
+A deletion carries an identifier of its own, so that a [replaced element](replacedelement.md) can say that it takes the place of what was deleted, and a name, because deletions are shown to modellers.
+
+The report shows the deletions of a submodel in its inspector, links the element every one of them removes and shows each deletion as an element of its own.
+"""
+related = ["Submodel", "ReplacedElement", "Port", "comp"]
+
+[types.Deletion.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the submodel whose element is removed"
+description = """
+The deletion names a [port](port.md) of the model the submodel instantiates, and the element behind that port is what is removed. Naming the port instead of the element is the friendlier way, because the port is the interface the other model offers.
+"""
+
+[types.Deletion.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is removed, by its identifier"
+description = """
+The identifier is resolved in the model the submodel instantiates, not in the model which declares the deletion.
+"""
+
+[types.Deletion.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which is removed"
+description = """
+Unit identifiers live in a namespace of their own. The units which SBML reserves cannot be deleted.
+"""
+
+[types.Deletion.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is removed, by its meta id"
+description = """
+This is the way to delete an element which carries no identifier, for example a rule or a reaction written without one.
+"""
+
+[types.Deletion.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches into a submodel of the submodel"
+description = """
+A deletion which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be removed.
+"""
+
+[types.ReplacedElement]
+label = "Replaced element"
+package = "comp"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "an element of a submodel which the element carrying it takes the place of"
+description = """
+A replacement is the glue of a composed model. The element which carries the replaced element stays, the element it names disappears, and every reference to the one that disappeared points at the one that stays. Two submodels are connected by letting one element of the containing model replace an element of each: the three become one.
+
+Each replaced element names the [submodel](submodel.md) it reaches into and one element inside it, by port, identifier, unit identifier or meta id, and reaches deeper with a [nested reference](sbaseref.md). It may carry a conversion factor which rescales the replaced value, and instead of naming an element it may name a [deletion](deletion.md), which records that the element takes the place of something the submodel lost.
+
+The report lists the replacements of an element in its inspector, links the submodel and the element inside it, and shows every replacement as an element of its own.
+"""
+related = ["Submodel", "ReplacedBy", "Deletion", "comp"]
+
+[types.ReplacedElement.attributes.submodelRef]
+label = "submodel"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "the submodel which holds the replaced element"
+description = """
+The reference names a [submodel](submodel.md) of the model which carries the replacement. It is required, and it says which model the other references are resolved in: only elements of the model that submodel instantiates can be named.
+"""
+
+[types.ReplacedElement.attributes.deletion]
+label = "deletion"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "the deletion of the submodel whose element this element takes the place of"
+description = """
+The reference names a [deletion](deletion.md) of the named submodel and takes the place of the four references: instead of an element which is replaced, the replacement names an element which was removed. It changes nothing about the composed model and nothing about its mathematics; it records the decision that this element is what the submodel lost, so that a reader, and a tool which draws the model, can follow it.
+"""
+
+[types.ReplacedElement.attributes.conversionFactor]
+label = "conversion factor"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "the parameter which rescales the replaced value to the scale of this element"
+description = """
+The reference names a [parameter](parameter.md) of the model which carries the replacement. One unit of the replaced element multiplied by the factor is one unit of the replacing element, which is how a submodel written in millimole is used by a model written in mole. The factor applies to every reference to the replaced element, and the factors of nested replacements multiply.
+
+A replacement cannot carry a conversion factor and a deletion at the same time: what is deleted has no value left to convert.
+"""
+
+[types.ReplacedElement.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the submodel whose element is replaced"
+description = """
+The replacement names a [port](port.md) of the model the submodel instantiates, and the element behind that port is what is replaced. It is the first choice of the specification, because the port is the interface the other model offers.
+"""
+
+[types.ReplacedElement.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is replaced, by its identifier"
+description = """
+The identifier is resolved in the model the named submodel instantiates. It is the choice for an element which no port exposes.
+"""
+
+[types.ReplacedElement.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which is replaced"
+description = """
+Unit identifiers live in a namespace of their own. The units which SBML reserves cannot be replaced.
+"""
+
+[types.ReplacedElement.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is replaced, by its meta id"
+description = """
+This is the way to replace an element which carries no identifier of its own.
+"""
+
+[types.ReplacedElement.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches into a submodel of the named submodel"
+description = """
+A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be replaced.
+"""
+
+[types.ReplacedBy]
+label = "Replaced by"
+package = "comp"
+spec = { doc = "comp", section = "3.6.4" }
+summary = "the element of a submodel which takes the place of the element carrying it"
+description = """
+A replaced by turns a replacement around: the element which carries it disappears and the element of the [submodel](submodel.md) it names stays, so that every reference to the element of the containing model points into the submodel afterwards. It is how a model declares a placeholder which one of its parts fills in.
+
+An element carries at most one replaced by, and it names the element which replaces it the same four ways a [replaced element](replacedelement.md) does, with a [nested reference](sbaseref.md) for an element which sits deeper.
+
+The report shows the replacement in the inspector of the element, links the submodel and the element inside it, and shows the replacement as an element of its own.
+"""
+related = ["Submodel", "ReplacedElement", "comp"]
+
+[types.ReplacedBy.attributes.submodelRef]
+label = "submodel"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.4" }
+summary = "the submodel which holds the replacing element"
+description = """
+The reference names a [submodel](submodel.md) of the model which carries the replacement. It is required, and the other references are resolved in the model that submodel instantiates.
+"""
+
+[types.ReplacedBy.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the submodel whose element takes the place of this element"
+description = """
+The replacement names a [port](port.md) of the model the submodel instantiates, and the element behind that port is the one which stays.
+"""
+
+[types.ReplacedBy.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which replaces this element, by its identifier"
+description = """
+The identifier is resolved in the model the named submodel instantiates.
+"""
+
+[types.ReplacedBy.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which replaces this unit definition"
+description = """
+Unit identifiers live in a namespace of their own. The units which SBML reserves cannot replace anything.
+"""
+
+[types.ReplacedBy.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which replaces this element, by its meta id"
+description = """
+This is the way to name a replacing element which carries no identifier of its own.
+"""
+
+[types.ReplacedBy.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches into a submodel of the named submodel"
+description = """
+A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel takes the place of this element.
+"""
+
 
 # ----------------------------------------------------------------------------
 # the elements of fbc

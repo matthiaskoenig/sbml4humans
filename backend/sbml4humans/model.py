@@ -57,36 +57,6 @@ class ModelHistory(ReportModel):
     modified_dates: list[str] = Field(default_factory=list)
 
 
-class SBaseRef(ReportModel):
-    """A comp reference to an element by port, id, unit or metaId."""
-
-    port_ref: str | None = None
-    id_ref: str | None = None
-    unit_ref: str | None = None
-    meta_id_ref: str | None = None
-
-
-class ReplacedBy(ReportModel):
-    """The element of a submodel which replaces this element."""
-
-    submodel_ref: str
-    sbase_ref: SBaseRef
-
-
-class ReplacedElement(ReportModel):
-    """An element of a submodel which this element replaces."""
-
-    submodel_ref: str
-    sbase_ref: SBaseRef
-
-
-class CompSBase(ReportModel):
-    """The comp extension of an element."""
-
-    replaced_by: ReplacedBy | None = None
-    replaced_elements: list[ReplacedElement] = Field(default_factory=list)
-
-
 class ConversionFactor(ReportModel):
     """The conversion factor parameter of a model or species."""
 
@@ -140,6 +110,69 @@ class Uncertainty(SBase):
     uncert_parameters: list[UncertParameter] = Field(default_factory=list)
 
 
+# -------------------------------------------------------------------------------------
+# the references of comp, which every element carries and which are `SBase`
+# -------------------------------------------------------------------------------------
+class SBaseRefFields(SBase):
+    """The fields of a comp reference to an element (comp §3.7).
+
+    A reference names one element of a model by its port, its id, its unit id
+    or its meta id, and may carry a reference of its own which reaches into a
+    submodel of that model. `Port`, `Deletion`, `ReplacedElement` and
+    `ReplacedBy` derive from `SBaseRef` in the specification, so they carry
+    these fields next to the attributes of their own class. The class holds the
+    fields alone and leaves `sbml_type` to the classes below it, each of which
+    pins it to its own name.
+    """
+
+    port_ref: str | None = None
+    id_ref: str | None = None
+    unit_ref: str | None = None
+    meta_id_ref: str | None = None
+    sbase_ref: SBaseRef | None = None
+
+
+class SBaseRef(SBaseRefFields):
+    """A link of a reference chain, which names an element of a submodel.
+
+    The chain starts at a port, a deletion, a replaced element or a replaced
+    by, whose reference names a submodel; every further link names an element
+    of the model that submodel instantiates (comp §3.7.2).
+    """
+
+    sbml_type: Literal["SBaseRef"] = "SBaseRef"
+
+
+class Deletion(SBaseRefFields):
+    """An element of a submodel which is removed before it is instantiated."""
+
+    sbml_type: Literal["Deletion"] = "Deletion"
+
+
+class ReplacedBy(SBaseRefFields):
+    """The element of a submodel which replaces this element."""
+
+    sbml_type: Literal["ReplacedBy"] = "ReplacedBy"
+    submodel_ref: str
+
+
+class ReplacedElement(SBaseRefFields):
+    """An element of a submodel which this element replaces."""
+
+    sbml_type: Literal["ReplacedElement"] = "ReplacedElement"
+    submodel_ref: str
+    deletion: str | None = None
+    conversion_factor: str | None = None
+
+
+class CompSBase(ReportModel):
+    """The comp extension of an element."""
+
+    replaced_by: ReplacedBy | None = None
+    replaced_elements: list[ReplacedElement] = Field(default_factory=list)
+
+
+SBaseRefFields.model_rebuild()
 SBase.model_rebuild()
 
 
@@ -405,17 +438,13 @@ class Submodel(SBase):
     model_ref: str
     time_conversion_factor: str | None = None
     extent_conversion_factor: str | None = None
-    list_of_deletions: list[SBaseRef] = Field(default_factory=list)
+    list_of_deletions: list[Deletion] = Field(default_factory=list)
 
 
-class Port(SBase):
+class Port(SBaseRefFields):
     """A comp port referencing an element of the model."""
 
     sbml_type: Literal["Port"] = "Port"
-    port_ref: str | None = None
-    id_ref: str | None = None
-    unit_ref: str | None = None
-    meta_id_ref: str | None = None
 
 
 class ExternalModelDefinition(SBase):
@@ -424,6 +453,7 @@ class ExternalModelDefinition(SBase):
     sbml_type: Literal["ExternalModelDefinition"] = "ExternalModelDefinition"
     source: str
     model_ref: str | None = None
+    md5: str | None = None
 
 
 # -------------------------------------------------------------------------------------

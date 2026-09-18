@@ -130,24 +130,24 @@ export interface CompSBase {
  * The element of a submodel which replaces this element.
  */
 export interface ReplacedBy {
-  submodelRef: string;
-  sbaseRef: SBaseRef;
-}
-/**
- * A comp reference to an element by port, id, unit or metaId.
- */
-export interface SBaseRef {
+  pk: string;
+  sbmlType?: "ReplacedBy";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
   metaIdRef?: string | null;
-}
-/**
- * An element of a submodel which this element replaces.
- */
-export interface ReplacedElement {
+  sbaseRef?: SBaseRef | null;
   submodelRef: string;
-  sbaseRef: SBaseRef;
 }
 /**
  * A distrib uncertainty of an element.
@@ -184,6 +184,57 @@ export interface UncertParameter {
 export interface Math {
   latex: string;
   formula: string;
+}
+/**
+ * A link of a reference chain, which names an element of a submodel.
+ *
+ * The chain starts at a port, a deletion, a replaced element or a replaced
+ * by, whose reference names a submodel; every further link names an element
+ * of the model that submodel instantiates (comp §3.7.2).
+ */
+export interface SBaseRef {
+  pk: string;
+  sbmlType?: "SBaseRef";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  portRef?: string | null;
+  idRef?: string | null;
+  unitRef?: string | null;
+  metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
+}
+/**
+ * An element of a submodel which this element replaces.
+ */
+export interface ReplacedElement {
+  pk: string;
+  sbmlType?: "ReplacedElement";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  portRef?: string | null;
+  idRef?: string | null;
+  unitRef?: string | null;
+  metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
+  submodelRef: string;
+  deletion?: string | null;
+  conversionFactor?: string | null;
 }
 /**
  * An SBML package used by the document.
@@ -715,7 +766,29 @@ export interface Submodel {
   modelRef: string;
   timeConversionFactor?: string | null;
   extentConversionFactor?: string | null;
-  listOfDeletions?: SBaseRef[];
+  listOfDeletions?: Deletion[];
+}
+/**
+ * An element of a submodel which is removed before it is instantiated.
+ */
+export interface Deletion {
+  pk: string;
+  sbmlType?: "Deletion";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  portRef?: string | null;
+  idRef?: string | null;
+  unitRef?: string | null;
+  metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
 }
 /**
  * A comp port referencing an element of the model.
@@ -737,6 +810,7 @@ export interface Port {
   idRef?: string | null;
   unitRef?: string | null;
   metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
 }
 /**
  * An fbc gene product.
@@ -801,6 +875,7 @@ export interface ExternalModelDefinition {
   uncertainties?: Uncertainty[];
   source: string;
   modelRef?: string | null;
+  md5?: string | null;
 }
 /**
  * All objects of a report and the references between them.

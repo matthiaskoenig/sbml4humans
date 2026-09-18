@@ -21,6 +21,7 @@ from sbml4humans.model import (
     Reaction,
     Report,
     SBase,
+    SBaseRefFields,
     SpeciesReference,
 )
 
@@ -85,9 +86,10 @@ def _nested(model: Model) -> Iterator[SBase]:
     """All nodes of a model: every element and the objects nested in one.
 
     The nested objects are the kinetic law of a reaction with its local
-    parameters and the trigger, the priority and the delay of an event. None of
-    them is referenced by an SId, so they are nodes without being part of the
-    namespace of the model.
+    parameters, the trigger, the priority and the delay of an event and the
+    deletions of a submodel with the references below them. None of them is
+    referenced by an SId, so they are nodes without being part of the namespace
+    of the model.
     """
     yield from model.list_of_unit_definitions
     yield from _elements(model)
@@ -97,6 +99,34 @@ def _nested(model: Model) -> Iterator[SBase]:
             yield from reaction.kinetic_law.list_of_local_parameters
     for event in model.list_of_events:
         yield from _event_children(event)
+    for submodel in model.list_of_submodels:
+        for deletion in submodel.list_of_deletions:
+            yield from _ref_chain(deletion)
+    for port in model.list_of_ports:
+        if port.sbase_ref is not None:
+            yield from _ref_chain(port.sbase_ref)
+
+
+def _ref_chain(ref: SBaseRefFields) -> Iterator[SBaseRefFields]:
+    """A comp reference and every reference below it (comp §3.7.2)."""
+    yield ref
+    if ref.sbase_ref is not None:
+        yield from _ref_chain(ref.sbase_ref)
+
+
+def _comp_refs(sbase: SBase) -> Iterator[SBaseRefFields]:
+    """The replacements of an element, each with the references below it.
+
+    An element says which elements of submodels it replaces and which element
+    of a submodel replaces it (comp §3.6), and every one of those references is
+    an element of the report of its own.
+    """
+    if sbase.comp is None:
+        return
+    if sbase.comp.replaced_by is not None:
+        yield from _ref_chain(sbase.comp.replaced_by)
+    for replaced in sbase.comp.replaced_elements:
+        yield from _ref_chain(replaced)
 
 
 def _event_children(event: Event) -> Iterator[SBase]:
@@ -129,7 +159,7 @@ class LinkGraphBuilder:
     # nodes
     # ---------------------------------------------------------------------------------
     def _add_node(self, sbase: SBase, model_pk: str | None) -> None:
-        """Add the node of an element and of its uncertainties."""
+        """Add the node of an element, of its uncertainties and of its replacements."""
         self.nodes[sbase.pk] = Node(
             pk=sbase.pk,
             sbml_type=sbase.sbml_type,
@@ -139,6 +169,8 @@ class LinkGraphBuilder:
         )
         for uncertainty in sbase.uncertainties:
             self._add_node(uncertainty, model_pk)
+        for ref in _comp_refs(sbase):
+            self._add_node(ref, model_pk)
 
     def _collect_nodes(self) -> None:
         """Every SBase of the report is a node."""

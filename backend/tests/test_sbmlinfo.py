@@ -29,6 +29,12 @@ def constraint_event() -> Report:
     return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "constraint_event.xml")
 
 
+@pytest.fixture(scope="module")
+def comp_deletion() -> Report:
+    """The report of the deletion and replacement example of comp."""
+    return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "comp_deletion.xml")
+
+
 def test_document(repressilator: Report) -> None:
     """The document carries level, version and its pk."""
     doc = repressilator.document
@@ -260,10 +266,7 @@ def test_comp_submodels_ports_and_replacements() -> None:
     species = next(s for s in model.list_of_species if s.id == "Cli_plasma_icg")
     assert species.comp is not None
     replaced = species.comp.replaced_elements[0]
-    assert (replaced.submodel_ref, replaced.sbase_ref.port_ref) == (
-        "LI",
-        "icg_ext_port",
-    )
+    assert (replaced.submodel_ref, replaced.port_ref) == ("LI", "icg_ext_port")
 
 
 def test_fractional_spatial_dimensions() -> None:
@@ -787,3 +790,105 @@ def test_nested_cvterms_are_read(constraint_event: Report) -> None:
     assert nested.qualifier == "BQB_IS_DESCRIBED_BY"
     assert nested.resources == ["https://identifiers.org/pubmed/31219795"]
     assert nested.nested == []
+
+
+# -------------------------------------------------------------------------------------
+# the objects of comp which the report carried as values
+# -------------------------------------------------------------------------------------
+def test_deletion_is_an_element_of_the_report(comp_deletion: Report) -> None:
+    """A deletion is an element with its own identity and its `SBase` attributes.
+
+    comp §3.5.3 gives a deletion an id, a name and everything an `SBase`
+    carries, so that a containing model can name it and a report can show it.
+    """
+    cell1 = comp_deletion.models[0].list_of_submodels[0]
+    del_k, del_sink = cell1.list_of_deletions
+    assert del_k.sbml_type == "Deletion"
+    assert del_k.pk == "comp_deletion/Deletion:del_k"
+    assert del_k.id == "del_k"
+    assert del_k.name == "deletion of the rate constant"
+    assert del_k.meta_id == "meta_del_k"
+    assert del_k.sbo == "SBO:0000002"
+    assert del_k.notes is not None
+    assert "rate constant of the medium" in del_k.notes
+    assert del_k.xml is not None
+    assert del_k.id_ref == "k"
+    assert del_k.port_ref is None
+    assert del_sink.pk == "comp_deletion/Deletion:del_sink"
+    assert del_sink.meta_id_ref == "meta_sink"
+
+
+def test_replaced_element_carries_its_deletion_and_conversion_factor(
+    comp_deletion: Report,
+) -> None:
+    """A replaced element carries the two attributes comp adds to a reference.
+
+    The conversion factor changes the mathematics of the composed model (comp
+    §3.6.2 and §3.8.1) and the deletion says that the replacement stands for an
+    element which the submodel lost.
+    """
+    model = comp_deletion.models[0]
+    (glc,) = model.list_of_species
+    assert glc.comp is not None
+    first, second = glc.comp.replaced_elements
+    assert first.sbml_type == "ReplacedElement"
+    assert first.pk == "comp_deletion/ReplacedElement:meta_glc_cell1"
+    assert first.submodel_ref == "cell1"
+    assert first.port_ref == "glc_port"
+    assert first.conversion_factor == "f_amount"
+    assert first.deletion is None
+    assert second.conversion_factor is None
+
+    k_total = model.list_of_parameters[0]
+    assert k_total.comp is not None
+    (replaced,) = k_total.comp.replaced_elements
+    assert replaced.deletion == "del_k"
+    assert replaced.port_ref is None
+
+
+def test_replaced_by_is_an_sbase_of_the_report(comp_deletion: Report) -> None:
+    """A replaced by carries the attributes of an `SBase` (comp §3.7)."""
+    vmax = comp_deletion.models[0].list_of_parameters[1]
+    assert vmax.comp is not None
+    replaced_by = vmax.comp.replaced_by
+    assert replaced_by is not None
+    assert replaced_by.sbml_type == "ReplacedBy"
+    assert replaced_by.pk == "comp_deletion/ReplacedBy:meta_Vmax_shared"
+    assert replaced_by.meta_id == "meta_Vmax_shared"
+    assert replaced_by.submodel_ref == "cell2"
+    assert replaced_by.port_ref == "Vmax_port"
+
+
+def test_nested_sbase_ref_is_read(comp_deletion: Report) -> None:
+    """A reference which reaches into a submodel of a submodel keeps its chain.
+
+    comp §3.7.2 lets an `SBaseRef` carry an `SBaseRef` of its own, which names
+    an element of the model the referenced submodel instantiates.
+    """
+    (medium,) = comp_deletion.models[0].list_of_compartments
+    assert medium.comp is not None
+    through_tissue = medium.comp.replaced_elements[2]
+    assert through_tissue.submodel_ref == "tissue1"
+    assert through_tissue.id_ref == "cell_in_tissue"
+    nested = through_tissue.sbase_ref
+    assert nested is not None
+    assert nested.sbml_type == "SBaseRef"
+    assert nested.pk == "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef"
+    assert nested.port_ref == "cell_port"
+    assert nested.sbase_ref is None
+
+
+def test_port_carries_the_nested_reference_of_its_class(comp_deletion: Report) -> None:
+    """A port is an `SBaseRef` and may carry a nested reference (comp §3.4.3)."""
+    ports = {port.id: port for port in comp_deletion.models[0].list_of_ports}
+    assert ports["per_min_port"].unit_ref == "per_min"
+    assert ports["per_min_port"].sbase_ref is None
+    assert ports["glc_amount_rule_port"].meta_id_ref == "meta_glc_amount_rule"
+
+
+def test_external_model_definition_carries_its_md5(comp_deletion: Report) -> None:
+    """The checksum of the referenced document is read (comp §3.3.2)."""
+    (emd,) = comp_deletion.external_model_definitions
+    assert emd.source == "minimal_model.xml"
+    assert emd.model_ref == "minimal_model"
+    assert emd.md5 == "37031fdf7d08f3a8eec79a911abf0da0"

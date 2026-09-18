@@ -27,6 +27,7 @@ from sbml4humans.model import (
     Creator,
     CVTerm,
     Delay,
+    Deletion,
     Event,
     EventAssignment,
     ExternalModelDefinition,
@@ -270,7 +271,7 @@ class SBMLDocumentInfo:
             "cvterms": self.cvterms(sbase),
             "history": self.history(sbase),
             "xml": xml,
-            "comp": self.comp_sbase(sbase),
+            "comp": self.comp_sbase(sbase, self._key(sbase, key, use_id)),
             "uncertainties": self.uncertainties(sbase, self._key(sbase, key, use_id)),
         }
 
@@ -739,18 +740,36 @@ class SBMLDocumentInfo:
     # ---------------------------------------------------------------------------------
     # comp
     # ---------------------------------------------------------------------------------
-    @staticmethod
-    def _sbase_ref(ref: libsbml.SBaseRef) -> SBaseRef:
-        """The comp reference of an element."""
-        return SBaseRef(
-            port_ref=_attribute(ref, "portRef"),
-            id_ref=_attribute(ref, "idRef"),
-            unit_ref=_attribute(ref, "unitRef"),
-            meta_id_ref=_attribute(ref, "metaIdRef"),
-        )
+    def _sbase_ref_fields(self, ref: libsbml.SBaseRef, key: str) -> dict[str, Any]:
+        """The fields of a comp reference, for the constructor of its class.
 
-    def comp_sbase(self, sbase: libsbml.SBase) -> CompSBase | None:
-        """The comp extension of an element: replaced by and replaced elements."""
+        A reference is an `SBase` (comp §3.7), so it carries the fields of one
+        next to the four references and the reference chain below it. `key` is
+        the key its parent gives it, used for the pk when the reference carries
+        neither an id nor a metaId.
+        """
+        nested = None
+        if ref.isSetSBaseRef():
+            nested_key = f"{self._key(ref, key)}.sBaseRef"
+            nested = SBaseRef(
+                **self._sbase_ref_fields(ref.getSBaseRef(), nested_key),
+            )
+        return {
+            **self.sbase(ref, key=key),
+            "port_ref": _attribute(ref, "portRef"),
+            "id_ref": _attribute(ref, "idRef"),
+            "unit_ref": _attribute(ref, "unitRef"),
+            "meta_id_ref": _attribute(ref, "metaIdRef"),
+            "sbase_ref": nested,
+        }
+
+    def comp_sbase(self, sbase: libsbml.SBase, key: str) -> CompSBase | None:
+        """The comp extension of an element: replaced by and replaced elements.
+
+        Args:
+            sbase: the element carrying the extension.
+            key: the key of the element, which keys its replacements.
+        """
         plugin = sbase.getPlugin("comp")
         if not plugin or not isinstance(plugin, libsbml.CompSBasePlugin):
             return None
@@ -758,13 +777,17 @@ class SBMLDocumentInfo:
         if plugin.isSetReplacedBy():
             rb: libsbml.ReplacedBy = plugin.getReplacedBy()
             replaced_by = ReplacedBy(
-                submodel_ref=rb.getSubmodelRef(), sbase_ref=self._sbase_ref(rb)
+                **self._sbase_ref_fields(rb, f"{key}.replacedBy"),
+                submodel_ref=rb.getSubmodelRef(),
             )
         replaced_elements = [
             ReplacedElement(
-                submodel_ref=re.getSubmodelRef(), sbase_ref=self._sbase_ref(re)
+                **self._sbase_ref_fields(re, f"{key}.replacedElement.{index}"),
+                submodel_ref=re.getSubmodelRef(),
+                deletion=_attribute(re, "deletion"),
+                conversion_factor=_attribute(re, "conversionFactor"),
             )
-            for re in plugin.getListOfReplacedElements() or []
+            for index, re in enumerate(plugin.getListOfReplacedElements() or [])
         ]
         if replaced_by is None and not replaced_elements:
             return None
@@ -778,6 +801,7 @@ class SBMLDocumentInfo:
             **self.sbase(emd, scope=DOCUMENT_SCOPE),
             source=emd.getSource(),
             model_ref=_attribute(emd, "modelRef"),
+            md5=_attribute(emd, "md5"),
         )
 
     def submodels(self, model: libsbml.Model) -> list[Submodel]:
@@ -791,7 +815,12 @@ class SBMLDocumentInfo:
                 model_ref=s.getModelRef(),
                 time_conversion_factor=_attribute(s, "timeConversionFactor"),
                 extent_conversion_factor=_attribute(s, "extentConversionFactor"),
-                list_of_deletions=[self._sbase_ref(d) for d in s.getListOfDeletions()],
+                list_of_deletions=[
+                    Deletion(
+                        **self._sbase_ref_fields(d, f"{self._key(s)}.deletion.{index}")
+                    )
+                    for index, d in enumerate(s.getListOfDeletions())
+                ],
             )
             for s in plugin.getListOfSubmodels()
         ]
@@ -802,7 +831,7 @@ class SBMLDocumentInfo:
         if not plugin:
             return []
         return [
-            Port(**self.sbase(p), **self._sbase_ref(p).model_dump())
+            Port(**self._sbase_ref_fields(p, self._key(p)))
             for p in plugin.getListOfPorts()
         ]
 

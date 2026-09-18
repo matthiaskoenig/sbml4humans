@@ -96,6 +96,34 @@
         }
       }
     },
+    "Deletion": {
+      "label": "Deletion",
+      "summary": "an element which is removed from a submodel before it is instantiated",
+      "package": "comp",
+      "page": "reference/deletion/",
+      "attributes": {
+        "idRef": {
+          "label": "id ref",
+          "summary": "the element which is removed, by its identifier"
+        },
+        "metaIdRef": {
+          "label": "meta id ref",
+          "summary": "the element which is removed, by its meta id"
+        },
+        "portRef": {
+          "label": "port ref",
+          "summary": "the port of the submodel whose element is removed"
+        },
+        "sbaseRef": {
+          "label": "nested reference",
+          "summary": "the reference which reaches into a submodel of the submodel"
+        },
+        "unitRef": {
+          "label": "unit ref",
+          "summary": "the unit definition which is removed"
+        }
+      }
+    },
     "Event": {
       "label": "Event",
       "summary": "an instantaneous change of the model when a condition becomes true",
@@ -166,6 +194,10 @@
       "package": "comp",
       "page": "reference/externalmodeldefinition/",
       "attributes": {
+        "md5": {
+          "label": "md5",
+          "summary": "the checksum of the document at the source"
+        },
         "modelRef": {
           "label": "model ref",
           "summary": "the identifier of the model inside the referenced file"
@@ -470,6 +502,10 @@
           "label": "port ref",
           "summary": "the port which this reference names"
         },
+        "sbaseRef": {
+          "label": "nested reference",
+          "summary": "the reference which reaches from the named submodel into the model it instantiates"
+        },
         "unitRef": {
           "label": "unit ref",
           "summary": "the unit definition which this port names"
@@ -576,6 +612,78 @@
         }
       }
     },
+    "ReplacedBy": {
+      "label": "Replaced by",
+      "summary": "the element of a submodel which takes the place of the element carrying it",
+      "package": "comp",
+      "page": "reference/replacedby/",
+      "attributes": {
+        "idRef": {
+          "label": "id ref",
+          "summary": "the element which replaces this element, by its identifier"
+        },
+        "metaIdRef": {
+          "label": "meta id ref",
+          "summary": "the element which replaces this element, by its meta id"
+        },
+        "portRef": {
+          "label": "port ref",
+          "summary": "the port of the submodel whose element takes the place of this element"
+        },
+        "sbaseRef": {
+          "label": "nested reference",
+          "summary": "the reference which reaches into a submodel of the named submodel"
+        },
+        "submodelRef": {
+          "label": "submodel",
+          "summary": "the submodel which holds the replacing element"
+        },
+        "unitRef": {
+          "label": "unit ref",
+          "summary": "the unit definition which replaces this unit definition"
+        }
+      }
+    },
+    "ReplacedElement": {
+      "label": "Replaced element",
+      "summary": "an element of a submodel which the element carrying it takes the place of",
+      "package": "comp",
+      "page": "reference/replacedelement/",
+      "attributes": {
+        "conversionFactor": {
+          "label": "conversion factor",
+          "summary": "the parameter which rescales the replaced value to the scale of this element"
+        },
+        "deletion": {
+          "label": "deletion",
+          "summary": "the deletion of the submodel whose element this element takes the place of"
+        },
+        "idRef": {
+          "label": "id ref",
+          "summary": "the element which is replaced, by its identifier"
+        },
+        "metaIdRef": {
+          "label": "meta id ref",
+          "summary": "the element which is replaced, by its meta id"
+        },
+        "portRef": {
+          "label": "port ref",
+          "summary": "the port of the submodel whose element is replaced"
+        },
+        "sbaseRef": {
+          "label": "nested reference",
+          "summary": "the reference which reaches into a submodel of the named submodel"
+        },
+        "submodelRef": {
+          "label": "submodel",
+          "summary": "the submodel which holds the replaced element"
+        },
+        "unitRef": {
+          "label": "unit ref",
+          "summary": "the unit definition which is replaced"
+        }
+      }
+    },
     "SBMLDocument": {
       "label": "Document",
       "summary": "the container of an SBML file, with its level, version and packages",
@@ -653,6 +761,34 @@
         "xml": {
           "label": "xml",
           "summary": "the element as it is written in the SBML file"
+        }
+      }
+    },
+    "SBaseRef": {
+      "label": "Reference",
+      "summary": "a link of a chain which reaches into a submodel of a submodel",
+      "package": "comp",
+      "page": "reference/sbaseref/",
+      "attributes": {
+        "idRef": {
+          "label": "id ref",
+          "summary": "the element which this link of the chain names, by its identifier"
+        },
+        "metaIdRef": {
+          "label": "meta id ref",
+          "summary": "the element which this link of the chain names, by its meta id"
+        },
+        "portRef": {
+          "label": "port ref",
+          "summary": "the port of the model which this link of the chain names"
+        },
+        "sbaseRef": {
+          "label": "nested reference",
+          "summary": "the next link of the chain, one submodel deeper"
+        },
+        "unitRef": {
+          "label": "unit ref",
+          "summary": "the unit definition which this link of the chain names"
         }
       }
     },

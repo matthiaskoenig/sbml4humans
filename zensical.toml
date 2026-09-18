@@ -49,6 +49,10 @@ nav = [
       { "External model definition" = "reference/externalmodeldefinition.md" },
       { "Submodel" = "reference/submodel.md" },
       { "Port" = "reference/port.md" },
+      { "Deletion" = "reference/deletion.md" },
+      { "Replaced element" = "reference/replacedelement.md" },
+      { "Replaced by" = "reference/replacedby.md" },
+      { "Reference" = "reference/sbaseref.md" },
     ] },
     { "Flux Balance Constraints (fbc)" = [
       { "Flux Balance Constraints (fbc)" = "reference/fbc.md" },

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { SBase, SBaseRef } from "@/api/types";
+import type { ReplacedBy, ReplacedElement, SBase, SBaseRef } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
@@ -29,8 +29,8 @@ const uncertainties = computed(() =>
   })),
 );
 
-/** The element a comp sbaseRef names, in the order of the comp specification. */
-function sbaseRefLabel(ref: SBaseRef): string {
+/** The element a comp reference names, in the order of the comp specification. */
+function sbaseRefLabel(ref: SBaseRef | ReplacedElement | ReplacedBy): string {
   return ref.portRef ?? ref.idRef ?? ref.unitRef ?? ref.metaIdRef ?? "-";
 }
 
@@ -47,7 +47,7 @@ const replacedElements = computed(() =>
   (props.element.comp?.replacedElements ?? []).map((replaced) => ({
     ...replaced,
     pk: index.value?.resolve(props.element.pk, "replacedElement", replaced.submodelRef) ?? null,
-    ref: sbaseRefLabel(replaced.sbaseRef),
+    ref: sbaseRefLabel(replaced),
   })),
 );
 </script>
@@ -77,7 +77,7 @@ const replacedElements = computed(() =>
       >
         <ElementLink :pk="replacedBySubmodel" :label="element.comp.replacedBy.submodelRef" />
         <span class="ml-2 font-mono text-gray-600">{{
-          sbaseRefLabel(element.comp.replacedBy.sbaseRef)
+          sbaseRefLabel(element.comp.replacedBy)
         }}</span>
       </AttributeRow>
       <AttributeRow

@@ -313,13 +313,18 @@ describe("inspector", () => {
     expect(wrapper.text()).toContain("javascript:alert(1)");
   });
 
-  it("shows the sbaseRef of a replacedBy by unit ref when it names no port or id", () => {
+  it("shows the reference of a replacedBy by unit ref when it names no port or id", () => {
     const species = repressilator.mainModel!.listOfSpecies![0] as Species;
     const replaced: Species = {
       ...species,
       comp: {
         ...species.comp,
-        replacedBy: { submodelRef: "submodel1", sbaseRef: { unitRef: "mmole" } },
+        replacedBy: {
+          pk: "m/ReplacedBy:S1.replacedBy",
+          sbmlType: "ReplacedBy",
+          submodelRef: "submodel1",
+          unitRef: "mmole",
+        },
       },
     };
     const wrapper = mountWith(AttributesColumn, { element: replaced }, repressilator);
