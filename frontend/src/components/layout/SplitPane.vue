@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 import { readStorage, writeStorage } from "@/storage";
 
@@ -16,9 +16,33 @@ const props = withDefaults(
 );
 
 const key = computed(() => `sbml4humans.split.${props.storageKey}`);
-const size = ref(Number(readStorage(key.value)) || props.initial);
+/** The size the reader asked for, which is the one remembered. */
+const preferred = ref(Number(readStorage(key.value)) || props.initial);
+/** The size of the container along the split, zero until the first layout is measured. */
+const available = ref(0);
 const container = ref<HTMLElement | null>(null);
 const horizontal = computed(() => props.direction === "horizontal");
+
+/** The pane shows as much of the size the reader asked for as this window allows: a size dragged
+ * on a wide screen would otherwise squeeze the other pane away on a narrow one, and the reader
+ * gets it back as soon as the window is wide enough again. */
+const size = computed(() => {
+  if (available.value <= 0) return preferred.value;
+  return Math.min(
+    Math.max(preferred.value, props.min),
+    Math.max(available.value - props.min, props.min),
+  );
+});
+
+function measure(): void {
+  const rect = container.value?.getBoundingClientRect();
+  available.value = (horizontal.value ? rect?.width : rect?.height) ?? 0;
+}
+
+onMounted(() => {
+  measure();
+  window.addEventListener("resize", measure);
+});
 
 let dragging = false;
 
@@ -37,8 +61,9 @@ function onPointerMove(event: PointerEvent): void {
   const rect = container.value.getBoundingClientRect();
   const fromStart = horizontal.value ? event.clientX - rect.left : event.clientY - rect.top;
   const total = horizontal.value ? rect.width : rect.height;
+  available.value = total;
   const next = props.sizedPane === "first" ? fromStart : total - fromStart;
-  size.value = Math.min(Math.max(next, props.min), total - props.min);
+  preferred.value = Math.min(Math.max(next, props.min), total - props.min);
 }
 
 function onPointerUp(): void {
@@ -46,10 +71,13 @@ function onPointerUp(): void {
   dragging = false;
   document.body.style.cursor = "";
   document.body.style.userSelect = "";
-  writeStorage(key.value, String(Math.round(size.value)));
+  writeStorage(key.value, String(Math.round(preferred.value)));
 }
 
-onBeforeUnmount(onPointerUp);
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", measure);
+  onPointerUp();
+});
 
 /** The keyboard path of the separator: the arrow keys along the split move it by `STEP`, within
  * the same bounds as the drag, and remember the size like the end of a drag does. */
@@ -61,12 +89,14 @@ function onKeyDown(event: KeyboardEvent): void {
   // right and down move the separator towards the end, which grows the first pane
   const towardsEnd = index === 1;
   const delta = (towardsEnd ? STEP : -STEP) * (props.sizedPane === "first" ? 1 : -1);
-  const rect = container.value?.getBoundingClientRect();
-  const total = (horizontal.value ? rect?.width : rect?.height) ?? 0;
+  measure();
   // an unmeasured container (no layout yet) only keeps the lower bound
-  const max = total > 0 ? Math.max(total - props.min, props.min) : Number.POSITIVE_INFINITY;
-  size.value = Math.min(Math.max(size.value + delta, props.min), max);
-  writeStorage(key.value, String(Math.round(size.value)));
+  const max =
+    available.value > 0
+      ? Math.max(available.value - props.min, props.min)
+      : Number.POSITIVE_INFINITY;
+  preferred.value = Math.min(Math.max(size.value + delta, props.min), max);
+  writeStorage(key.value, String(Math.round(preferred.value)));
 }
 
 const valueNow = computed(() => Math.round(size.value));

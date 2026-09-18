@@ -1,9 +1,19 @@
 import { mount } from "@vue/test-utils";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 
 import SplitPane from "@/components/layout/SplitPane.vue";
 
 const KEY = "sbml4humans.split.test";
+
+const measure = Element.prototype.getBoundingClientRect;
+
+/** jsdom measures every box as empty, so the size of the container is stated for the tests which
+ * need one. */
+function measureAs(width: number, height: number): void {
+  Element.prototype.getBoundingClientRect = () =>
+    ({ width, height, top: 0, left: 0, right: width, bottom: height, x: 0, y: 0 }) as DOMRect;
+}
 
 function mountPane(direction: "horizontal" | "vertical", sizedPane: "first" | "second" = "first") {
   return mount(SplitPane, {
@@ -14,6 +24,33 @@ function mountPane(direction: "horizontal" | "vertical", sizedPane: "first" | "s
 describe("SplitPane", () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  afterEach(() => {
+    Element.prototype.getBoundingClientRect = measure;
+  });
+
+  it("keeps a size stored on a wider window inside the container", async () => {
+    // the reader dragged the pane to 900 px on a wide screen and opens the page on a narrow one
+    localStorage.setItem(KEY, "900");
+    measureAs(600, 400);
+    const handle = mountPane("horizontal", "second").get("[data-testid=split-handle]");
+    await nextTick();
+    // the other pane keeps its minimum, and the stored size survives for the wide screen
+    expect(handle.attributes("aria-valuenow")).toBe("440");
+    expect(localStorage.getItem(KEY)).toBe("900");
+  });
+
+  it("gives the window resize the size back which fits again", async () => {
+    localStorage.setItem(KEY, "900");
+    measureAs(600, 400);
+    const handle = mountPane("horizontal", "second").get("[data-testid=split-handle]");
+    await nextTick();
+    expect(handle.attributes("aria-valuenow")).toBe("440");
+    measureAs(1600, 400);
+    window.dispatchEvent(new Event("resize"));
+    await nextTick();
+    expect(handle.attributes("aria-valuenow")).toBe("900");
   });
 
   it("describes the separator of a horizontal split for assistive technology", () => {
