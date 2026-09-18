@@ -111,6 +111,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "math": {
           "anyOf": [
             {
@@ -251,6 +257,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "associations": {
           "items": {
             "anyOf": [
@@ -382,6 +394,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -579,6 +597,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "spatialDimensions": {
           "anyOf": [
             {
@@ -760,6 +784,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -1002,6 +1032,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "math": {
           "anyOf": [
             {
@@ -1131,6 +1167,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "portRef": {
           "anyOf": [
             {
@@ -1234,6 +1276,8 @@
         "associatedSpecies",
         "fluxObjective",
         "activeObjective",
+        "constraintComponent",
+        "coefficient",
         "modelRef",
         "port",
         "deletion",
@@ -1352,6 +1396,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -1523,6 +1573,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "variable": {
           "type": "string"
         },
@@ -1653,6 +1709,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -1797,6 +1859,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -1948,6 +2016,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -2106,6 +2180,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "math": {
           "anyOf": [
             {
@@ -2232,6 +2312,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -2375,6 +2461,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "association": {
           "anyOf": [
             {
@@ -2510,6 +2602,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "geneProduct": {
           "type": "string"
         }
@@ -2632,6 +2730,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "symbol": {
           "type": "string"
         },
@@ -2663,6 +2767,46 @@
         "symbol"
       ],
       "title": "InitialAssignment",
+      "type": "object"
+    },
+    "KeyValuePair": {
+      "description": "One entry of the controlled annotation of fbc Version 3 (fbc §3.17).\n\nA key value pair carries metadata which no attribute of SBML holds, and\nlibsbml reads it from the annotation of any element. It is a nested object\nof that element and not an element of the report: nothing references it, it\nreferences nothing, and libsbml does not read the identifier and the name\nthe specification allows it back from a file.",
+      "properties": {
+        "key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uri": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "KeyValuePair",
       "type": "object"
     },
     "KineticLaw": {
@@ -2773,6 +2917,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -2938,6 +3088,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -3151,6 +3307,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -3424,6 +3586,12 @@
           },
           "type": "array"
         },
+        "listOfUserDefinedConstraints": {
+          "items": {
+            "$ref": "#/$defs/UserDefinedConstraint"
+          },
+          "type": "array"
+        },
         "fbc": {
           "anyOf": [
             {
@@ -3612,6 +3780,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "species": {
           "type": "string"
         }
@@ -3784,6 +3958,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "type": {
           "anyOf": [
             {
@@ -3916,6 +4096,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -4067,6 +4253,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -4243,6 +4435,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "portRef": {
           "anyOf": [
             {
@@ -4416,6 +4614,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "math": {
           "anyOf": [
             {
@@ -4542,6 +4746,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -4686,6 +4896,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -4924,6 +5140,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "portRef": {
           "anyOf": [
             {
@@ -5098,6 +5320,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -5345,6 +5573,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "level": {
           "type": "integer"
         },
@@ -5485,6 +5719,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -5661,6 +5901,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "compartment": {
           "type": "string"
         },
@@ -5783,7 +6029,7 @@
       "type": "object"
     },
     "SpeciesFbc": {
-      "description": "The fbc extension of a species.",
+      "description": "The fbc extension of a species.\n\nThe charge is a double, which is what fbc Version 3 made of the integer of\nthe versions before it (fbc §3.4).",
       "properties": {
         "chemicalFormula": {
           "anyOf": [
@@ -5799,7 +6045,7 @@
         "charge": {
           "anyOf": [
             {
-              "type": "integer"
+              "type": "number"
             },
             {
               "type": "null"
@@ -5919,6 +6165,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -6063,6 +6315,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -6213,6 +6471,12 @@
         "uncertainties": {
           "items": {
             "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
           },
           "type": "array"
         },
@@ -6440,6 +6704,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "uncertParameters": {
           "items": {
             "$ref": "#/$defs/UncertParameter"
@@ -6615,6 +6885,12 @@
           },
           "type": "array"
         },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "unitsLatex": {
           "anyOf": [
             {
@@ -6637,6 +6913,326 @@
         "pk"
       ],
       "title": "UnitDefinition",
+      "type": "object"
+    },
+    "UserDefinedConstraint": {
+      "description": "A constraint of fbc Version 3 over a combination of model variables.",
+      "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "UserDefinedConstraint",
+          "default": "UserDefinedConstraint",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
+        "lowerBound": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "upperBound": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "listOfUserDefinedConstraintComponents": {
+          "items": {
+            "$ref": "#/$defs/UserDefinedConstraintComponent"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "UserDefinedConstraint",
+      "type": "object"
+    },
+    "UserDefinedConstraintComponent": {
+      "description": "One term of a user defined constraint (fbc §3.15).",
+      "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "UserDefinedConstraintComponent",
+          "default": "UserDefinedConstraintComponent",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
+        "variable": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "variable2": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "coefficient": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "variableType": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "UserDefinedConstraintComponent",
       "type": "object"
     }
   },

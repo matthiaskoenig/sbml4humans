@@ -1,5 +1,5 @@
 {
-  "uid": "5b2d5e2ce4844f1f80babac8ef9f60de",
+  "uid": "3776122ed71c472ca9cd0fc9318f3667",
   "manifest": {
     "entries": [
       {
@@ -35,6 +35,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -59,6 +60,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": "mole",
@@ -89,6 +91,7 @@
                 "xml": "<unitDefinition id=\"min\" name=\"minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -112,6 +115,7 @@
                 "xml": "<unitDefinition id=\"per_min\" name=\"per minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{1}{min}",
                 "listOfUnits": [
                   {
@@ -135,6 +139,7 @@
                 "xml": "<unitDefinition id=\"mole_per_min\" name=\"mole per minute\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{mol}{min}",
                 "listOfUnits": [
                   {
@@ -180,6 +185,7 @@
                       "xml": "<comp:replacedElement metaid=\"meta_medium_cell1\" comp:portRef=\"cell_port\" comp:submodelRef=\"cell1\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -202,6 +208,7 @@
                       "xml": "<comp:replacedElement metaid=\"meta_medium_cell2\" comp:portRef=\"cell_port\" comp:submodelRef=\"cell2\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -224,6 +231,7 @@
                       "xml": "<comp:replacedElement metaid=\"meta_medium_tissue\" comp:idRef=\"cell_in_tissue\" comp:submodelRef=\"tissue1\">\n  <comp:sBaseRef comp:portRef=\"cell_port\"/>\n</comp:replacedElement>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": null,
                       "idRef": "cell_in_tissue",
                       "unitRef": null,
@@ -241,6 +249,7 @@
                         "xml": "<comp:sBaseRef comp:portRef=\"cell_port\"/>",
                         "comp": null,
                         "uncertainties": [],
+                        "keyValuePairs": [],
                         "portRef": "cell_port",
                         "idRef": null,
                         "unitRef": null,
@@ -254,6 +263,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -290,6 +300,7 @@
                       "xml": "<comp:replacedElement metaid=\"meta_glc_cell1\" comp:portRef=\"glc_port\" comp:submodelRef=\"cell1\" comp:conversionFactor=\"f_amount\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "glc_port",
                       "idRef": null,
                       "unitRef": null,
@@ -312,6 +323,7 @@
                       "xml": "<comp:replacedElement metaid=\"meta_glc_cell2\" comp:portRef=\"glc_port\" comp:submodelRef=\"cell2\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "glc_port",
                       "idRef": null,
                       "unitRef": null,
@@ -324,6 +336,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "medium",
                 "initialAmount": null,
                 "initialConcentration": 5,
@@ -365,6 +378,7 @@
                       "xml": "<comp:replacedElement metaid=\"meta_k_total_cell1\" comp:submodelRef=\"cell1\" comp:deletion=\"del_k\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": null,
                       "idRef": null,
                       "unitRef": null,
@@ -377,6 +391,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": "per_min",
@@ -408,6 +423,7 @@
                     "xml": "<comp:replacedBy metaid=\"meta_Vmax_shared\" comp:portRef=\"Vmax_port\" comp:submodelRef=\"cell2\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "portRef": "Vmax_port",
                     "idRef": null,
                     "unitRef": null,
@@ -418,6 +434,7 @@
                   "replacedElements": []
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": true,
                 "units": "mole_per_min",
@@ -437,6 +454,7 @@
                 "xml": "<parameter id=\"f_amount\" name=\"conversion factor of the amounts of cell1\" value=\"1\" units=\"dimensionless\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": true,
                 "units": "dimensionless",
@@ -456,6 +474,7 @@
                 "xml": "<parameter id=\"f_time\" name=\"conversion factor of the time of cell2\" value=\"1\" units=\"dimensionless\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": true,
                 "units": "dimensionless",
@@ -475,6 +494,7 @@
                 "xml": "<parameter id=\"f_extent\" name=\"conversion factor of the extent of cell2\" value=\"1\" units=\"dimensionless\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": true,
                 "units": "dimensionless",
@@ -494,6 +514,7 @@
                 "xml": "<parameter id=\"glc_amount\" name=\"amount of glucose in the medium\" value=\"5\" units=\"mole\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 5,
                 "constant": false,
                 "units": "mole",
@@ -516,6 +537,7 @@
                 "xml": "<assignmentRule metaid=\"meta_glc_amount_rule\" variable=\"glc_amount\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> glc </ci>\n      <ci> medium </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "glc_amount",
                 "math": {
                   "latex": " \\mathit{glc}·\\mathit{medium}",
@@ -541,6 +563,7 @@
                 "xml": "<comp:submodel comp:id=\"cell1\" comp:name=\"first cell, without its own rate constant\" comp:modelRef=\"cell\">\n  <comp:listOfDeletions>\n    <comp:deletion metaid=\"meta_del_k\" sboTerm=\"SBO:0000002\" comp:idRef=\"k\" comp:id=\"del_k\" comp:name=\"deletion of the rate constant\">\n      <notes>\n        <body xmlns=\"http://www.w3.org/1999/xhtml\">\n          <p>The first cell reads the rate constant of the medium instead of its own, so the constant of the cell and the sink reaction which uses it are removed.</p>\n        </body>\n      </notes>\n    </comp:deletion>\n    <comp:deletion metaid=\"meta_del_sink\" comp:metaIdRef=\"meta_sink\" comp:id=\"del_sink\" comp:name=\"deletion of the sink reaction\"/>\n  </comp:listOfDeletions>\n</comp:submodel>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "cell",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -566,6 +589,7 @@
                     "xml": "<comp:deletion metaid=\"meta_del_k\" sboTerm=\"SBO:0000002\" comp:idRef=\"k\" comp:id=\"del_k\" comp:name=\"deletion of the rate constant\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The first cell reads the rate constant of the medium instead of its own, so the constant of the cell and the sink reaction which uses it are removed.</p>\n    </body>\n  </notes>\n</comp:deletion>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "portRef": null,
                     "idRef": "k",
                     "unitRef": null,
@@ -585,6 +609,7 @@
                     "xml": "<comp:deletion metaid=\"meta_del_sink\" comp:metaIdRef=\"meta_sink\" comp:id=\"del_sink\" comp:name=\"deletion of the sink reaction\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "portRef": null,
                     "idRef": null,
                     "unitRef": null,
@@ -606,6 +631,7 @@
                 "xml": "<comp:submodel comp:id=\"cell2\" comp:name=\"second cell, on its own time and extent scale\" comp:modelRef=\"cell\" comp:timeConversionFactor=\"f_time\" comp:extentConversionFactor=\"f_extent\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "cell",
                 "timeConversionFactor": "f_time",
                 "extentConversionFactor": "f_extent",
@@ -624,6 +650,7 @@
                 "xml": "<comp:submodel comp:id=\"tissue1\" comp:name=\"tissue holding a cell of its own\" comp:modelRef=\"tissue\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "tissue",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -642,6 +669,7 @@
                 "xml": "<comp:submodel comp:id=\"unit_library\" comp:name=\"unit definitions of another document\" comp:modelRef=\"units\">\n  <comp:listOfDeletions>\n    <comp:deletion comp:unitRef=\"mg_per_day\" comp:id=\"del_external_unit\" comp:name=\"deletion of a unit definition of the other document\"/>\n  </comp:listOfDeletions>\n</comp:submodel>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "units",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -659,6 +687,7 @@
                     "xml": "<comp:deletion comp:unitRef=\"mg_per_day\" comp:id=\"del_external_unit\" comp:name=\"deletion of a unit definition of the other document\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "portRef": null,
                     "idRef": null,
                     "unitRef": "mg_per_day",
@@ -682,6 +711,7 @@
                 "xml": "<comp:port comp:idRef=\"medium\" comp:id=\"medium_port\" comp:name=\"port of the medium\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": "medium",
                 "unitRef": null,
@@ -701,6 +731,7 @@
                 "xml": "<comp:port comp:unitRef=\"per_min\" comp:id=\"per_min_port\" comp:name=\"port of the unit per minute\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": null,
                 "unitRef": "per_min",
@@ -720,6 +751,7 @@
                 "xml": "<comp:port comp:metaIdRef=\"meta_glc_amount_rule\" comp:id=\"glc_amount_rule_port\" comp:name=\"port of the rule of the glucose amount\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": null,
                 "unitRef": null,
@@ -730,6 +762,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": null
           },
           {
@@ -745,6 +778,7 @@
             "xml": "<comp:modelDefinition id=\"cell\" name=\"a single cell\" substanceUnits=\"mole\" timeUnits=\"min\" volumeUnits=\"litre\" extentUnits=\"mole\">\n  <listOfUnitDefinitions>\n    <unitDefinition id=\"min\" name=\"minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n    <unitDefinition id=\"per_min\" name=\"per minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n    <unitDefinition id=\"mole_per_min\" name=\"mole per minute\">\n      <listOfUnits>\n        <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n        <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n  </listOfUnitDefinitions>\n  <listOfCompartments>\n    <compartment id=\"c\" name=\"cell volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <listOfSpecies>\n    <species metaid=\"meta_glc_cell\" id=\"glc\" name=\"glucose of the cell\" compartment=\"c\" initialConcentration=\"1\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>\n  </listOfSpecies>\n  <listOfParameters>\n    <parameter id=\"k\" name=\"rate constant of the cell\" value=\"0.2\" units=\"per_min\" constant=\"true\"/>\n    <parameter id=\"Vmax\" name=\"maximal rate of the cell\" value=\"2\" units=\"mole_per_min\" constant=\"true\"/>\n  </listOfParameters>\n  <listOfReactions>\n    <reaction metaid=\"meta_sink\" id=\"sink\" name=\"consumption of glucose\" reversible=\"false\" fast=\"false\">\n      <listOfReactants>\n        <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n      </listOfReactants>\n      <kineticLaw>\n        <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n          <apply>\n            <times/>\n            <ci> k </ci>\n            <ci> glc </ci>\n            <ci> c </ci>\n          </apply>\n        </math>\n      </kineticLaw>\n    </reaction>\n  </listOfReactions>\n  <comp:listOfPorts>\n    <comp:port comp:idRef=\"c\" comp:id=\"cell_port\" comp:name=\"port of the compartment\"/>\n    <comp:port comp:idRef=\"glc\" comp:id=\"glc_port\" comp:name=\"port of the glucose\"/>\n    <comp:port comp:idRef=\"Vmax\" comp:id=\"Vmax_port\" comp:name=\"port of the maximal rate\"/>\n  </comp:listOfPorts>\n</comp:modelDefinition>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "modelDefinition",
             "annotationXml": null,
             "substanceUnits": "mole",
@@ -775,6 +809,7 @@
                 "xml": "<unitDefinition id=\"min\" name=\"minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -798,6 +833,7 @@
                 "xml": "<unitDefinition id=\"per_min\" name=\"per minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{1}{min}",
                 "listOfUnits": [
                   {
@@ -821,6 +857,7 @@
                 "xml": "<unitDefinition id=\"mole_per_min\" name=\"mole per minute\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{mol}{min}",
                 "listOfUnits": [
                   {
@@ -852,6 +889,7 @@
                 "xml": "<compartment id=\"c\" name=\"cell volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -874,6 +912,7 @@
                 "xml": "<species metaid=\"meta_glc_cell\" id=\"glc\" name=\"glucose of the cell\" compartment=\"c\" initialConcentration=\"1\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "c",
                 "initialAmount": null,
                 "initialConcentration": 1,
@@ -901,6 +940,7 @@
                 "xml": "<parameter id=\"k\" name=\"rate constant of the cell\" value=\"0.2\" units=\"per_min\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.2,
                 "constant": true,
                 "units": "per_min",
@@ -920,6 +960,7 @@
                 "xml": "<parameter id=\"Vmax\" name=\"maximal rate of the cell\" value=\"2\" units=\"mole_per_min\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 2,
                 "constant": true,
                 "units": "mole_per_min",
@@ -944,6 +985,7 @@
                 "xml": "<reaction metaid=\"meta_sink\" id=\"sink\" name=\"consumption of glucose\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k </ci>\n        <ci> glc </ci>\n        <ci> c </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -961,6 +1003,7 @@
                     "xml": "<speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -981,6 +1024,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k </ci>\n      <ci> glc </ci>\n      <ci> c </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k}·\\mathit{glc}·\\mathit{c}",
                     "formula": "k * glc * c"
@@ -1008,6 +1052,7 @@
                 "xml": "<comp:port comp:idRef=\"c\" comp:id=\"cell_port\" comp:name=\"port of the compartment\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": "c",
                 "unitRef": null,
@@ -1027,6 +1072,7 @@
                 "xml": "<comp:port comp:idRef=\"glc\" comp:id=\"glc_port\" comp:name=\"port of the glucose\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": "glc",
                 "unitRef": null,
@@ -1046,6 +1092,7 @@
                 "xml": "<comp:port comp:idRef=\"Vmax\" comp:id=\"Vmax_port\" comp:name=\"port of the maximal rate\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": "Vmax",
                 "unitRef": null,
@@ -1056,6 +1103,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": null
           },
           {
@@ -1071,6 +1119,7 @@
             "xml": "<comp:modelDefinition id=\"tissue\" name=\"a tissue built from one cell\" substanceUnits=\"mole\" timeUnits=\"min\" volumeUnits=\"litre\" extentUnits=\"mole\">\n  <listOfUnitDefinitions>\n    <unitDefinition id=\"min\" name=\"minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n  </listOfUnitDefinitions>\n  <listOfCompartments>\n    <compartment id=\"t\" name=\"tissue volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <comp:listOfSubmodels>\n    <comp:submodel comp:id=\"cell_in_tissue\" comp:name=\"the cell of the tissue\" comp:modelRef=\"cell\"/>\n  </comp:listOfSubmodels>\n</comp:modelDefinition>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "modelDefinition",
             "annotationXml": null,
             "substanceUnits": "mole",
@@ -1101,6 +1150,7 @@
                 "xml": "<unitDefinition id=\"min\" name=\"minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -1126,6 +1176,7 @@
                 "xml": "<compartment id=\"t\" name=\"tissue volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -1155,6 +1206,7 @@
                 "xml": "<comp:submodel comp:id=\"cell_in_tissue\" comp:name=\"the cell of the tissue\" comp:modelRef=\"cell\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "cell",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1165,6 +1217,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": null
           }
         ],
@@ -1182,6 +1235,7 @@
             "xml": "<comp:externalModelDefinition comp:id=\"units\" comp:name=\"the unit definitions of another document\" comp:source=\"unit_definitions.xml\" comp:modelRef=\"unit_definitions\" comp:md5=\"bde1522151d26d8fbca09893ce85ac52\"/>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "source": "unit_definitions.xml",
             "modelRef": "unit_definitions",
             "md5": "bde1522151d26d8fbca09893ce85ac52"
@@ -1837,7 +1891,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.024 [s]"
+        "jsonReportTime": "0.026 [s]"
       }
     }
   }

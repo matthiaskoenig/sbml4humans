@@ -3,7 +3,7 @@ import { ID_COLUMNS, type ColumnDef } from "@/report/columns/types";
 
 type PackageType = Extract<
   ElementType,
-  "Submodel" | "Port" | "GeneProduct" | "Objective" | "FluxBound"
+  "Submodel" | "Port" | "GeneProduct" | "Objective" | "FluxBound" | "UserDefinedConstraint"
 >;
 
 export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>> = {
@@ -51,5 +51,15 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
     { field: "reaction", header: "reaction", kind: "link", link: "fluxBound" },
     { field: "operation", header: "operation", kind: "text" },
     { field: "value", header: "value", kind: "number" },
+  ],
+  UserDefinedConstraint: [
+    ...ID_COLUMNS,
+    { field: "lowerBound", header: "lower bound", kind: "link", link: "fluxBound" },
+    { field: "upperBound", header: "upper bound", kind: "link", link: "fluxBound" },
+    {
+      field: "listOfUserDefinedConstraintComponents.length",
+      header: "components",
+      kind: "count",
+    },
   ],
 };

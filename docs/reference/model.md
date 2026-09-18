@@ -34,6 +34,7 @@ The report shows the model as the root of the report, its lists as the sections 
 | [strict](#strict) | `boolean` | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [active objective](#active-objective) | `SIdRef` | the objective which is optimised unless an analysis says otherwise | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [flux bounds](#flux-bounds) | `list` | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
+| [user defined constraints](#user-defined-constraints) | `list` | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [objectives](#objectives) | `list` | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
@@ -183,6 +184,12 @@ The report links the objective in the inspector of the model, and the inspector 
 A [flux bound](fluxbound.md) is how the first version of the package constrained a reaction. Version 2 removed the construct and replaced it by the two attributes of a [reaction](reaction.md) which name a parameter, so the list is empty for every document of a later version.
 
 The report shows the flux bounds of a Version 1 model as a section of the report.
+
+<span id="user-defined-constraints"></span>**user defined constraints**
+
+A [user defined constraint](userdefinedconstraint.md) bounds a combination of fluxes and parameters which the stoichiometry of the network leaves free, for example the ratio of two reactions or a shared budget. The list exists from Version 3 of the package on and is empty in every earlier document.
+
+The report shows the user defined constraints of a model as a section of the report.
 
 <span id="objectives"></span>**objectives**
 

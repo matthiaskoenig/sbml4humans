@@ -177,6 +177,10 @@ export class ReportIndex {
           this.addAssociation(element.fbc.geneProductAssociation.association);
         }
         break;
+      case "UserDefinedConstraint":
+        for (const component of element.listOfUserDefinedConstraintComponents ?? [])
+          this.add(component);
+        break;
       case "Objective":
         for (const fluxObjective of element.listOfFluxObjectives ?? []) this.add(fluxObjective);
         break;

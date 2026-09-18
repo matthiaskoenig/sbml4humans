@@ -60,9 +60,9 @@ It is shown under "References" of the event and under "Referenced by" of the del
 
 ## variable
 
-The element whose value a rule or an event assignment sets.
+The element a rule, an event assignment or a constraint component is about.
 
-An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference.
+An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference. A [component](userdefinedconstraintcomponent.md) of a user defined constraint of fbc names the reaction or the parameter it weighs with the same attribute, which it does not set but reads.
 
 The link is shown under "References" of the rule or of the assignment, and under "Referenced by" of the element, where it shows what determines its value.
 
@@ -141,6 +141,22 @@ The objective a model declares as the one which is optimised.
 A [model](model.md) which defines several [objectives](objective.md) names the one an analysis optimises unless it is told otherwise. It is the only link which starts at the model itself, because the attribute belongs to the list of the objectives, which the report shows as the section of that type.
 
 It is shown under "References" of the model and under "Referenced by" of the objective, where it says that this objective is the one the model was published with.
+
+## constraint component
+
+A term of a user defined constraint.
+
+A [user defined constraint](userdefinedconstraint.md) names every [component](userdefinedconstraintcomponent.md) it is the sum of, the way a reaction names its species references, and each component names the variable it weighs and the parameter of its coefficient with links of their own.
+
+It is shown under "References" of the constraint and under "Referenced by" of the component.
+
+## coefficient
+
+The parameter which holds the weight of a term.
+
+A [component](userdefinedconstraintcomponent.md) of a user defined constraint does not write its weight into the file: it names the [parameter](parameter.md) which holds it, so that the weights of a model are changed in one place.
+
+It is shown under "References" of the component and under "Referenced by" of the parameter, where it says which constraints a number belongs to.
 
 ## model reference
 

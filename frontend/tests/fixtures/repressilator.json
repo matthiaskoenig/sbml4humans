@@ -1,5 +1,5 @@
 {
-  "uid": "e696ae29207344398c51685c48263d7e",
+  "uid": "57456fa7b696427abb3ab83ce9d31c3b",
   "manifest": {
     "entries": [
       {
@@ -35,6 +35,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 2,
           "version": 3,
           "packages": [
@@ -143,6 +144,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n    <rdf:Description rdf:about=\"#_000001\">\n      <dc:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Le Novère</vCard:Family>\n              <vCard:Given>Nicolas</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>lenov@ebi.ac.uk</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>EMBL-EBI</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Shapiro</vCard:Family>\n              <vCard:Given>Bruce</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>bshapiro@caltech.edu</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Jet Propulsion Laboratory</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Juty</vCard:Family>\n              <vCard:Given>Nick</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>juty@ebi.ac.uk</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>EMBL-EBI</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Endler</vCard:Family>\n              <vCard:Given>Lukas</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>lukas@ebi.ac.uk</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>EMBL-EBI</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Chelliah</vCard:Family>\n              <vCard:Given>Vijayalakshmi</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>viji@ebi.ac.uk</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>EMBL-EBI</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dc:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2009-01-20T14:03:56Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2013-07-10T10:59:30Z</dcterms:W3CDTF>\n      </dcterms:modified>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/MODEL6615351360\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/BIOMD0000000012\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:isDescribedBy>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/pubmed/10659856\"/>\n        </rdf:Bag>\n      </bqmodel:isDescribedBy>\n      <bqbiol:hasTaxon>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/taxonomy/562\"/>\n        </rdf:Bag>\n      </bqbiol:hasTaxon>\n      <bqbiol:isVersionOf>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0040029\"/>\n        </rdf:Bag>\n      </bqbiol:isVersionOf>\n      <bqbiol:hasProperty>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/mamo/MAMO_0000046\"/>\n        </rdf:Bag>\n      </bqbiol:hasProperty>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": null,
@@ -173,6 +175,7 @@
                 "xml": "<unitDefinition metaid=\"metaid_0000029\" id=\"volume\" name=\"cubic microns\">\n  <listOfUnits>\n    <unit metaid=\"_420934\" kind=\"litre\" scale=\"-15\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "fl",
                 "listOfUnits": [
                   {
@@ -196,6 +199,7 @@
                 "xml": "<unitDefinition metaid=\"metaid_1000000\" id=\"substance\" name=\"item\">\n  <listOfUnits>\n    <unit metaid=\"_420947\" kind=\"item\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "item",
                 "listOfUnits": [
                   {
@@ -219,6 +223,7 @@
                 "xml": "<unitDefinition metaid=\"metaid_0000030\" id=\"time\" name=\"minute\">\n  <listOfUnits>\n    <unit metaid=\"_420960\" kind=\"second\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -259,6 +264,7 @@
                 "xml": "<compartment metaid=\"_000002\" sboTerm=\"SBO:0000290\" id=\"cell\" size=\"1\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_000002\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0005623\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</compartment>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -296,6 +302,7 @@
                 "xml": "<species metaid=\"PX\" sboTerm=\"SBO:0000252\" id=\"PX\" name=\"LacI protein\" compartment=\"cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        lacI inhibitor</p>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#PX\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P03023\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -336,6 +343,7 @@
                 "xml": "<species metaid=\"PY\" sboTerm=\"SBO:0000252\" id=\"PY\" name=\"TetR protein\" compartment=\"cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Tet repressor protein</p>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#PY\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04483\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -376,6 +384,7 @@
                 "xml": "<species metaid=\"PZ\" sboTerm=\"SBO:0000252\" id=\"PZ\" name=\"cI protein\" compartment=\"cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        lambda repressor</p>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#PZ\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P03034\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -424,6 +433,7 @@
                 "xml": "<species metaid=\"_905769\" sboTerm=\"SBO:0000250\" id=\"X\" name=\"LacI mRNA\" compartment=\"cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905769\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/chebi/CHEBI:33699\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/kegg.compound/C00046\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n        <bqbiol:encodes>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P03023\"/>\n          </rdf:Bag>\n        </bqbiol:encodes>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -472,6 +482,7 @@
                 "xml": "<species metaid=\"_905781\" sboTerm=\"SBO:0000250\" id=\"Y\" name=\"TetR mRNA\" compartment=\"cell\" initialAmount=\"20\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905781\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/chebi/CHEBI:33699\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/kegg.compound/C00046\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n        <bqbiol:encodes>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04483\"/>\n          </rdf:Bag>\n        </bqbiol:encodes>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": 20,
                 "initialConcentration": null,
@@ -520,6 +531,7 @@
                 "xml": "<species metaid=\"_905802\" sboTerm=\"SBO:0000250\" id=\"Z\" name=\"cI mRNA\" compartment=\"cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905802\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/chebi/CHEBI:33699\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/kegg.compound/C00046\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n        <bqbiol:encodes>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P03034\"/>\n          </rdf:Bag>\n        </bqbiol:encodes>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -547,6 +559,7 @@
                 "xml": "<parameter metaid=\"metaid_0000022\" id=\"beta\" name=\"beta\" value=\"0.2\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        ratio of protein to mRNA decay rates</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.2,
                 "constant": false,
                 "units": null,
@@ -574,6 +587,7 @@
                 "xml": "<parameter metaid=\"metaid_0000023\" sboTerm=\"SBO:0000485\" id=\"alpha0\" name=\"alpha0\" value=\"0.2164\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Leakiness in protein copies per promoter and cell</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.2164,
                 "constant": false,
                 "units": null,
@@ -601,6 +615,7 @@
                 "xml": "<parameter metaid=\"metaid_0000024\" sboTerm=\"SBO:0000186\" id=\"alpha\" name=\"alpha\" value=\"216.404\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Protein copies per promoter and cell</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 216.404,
                 "constant": false,
                 "units": null,
@@ -620,6 +635,7 @@
                 "xml": "<parameter metaid=\"metaid_0000025\" id=\"eff\" name=\"translation efficiency\" value=\"20\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Average number of proteins per transcript</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 20,
                 "constant": true,
                 "units": null,
@@ -647,6 +663,7 @@
                 "xml": "<parameter metaid=\"metaid_0000026\" sboTerm=\"SBO:0000190\" id=\"n\" name=\"n\" value=\"2\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Hill coefficient</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 2,
                 "constant": true,
                 "units": null,
@@ -674,6 +691,7 @@
                 "xml": "<parameter metaid=\"metaid_0000027\" sboTerm=\"SBO:0000288\" id=\"KM\" name=\"KM\" value=\"40\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Number of repressor molecules per cell giving half maximal repression, in monomers per cell</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 40,
                 "constant": true,
                 "units": null,
@@ -701,6 +719,7 @@
                 "xml": "<parameter metaid=\"metaid_0000028\" sboTerm=\"SBO:0000332\" id=\"tau_mRNA\" name=\"mRNA half life\" value=\"2\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 2,
                 "constant": true,
                 "units": null,
@@ -728,6 +747,7 @@
                 "xml": "<parameter metaid=\"metaid_0000128\" sboTerm=\"SBO:0000332\" id=\"tau_prot\" name=\"protein half life\" value=\"10\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 10,
                 "constant": true,
                 "units": null,
@@ -755,6 +775,7 @@
                 "xml": "<parameter metaid=\"metaid_0000032\" sboTerm=\"SBO:0000348\" id=\"t_ave\" name=\"average mRNA life time\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -782,6 +803,7 @@
                 "xml": "<parameter metaid=\"metaid_0000132\" sboTerm=\"SBO:0000356\" id=\"kd_mRNA\" name=\"kd_mRNA\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        mRNA decay rate constant</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -809,6 +831,7 @@
                 "xml": "<parameter metaid=\"metaid_0000133\" sboTerm=\"SBO:0000356\" id=\"kd_prot\" name=\"kd_prot\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Protein decay rate costant</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -836,6 +859,7 @@
                 "xml": "<parameter metaid=\"metaid_0000233\" sboTerm=\"SBO:0000016\" id=\"k_tl\" name=\"k_tl\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Translation rate constant</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -863,6 +887,7 @@
                 "xml": "<parameter metaid=\"metaid_0900235\" sboTerm=\"SBO:0000186\" id=\"a_tr\" name=\"a_tr\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Transcription rate from free promotor minus a0_tr</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -890,6 +915,7 @@
                 "xml": "<parameter metaid=\"metaid_0800235\" sboTerm=\"SBO:0000186\" id=\"ps_a\" name=\"tps_active\" value=\"0.5\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Transcrition from free promotor in transcripts per second and promotor</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.5,
                 "constant": true,
                 "units": null,
@@ -917,6 +943,7 @@
                 "xml": "<parameter metaid=\"metaid_0500235\" sboTerm=\"SBO:0000485\" id=\"ps_0\" name=\"tps_repr\" value=\"0.0005\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Transcrition from fully repressed promotor in transcripts per second and promotor</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.0005,
                 "constant": true,
                 "units": null,
@@ -944,6 +971,7 @@
                 "xml": "<parameter metaid=\"metaid_0000234\" sboTerm=\"SBO:0000485\" id=\"a0_tr\" name=\"a0_tr\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Transcription rate from fully repressed promotor</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -966,6 +994,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0500035\" variable=\"t_ave\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <ci> tau_mRNA </ci>\n      <apply>\n        <ln/>\n        <cn> 2 </cn>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "t_ave",
                 "math": {
                   "latex": " \\frac{\\mathit{tau_{mRNA}}}{\\mathrm{ln}2}",
@@ -986,6 +1015,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0240045\" variable=\"beta\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <ci> tau_mRNA </ci>\n      <ci> tau_prot </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "beta",
                 "math": {
                   "latex": " \\frac{\\mathit{tau_{mRNA}}}{\\mathit{tau_{prot}}}",
@@ -1006,6 +1036,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0400235\" variable=\"k_tl\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <ci> eff </ci>\n      <ci> t_ave </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "k_tl",
                 "math": {
                   "latex": " \\frac{\\mathit{eff}}{\\mathit{t_{ave}}}",
@@ -1026,6 +1057,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_1000237\" variable=\"a_tr\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <apply>\n        <minus/>\n        <ci> ps_a </ci>\n        <ci> ps_0 </ci>\n      </apply>\n      <cn> 60 </cn>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "a_tr",
                 "math": {
                   "latex": " (\\mathit{ps_{a}}-\\mathit{ps_{0}})·60",
@@ -1046,6 +1078,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0100236\" variable=\"a0_tr\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> ps_0 </ci>\n      <cn> 60 </cn>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "a0_tr",
                 "math": {
                   "latex": " \\mathit{ps_{0}}·60",
@@ -1066,6 +1099,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0010335\" variable=\"kd_prot\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <apply>\n        <ln/>\n        <cn> 2 </cn>\n      </apply>\n      <ci> tau_prot </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "kd_prot",
                 "math": {
                   "latex": " \\frac{\\mathrm{ln}2}{\\mathit{tau_{prot}}}",
@@ -1086,6 +1120,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0020435\" variable=\"kd_mRNA\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <apply>\n        <ln/>\n        <cn> 2 </cn>\n      </apply>\n      <ci> tau_mRNA </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "kd_mRNA",
                 "math": {
                   "latex": " \\frac{\\mathrm{ln}2}{\\mathit{tau_{mRNA}}}",
@@ -1106,6 +1141,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0230035\" variable=\"alpha\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <apply>\n        <times/>\n        <ci> a_tr </ci>\n        <ci> eff </ci>\n        <ci> tau_prot </ci>\n      </apply>\n      <apply>\n        <times/>\n        <apply>\n          <ln/>\n          <cn> 2 </cn>\n        </apply>\n        <ci> KM </ci>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "alpha",
                 "math": {
                   "latex": " \\frac{\\mathit{a_{tr}}·\\mathit{eff}·\\mathit{tau_{prot}}}{\\mathrm{ln}2·\\mathit{KM}}",
@@ -1126,6 +1162,7 @@
                 "xml": "<assignmentRule metaid=\"metaid_0240035\" variable=\"alpha0\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <apply>\n        <times/>\n        <ci> a0_tr </ci>\n        <ci> eff </ci>\n        <ci> tau_prot </ci>\n      </apply>\n      <apply>\n        <times/>\n        <apply>\n          <ln/>\n          <cn> 2 </cn>\n        </apply>\n        <ci> KM </ci>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "alpha0",
                 "math": {
                   "latex": " \\frac{\\mathit{a0_{tr}}·\\mathit{eff}·\\mathit{tau_{prot}}}{\\mathrm{ln}2·\\mathit{KM}}",
@@ -1164,6 +1201,7 @@
                 "xml": "<reaction metaid=\"_905823\" sboTerm=\"SBO:0000179\" id=\"Reaction1\" name=\"degradation of LacI transcripts\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905823\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006402\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_420973\" species=\"X\"/>\n  </listOfReactants>\n  <kineticLaw metaid=\"_420986\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> kd_mRNA </ci>\n        <ci> X </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1181,6 +1219,7 @@
                     "xml": "<speciesReference metaid=\"_420973\" species=\"X\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X",
                     "stoichiometry": null,
                     "constant": null
@@ -1209,6 +1248,7 @@
                   "xml": "<kineticLaw metaid=\"_420986\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> kd_mRNA </ci>\n      <ci> X </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{kd_{mRNA}}·\\mathit{X}",
                     "formula": "kd_mRNA * X"
@@ -1247,6 +1287,7 @@
                 "xml": "<reaction metaid=\"_905842\" sboTerm=\"SBO:0000179\" id=\"Reaction2\" name=\"degradation of TetR transcripts\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905842\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006402\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_420999\" species=\"Y\"/>\n  </listOfReactants>\n  <kineticLaw metaid=\"_421012\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> kd_mRNA </ci>\n        <ci> Y </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1264,6 +1305,7 @@
                     "xml": "<speciesReference metaid=\"_420999\" species=\"Y\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Y",
                     "stoichiometry": null,
                     "constant": null
@@ -1292,6 +1334,7 @@
                   "xml": "<kineticLaw metaid=\"_421012\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> kd_mRNA </ci>\n      <ci> Y </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{kd_{mRNA}}·\\mathit{Y}",
                     "formula": "kd_mRNA * Y"
@@ -1330,6 +1373,7 @@
                 "xml": "<reaction metaid=\"_905862\" sboTerm=\"SBO:0000179\" id=\"Reaction3\" name=\"degradation of CI transcripts\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905862\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006402\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_421025\" species=\"Z\"/>\n  </listOfReactants>\n  <kineticLaw metaid=\"_421038\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> kd_mRNA </ci>\n        <ci> Z </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1347,6 +1391,7 @@
                     "xml": "<speciesReference metaid=\"_421025\" species=\"Z\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Z",
                     "stoichiometry": null,
                     "constant": null
@@ -1375,6 +1420,7 @@
                   "xml": "<kineticLaw metaid=\"_421038\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> kd_mRNA </ci>\n      <ci> Z </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{kd_{mRNA}}·\\mathit{Z}",
                     "formula": "kd_mRNA * Z"
@@ -1413,6 +1459,7 @@
                 "xml": "<reaction metaid=\"_905882\" sboTerm=\"SBO:0000184\" id=\"Reaction4\" name=\"translation of LacI\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905882\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006412\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfProducts>\n    <speciesReference metaid=\"_421051\" species=\"PX\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_421064\" sboTerm=\"SBO:0000461\" species=\"X\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_421076\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k_tl </ci>\n        <ci> X </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1431,6 +1478,7 @@
                     "xml": "<speciesReference metaid=\"_421051\" species=\"PX\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PX",
                     "stoichiometry": null,
                     "constant": null
@@ -1458,6 +1506,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_421064\" sboTerm=\"SBO:0000461\" species=\"X\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X"
                   }
                 ],
@@ -1482,6 +1531,7 @@
                   "xml": "<kineticLaw metaid=\"_421076\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k_tl </ci>\n      <ci> X </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k_{tl}}·\\mathit{X}",
                     "formula": "k_tl * X"
@@ -1520,6 +1570,7 @@
                 "xml": "<reaction metaid=\"_905903\" sboTerm=\"SBO:0000184\" id=\"Reaction5\" name=\"translation of TetR\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905903\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006412\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfProducts>\n    <speciesReference metaid=\"_421088\" species=\"PY\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_421100\" sboTerm=\"SBO:0000461\" species=\"Y\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_421112\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k_tl </ci>\n        <ci> Y </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1538,6 +1589,7 @@
                     "xml": "<speciesReference metaid=\"_421088\" species=\"PY\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PY",
                     "stoichiometry": null,
                     "constant": null
@@ -1565,6 +1617,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_421100\" sboTerm=\"SBO:0000461\" species=\"Y\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Y"
                   }
                 ],
@@ -1589,6 +1642,7 @@
                   "xml": "<kineticLaw metaid=\"_421112\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k_tl </ci>\n      <ci> Y </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k_{tl}}·\\mathit{Y}",
                     "formula": "k_tl * Y"
@@ -1627,6 +1681,7 @@
                 "xml": "<reaction metaid=\"_905923\" sboTerm=\"SBO:0000184\" id=\"Reaction6\" name=\"translation of CI\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905923\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006412\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfProducts>\n    <speciesReference metaid=\"_421124\" species=\"PZ\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_421136\" sboTerm=\"SBO:0000461\" species=\"Z\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_421148\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k_tl </ci>\n        <ci> Z </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1645,6 +1700,7 @@
                     "xml": "<speciesReference metaid=\"_421124\" species=\"PZ\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PZ",
                     "stoichiometry": null,
                     "constant": null
@@ -1672,6 +1728,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_421136\" sboTerm=\"SBO:0000461\" species=\"Z\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Z"
                   }
                 ],
@@ -1696,6 +1753,7 @@
                   "xml": "<kineticLaw metaid=\"_421148\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k_tl </ci>\n      <ci> Z </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k_{tl}}·\\mathit{Z}",
                     "formula": "k_tl * Z"
@@ -1734,6 +1792,7 @@
                 "xml": "<reaction metaid=\"_905943\" sboTerm=\"SBO:0000179\" id=\"Reaction7\" name=\"degradation of LacI\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905943\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_421160\" species=\"PX\"/>\n  </listOfReactants>\n  <kineticLaw metaid=\"_421172\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> kd_prot </ci>\n        <ci> PX </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1751,6 +1810,7 @@
                     "xml": "<speciesReference metaid=\"_421160\" species=\"PX\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PX",
                     "stoichiometry": null,
                     "constant": null
@@ -1779,6 +1839,7 @@
                   "xml": "<kineticLaw metaid=\"_421172\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> kd_prot </ci>\n      <ci> PX </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{kd_{prot}}·\\mathit{PX}",
                     "formula": "kd_prot * PX"
@@ -1817,6 +1878,7 @@
                 "xml": "<reaction metaid=\"_905962\" sboTerm=\"SBO:0000179\" id=\"Reaction8\" name=\"degradation of TetR\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905962\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_421184\" species=\"PY\"/>\n  </listOfReactants>\n  <kineticLaw metaid=\"_421196\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> kd_prot </ci>\n        <ci> PY </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1834,6 +1896,7 @@
                     "xml": "<speciesReference metaid=\"_421184\" species=\"PY\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PY",
                     "stoichiometry": null,
                     "constant": null
@@ -1862,6 +1925,7 @@
                   "xml": "<kineticLaw metaid=\"_421196\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> kd_prot </ci>\n      <ci> PY </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{kd_{prot}}·\\mathit{PY}",
                     "formula": "kd_prot * PY"
@@ -1900,6 +1964,7 @@
                 "xml": "<reaction metaid=\"_905982\" sboTerm=\"SBO:0000179\" id=\"Reaction9\" name=\"degradation of CI\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_905982\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_421208\" species=\"PZ\"/>\n  </listOfReactants>\n  <kineticLaw metaid=\"_421220\" sboTerm=\"SBO:0000049\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> kd_prot </ci>\n        <ci> PZ </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -1917,6 +1982,7 @@
                     "xml": "<speciesReference metaid=\"_421208\" species=\"PZ\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PZ",
                     "stoichiometry": null,
                     "constant": null
@@ -1945,6 +2011,7 @@
                   "xml": "<kineticLaw metaid=\"_421220\" sboTerm=\"SBO:0000049\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> kd_prot </ci>\n      <ci> PZ </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{kd_{prot}}·\\mathit{PZ}",
                     "formula": "kd_prot * PZ"
@@ -1983,6 +2050,7 @@
                 "xml": "<reaction metaid=\"_906002\" sboTerm=\"SBO:0000183\" id=\"Reaction10\" name=\"transcription of LacI\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_906002\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006351\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfProducts>\n    <speciesReference metaid=\"_421232\" species=\"X\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_421244\" sboTerm=\"SBO:0000536\" species=\"PZ\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_421256\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <plus/>\n        <ci> a0_tr </ci>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> a_tr </ci>\n            <apply>\n              <power/>\n              <ci> KM </ci>\n              <ci> n </ci>\n            </apply>\n          </apply>\n          <apply>\n            <plus/>\n            <apply>\n              <power/>\n              <ci> KM </ci>\n              <ci> n </ci>\n            </apply>\n            <apply>\n              <power/>\n              <ci> PZ </ci>\n              <ci> n </ci>\n            </apply>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -2001,6 +2069,7 @@
                     "xml": "<speciesReference metaid=\"_421232\" species=\"X\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X",
                     "stoichiometry": null,
                     "constant": null
@@ -2028,6 +2097,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_421244\" sboTerm=\"SBO:0000536\" species=\"PZ\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PZ"
                   }
                 ],
@@ -2044,6 +2114,7 @@
                   "xml": "<kineticLaw metaid=\"_421256\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> a0_tr </ci>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> a_tr </ci>\n          <apply>\n            <power/>\n            <ci> KM </ci>\n            <ci> n </ci>\n          </apply>\n        </apply>\n        <apply>\n          <plus/>\n          <apply>\n            <power/>\n            <ci> KM </ci>\n            <ci> n </ci>\n          </apply>\n          <apply>\n            <power/>\n            <ci> PZ </ci>\n            <ci> n </ci>\n          </apply>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}·{\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PZ}}^{\\mathit{n}}}",
                     "formula": "a0_tr + a_tr * KM^n / (KM^n + PZ^n)"
@@ -2082,6 +2153,7 @@
                 "xml": "<reaction metaid=\"_906022\" sboTerm=\"SBO:0000183\" id=\"Reaction11\" name=\"transcription of TetR\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_906022\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006351\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfProducts>\n    <speciesReference metaid=\"_421268\" species=\"Y\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_421280\" sboTerm=\"SBO:0000536\" species=\"PX\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_421292\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <plus/>\n        <ci> a0_tr </ci>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> a_tr </ci>\n            <apply>\n              <power/>\n              <ci> KM </ci>\n              <ci> n </ci>\n            </apply>\n          </apply>\n          <apply>\n            <plus/>\n            <apply>\n              <power/>\n              <ci> KM </ci>\n              <ci> n </ci>\n            </apply>\n            <apply>\n              <power/>\n              <ci> PX </ci>\n              <ci> n </ci>\n            </apply>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -2100,6 +2172,7 @@
                     "xml": "<speciesReference metaid=\"_421268\" species=\"Y\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Y",
                     "stoichiometry": null,
                     "constant": null
@@ -2127,6 +2200,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_421280\" sboTerm=\"SBO:0000536\" species=\"PX\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PX"
                   }
                 ],
@@ -2143,6 +2217,7 @@
                   "xml": "<kineticLaw metaid=\"_421292\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> a0_tr </ci>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> a_tr </ci>\n          <apply>\n            <power/>\n            <ci> KM </ci>\n            <ci> n </ci>\n          </apply>\n        </apply>\n        <apply>\n          <plus/>\n          <apply>\n            <power/>\n            <ci> KM </ci>\n            <ci> n </ci>\n          </apply>\n          <apply>\n            <power/>\n            <ci> PX </ci>\n            <ci> n </ci>\n          </apply>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}·{\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PX}}^{\\mathit{n}}}",
                     "formula": "a0_tr + a_tr * KM^n / (KM^n + PX^n)"
@@ -2181,6 +2256,7 @@
                 "xml": "<reaction metaid=\"_906042\" sboTerm=\"SBO:0000183\" id=\"Reaction12\" name=\"transcription of CI\" reversible=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#_906042\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006351\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfProducts>\n    <speciesReference metaid=\"_421304\" species=\"Z\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_421317\" sboTerm=\"SBO:0000536\" species=\"PY\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_421329\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <plus/>\n        <ci> a0_tr </ci>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> a_tr </ci>\n            <apply>\n              <power/>\n              <ci> KM </ci>\n              <ci> n </ci>\n            </apply>\n          </apply>\n          <apply>\n            <plus/>\n            <apply>\n              <power/>\n              <ci> KM </ci>\n              <ci> n </ci>\n            </apply>\n            <apply>\n              <power/>\n              <ci> PY </ci>\n              <ci> n </ci>\n            </apply>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": null,
@@ -2199,6 +2275,7 @@
                     "xml": "<speciesReference metaid=\"_421304\" species=\"Z\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Z",
                     "stoichiometry": null,
                     "constant": null
@@ -2226,6 +2303,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_421317\" sboTerm=\"SBO:0000536\" species=\"PY\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PY"
                   }
                 ],
@@ -2242,6 +2320,7 @@
                   "xml": "<kineticLaw metaid=\"_421329\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> a0_tr </ci>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> a_tr </ci>\n          <apply>\n            <power/>\n            <ci> KM </ci>\n            <ci> n </ci>\n          </apply>\n        </apply>\n        <apply>\n          <plus/>\n          <apply>\n            <power/>\n            <ci> KM </ci>\n            <ci> n </ci>\n          </apply>\n          <apply>\n            <power/>\n            <ci> PY </ci>\n            <ci> n </ci>\n          </apply>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}·{\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PY}}^{\\mathit{n}}}",
                     "formula": "a0_tr + a_tr * KM^n / (KM^n + PY^n)"
@@ -2259,6 +2338,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": null
           }
         ],
@@ -3334,7 +3414,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.163 [s]"
+        "jsonReportTime": "0.152 [s]"
       }
     }
   }

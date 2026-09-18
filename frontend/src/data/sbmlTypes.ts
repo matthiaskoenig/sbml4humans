@@ -23,6 +23,7 @@ import {
   LogInIcon,
   NetworkIcon,
   ReplaceIcon,
+  ScaleIcon,
   SlidersHorizontalIcon,
   SplitIcon,
   TagIcon,
@@ -242,6 +243,15 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
     pkg: "fbc",
     listKey: "listOfFluxBounds",
   },
+  {
+    type: "UserDefinedConstraint",
+    label: "User defined constraint",
+    plural: "User defined constraints",
+    color: "#f46d43",
+    icon: ScaleIcon,
+    pkg: "fbc",
+    listKey: "listOfUserDefinedConstraints",
+  },
 ];
 
 export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
@@ -347,6 +357,14 @@ export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
     plural: "Flux objectives",
     color: "#f46d43",
     icon: TargetIcon,
+    pkg: "fbc",
+  },
+  {
+    type: "UserDefinedConstraintComponent",
+    label: "Constraint component",
+    plural: "Constraint components",
+    color: "#f46d43",
+    icon: ScaleIcon,
     pkg: "fbc",
   },
   {

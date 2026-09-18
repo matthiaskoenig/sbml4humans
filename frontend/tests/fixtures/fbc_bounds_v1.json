@@ -1,5 +1,5 @@
 {
-  "uid": "0248382052b84124a8d52e5696105858",
+  "uid": "8a6fd0f7dac44779a4c69e9527a087d9",
   "manifest": {
     "entries": [
       {
@@ -35,6 +35,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -59,6 +60,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": "mmole",
@@ -89,6 +91,7 @@
                 "xml": "<unitDefinition id=\"hr\" name=\"hour\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "hr",
                 "listOfUnits": [
                   {
@@ -112,6 +115,7 @@
                 "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -135,6 +139,7 @@
                 "xml": "<unitDefinition id=\"mmole_per_hr\" name=\"mmole per hour\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{mmol}{hr}",
                 "listOfUnits": [
                   {
@@ -166,6 +171,7 @@
                 "xml": "<compartment id=\"cell\" name=\"cell\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -188,6 +194,7 @@
                 "xml": "<species id=\"glc\" name=\"glucose\" compartment=\"cell\" initialConcentration=\"5\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\" fbc:charge=\"0\" fbc:chemicalFormula=\"C6H12O6\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 5,
@@ -216,6 +223,7 @@
                 "xml": "<species id=\"atp\" name=\"ATP\" compartment=\"cell\" initialConcentration=\"1\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\" fbc:charge=\"-4\" fbc:chemicalFormula=\"C10H12N5O13P3\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 1,
@@ -244,6 +252,7 @@
                 "xml": "<species id=\"adp\" name=\"ADP\" compartment=\"cell\" initialConcentration=\"1\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\" fbc:charge=\"-3\" fbc:chemicalFormula=\"C10H12N5O10P2\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 1,
@@ -272,6 +281,7 @@
                 "xml": "<species id=\"biomass\" name=\"biomass\" compartment=\"cell\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -282,10 +292,7 @@
                 "unitsLatex": "mmol",
                 "derivedUnits": "\\frac{mmol}{l}",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               }
             ],
             "listOfParameters": [],
@@ -306,6 +313,7 @@
                 "xml": "<reaction id=\"v1\" name=\"glycolysis\" reversible=\"false\" fast=\"false\" compartment=\"cell\">\n  <listOfReactants>\n    <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n    <speciesReference species=\"adp\" stoichiometry=\"2\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"atp\" stoichiometry=\"2\" constant=\"true\"/>\n    <speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "cell",
@@ -323,6 +331,7 @@
                     "xml": "<speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -340,6 +349,7 @@
                     "xml": "<speciesReference species=\"adp\" stoichiometry=\"2\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "adp",
                     "stoichiometry": 2,
                     "constant": true
@@ -359,6 +369,7 @@
                     "xml": "<speciesReference species=\"atp\" stoichiometry=\"2\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "atp",
                     "stoichiometry": 2,
                     "constant": true
@@ -376,6 +387,7 @@
                     "xml": "<speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "biomass",
                     "stoichiometry": 1,
                     "constant": true
@@ -384,11 +396,7 @@
                 "listOfModifiers": [],
                 "kineticLaw": null,
                 "equation": "glc + 2.0 adp ➞ 2.0 atp + biomass",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "fbc_bounds_v1/Reaction:EX_glc",
@@ -403,6 +411,7 @@
                 "xml": "<reaction id=\"EX_glc\" name=\"glucose exchange\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -420,6 +429,7 @@
                     "xml": "<speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -429,11 +439,7 @@
                 "listOfModifiers": [],
                 "kineticLaw": null,
                 "equation": "glc ⇆ ",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "fbc_bounds_v1/Reaction:EX_biomass",
@@ -448,6 +454,7 @@
                 "xml": "<reaction id=\"EX_biomass\" name=\"biomass exchange\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -465,6 +472,7 @@
                     "xml": "<speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "biomass",
                     "stoichiometry": 1,
                     "constant": true
@@ -474,11 +482,7 @@
                 "listOfModifiers": [],
                 "kineticLaw": null,
                 "equation": "biomass ➞ ",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               }
             ],
             "listOfEvents": [],
@@ -499,6 +503,7 @@
                 "xml": "<fbc:objective fbc:id=\"biomass_max\" fbc:name=\"maximal biomass\" fbc:type=\"maximize\">\n  <fbc:listOfFluxObjectives>\n    <fbc:fluxObjective fbc:reaction=\"EX_biomass\" fbc:coefficient=\"1\"/>\n  </fbc:listOfFluxObjectives>\n</fbc:objective>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "type": "maximize",
                 "listOfFluxObjectives": [
                   {
@@ -514,6 +519,7 @@
                     "xml": "<fbc:fluxObjective fbc:reaction=\"EX_biomass\" fbc:coefficient=\"1\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "reaction": "EX_biomass",
                     "reaction2": null,
                     "coefficient": 1,
@@ -534,6 +540,7 @@
                 "xml": "<fbc:objective fbc:id=\"glc_min\" fbc:name=\"minimal glucose uptake\" fbc:type=\"minimize\">\n  <fbc:listOfFluxObjectives>\n    <fbc:fluxObjective fbc:reaction=\"EX_glc\" fbc:coefficient=\"-1\"/>\n  </fbc:listOfFluxObjectives>\n</fbc:objective>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "type": "minimize",
                 "listOfFluxObjectives": [
                   {
@@ -549,6 +556,7 @@
                     "xml": "<fbc:fluxObjective fbc:reaction=\"EX_glc\" fbc:coefficient=\"-1\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "reaction": "EX_glc",
                     "reaction2": null,
                     "coefficient": -1,
@@ -571,6 +579,7 @@
                 "xml": "<fbc:fluxBound metaid=\"meta_v1_lb\" fbc:id=\"v1_lb\" fbc:name=\"lower bound of the glycolysis\" fbc:reaction=\"v1\" fbc:operation=\"greaterEqual\" fbc:value=\"0\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The reaction is irreversible, so its flux may not become negative.</p>\n    </body>\n  </notes>\n</fbc:fluxBound>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reaction": "v1",
                 "operation": "greaterEqual",
                 "value": 0
@@ -588,6 +597,7 @@
                 "xml": "<fbc:fluxBound fbc:id=\"v1_ub\" fbc:name=\"upper bound of the glycolysis\" fbc:reaction=\"v1\" fbc:operation=\"lessEqual\" fbc:value=\"INF\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reaction": "v1",
                 "operation": "lessEqual",
                 "value": null
@@ -605,11 +615,13 @@
                 "xml": "<fbc:fluxBound fbc:id=\"EX_glc_fixed\" fbc:name=\"fixed glucose uptake\" fbc:reaction=\"EX_glc\" fbc:operation=\"equal\" fbc:value=\"-10\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reaction": "EX_glc",
                 "operation": "equal",
                 "value": -10
               }
             ],
+            "listOfUserDefinedConstraints": [],
             "fbc": {
               "strict": null,
               "activeObjective": "biomass_max"
@@ -967,7 +979,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.004 [s]"
+        "jsonReportTime": "0.005 [s]"
       }
     }
   }

@@ -1021,3 +1021,74 @@ def test_flux_objective_without_an_id_is_keyed_by_its_objective() -> None:
         "e_coli_core/FluxObjective:obj.fluxObjective.R_BIOMASS_Ecoli_core_w_GAM"
     )
     assert flux_objective.variable_type is None
+
+
+def test_user_defined_constraints_of_a_version_3_model() -> None:
+    """A Version 3 document carries its user defined constraints with their components."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    model = report.models[0]
+    assert [c.id for c in model.list_of_user_defined_constraints] == ["ratio", "budget"]
+    ratio = model.list_of_user_defined_constraints[0]
+    assert ratio.pk == "fbc_constraints_v3/UserDefinedConstraint:ratio"
+    assert ratio.name == "the growth is twice the uptake"
+    assert (ratio.lower_bound, ratio.upper_bound) == ("ratio_lb", "ratio_ub")
+    assert ratio.notes is not None
+    first, second = ratio.list_of_user_defined_constraint_components
+    assert first.pk == "fbc_constraints_v3/UserDefinedConstraintComponent:ratio_v1"
+    assert first.sbml_type == "UserDefinedConstraintComponent"
+    assert (first.variable, first.coefficient) == ("v1", "c_two")
+    assert first.variable_type == "linear"
+    assert first.variable2 is None
+    assert second.variable == "v2"
+
+    quadratic = model.list_of_user_defined_constraints[1]
+    component = quadratic.list_of_user_defined_constraint_components[0]
+    assert (component.variable, component.variable2) == ("v2", "maintenance")
+    assert component.variable_type == "quadratic"
+
+
+def test_key_value_pairs_of_an_element() -> None:
+    """The controlled annotation of fbc Version 3 is carried by every element."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    model = report.models[0]
+    assert [(p.key, p.value, p.uri) for p in model.key_value_pairs] == [
+        ("reconstruction", "manual", "https://sbml.org/fbc/keyvaluepair"),
+        ("solver", "glpk", None),
+    ]
+    parameter = next(p for p in model.list_of_parameters if p.id == "maintenance")
+    assert [(p.key, p.value) for p in parameter.key_value_pairs] == [
+        ("source", "measured")
+    ]
+    assert model.list_of_species[0].key_value_pairs == []
+
+
+def test_charge_of_a_version_3_species_is_a_double() -> None:
+    """Version 3 widened the charge to a double, for a pseudoisomer."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    species = {s.id: s for s in report.models[0].list_of_species}
+    assert species["pi"].fbc is not None
+    assert species["pi"].fbc.charge == -1.5
+    assert species["glc"].fbc is not None
+    assert species["glc"].fbc.charge == 0.0
+
+
+def test_charge_of_a_version_2_species_is_read_as_an_integer() -> None:
+    """Before Version 3 the charge is an integer, which libsbml reads with its own getter."""
+    report = SBMLDocumentInfo.from_sbml(FBC_ECOLI_CORE_SBML)
+    species = next(s for s in report.models[0].list_of_species if s.id == "M_atp_c")
+    assert species.fbc is not None
+    assert species.fbc.charge == -4.0
+    assert species.fbc.chemical_formula == "C10H12N5O13P3"
+
+
+def test_fbc_block_of_an_element_which_sets_nothing() -> None:
+    """An element of an fbc document which sets no fbc attribute carries no fbc block."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_bounds_v1.xml")
+    model = report.models[0]
+    # a Version 1 reaction has neither a bound nor an association, the attributes
+    # do not exist in that version of the package
+    assert all(r.fbc is None for r in model.list_of_reactions)
+    biomass = next(s for s in model.list_of_species if s.id == "biomass")
+    assert biomass.fbc is None
+    glucose = next(s for s in model.list_of_species if s.id == "glc")
+    assert glucose.fbc is not None

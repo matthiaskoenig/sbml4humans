@@ -30,6 +30,7 @@ describe("sbml types", () => {
       "GeneProduct",
       "Objective",
       "FluxBound",
+      "UserDefinedConstraint",
     ]);
   });
 
@@ -55,6 +56,8 @@ describe("sbml types", () => {
     expect(typeInfo("Objective").pkg).toBe("fbc");
     expect(typeInfo("FluxObjective").pkg).toBe("fbc");
     expect(typeInfo("FluxBound").pkg).toBe("fbc");
+    expect(typeInfo("UserDefinedConstraint").pkg).toBe("fbc");
+    expect(typeInfo("UserDefinedConstraintComponent").pkg).toBe("fbc");
     expect(typeInfo("Species").pkg).toBe("core");
   });
 
@@ -69,7 +72,7 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(23);
+    expect(EDGE_KINDS).toHaveLength(25);
     expect(edgeKindLabel("geneProductAssociation")).toBe("gene product association");
     expect(edgeKindLabel("fluxBound")).toBe("flux bound");
     expect(edgeKindLabel("replacedBy")).toBe("replaced by");

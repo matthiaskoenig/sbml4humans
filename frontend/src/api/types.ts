@@ -38,6 +38,8 @@ import type {
   Trigger,
   Uncertainty,
   UnitDefinition,
+  UserDefinedConstraint,
+  UserDefinedConstraintComponent,
 } from "@/types/report";
 
 export type * from "@/types/report";
@@ -63,7 +65,8 @@ export type SbmlElement =
   | Port
   | GeneProduct
   | Objective
-  | FluxBound;
+  | FluxBound
+  | UserDefinedConstraint;
 
 /** The objects nested in another object, reachable through the inspector only. */
 export type NestedElement =
@@ -80,6 +83,7 @@ export type NestedElement =
   | ReplacedBy
   | SBaseRef
   | FluxObjective
+  | UserDefinedConstraintComponent
   | GeneProductAssociation
   | And
   | Or

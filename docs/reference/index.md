@@ -54,6 +54,8 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Objective](objective.md) | the function a flux balance analysis maximises or minimises |
 | [Flux objective](fluxobjective.md) | one term of an objective: a reaction weighted by a coefficient |
 | [Flux bound](fluxbound.md) | a constraint on the flux of a reaction, as fbc Version 1 writes it |
+| [User defined constraint](userdefinedconstraint.md) | a constraint over a combination of fluxes and parameters, added in Version 3 |
+| [User defined constraint component](userdefinedconstraintcomponent.md) | one weighted variable of a user defined constraint |
 | [Gene product association](geneproductassociation.md) | the genes a reaction needs, as the tree of operators over them |
 | [And](and.md) | the associations below it are all needed at once |
 | [Or](or.md) | one of the associations below it suffices |

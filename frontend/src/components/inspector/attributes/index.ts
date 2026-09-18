@@ -40,6 +40,8 @@ import SubmodelAttributes from "./SubmodelAttributes.vue";
 import TriggerAttributes from "./TriggerAttributes.vue";
 import UncertaintyAttributes from "./UncertaintyAttributes.vue";
 import UnitDefinitionAttributes from "./UnitDefinitionAttributes.vue";
+import UserDefinedConstraintAttributes from "./UserDefinedConstraintAttributes.vue";
+import UserDefinedConstraintComponentAttributes from "./UserDefinedConstraintComponentAttributes.vue";
 
 /** The type specific attributes component of every SBML type, each taking `element`. */
 export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
@@ -68,6 +70,8 @@ export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
   Objective: ObjectiveAttributes,
   FluxObjective: FluxObjectiveAttributes,
   FluxBound: FluxBoundAttributes,
+  UserDefinedConstraint: UserDefinedConstraintAttributes,
+  UserDefinedConstraintComponent: UserDefinedConstraintComponentAttributes,
   SpeciesReference: SpeciesReferenceAttributes,
   ModifierSpeciesReference: ModifierSpeciesReferenceAttributes,
   KineticLaw: KineticLawAttributes,

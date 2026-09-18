@@ -40,6 +40,7 @@ from sbml4humans.model import (
     GeneProductAssociation,
     GeneProductRef,
     InitialAssignment,
+    KeyValuePair,
     KineticLaw,
     LocalParameter,
     Math,
@@ -70,6 +71,8 @@ from sbml4humans.model import (
     UncertParameter,
     Unit,
     UnitDefinition,
+    UserDefinedConstraint,
+    UserDefinedConstraintComponent,
 )
 from sbml4humans.sbml import read_sbml
 from sbml4humans.units import udef_to_string
@@ -280,6 +283,7 @@ class SBMLDocumentInfo:
             "xml": xml,
             "comp": self.comp_sbase(sbase, self._key(sbase, key, use_id)),
             "uncertainties": self.uncertainties(sbase, self._key(sbase, key, use_id)),
+            "key_value_pairs": self.key_value_pairs(sbase),
         }
 
     @staticmethod
@@ -451,6 +455,7 @@ class SBMLDocumentInfo:
             list_of_gene_products=self.gene_products(model),
             list_of_objectives=self.objectives(model),
             list_of_flux_bounds=self.flux_bounds(model),
+            list_of_user_defined_constraints=self.user_defined_constraints(model),
             fbc=self.model_fbc(model),
         )
 
@@ -509,13 +514,6 @@ class SBMLDocumentInfo:
     def species(self, s: libsbml.Species, model: libsbml.Model) -> Species:
         """A species."""
         substance_units = _attribute(s, "substanceUnits")
-        fbc: libsbml.FbcSpeciesPlugin | None = s.getPlugin("fbc")
-        species_fbc = None
-        if fbc:
-            species_fbc = SpeciesFbc(
-                chemical_formula=_attribute(fbc, "chemicalFormula"),
-                charge=_attribute(fbc, "charge"),
-            )
         return Species(
             **self.sbase(s),
             compartment=s.getCompartment(),
@@ -528,7 +526,7 @@ class SBMLDocumentInfo:
             units_latex=self.units(substance_units, model),
             derived_units=udef_to_string(s.getDerivedUnitDefinition()),
             conversion_factor=self.conversion_factor(s, model),
-            fbc=species_fbc,
+            fbc=self.species_fbc(s),
         )
 
     def parameter(self, p: libsbml.Parameter, model: libsbml.Model) -> Parameter:
@@ -934,20 +932,114 @@ class SBMLDocumentInfo:
             for index, fb in enumerate(plugin.getListOfFluxBounds())
         ]
 
+    @staticmethod
+    def key_value_pairs(sbase: libsbml.SBase) -> list[KeyValuePair]:
+        """The key value pairs of an element, the controlled annotation of fbc §3.17.
+
+        libsbml reads them from the annotation of any element of a document
+        which uses fbc, whatever its version, and exposes them on the fbc
+        plugin of that element. It reads the key, the value and the uri back
+        from a file, but not the identifier and the name the specification
+        allows, so the report carries the three attributes which survive.
+        """
+        plugin = sbase.getPlugin("fbc")
+        if not plugin or not isinstance(plugin, libsbml.FbcSBasePlugin):
+            return []
+        return [
+            KeyValuePair(
+                key=_attribute(kvp, "key"),
+                value=_attribute(kvp, "value"),
+                uri=_attribute(kvp, "uri"),
+            )
+            for kvp in plugin.getListOfKeyValuePairs()
+        ]
+
+    @staticmethod
+    def species_fbc(s: libsbml.Species) -> SpeciesFbc | None:
+        """The fbc extension of a species: its chemical formula and its charge.
+
+        fbc Version 3 widened the charge from an integer to a double, and
+        libsbml keeps the two in attributes of their own: `getCharge` reads the
+        integer of a Version 1 or Version 2 document and returns zero for a
+        Version 3 one, `getChargeAsDouble` the other way around, so the version
+        of the plugin decides which of them is the charge of the file. An
+        element which sets neither attribute carries no block rather than one
+        of empty values.
+        """
+        plugin: libsbml.FbcSpeciesPlugin | None = s.getPlugin("fbc")
+        if not plugin:
+            return None
+        charge = None
+        if plugin.isSetCharge():
+            charge = (
+                plugin.getChargeAsDouble()
+                if plugin.getPackageVersion() >= 3
+                else float(plugin.getCharge())
+            )
+        formula = _attribute(plugin, "chemicalFormula")
+        if charge is None and formula is None:
+            return None
+        return SpeciesFbc(chemical_formula=formula, charge=_number(charge))
+
     def reaction_fbc(
         self, r: libsbml.Reaction, reaction_key: str
     ) -> ReactionFbc | None:
-        """The fbc extension of a reaction: bounds and gene product association."""
+        """The fbc extension of a reaction: bounds and gene product association.
+
+        A reaction which sets none of the three, which is every reaction of a
+        Version 1 document, where the attributes do not exist, carries no block
+        rather than one of empty values.
+        """
         plugin: libsbml.FbcReactionPlugin | None = r.getPlugin("fbc")
         if not plugin:
             return None
+        lower = _attribute(plugin, "lowerFluxBound")
+        upper = _attribute(plugin, "upperFluxBound")
+        association = self.gene_product_association(plugin, reaction_key)
+        if lower is None and upper is None and association is None:
+            return None
         return ReactionFbc(
-            lower_flux_bound=_attribute(plugin, "lowerFluxBound"),
-            upper_flux_bound=_attribute(plugin, "upperFluxBound"),
-            gene_product_association=self.gene_product_association(
-                plugin, reaction_key
-            ),
+            lower_flux_bound=lower,
+            upper_flux_bound=upper,
+            gene_product_association=association,
         )
+
+    def user_defined_constraints(
+        self, model: libsbml.Model
+    ) -> list[UserDefinedConstraint]:
+        """The user defined constraints of a model, which fbc Version 3 added.
+
+        libsbml keeps the list empty for a document of an earlier version,
+        which has no way to write a constraint over more than one flux.
+        """
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return []
+        constraints = []
+        for index, udc in enumerate(plugin.getListOfUserDefinedConstraints()):
+            key = self._key(udc, f"userDefinedConstraint.{index}")
+            constraints.append(
+                UserDefinedConstraint(
+                    **self.sbase(udc, key=key),
+                    lower_bound=_attribute(udc, "lowerBound"),
+                    upper_bound=_attribute(udc, "upperBound"),
+                    list_of_user_defined_constraint_components=[
+                        UserDefinedConstraintComponent(
+                            **self.sbase(c, key=f"{key}.component.{position}"),
+                            variable=_attribute(c, "variable"),
+                            variable2=_attribute(c, "variable2"),
+                            coefficient=_attribute(c, "coefficient"),
+                            variable_type=c.getVariableTypeAsString()
+                            if c.isSetVariableType()
+                            else None,
+                        )
+                        for position, c in enumerate(
+                            udc.getListOfUserDefinedConstraintComponents()
+                        )
+                    ],
+                )
+            )
+        return constraints
 
     def gene_product_association(
         self, plugin: libsbml.FbcReactionPlugin, reaction_key: str

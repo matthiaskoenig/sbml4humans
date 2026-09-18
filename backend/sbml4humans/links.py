@@ -33,6 +33,7 @@ from sbml4humans.model import (
     SBaseRefFields,
     SpeciesReference,
     Submodel,
+    UserDefinedConstraint,
 )
 
 
@@ -140,6 +141,9 @@ def _elements(model: Model) -> Iterator[SBase]:
     yield from model.list_of_submodels
     yield from model.list_of_gene_products
     yield from model.list_of_flux_bounds
+    for constraint in model.list_of_user_defined_constraints:
+        yield constraint
+        yield from constraint.list_of_user_defined_constraint_components
     for objective in model.list_of_objectives:
         yield objective
         yield from objective.list_of_flux_objectives
@@ -598,6 +602,8 @@ class LinkGraphBuilder:
             self._objective_edges(objective, index)
         for bound in model.list_of_flux_bounds:
             self._edge(bound, bound.reaction, EdgeKind.FLUX_BOUND, index)
+        for constraint in model.list_of_user_defined_constraints:
+            self._constraint_edges(constraint, index)
 
     def _participation_edges(
         self,
@@ -657,6 +663,30 @@ class LinkGraphBuilder:
             self._math_edges(klaw, index, kinetic_law_pk=klaw.pk)
             for lp in klaw.list_of_local_parameters:
                 self._units_edge(lp, lp.units, index)
+
+    def _constraint_edges(
+        self, constraint: UserDefinedConstraint, index: ModelIndex
+    ) -> None:
+        """The edges of a user defined constraint and of its components.
+
+        The constraint names the parameters which bound it, which is the same
+        relation a reaction has to its flux bounds, and it names its components;
+        every component names the reaction or the parameter it weighs and the
+        parameter which holds its coefficient (fbc §3.14, §3.15).
+        """
+        self._edge(constraint, constraint.lower_bound, EdgeKind.FLUX_BOUND, index)
+        self._edge(constraint, constraint.upper_bound, EdgeKind.FLUX_BOUND, index)
+        for component in constraint.list_of_user_defined_constraint_components:
+            self.edges.append(
+                Edge(
+                    source=constraint.pk,
+                    target=component.pk,
+                    kind=EdgeKind.CONSTRAINT_COMPONENT,
+                )
+            )
+            self._edge(component, component.variable, EdgeKind.VARIABLE, index)
+            self._edge(component, component.variable2, EdgeKind.VARIABLE, index)
+            self._edge(component, component.coefficient, EdgeKind.COEFFICIENT, index)
 
     def _objective_edges(self, objective: Objective, index: ModelIndex) -> None:
         """The edges of an objective: its flux objectives and their reactions.

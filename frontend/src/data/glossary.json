@@ -494,6 +494,10 @@
           "label": "unit definitions",
           "summary": "the units the model defines"
         },
+        "listOfUserDefinedConstraints": {
+          "label": "user defined constraints",
+          "summary": "the constraints of the model which the reaction network does not impose"
+        },
         "substanceUnits": {
           "label": "substance units",
           "summary": "the units of the amounts of the species which do not declare their own"
@@ -842,6 +846,10 @@
           "label": "id",
           "summary": "the identifier other elements of the model use to reference the element"
         },
+        "keyValuePairs": {
+          "label": "key value pairs",
+          "summary": "the controlled annotation fbc Version 3 allows on any element"
+        },
         "metaId": {
           "label": "metaId",
           "summary": "the identifier the annotations of the element point at"
@@ -1056,6 +1064,50 @@
         }
       }
     },
+    "UserDefinedConstraint": {
+      "label": "User defined constraint",
+      "summary": "a constraint over a combination of fluxes and parameters, added in Version 3",
+      "package": "fbc",
+      "page": "reference/userdefinedconstraint/",
+      "attributes": {
+        "listOfUserDefinedConstraintComponents": {
+          "label": "components",
+          "summary": "the weighted variables the constraint is the sum of"
+        },
+        "lowerBound": {
+          "label": "lower bound",
+          "summary": "the parameter which holds the smallest value the constraint may take"
+        },
+        "upperBound": {
+          "label": "upper bound",
+          "summary": "the parameter which holds the largest value the constraint may take"
+        }
+      }
+    },
+    "UserDefinedConstraintComponent": {
+      "label": "User defined constraint component",
+      "summary": "one weighted variable of a user defined constraint",
+      "package": "fbc",
+      "page": "reference/userdefinedconstraintcomponent/",
+      "attributes": {
+        "coefficient": {
+          "label": "coefficient",
+          "summary": "the parameter which holds the number the variable is multiplied with"
+        },
+        "variable": {
+          "label": "variable",
+          "summary": "the reaction or the parameter this term of the constraint weighs"
+        },
+        "variable2": {
+          "label": "second variable",
+          "summary": "the second variable of a mixed quadratic term"
+        },
+        "variableType": {
+          "label": "variable type",
+          "summary": "whether the variable enters the constraint linearly or quadratically"
+        }
+      }
+    },
     "comp": {
       "label": "Hierarchical Model Composition (comp)",
       "summary": "the package which builds a model out of other models",
@@ -1087,9 +1139,17 @@
       "label": "associated species",
       "summary": "the species a gene product stands for"
     },
+    "coefficient": {
+      "label": "coefficient",
+      "summary": "the parameter which holds the weight of a term"
+    },
     "compartment": {
       "label": "compartment",
       "summary": "the compartment a species is located in or a reaction takes place in"
+    },
+    "constraintComponent": {
+      "label": "constraint component",
+      "summary": "a term of a user defined constraint"
     },
     "conversionFactor": {
       "label": "conversion factor",
@@ -1169,7 +1229,7 @@
     },
     "variable": {
       "label": "variable",
-      "summary": "the element whose value a rule or an event assignment sets"
+      "summary": "the element a rule, an event assignment or a constraint component is about"
     }
   },
   "concepts": {

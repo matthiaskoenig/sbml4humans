@@ -19,6 +19,11 @@ const component = computed(() =>
 const sboUrl = computed(() =>
   props.element.sbo ? `https://identifiers.org/${props.element.sbo}` : null,
 );
+const keyValueColumns = [
+  { key: "key", header: "key" },
+  { key: "value", header: "value" },
+  { key: "uri", header: "uri" },
+];
 const uncertaintyColumns = [
   { key: "id", header: "id" },
   { key: "count", header: "parameters" },
@@ -121,6 +126,27 @@ const replacedElements = computed(() =>
       </AttributeRow>
     </template>
     <component :is="component" v-if="component" :element="element" />
+    <AttributeRow
+      v-if="element.keyValuePairs?.length"
+      label="key value pairs"
+      :type="element.sbmlType"
+      field="keyValuePairs"
+      wide
+    >
+      <NestedTable :rows="element.keyValuePairs" :columns="keyValueColumns">
+        <template #cell-uri="{ row }">
+          <a
+            v-if="row.uri"
+            :href="row.uri"
+            target="_blank"
+            rel="noopener"
+            class="text-link hover:underline"
+            >{{ row.uri }}</a
+          >
+          <span v-else class="text-gray-400">-</span>
+        </template>
+      </NestedTable>
+    </AttributeRow>
     <AttributeRow
       v-if="uncertainties.length"
       label="uncertainties"

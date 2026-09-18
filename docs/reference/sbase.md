@@ -20,6 +20,7 @@ The report shows these attributes for every element: the id and the name in the 
 | [replacements](#replacements) | `CompSBase` | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [replaced by](#replaced-by) | `ReplacedBy` | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [replaced elements](#replaced-elements) | `list` | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [key value pairs](#key-value-pairs) | `list` | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [uncertainties](#uncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
@@ -83,6 +84,14 @@ The report links the submodel and shows the named element next to it.
 Every entry names a submodel and one element inside it which this element replaces. It is how a species of the containing model is connected to the species of two submodels: the containing species replaces both, and the three become one pool.
 
 The report lists the submodel and the named element of every replacement in the inspector.
+
+<span id="key-value-pairs"></span>**key value pairs**
+
+A key value pair carries metadata for which SBML has no attribute: the tool which produced a number, the database a reaction was taken from, the assumption behind a bound. It is written into the annotation of an element, in a namespace the package defines, so that every tool reads the same format instead of inventing its own.
+
+Every key of one element is unique, the value is a string, and the uri says where the key is defined, for example a document which lists the keys of a tool.
+
+The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
 
 <span id="uncertainties"></span>**uncertainties**
 

@@ -795,3 +795,27 @@ def test_flux_bound_edge_of_a_version_1_model() -> None:
         (f"{m}/FluxBound:v1_ub", f"{m}/Reaction:v1", "fluxBound"),
         (f"{m}/FluxBound:EX_glc_fixed", f"{m}/Reaction:EX_glc", "fluxBound"),
     }
+
+
+def test_user_defined_constraint_edges() -> None:
+    """A constraint names its bounds and its components, a component its variables."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    m = "fbc_constraints_v3"
+    constraint = f"{m}/UserDefinedConstraint:ratio"
+    component = f"{m}/UserDefinedConstraintComponent:ratio_v1"
+    assert _edges(report, source=constraint) == {
+        (constraint, f"{m}/Parameter:ratio_lb", "fluxBound"),
+        (constraint, f"{m}/Parameter:ratio_ub", "fluxBound"),
+        (constraint, component, "constraintComponent"),
+        (
+            constraint,
+            f"{m}/UserDefinedConstraintComponent:ratio_v2",
+            "constraintComponent",
+        ),
+    }
+    assert _edges(report, source=component) == {
+        (component, f"{m}/Reaction:v1", "variable"),
+        (component, f"{m}/Parameter:c_two", "coefficient"),
+    }
+    quadratic = f"{m}/UserDefinedConstraintComponent:budget_v2"
+    assert (quadratic, f"{m}/Parameter:maintenance", "variable") in _edges(report)

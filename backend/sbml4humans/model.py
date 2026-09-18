@@ -90,6 +90,22 @@ class SBase(ReportModel):
     xml: str | None = None
     comp: CompSBase | None = None
     uncertainties: list[Uncertainty] = Field(default_factory=list)
+    key_value_pairs: list[KeyValuePair] = Field(default_factory=list)
+
+
+class KeyValuePair(ReportModel):
+    """One entry of the controlled annotation of fbc Version 3 (fbc §3.17).
+
+    A key value pair carries metadata which no attribute of SBML holds, and
+    libsbml reads it from the annotation of any element. It is a nested object
+    of that element and not an element of the report: nothing references it, it
+    references nothing, and libsbml does not read the identifier and the name
+    the specification allows it back from a file.
+    """
+
+    key: str | None = None
+    value: str | None = None
+    uri: str | None = None
 
 
 class UncertParameter(ReportModel):
@@ -236,10 +252,14 @@ class Compartment(SBase):
 
 
 class SpeciesFbc(ReportModel):
-    """The fbc extension of a species."""
+    """The fbc extension of a species.
+
+    The charge is a double, which is what fbc Version 3 made of the integer of
+    the versions before it (fbc §3.4).
+    """
 
     chemical_formula: str | None = None
-    charge: int | None = None
+    charge: float | None = None
 
 
 class Species(SBase):
@@ -535,6 +555,29 @@ class Objective(SBase):
     list_of_flux_objectives: list[FluxObjective] = Field(default_factory=list)
 
 
+class UserDefinedConstraintComponent(SBase):
+    """One term of a user defined constraint (fbc §3.15)."""
+
+    sbml_type: Literal["UserDefinedConstraintComponent"] = (
+        "UserDefinedConstraintComponent"
+    )
+    variable: str | None = None
+    variable2: str | None = None
+    coefficient: str | None = None
+    variable_type: str | None = None
+
+
+class UserDefinedConstraint(SBase):
+    """A constraint of fbc Version 3 over a combination of model variables."""
+
+    sbml_type: Literal["UserDefinedConstraint"] = "UserDefinedConstraint"
+    lower_bound: str | None = None
+    upper_bound: str | None = None
+    list_of_user_defined_constraint_components: list[UserDefinedConstraintComponent] = (
+        Field(default_factory=list)
+    )
+
+
 class ModelFbc(ReportModel):
     """The fbc extension of a model.
 
@@ -589,6 +632,9 @@ class Model(SBase):
     list_of_gene_products: list[GeneProduct] = Field(default_factory=list)
     list_of_objectives: list[Objective] = Field(default_factory=list)
     list_of_flux_bounds: list[FluxBound] = Field(default_factory=list)
+    list_of_user_defined_constraints: list[UserDefinedConstraint] = Field(
+        default_factory=list
+    )
     fbc: ModelFbc | None = None
 
 
@@ -629,6 +675,8 @@ class EdgeKind(StrEnum):
     ASSOCIATED_SPECIES = "associatedSpecies"
     FLUX_OBJECTIVE = "fluxObjective"
     ACTIVE_OBJECTIVE = "activeObjective"
+    CONSTRAINT_COMPONENT = "constraintComponent"
+    COEFFICIENT = "coefficient"
     MODEL_REF = "modelRef"
     PORT = "port"
     DELETION = "deletion"

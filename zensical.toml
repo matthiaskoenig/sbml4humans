@@ -64,6 +64,8 @@ nav = [
       { "Objective" = "reference/objective.md" },
       { "Flux objective" = "reference/fluxobjective.md" },
       { "Flux bound" = "reference/fluxbound.md" },
+      { "User defined constraint" = "reference/userdefinedconstraint.md" },
+      { "User defined constraint component" = "reference/userdefinedconstraintcomponent.md" },
     ] },
     { "Distributions (distrib)" = [
       { "Distributions (distrib)" = "reference/distrib.md" },

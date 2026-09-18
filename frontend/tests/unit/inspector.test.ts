@@ -301,6 +301,34 @@ describe("inspector", () => {
     expect(wrapper.text()).toContain("quadratic");
   });
 
+  it("links the variables and the coefficient of a user defined constraint", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    const constraint = fbcConstraints.mainModel!.listOfUserDefinedConstraints![0]!;
+    const wrapper = mountWith(AttributesColumn, { element: constraint }, fbcConstraints);
+    const rows = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .map((r) => [r.find("dt").text(), r.find("dd").text()]);
+    expect(rows).toContainEqual(["lower bound", "ratio_lb"]);
+    expect(rows).toContainEqual(["upper bound", "ratio_ub"]);
+    const pks = wrapper.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
+    expect(pks).toContain("fbc_constraints_v3/Reaction:v1");
+    expect(pks).toContain("fbc_constraints_v3/Parameter:c_two");
+    expect(pks).toContain("fbc_constraints_v3/UserDefinedConstraintComponent:ratio_v1");
+  });
+
+  it("shows the key value pairs of an element", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    const parameter = fbcConstraints.mainModel!.listOfParameters!.find(
+      (p) => p.id === "maintenance",
+    )!;
+    const row = mountWith(AttributesColumn, { element: parameter }, fbcConstraints)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "key value pairs")!;
+    expect(row.find("dd").text()).toContain("source");
+    expect(row.find("dd").text()).toContain("measured");
+    expect(row.find("dd").find("a").attributes("href")).toBe("https://sbml.org/fbc/keyvaluepair");
+  });
+
   it("renders the gene product association of a reaction as its tree", async () => {
     await router.push("/examples/fbc_constraints_v3");
     const reaction = fbcConstraints.mainModel!.listOfReactions!.find((r) => r.id === "v1")!;

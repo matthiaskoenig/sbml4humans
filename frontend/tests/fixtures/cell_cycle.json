@@ -1,5 +1,5 @@
 {
-  "uid": "2d09dbc08d9942c99119012aca33f093",
+  "uid": "fb7cdbf0988f42aa89afb573bfae355a",
   "manifest": {
     "entries": [
       {
@@ -35,6 +35,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 2,
           "version": 3,
           "packages": [
@@ -140,6 +141,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n    <rdf:Description rdf:about=\"#_000001\">\n      <dc:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Le Novère</vCard:Family>\n              <vCard:Given>Nicolas</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>lenov@ebi.ac.uk</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>EMBL-EBI</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Shapiro</vCard:Family>\n              <vCard:Given>Bruce</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>bshapiro@jpl.nasa.gov</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>NASA Jet Propulsion Laboratory</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dc:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2009-10-15T13:21:50Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2014-03-26T14:20:21Z</dcterms:W3CDTF>\n      </dcterms:modified>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/MODEL6614787694\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/BIOMD0000000007\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:isDescribedBy>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/pubmed/9256450\"/>\n        </rdf:Bag>\n      </bqmodel:isDescribedBy>\n      <bqmodel:isDerivedFrom>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/pubmed/10395816\"/>\n        </rdf:Bag>\n      </bqmodel:isDerivedFrom>\n      <bqbiol:hasTaxon>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/taxonomy/4896\"/>\n        </rdf:Bag>\n      </bqbiol:hasTaxon>\n      <bqbiol:isVersionOf>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/kegg.pathway/ko04110\"/>\n          <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0000278\"/>\n        </rdf:Bag>\n      </bqbiol:isVersionOf>\n      <bqbiol:isHomologTo>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/reactome/REACT_152\"/>\n        </rdf:Bag>\n      </bqbiol:isHomologTo>\n      <bqbiol:hasProperty>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/mamo/MAMO_0000046\"/>\n        </rdf:Bag>\n      </bqbiol:hasProperty>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": null,
@@ -170,6 +172,7 @@
                 "xml": "<unitDefinition metaid=\"metaid_0000018\" id=\"time\" name=\"minutes\">\n  <listOfUnits>\n    <unit metaid=\"_377768\" kind=\"second\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -203,6 +206,7 @@
                 "xml": "<compartment metaid=\"metaid_0000068\" id=\"Cell\" name=\"Cell\" size=\"1\" units=\"volume\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000068\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0005623\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</compartment>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -233,6 +237,7 @@
                 "xml": "<species metaid=\"metaid_0000069\" id=\"UbE\" name=\"ubiquitinProtease1\" compartment=\"Cell\" initialAmount=\"0.11\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000069\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0000502\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0.11,
                 "initialConcentration": null,
@@ -266,6 +271,7 @@
                 "xml": "<species metaid=\"metaid_0000070\" id=\"UbE2\" name=\"ubiquitinProtease2\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000070\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0000502\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -300,6 +306,7 @@
                 "xml": "<species metaid=\"metaid_0000071\" id=\"Wee1\" name=\"Wee1\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000071\">\n        <bqbiol:hasVersion>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P30290\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P07527\"/>\n          </rdf:Bag>\n        </bqbiol:hasVersion>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -333,6 +340,7 @@
                 "xml": "<species metaid=\"metaid_0000072\" id=\"Cdc25\" name=\"Cdc25\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000072\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P06652\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -367,6 +375,7 @@
                 "xml": "<species metaid=\"metaid_0000073\" id=\"G2K\" name=\"Cdc13_Cdc2\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000073\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P10815\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -400,6 +409,7 @@
                 "xml": "<species metaid=\"metaid_0000074\" id=\"R\" name=\"FreeRum1\" compartment=\"Cell\" initialAmount=\"0.4\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000074\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P40380\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0.4,
                 "initialConcentration": null,
@@ -434,6 +444,7 @@
                 "xml": "<species metaid=\"metaid_0000075\" id=\"G1K\" name=\"Cig2_Cdc2\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000075\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P36630\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -459,6 +470,7 @@
                 "xml": "<species metaid=\"metaid_0000076\" id=\"IE\" name=\"IntermediaryEnzyme\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -493,6 +505,7 @@
                 "xml": "<species metaid=\"metaid_0000077\" id=\"PG2\" name=\"Cdc13_P-Cdc2\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000077\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P10815\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -528,6 +541,7 @@
                 "xml": "<species metaid=\"metaid_0000078\" id=\"G1R\" name=\"Cig2_Cdc2_Rum1\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000078\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P36630\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P40380\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -563,6 +577,7 @@
                 "xml": "<species metaid=\"metaid_0000079\" id=\"G2R\" name=\"Cdc13_Cdc2_Rum1\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000079\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P10815\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P40380\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -598,6 +613,7 @@
                 "xml": "<species metaid=\"metaid_0000080\" id=\"PG2R\" name=\"Cdc13_P-Cdc2_Rum1\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000080\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P10815\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P40380\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -633,6 +649,7 @@
                 "xml": "<species metaid=\"metaid_0000081\" id=\"SPF\" name=\"S-phasePromotingFactor\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000081\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P10815\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P36630\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -667,6 +684,7 @@
                 "xml": "<species metaid=\"metaid_0000082\" id=\"MPF\" name=\"M-phasePromotingFactor\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000082\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P10815\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P04551\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -692,6 +710,7 @@
                 "xml": "<species metaid=\"metaid_0000083\" id=\"IEB\" name=\"BoundIntermediaryEnzyme\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -725,6 +744,7 @@
                 "xml": "<species metaid=\"metaid_0000084\" id=\"UbEB\" name=\"BoundUbiquitinProtease1\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000084\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0000502\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -758,6 +778,7 @@
                 "xml": "<species metaid=\"metaid_0000085\" id=\"UbE2B\" name=\"BoundUbiquitinProtease2\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000085\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0000502\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -792,6 +813,7 @@
                 "xml": "<species metaid=\"metaid_0000086\" id=\"Wee1B\" name=\"BoundWee1\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000086\">\n        <bqbiol:hasVersion>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P07527\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P30290\"/>\n          </rdf:Bag>\n        </bqbiol:hasVersion>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -825,6 +847,7 @@
                 "xml": "<species metaid=\"metaid_0000087\" id=\"Cdc25B\" name=\"BoundCdc25\" compartment=\"Cell\" initialAmount=\"0\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000087\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P06652\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -858,6 +881,7 @@
                 "xml": "<species metaid=\"metaid_0000088\" id=\"Rum1Total\" name=\"TotalRum1\" compartment=\"Cell\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000088\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P40380\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": null,
                 "initialConcentration": null,
@@ -891,6 +915,7 @@
                 "xml": "<species metaid=\"metaid_0000089\" id=\"Cdc13Total\" name=\"TotalCdc13\" compartment=\"Cell\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000089\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P10815\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": null,
                 "initialConcentration": null,
@@ -924,6 +949,7 @@
                 "xml": "<species metaid=\"metaid_0000090\" id=\"Cig2Total\" name=\"TotalCig2\" compartment=\"Cell\" hasOnlySubstanceUnits=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000090\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/uniprot/P36630\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</species>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "Cell",
                 "initialAmount": null,
                 "initialConcentration": null,
@@ -951,6 +977,7 @@
                 "xml": "<parameter metaid=\"metaid_0000019\" id=\"mu\" name=\"mu\" value=\"0.00495\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        mass growth rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.00495,
                 "constant": true,
                 "units": null,
@@ -970,6 +997,7 @@
                 "xml": "<parameter metaid=\"metaid_0000020\" id=\"Mass\" name=\"Mass\" value=\"0.49\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.49,
                 "constant": false,
                 "units": null,
@@ -989,6 +1017,7 @@
                 "xml": "<parameter metaid=\"metaid_0000021\" id=\"k1\" name=\"k1\" value=\"0.015\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        G2K production rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.015,
                 "constant": true,
                 "units": null,
@@ -1008,6 +1037,7 @@
                 "xml": "<parameter metaid=\"metaid_0000022\" id=\"k2prime\" name=\"k2&apos;\" value=\"0.05\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1027,6 +1057,7 @@
                 "xml": "<parameter metaid=\"metaid_0000023\" id=\"k3\" name=\"k3\" value=\"0.09375\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Rum1 production rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.09375,
                 "constant": true,
                 "units": null,
@@ -1046,6 +1077,7 @@
                 "xml": "<parameter metaid=\"metaid_0000024\" id=\"k4\" name=\"k4\" value=\"0.1875\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Rum1 degradation rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1875,
                 "constant": true,
                 "units": null,
@@ -1065,6 +1097,7 @@
                 "xml": "<parameter metaid=\"metaid_0000025\" id=\"k5\" name=\"k5\" value=\"0.00175\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        G1k production rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.00175,
                 "constant": true,
                 "units": null,
@@ -1084,6 +1117,7 @@
                 "xml": "<parameter metaid=\"metaid_0000026\" id=\"k6prime\" name=\"k6&apos;\" value=\"0\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0,
                 "constant": true,
                 "units": null,
@@ -1103,6 +1137,7 @@
                 "xml": "<parameter metaid=\"metaid_0000027\" id=\"k7\" name=\"k7\" value=\"100\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Rum1/G2K binding rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 100,
                 "constant": true,
                 "units": null,
@@ -1122,6 +1157,7 @@
                 "xml": "<parameter metaid=\"metaid_0000028\" id=\"k7r\" name=\"k7r\" value=\"0.1\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        G2R dissociation rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1141,6 +1177,7 @@
                 "xml": "<parameter metaid=\"metaid_0000029\" id=\"k8\" name=\"k8\" value=\"10\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Rum1/G1K binding rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 10,
                 "constant": true,
                 "units": null,
@@ -1160,6 +1197,7 @@
                 "xml": "<parameter metaid=\"metaid_0000030\" id=\"k8r\" name=\"k8r\" value=\"0.1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1179,6 +1217,7 @@
                 "xml": "<parameter metaid=\"metaid_0000031\" id=\"kc\" name=\"kc\" value=\"1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": true,
                 "units": null,
@@ -1198,6 +1237,7 @@
                 "xml": "<parameter metaid=\"metaid_0000032\" id=\"kcr\" name=\"kcr\" value=\"0.25\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1217,6 +1257,7 @@
                 "xml": "<parameter metaid=\"metaid_0000033\" id=\"ki\" name=\"ki\" value=\"0.4\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.4,
                 "constant": true,
                 "units": null,
@@ -1236,6 +1277,7 @@
                 "xml": "<parameter metaid=\"metaid_0000034\" id=\"kir\" name=\"kir\" value=\"0.1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1255,6 +1297,7 @@
                 "xml": "<parameter metaid=\"metaid_0000035\" id=\"kp\" name=\"kp\" value=\"3.25\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Rum1 Phosphorylation Rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 3.25,
                 "constant": false,
                 "units": null,
@@ -1274,6 +1317,7 @@
                 "xml": "<parameter metaid=\"metaid_0000036\" id=\"ku\" name=\"ku\" value=\"0.2\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.2,
                 "constant": true,
                 "units": null,
@@ -1293,6 +1337,7 @@
                 "xml": "<parameter metaid=\"metaid_0000037\" id=\"kur\" name=\"kur\" value=\"0.1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1312,6 +1357,7 @@
                 "xml": "<parameter metaid=\"metaid_0000038\" id=\"ku2\" name=\"ku2\" value=\"1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": true,
                 "units": null,
@@ -1331,6 +1377,7 @@
                 "xml": "<parameter metaid=\"metaid_0000039\" id=\"kur2\" name=\"kur2\" value=\"0.3\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.3,
                 "constant": true,
                 "units": null,
@@ -1350,6 +1397,7 @@
                 "xml": "<parameter metaid=\"metaid_0000040\" id=\"kw\" name=\"kw\" value=\"1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": true,
                 "units": null,
@@ -1369,6 +1417,7 @@
                 "xml": "<parameter metaid=\"metaid_0000041\" id=\"kwr\" name=\"kwr\" value=\"0.25\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1388,6 +1437,7 @@
                 "xml": "<parameter metaid=\"metaid_0000042\" id=\"V2\" name=\"V2\" value=\"0.25\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1407,6 +1457,7 @@
                 "xml": "<parameter metaid=\"metaid_0000043\" id=\"V2prime\" name=\"V2&apos;\" value=\"0.0075\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.0075,
                 "constant": true,
                 "units": null,
@@ -1426,6 +1477,7 @@
                 "xml": "<parameter metaid=\"metaid_0000044\" id=\"V6\" name=\"V6\" value=\"7.5\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 7.5,
                 "constant": true,
                 "units": null,
@@ -1445,6 +1497,7 @@
                 "xml": "<parameter metaid=\"metaid_0000045\" id=\"V6prime\" name=\"V6&apos;\" value=\"0.0375\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.0375,
                 "constant": true,
                 "units": null,
@@ -1464,6 +1517,7 @@
                 "xml": "<parameter metaid=\"metaid_0000046\" id=\"V25\" name=\"V25\" value=\"0.5\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.5,
                 "constant": true,
                 "units": null,
@@ -1483,6 +1537,7 @@
                 "xml": "<parameter metaid=\"metaid_0000047\" id=\"V25prime\" name=\"V25&apos;\" value=\"0.025\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.025,
                 "constant": true,
                 "units": null,
@@ -1502,6 +1557,7 @@
                 "xml": "<parameter metaid=\"metaid_0000048\" id=\"Vw\" name=\"Vw\" value=\"0.35\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.35,
                 "constant": true,
                 "units": null,
@@ -1521,6 +1577,7 @@
                 "xml": "<parameter metaid=\"metaid_0000049\" id=\"Vwprime\" name=\"Vw&apos;\" value=\"0.035\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.035,
                 "constant": true,
                 "units": null,
@@ -1540,6 +1597,7 @@
                 "xml": "<parameter metaid=\"metaid_0000050\" id=\"Kmc\" name=\"Kmc\" value=\"0.1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1559,6 +1617,7 @@
                 "xml": "<parameter metaid=\"metaid_0000051\" id=\"Kmcr\" name=\"Kmcr\" value=\"0.1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1578,6 +1637,7 @@
                 "xml": "<parameter metaid=\"metaid_0000052\" id=\"Kmi\" name=\"Kmi\" value=\"0.01\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1597,6 +1657,7 @@
                 "xml": "<parameter metaid=\"metaid_0000053\" id=\"Kmir\" name=\"Kmir\" value=\"0.01\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1616,6 +1677,7 @@
                 "xml": "<parameter metaid=\"metaid_0000054\" id=\"Kmp\" name=\"Kmp\" value=\"0.001\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.001,
                 "constant": true,
                 "units": null,
@@ -1635,6 +1697,7 @@
                 "xml": "<parameter metaid=\"metaid_0000055\" id=\"Kmu\" name=\"Kmu\" value=\"0.01\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1654,6 +1717,7 @@
                 "xml": "<parameter metaid=\"metaid_0000056\" id=\"Kmur\" name=\"Kmur\" value=\"0.01\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1673,6 +1737,7 @@
                 "xml": "<parameter metaid=\"metaid_0000057\" id=\"Kmu2\" name=\"Kmu2\" value=\"0.05\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1692,6 +1757,7 @@
                 "xml": "<parameter metaid=\"metaid_0000058\" id=\"Kmur2\" name=\"Kmur2\" value=\"0.05\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1711,6 +1777,7 @@
                 "xml": "<parameter metaid=\"metaid_0000059\" id=\"Kmw\" name=\"Kmw\" value=\"0.1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1730,6 +1797,7 @@
                 "xml": "<parameter metaid=\"metaid_0000060\" id=\"Kmwr\" name=\"Kmwr\" value=\"0.1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1749,6 +1817,7 @@
                 "xml": "<parameter metaid=\"metaid_0000061\" id=\"alpha\" name=\"alpha\" value=\"0.25\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1768,6 +1837,7 @@
                 "xml": "<parameter metaid=\"metaid_0000062\" id=\"beta\" name=\"beta\" value=\"0.05\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1787,6 +1857,7 @@
                 "xml": "<parameter metaid=\"metaid_0000063\" id=\"Cig1\" name=\"Cig1\" value=\"0\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0,
                 "constant": true,
                 "units": null,
@@ -1806,6 +1877,7 @@
                 "xml": "<parameter metaid=\"metaid_0000064\" id=\"k2\" name=\"k2\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Cdc13/Cdc2 dissociation rate (degradation of G2K)</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1825,6 +1897,7 @@
                 "xml": "<parameter metaid=\"metaid_0000065\" id=\"k6\" name=\"k6\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Cig2/Cdc2 dissociation rate (degradation of G1K)</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1844,6 +1917,7 @@
                 "xml": "<parameter metaid=\"metaid_0000066\" id=\"kwee\" name=\"kwee\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Cdc2 phosphorylation rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1863,6 +1937,7 @@
                 "xml": "<parameter metaid=\"metaid_0000067\" id=\"k25\" name=\"k25\" constant=\"false\">\n  <notes>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">\n        Cdc2 dephosphorylation rate</p>\n  </notes>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1885,6 +1960,7 @@
                 "xml": "<rateRule metaid=\"rule1\" variable=\"Mass\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> Mass </ci>\n      <ci> mu </ci>\n    </apply>\n  </math>\n</rateRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "Mass",
                 "math": {
                   "latex": " \\mathit{Mass}·\\mathit{\\mu}",
@@ -1905,6 +1981,7 @@
                 "xml": "<assignmentRule metaid=\"rule2\" variable=\"IEB\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <cn type=\"integer\"> 1 </cn>\n      <ci> IE </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "IEB",
                 "math": {
                   "latex": " 1-\\mathit{IE}",
@@ -1925,6 +2002,7 @@
                 "xml": "<assignmentRule metaid=\"rule3\" variable=\"UbEB\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <cn type=\"integer\"> 1 </cn>\n      <ci> UbE </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "UbEB",
                 "math": {
                   "latex": " 1-\\mathit{UbE}",
@@ -1945,6 +2023,7 @@
                 "xml": "<assignmentRule metaid=\"rule4\" variable=\"UbE2B\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <cn type=\"integer\"> 1 </cn>\n      <ci> UbE2 </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "UbE2B",
                 "math": {
                   "latex": " 1-\\mathit{UbE2}",
@@ -1965,6 +2044,7 @@
                 "xml": "<assignmentRule metaid=\"rule5\" variable=\"Wee1B\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <cn type=\"integer\"> 1 </cn>\n      <ci> Wee1 </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "Wee1B",
                 "math": {
                   "latex": " 1-\\mathit{Wee1}",
@@ -1985,6 +2065,7 @@
                 "xml": "<assignmentRule metaid=\"rule6\" variable=\"Cdc25B\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <cn type=\"integer\"> 1 </cn>\n      <ci> Cdc25 </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "Cdc25B",
                 "math": {
                   "latex": " 1-\\mathit{Cdc25}",
@@ -2005,6 +2086,7 @@
                 "xml": "<assignmentRule metaid=\"rule7\" variable=\"Rum1Total\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> G1R </ci>\n      <ci> G2R </ci>\n      <ci> PG2R </ci>\n      <ci> R </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "Rum1Total",
                 "math": {
                   "latex": " \\mathit{G1R}+\\mathit{G2R}+\\mathit{PG2R}+\\mathit{R}",
@@ -2025,6 +2107,7 @@
                 "xml": "<assignmentRule metaid=\"rule8\" variable=\"Cdc13Total\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> G2K </ci>\n      <ci> G2R </ci>\n      <ci> PG2 </ci>\n      <ci> PG2R </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "Cdc13Total",
                 "math": {
                   "latex": " \\mathit{G2K}+\\mathit{G2R}+\\mathit{PG2}+\\mathit{PG2R}",
@@ -2045,6 +2128,7 @@
                 "xml": "<assignmentRule metaid=\"rule9\" variable=\"Cig2Total\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> G1K </ci>\n      <ci> G1R </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "Cig2Total",
                 "math": {
                   "latex": " \\mathit{G1K}+\\mathit{G1R}",
@@ -2065,6 +2149,7 @@
                 "xml": "<assignmentRule metaid=\"rule10\" variable=\"k2\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <apply>\n        <times/>\n        <ci> UbE </ci>\n        <ci> V2 </ci>\n      </apply>\n      <apply>\n        <times/>\n        <apply>\n          <minus/>\n          <cn type=\"integer\"> 1 </cn>\n          <ci> UbE </ci>\n        </apply>\n        <ci> V2prime </ci>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "k2",
                 "math": {
                   "latex": " \\mathit{UbE}·\\mathit{V2}+(1-\\mathit{UbE})·\\mathit{V2prime}",
@@ -2085,6 +2170,7 @@
                 "xml": "<assignmentRule metaid=\"rule11\" variable=\"k6\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <apply>\n        <times/>\n        <ci> UbE2 </ci>\n        <ci> V6 </ci>\n      </apply>\n      <apply>\n        <times/>\n        <apply>\n          <minus/>\n          <cn type=\"integer\"> 1 </cn>\n          <ci> UbE2 </ci>\n        </apply>\n        <ci> V6prime </ci>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "k6",
                 "math": {
                   "latex": " \\mathit{UbE2}·\\mathit{V6}+(1-\\mathit{UbE2})·\\mathit{V6prime}",
@@ -2105,6 +2191,7 @@
                 "xml": "<assignmentRule metaid=\"rule12\" variable=\"kwee\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <apply>\n        <times/>\n        <ci> Vwprime </ci>\n        <apply>\n          <minus/>\n          <cn type=\"integer\"> 1 </cn>\n          <ci> Wee1 </ci>\n        </apply>\n      </apply>\n      <apply>\n        <times/>\n        <ci> Vw </ci>\n        <ci> Wee1 </ci>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "kwee",
                 "math": {
                   "latex": " \\mathit{Vwprime}·(1-\\mathit{Wee1})+\\mathit{Vw}·\\mathit{Wee1}",
@@ -2125,6 +2212,7 @@
                 "xml": "<assignmentRule metaid=\"rule13\" variable=\"k25\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <apply>\n        <times/>\n        <ci> Cdc25 </ci>\n        <ci> V25 </ci>\n      </apply>\n      <apply>\n        <times/>\n        <apply>\n          <minus/>\n          <cn type=\"integer\"> 1 </cn>\n          <ci> Cdc25 </ci>\n        </apply>\n        <ci> V25prime </ci>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "k25",
                 "math": {
                   "latex": " \\mathit{Cdc25}·\\mathit{V25}+(1-\\mathit{Cdc25})·\\mathit{V25prime}",
@@ -2145,6 +2233,7 @@
                 "xml": "<assignmentRule metaid=\"rule14\" variable=\"MPF\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> G2K </ci>\n      <apply>\n        <times/>\n        <ci> beta </ci>\n        <ci> PG2 </ci>\n      </apply>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "MPF",
                 "math": {
                   "latex": " \\mathit{G2K}+\\mathit{\\beta}·\\mathit{PG2}",
@@ -2165,6 +2254,7 @@
                 "xml": "<assignmentRule metaid=\"rule15\" variable=\"SPF\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> Cig1 </ci>\n      <apply>\n        <times/>\n        <ci> alpha </ci>\n        <ci> G1K </ci>\n      </apply>\n      <ci> MPF </ci>\n    </apply>\n  </math>\n</assignmentRule>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "variable": "SPF",
                 "math": {
                   "latex": " \\mathit{Cig1}+\\mathit{\\alpha}·\\mathit{G1K}+\\mathit{MPF}",
@@ -2188,6 +2278,7 @@
                 "xml": "<reaction metaid=\"metaid_0000091\" id=\"G2K_Creation\" name=\"Cdc13_Cdc2 creation\" reversible=\"false\" fast=\"false\">\n  <listOfProducts>\n    <speciesReference metaid=\"_377780\" species=\"G2K\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_377792\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <ci> k1 </ci>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2206,6 +2297,7 @@
                     "xml": "<speciesReference metaid=\"_377780\" species=\"G2K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2K",
                     "stoichiometry": null,
                     "constant": null
@@ -2225,6 +2317,7 @@
                   "xml": "<kineticLaw metaid=\"_377792\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <ci> k1 </ci>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k1}",
                     "formula": "k1"
@@ -2248,6 +2341,7 @@
                 "xml": "<reaction metaid=\"metaid_0000092\" id=\"G1K_Creation\" name=\"Cig2_Cdc2 creation\" reversible=\"false\" fast=\"false\">\n  <listOfProducts>\n    <speciesReference metaid=\"_377804\" species=\"G1K\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_377816\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <ci> k5 </ci>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2266,6 +2360,7 @@
                     "xml": "<speciesReference metaid=\"_377804\" species=\"G1K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G1K",
                     "stoichiometry": null,
                     "constant": null
@@ -2285,6 +2380,7 @@
                   "xml": "<kineticLaw metaid=\"_377816\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <ci> k5 </ci>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k5}",
                     "formula": "k5"
@@ -2333,6 +2429,7 @@
                 "xml": "<reaction metaid=\"metaid_0000093\" id=\"Cdc2Phos\" name=\"Cdc2 phosphorylation\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000093\">\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/reactome/REACT_6294\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/reactome/REACT_6327\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n        <bqbiol:hasPart>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/reactome/REACT_6257\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/reactome/REACT_6178\"/>\n          </rdf:Bag>\n        </bqbiol:hasPart>\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/ec-code/2.7.10.2\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006468\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_377828\" species=\"G2K\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_377840\" species=\"PG2\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_377852\" species=\"Wee1\"/>\n    <modifierSpeciesReference metaid=\"_377864\" species=\"Cdc25\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_377876\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <times/>\n          <ci> G2K </ci>\n          <ci> kwee </ci>\n        </apply>\n        <apply>\n          <times/>\n          <ci> k25 </ci>\n          <ci> PG2 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2350,6 +2447,7 @@
                     "xml": "<speciesReference metaid=\"_377828\" species=\"G2K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2K",
                     "stoichiometry": null,
                     "constant": null
@@ -2369,6 +2467,7 @@
                     "xml": "<speciesReference metaid=\"_377840\" species=\"PG2\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2",
                     "stoichiometry": null,
                     "constant": null
@@ -2388,6 +2487,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_377852\" species=\"Wee1\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Wee1"
                   },
                   {
@@ -2403,6 +2503,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_377864\" species=\"Cdc25\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Cdc25"
                   }
                 ],
@@ -2419,6 +2520,7 @@
                   "xml": "<kineticLaw metaid=\"_377876\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <times/>\n        <ci> G2K </ci>\n        <ci> kwee </ci>\n      </apply>\n      <apply>\n        <times/>\n        <ci> k25 </ci>\n        <ci> PG2 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G2K}·\\mathit{kwee}-\\mathit{k25}·\\mathit{PG2}",
                     "formula": "G2K * kwee - k25 * PG2"
@@ -2450,6 +2552,7 @@
                 "xml": "<reaction metaid=\"metaid_0000094\" id=\"G2R_Creation\" name=\"binding of Rum1 with Cdc13_Cdc2\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000094\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006461\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_377889\" species=\"G2K\"/>\n    <speciesReference metaid=\"_377901\" species=\"R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_377913\" species=\"G2R\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_377925\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <times/>\n          <ci> G2K </ci>\n          <ci> k7 </ci>\n          <ci> R </ci>\n        </apply>\n        <apply>\n          <times/>\n          <ci> G2R </ci>\n          <ci> k7r </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2467,6 +2570,7 @@
                     "xml": "<speciesReference metaid=\"_377889\" species=\"G2K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2K",
                     "stoichiometry": null,
                     "constant": null
@@ -2484,6 +2588,7 @@
                     "xml": "<speciesReference metaid=\"_377901\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -2503,6 +2608,7 @@
                     "xml": "<speciesReference metaid=\"_377913\" species=\"G2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2R",
                     "stoichiometry": null,
                     "constant": null
@@ -2522,6 +2628,7 @@
                   "xml": "<kineticLaw metaid=\"_377925\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <times/>\n        <ci> G2K </ci>\n        <ci> k7 </ci>\n        <ci> R </ci>\n      </apply>\n      <apply>\n        <times/>\n        <ci> G2R </ci>\n        <ci> k7r </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G2K}·\\mathit{k7}·\\mathit{R}-\\mathit{G2R}·\\mathit{k7r}",
                     "formula": "G2K * k7 * R - G2R * k7r"
@@ -2553,6 +2660,7 @@
                 "xml": "<reaction metaid=\"metaid_0000095\" id=\"PG2R_Creation\" name=\"binding of Rum1 with Cdc13_P-Cdc2\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000095\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006461\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_377937\" species=\"PG2\"/>\n    <speciesReference metaid=\"_377949\" species=\"R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_377961\" species=\"PG2R\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_377973\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <times/>\n          <ci> k7 </ci>\n          <ci> PG2 </ci>\n          <ci> R </ci>\n        </apply>\n        <apply>\n          <times/>\n          <ci> k7r </ci>\n          <ci> PG2R </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2570,6 +2678,7 @@
                     "xml": "<speciesReference metaid=\"_377937\" species=\"PG2\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2",
                     "stoichiometry": null,
                     "constant": null
@@ -2587,6 +2696,7 @@
                     "xml": "<speciesReference metaid=\"_377949\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -2606,6 +2716,7 @@
                     "xml": "<speciesReference metaid=\"_377961\" species=\"PG2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2R",
                     "stoichiometry": null,
                     "constant": null
@@ -2625,6 +2736,7 @@
                   "xml": "<kineticLaw metaid=\"_377973\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <times/>\n        <ci> k7 </ci>\n        <ci> PG2 </ci>\n        <ci> R </ci>\n      </apply>\n      <apply>\n        <times/>\n        <ci> k7r </ci>\n        <ci> PG2R </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k7}·\\mathit{PG2}·\\mathit{R}-\\mathit{k7r}·\\mathit{PG2R}",
                     "formula": "k7 * PG2 * R - k7r * PG2R"
@@ -2656,6 +2768,7 @@
                 "xml": "<reaction metaid=\"metaid_0000096\" id=\"Rum1DegInG2R\" name=\"Rum1 degradation in Rum1_Cdc13_Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000096\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_377985\" species=\"G2R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_377997\" species=\"G2K\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378009\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> G2R </ci>\n        <ci> k4 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2673,6 +2786,7 @@
                     "xml": "<speciesReference metaid=\"_377985\" species=\"G2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2R",
                     "stoichiometry": null,
                     "constant": null
@@ -2692,6 +2806,7 @@
                     "xml": "<speciesReference metaid=\"_377997\" species=\"G2K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2K",
                     "stoichiometry": null,
                     "constant": null
@@ -2711,6 +2826,7 @@
                   "xml": "<kineticLaw metaid=\"_378009\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> G2R </ci>\n      <ci> k4 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G2R}·\\mathit{k4}",
                     "formula": "G2R * k4"
@@ -2742,6 +2858,7 @@
                 "xml": "<reaction metaid=\"metaid_0000097\" id=\"Rum1Deg\" name=\"Rum1 degradation in solution\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000097\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378021\" species=\"R\"/>\n  </listOfReactants>\n  <kineticLaw metaid=\"_378033\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k4 </ci>\n        <ci> R </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2759,6 +2876,7 @@
                     "xml": "<speciesReference metaid=\"_378021\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -2779,6 +2897,7 @@
                   "xml": "<kineticLaw metaid=\"_378033\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k4 </ci>\n      <ci> R </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k4}·\\mathit{R}",
                     "formula": "k4 * R"
@@ -2810,6 +2929,7 @@
                 "xml": "<reaction metaid=\"metaid_0000098\" id=\"Rum1DegInPG2R\" name=\"Rum1 degradation in Rum1_Cdc13_P-Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000098\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378045\" species=\"PG2R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378057\" species=\"PG2\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378069\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k4 </ci>\n        <ci> PG2R </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2827,6 +2947,7 @@
                     "xml": "<speciesReference metaid=\"_378045\" species=\"PG2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2R",
                     "stoichiometry": null,
                     "constant": null
@@ -2846,6 +2967,7 @@
                     "xml": "<speciesReference metaid=\"_378057\" species=\"PG2\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2",
                     "stoichiometry": null,
                     "constant": null
@@ -2865,6 +2987,7 @@
                   "xml": "<kineticLaw metaid=\"_378069\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k4 </ci>\n      <ci> PG2R </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k4}·\\mathit{PG2R}",
                     "formula": "k4 * PG2R"
@@ -2896,6 +3019,7 @@
                 "xml": "<reaction metaid=\"metaid_0000099\" id=\"RumDegInG1R\" name=\"Rum1 degradation in Rum1_Cig2_Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000099\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378081\" species=\"G1R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378094\" species=\"G1K\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378106\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> G1R </ci>\n        <ci> k4 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2913,6 +3037,7 @@
                     "xml": "<speciesReference metaid=\"_378081\" species=\"G1R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G1R",
                     "stoichiometry": null,
                     "constant": null
@@ -2932,6 +3057,7 @@
                     "xml": "<speciesReference metaid=\"_378094\" species=\"G1K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G1K",
                     "stoichiometry": null,
                     "constant": null
@@ -2951,6 +3077,7 @@
                   "xml": "<kineticLaw metaid=\"_378106\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> G1R </ci>\n      <ci> k4 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G1R}·\\mathit{k4}",
                     "formula": "G1R * k4"
@@ -2982,6 +3109,7 @@
                 "xml": "<reaction metaid=\"metaid_0000100\" id=\"G2K_dissoc\" name=\"Cdc13 degradation in Cdc13_Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000100\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0008054\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378118\" species=\"G2K\"/>\n  </listOfReactants>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378130\" species=\"UbE\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378142\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> G2K </ci>\n        <ci> k2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2999,6 +3127,7 @@
                     "xml": "<speciesReference metaid=\"_378118\" species=\"G2K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2K",
                     "stoichiometry": null,
                     "constant": null
@@ -3019,6 +3148,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378130\" species=\"UbE\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE"
                   }
                 ],
@@ -3035,6 +3165,7 @@
                   "xml": "<kineticLaw metaid=\"_378142\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> G2K </ci>\n      <ci> k2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G2K}·\\mathit{k2}",
                     "formula": "G2K * k2"
@@ -3066,6 +3197,7 @@
                 "xml": "<reaction metaid=\"metaid_0000101\" id=\"PG2_dissoc\" name=\"Cdc13 degradation in Cdc13_P-Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000101\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0008054\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378154\" species=\"PG2\"/>\n  </listOfReactants>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378167\" species=\"UbE\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378179\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k2 </ci>\n        <ci> PG2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3083,6 +3215,7 @@
                     "xml": "<speciesReference metaid=\"_378154\" species=\"PG2\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2",
                     "stoichiometry": null,
                     "constant": null
@@ -3103,6 +3236,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378167\" species=\"UbE\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE"
                   }
                 ],
@@ -3119,6 +3253,7 @@
                   "xml": "<kineticLaw metaid=\"_378179\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k2 </ci>\n      <ci> PG2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k2}·\\mathit{PG2}",
                     "formula": "k2 * PG2"
@@ -3150,6 +3285,7 @@
                 "xml": "<reaction metaid=\"metaid_0000102\" id=\"G1K_Dissociation\" name=\"Cig2 degradation in Cig2_Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000102\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0008054\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378191\" species=\"G1K\"/>\n  </listOfReactants>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378203\" species=\"UbE2\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378215\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> G1K </ci>\n        <ci> k6 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3167,6 +3303,7 @@
                     "xml": "<speciesReference metaid=\"_378191\" species=\"G1K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G1K",
                     "stoichiometry": null,
                     "constant": null
@@ -3187,6 +3324,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378203\" species=\"UbE2\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE2"
                   }
                 ],
@@ -3203,6 +3341,7 @@
                   "xml": "<kineticLaw metaid=\"_378215\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> G1K </ci>\n      <ci> k6 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G1K}·\\mathit{k6}",
                     "formula": "G1K * k6"
@@ -3234,6 +3373,7 @@
                 "xml": "<reaction metaid=\"metaid_0000103\" id=\"PG2R_Dissociation\" name=\"Cdc13 degradation in Rum1_Cdc13_P-Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000103\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0008054\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378227\" species=\"PG2R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378239\" species=\"R\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378251\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k2prime </ci>\n        <ci> PG2R </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3251,6 +3391,7 @@
                     "xml": "<speciesReference metaid=\"_378227\" species=\"PG2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2R",
                     "stoichiometry": null,
                     "constant": null
@@ -3270,6 +3411,7 @@
                     "xml": "<speciesReference metaid=\"_378239\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3289,6 +3431,7 @@
                   "xml": "<kineticLaw metaid=\"_378251\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k2prime </ci>\n      <ci> PG2R </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k2prime}·\\mathit{PG2R}",
                     "formula": "k2prime * PG2R"
@@ -3320,6 +3463,7 @@
                 "xml": "<reaction metaid=\"metaid_0000104\" id=\"G2R_Dissociation\" name=\"Cdc13 degradation in Rum1_Cdc13_Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000104\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0008054\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378263\" species=\"G2R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378276\" species=\"R\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378288\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> G2R </ci>\n        <ci> k2prime </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3337,6 +3481,7 @@
                     "xml": "<speciesReference metaid=\"_378263\" species=\"G2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2R",
                     "stoichiometry": null,
                     "constant": null
@@ -3356,6 +3501,7 @@
                     "xml": "<speciesReference metaid=\"_378276\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3375,6 +3521,7 @@
                   "xml": "<kineticLaw metaid=\"_378288\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> G2R </ci>\n      <ci> k2prime </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G2R}·\\mathit{k2prime}",
                     "formula": "G2R * k2prime"
@@ -3406,6 +3553,7 @@
                 "xml": "<reaction metaid=\"metaid_0000105\" id=\"G1R_Dissociation\" name=\"Cig2 degradation in Rum1_Cig2_Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000105\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0008054\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378300\" species=\"G1R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378313\" species=\"R\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378325\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> G1R </ci>\n        <ci> k6prime </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3423,6 +3571,7 @@
                     "xml": "<speciesReference metaid=\"_378300\" species=\"G1R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G1R",
                     "stoichiometry": null,
                     "constant": null
@@ -3442,6 +3591,7 @@
                     "xml": "<speciesReference metaid=\"_378313\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3461,6 +3611,7 @@
                   "xml": "<kineticLaw metaid=\"_378325\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> G1R </ci>\n      <ci> k6prime </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G1R}·\\mathit{k6prime}",
                     "formula": "G1R * k6prime"
@@ -3492,6 +3643,7 @@
                 "xml": "<reaction metaid=\"metaid_0000106\" id=\"G1R_Binding\" name=\"Binding of Rum1 to Cig2_Cdc2\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000106\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0006461\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378337\" species=\"G1K\"/>\n    <speciesReference metaid=\"_378349\" species=\"R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378361\" species=\"G1R\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378373\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <times/>\n          <ci> G1K </ci>\n          <ci> k8 </ci>\n          <ci> R </ci>\n        </apply>\n        <apply>\n          <times/>\n          <ci> G1R </ci>\n          <ci> k8r </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3509,6 +3661,7 @@
                     "xml": "<speciesReference metaid=\"_378337\" species=\"G1K\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G1K",
                     "stoichiometry": null,
                     "constant": null
@@ -3526,6 +3679,7 @@
                     "xml": "<speciesReference metaid=\"_378349\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3545,6 +3699,7 @@
                     "xml": "<speciesReference metaid=\"_378361\" species=\"G1R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G1R",
                     "stoichiometry": null,
                     "constant": null
@@ -3564,6 +3719,7 @@
                   "xml": "<kineticLaw metaid=\"_378373\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <times/>\n        <ci> G1K </ci>\n        <ci> k8 </ci>\n        <ci> R </ci>\n      </apply>\n      <apply>\n        <times/>\n        <ci> G1R </ci>\n        <ci> k8r </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G1K}·\\mathit{k8}·\\mathit{R}-\\mathit{G1R}·\\mathit{k8r}",
                     "formula": "G1K * k8 * R - G1R * k8r"
@@ -3596,6 +3752,7 @@
                 "xml": "<reaction metaid=\"metaid_0000107\" id=\"G2R_Dissociation_UbE\" name=\"UbE mediated degradation of Cdc13_Cdc2 in Rum1_Cdc13_Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000107\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/kegg.pathway/spo04120\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378385\" species=\"G2R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378397\" species=\"R\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378410\" species=\"UbE\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378422\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> G2R </ci>\n        <ci> k2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3613,6 +3770,7 @@
                     "xml": "<speciesReference metaid=\"_378385\" species=\"G2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "G2R",
                     "stoichiometry": null,
                     "constant": null
@@ -3632,6 +3790,7 @@
                     "xml": "<speciesReference metaid=\"_378397\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3651,6 +3810,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378410\" species=\"UbE\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE"
                   }
                 ],
@@ -3667,6 +3827,7 @@
                   "xml": "<kineticLaw metaid=\"_378422\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> G2R </ci>\n      <ci> k2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{G2R}·\\mathit{k2}",
                     "formula": "G2R * k2"
@@ -3699,6 +3860,7 @@
                 "xml": "<reaction metaid=\"metaid_0000108\" id=\"PG2R_Dissociation_UbE\" name=\"UbE mediated degradation of Cdc13_Cdc2 in Rum1_Cdc13_P-Cdc2\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000108\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/kegg.pathway/spo04120\"/>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378434\" species=\"PG2R\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378447\" species=\"R\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378459\" species=\"UbE\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378471\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k2 </ci>\n        <ci> PG2R </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3716,6 +3878,7 @@
                     "xml": "<speciesReference metaid=\"_378434\" species=\"PG2R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "PG2R",
                     "stoichiometry": null,
                     "constant": null
@@ -3735,6 +3898,7 @@
                     "xml": "<speciesReference metaid=\"_378447\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3754,6 +3918,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378459\" species=\"UbE\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE"
                   }
                 ],
@@ -3770,6 +3935,7 @@
                   "xml": "<kineticLaw metaid=\"_378471\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k2 </ci>\n      <ci> PG2R </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k2}·\\mathit{PG2R}",
                     "formula": "k2 * PG2R"
@@ -3793,6 +3959,7 @@
                 "xml": "<reaction metaid=\"metaid_0000109\" id=\"Rum1_Production\" name=\"Rum1 creation\" reversible=\"false\" fast=\"false\">\n  <listOfProducts>\n    <speciesReference metaid=\"_378483\" species=\"R\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"_378495\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <ci> k3 </ci>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3811,6 +3978,7 @@
                     "xml": "<speciesReference metaid=\"_378483\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3830,6 +3998,7 @@
                   "xml": "<kineticLaw metaid=\"_378495\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <ci> k3 </ci>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k3}",
                     "formula": "k3"
@@ -3861,6 +4030,7 @@
                 "xml": "<reaction metaid=\"metaid_0000110\" id=\"Rum1_Deg_SPF\" name=\"Rum1 degradation by SPF\" reversible=\"false\" fast=\"false\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000110\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0030163\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference metaid=\"_378507\" species=\"R\"/>\n  </listOfReactants>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378519\" species=\"SPF\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378531\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> kp </ci>\n          <ci> Mass </ci>\n          <ci> R </ci>\n          <ci> SPF </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Kmp </ci>\n          <ci> R </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3878,6 +4048,7 @@
                     "xml": "<speciesReference metaid=\"_378507\" species=\"R\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "R",
                     "stoichiometry": null,
                     "constant": null
@@ -3898,6 +4069,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378519\" species=\"SPF\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "SPF"
                   }
                 ],
@@ -3914,6 +4086,7 @@
                   "xml": "<kineticLaw metaid=\"_378531\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <apply>\n        <times/>\n        <ci> kp </ci>\n        <ci> Mass </ci>\n        <ci> R </ci>\n        <ci> SPF </ci>\n      </apply>\n      <apply>\n        <plus/>\n        <ci> Kmp </ci>\n        <ci> R </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\frac{\\mathit{kp}·\\mathit{Mass}·\\mathit{R}·\\mathit{SPF}}{\\mathit{Kmp}+\\mathit{R}}",
                     "formula": "kp * Mass * R * SPF / (Kmp + R)"
@@ -3937,6 +4110,7 @@
                 "xml": "<reaction metaid=\"metaid_0000111\" id=\"IE_Reaction\" name=\"IE production &amp; degradation\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference metaid=\"_378543\" species=\"IEB\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378555\" species=\"IE\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378568\" species=\"MPF\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378580\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> IEB </ci>\n            <ci> ki </ci>\n            <ci> MPF </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> IEB </ci>\n            <ci> Kmi </ci>\n          </apply>\n        </apply>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> IE </ci>\n            <ci> kir </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> IE </ci>\n            <ci> Kmir </ci>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3954,6 +4128,7 @@
                     "xml": "<speciesReference metaid=\"_378543\" species=\"IEB\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "IEB",
                     "stoichiometry": null,
                     "constant": null
@@ -3973,6 +4148,7 @@
                     "xml": "<speciesReference metaid=\"_378555\" species=\"IE\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "IE",
                     "stoichiometry": null,
                     "constant": null
@@ -3992,6 +4168,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378568\" species=\"MPF\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "MPF"
                   }
                 ],
@@ -4008,6 +4185,7 @@
                   "xml": "<kineticLaw metaid=\"_378580\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> IEB </ci>\n          <ci> ki </ci>\n          <ci> MPF </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> IEB </ci>\n          <ci> Kmi </ci>\n        </apply>\n      </apply>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> IE </ci>\n          <ci> kir </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> IE </ci>\n          <ci> Kmir </ci>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\frac{\\mathit{IEB}·\\mathit{ki}·\\mathit{MPF}}{\\mathit{IEB}+\\mathit{Kmi}}-\\frac{\\mathit{IE}·\\mathit{kir}}{\\mathit{IE}+\\mathit{Kmir}}",
                     "formula": "IEB * ki * MPF / (IEB + Kmi) - IE * kir / (IE + Kmir)"
@@ -4031,6 +4209,7 @@
                 "xml": "<reaction metaid=\"metaid_0000112\" id=\"UbE_Reaction\" name=\"UbE production &amp; degradation\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference metaid=\"_378592\" species=\"UbEB\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378604\" species=\"UbE\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378616\" species=\"IE\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378628\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> IE </ci>\n            <ci> ku </ci>\n            <ci> UbEB </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Kmu </ci>\n            <ci> UbEB </ci>\n          </apply>\n        </apply>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> kur </ci>\n            <ci> UbE </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Kmur </ci>\n            <ci> UbE </ci>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4048,6 +4227,7 @@
                     "xml": "<speciesReference metaid=\"_378592\" species=\"UbEB\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbEB",
                     "stoichiometry": null,
                     "constant": null
@@ -4067,6 +4247,7 @@
                     "xml": "<speciesReference metaid=\"_378604\" species=\"UbE\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE",
                     "stoichiometry": null,
                     "constant": null
@@ -4086,6 +4267,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378616\" species=\"IE\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "IE"
                   }
                 ],
@@ -4102,6 +4284,7 @@
                   "xml": "<kineticLaw metaid=\"_378628\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> IE </ci>\n          <ci> ku </ci>\n          <ci> UbEB </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Kmu </ci>\n          <ci> UbEB </ci>\n        </apply>\n      </apply>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> kur </ci>\n          <ci> UbE </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Kmur </ci>\n          <ci> UbE </ci>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\frac{\\mathit{IE}·\\mathit{ku}·\\mathit{UbEB}}{\\mathit{Kmu}+\\mathit{UbEB}}-\\frac{\\mathit{kur}·\\mathit{UbE}}{\\mathit{Kmur}+\\mathit{UbE}}",
                     "formula": "IE * ku * UbEB / (Kmu + UbEB) - kur * UbE / (Kmur + UbE)"
@@ -4125,6 +4308,7 @@
                 "xml": "<reaction metaid=\"metaid_0000113\" id=\"UbE2_Reaction\" name=\"UbE2 production &amp; degradation\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference metaid=\"_378640\" species=\"UbE2B\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378652\" species=\"UbE2\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378665\" species=\"MPF\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378677\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> ku2 </ci>\n            <ci> MPF </ci>\n            <ci> UbE2B </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Kmu2 </ci>\n            <ci> UbE2B </ci>\n          </apply>\n        </apply>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> kur2 </ci>\n            <ci> UbE2 </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Kmur2 </ci>\n            <ci> UbE2 </ci>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4142,6 +4326,7 @@
                     "xml": "<speciesReference metaid=\"_378640\" species=\"UbE2B\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE2B",
                     "stoichiometry": null,
                     "constant": null
@@ -4161,6 +4346,7 @@
                     "xml": "<speciesReference metaid=\"_378652\" species=\"UbE2\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "UbE2",
                     "stoichiometry": null,
                     "constant": null
@@ -4180,6 +4366,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378665\" species=\"MPF\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "MPF"
                   }
                 ],
@@ -4196,6 +4383,7 @@
                   "xml": "<kineticLaw metaid=\"_378677\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> ku2 </ci>\n          <ci> MPF </ci>\n          <ci> UbE2B </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Kmu2 </ci>\n          <ci> UbE2B </ci>\n        </apply>\n      </apply>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> kur2 </ci>\n          <ci> UbE2 </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Kmur2 </ci>\n          <ci> UbE2 </ci>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\frac{\\mathit{ku2}·\\mathit{MPF}·\\mathit{UbE2B}}{\\mathit{Kmu2}+\\mathit{UbE2B}}-\\frac{\\mathit{kur2}·\\mathit{UbE2}}{\\mathit{Kmur2}+\\mathit{UbE2}}",
                     "formula": "ku2 * MPF * UbE2B / (Kmu2 + UbE2B) - kur2 * UbE2 / (Kmur2 + UbE2)"
@@ -4219,6 +4407,7 @@
                 "xml": "<reaction metaid=\"metaid_0000114\" id=\"Wee1_Reaction\" name=\"Wee1 production &amp; degradation\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference metaid=\"_378689\" species=\"Wee1B\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378701\" species=\"Wee1\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378713\" species=\"MPF\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378725\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> kwr </ci>\n            <ci> Wee1B </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Kmwr </ci>\n            <ci> Wee1B </ci>\n          </apply>\n        </apply>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> kw </ci>\n            <ci> MPF </ci>\n            <ci> Wee1 </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Kmw </ci>\n            <ci> Wee1 </ci>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4236,6 +4425,7 @@
                     "xml": "<speciesReference metaid=\"_378689\" species=\"Wee1B\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Wee1B",
                     "stoichiometry": null,
                     "constant": null
@@ -4255,6 +4445,7 @@
                     "xml": "<speciesReference metaid=\"_378701\" species=\"Wee1\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Wee1",
                     "stoichiometry": null,
                     "constant": null
@@ -4274,6 +4465,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378713\" species=\"MPF\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "MPF"
                   }
                 ],
@@ -4290,6 +4482,7 @@
                   "xml": "<kineticLaw metaid=\"_378725\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> kwr </ci>\n          <ci> Wee1B </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Kmwr </ci>\n          <ci> Wee1B </ci>\n        </apply>\n      </apply>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> kw </ci>\n          <ci> MPF </ci>\n          <ci> Wee1 </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Kmw </ci>\n          <ci> Wee1 </ci>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\frac{\\mathit{kwr}·\\mathit{Wee1B}}{\\mathit{Kmwr}+\\mathit{Wee1B}}-\\frac{\\mathit{kw}·\\mathit{MPF}·\\mathit{Wee1}}{\\mathit{Kmw}+\\mathit{Wee1}}",
                     "formula": "kwr * Wee1B / (Kmwr + Wee1B) - kw * MPF * Wee1 / (Kmw + Wee1)"
@@ -4313,6 +4506,7 @@
                 "xml": "<reaction metaid=\"metaid_0000115\" id=\"Cdc25_Reaction\" name=\"Cdc25 production &amp; degradation\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference metaid=\"_378737\" species=\"Cdc25B\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference metaid=\"_378749\" species=\"Cdc25\"/>\n  </listOfProducts>\n  <listOfModifiers>\n    <modifierSpeciesReference metaid=\"_378761\" species=\"MPF\"/>\n  </listOfModifiers>\n  <kineticLaw metaid=\"_378773\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <minus/>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> Cdc25B </ci>\n            <ci> kc </ci>\n            <ci> MPF </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Cdc25B </ci>\n            <ci> Kmc </ci>\n          </apply>\n        </apply>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> Cdc25 </ci>\n            <ci> kcr </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Cdc25 </ci>\n            <ci> Kmcr </ci>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4330,6 +4524,7 @@
                     "xml": "<speciesReference metaid=\"_378737\" species=\"Cdc25B\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Cdc25B",
                     "stoichiometry": null,
                     "constant": null
@@ -4349,6 +4544,7 @@
                     "xml": "<speciesReference metaid=\"_378749\" species=\"Cdc25\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Cdc25",
                     "stoichiometry": null,
                     "constant": null
@@ -4368,6 +4564,7 @@
                     "xml": "<modifierSpeciesReference metaid=\"_378761\" species=\"MPF\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "MPF"
                   }
                 ],
@@ -4384,6 +4581,7 @@
                   "xml": "<kineticLaw metaid=\"_378773\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> Cdc25B </ci>\n          <ci> kc </ci>\n          <ci> MPF </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Cdc25B </ci>\n          <ci> Kmc </ci>\n        </apply>\n      </apply>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> Cdc25 </ci>\n          <ci> kcr </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Cdc25 </ci>\n          <ci> Kmcr </ci>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\frac{\\mathit{Cdc25B}·\\mathit{kc}·\\mathit{MPF}}{\\mathit{Cdc25B}+\\mathit{Kmc}}-\\frac{\\mathit{Cdc25}·\\mathit{kcr}}{\\mathit{Cdc25}+\\mathit{Kmcr}}",
                     "formula": "Cdc25B * kc * MPF / (Cdc25B + Kmc) - Cdc25 * kcr / (Cdc25 + Kmcr)"
@@ -4417,6 +4615,7 @@
                 "xml": "<event metaid=\"metaid_0000116\" id=\"Start\" name=\"S-Phase Start\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000116\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0045750\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <trigger metaid=\"_378785\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <geq/>\n        <ci> SPF </ci>\n        <cn> 0.1 </cn>\n      </apply>\n    </math>\n  </trigger>\n  <delay metaid=\"_378797\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <cn type=\"integer\"> 60 </cn>\n    </math>\n  </delay>\n  <listOfEventAssignments>\n    <eventAssignment metaid=\"_378809\" variable=\"kp\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <divide/>\n          <ci> kp </ci>\n          <cn type=\"integer\"> 2 </cn>\n        </apply>\n      </math>\n    </eventAssignment>\n  </listOfEventAssignments>\n</event>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "useValuesFromTriggerTime": true,
                 "trigger": {
                   "pk": "BIOMD0000000007/Trigger:_378785",
@@ -4431,6 +4630,7 @@
                   "xml": "<trigger metaid=\"_378785\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <geq/>\n      <ci> SPF </ci>\n      <cn> 0.1 </cn>\n    </apply>\n  </math>\n</trigger>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{SPF}\\ge 0.1",
                     "formula": "SPF >= 0.1"
@@ -4452,6 +4652,7 @@
                   "xml": "<delay metaid=\"_378797\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <cn type=\"integer\"> 60 </cn>\n  </math>\n</delay>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " 60",
                     "formula": "60"
@@ -4471,6 +4672,7 @@
                     "xml": "<eventAssignment metaid=\"_378809\" variable=\"kp\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <ci> kp </ci>\n      <cn type=\"integer\"> 2 </cn>\n    </apply>\n  </math>\n</eventAssignment>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "variable": "kp",
                     "math": {
                       "latex": " \\frac{\\mathit{kp}}{2}",
@@ -4500,6 +4702,7 @@
                 "xml": "<event metaid=\"metaid_0000117\" id=\"Division\" name=\"Cell Division\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#metaid_0000117\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0051301\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <trigger metaid=\"_378821\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <leq/>\n        <ci> UbE </ci>\n        <cn> 0.1 </cn>\n      </apply>\n    </math>\n  </trigger>\n  <listOfEventAssignments>\n    <eventAssignment metaid=\"_378833\" variable=\"kp\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <times/>\n          <cn type=\"integer\"> 2 </cn>\n          <ci> kp </ci>\n        </apply>\n      </math>\n    </eventAssignment>\n    <eventAssignment metaid=\"_378845\" variable=\"Mass\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <divide/>\n          <ci> Mass </ci>\n          <cn type=\"integer\"> 2 </cn>\n        </apply>\n      </math>\n    </eventAssignment>\n  </listOfEventAssignments>\n</event>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "useValuesFromTriggerTime": true,
                 "trigger": {
                   "pk": "BIOMD0000000007/Trigger:_378821",
@@ -4514,6 +4717,7 @@
                   "xml": "<trigger metaid=\"_378821\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <leq/>\n      <ci> UbE </ci>\n      <cn> 0.1 </cn>\n    </apply>\n  </math>\n</trigger>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{UbE}\\le 0.1",
                     "formula": "UbE <= 0.1"
@@ -4537,6 +4741,7 @@
                     "xml": "<eventAssignment metaid=\"_378833\" variable=\"kp\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <cn type=\"integer\"> 2 </cn>\n      <ci> kp </ci>\n    </apply>\n  </math>\n</eventAssignment>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "variable": "kp",
                     "math": {
                       "latex": " 2·\\mathit{kp}",
@@ -4556,6 +4761,7 @@
                     "xml": "<eventAssignment metaid=\"_378845\" variable=\"Mass\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <ci> Mass </ci>\n      <cn type=\"integer\"> 2 </cn>\n    </apply>\n  </math>\n</eventAssignment>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "variable": "Mass",
                     "math": {
                       "latex": " \\frac{\\mathit{Mass}}{2}",
@@ -4570,6 +4776,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": null
           }
         ],
@@ -7454,7 +7661,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.313 [s]"
+        "jsonReportTime": "0.326 [s]"
       }
     }
   }

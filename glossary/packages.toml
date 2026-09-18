@@ -131,6 +131,20 @@ Every entry names a submodel and one element inside it which this element replac
 The report lists the submodel and the named element of every replacement in the inspector.
 """
 
+[types.SBase.attributes.keyValuePairs]
+label = "key value pairs"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.16" }
+summary = "the controlled annotation fbc Version 3 allows on any element"
+description = """
+A key value pair carries metadata for which SBML has no attribute: the tool which produced a number, the database a reaction was taken from, the assumption behind a bound. It is written into the annotation of an element, in a namespace the package defines, so that every tool reads the same format instead of inventing its own.
+
+Every key of one element is unique, the value is a string, and the uri says where the key is defined, for example a document which lists the keys of a tool.
+
+The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
+"""
+
 [types.SBase.attributes.uncertainties]
 label = "uncertainties"
 package = "distrib"
@@ -231,6 +245,18 @@ description = """
 A [flux bound](fluxbound.md) is how the first version of the package constrained a reaction. Version 2 removed the construct and replaced it by the two attributes of a [reaction](reaction.md) which name a parameter, so the list is empty for every document of a later version.
 
 The report shows the flux bounds of a Version 1 model as a section of the report.
+"""
+
+[types.Model.attributes.listOfUserDefinedConstraints]
+label = "user defined constraints"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.3.3" }
+summary = "the constraints of the model which the reaction network does not impose"
+description = """
+A [user defined constraint](userdefinedconstraint.md) bounds a combination of fluxes and parameters which the stoichiometry of the network leaves free, for example the ratio of two reactions or a shared budget. The list exists from Version 3 of the package on and is empty in every earlier document.
+
+The report shows the user defined constraints of a model as a section of the report.
 """
 
 [types.Model.attributes.listOfObjectives]
@@ -1005,6 +1031,102 @@ spec = { doc = "fbc1", section = "3.5" }
 summary = "the number the flux is compared with"
 description = """
 The value carries the units of a reaction flux, extent per time, which the model defines globally. An infinite value states that the flux is not bounded in that direction; the report cannot show it, because infinity is not a number JSON carries, and leaves the cell empty.
+"""
+
+[types.UserDefinedConstraint]
+label = "User defined constraint"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.14" }
+summary = "a constraint over a combination of fluxes and parameters, added in Version 3"
+description = """
+The bounds of a [reaction](reaction.md) constrain one flux at a time, and the stoichiometry of the network constrains the fluxes which share a species. A user defined constraint is everything else a modeller knows: that two reactions run at a fixed ratio, that a set of reactions shares a budget, or that a flux is coupled to a parameter which a simulation changes.
+
+It is a sum of its [components](userdefinedconstraintcomponent.md), each of which weighs one model variable, and the sum has to stay between the values of the two [parameters](parameter.md) it names as its bounds.
+
+The report shows the user defined constraints of a model in a section of their own, with the table of their components.
+"""
+related = ["UserDefinedConstraintComponent", "Parameter", "Reaction", "fbc"]
+
+[types.UserDefinedConstraint.attributes.lowerBound]
+label = "lower bound"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.14" }
+summary = "the parameter which holds the smallest value the constraint may take"
+description = """
+The attribute is required and names a [parameter](parameter.md) of the model, the way the lower flux bound of a reaction does, so that a scenario is changed in one place. A constraint whose two bounds name the same parameter is an equality.
+"""
+
+[types.UserDefinedConstraint.attributes.upperBound]
+label = "upper bound"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.14" }
+summary = "the parameter which holds the largest value the constraint may take"
+description = """
+The attribute is required and names a [parameter](parameter.md) of the model. Together with the lower bound it reads `lowerBound <= sum of the components <= upperBound`.
+"""
+
+[types.UserDefinedConstraint.attributes.listOfUserDefinedConstraintComponents]
+label = "components"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the weighted variables the constraint is the sum of"
+description = """
+A constraint which is defined has at least one [component](userdefinedconstraintcomponent.md). The report shows them as a table of the variable, the coefficient and the type of every term, with a link to each of them.
+"""
+
+[types.UserDefinedConstraintComponent]
+label = "User defined constraint component"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "one weighted variable of a user defined constraint"
+description = """
+A component is one term of the sum a [user defined constraint](userdefinedconstraint.md) bounds: the model variable it is about, the [parameter](parameter.md) which holds the number the variable is multiplied with, and whether the variable enters the sum linearly or quadratically.
+
+The variable is either a [reaction](reaction.md), whose flux is meant, or a parameter which is not constant, which is how a constraint reaches a quantity the network does not carry.
+"""
+related = ["UserDefinedConstraint", "Reaction", "Parameter", "fbc"]
+
+[types.UserDefinedConstraintComponent.attributes.variable]
+label = "variable"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the reaction or the parameter this term of the constraint weighs"
+description = """
+The attribute is required and names either a [reaction](reaction.md), in which case the term is about its flux, or a [parameter](parameter.md) which is not constant. The report links the element it names.
+"""
+
+[types.UserDefinedConstraintComponent.attributes.variable2]
+label = "second variable"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the second variable of a mixed quadratic term"
+description = """
+A quadratic component which names a second variable weighs the product of the two, `coefficient * v1 * v2`, instead of the square of the first. It is optional and empty in a linear component.
+"""
+
+[types.UserDefinedConstraintComponent.attributes.coefficient]
+label = "coefficient"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the parameter which holds the number the variable is multiplied with"
+description = """
+Unlike the coefficient of a [flux objective](fluxobjective.md), which is a number written into the file, the coefficient of a component is the identifier of a [parameter](parameter.md), so that the weights of a constraint can be changed in one place. In a strict model that parameter has to be constant and its value finite.
+"""
+
+[types.UserDefinedConstraintComponent.attributes.variableType]
+label = "variable type"
+package = "fbc"
+type = "FbcVariableType"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "whether the variable enters the constraint linearly or quadratically"
+description = """
+The type is `linear` or `quadratic`, as in a [flux objective](fluxobjective.md): a quadratic component squares its variable, or multiplies it by the second variable where it names one. It is required.
 """
 
 

@@ -22,6 +22,8 @@ export type EdgeKind =
   | "associatedSpecies"
   | "fluxObjective"
   | "activeObjective"
+  | "constraintComponent"
+  | "coefficient"
   | "modelRef"
   | "port"
   | "deletion"
@@ -89,6 +91,7 @@ export interface SBMLDocument {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   level: number;
   version: number;
   packages?: Package[];
@@ -145,6 +148,7 @@ export interface ReplacedBy {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -168,7 +172,22 @@ export interface Uncertainty {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   uncertParameters?: UncertParameter[];
+}
+/**
+ * One entry of the controlled annotation of fbc Version 3 (fbc §3.17).
+ *
+ * A key value pair carries metadata which no attribute of SBML holds, and
+ * libsbml reads it from the annotation of any element. It is a nested object
+ * of that element and not an element of the report: nothing references it, it
+ * references nothing, and libsbml does not read the identifier and the name
+ * the specification allows it back from a file.
+ */
+export interface KeyValuePair {
+  key?: string | null;
+  value?: string | null;
+  uri?: string | null;
 }
 /**
  * A parameter of a distrib uncertainty.
@@ -208,6 +227,7 @@ export interface SBaseRef {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -230,6 +250,7 @@ export interface ReplacedElement {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -266,6 +287,7 @@ export interface Model {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   kind?: "model" | "modelDefinition";
   annotationXml?: string | null;
   substanceUnits?: string | null;
@@ -296,6 +318,7 @@ export interface Model {
   listOfGeneProducts?: GeneProduct[];
   listOfObjectives?: Objective[];
   listOfFluxBounds?: FluxBound[];
+  listOfUserDefinedConstraints?: UserDefinedConstraint[];
   fbc?: ModelFbc | null;
 }
 /**
@@ -322,6 +345,7 @@ export interface FunctionDefinition {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
 }
 /**
@@ -340,6 +364,7 @@ export interface UnitDefinition {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   unitsLatex?: string | null;
   listOfUnits?: Unit[];
 }
@@ -372,6 +397,7 @@ export interface Compartment {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   spatialDimensions?: number | null;
   size?: number | null;
   constant?: boolean | null;
@@ -395,6 +421,7 @@ export interface Species {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   compartment: string;
   initialAmount?: number | null;
   initialConcentration?: number | null;
@@ -409,6 +436,9 @@ export interface Species {
 }
 /**
  * The fbc extension of a species.
+ *
+ * The charge is a double, which is what fbc Version 3 made of the integer of
+ * the versions before it (fbc §3.4).
  */
 export interface SpeciesFbc {
   chemicalFormula?: string | null;
@@ -430,6 +460,7 @@ export interface Parameter {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   value?: number | null;
   constant?: boolean | null;
   units?: string | null;
@@ -452,6 +483,7 @@ export interface InitialAssignment {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   symbol: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -472,6 +504,7 @@ export interface AssignmentRule {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   variable: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -492,6 +525,7 @@ export interface RateRule {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   variable: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -512,6 +546,7 @@ export interface AlgebraicRule {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   derivedUnits?: string | null;
 }
@@ -531,6 +566,7 @@ export interface Constraint {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   message?: string | null;
 }
@@ -554,6 +590,7 @@ export interface Reaction {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   reversible?: boolean | null;
   fast?: boolean | null;
   compartment?: string | null;
@@ -580,6 +617,7 @@ export interface SpeciesReference {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   species: string;
   stoichiometry?: number | null;
   constant?: boolean | null;
@@ -600,6 +638,7 @@ export interface ModifierSpeciesReference {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   species: string;
 }
 /**
@@ -618,6 +657,7 @@ export interface KineticLaw {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   derivedUnits?: string | null;
   listOfLocalParameters?: LocalParameter[];
@@ -638,6 +678,7 @@ export interface LocalParameter {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   value?: number | null;
   units?: string | null;
   unitsLatex?: string | null;
@@ -667,6 +708,7 @@ export interface GeneProductAssociation {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   association?: GeneProductRef | And | Or | null;
 }
 /**
@@ -685,6 +727,7 @@ export interface GeneProductRef {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   geneProduct: string;
 }
 /**
@@ -703,6 +746,7 @@ export interface And {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   associations?: (GeneProductRef | And | Or)[];
 }
 /**
@@ -721,6 +765,7 @@ export interface Or {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   associations?: (GeneProductRef | And | Or)[];
 }
 /**
@@ -739,6 +784,7 @@ export interface Event {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   useValuesFromTriggerTime?: boolean | null;
   trigger?: Trigger | null;
   priority?: Priority | null;
@@ -761,6 +807,7 @@ export interface Trigger {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   initialValue?: boolean | null;
   persistent?: boolean | null;
@@ -781,6 +828,7 @@ export interface Priority {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
 }
 /**
@@ -799,6 +847,7 @@ export interface Delay {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
 }
 /**
@@ -817,6 +866,7 @@ export interface EventAssignment {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   variable: string;
   math?: Math | null;
 }
@@ -836,6 +886,7 @@ export interface Submodel {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   modelRef: string;
   timeConversionFactor?: string | null;
   extentConversionFactor?: string | null;
@@ -857,6 +908,7 @@ export interface Deletion {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -879,6 +931,7 @@ export interface Port {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -901,6 +954,7 @@ export interface GeneProduct {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   label?: string | null;
   associatedSpecies?: string | null;
 }
@@ -920,6 +974,7 @@ export interface Objective {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   type?: string | null;
   listOfFluxObjectives?: FluxObjective[];
 }
@@ -939,6 +994,7 @@ export interface FluxObjective {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   reaction: string;
   reaction2?: string | null;
   coefficient?: number | null;
@@ -965,9 +1021,53 @@ export interface FluxBound {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   reaction?: string | null;
   operation?: string | null;
   value?: number | null;
+}
+/**
+ * A constraint of fbc Version 3 over a combination of model variables.
+ */
+export interface UserDefinedConstraint {
+  pk: string;
+  sbmlType?: "UserDefinedConstraint";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  lowerBound?: string | null;
+  upperBound?: string | null;
+  listOfUserDefinedConstraintComponents?: UserDefinedConstraintComponent[];
+}
+/**
+ * One term of a user defined constraint (fbc §3.15).
+ */
+export interface UserDefinedConstraintComponent {
+  pk: string;
+  sbmlType?: "UserDefinedConstraintComponent";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  variable?: string | null;
+  variable2?: string | null;
+  coefficient?: string | null;
+  variableType?: string | null;
 }
 /**
  * The fbc extension of a model.
@@ -996,6 +1096,7 @@ export interface ExternalModelDefinition {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   source: string;
   modelRef?: string | null;
   md5?: string | null;

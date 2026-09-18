@@ -1,5 +1,5 @@
 {
-  "uid": "5f8f928f54d846bf94cb4e77e7c8ff9c",
+  "uid": "8e1665e7081f4a528b264d1a3311c707",
   "manifest": {
     "entries": [
       {
@@ -35,6 +35,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 2,
           "packages": [
@@ -88,6 +89,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <sbml4humans:model xmlns:sbml4humans=\"https://sbml4humans.de/ns/example\" sbml4humans:elements=\"constraint event localParameter unitDefinition\"/>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_constraint_event\">\n      <bqbiol:hasTaxon>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"https://identifiers.org/taxonomy/9606\"/>\n          <bqbiol:isDescribedBy>\n            <rdf:Bag>\n              <rdf:li rdf:resource=\"https://identifiers.org/pubmed/31219795\"/>\n            </rdf:Bag>\n          </bqbiol:isDescribedBy>\n        </rdf:Bag>\n      </bqbiol:hasTaxon>\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mmole",
@@ -118,6 +120,7 @@
                 "xml": "<unitDefinition id=\"min\" name=\"min\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -141,6 +144,7 @@
                 "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -164,6 +168,7 @@
                 "xml": "<unitDefinition id=\"mM\" name=\"mmole/litre\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{mmol}{l}",
                 "listOfUnits": [
                   {
@@ -193,6 +198,7 @@
                 "xml": "<unitDefinition id=\"mmole_per_min_l\" name=\"mmole/min/litre\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{mmol}{min \\cdot l}",
                 "listOfUnits": [
                   {
@@ -238,6 +244,7 @@
                 "xml": "<compartment metaid=\"meta_cell\" sboTerm=\"SBO:0000290\" id=\"cell\" name=\"cell\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -268,6 +275,7 @@
                 "xml": "<species metaid=\"meta_S1\" sboTerm=\"SBO:0000247\" id=\"S1\" name=\"substrate\" compartment=\"cell\" initialConcentration=\"8\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 8,
@@ -301,6 +309,7 @@
                 "xml": "<species metaid=\"meta_S2\" sboTerm=\"SBO:0000247\" id=\"S2\" name=\"product\" compartment=\"cell\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -328,6 +337,7 @@
                 "xml": "<parameter id=\"S1_max\" name=\"upper bound of the substrate\" value=\"10\" units=\"mM\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 10,
                 "constant": true,
                 "units": "mM",
@@ -347,6 +357,7 @@
                 "xml": "<parameter id=\"dose\" name=\"dose added by the event\" value=\"5\" units=\"mM\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 5,
                 "constant": true,
                 "units": "mM",
@@ -366,6 +377,7 @@
                 "xml": "<parameter id=\"active\" name=\"switch of the reaction\" value=\"1\" units=\"dimensionless\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 1,
                 "constant": false,
                 "units": "dimensionless",
@@ -385,6 +397,7 @@
                 "xml": "<parameter id=\"t_dose\" name=\"time of the dose\" value=\"20\" units=\"min\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 20,
                 "constant": true,
                 "units": "min",
@@ -404,6 +417,7 @@
                 "xml": "<parameter id=\"t_delay\" name=\"time the dose needs to reach the compartment\" value=\"5\" units=\"min\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 5,
                 "constant": true,
                 "units": "min",
@@ -435,6 +449,7 @@
                 "xml": "<constraint metaid=\"meta_constraint_S1\" sboTerm=\"SBO:0000064\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The rate law of <code>R1</code> was measured below <code>S1_max</code>, so a simulation which leaves that range is no longer a prediction of the system.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <lt/>\n      <ci> S1 </ci>\n      <ci> S1_max </ci>\n    </apply>\n  </math>\n  <message>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">The substrate <b>S1</b> left the range of the rate law of <code>R1</code>: it is above <b>S1_max</b> and the results from here on are not valid.</p>\n  </message>\n</constraint>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "math": {
                   "latex": " \\mathit{S1}<\\mathit{S1_{max}}",
                   "formula": "S1 < S1_max"
@@ -464,6 +479,7 @@
                 "xml": "<reaction metaid=\"meta_R1\" sboTerm=\"SBO:0000176\" id=\"R1\" name=\"conversion of S1 into S2\" reversible=\"false\" compartment=\"cell\">\n  <listOfReactants>\n    <speciesReference id=\"R1_S1\" species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference id=\"R1_S2\" species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"meta_R1_kinetic_law\" sboTerm=\"SBO:0000028\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> active </ci>\n        <ci> cell </ci>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> Vmax </ci>\n            <ci> S1 </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Km </ci>\n            <ci> S1 </ci>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n    <listOfLocalParameters>\n      <localParameter sboTerm=\"SBO:0000186\" id=\"Vmax\" name=\"maximal velocity\" value=\"1\" units=\"mmole_per_min_l\"/>\n      <localParameter sboTerm=\"SBO:0000027\" id=\"Km\" name=\"Michaelis constant\" value=\"2\" units=\"mM\"/>\n    </listOfLocalParameters>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": "cell",
@@ -481,6 +497,7 @@
                     "xml": "<speciesReference id=\"R1_S1\" species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -500,6 +517,7 @@
                     "xml": "<speciesReference id=\"R1_S2\" species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -527,6 +545,7 @@
                   "xml": "<kineticLaw metaid=\"meta_R1_kinetic_law\" sboTerm=\"SBO:0000028\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> active </ci>\n      <ci> cell </ci>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> Vmax </ci>\n          <ci> S1 </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Km </ci>\n          <ci> S1 </ci>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n  <listOfLocalParameters>\n    <localParameter sboTerm=\"SBO:0000186\" id=\"Vmax\" name=\"maximal velocity\" value=\"1\" units=\"mmole_per_min_l\"/>\n    <localParameter sboTerm=\"SBO:0000027\" id=\"Km\" name=\"Michaelis constant\" value=\"2\" units=\"mM\"/>\n  </listOfLocalParameters>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{active}·\\mathit{cell}·\\frac{\\mathit{Vmax}·\\mathit{S1}}{\\mathit{Km}+\\mathit{S1}}",
                     "formula": "active * cell * (Vmax * S1 / (Km + S1))"
@@ -554,6 +573,7 @@
                       "xml": "<localParameter sboTerm=\"SBO:0000186\" id=\"Vmax\" name=\"maximal velocity\" value=\"1\" units=\"mmole_per_min_l\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "value": 1,
                       "units": "mmole_per_min_l",
                       "unitsLatex": "\\frac{mmol}{min \\cdot l}",
@@ -580,6 +600,7 @@
                       "xml": "<localParameter sboTerm=\"SBO:0000027\" id=\"Km\" name=\"Michaelis constant\" value=\"2\" units=\"mM\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "value": 2,
                       "units": "mM",
                       "unitsLatex": "\\frac{mmol}{l}",
@@ -605,6 +626,7 @@
                 "xml": "<event metaid=\"meta_E1\" id=\"E1\" name=\"dose of S1 which switches the reaction off\" useValuesFromTriggerTime=\"false\">\n  <trigger metaid=\"meta_E1_trigger\" sboTerm=\"SBO:0000064\" id=\"E1_trigger\" initialValue=\"false\" persistent=\"true\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given once the system has run for twenty minutes.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <geq/>\n        <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/time\"> time </csymbol>\n        <ci> t_dose </ci>\n      </apply>\n    </math>\n  </trigger>\n  <delay metaid=\"meta_E1_delay\" sboTerm=\"SBO:0000064\" id=\"E1_delay\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose reaches the compartment five minutes after the trigger.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <ci> t_delay </ci>\n    </math>\n  </delay>\n  <priority metaid=\"meta_E1_priority\" sboTerm=\"SBO:0000064\" id=\"E1_priority\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given before any other event of the same moment.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <cn sbml:units=\"dimensionless\"> 1 </cn>\n    </math>\n  </priority>\n  <listOfEventAssignments>\n    <eventAssignment id=\"E1_dose\" variable=\"S1\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <plus/>\n          <ci> S1 </ci>\n          <ci> dose </ci>\n        </apply>\n      </math>\n    </eventAssignment>\n    <eventAssignment id=\"E1_switch\" variable=\"active\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n        <cn sbml:units=\"dimensionless\"> 0 </cn>\n      </math>\n    </eventAssignment>\n  </listOfEventAssignments>\n</event>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "useValuesFromTriggerTime": false,
                 "trigger": {
                   "pk": "constraint_event/Trigger:E1_trigger",
@@ -627,6 +649,7 @@
                   "xml": "<trigger metaid=\"meta_E1_trigger\" sboTerm=\"SBO:0000064\" id=\"E1_trigger\" initialValue=\"false\" persistent=\"true\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The dose is given once the system has run for twenty minutes.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <geq/>\n      <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/time\"> time </csymbol>\n      <ci> t_dose </ci>\n    </apply>\n  </math>\n</trigger>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathrm{time}\\ge \\mathit{t_{dose}}",
                     "formula": "time >= t_dose"
@@ -655,6 +678,7 @@
                   "xml": "<priority metaid=\"meta_E1_priority\" sboTerm=\"SBO:0000064\" id=\"E1_priority\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The dose is given before any other event of the same moment.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n    <cn sbml:units=\"dimensionless\"> 1 </cn>\n  </math>\n</priority>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " 1",
                     "formula": "1 dimensionless"
@@ -681,6 +705,7 @@
                   "xml": "<delay metaid=\"meta_E1_delay\" sboTerm=\"SBO:0000064\" id=\"E1_delay\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The dose reaches the compartment five minutes after the trigger.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <ci> t_delay </ci>\n  </math>\n</delay>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{t_{delay}}",
                     "formula": "t_delay"
@@ -700,6 +725,7 @@
                     "xml": "<eventAssignment id=\"E1_dose\" variable=\"S1\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> S1 </ci>\n      <ci> dose </ci>\n    </apply>\n  </math>\n</eventAssignment>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "variable": "S1",
                     "math": {
                       "latex": " \\mathit{S1}+\\mathit{dose}",
@@ -719,6 +745,7 @@
                     "xml": "<eventAssignment id=\"E1_switch\" variable=\"active\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n    <cn sbml:units=\"dimensionless\"> 0 </cn>\n  </math>\n</eventAssignment>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "variable": "active",
                     "math": {
                       "latex": " 0",
@@ -733,6 +760,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": null
           }
         ],
@@ -1104,7 +1132,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.051 [s]"
+        "jsonReportTime": "0.053 [s]"
       }
     }
   }

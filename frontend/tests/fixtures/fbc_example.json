@@ -1,5 +1,5 @@
 {
-  "uid": "b6e023c6b3b84c4ab9f8467959895bd2",
+  "uid": "7a681b59f309411f8ed3a0ced72de4a2",
   "manifest": {
     "entries": [
       {
@@ -35,6 +35,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -76,6 +77,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_fbc_example\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mmole",
@@ -106,6 +108,7 @@
                 "xml": "<unitDefinition id=\"hr\" name=\"hr\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "hr",
                 "listOfUnits": [
                   {
@@ -129,6 +132,7 @@
                 "xml": "<unitDefinition id=\"m2\" name=\"meter^2\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"2\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "m^2",
                 "listOfUnits": [
                   {
@@ -152,6 +156,7 @@
                 "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -175,6 +180,7 @@
                 "xml": "<unitDefinition id=\"mmole_per_hr\" name=\"mmole/hr\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{mmol}{hr}",
                 "listOfUnits": [
                   {
@@ -204,6 +210,7 @@
                 "xml": "<unitDefinition id=\"mmole_per_l\" name=\"mmole/liter\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "unitsLatex": "\\frac{mmol}{l}",
                 "listOfUnits": [
                   {
@@ -235,6 +242,7 @@
                 "xml": "<compartment id=\"bioreactor\" name=\"bioreactor\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -257,6 +265,7 @@
                 "xml": "<species id=\"Glcxt\" name=\"glucose\" compartment=\"bioreactor\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "bioreactor",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -267,10 +276,7 @@
                 "unitsLatex": "mmol",
                 "derivedUnits": "\\frac{mmol}{l}",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "fbc_example/Species:Ac",
@@ -285,6 +291,7 @@
                 "xml": "<species id=\"Ac\" name=\"acetate\" compartment=\"bioreactor\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "bioreactor",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -295,10 +302,7 @@
                 "unitsLatex": "mmol",
                 "derivedUnits": "\\frac{mmol}{l}",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "fbc_example/Species:O2",
@@ -313,6 +317,7 @@
                 "xml": "<species id=\"O2\" name=\"oxygen\" compartment=\"bioreactor\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "bioreactor",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -323,10 +328,7 @@
                 "unitsLatex": "mmol",
                 "derivedUnits": "\\frac{mmol}{l}",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "fbc_example/Species:X",
@@ -341,6 +343,7 @@
                 "xml": "<species id=\"X\" name=\"biomass\" compartment=\"bioreactor\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "bioreactor",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -351,10 +354,7 @@
                 "unitsLatex": "mmol",
                 "derivedUnits": "\\frac{mmol}{l}",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               }
             ],
             "listOfParameters": [
@@ -379,6 +379,7 @@
                 "xml": "<parameter metaid=\"meta_zero\" sboTerm=\"SBO:0000625\" id=\"zero\" name=\"zero bound\" value=\"0\" units=\"mmole_per_hr\" constant=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_zero\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000625\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -406,6 +407,7 @@
                 "xml": "<parameter metaid=\"meta_ub_inf\" sboTerm=\"SBO:0000625\" id=\"ub_inf\" name=\"default upper bound\" value=\"INF\" units=\"mmole_per_hr\" constant=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_ub_inf\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000625\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -433,6 +435,7 @@
                 "xml": "<parameter metaid=\"meta_lb_inf\" sboTerm=\"SBO:0000625\" id=\"lb_inf\" name=\"default lower bound\" value=\"-INF\" units=\"mmole_per_hr\" constant=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_lb_inf\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000625\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": null,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -460,6 +463,7 @@
                 "xml": "<parameter metaid=\"meta_glc_import\" sboTerm=\"SBO:0000625\" id=\"glc_import\" name=\"glc import bound\" value=\"-15\" units=\"mmole_per_hr\" constant=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_glc_import\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000625\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": -15,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -487,6 +491,7 @@
                 "xml": "<parameter metaid=\"meta_o2_import\" sboTerm=\"SBO:0000625\" id=\"o2_import\" name=\"o2 import bound\" value=\"-10\" units=\"mmole_per_hr\" constant=\"true\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_o2_import\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000625\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</parameter>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": -10,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -511,6 +516,7 @@
                 "xml": "<reaction id=\"v1\" name=\"v1 (39.43 Ac + 35 O2 -&gt; X)\" reversible=\"false\" fast=\"false\" compartment=\"bioreactor\" fbc:lowerFluxBound=\"zero\" fbc:upperFluxBound=\"ub_inf\">\n  <listOfReactants>\n    <speciesReference species=\"Ac\" stoichiometry=\"39.43\" constant=\"true\"/>\n    <speciesReference species=\"O2\" stoichiometry=\"35\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "bioreactor",
@@ -528,6 +534,7 @@
                     "xml": "<speciesReference species=\"Ac\" stoichiometry=\"39.43\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Ac",
                     "stoichiometry": 39.43,
                     "constant": true
@@ -545,6 +552,7 @@
                     "xml": "<speciesReference species=\"O2\" stoichiometry=\"35\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "O2",
                     "stoichiometry": 35,
                     "constant": true
@@ -564,6 +572,7 @@
                     "xml": "<speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X",
                     "stoichiometry": 1,
                     "constant": true
@@ -591,6 +600,7 @@
                 "xml": "<reaction id=\"v2\" name=\"v2 (9.46 Glcxt + 12.92 O2 -&gt; X)\" reversible=\"false\" fast=\"false\" compartment=\"bioreactor\" fbc:lowerFluxBound=\"zero\" fbc:upperFluxBound=\"ub_inf\">\n  <listOfReactants>\n    <speciesReference species=\"Glcxt\" stoichiometry=\"9.46\" constant=\"true\"/>\n    <speciesReference species=\"O2\" stoichiometry=\"12.92\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "bioreactor",
@@ -608,6 +618,7 @@
                     "xml": "<speciesReference species=\"Glcxt\" stoichiometry=\"9.46\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Glcxt",
                     "stoichiometry": 9.46,
                     "constant": true
@@ -625,6 +636,7 @@
                     "xml": "<speciesReference species=\"O2\" stoichiometry=\"12.92\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "O2",
                     "stoichiometry": 12.92,
                     "constant": true
@@ -644,6 +656,7 @@
                     "xml": "<speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X",
                     "stoichiometry": 1,
                     "constant": true
@@ -671,6 +684,7 @@
                 "xml": "<reaction id=\"v3\" name=\"v3 (9.84 Glcxt + 12.73 O2 -&gt; 1.24 Ac + X)\" reversible=\"false\" fast=\"false\" compartment=\"bioreactor\" fbc:lowerFluxBound=\"zero\" fbc:upperFluxBound=\"ub_inf\">\n  <listOfReactants>\n    <speciesReference species=\"Glcxt\" stoichiometry=\"9.84\" constant=\"true\"/>\n    <speciesReference species=\"O2\" stoichiometry=\"12.73\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"Ac\" stoichiometry=\"1.24\" constant=\"true\"/>\n    <speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "bioreactor",
@@ -688,6 +702,7 @@
                     "xml": "<speciesReference species=\"Glcxt\" stoichiometry=\"9.84\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Glcxt",
                     "stoichiometry": 9.84,
                     "constant": true
@@ -705,6 +720,7 @@
                     "xml": "<speciesReference species=\"O2\" stoichiometry=\"12.73\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "O2",
                     "stoichiometry": 12.73,
                     "constant": true
@@ -724,6 +740,7 @@
                     "xml": "<speciesReference species=\"Ac\" stoichiometry=\"1.24\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Ac",
                     "stoichiometry": 1.24,
                     "constant": true
@@ -741,6 +758,7 @@
                     "xml": "<speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X",
                     "stoichiometry": 1,
                     "constant": true
@@ -768,6 +786,7 @@
                 "xml": "<reaction id=\"v4\" name=\"v4 (19.23 Glcxt -&gt; 12.12 Ac + X)\" reversible=\"false\" fast=\"false\" compartment=\"bioreactor\" fbc:lowerFluxBound=\"zero\" fbc:upperFluxBound=\"ub_inf\">\n  <listOfReactants>\n    <speciesReference species=\"Glcxt\" stoichiometry=\"19.23\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"Ac\" stoichiometry=\"12.12\" constant=\"true\"/>\n    <speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "bioreactor",
@@ -785,6 +804,7 @@
                     "xml": "<speciesReference species=\"Glcxt\" stoichiometry=\"19.23\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Glcxt",
                     "stoichiometry": 19.23,
                     "constant": true
@@ -804,6 +824,7 @@
                     "xml": "<speciesReference species=\"Ac\" stoichiometry=\"12.12\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Ac",
                     "stoichiometry": 12.12,
                     "constant": true
@@ -821,6 +842,7 @@
                     "xml": "<speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X",
                     "stoichiometry": 1,
                     "constant": true
@@ -856,6 +878,7 @@
                 "xml": "<reaction metaid=\"meta_EX_Ac\" sboTerm=\"SBO:0000627\" id=\"EX_Ac\" reversible=\"false\" fast=\"false\" fbc:lowerFluxBound=\"lb_inf\" fbc:upperFluxBound=\"ub_inf\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_EX_Ac\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000627\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference species=\"Ac\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -873,6 +896,7 @@
                     "xml": "<speciesReference species=\"Ac\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Ac",
                     "stoichiometry": 1,
                     "constant": true
@@ -909,6 +933,7 @@
                 "xml": "<reaction metaid=\"meta_EX_O2\" sboTerm=\"SBO:0000627\" id=\"EX_O2\" reversible=\"false\" fast=\"false\" fbc:lowerFluxBound=\"o2_import\" fbc:upperFluxBound=\"zero\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_EX_O2\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000627\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference species=\"O2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -926,6 +951,7 @@
                     "xml": "<speciesReference species=\"O2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "O2",
                     "stoichiometry": 1,
                     "constant": true
@@ -962,6 +988,7 @@
                 "xml": "<reaction metaid=\"meta_EX_Glcxt\" sboTerm=\"SBO:0000627\" id=\"EX_Glcxt\" reversible=\"false\" fast=\"false\" fbc:lowerFluxBound=\"glc_import\" fbc:upperFluxBound=\"zero\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_EX_Glcxt\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000627\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference species=\"Glcxt\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -979,6 +1006,7 @@
                     "xml": "<speciesReference species=\"Glcxt\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "Glcxt",
                     "stoichiometry": 1,
                     "constant": true
@@ -1015,6 +1043,7 @@
                 "xml": "<reaction metaid=\"meta_EX_X\" sboTerm=\"SBO:0000627\" id=\"EX_X\" reversible=\"false\" fast=\"false\" fbc:lowerFluxBound=\"lb_inf\" fbc:upperFluxBound=\"ub_inf\">\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_EX_X\">\n        <bqbiol:is>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"http://identifiers.org/SBO:0000627\"/>\n          </rdf:Bag>\n        </bqbiol:is>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <listOfReactants>\n    <speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -1032,6 +1061,7 @@
                     "xml": "<speciesReference species=\"X\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "X",
                     "stoichiometry": 1,
                     "constant": true
@@ -1066,6 +1096,7 @@
                 "xml": "<fbc:objective fbc:id=\"biomass_max\" fbc:type=\"maximize\">\n  <fbc:listOfFluxObjectives>\n    <fbc:fluxObjective fbc:reaction=\"v1\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>\n    <fbc:fluxObjective fbc:reaction=\"v2\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>\n    <fbc:fluxObjective fbc:reaction=\"v3\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>\n    <fbc:fluxObjective fbc:reaction=\"v4\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>\n  </fbc:listOfFluxObjectives>\n</fbc:objective>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "type": "maximize",
                 "listOfFluxObjectives": [
                   {
@@ -1081,6 +1112,7 @@
                     "xml": "<fbc:fluxObjective fbc:reaction=\"v1\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "reaction": "v1",
                     "reaction2": null,
                     "coefficient": 1,
@@ -1099,6 +1131,7 @@
                     "xml": "<fbc:fluxObjective fbc:reaction=\"v2\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "reaction": "v2",
                     "reaction2": null,
                     "coefficient": 1,
@@ -1117,6 +1150,7 @@
                     "xml": "<fbc:fluxObjective fbc:reaction=\"v3\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "reaction": "v3",
                     "reaction2": null,
                     "coefficient": 1,
@@ -1135,6 +1169,7 @@
                     "xml": "<fbc:fluxObjective fbc:reaction=\"v4\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "reaction": "v4",
                     "reaction2": null,
                     "coefficient": 1,
@@ -1144,6 +1179,7 @@
               }
             ],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": {
               "strict": false,
               "activeObjective": "biomass_max"

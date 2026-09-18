@@ -1,5 +1,5 @@
 {
-  "uid": "8287036961264d3387687082a5c9287c",
+  "uid": "da1784fe90f34d30bebf38a0c80d10ea",
   "manifest": {
     "entries": [
       {
@@ -50,6 +50,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -91,6 +92,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_omex_minimal\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": null,
@@ -122,6 +124,7 @@
                 "xml": "<compartment id=\"cell\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -144,6 +147,7 @@
                 "xml": "<species id=\"S1\" compartment=\"cell\" initialConcentration=\"10\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 10,
@@ -154,10 +158,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_minimal/Species:S2",
@@ -172,6 +173,7 @@
                 "xml": "<species id=\"S2\" compartment=\"cell\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -182,10 +184,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               }
             ],
             "listOfParameters": [
@@ -202,6 +201,7 @@
                 "xml": "<parameter id=\"k1\" value=\"0.1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -226,6 +226,7 @@
                 "xml": "<reaction id=\"J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k1 </ci>\n        <ci> S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -243,6 +244,7 @@
                     "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -262,6 +264,7 @@
                     "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -281,6 +284,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k1 </ci>\n      <ci> S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{k1}·\\mathit{S2}",
                     "formula": "k1 * S2"
@@ -289,11 +293,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S1 ➞ S2",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               }
             ],
             "listOfEvents": [],
@@ -320,6 +320,7 @@
                 "xml": "<comp:port metaid=\"cell_port\" sboTerm=\"SBO:0000599\" comp:idRef=\"cell\" comp:id=\"cell_port\" comp:name=\"Port of cell\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": "cell",
                 "unitRef": null,
@@ -347,6 +348,7 @@
                 "xml": "<comp:port metaid=\"S1_port\" sboTerm=\"SBO:0000599\" comp:idRef=\"S1\" comp:id=\"S1_port\" comp:name=\"Port of S1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "portRef": null,
                 "idRef": "S1",
                 "unitRef": null,
@@ -357,6 +359,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": {
               "strict": false,
               "activeObjective": null
@@ -506,7 +509,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.009 [s]"
       }
     },
     "./models/omex_comp.xml": {
@@ -524,6 +527,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -548,6 +552,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": null,
@@ -593,6 +598,7 @@
                       "xml": "<comp:replacedElement metaid=\"cell0_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel0\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -605,6 +611,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -639,6 +646,7 @@
                       "xml": "<comp:replacedElement metaid=\"cell1_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel1\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -651,6 +659,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -685,6 +694,7 @@
                       "xml": "<comp:replacedElement metaid=\"cell2_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel2\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -697,6 +707,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -731,6 +742,7 @@
                       "xml": "<comp:replacedElement metaid=\"cell3_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel3\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -743,6 +755,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -777,6 +790,7 @@
                       "xml": "<comp:replacedElement metaid=\"cell4_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel4\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -789,6 +803,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -825,6 +840,7 @@
                       "xml": "<comp:replacedElement metaid=\"S0_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel0\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -837,6 +853,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell0",
                 "initialAmount": null,
                 "initialConcentration": 10,
@@ -876,6 +893,7 @@
                       "xml": "<comp:replacedElement metaid=\"S1_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel1\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -888,6 +906,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell1",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -927,6 +946,7 @@
                       "xml": "<comp:replacedElement metaid=\"S2_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel2\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -939,6 +959,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell2",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -978,6 +999,7 @@
                       "xml": "<comp:replacedElement metaid=\"S3_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel3\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -990,6 +1012,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell3",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -1029,6 +1052,7 @@
                       "xml": "<comp:replacedElement metaid=\"S4_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel4\"/>",
                       "comp": null,
                       "uncertainties": [],
+                      "keyValuePairs": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -1041,6 +1065,7 @@
                   ]
                 },
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell4",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -1068,6 +1093,7 @@
                 "xml": "<parameter id=\"D\" value=\"0.01\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1092,6 +1118,7 @@
                 "xml": "<reaction id=\"J0\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S0\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S0 </ci>\n          <ci> S1 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1109,6 +1136,7 @@
                     "xml": "<speciesReference species=\"S0\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S0",
                     "stoichiometry": 1,
                     "constant": true
@@ -1128,6 +1156,7 @@
                     "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -1147,6 +1176,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S0 </ci>\n        <ci> S1 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S0}-\\mathit{S1})",
                     "formula": "D * (S0 - S1)"
@@ -1170,6 +1200,7 @@
                 "xml": "<reaction id=\"J1\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S1 </ci>\n          <ci> S2 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1187,6 +1218,7 @@
                     "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -1206,6 +1238,7 @@
                     "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -1225,6 +1258,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S1 </ci>\n        <ci> S2 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S1}-\\mathit{S2})",
                     "formula": "D * (S1 - S2)"
@@ -1248,6 +1282,7 @@
                 "xml": "<reaction id=\"J2\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S2 </ci>\n          <ci> S3 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1265,6 +1300,7 @@
                     "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -1284,6 +1320,7 @@
                     "xml": "<speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -1303,6 +1340,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S2 </ci>\n        <ci> S3 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S2}-\\mathit{S3})",
                     "formula": "D * (S2 - S3)"
@@ -1326,6 +1364,7 @@
                 "xml": "<reaction id=\"J3\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S4\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S3 </ci>\n          <ci> S4 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1343,6 +1382,7 @@
                     "xml": "<speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -1362,6 +1402,7 @@
                     "xml": "<speciesReference species=\"S4\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S4",
                     "stoichiometry": 1,
                     "constant": true
@@ -1381,6 +1422,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S3 </ci>\n        <ci> S4 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S3}-\\mathit{S4})",
                     "formula": "D * (S3 - S4)"
@@ -1407,6 +1449,7 @@
                 "xml": "<comp:submodel comp:id=\"submodel0\" comp:modelRef=\"emd0\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "emd0",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1425,6 +1468,7 @@
                 "xml": "<comp:submodel comp:id=\"submodel1\" comp:modelRef=\"emd1\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "emd1",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1443,6 +1487,7 @@
                 "xml": "<comp:submodel comp:id=\"submodel2\" comp:modelRef=\"emd2\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "emd2",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1461,6 +1506,7 @@
                 "xml": "<comp:submodel comp:id=\"submodel3\" comp:modelRef=\"emd3\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "emd3",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1479,6 +1525,7 @@
                 "xml": "<comp:submodel comp:id=\"submodel4\" comp:modelRef=\"emd4\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "modelRef": "emd4",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1489,6 +1536,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": null
           }
         ],
@@ -1506,6 +1554,7 @@
             "xml": "<comp:externalModelDefinition comp:id=\"emd0\" comp:source=\"omex_minimal.xml\" comp:modelRef=\"omex_minimal\"/>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null
@@ -1523,6 +1572,7 @@
             "xml": "<comp:externalModelDefinition comp:id=\"emd1\" comp:source=\"omex_minimal.xml\" comp:modelRef=\"omex_minimal\"/>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null
@@ -1540,6 +1590,7 @@
             "xml": "<comp:externalModelDefinition comp:id=\"emd2\" comp:source=\"omex_minimal.xml\" comp:modelRef=\"omex_minimal\"/>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null
@@ -1557,6 +1608,7 @@
             "xml": "<comp:externalModelDefinition comp:id=\"emd3\" comp:source=\"omex_minimal.xml\" comp:modelRef=\"omex_minimal\"/>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null
@@ -1574,6 +1626,7 @@
             "xml": "<comp:externalModelDefinition comp:id=\"emd4\" comp:source=\"omex_minimal.xml\" comp:modelRef=\"omex_minimal\"/>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null
@@ -2220,7 +2273,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.028 [s]"
+        "jsonReportTime": "0.03 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -2238,6 +2291,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -2262,6 +2316,7 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": null,
@@ -2293,6 +2348,7 @@
                 "xml": "<compartment id=\"cell0\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2313,6 +2369,7 @@
                 "xml": "<compartment id=\"cell1\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2333,6 +2390,7 @@
                 "xml": "<compartment id=\"cell2\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2353,6 +2411,7 @@
                 "xml": "<compartment id=\"cell3\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2373,6 +2432,7 @@
                 "xml": "<compartment id=\"cell4\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2395,6 +2455,7 @@
                 "xml": "<species id=\"S0\" compartment=\"cell0\" initialConcentration=\"10\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell0",
                 "initialAmount": null,
                 "initialConcentration": 10,
@@ -2405,10 +2466,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:S1",
@@ -2423,6 +2481,7 @@
                 "xml": "<species id=\"S1\" compartment=\"cell1\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell1",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2433,10 +2492,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:S2",
@@ -2451,6 +2507,7 @@
                 "xml": "<species id=\"S2\" compartment=\"cell2\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell2",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2461,10 +2518,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:S3",
@@ -2479,6 +2533,7 @@
                 "xml": "<species id=\"S3\" compartment=\"cell3\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell3",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2489,10 +2544,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:S4",
@@ -2507,6 +2559,7 @@
                 "xml": "<species id=\"S4\" compartment=\"cell4\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell4",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2517,10 +2570,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:submodel0__S2",
@@ -2535,6 +2585,7 @@
                 "xml": "<species id=\"submodel0__S2\" compartment=\"cell0\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell0",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2545,10 +2596,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:submodel1__S2",
@@ -2563,6 +2611,7 @@
                 "xml": "<species id=\"submodel1__S2\" compartment=\"cell1\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell1",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2573,10 +2622,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:submodel2__S2",
@@ -2591,6 +2637,7 @@
                 "xml": "<species id=\"submodel2__S2\" compartment=\"cell2\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell2",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2601,10 +2648,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:submodel3__S2",
@@ -2619,6 +2663,7 @@
                 "xml": "<species id=\"submodel3__S2\" compartment=\"cell3\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell3",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2629,10 +2674,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Species:submodel4__S2",
@@ -2647,6 +2689,7 @@
                 "xml": "<species id=\"submodel4__S2\" compartment=\"cell4\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "cell4",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2657,10 +2700,7 @@
                 "unitsLatex": null,
                 "derivedUnits": "-",
                 "conversionFactor": null,
-                "fbc": {
-                  "chemicalFormula": null,
-                  "charge": null
-                }
+                "fbc": null
               }
             ],
             "listOfParameters": [
@@ -2677,6 +2717,7 @@
                 "xml": "<parameter id=\"D\" value=\"0.01\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -2696,6 +2737,7 @@
                 "xml": "<parameter id=\"submodel0__k1\" value=\"0.1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -2715,6 +2757,7 @@
                 "xml": "<parameter id=\"submodel1__k1\" value=\"0.1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -2734,6 +2777,7 @@
                 "xml": "<parameter id=\"submodel2__k1\" value=\"0.1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -2753,6 +2797,7 @@
                 "xml": "<parameter id=\"submodel3__k1\" value=\"0.1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -2772,6 +2817,7 @@
                 "xml": "<parameter id=\"submodel4__k1\" value=\"0.1\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -2796,6 +2842,7 @@
                 "xml": "<reaction id=\"J0\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S0\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S0 </ci>\n          <ci> S1 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2813,6 +2860,7 @@
                     "xml": "<speciesReference species=\"S0\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S0",
                     "stoichiometry": 1,
                     "constant": true
@@ -2832,6 +2880,7 @@
                     "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -2851,6 +2900,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S0 </ci>\n        <ci> S1 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S0}-\\mathit{S1})",
                     "formula": "D * (S0 - S1)"
@@ -2859,11 +2909,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S0 ⇆ S1",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:J1",
@@ -2878,6 +2924,7 @@
                 "xml": "<reaction id=\"J1\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S1 </ci>\n          <ci> S2 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2895,6 +2942,7 @@
                     "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -2914,6 +2962,7 @@
                     "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -2933,6 +2982,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S1 </ci>\n        <ci> S2 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S1}-\\mathit{S2})",
                     "formula": "D * (S1 - S2)"
@@ -2941,11 +2991,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S1 ⇆ S2",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:J2",
@@ -2960,6 +3006,7 @@
                 "xml": "<reaction id=\"J2\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S2 </ci>\n          <ci> S3 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2977,6 +3024,7 @@
                     "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -2996,6 +3044,7 @@
                     "xml": "<speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -3015,6 +3064,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S2 </ci>\n        <ci> S3 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S2}-\\mathit{S3})",
                     "formula": "D * (S2 - S3)"
@@ -3023,11 +3073,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S2 ⇆ S3",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:J3",
@@ -3042,6 +3088,7 @@
                 "xml": "<reaction id=\"J3\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S4\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> D </ci>\n        <apply>\n          <minus/>\n          <ci> S3 </ci>\n          <ci> S4 </ci>\n        </apply>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3059,6 +3106,7 @@
                     "xml": "<speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -3078,6 +3126,7 @@
                     "xml": "<speciesReference species=\"S4\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S4",
                     "stoichiometry": 1,
                     "constant": true
@@ -3097,6 +3146,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> D </ci>\n      <apply>\n        <minus/>\n        <ci> S3 </ci>\n        <ci> S4 </ci>\n      </apply>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{D}·(\\mathit{S3}-\\mathit{S4})",
                     "formula": "D * (S3 - S4)"
@@ -3105,11 +3155,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S3 ⇆ S4",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:submodel0__J0",
@@ -3124,6 +3170,7 @@
                 "xml": "<reaction id=\"submodel0__J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S0\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"submodel0__S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> submodel0__k1 </ci>\n        <ci> submodel0__S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3141,6 +3188,7 @@
                     "xml": "<speciesReference species=\"S0\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S0",
                     "stoichiometry": 1,
                     "constant": true
@@ -3160,6 +3208,7 @@
                     "xml": "<speciesReference species=\"submodel0__S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "submodel0__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3179,6 +3228,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> submodel0__k1 </ci>\n      <ci> submodel0__S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{submodel0\\_\\_k1}·\\mathit{submodel0\\_\\_S2}",
                     "formula": "submodel0__k1 * submodel0__S2"
@@ -3187,11 +3237,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S0 ➞ submodel0__S2",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:submodel1__J0",
@@ -3206,6 +3252,7 @@
                 "xml": "<reaction id=\"submodel1__J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"submodel1__S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> submodel1__k1 </ci>\n        <ci> submodel1__S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3223,6 +3270,7 @@
                     "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -3242,6 +3290,7 @@
                     "xml": "<speciesReference species=\"submodel1__S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "submodel1__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3261,6 +3310,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> submodel1__k1 </ci>\n      <ci> submodel1__S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{submodel1\\_\\_k1}·\\mathit{submodel1\\_\\_S2}",
                     "formula": "submodel1__k1 * submodel1__S2"
@@ -3269,11 +3319,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S1 ➞ submodel1__S2",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:submodel2__J0",
@@ -3288,6 +3334,7 @@
                 "xml": "<reaction id=\"submodel2__J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"submodel2__S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> submodel2__k1 </ci>\n        <ci> submodel2__S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3305,6 +3352,7 @@
                     "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3324,6 +3372,7 @@
                     "xml": "<speciesReference species=\"submodel2__S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "submodel2__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3343,6 +3392,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> submodel2__k1 </ci>\n      <ci> submodel2__S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{submodel2\\_\\_k1}·\\mathit{submodel2\\_\\_S2}",
                     "formula": "submodel2__k1 * submodel2__S2"
@@ -3351,11 +3401,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S2 ➞ submodel2__S2",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:submodel3__J0",
@@ -3370,6 +3416,7 @@
                 "xml": "<reaction id=\"submodel3__J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"submodel3__S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> submodel3__k1 </ci>\n        <ci> submodel3__S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3387,6 +3434,7 @@
                     "xml": "<speciesReference species=\"S3\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -3406,6 +3454,7 @@
                     "xml": "<speciesReference species=\"submodel3__S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "submodel3__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3425,6 +3474,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> submodel3__k1 </ci>\n      <ci> submodel3__S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{submodel3\\_\\_k1}·\\mathit{submodel3\\_\\_S2}",
                     "formula": "submodel3__k1 * submodel3__S2"
@@ -3433,11 +3483,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S3 ➞ submodel3__S2",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               },
               {
                 "pk": "omex_comp/Reaction:submodel4__J0",
@@ -3452,6 +3498,7 @@
                 "xml": "<reaction id=\"submodel4__J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S4\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"submodel4__S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> submodel4__k1 </ci>\n        <ci> submodel4__S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3469,6 +3516,7 @@
                     "xml": "<speciesReference species=\"S4\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "S4",
                     "stoichiometry": 1,
                     "constant": true
@@ -3488,6 +3536,7 @@
                     "xml": "<speciesReference species=\"submodel4__S2\" stoichiometry=\"1\" constant=\"true\"/>",
                     "comp": null,
                     "uncertainties": [],
+                    "keyValuePairs": [],
                     "species": "submodel4__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3507,6 +3556,7 @@
                   "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> submodel4__k1 </ci>\n      <ci> submodel4__S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
                   "comp": null,
                   "uncertainties": [],
+                  "keyValuePairs": [],
                   "math": {
                     "latex": " \\mathit{submodel4\\_\\_k1}·\\mathit{submodel4\\_\\_S2}",
                     "formula": "submodel4__k1 * submodel4__S2"
@@ -3515,11 +3565,7 @@
                   "listOfLocalParameters": []
                 },
                 "equation": "S4 ➞ submodel4__S2",
-                "fbc": {
-                  "lowerFluxBound": null,
-                  "upperFluxBound": null,
-                  "geneProductAssociation": null
-                }
+                "fbc": null
               }
             ],
             "listOfEvents": [],
@@ -3528,6 +3574,7 @@
             "listOfGeneProducts": [],
             "listOfObjectives": [],
             "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
             "fbc": {
               "strict": false,
               "activeObjective": null
@@ -4296,7 +4343,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.039 [s]"
+        "jsonReportTime": "0.04 [s]"
       }
     }
   }
