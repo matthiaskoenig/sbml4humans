@@ -4,6 +4,11 @@ import { computed } from "vue";
 import { APP_COMMIT, APP_VERSION } from "@/build";
 import { DOCS_URL } from "@/report/glossary";
 
+/** The report page is a full height workspace and puts the footer under its split, where the
+ * padding which lifts the footer off the content of a scrolling page would take height from the
+ * tables and the inspector. The dense footer carries the same text in the same order. */
+const props = withDefaults(defineProps<{ dense?: boolean }>(), { dense: false });
+
 const REPOSITORY_URL = "https://github.com/matthiaskoenig/sbml4humans";
 
 /** The concept DOI of the archive on Zenodo, which always resolves to the newest release. */
@@ -18,9 +23,14 @@ const commitUrl = computed(() => `${REPOSITORY_URL}/commit/${APP_COMMIT}`);
 
 <template>
   <!-- `mt-auto` puts the footer at the bottom of a short page, the padding keeps it clear of the
-       content of a page which fills the window, e.g. the grid of the examples -->
-  <footer class="mt-auto pt-8 text-xs text-gray-500" data-testid="app-footer">
-    <div class="border-t border-gray-200 pt-6">
+       content of a page which fills the window, e.g. the grid of the examples; the dense footer
+       of the report page sits right under the split, which has taken the height it needs -->
+  <footer
+    class="text-xs text-gray-500"
+    :class="props.dense ? 'shrink-0 bg-white px-4' : 'mt-auto pt-8'"
+    data-testid="app-footer"
+  >
+    <div class="border-t border-gray-200" :class="props.dense ? 'py-2' : 'pt-6'">
       <p>
         SBML4Humans {{ APP_VERSION
         }}<template v-if="APP_COMMIT">

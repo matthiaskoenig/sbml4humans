@@ -25,6 +25,8 @@ const packages = computed(
 
 <template>
   <div class="flex min-w-0 items-center gap-3 text-sm">
+    <!-- an archive of several entries picks the one to report, the single entry of a plain SBML
+    file is a name the backend gives it and the reader never chose, so it is not shown -->
     <SelectInput
       v-if="entries.length > 1"
       :model-value="entry"
@@ -33,9 +35,6 @@ const packages = computed(
       data-testid="entry-select"
       @update:model-value="(value: string) => view.setEntry(value)"
     />
-    <span v-else class="truncate font-mono text-gray-700" data-testid="entry-name">{{
-      entry
-    }}</span>
     <SelectInput
       v-if="index.models.length > 1"
       :model-value="model.id ?? ''"

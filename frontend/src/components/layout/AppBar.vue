@@ -15,11 +15,11 @@ import { DOCS_URL } from "@/report/glossary";
       <img :src="logo" alt="The logo of SBML4Humans" class="size-6" data-testid="app-logo" />
       SBML4Humans
     </RouterLink>
+    <slot name="search" />
     <div class="flex min-w-0 flex-1 items-center gap-3">
       <slot name="context" />
     </div>
     <div class="flex items-center gap-3">
-      <slot name="actions" />
       <a
         :href="DOCS_URL"
         target="_blank"

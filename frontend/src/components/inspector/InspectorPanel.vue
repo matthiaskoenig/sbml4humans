@@ -33,11 +33,7 @@ const xmlEmptyMessage = computed(() =>
 </script>
 
 <template>
-  <aside
-    v-if="element"
-    class="flex h-full flex-col border-t border-gray-200 bg-white"
-    data-testid="inspector"
-  >
+  <aside v-if="element" class="flex h-full flex-col bg-white" data-testid="inspector">
     <header class="flex h-10 shrink-0 items-center gap-2 border-b border-gray-200 px-3 text-sm">
       <TypeMark v-if="element.sbmlType" :type="element.sbmlType" size="md" />
       <a
@@ -85,10 +81,24 @@ const xmlEmptyMessage = computed(() =>
     <div v-if="showXml" class="min-h-0 flex-1 overflow-hidden p-3">
       <XmlView :xml="element.xml" :empty-message="xmlEmptyMessage" />
     </div>
-    <div v-else class="grid min-h-0 flex-1 grid-cols-3 divide-x divide-gray-200">
-      <div class="overflow-y-auto p-3"><AttributesColumn :element="element" /></div>
-      <div class="overflow-y-auto p-3"><LinksColumn :pk="element.pk" /></div>
-      <div class="overflow-y-auto p-3"><AnnotationsColumn :element="element" /></div>
+    <!-- the inspector is a column of the report page, a third of the window wide, and its three
+    sections are one under the other in one scroll; a reader who drags it wider than `@4xl` gets
+    the three columns next to each other, each with a scroll of its own -->
+    <div v-else class="@container min-h-0 flex-1 overflow-hidden" data-testid="inspector-body">
+      <div
+        class="grid h-full grid-cols-1 divide-y divide-gray-200 overflow-y-auto @4xl:grid-cols-3 @4xl:divide-x @4xl:divide-y-0 @4xl:overflow-hidden"
+      >
+        <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
+          <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase @4xl:hidden">
+            Attributes
+          </h3>
+          <AttributesColumn :element="element" />
+        </div>
+        <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto"><LinksColumn :pk="element.pk" /></div>
+        <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
+          <AnnotationsColumn :element="element" />
+        </div>
+      </div>
     </div>
   </aside>
 </template>

@@ -29,7 +29,7 @@ import type {
 
 export type * from "@/types/report";
 
-/** The objects of the document group of the rail. */
+/** The objects of the document group of the type bar. */
 export type DocumentElement = SBMLDocument | Model | ExternalModelDefinition;
 
 /** The objects with a table of their own. */

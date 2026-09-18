@@ -46,7 +46,7 @@ test.describe("repressilator", () => {
     const speciesRows = page.getByTestId("table-Species").locator("tbody tr[data-pk]");
     const total = await speciesRows.count();
     await page.getByTestId("search-input").fill("laci");
-    await expect(page.getByTestId("rail-count-Species")).toContainText("/");
+    await expect(page.getByTestId("bar-count-Species")).toContainText("/");
     await expect.poll(() => speciesRows.count()).toBeLessThan(total);
     expect(query(page, "q")).toBe("laci");
     await page.getByTestId("search-input").fill("zzzz-nothing");
@@ -57,10 +57,10 @@ test.describe("repressilator", () => {
 
   test("a type can be toggled off", async ({ page }) => {
     await expect(page.getByTestId("section-Reaction")).toBeVisible();
-    await page.getByTestId("rail-toggle-Reaction").click();
+    await page.getByTestId("bar-toggle-Reaction").click();
     await expect(page.getByTestId("section-Reaction")).toHaveCount(0);
     expect(query(page, "types")).not.toContain("Reaction");
-    await page.getByTestId("rail-toggle-Reaction").click();
+    await page.getByTestId("bar-toggle-Reaction").click();
     await expect(page.getByTestId("section-Reaction")).toBeVisible();
     expect(query(page, "types")).toBeNull();
   });
@@ -180,7 +180,7 @@ test("the archive dropdown switches the entry", async ({ page }) => {
 test("the model dropdown switches to a model definition", async ({ page }) => {
   await openExample(page, "model_definitions (model_definitions.xml)");
   await page.getByRole("combobox", { name: "model", exact: true }).selectOption("m1");
-  await expect(page.getByTestId("rail-model")).toContainText("m1");
+  await expect(page.getByTestId("bar-model")).toContainText("m1");
   expect(query(page, "model")).toBe("m1");
 });
 

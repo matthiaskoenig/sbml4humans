@@ -37,7 +37,7 @@ test("the notes of an element stay inside their box and keep only the allowed ma
   await page.getByTestId("paste-submit").click();
   await expect(page.getByTestId("report-page")).toBeVisible();
 
-  await page.getByTestId("rail-model").click();
+  await page.getByTestId("bar-model").click();
   const inspector = page.getByTestId("inspector");
   await expect(inspector.getByTestId("inspector-type")).toHaveText("Model");
 

@@ -18,7 +18,7 @@ test("uploads a file", async ({ page }) => {
   await page.getByTestId("file-input").setInputFiles(REPRESSILATOR_FILE);
   await expect(page).toHaveURL(/\/report$/);
   await expect(page.getByTestId("report-page")).toBeVisible();
-  await expect(page.getByTestId("rail-model")).toContainText("BIOMD0000000012");
+  await expect(page.getByTestId("bar-model")).toContainText("BIOMD0000000012");
   await page.reload();
   await expect(page.getByTestId("no-report")).toBeVisible();
 });

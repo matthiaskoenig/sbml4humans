@@ -44,7 +44,7 @@ npm run screenshots  # retake docs/images/*.png against the running backend and 
 - `src/stores/`: the Pinia stores of the report and the examples.
 - `src/report/`: what the report page is built from. `index.ts` is `ReportIndex` (every element by pk, the edges of the link graph), `columns/` the table columns per element type, `search.ts` the search, `sort.ts` and `rowWindow.ts` the sorting and the windowing of a large table, `query.ts` and `view.ts` the view state of the report page in the route query, `glossary.ts` the entries behind the explanations on hover and the url of a reference page, `latex.ts` the KaTeX rendering, `notes.ts` the sanitised notes, `limitedList.ts` the lists which are cut off in the inspector, and `context.ts`, `parentReaction.ts`, `text.ts` and `units.ts` the helpers the components share.
 - `src/pages/`: home (upload, url, paste), examples, report.
-- `src/components/`: `layout/` (app bar, split panes, states), `input/`, `report/` (context bar, type rail, search, element tables), `inspector/` (attributes per type, links, annotations), `misc/` (math, units, links, notes, xml).
+- `src/components/`: `layout/` (app bar, split panes, states), `input/`, `report/` (context bar, type bar, search, element tables), `inspector/` (attributes per type, links, annotations), `misc/` (math, units, links, notes, xml).
 - `src/data/`: order, labels, colours and icons of the SBML types and the edge kinds.
 - `tests/unit/` (vitest with the recorded fixtures), `tests/e2e/` (playwright).
 
