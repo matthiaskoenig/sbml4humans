@@ -39,7 +39,12 @@ const ASSIGNMENT_COLUMNS = [
   <AttributeRow label="delay" :type="element.sbmlType" field="delay"
     ><MathView :math="element.delay"
   /></AttributeRow>
-  <AttributeRow label="event assignments" :type="element.sbmlType" field="listOfEventAssignments">
+  <AttributeRow
+    label="event assignments"
+    :type="element.sbmlType"
+    field="listOfEventAssignments"
+    :wide="!!element.listOfEventAssignments?.length"
+  >
     <NestedTable :rows="element.listOfEventAssignments ?? []" :columns="ASSIGNMENT_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.variable"

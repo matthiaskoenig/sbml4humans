@@ -40,7 +40,12 @@ const species = (kind: EdgeKind, id: string) =>
   <AttributeRow label="equation" :type="element.sbmlType" field="equation"
     ><span class="font-mono">{{ element.equation }}</span></AttributeRow
   >
-  <AttributeRow label="reactants" :type="element.sbmlType" field="listOfReactants">
+  <AttributeRow
+    label="reactants"
+    :type="element.sbmlType"
+    field="listOfReactants"
+    :wide="!!element.listOfReactants?.length"
+  >
     <NestedTable :rows="element.listOfReactants ?? []" :columns="PARTICIPANT_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
@@ -51,7 +56,12 @@ const species = (kind: EdgeKind, id: string) =>
       <template #cell-constant="{ row }"><BooleanMark :value="row.constant" /></template>
     </NestedTable>
   </AttributeRow>
-  <AttributeRow label="products" :type="element.sbmlType" field="listOfProducts">
+  <AttributeRow
+    label="products"
+    :type="element.sbmlType"
+    field="listOfProducts"
+    :wide="!!element.listOfProducts?.length"
+  >
     <NestedTable :rows="element.listOfProducts ?? []" :columns="PARTICIPANT_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
@@ -62,7 +72,12 @@ const species = (kind: EdgeKind, id: string) =>
       <template #cell-constant="{ row }"><BooleanMark :value="row.constant" /></template>
     </NestedTable>
   </AttributeRow>
-  <AttributeRow label="modifiers" :type="element.sbmlType" field="listOfModifiers">
+  <AttributeRow
+    label="modifiers"
+    :type="element.sbmlType"
+    field="listOfModifiers"
+    :wide="!!element.listOfModifiers?.length"
+  >
     <NestedTable :rows="element.listOfModifiers ?? []" :columns="MODIFIER_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"

@@ -19,7 +19,12 @@ const COLUMNS = [
   <AttributeRow label="type" :type="element.sbmlType" field="type"
     ><ValueText :value="element.type"
   /></AttributeRow>
-  <AttributeRow label="flux objectives" :type="element.sbmlType" field="listOfFluxObjectives">
+  <AttributeRow
+    label="flux objectives"
+    :type="element.sbmlType"
+    field="listOfFluxObjectives"
+    :wide="!!element.listOfFluxObjectives?.length"
+  >
     <NestedTable :rows="element.listOfFluxObjectives ?? []" :columns="COLUMNS">
       <template #cell-reaction="{ row }">
         <ElementLink

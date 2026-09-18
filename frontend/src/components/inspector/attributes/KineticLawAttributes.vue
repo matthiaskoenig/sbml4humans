@@ -23,7 +23,12 @@ const COLUMNS = [
   <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
     ><UnitsView :latex="element.derivedUnits"
   /></AttributeRow>
-  <AttributeRow label="local parameters" :type="element.sbmlType" field="listOfLocalParameters">
+  <AttributeRow
+    label="local parameters"
+    :type="element.sbmlType"
+    field="listOfLocalParameters"
+    :wide="!!element.listOfLocalParameters?.length"
+  >
     <NestedTable :rows="element.listOfLocalParameters ?? []" :columns="COLUMNS">
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" :label="row.id" /></template>
       <template #cell-unitsLatex="{ row }"

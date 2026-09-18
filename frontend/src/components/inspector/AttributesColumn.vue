@@ -86,6 +86,7 @@ const replacedElements = computed(() =>
         label="replaced elements"
         :type="element.sbmlType"
         field="comp.replacedElements"
+        wide
       >
         <NestedTable
           :rows="replacedElements"
@@ -106,6 +107,7 @@ const replacedElements = computed(() =>
       label="uncertainties"
       :type="element.sbmlType"
       field="uncertainties"
+      wide
     >
       <NestedTable :rows="uncertainties" :columns="uncertaintyColumns">
         <template #cell-id="{ row }"><ElementLink :pk="row.pk" :label="row.id" /></template>

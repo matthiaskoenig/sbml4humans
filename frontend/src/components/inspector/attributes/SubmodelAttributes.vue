@@ -43,7 +43,11 @@ const DELETION_COLUMNS = [
       :label="element.extentConversionFactor"
     />
   </AttributeRow>
-  <AttributeRow label="deletions" :type="element.sbmlType" field="listOfDeletions"
+  <AttributeRow
+    label="deletions"
+    :type="element.sbmlType"
+    field="listOfDeletions"
+    :wide="!!element.listOfDeletions?.length"
     ><NestedTable :rows="element.listOfDeletions ?? []" :columns="DELETION_COLUMNS"
   /></AttributeRow>
 </template>
