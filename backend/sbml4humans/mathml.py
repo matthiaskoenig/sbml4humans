@@ -142,3 +142,17 @@ def math_symbols(astnode: libsbml.ASTNode) -> set[str]:
     for k in range(astnode.getNumChildren()):
         symbols |= math_symbols(astnode.getChild(k))
     return symbols
+
+
+def math_units(astnode: libsbml.ASTNode) -> set[str]:
+    """The units the numbers of a math name with the attribute `sbml:units`.
+
+    Level 3 lets a `cn` element say which units its number has (core §3.4.2),
+    by the identifier of a unit definition of the model or of a base unit.
+    """
+    units: set[str] = set()
+    if astnode.isNumber() and astnode.isSetUnits():
+        units.add(astnode.getUnits())
+    for k in range(astnode.getNumChildren()):
+        units |= math_units(astnode.getChild(k))
+    return units

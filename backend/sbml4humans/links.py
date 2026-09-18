@@ -43,6 +43,11 @@ from sbml4humans.model import (
 
 logger = logging.getLogger(__name__)
 
+# the units Level 1 and Level 2 predefine and which every element without
+# units of its own uses; a model changes them by defining a unit of that id
+# (L2V4 §4.4.3), which Level 3 does with the units attributes of the model
+BUILT_IN_UNITS = ("substance", "time", "volume", "area", "length")
+
 
 class ModelIndex:
     """The identifiers of one model resolved to pks.
@@ -296,10 +301,16 @@ def _transition_terms(transition: Transition) -> Iterator[SBase]:
 class LinkGraphBuilder:
     """Collects the nodes and edges of a report."""
 
-    def __init__(self, report: Report, symbols: dict[str, set[str]]) -> None:
-        """Prepare the build for the report and the symbols of its maths."""
+    def __init__(
+        self,
+        report: Report,
+        symbols: dict[str, set[str]],
+        units: dict[str, set[str]] | None = None,
+    ) -> None:
+        """Prepare the build for the report and the symbols and units of its maths."""
         self.report = report
         self.symbols = symbols
+        self.units = units or {}
         self.nodes: dict[str, Node] = {}
         self.edges: list[Edge] = []
         self.indices: dict[str, ModelIndex] = {}
@@ -384,13 +395,20 @@ class LinkGraphBuilder:
     def _math_edges(
         self, source: SBase, index: ModelIndex, kinetic_law_pk: str | None = None
     ) -> None:
-        """Add the math edges for the symbols of the math of the source."""
+        """Add the edges of the math of the source: its symbols and its units.
+
+        A number of a formula may name its units (core §3.4.2), which is the
+        same relation the units attribute of a parameter has to its unit
+        definition.
+        """
         for symbol in sorted(self.symbols.get(source.pk, set())):
             target = index.resolve(symbol, kinetic_law_pk)
             if target is not None:
                 self.edges.append(
                     Edge(source=source.pk, target=target, kind=EdgeKind.MATH)
                 )
+        for units in sorted(self.units.get(source.pk, set())):
+            self._units_edge(source, units, index)
 
     # ---------------------------------------------------------------------------------
     # distrib: the uncertainties of an element and their measures
@@ -740,6 +758,9 @@ class LinkGraphBuilder:
 
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             self._units_edge(model, getattr(model, f"{key}_units"), index)
+        if self.report.document.level < 3:
+            for units in BUILT_IN_UNITS:
+                self._units_edge(model, units, index)
         if model.conversion_factor is not None:
             self._edge(
                 model, model.conversion_factor.sid, EdgeKind.CONVERSION_FACTOR, index
@@ -1005,11 +1026,16 @@ class LinkGraphBuilder:
             self._math_edges(ea, index)
 
 
-def build_link_graph(report: Report, symbols: dict[str, set[str]]) -> LinkGraph:
+def build_link_graph(
+    report: Report,
+    symbols: dict[str, set[str]],
+    units: dict[str, set[str]] | None = None,
+) -> LinkGraph:
     """The nodes and edges of a report.
 
     Args:
         report: the report with its models, without link graph.
         symbols: the symbols of every math, keyed by the pk of its owner.
+        units: the units the numbers of every math name, keyed the same way.
     """
-    return LinkGraphBuilder(report, symbols).build()
+    return LinkGraphBuilder(report, symbols, units).build()

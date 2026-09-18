@@ -1,5 +1,5 @@
 {
-  "uid": "16f72e0b173c4eaa80492881258a7620",
+  "uid": "4ce9a0cc82ac420b86425a767e189e3f",
   "manifest": {
     "entries": [
       {
@@ -2908,6 +2908,21 @@
               "kind": "model"
             },
             {
+              "source": "BIOMD0000000012/Model:BIOMD0000000012",
+              "target": "BIOMD0000000012/UnitDefinition:substance",
+              "kind": "units"
+            },
+            {
+              "source": "BIOMD0000000012/Model:BIOMD0000000012",
+              "target": "BIOMD0000000012/UnitDefinition:time",
+              "kind": "units"
+            },
+            {
+              "source": "BIOMD0000000012/Model:BIOMD0000000012",
+              "target": "BIOMD0000000012/UnitDefinition:volume",
+              "kind": "units"
+            },
+            {
               "source": "BIOMD0000000012/Species:PX",
               "target": "BIOMD0000000012/Compartment:cell",
               "kind": "compartment"
@@ -3481,7 +3496,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.152 [s]"
+        "jsonReportTime": "0.148 [s]"
       }
     }
   }

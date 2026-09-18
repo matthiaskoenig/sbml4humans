@@ -124,7 +124,9 @@ The link is shown under "References" of the initial assignment and under "Refere
 label = "units"
 summary = "the unit definition an element declares its units with"
 description = """
-A [model](model.md), a [compartment](compartment.md), a [species](species.md), a [parameter](parameter.md) and a [local parameter](localparameter.md) may name a [unit definition](unitdefinition.md) of the model in one of their units attributes. A units attribute which names a base unit of SBML instead of a unit definition produces no link, because there is no element to link to.
+A [model](model.md), a [compartment](compartment.md), a [species](species.md), a [parameter](parameter.md), a [local parameter](localparameter.md) and an [uncert parameter](uncertparameter.md) may name a [unit definition](unitdefinition.md) of the model in one of their units attributes. A units attribute which names a base unit of SBML instead of a unit definition produces no link, because there is no element to link to.
+
+Two more references carry the same relation. A number in a formula of Level 3 may name its units with the attribute `sbml:units`, and the element which holds the formula links that unit definition. A model of Level 1 or Level 2 changes the units every element without units of its own uses by defining a unit of the id `substance`, `time`, `volume`, `area` or `length`, and the model links such a definition, the way a model of Level 3 links the unit definitions of its units attributes.
 
 The link is shown under "References" of the element and under "Referenced by" of the unit definition, where it shows which elements are measured in it.
 """

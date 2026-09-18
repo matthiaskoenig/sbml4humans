@@ -18,7 +18,7 @@ import libsbml
 from pymetadata.core.miriam import BQB, BQM
 
 from sbml4humans.links import build_link_graph
-from sbml4humans.mathml import math_info, math_symbols
+from sbml4humans.mathml import math_info, math_symbols, math_units
 from sbml4humans.model import (
     AlgebraicRule,
     And,
@@ -208,12 +208,14 @@ class SBMLDocumentInfo:
         report: the report after `build`.
         symbols: the symbols of every math, keyed by the pk of the object
             carrying the math (kinetic law, rule, event, ...).
+        units: the units the numbers of every math name, keyed the same way.
     """
 
     def __init__(self, doc: libsbml.SBMLDocument):
         """Prepare the build of the report of the document."""
         self.doc = doc
         self.symbols: dict[str, set[str]] = {}
+        self.units_of_math: dict[str, set[str]] = {}
         self.scope = DOCUMENT_SCOPE
         self.report: Report
 
@@ -252,7 +254,9 @@ class SBMLDocumentInfo:
             models=models,
             external_model_definitions=external,
         )
-        self.report.link_graph = build_link_graph(self.report, self.symbols)
+        self.report.link_graph = build_link_graph(
+            self.report, self.symbols, self.units_of_math
+        )
         return self.report
 
     # ---------------------------------------------------------------------------------
@@ -431,10 +435,12 @@ class SBMLDocumentInfo:
         )
 
     def math(self, owner_pk: str, astnode: libsbml.ASTNode | None) -> Math | None:
-        """The math of an element, its symbols are recorded for the link graph."""
+        """The math of an element, its symbols and units are recorded for the link graph."""
         if astnode is None:
             return None
         self.symbols.setdefault(owner_pk, set()).update(math_symbols(astnode))
+        if units := math_units(astnode):
+            self.units_of_math.setdefault(owner_pk, set()).update(units)
         return math_info(astnode)
 
     def units(self, sid: str | None, model: libsbml.Model) -> str | None:

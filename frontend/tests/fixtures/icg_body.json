@@ -1,5 +1,5 @@
 {
-  "uid": "9f5e57a53eb94abeaa55218d2cf8a12a",
+  "uid": "cc9bd312821f4dcba50a6dfc0659dad1",
   "manifest": {
     "entries": [
       {
@@ -9391,6 +9391,11 @@
               "kind": "math"
             },
             {
+              "source": "icg_body/AssignmentRule:FVre",
+              "target": "icg_body/UnitDefinition:l_per_kg",
+              "kind": "units"
+            },
+            {
               "source": "icg_body/AssignmentRule:FQre",
               "target": "icg_body/Parameter:FQre",
               "kind": "variable"
@@ -9421,6 +9426,21 @@
               "kind": "math"
             },
             {
+              "source": "icg_body/AssignmentRule:BSA",
+              "target": "icg_body/UnitDefinition:cm",
+              "kind": "units"
+            },
+            {
+              "source": "icg_body/AssignmentRule:BSA",
+              "target": "icg_body/UnitDefinition:kg",
+              "kind": "units"
+            },
+            {
+              "source": "icg_body/AssignmentRule:BSA",
+              "target": "icg_body/UnitDefinition:m2",
+              "kind": "units"
+            },
+            {
               "source": "icg_body/AssignmentRule:CO",
               "target": "icg_body/Parameter:CO",
               "kind": "variable"
@@ -9449,6 +9469,16 @@
               "source": "icg_body/AssignmentRule:QC",
               "target": "icg_body/Parameter:CO",
               "kind": "math"
+            },
+            {
+              "source": "icg_body/AssignmentRule:QC",
+              "target": "icg_body/UnitDefinition:ml_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "icg_body/AssignmentRule:QC",
+              "target": "icg_body/UnitDefinition:s_per_min",
+              "kind": "units"
             },
             {
               "source": "icg_body/AssignmentRule:Vbi",
@@ -9571,6 +9601,11 @@
               "kind": "math"
             },
             {
+              "source": "icg_body/AssignmentRule:Vve",
+              "target": "icg_body/UnitDefinition:l_per_kg",
+              "kind": "units"
+            },
+            {
               "source": "icg_body/AssignmentRule:Var",
               "target": "icg_body/Compartment:Var",
               "kind": "variable"
@@ -9609,6 +9644,11 @@
               "source": "icg_body/AssignmentRule:Var",
               "target": "icg_body/Parameter:HCT",
               "kind": "math"
+            },
+            {
+              "source": "icg_body/AssignmentRule:Var",
+              "target": "icg_body/UnitDefinition:l_per_kg",
+              "kind": "units"
             },
             {
               "source": "icg_body/AssignmentRule:Vpo",
@@ -9651,6 +9691,11 @@
               "kind": "math"
             },
             {
+              "source": "icg_body/AssignmentRule:Vpo",
+              "target": "icg_body/UnitDefinition:l_per_kg",
+              "kind": "units"
+            },
+            {
               "source": "icg_body/AssignmentRule:Vhv",
               "target": "icg_body/Compartment:Vhv",
               "kind": "variable"
@@ -9689,6 +9734,11 @@
               "source": "icg_body/AssignmentRule:Vhv",
               "target": "icg_body/Parameter:HCT",
               "kind": "math"
+            },
+            {
+              "source": "icg_body/AssignmentRule:Vhv",
+              "target": "icg_body/UnitDefinition:l_per_kg",
+              "kind": "units"
             },
             {
               "source": "icg_body/AssignmentRule:Qlu",
@@ -9944,6 +9994,11 @@
               "source": "icg_body/AssignmentRule:Ki_icg",
               "target": "icg_body/Parameter:ti_icg",
               "kind": "math"
+            },
+            {
+              "source": "icg_body/AssignmentRule:Ki_icg",
+              "target": "icg_body/UnitDefinition:s_per_min",
+              "kind": "units"
             },
             {
               "source": "icg_body/AssignmentRule:Are_plasma_icg",
@@ -10361,6 +10416,11 @@
               "kind": "math"
             },
             {
+              "source": "icg_body/AssignmentRule:ER_icg",
+              "target": "icg_body/UnitDefinition:mM",
+              "kind": "units"
+            },
+            {
               "source": "icg_body/AssignmentRule:CLinfusion_icg",
               "target": "icg_body/Parameter:CLinfusion_icg",
               "kind": "variable"
@@ -10379,6 +10439,11 @@
               "source": "icg_body/AssignmentRule:CLinfusion_icg",
               "target": "icg_body/Parameter:Ri_icg",
               "kind": "math"
+            },
+            {
+              "source": "icg_body/AssignmentRule:CLinfusion_icg",
+              "target": "icg_body/UnitDefinition:mM",
+              "kind": "units"
             },
             {
               "source": "icg_body/RateRule:IVDOSE_icg",
@@ -10984,7 +11049,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.558 [s]"
+        "jsonReportTime": "0.552 [s]"
       }
     }
   }

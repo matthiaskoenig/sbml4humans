@@ -156,6 +156,82 @@ def test_units_edges() -> None:
     assert all(t.startswith(f"{m}/UnitDefinition:") for _, t, _ in units_edges)
 
 
+def test_the_units_of_a_number_in_a_formula_are_linked() -> None:
+    """A number of a formula which names its units links their unit definition.
+
+    Level 3 gives a `cn` element of MathML the attribute `sbml:units` (core
+    §3.4.2), which names a unit definition of the model the way the units
+    attribute of a parameter does. A base unit is no element of the model and
+    has no link.
+    """
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "parameter.xml")
+    m = "parameter"
+    rule = next(r for r in report.models[0].list_of_rules if r.id is None)
+    assert rule.pk == f"{m}/AssignmentRule:p4"
+    assert _edges(report, source=rule.pk) == {
+        (rule.pk, f"{m}/Parameter:p4", "variable"),
+        (rule.pk, f"{m}/UnitDefinition:mg", "units"),
+        (rule.pk, f"{m}/UnitDefinition:hr", "units"),
+    }
+
+
+LEVEL_2_BUILT_IN_UNITS_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level2/version4" level="2" version="4">
+  <model id="m">
+    <listOfUnitDefinitions>
+      <unitDefinition id="substance">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="time">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="per_min">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments><compartment id="c" size="1"/></listOfCompartments>
+    <listOfSpecies>
+      <species id="s" compartment="c" initialAmount="1"/>
+    </listOfSpecies>
+  </model>
+</sbml>"""
+
+
+def test_a_level_2_model_names_its_redefined_built_in_units() -> None:
+    """A Level 2 unit definition of a built in unit is linked from its model.
+
+    Level 1 and 2 predefine the units `substance`, `time`, `volume`, `area`
+    and `length`, which every element without units of its own uses, and a
+    model changes them by defining a unit of that id (L2V4 §4.4.3). That is
+    what the units attributes of a Level 3 model say, so the model names such
+    a definition the way a Level 3 model names its substance units.
+    """
+    report = SBMLDocumentInfo.from_sbml(LEVEL_2_BUILT_IN_UNITS_SBML)
+    model = report.models[0]
+    assert _edges(report, source=model.pk, kind=EdgeKind.UNITS) == {
+        (model.pk, "m/UnitDefinition:substance", "units"),
+        (model.pk, "m/UnitDefinition:time", "units"),
+    }
+
+
+def test_a_level_3_unit_of_a_built_in_name_is_no_default() -> None:
+    """Level 3 has no built in units, a definition of the id `time` is a unit like any."""
+    sbml = LEVEL_2_BUILT_IN_UNITS_SBML.replace(
+        'xmlns="http://www.sbml.org/sbml/level2/version4" level="2" version="4"',
+        'xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2"',
+    )
+    report = SBMLDocumentInfo.from_sbml(sbml)
+    assert report.document.level == 3
+    model = report.models[0]
+    assert _edges(report, source=model.pk, kind=EdgeKind.UNITS) == set()
+
+
 def test_comp_edges() -> None:
     """Submodels, ports and replacements are edges."""
     report = SBMLDocumentInfo.from_sbml(COMP_ICG_BODY)
