@@ -131,7 +131,10 @@ test.describe("repressilator", () => {
 });
 
 test("the archive dropdown switches the entry", async ({ page }) => {
-  await openExample(page, "CompModels");
+  // the backend builds one report per SBML entry of an archive before it answers, so an archive
+  // takes longer than a single model, and on CI the parallel workers of the other specs compete
+  // for the runner's CPU while it does
+  await openExample(page, "CompModels", 60_000);
   const select = page.getByRole("combobox", { name: "archive entry", exact: true });
   // the order of the archive entries follows the file system of the backend, so the start entry is not fixed
   const current = await select.inputValue();
