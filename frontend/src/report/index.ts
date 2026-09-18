@@ -193,6 +193,12 @@ export class ReportIndex {
         if (element.delay) this.add(element.delay);
         for (const assignment of element.listOfEventAssignments ?? []) this.add(assignment);
         break;
+      case "Transition":
+        for (const input of element.listOfInputs ?? []) this.add(input);
+        for (const output of element.listOfOutputs ?? []) this.add(output);
+        for (const term of element.listOfFunctionTerms ?? []) this.add(term);
+        if (element.defaultTerm) this.add(element.defaultTerm);
+        break;
       default:
         break;
     }

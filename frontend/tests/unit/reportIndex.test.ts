@@ -20,6 +20,7 @@ const FIXTURE_NAMES: FixtureName[] = [
   "comp_models",
   "comp_deletion",
   "distrib_uncertainties",
+  "qual_example",
 ];
 
 /** Every report entry of every fixture, indexed - `comp_models` alone carries three entries. */
@@ -52,6 +53,27 @@ describe("ReportIndex", () => {
     }
     const uncertainty = [...distrib.elements.values()].find((e) => e.sbmlType === "Uncertainty");
     expect(uncertainty).toBeDefined();
+  });
+
+  // the inputs, the outputs and the terms of a transition were nodes of the graph before they
+  // were elements of the index, so the identifier of an input in the inspector of its
+  // transition was written as text instead of the link to that input
+  it("indexes every node of the link graph of every fixture", () => {
+    for (const index of allReportIndexes()) {
+      const missing = [...index.nodes.keys()].filter((pk) => !index.has(pk));
+      expect(missing).toEqual([]);
+    }
+  });
+
+  it("indexes the inputs, the outputs and the terms of a transition", () => {
+    const qual = new ReportIndex(loadReport("qual_example"));
+    const transition = qual.mainModel!.listOfTransitions![0]!;
+    expect(qual.get(transition.listOfInputs![0]!.pk)).toBe(transition.listOfInputs![0]);
+    expect(qual.get(transition.listOfOutputs![0]!.pk)).toBe(transition.listOfOutputs![0]);
+    expect(qual.get(transition.listOfFunctionTerms![0]!.pk)).toBe(
+      transition.listOfFunctionTerms![0],
+    );
+    expect(qual.get(transition.defaultTerm!.pk)).toBe(transition.defaultTerm);
   });
 
   it("indexes the external model definitions", () => {
