@@ -9,6 +9,8 @@ graph (`sbml4humans.links`).
 import hashlib
 import logging
 import math
+from collections.abc import Callable, Iterable, Sequence
+from functools import partial
 from pathlib import Path
 from typing import Any, Literal
 
@@ -140,6 +142,54 @@ def _identifier(sbase: libsbml.SBase) -> str | None:
     if isinstance(sbase, ALIASED_ID_CLASSES):
         return sbase.getIdAttribute() if sbase.isSetIdAttribute() else None
     return sbase.getId() if sbase.isSetId() else None
+
+
+def _has_own_key(sbase: libsbml.SBase) -> bool:
+    """Whether an element is keyed by an identifier of the file, its id or metaId."""
+    return _identifier(sbase) is not None or sbase.isSetMetaId()
+
+
+def _unique_keys(keys: Sequence[str]) -> list[str]:
+    """The keys, a key which repeats an earlier one told apart by its occurrence.
+
+    The first occurrence keeps its key and a repetition becomes `<key>.1`,
+    `<key>.2` and so on, passing over a key which another element of the list
+    carries already. A key a parent gives its child ends in an identifier of
+    the file, which cannot be a number, so the suffix names no other child.
+    """
+    reserved = set(keys)
+    used: set[str] = set()
+    unique: list[str] = []
+    for key in keys:
+        candidate, occurrence = key, 0
+        while candidate in used or (occurrence > 0 and candidate in reserved):
+            occurrence += 1
+            candidate = f"{key}.{occurrence}"
+        used.add(candidate)
+        unique.append(candidate)
+    return unique
+
+
+def _keyed[T: libsbml.SBase](
+    siblings: Iterable[T], key_of: Callable[[T], str]
+) -> list[tuple[T, str]]:
+    """The children of one list with the keys their parent gives them.
+
+    The key names what a child is about, the species of a species reference
+    or the fluxes of a flux objective, which the file does not change when it
+    reorders the list. Where the specification allows two children about the
+    same thing, a species twice among the reactants of a reaction (core
+    §4.11.3), the repetition is told apart by its occurrence. A child which
+    carries an id or a metaId is keyed by it and takes no part.
+    """
+    children = list(siblings)
+    derived = iter(
+        _unique_keys([key_of(child) for child in children if not _has_own_key(child)])
+    )
+    return [
+        (child, key_of(child) if _has_own_key(child) else next(derived))
+        for child in children
+    ]
 
 
 def _attribute(sbase: Any, key: str) -> Any | None:
@@ -609,19 +659,27 @@ class SBMLDocumentInfo:
             fast=_attribute(r, "fast"),
             compartment=_attribute(r, "compartment"),
             list_of_reactants=[
-                self.species_reference(sr, f"{reaction_key}.reactant.{sr.getSpecies()}")
-                for sr in r.getListOfReactants()
+                self.species_reference(sr, key)
+                for sr, key in _keyed(
+                    r.getListOfReactants(),
+                    lambda sr: f"{reaction_key}.reactant.{sr.getSpecies()}",
+                )
             ],
             list_of_products=[
-                self.species_reference(sr, f"{reaction_key}.product.{sr.getSpecies()}")
-                for sr in r.getListOfProducts()
+                self.species_reference(sr, key)
+                for sr, key in _keyed(
+                    r.getListOfProducts(),
+                    lambda sr: f"{reaction_key}.product.{sr.getSpecies()}",
+                )
             ],
             list_of_modifiers=[
                 ModifierSpeciesReference(
-                    **self.sbase(m, key=f"{reaction_key}.modifier.{m.getSpecies()}"),
-                    species=m.getSpecies(),
+                    **self.sbase(m, key=key), species=m.getSpecies()
                 )
-                for m in r.getListOfModifiers()
+                for m, key in _keyed(
+                    r.getListOfModifiers(),
+                    lambda m: f"{reaction_key}.modifier.{m.getSpecies()}",
+                )
             ],
             kinetic_law=self.kinetic_law(r.getKineticLaw(), model, reaction_key)
             if r.isSetKineticLaw()
@@ -748,8 +806,10 @@ class SBMLDocumentInfo:
                 math=self.math(delay_fields["pk"], _attribute(d, "math")),
             )
         assignments = []
-        for ea in e.getListOfEventAssignments():
-            ea_fields = self.sbase(ea, key=f"{event_key}.{ea.getVariable()}")
+        for ea, ea_key in _keyed(
+            e.getListOfEventAssignments(), lambda ea: f"{event_key}.{ea.getVariable()}"
+        ):
+            ea_fields = self.sbase(ea, key=ea_key)
             assignments.append(
                 EventAssignment(
                     **ea_fields,
@@ -910,23 +970,41 @@ class SBMLDocumentInfo:
                     **self.sbase(o),
                     type=_attribute(o, "type"),
                     list_of_flux_objectives=[
-                        self.flux_objective(f, objective_key)
-                        for f in o.getListOfFluxObjectives()
+                        self.flux_objective(f, key)
+                        for f, key in _keyed(
+                            o.getListOfFluxObjectives(),
+                            partial(
+                                self._flux_objective_key, objective_key=objective_key
+                            ),
+                        )
                     ],
                 )
             )
         return objectives
 
-    def flux_objective(
-        self, f: libsbml.FluxObjective, objective_key: str
-    ) -> FluxObjective:
-        """One term of an objective, keyed by its objective and its reaction.
+    @staticmethod
+    def _flux_objective_key(f: libsbml.FluxObjective, objective_key: str) -> str:
+        """The key of a term of an objective: the objective and the fluxes it multiplies.
+
+        A linear term is keyed by its reaction, a quadratic one by the two
+        fluxes of the product, the second reaction or, without one, the square
+        of the first (fbc §3.7).
+        """
+        fluxes = [f.getReaction()]
+        if f.isSetReaction2():
+            fluxes.append(f.getReaction2())
+        elif f.isSetVariableType() and f.getVariableTypeAsString() == "quadratic":
+            fluxes.append(f.getReaction())
+        return ".".join([objective_key, "fluxObjective", *fluxes])
+
+    def flux_objective(self, f: libsbml.FluxObjective, key: str) -> FluxObjective:
+        """One term of an objective, `key` names it within its objective.
 
         `reaction2` and `variableType` were added in Version 3, where the type
         is required; a document of an earlier version sets neither of them.
         """
         return FluxObjective(
-            **self.sbase(f, key=f"{objective_key}.fluxObjective.{f.getReaction()}"),
+            **self.sbase(f, key=key),
             reaction=f.getReaction(),
             reaction2=_attribute(f, "reaction2"),
             coefficient=f.getCoefficient() if f.isSetCoefficient() else None,

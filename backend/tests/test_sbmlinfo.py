@@ -1180,6 +1180,139 @@ def test_flux_objective_without_an_id_is_keyed_by_its_objective() -> None:
     assert flux_objective.variable_type is None
 
 
+FLUX_OBJECTIVES_OF_ONE_REACTION_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1"
+      xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version3"
+      fbc:required="false">
+  <model id="m" fbc:strict="true">
+    <listOfCompartments><compartment id="c" constant="true"/></listOfCompartments>
+    <listOfSpecies>
+      <species id="A" compartment="c" hasOnlySubstanceUnits="false"
+               boundaryCondition="false" constant="false"/>
+      <species id="B" compartment="c" hasOnlySubstanceUnits="false"
+               boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="lb" value="-1000" constant="true"/>
+      <parameter id="ub" value="1000" constant="true"/>
+    </listOfParameters>
+    <listOfReactions>
+      <reaction id="R1" reversible="false" fast="false"
+                fbc:lowerFluxBound="lb" fbc:upperFluxBound="ub">
+        <listOfReactants>
+          <speciesReference species="A" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="B" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R2" reversible="false" fast="false"
+                fbc:lowerFluxBound="lb" fbc:upperFluxBound="ub">
+        <listOfReactants>
+          <speciesReference species="B" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+    </listOfReactions>
+    <fbc:listOfObjectives fbc:activeObjective="obj">
+      <fbc:objective fbc:id="obj" fbc:type="maximize">
+        <fbc:listOfFluxObjectives>
+          <fbc:fluxObjective fbc:reaction="R1" fbc:coefficient="3"
+                             fbc:variableType="linear"/>
+          <fbc:fluxObjective fbc:reaction="R1" fbc:coefficient="1"
+                             fbc:variableType="quadratic"/>
+          <fbc:fluxObjective fbc:reaction="R1" fbc:reaction2="R2"
+                             fbc:coefficient="2" fbc:variableType="quadratic"/>
+          <fbc:fluxObjective fbc:reaction="R1" fbc:coefficient="4"
+                             fbc:variableType="linear"/>
+        </fbc:listOfFluxObjectives>
+      </fbc:objective>
+    </fbc:listOfObjectives>
+  </model>
+</sbml>"""
+
+
+def test_flux_objectives_of_one_reaction_have_a_key_each() -> None:
+    """The terms of one objective on one reaction are told apart by their key.
+
+    fbc Version 3 lets an objective weigh one flux in several terms, a linear
+    and a quadratic one, or a product with a second flux, and the id of a flux
+    objective is optional (fbc §3.7), so the reaction alone keys none of them.
+    A term is keyed by the fluxes it multiplies, which the file does not
+    change when it reorders its terms, and a term which repeats another one
+    of the same fluxes is told apart by its occurrence.
+    """
+    doc: libsbml.SBMLDocument = read_sbml(FLUX_OBJECTIVES_OF_ONE_REACTION_SBML)
+    doc.checkConsistency()
+    assert doc.getNumErrors(libsbml.LIBSBML_SEV_ERROR) == 0
+    report = SBMLDocumentInfo.from_doc(doc)
+    (objective,) = report.models[0].list_of_objectives
+    assert [f.pk for f in objective.list_of_flux_objectives] == [
+        "m/FluxObjective:obj.fluxObjective.R1",
+        "m/FluxObjective:obj.fluxObjective.R1.R1",
+        "m/FluxObjective:obj.fluxObjective.R1.R2",
+        "m/FluxObjective:obj.fluxObjective.R1.1",
+    ]
+    assert all(
+        f.pk in report.link_graph.nodes for f in objective.list_of_flux_objectives
+    )
+
+
+def test_a_species_twice_among_the_reactants_has_two_keys() -> None:
+    """Two references of one reaction to one species are two elements of the report.
+
+    A species may occur more than once in the reactants or the products of a
+    reaction, the stoichiometries add up (core §4.11.3), so the species does
+    not key the reference alone: the second one is told apart by its
+    occurrence and the first keeps the key it always had.
+    """
+    sbml = """<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"
+      level="3" version="2">
+      <model id="m">
+        <listOfCompartments><compartment id="c" constant="true"/></listOfCompartments>
+        <listOfSpecies>
+          <species id="s" compartment="c" hasOnlySubstanceUnits="false"
+                   boundaryCondition="false" constant="false"/>
+        </listOfSpecies>
+        <listOfReactions>
+          <reaction id="r" reversible="false">
+            <listOfReactants>
+              <speciesReference species="s" stoichiometry="1" constant="true"/>
+              <speciesReference species="s" stoichiometry="2" constant="true"/>
+            </listOfReactants>
+            <listOfModifiers>
+              <modifierSpeciesReference species="s"/>
+              <modifierSpeciesReference species="s"/>
+            </listOfModifiers>
+          </reaction>
+        </listOfReactions>
+      </model>
+    </sbml>"""
+    report = SBMLDocumentInfo.from_sbml(sbml)
+    (reaction,) = report.models[0].list_of_reactions
+    assert [sr.pk for sr in reaction.list_of_reactants] == [
+        "m/SpeciesReference:r.reactant.s",
+        "m/SpeciesReference:r.reactant.s.1",
+    ]
+    assert [sr.pk for sr in reaction.list_of_modifiers] == [
+        "m/ModifierSpeciesReference:r.modifier.s",
+        "m/ModifierSpeciesReference:r.modifier.s.1",
+    ]
+    assert [
+        (e.source, e.kind.value)
+        for e in report.link_graph.edges
+        if e.kind in {EdgeKind.REACTANT, EdgeKind.MODIFIER}
+    ] == [
+        ("m/Reaction:r", "reactant"),
+        ("m/SpeciesReference:r.reactant.s", "reactant"),
+        ("m/Reaction:r", "reactant"),
+        ("m/SpeciesReference:r.reactant.s.1", "reactant"),
+        ("m/Reaction:r", "modifier"),
+        ("m/ModifierSpeciesReference:r.modifier.s", "modifier"),
+        ("m/Reaction:r", "modifier"),
+        ("m/ModifierSpeciesReference:r.modifier.s.1", "modifier"),
+    ]
+
+
 def test_user_defined_constraints_of_a_version_3_model() -> None:
     """A Version 3 document carries its user defined constraints with their components."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
