@@ -3,6 +3,7 @@
 import shutil
 from pathlib import Path
 
+import libsbml
 import pytest
 from pymetadata.omex import Omex
 
@@ -17,9 +18,11 @@ from sbml4humans.examples import (
 )
 from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
+    EXAMPLES_DIR,
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
 )
+from sbml4humans.sbml import read_sbml
 
 
 def test_example_from_sbml() -> None:
@@ -138,3 +141,20 @@ def test_constraint_event_example_is_served() -> None:
     assert example.file.name == "constraint_event.xml"
     assert example.name == "model with a constraint, an event and local parameters"
     assert example.description is not None
+
+
+def test_comp_deletion_example_is_served() -> None:
+    """The example of the deletions and the replacements of comp is served."""
+    example = load_examples()["comp_deletion (comp_deletion.xml)"]
+    assert example.file.name == "comp_deletion.xml"
+    assert example.name == "Two cells and a tissue in one medium"
+    assert example.description is not None
+    assert example.packages == ["comp"]
+
+
+def test_comp_deletion_example_is_valid_sbml() -> None:
+    """The example is a valid SBML document, without an error or a warning."""
+    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / "comp_deletion.xml")
+    doc.checkConsistency()
+    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
+    assert messages == []
