@@ -67,6 +67,15 @@ nav = [
       { "User defined constraint" = "reference/userdefinedconstraint.md" },
       { "User defined constraint component" = "reference/userdefinedconstraintcomponent.md" },
     ] },
+    { "Qualitative Models (qual)" = [
+      { "Qualitative Models (qual)" = "reference/qual.md" },
+      { "Qualitative species" = "reference/qualitativespecies.md" },
+      { "Transition" = "reference/transition.md" },
+      { "Input" = "reference/input.md" },
+      { "Output" = "reference/output.md" },
+      { "Function term" = "reference/functionterm.md" },
+      { "Default term" = "reference/defaultterm.md" },
+    ] },
     { "Distributions (distrib)" = [
       { "Distributions (distrib)" = "reference/distrib.md" },
       { "Uncertainty" = "reference/uncertainty.md" },

@@ -52,6 +52,7 @@ PACKAGES: Mapping[str, str] = {
     "core": "Core",
     "comp": "Hierarchical models (comp)",
     "fbc": "Flux balance constraints (fbc)",
+    "qual": "Qualitative models (qual)",
     "distrib": "Distributions (distrib)",
     "report": "Added by the report",
 }
@@ -82,7 +83,7 @@ SINGLE_VALUE_DEFINITIONS = frozenset({"ConversionFactor", "Math", "ModelHistory"
 
 # the type entries which are not an element type of the report: the shared
 # attributes of `SBase` and the three packages, which have a page of their own
-NON_ELEMENT_TYPES = frozenset({"SBase", "comp", "fbc", "distrib"})
+NON_ELEMENT_TYPES = frozenset({"SBase", "comp", "fbc", "qual", "distrib"})
 
 _ENTRY_KEYS = frozenset(
     {

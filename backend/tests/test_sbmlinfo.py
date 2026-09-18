@@ -1092,3 +1092,106 @@ def test_fbc_block_of_an_element_which_sets_nothing() -> None:
     assert biomass.fbc is None
     glucose = next(s for s in model.list_of_species if s.id == "glc")
     assert glucose.fbc is not None
+
+
+@pytest.fixture(scope="module")
+def qual_example() -> Report:
+    """The report of the qualitative example model."""
+    return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "qual_example.xml")
+
+
+def test_qualitative_species_of_a_model(qual_example: Report) -> None:
+    """A qualitative species carries its compartment and its levels."""
+    model = qual_example.models[0]
+    species = model.list_of_qualitative_species
+    assert [s.id for s in species] == ["S", "G", "P"]
+    signal, gene, protein = species
+    assert signal.sbml_type == "QualitativeSpecies"
+    assert signal.pk == "qual_example/QualitativeSpecies:S"
+    assert signal.name == "signal"
+    assert signal.compartment == "cell"
+    assert signal.constant is True
+    # an unset level is None and not the maximum integer libsbml answers with
+    assert signal.initial_level is None
+    assert signal.max_level == 1
+    assert gene.constant is False
+    assert (gene.initial_level, gene.max_level) == (0, 1)
+    assert (protein.initial_level, protein.max_level) == (1, 2)
+
+
+def test_qualitative_species_carries_its_sbase_fields(qual_example: Report) -> None:
+    """The notes and the annotation of a qualitative species are part of the report."""
+    signal = qual_example.models[0].list_of_qualitative_species[0]
+    assert signal.meta_id == "meta_S"
+    assert signal.sbo == "SBO:0000252"
+    assert signal.notes is not None
+    assert "input of the system" in signal.notes
+    assert [term.qualifier for term in signal.cvterms] == [
+        "BQB_IS",
+        "BQB_IS_VERSION_OF",
+    ]
+    assert signal.xml is not None
+
+
+def test_transition_with_its_inputs_and_outputs(qual_example: Report) -> None:
+    """A transition carries its inputs, its outputs and their attributes."""
+    model = qual_example.models[0]
+    assert [t.id for t in model.list_of_transitions] == ["tr_G", "tr_P"]
+    transition = model.list_of_transitions[0]
+    assert transition.sbml_type == "Transition"
+    assert transition.pk == "qual_example/Transition:tr_G"
+    assert transition.name == "expression of the gene"
+
+    signal, protein, gene = transition.list_of_inputs
+    assert signal.sbml_type == "Input"
+    assert signal.pk == "qual_example/Input:theta_G_S"
+    assert signal.qualitative_species == "S"
+    assert signal.threshold_level == 1
+    # the word of the specification, which libsbml answers as an integer
+    assert signal.transition_effect == "none"
+    assert signal.sign == "positive"
+    assert protein.sign == "negative"
+    assert gene.qualitative_species == "G"
+
+    (output,) = transition.list_of_outputs
+    assert output.sbml_type == "Output"
+    assert output.pk == "qual_example/Output:out_G"
+    assert output.qualitative_species == "G"
+    assert output.transition_effect == "assignmentLevel"
+    assert output.output_level is None
+
+
+def test_petri_net_transition_consumes_and_produces(qual_example: Report) -> None:
+    """The second transition carries the two effects of the Petri net formalism."""
+    transition = qual_example.models[0].list_of_transitions[1]
+    gene, protein = transition.list_of_inputs
+    assert gene.transition_effect == "consumption"
+    assert protein.transition_effect == "none"
+    (output,) = transition.list_of_outputs
+    assert output.transition_effect == "production"
+    assert output.output_level == 1
+
+
+def test_function_terms_and_default_term(qual_example: Report) -> None:
+    """The function terms of a transition carry their result level and their math."""
+    transition = qual_example.models[0].list_of_transitions[0]
+    terms = transition.list_of_function_terms
+    assert [t.result_level for t in terms] == [1, 1]
+    first = terms[0]
+    assert first.sbml_type == "FunctionTerm"
+    assert first.pk == "qual_example/FunctionTerm:tr_G.functionTerm.0"
+    assert first.math is not None
+    assert first.math.formula == "(S >= theta_G_S) && (P < theta_G_P)"
+
+    default = transition.default_term
+    assert default is not None
+    assert default.sbml_type == "DefaultTerm"
+    assert default.pk == "qual_example/DefaultTerm:tr_G.defaultTerm"
+    assert default.result_level == 0
+
+
+def test_model_without_qual_carries_no_qual_lists(repressilator: Report) -> None:
+    """A model which does not use the package has neither list."""
+    model = repressilator.models[0]
+    assert model.list_of_qualitative_species == []
+    assert model.list_of_transitions == []

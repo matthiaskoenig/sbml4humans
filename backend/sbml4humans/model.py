@@ -578,6 +578,72 @@ class UserDefinedConstraint(SBase):
     )
 
 
+# -------------------------------------------------------------------------------------
+# qual
+# -------------------------------------------------------------------------------------
+class QualitativeSpecies(SBase):
+    """An entity of a qualitative model, which carries a level instead of an amount.
+
+    The level is a whole number between zero and `max_level`: the node of an
+    influence graph in a logical model, the place of a Petri net (qual §3.5).
+    """
+
+    sbml_type: Literal["QualitativeSpecies"] = "QualitativeSpecies"
+    compartment: str
+    constant: bool | None = None
+    initial_level: int | None = None
+    max_level: int | None = None
+
+
+class Input(SBase):
+    """A qualitative species a transition reads, with the sign of its influence."""
+
+    sbml_type: Literal["Input"] = "Input"
+    qualitative_species: str
+    threshold_level: int | None = None
+    transition_effect: str | None = None
+    sign: str | None = None
+
+
+class Output(SBase):
+    """A qualitative species a transition changes, with the effect it has on it."""
+
+    sbml_type: Literal["Output"] = "Output"
+    qualitative_species: str
+    output_level: int | None = None
+    transition_effect: str | None = None
+
+
+class FunctionTerm(SBase):
+    """One row of the transition table: a condition and the level it results in."""
+
+    sbml_type: Literal["FunctionTerm"] = "FunctionTerm"
+    result_level: int | None = None
+    math: Math | None = None
+
+
+class DefaultTerm(SBase):
+    """The level of a transition in every state no function term covers."""
+
+    sbml_type: Literal["DefaultTerm"] = "DefaultTerm"
+    result_level: int | None = None
+
+
+class Transition(SBase):
+    """The dynamics of a qualitative model: what the level of a species becomes.
+
+    A transition reads the species of its inputs, writes the species of its
+    outputs and decides between them with its function terms, the first of
+    which whose condition holds gives the result level (qual §3.6).
+    """
+
+    sbml_type: Literal["Transition"] = "Transition"
+    list_of_inputs: list[Input] = Field(default_factory=list)
+    list_of_outputs: list[Output] = Field(default_factory=list)
+    list_of_function_terms: list[FunctionTerm] = Field(default_factory=list)
+    default_term: DefaultTerm | None = None
+
+
 class ModelFbc(ReportModel):
     """The fbc extension of a model.
 
@@ -635,6 +701,8 @@ class Model(SBase):
     list_of_user_defined_constraints: list[UserDefinedConstraint] = Field(
         default_factory=list
     )
+    list_of_qualitative_species: list[QualitativeSpecies] = Field(default_factory=list)
+    list_of_transitions: list[Transition] = Field(default_factory=list)
     fbc: ModelFbc | None = None
 
 
@@ -677,6 +745,10 @@ class EdgeKind(StrEnum):
     ACTIVE_OBJECTIVE = "activeObjective"
     CONSTRAINT_COMPONENT = "constraintComponent"
     COEFFICIENT = "coefficient"
+    INPUT = "input"
+    OUTPUT = "output"
+    FUNCTION_TERM = "functionTerm"
+    DEFAULT_TERM = "defaultTerm"
     MODEL_REF = "modelRef"
     PORT = "port"
     DELETION = "deletion"

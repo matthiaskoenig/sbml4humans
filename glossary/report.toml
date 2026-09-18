@@ -187,6 +187,42 @@ A [component](userdefinedconstraintcomponent.md) of a user defined constraint do
 It is shown under "References" of the component and under "Referenced by" of the parameter, where it says which constraints a number belongs to.
 """
 
+[links.input]
+label = "input"
+summary = "a qualitative species a transition reads"
+description = """
+A [transition](transition.md) names every [input](input.md) it lists and each input names the [qualitative species](qualitativespecies.md) whose level it reads, the way a reaction names its species references. The [sign](input.md#sign) of the input says whether that species activates or inhibits, so the inputs and the [outputs](links.md#output) of a model together are its influence graph.
+
+It is shown under "References" of the transition and of the input and under "Referenced by" of the qualitative species, where it says which transitions read it.
+"""
+
+[links.output]
+label = "output"
+summary = "a qualitative species a transition changes"
+description = """
+A [transition](transition.md) names every [output](output.md) it lists and each output names the [qualitative species](qualitativespecies.md) whose level it changes.
+
+It is shown under "References" of the transition and of the output and under "Referenced by" of the qualitative species, where it says which transitions decide its level.
+"""
+
+[links.functionTerm]
+label = "function term"
+summary = "a row of the transition table of a transition"
+description = """
+A [transition](transition.md) names every [function term](functionterm.md) of its list, in the order in which they are read, and the math of a term reaches the qualitative species, the inputs and the outputs it names with [math](links.md#math) links of its own.
+
+It is shown under "References" of the transition and under "Referenced by" of the term.
+"""
+
+[links.defaultTerm]
+label = "default term"
+summary = "the term of a transition which holds where no other one does"
+description = """
+A [transition](transition.md) has exactly one [default term](defaultterm.md), which gives the level of every state its function terms do not cover. It is a link of its own and not a function term link, because the term carries no condition and is the last row of the transition table whatever the order of the others.
+
+It is shown under "References" of the transition and under "Referenced by" of the term.
+"""
+
 [links.modelRef]
 label = "model reference"
 summary = "the model a submodel instantiates"

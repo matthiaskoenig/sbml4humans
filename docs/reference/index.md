@@ -61,6 +61,18 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Or](or.md) | one of the associations below it suffices |
 | [Gene product reference](geneproductref.md) | the leaf of an association: one gene product the reaction depends on |
 
+## Qualitative models (qual)
+
+| element | meaning |
+| --- | --- |
+| [Qualitative Models (qual)](qual.md) | the package which describes a model whose entities carry a level |
+| [Qualitative species](qualitativespecies.md) | an entity of a qualitative model, which carries a level instead of an amount |
+| [Transition](transition.md) | what the level of a qualitative species becomes, and under which condition |
+| [Input](input.md) | a qualitative species a transition reads, with the sign of its influence |
+| [Output](output.md) | a qualitative species a transition changes, with the effect it has on it |
+| [Function term](functionterm.md) | one row of the transition table: a condition and the level it results in |
+| [Default term](defaultterm.md) | the level of a transition in every state no function term covers |
+
 ## Distributions (distrib)
 
 | element | meaning |

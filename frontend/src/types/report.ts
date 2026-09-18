@@ -24,6 +24,10 @@ export type EdgeKind =
   | "activeObjective"
   | "constraintComponent"
   | "coefficient"
+  | "input"
+  | "output"
+  | "functionTerm"
+  | "defaultTerm"
   | "modelRef"
   | "port"
   | "deletion"
@@ -319,6 +323,8 @@ export interface Model {
   listOfObjectives?: Objective[];
   listOfFluxBounds?: FluxBound[];
   listOfUserDefinedConstraints?: UserDefinedConstraint[];
+  listOfQualitativeSpecies?: QualitativeSpecies[];
+  listOfTransitions?: Transition[];
   fbc?: ModelFbc | null;
 }
 /**
@@ -1068,6 +1074,139 @@ export interface UserDefinedConstraintComponent {
   variable2?: string | null;
   coefficient?: string | null;
   variableType?: string | null;
+}
+/**
+ * An entity of a qualitative model, which carries a level instead of an amount.
+ *
+ * The level is a whole number between zero and `max_level`: the node of an
+ * influence graph in a logical model, the place of a Petri net (qual §3.5).
+ */
+export interface QualitativeSpecies {
+  pk: string;
+  sbmlType?: "QualitativeSpecies";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  compartment: string;
+  constant?: boolean | null;
+  initialLevel?: number | null;
+  maxLevel?: number | null;
+}
+/**
+ * The dynamics of a qualitative model: what the level of a species becomes.
+ *
+ * A transition reads the species of its inputs, writes the species of its
+ * outputs and decides between them with its function terms, the first of
+ * which whose condition holds gives the result level (qual §3.6).
+ */
+export interface Transition {
+  pk: string;
+  sbmlType?: "Transition";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  listOfInputs?: Input[];
+  listOfOutputs?: Output[];
+  listOfFunctionTerms?: FunctionTerm[];
+  defaultTerm?: DefaultTerm | null;
+}
+/**
+ * A qualitative species a transition reads, with the sign of its influence.
+ */
+export interface Input {
+  pk: string;
+  sbmlType?: "Input";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  qualitativeSpecies: string;
+  thresholdLevel?: number | null;
+  transitionEffect?: string | null;
+  sign?: string | null;
+}
+/**
+ * A qualitative species a transition changes, with the effect it has on it.
+ */
+export interface Output {
+  pk: string;
+  sbmlType?: "Output";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  qualitativeSpecies: string;
+  outputLevel?: number | null;
+  transitionEffect?: string | null;
+}
+/**
+ * One row of the transition table: a condition and the level it results in.
+ */
+export interface FunctionTerm {
+  pk: string;
+  sbmlType?: "FunctionTerm";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  resultLevel?: number | null;
+  math?: Math | null;
+}
+/**
+ * The level of a transition in every state no function term covers.
+ */
+export interface DefaultTerm {
+  pk: string;
+  sbmlType?: "DefaultTerm";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  resultLevel?: number | null;
 }
 /**
  * The fbc extension of a model.

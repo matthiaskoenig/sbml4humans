@@ -819,3 +819,66 @@ def test_user_defined_constraint_edges() -> None:
     }
     quadratic = f"{m}/UserDefinedConstraintComponent:budget_v2"
     assert (quadratic, f"{m}/Parameter:maintenance", "variable") in _edges(report)
+
+
+@pytest.fixture(scope="module")
+def qual_example() -> Report:
+    """The report of the qualitative example model."""
+    return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "qual_example.xml")
+
+
+def test_qualitative_species_names_its_compartment(qual_example: Report) -> None:
+    """A qualitative species names its compartment, the way a species does."""
+    m = "qual_example"
+    assert _edges(qual_example, kind=EdgeKind.COMPARTMENT) == {
+        (f"{m}/QualitativeSpecies:S", f"{m}/Compartment:cell", "compartment"),
+        (f"{m}/QualitativeSpecies:G", f"{m}/Compartment:cell", "compartment"),
+        (f"{m}/QualitativeSpecies:P", f"{m}/Compartment:cell", "compartment"),
+    }
+
+
+def test_influence_edges_start_at_the_input_and_at_the_output(
+    qual_example: Report,
+) -> None:
+    """A transition names its inputs and outputs, each of them names its species."""
+    m = "qual_example"
+    transition = f"{m}/Transition:tr_G"
+    signal = f"{m}/Input:theta_G_S"
+    output = f"{m}/Output:out_G"
+    assert (transition, signal, "input") in _edges(qual_example)
+    assert (transition, output, "output") in _edges(qual_example)
+    assert _edges(qual_example, source=signal) == {
+        (signal, f"{m}/QualitativeSpecies:S", "input"),
+    }
+    assert _edges(qual_example, source=output) == {
+        (output, f"{m}/QualitativeSpecies:G", "output"),
+    }
+
+
+def test_transition_names_its_function_terms_and_its_default_term(
+    qual_example: Report,
+) -> None:
+    """The terms of a transition hang below it, the default term as its own kind."""
+    m = "qual_example"
+    transition = f"{m}/Transition:tr_G"
+    assert _edges(qual_example, source=transition, kind=EdgeKind.FUNCTION_TERM) == {
+        (transition, f"{m}/FunctionTerm:tr_G.functionTerm.0", "functionTerm"),
+        (transition, f"{m}/FunctionTerm:tr_G.functionTerm.1", "functionTerm"),
+    }
+    assert _edges(qual_example, source=transition, kind=EdgeKind.DEFAULT_TERM) == {
+        (transition, f"{m}/DefaultTerm:tr_G.defaultTerm", "defaultTerm"),
+    }
+
+
+def test_math_of_a_function_term_reaches_species_and_inputs(
+    qual_example: Report,
+) -> None:
+    """The symbols of a function term are qualitative species and inputs."""
+    m = "qual_example"
+    term = f"{m}/FunctionTerm:tr_G.functionTerm.0"
+    assert _edges(qual_example, source=term) == {
+        (term, f"{m}/QualitativeSpecies:S", "math"),
+        (term, f"{m}/QualitativeSpecies:P", "math"),
+        (term, f"{m}/Input:theta_G_S", "math"),
+        (term, f"{m}/Input:theta_G_P", "math"),
+    }

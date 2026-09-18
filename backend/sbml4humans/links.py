@@ -33,6 +33,7 @@ from sbml4humans.model import (
     SBaseRefFields,
     SpeciesReference,
     Submodel,
+    Transition,
     UserDefinedConstraint,
 )
 
@@ -147,6 +148,13 @@ def _elements(model: Model) -> Iterator[SBase]:
     for objective in model.list_of_objectives:
         yield objective
         yield from objective.list_of_flux_objectives
+    yield from model.list_of_qualitative_species
+    for transition in model.list_of_transitions:
+        yield transition
+        # an input and an output may carry an identifier, and a function term
+        # names it to mean the threshold level or the output level (qual §3.6.5)
+        yield from transition.list_of_inputs
+        yield from transition.list_of_outputs
 
 
 def _nested(model: Model) -> Iterator[SBase]:
@@ -167,6 +175,8 @@ def _nested(model: Model) -> Iterator[SBase]:
             yield from reaction.kinetic_law.list_of_local_parameters
     for event in model.list_of_events:
         yield from _event_children(event)
+    for transition in model.list_of_transitions:
+        yield from _transition_terms(transition)
     for submodel in model.list_of_submodels:
         for deletion in submodel.list_of_deletions:
             yield from _ref_chain(deletion)
@@ -238,6 +248,18 @@ def _event_children(event: Event) -> Iterator[SBase]:
     for child in (event.trigger, event.priority, event.delay):
         if child is not None:
             yield child
+
+
+def _transition_terms(transition: Transition) -> Iterator[SBase]:
+    """The function terms of a transition and its default term (qual §3.6.3).
+
+    A term carries no identifier the specification puts in a namespace, so it
+    is a node of the graph without being part of the SId namespace of the
+    model, the way the trigger of an event is.
+    """
+    yield from transition.list_of_function_terms
+    if transition.default_term is not None:
+        yield transition.default_term
 
 
 class LinkGraphBuilder:
@@ -604,6 +626,10 @@ class LinkGraphBuilder:
             self._edge(bound, bound.reaction, EdgeKind.FLUX_BOUND, index)
         for constraint in model.list_of_user_defined_constraints:
             self._constraint_edges(constraint, index)
+        for qs in model.list_of_qualitative_species:
+            self._edge(qs, qs.compartment, EdgeKind.COMPARTMENT, index)
+        for transition in model.list_of_transitions:
+            self._transition_edges(transition, index)
 
     def _participation_edges(
         self,
@@ -743,6 +769,45 @@ class LinkGraphBuilder:
             return
         for child in node.associations:
             self._association_node_edges(node.pk, child, index)
+
+    def _transition_edges(self, transition: Transition, index: ModelIndex) -> None:
+        """The edges of a transition: its influences and its terms.
+
+        The transition lists its inputs and its outputs and each of those names
+        one qualitative species (qual §3.6.1, §3.6.2), so an influence is two
+        edges of its kind, the way a participation of a reaction is: the edge
+        starts where the file writes the reference, at the input and at the
+        output, and the two kinds together are the influence graph of the
+        model. The math of a function term names qualitative species, inputs
+        and outputs, and every one of those symbols is an edge of the term.
+        """
+        for qual_input in transition.list_of_inputs:
+            self.edges.append(
+                Edge(source=transition.pk, target=qual_input.pk, kind=EdgeKind.INPUT)
+            )
+            self._edge(
+                qual_input, qual_input.qualitative_species, EdgeKind.INPUT, index
+            )
+        for qual_output in transition.list_of_outputs:
+            self.edges.append(
+                Edge(source=transition.pk, target=qual_output.pk, kind=EdgeKind.OUTPUT)
+            )
+            self._edge(
+                qual_output, qual_output.qualitative_species, EdgeKind.OUTPUT, index
+            )
+        for term in transition.list_of_function_terms:
+            self.edges.append(
+                Edge(source=transition.pk, target=term.pk, kind=EdgeKind.FUNCTION_TERM)
+            )
+            self._math_edges(term, index)
+        if transition.default_term is not None:
+            self.edges.append(
+                Edge(
+                    source=transition.pk,
+                    target=transition.default_term.pk,
+                    kind=EdgeKind.DEFAULT_TERM,
+                )
+            )
 
     def _event_edges(self, event: Event, index: ModelIndex) -> None:
         """The edges of an event: those of its children and of its assignments.

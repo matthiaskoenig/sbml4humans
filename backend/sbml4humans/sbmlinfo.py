@@ -28,6 +28,7 @@ from sbml4humans.model import (
     ConversionFactor,
     Creator,
     CVTerm,
+    DefaultTerm,
     Delay,
     Deletion,
     Event,
@@ -36,10 +37,12 @@ from sbml4humans.model import (
     FluxBound,
     FluxObjective,
     FunctionDefinition,
+    FunctionTerm,
     GeneProduct,
     GeneProductAssociation,
     GeneProductRef,
     InitialAssignment,
+    Input,
     KeyValuePair,
     KineticLaw,
     LocalParameter,
@@ -50,10 +53,12 @@ from sbml4humans.model import (
     ModifierSpeciesReference,
     Objective,
     Or,
+    Output,
     Package,
     Parameter,
     Port,
     Priority,
+    QualitativeSpecies,
     RateRule,
     Reaction,
     ReactionFbc,
@@ -66,6 +71,7 @@ from sbml4humans.model import (
     SpeciesFbc,
     SpeciesReference,
     Submodel,
+    Transition,
     Trigger,
     Uncertainty,
     UncertParameter,
@@ -97,6 +103,28 @@ ALIASED_ID_CLASSES = (
     libsbml.Rule,
     libsbml.EventAssignment,
 )
+
+# libsbml answers the sign of an input and the transition effect of an input and
+# of an output as the integer of its constant and, unlike the enumerations of
+# distrib and fbc, offers no `_toString` helper for them, so the report maps them
+# to the words the specification defines (qual §3.6.1, §3.6.2). The constants
+# `INPUT_SIGN_VALUE_NOTSET` and the two `UNKNOWN` of the transition effects mark
+# an attribute libsbml could not read as one of those words and are left out:
+# they are no value of the specification, and `isSet` guards the read anyway.
+INPUT_SIGNS: dict[int, str] = {
+    libsbml.INPUT_SIGN_POSITIVE: "positive",
+    libsbml.INPUT_SIGN_NEGATIVE: "negative",
+    libsbml.INPUT_SIGN_DUAL: "dual",
+    libsbml.INPUT_SIGN_UNKNOWN: "unknown",
+}
+INPUT_TRANSITION_EFFECTS: dict[int, str] = {
+    libsbml.INPUT_TRANSITION_EFFECT_NONE: "none",
+    libsbml.INPUT_TRANSITION_EFFECT_CONSUMPTION: "consumption",
+}
+OUTPUT_TRANSITION_EFFECTS: dict[int, str] = {
+    libsbml.OUTPUT_TRANSITION_EFFECT_PRODUCTION: "production",
+    libsbml.OUTPUT_TRANSITION_EFFECT_ASSIGNMENT_LEVEL: "assignmentLevel",
+}
 
 # the classes whose aliased `getId()` names a target which is unique within the
 # model, so that it keys the element as long as it carries no id of its own: a
@@ -456,6 +484,8 @@ class SBMLDocumentInfo:
             list_of_objectives=self.objectives(model),
             list_of_flux_bounds=self.flux_bounds(model),
             list_of_user_defined_constraints=self.user_defined_constraints(model),
+            list_of_qualitative_species=self.qualitative_species(model),
+            list_of_transitions=self.transitions(model),
             fbc=self.model_fbc(model),
         )
 
@@ -1102,6 +1132,125 @@ class SBMLDocumentInfo:
             )
             for k in range(a.getNumAssociations())  # ty: ignore[unresolved-attribute]
         ]
+
+    # ---------------------------------------------------------------------------------
+    # qual
+    # ---------------------------------------------------------------------------------
+    def qualitative_species(self, model: libsbml.Model) -> list[QualitativeSpecies]:
+        """The qualitative species of a model with their levels (qual §3.5).
+
+        `getInitialLevel` and `getMaxLevel` answer the largest integer for an
+        attribute the file does not set, so the levels are read through the
+        `isSet` guard of `_attribute`.
+        """
+        plugin: libsbml.QualModelPlugin | None = model.getPlugin("qual")
+        if not plugin:
+            return []
+        return [
+            QualitativeSpecies(
+                **self.sbase(qs),
+                compartment=qs.getCompartment(),
+                constant=_attribute(qs, "constant"),
+                initial_level=_attribute(qs, "initialLevel"),
+                max_level=_attribute(qs, "maxLevel"),
+            )
+            for qs in plugin.getListOfQualitativeSpecies()
+        ]
+
+    def transitions(self, model: libsbml.Model) -> list[Transition]:
+        """The transitions of a model with their inputs, outputs and terms.
+
+        The identifier of a transition is optional and has no mathematical
+        meaning (qual §3.6), so a transition without one is keyed by its
+        position and everything below it by that key.
+        """
+        plugin: libsbml.QualModelPlugin | None = model.getPlugin("qual")
+        if not plugin:
+            return []
+        transitions = []
+        for index, t in enumerate(plugin.getListOfTransitions()):
+            key = self._key(t, f"transition.{index}")
+            transitions.append(
+                Transition(
+                    **self.sbase(t, key=key),
+                    list_of_inputs=[
+                        self.qual_input(i, f"{key}.input.{position}")
+                        for position, i in enumerate(t.getListOfInputs())
+                    ],
+                    list_of_outputs=[
+                        self.qual_output(o, f"{key}.output.{position}")
+                        for position, o in enumerate(t.getListOfOutputs())
+                    ],
+                    list_of_function_terms=[
+                        self.function_term(ft, f"{key}.functionTerm.{position}")
+                        for position, ft in enumerate(t.getListOfFunctionTerms())
+                    ],
+                    default_term=self.default_term(t, key),
+                )
+            )
+        return transitions
+
+    def qual_input(self, i: libsbml.Input, key: str) -> Input:
+        """One input of a transition: the species it reads and the sign of it.
+
+        `key` names the input within its transition, used for the pk when the
+        input carries neither an id nor a metaId.
+        """
+        return Input(
+            **self.sbase(i, key=key),
+            qualitative_species=i.getQualitativeSpecies(),
+            threshold_level=_attribute(i, "thresholdLevel"),
+            transition_effect=INPUT_TRANSITION_EFFECTS.get(i.getTransitionEffect())
+            if i.isSetTransitionEffect()
+            else None,
+            sign=INPUT_SIGNS.get(i.getSign()) if i.isSetSign() else None,
+        )
+
+    def qual_output(self, o: libsbml.Output, key: str) -> Output:
+        """One output of a transition: the species it writes and how.
+
+        `key` names the output within its transition, used for the pk when the
+        output carries neither an id nor a metaId.
+        """
+        return Output(
+            **self.sbase(o, key=key),
+            qualitative_species=o.getQualitativeSpecies(),
+            output_level=_attribute(o, "outputLevel"),
+            transition_effect=OUTPUT_TRANSITION_EFFECTS.get(o.getTransitionEffect())
+            if o.isSetTransitionEffect()
+            else None,
+        )
+
+    def function_term(self, ft: libsbml.FunctionTerm, key: str) -> FunctionTerm:
+        """One function term: the level its condition results in (qual §3.6.5).
+
+        The math is ordinary MathML and its symbols are the identifiers of
+        qualitative species, of inputs and of outputs, which the link graph
+        resolves in the SId namespace of the model.
+        """
+        fields = self.sbase(ft, key=key)
+        return FunctionTerm(
+            **fields,
+            result_level=_attribute(ft, "resultLevel"),
+            math=self.math(fields["pk"], _attribute(ft, "math")),
+        )
+
+    def default_term(
+        self, t: libsbml.Transition, transition_key: str
+    ) -> DefaultTerm | None:
+        """The default term of a transition: its level where no term holds.
+
+        The specification notes that the class is not derived from `SBase`,
+        while libsbml gives it the full surface of one and the report reads it
+        as it reads every other element (qual §3.6.4).
+        """
+        if not t.isSetDefaultTerm():
+            return None
+        dt: libsbml.DefaultTerm = t.getDefaultTerm()
+        return DefaultTerm(
+            **self.sbase(dt, key=f"{transition_key}.defaultTerm"),
+            result_level=_attribute(dt, "resultLevel"),
+        )
 
     # ---------------------------------------------------------------------------------
     # distrib

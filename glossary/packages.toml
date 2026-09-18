@@ -1,6 +1,7 @@
 # The glossary of the SBML Level 3 packages the report supports and of the
 # elements they add: comp (hierarchical model composition), fbc (flux balance
-# constraints) and distrib (distributions). It follows the format of
+# constraints), qual (qualitative models) and distrib (distributions). It
+# follows the format of
 # `core.toml`: the summary becomes a tooltip of the application, the
 # description becomes a reference page of the documentation site. Run
 # `uv run python -m sbml4humans.glossary` after a change and commit the
@@ -13,7 +14,7 @@
 # Every key of `types` is the name of a type of the report model
 # (`frontend/src/schema/report.schema.json`), so that a typo cannot generate a
 # page which no element of a report reaches. The only exceptions are the shared
-# attributes `SBase` and the three package entries `comp`, `fbc` and `distrib`
+# attributes `SBase` and the four package entries `comp`, `fbc`, `qual` and `distrib`
 # below, which describe a package instead of an element and have a page of
 # their own; `--check` rejects every other key.
 
@@ -38,6 +39,12 @@ label = "SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1"
 short = "fbc v3"
 citation = "Olivier and Bergmann, COMBINE specification"
 url = "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1"
+
+[specs.qual]
+label = "SBML Level 3 Package: Qualitative Models, Version 1 Release 1"
+short = "qual"
+citation = "Chaouiya et al. 2013, BMC Syst Biol 7:135"
+url = "https://sbml.org/documents/specifications/level-3/version-1/qual/"
 
 [specs.distrib]
 label = "The Distributions Package for SBML Level 3, Version 1 Release 1"
@@ -76,6 +83,20 @@ The fbc package holds what such a model needs beyond the core: the lower and the
 The report shows the gene products and the objectives of a model as sections of their own and the fbc attributes of a species and of a reaction in their inspector.
 """
 related = ["GeneProduct", "GeneProductAssociation", "Objective", "Species", "Reaction"]
+
+[types.qual]
+label = "Qualitative Models (qual)"
+package = "qual"
+spec = { doc = "qual" }
+summary = "the package which describes a model whose entities carry a level"
+description = """
+A qualitative model does not integrate rate laws over time. Its entities carry a level, a whole number which stands for a range of activity, and a rule says which level an entity takes next given the levels of the entities which act on it. It is how a regulatory network is written down when the kinetics are unknown, which is the usual case for a network of genes, and it covers the logical models of the Boolean school as well as Petri nets.
+
+The qual package holds what such a model needs beyond the core: the [qualitative species](qualitativespecies.md) with their levels, and the [transitions](transition.md) with the [inputs](input.md) they read, the [outputs](output.md) they change and the [function terms](functionterm.md) which decide between them.
+
+The report shows the qualitative species and the transitions of a model as sections of their own, the inputs of a transition with the sign of their influence, and the function terms as the transition table they are.
+"""
+related = ["QualitativeSpecies", "Transition", "Input", "Output", "FunctionTerm"]
 
 [types.distrib]
 label = "Distributions (distrib)"
@@ -275,6 +296,30 @@ The report shows the objectives of a model as a section of the report.
 # ----------------------------------------------------------------------------
 # what fbc adds to a species and to a reaction
 # ----------------------------------------------------------------------------
+[types.Model.attributes.listOfQualitativeSpecies]
+label = "qualitative species"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.4" }
+summary = "the entities of a qualitative model, which carry a level"
+description = """
+A model which uses the qual package holds its [qualitative species](qualitativespecies.md) in a list of their own, next to the species of the core. The two are not the same thing and a model does not mix them: an entity of a qualitative model has no amount and no concentration, it has a level.
+
+The report shows them as a section of their own.
+"""
+
+[types.Model.attributes.listOfTransitions]
+label = "transitions"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.4" }
+summary = "the rules which decide the level of the qualitative species"
+description = """
+The [transitions](transition.md) are the dynamics of a qualitative model, what the reactions with their kinetic laws are to a kinetic one. Every one of them reads some qualitative species and changes others.
+
+The report shows them as a section of their own.
+"""
+
 [types.Species.attributes.fbc]
 label = "fbc"
 package = "fbc"
@@ -1250,4 +1295,298 @@ description = """
 Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 
 The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
+"""
+
+
+# ----------------------------------------------------------------------------
+# qual
+# ----------------------------------------------------------------------------
+[types.QualitativeSpecies]
+label = "Qualitative species"
+package = "qual"
+spec = { doc = "qual", section = "3.5" }
+summary = "an entity of a qualitative model, which carries a level instead of an amount"
+description = """
+A qualitative species is what a [species](species.md) is to a kinetic model: the thing the model is about. Its state is not a concentration but a level, a whole number between zero and its [maximum level](qualitativespecies.md#max-level), which stands for a range of activity, for example "the gene is off" and "the gene is on".
+
+It is the node of the influence graph of a logical model and the place of a Petri net. Which of the two a file writes is read from the [transitions](transition.md) which change it.
+
+The report shows the qualitative species of a model in a section of their own, with their levels, and links every transition which reads or changes one in its inspector.
+"""
+related = ["Transition", "Input", "Output", "Compartment", "qual"]
+
+[types.QualitativeSpecies.attributes.compartment]
+label = "compartment"
+package = "qual"
+type = "SIdRef"
+spec = { doc = "qual", section = "3.5" }
+summary = "the compartment the qualitative species is located in"
+description = """
+The attribute is required and names a [compartment](compartment.md) of the model, the same way a [species](species.md) names one. The compartment of a qualitative model carries no size which enters a formula; it says where in the cell the entity is, which is what tells two copies of one protein in two compartments apart.
+
+The report links the compartment in the column "compartment" and in the inspector.
+"""
+
+[types.QualitativeSpecies.attributes.constant]
+label = "constant"
+package = "qual"
+type = "boolean"
+spec = { doc = "qual", section = "3.5" }
+summary = "whether no transition may change the level of the species"
+description = """
+A constant qualitative species is an input of the system: transitions read it and none of them is allowed to change it, so its level is a condition of the experiment and not a result of the model. The attribute is required.
+
+The report shows the flag as a mark in the column "constant" and in the inspector.
+"""
+
+[types.QualitativeSpecies.attributes.initialLevel]
+label = "initial level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.5" }
+summary = "the level of the species at the start of a simulation"
+description = """
+The initial level is the state the entity starts in, a whole number which cannot be negative and cannot exceed the maximum level. It is optional: a model which is analysed over all of its states, which is what an attractor analysis of a logical model does, gives no starting state.
+
+The report shows the level in the column "initial level" and in the inspector, and an unset level as a dash.
+"""
+
+[types.QualitativeSpecies.attributes.maxLevel]
+label = "max level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.5" }
+summary = "the highest level the species can take"
+description = """
+The maximum level decides how the whole model is read: with the value one the entity is Boolean, off or on, and every condition over it is a logical one; with a higher value it is multi valued and its levels stand for the thresholds at which it acts differently on the things it regulates.
+
+It is optional, because the levels a species actually takes can be derived from the [result levels](functionterm.md#result-level) of the transitions which change it.
+
+The report shows the level in the column "max level" and in the inspector.
+"""
+
+[types.Transition]
+label = "Transition"
+package = "qual"
+spec = { doc = "qual", section = "3.6" }
+summary = "what the level of a qualitative species becomes, and under which condition"
+description = """
+A transition is to a qualitative model what a [reaction](reaction.md) with its kinetic law is to a kinetic one: it holds the dynamics. It reads the [qualitative species](qualitativespecies.md) of its [inputs](input.md), it changes those of its [outputs](output.md), and its [function terms](functionterm.md) say which level the outputs take: the result level of the first term whose condition holds, and the level of the [default term](defaultterm.md) where none of them holds.
+
+Its identifier is optional and has no mathematical meaning, because nothing in a qualitative model refers to a transition.
+
+The report shows the transitions of a model in a section of their own, with the species they read and the species they change, and the inspector shows the function terms as the table of condition and result level they are.
+"""
+related = ["QualitativeSpecies", "Input", "Output", "FunctionTerm", "DefaultTerm", "qual"]
+
+[types.Transition.attributes.listOfInputs]
+label = "inputs"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "the qualitative species the transition reads"
+description = """
+Every [input](input.md) names one [qualitative species](qualitativespecies.md) whose level the condition of a function term may read, with the threshold at which it matters and the sign of its influence. A transition may list none of them, in which case its terms read no species at all.
+
+The report shows the species of the inputs with their sign in the column "inputs" and the table of the inputs in the inspector.
+"""
+
+[types.Transition.attributes.listOfOutputs]
+label = "outputs"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "the qualitative species the transition changes"
+description = """
+Every [output](output.md) names one [qualitative species](qualitativespecies.md) whose level the transition sets or increases. A transition without outputs changes nothing, which is why a model which does something has at least one.
+
+The report shows the species of the outputs in the column "outputs" and the table of the outputs in the inspector.
+"""
+
+[types.Transition.attributes.listOfFunctionTerms]
+label = "function terms"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.6.3" }
+summary = "the terms which decide the level, in the order in which they are read"
+description = """
+The list is the transition table of the transition. Its [terms](functionterm.md) are read in the order in which the file writes them and the first one whose condition holds decides the result level, so two terms whose conditions overlap are not a contradiction: the earlier one wins.
+
+The report shows the terms as a table of condition and result level in the inspector of the transition, with the default term as its last row.
+"""
+
+[types.Transition.attributes.defaultTerm]
+label = "default term"
+package = "qual"
+type = "DefaultTerm"
+spec = { doc = "qual", section = "3.6.4" }
+summary = "the term which holds in every state no function term covers"
+description = """
+Every transition has exactly one [default term](defaultterm.md), which makes the transition table total: whatever the levels of the inputs, some term gives a result level.
+
+The report shows it as the last row of the table of the function terms, under the condition "otherwise".
+"""
+
+[types.Input]
+label = "Input"
+package = "qual"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "a qualitative species a transition reads, with the sign of its influence"
+description = """
+An input names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) reads. Together with the [outputs](output.md) of the transitions the inputs are the influence graph of the model, the picture a reader of a regulatory model actually wants: who acts on whom, and whether the action activates or inhibits.
+
+It is an element of the report and not a row of its transition, because the specification derives it from `SBase`: it may carry an identifier, a name, an SBO term, notes and annotations, and the reference to its species starts here, not at the transition around it.
+"""
+related = ["Transition", "QualitativeSpecies", "Output", "qual"]
+
+[types.Input.attributes.qualitativeSpecies]
+label = "qualitative species"
+package = "qual"
+type = "SIdRef"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "the species whose level the transition reads"
+description = """
+The attribute is required and names a [qualitative species](qualitativespecies.md) of the model. The report links it, and the inspector of that species shows the input under "referenced by", which is how the transitions that read an entity are found.
+"""
+
+[types.Input.attributes.thresholdLevel]
+label = "threshold level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "the level of the species at which the input acts"
+description = """
+A multi valued species does not act the same way at every level: it acts on one target above one level and on another above a higher one. The threshold level is that level, and the identifier of the input stands for it in the math of a [function term](functionterm.md), so that a condition reads `A >= theta_B_A` instead of a bare number.
+
+The report shows the threshold in the column "threshold" of the inputs of a transition and in the inspector.
+"""
+
+[types.Input.attributes.transitionEffect]
+label = "transition effect"
+package = "qual"
+type = "transitionInputEffect"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "whether the transition consumes the level of the species it reads"
+description = """
+The effect is `none`, where the transition only reads the level, which is what a logical model does, or `consumption`, where the firing of the transition takes the level away from the species, which is what a Petri net does with the tokens of the places before a transition. The attribute is required.
+
+The report shows the effect in the table of the inputs in the inspector of the transition.
+"""
+
+[types.Input.attributes.sign]
+label = "sign"
+package = "qual"
+type = "sign"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "whether the influence of the species activates or inhibits"
+description = """
+The sign is `positive` for an activation, `negative` for an inhibition, `dual` where the species does both depending on the level of the others, and `unknown` where the file does not say. The specification adds it for visualisation: the mathematics of the model is in the [function terms](functionterm.md), and the sign is what lets a reader, or a drawing of the influence graph, see an arrow and a bar without reading the conditions.
+
+The report shows the sign next to the species of the input in the column "inputs" of the transitions and in the table of the inputs in the inspector.
+"""
+
+[types.Output]
+label = "Output"
+package = "qual"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "a qualitative species a transition changes, with the effect it has on it"
+description = """
+An output names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) changes. Its [transition effect](output.md#transition-effect) is what tells the two formalisms of the package apart: `assignmentLevel` for a logical model, `production` for a Petri net.
+
+It is an element of the report and not a row of its transition, because the specification derives it from `SBase`: it may carry an identifier, a name, an SBO term, notes and annotations, and the reference to its species starts here, not at the transition around it.
+"""
+related = ["Transition", "QualitativeSpecies", "Input", "qual"]
+
+[types.Output.attributes.qualitativeSpecies]
+label = "qualitative species"
+package = "qual"
+type = "SIdRef"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "the species whose level the transition changes"
+description = """
+The attribute is required and names a [qualitative species](qualitativespecies.md) of the model which is not constant, since a constant species is an input of the system which no transition may change. The report links it, and the inspector of that species shows the output under "referenced by", which is how the transitions that decide the level of an entity are found.
+"""
+
+[types.Output.attributes.outputLevel]
+label = "output level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "the level the transition produces per result level"
+description = """
+Where the transition effect is `production`, the level the species gains is the result level of the term which fires multiplied by the output level, which is the weight of the arc of a Petri net. The attribute is required there and has no meaning for an `assignmentLevel` output, where the level is the result level itself.
+
+The report shows the output level in the table of the outputs in the inspector of the transition.
+"""
+
+[types.Output.attributes.transitionEffect]
+label = "transition effect"
+package = "qual"
+type = "transitionOutputEffect"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "whether the transition sets the level of the species or adds to it"
+description = """
+The effect is `assignmentLevel`, where the level of the species becomes the result level of the term which fires, which is how a logical model is written, or `production`, where the result level multiplied by the output level is added to it, which is how a Petri net is written. The attribute is required, and it is the attribute which says in which of the two formalisms a file is written.
+
+The report shows the effect in the table of the outputs in the inspector of the transition.
+"""
+
+[types.FunctionTerm]
+label = "Function term"
+package = "qual"
+spec = { doc = "qual", section = "3.6.5" }
+summary = "one row of the transition table: a condition and the level it results in"
+description = """
+A function term is a condition and a level. The condition is ordinary MathML which returns a boolean value and reads the levels of the [qualitative species](qualitativespecies.md) of the transition; where it holds, the [outputs](output.md) take the result level of the term.
+
+The terms of a [transition](transition.md) are read in order and the first one which holds decides, so the list of terms with the [default term](defaultterm.md) behind it is the state transition table of the transition.
+"""
+related = ["Transition", "DefaultTerm", "QualitativeSpecies", "qual"]
+
+[types.FunctionTerm.attributes.resultLevel]
+label = "result level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.5" }
+summary = "the level the outputs take where the condition of the term holds"
+description = """
+The result level is a whole number which cannot be negative. An `assignmentLevel` output takes it as its new level, a `production` output gains it multiplied by its output level. The attribute is required.
+
+The report shows it in the column "result level" of the table of the terms in the inspector of the transition.
+"""
+
+[types.FunctionTerm.attributes.math]
+label = "math"
+package = "qual"
+type = "Math"
+spec = { doc = "qual", section = "3.6.5" }
+summary = "the condition under which the term decides the level"
+description = """
+The math is an expression which returns a boolean value, usually a comparison of the level of a species with the threshold of an input combined with `and`, `or` and `not`. A symbol in it is the identifier of a qualitative species, which means its level, of an [input](input.md), which means its threshold level, or of an [output](output.md), which means its output level.
+
+The report renders the condition in the table of the terms in the inspector of the transition and links every element the condition reads.
+"""
+
+[types.DefaultTerm]
+label = "Default term"
+package = "qual"
+spec = { doc = "qual", section = "3.6.4" }
+summary = "the level of a transition in every state no function term covers"
+description = """
+The default term carries no condition: it is what makes the transition table of a [transition](transition.md) total, the row "otherwise" behind the [function terms](functionterm.md). Every transition has exactly one of them.
+
+The specification notes that the class is not derived from `SBase` while libsbml gives it the full surface of one, so the report reads it as it reads every other element, with its meta id, its SBO term, its notes and its annotations.
+"""
+related = ["Transition", "FunctionTerm", "qual"]
+
+[types.DefaultTerm.attributes.resultLevel]
+label = "result level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.4" }
+summary = "the level the outputs take where no function term holds"
+description = """
+The result level is a whole number which cannot be negative, and it is required. In most files it is zero, which reads as "the entity is off unless one of the terms switches it on".
+
+The report shows it as the last row of the table of the terms in the inspector of the transition, under the condition "otherwise".
 """

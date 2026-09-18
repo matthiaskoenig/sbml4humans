@@ -96,6 +96,18 @@
         }
       }
     },
+    "DefaultTerm": {
+      "label": "Default term",
+      "summary": "the level of a transition in every state no function term covers",
+      "package": "qual",
+      "page": "reference/defaultterm/",
+      "attributes": {
+        "resultLevel": {
+          "label": "result level",
+          "summary": "the level the outputs take where no function term holds"
+        }
+      }
+    },
     "Delay": {
       "label": "Delay",
       "summary": "the formula which gives the time between the trigger of an event and its execution",
@@ -276,6 +288,22 @@
         }
       }
     },
+    "FunctionTerm": {
+      "label": "Function term",
+      "summary": "one row of the transition table: a condition and the level it results in",
+      "package": "qual",
+      "page": "reference/functionterm/",
+      "attributes": {
+        "math": {
+          "label": "math",
+          "summary": "the condition under which the term decides the level"
+        },
+        "resultLevel": {
+          "label": "result level",
+          "summary": "the level the outputs take where the condition of the term holds"
+        }
+      }
+    },
     "GeneProduct": {
       "label": "Gene product",
       "summary": "a gene or one of its products which the reactions of the model depend on",
@@ -333,6 +361,30 @@
         "symbol": {
           "label": "symbol",
           "summary": "the element whose initial value the assignment computes"
+        }
+      }
+    },
+    "Input": {
+      "label": "Input",
+      "summary": "a qualitative species a transition reads, with the sign of its influence",
+      "package": "qual",
+      "page": "reference/input/",
+      "attributes": {
+        "qualitativeSpecies": {
+          "label": "qualitative species",
+          "summary": "the species whose level the transition reads"
+        },
+        "sign": {
+          "label": "sign",
+          "summary": "whether the influence of the species activates or inhibits"
+        },
+        "thresholdLevel": {
+          "label": "threshold level",
+          "summary": "the level of the species at which the input acts"
+        },
+        "transitionEffect": {
+          "label": "transition effect",
+          "summary": "whether the transition consumes the level of the species it reads"
         }
       }
     },
@@ -474,6 +526,10 @@
           "label": "ports",
           "summary": "the elements of the model which are meant to be used from outside"
         },
+        "listOfQualitativeSpecies": {
+          "label": "qualitative species",
+          "summary": "the entities of a qualitative model, which carry a level"
+        },
         "listOfReactions": {
           "label": "reactions",
           "summary": "the reactions of the model"
@@ -489,6 +545,10 @@
         "listOfSubmodels": {
           "label": "submodels",
           "summary": "the models which this model instantiates"
+        },
+        "listOfTransitions": {
+          "label": "transitions",
+          "summary": "the rules which decide the level of the qualitative species"
         },
         "listOfUnitDefinitions": {
           "label": "unit definitions",
@@ -568,6 +628,26 @@
         }
       }
     },
+    "Output": {
+      "label": "Output",
+      "summary": "a qualitative species a transition changes, with the effect it has on it",
+      "package": "qual",
+      "page": "reference/output/",
+      "attributes": {
+        "outputLevel": {
+          "label": "output level",
+          "summary": "the level the transition produces per result level"
+        },
+        "qualitativeSpecies": {
+          "label": "qualitative species",
+          "summary": "the species whose level the transition changes"
+        },
+        "transitionEffect": {
+          "label": "transition effect",
+          "summary": "whether the transition sets the level of the species or adds to it"
+        }
+      }
+    },
     "Parameter": {
       "label": "Parameter",
       "summary": "a named value which the mathematics of the model can use",
@@ -633,6 +713,30 @@
         "math": {
           "label": "math",
           "summary": "the formula whose value orders the events of one moment"
+        }
+      }
+    },
+    "QualitativeSpecies": {
+      "label": "Qualitative species",
+      "summary": "an entity of a qualitative model, which carries a level instead of an amount",
+      "package": "qual",
+      "page": "reference/qualitativespecies/",
+      "attributes": {
+        "compartment": {
+          "label": "compartment",
+          "summary": "the compartment the qualitative species is located in"
+        },
+        "constant": {
+          "label": "constant",
+          "summary": "whether no transition may change the level of the species"
+        },
+        "initialLevel": {
+          "label": "initial level",
+          "summary": "the level of the species at the start of a simulation"
+        },
+        "maxLevel": {
+          "label": "max level",
+          "summary": "the highest level the species can take"
         }
       }
     },
@@ -1016,6 +1120,30 @@
         }
       }
     },
+    "Transition": {
+      "label": "Transition",
+      "summary": "what the level of a qualitative species becomes, and under which condition",
+      "package": "qual",
+      "page": "reference/transition/",
+      "attributes": {
+        "defaultTerm": {
+          "label": "default term",
+          "summary": "the term which holds in every state no function term covers"
+        },
+        "listOfFunctionTerms": {
+          "label": "function terms",
+          "summary": "the terms which decide the level, in the order in which they are read"
+        },
+        "listOfInputs": {
+          "label": "inputs",
+          "summary": "the qualitative species the transition reads"
+        },
+        "listOfOutputs": {
+          "label": "outputs",
+          "summary": "the qualitative species the transition changes"
+        }
+      }
+    },
     "Trigger": {
       "label": "Trigger",
       "summary": "the condition of an event, whose change from false to true fires it",
@@ -1128,6 +1256,13 @@
       "package": "fbc",
       "page": "reference/fbc/",
       "attributes": {}
+    },
+    "qual": {
+      "label": "Qualitative Models (qual)",
+      "summary": "the package which describes a model whose entities carry a level",
+      "package": "qual",
+      "page": "reference/qual/",
+      "attributes": {}
     }
   },
   "links": {
@@ -1155,6 +1290,10 @@
       "label": "conversion factor",
       "summary": "the parameter which converts the values of an element"
     },
+    "defaultTerm": {
+      "label": "default term",
+      "summary": "the term of a transition which holds where no other one does"
+    },
     "delay": {
       "label": "delay",
       "summary": "the formula which postpones the execution of an event"
@@ -1171,6 +1310,10 @@
       "label": "flux objective",
       "summary": "a term of an objective function and the reaction whose flux it weighs"
     },
+    "functionTerm": {
+      "label": "function term",
+      "summary": "a row of the transition table of a transition"
+    },
     "geneProduct": {
       "label": "gene product",
       "summary": "the gene product a reference of an association names"
@@ -1178,6 +1321,10 @@
     "geneProductAssociation": {
       "label": "gene product association",
       "summary": "a node of the gene association of a reaction, from the reaction down to its genes"
+    },
+    "input": {
+      "label": "input",
+      "summary": "a qualitative species a transition reads"
     },
     "math": {
       "label": "math",
@@ -1190,6 +1337,10 @@
     "modifier": {
       "label": "modifier",
       "summary": "a species which influences a reaction without being consumed"
+    },
+    "output": {
+      "label": "output",
+      "summary": "a qualitative species a transition changes"
     },
     "port": {
       "label": "port",

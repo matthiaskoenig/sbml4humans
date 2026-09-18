@@ -36,6 +36,8 @@ The report shows the model as the root of the report, its lists as the sections 
 | [flux bounds](#flux-bounds) | `list` | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
 | [user defined constraints](#user-defined-constraints) | `list` | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [objectives](#objectives) | `list` | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [qualitative species](#qualitative-species) | `list` | the entities of a qualitative model, which carry a level | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [transitions](#transitions) | `list` | the rules which decide the level of the qualitative species | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -196,6 +198,18 @@ The report shows the user defined constraints of a model as a section of the rep
 A model may define several [objectives](objective.md) and declares one of them as the active objective, the function which an analysis optimises unless it is told otherwise. The others are kept so that a model can carry the alternatives it was studied with.
 
 The report shows the objectives of a model as a section of the report.
+
+<span id="qualitative-species"></span>**qualitative species**
+
+A model which uses the qual package holds its [qualitative species](qualitativespecies.md) in a list of their own, next to the species of the core. The two are not the same thing and a model does not mix them: an entity of a qualitative model has no amount and no concentration, it has a level.
+
+The report shows them as a section of their own.
+
+<span id="transitions"></span>**transitions**
+
+The [transitions](transition.md) are the dynamics of a qualitative model, what the reactions with their kinetic laws are to a kinetic one. Every one of them reads some qualitative species and changes others.
+
+The report shows them as a section of their own.
 
 ## In the report
 
