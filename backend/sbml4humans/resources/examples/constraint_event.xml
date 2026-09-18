@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" xmlns:sbml="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <notes>
+    <body xmlns="http://www.w3.org/1999/xhtml">
+      <p>Example model of <a href="https://sbml4humans.de">SBML4Humans</a> for the objects of SBML core which carry their own attributes: a constraint with a message, an event with a trigger, a priority and a delay, a kinetic law with local parameters and a unit definition built from several units.</p>
+    </body>
+  </notes>
+  <annotation>
+    <sbml4humans:document xmlns:sbml4humans="https://sbml4humans.de/ns/example" sbml4humans:writtenBy="hand" sbml4humans:purpose="constraint, event and local parameter example"/>
+  </annotation>
+  <model metaid="meta_constraint_event" id="constraint_event" name="model with a constraint, an event and local parameters" substanceUnits="mmole" timeUnits="min" volumeUnits="litre" extentUnits="mmole">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <h1>Model with a constraint, an event and local parameters</h1>
+        <p>A single Michaelis-Menten reaction converts <code>S1</code> into <code>S2</code> in the compartment <code>cell</code>. The rate law keeps its constants <code>Km</code> and <code>Vmax</code> as local parameters, so they belong to this reaction alone.</p>
+        <p>A constraint states that <code>S1</code> stays below <code>S1_max</code> and carries the message which a simulator shows when it does not. The event <code>E1</code> adds a dose of <code>S1</code> five minutes after the twentieth minute and switches the reaction off; its trigger, its priority and its delay each carry their own identifier, SBO term and notes.</p>
+        <h2>Terms of use</h2>
+        <p>This file was written for the SBML4Humans report and is distributed under the <a href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</p>
+      </body>
+    </notes>
+    <annotation>
+      <sbml4humans:model xmlns:sbml4humans="https://sbml4humans.de/ns/example" sbml4humans:elements="constraint event localParameter unitDefinition"/>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+        <rdf:Description rdf:about="#meta_constraint_event">
+          <bqbiol:hasTaxon>
+            <rdf:Bag>
+              <rdf:li rdf:resource="https://identifiers.org/taxonomy/9606"/>
+              <bqbiol:isDescribedBy>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="https://identifiers.org/pubmed/31219795"/>
+                </rdf:Bag>
+              </bqbiol:isDescribedBy>
+            </rdf:Bag>
+          </bqbiol:hasTaxon>
+          <dcterms:creator>
+            <rdf:Bag>
+              <rdf:li rdf:parseType="Resource">
+                <vCard:N rdf:parseType="Resource">
+                  <vCard:Family>König</vCard:Family>
+                  <vCard:Given>Matthias</vCard:Given>
+                </vCard:N>
+                <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>
+                <vCard:ORG rdf:parseType="Resource">
+                  <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>
+                </vCard:ORG>
+              </rdf:li>
+            </rdf:Bag>
+          </dcterms:creator>
+          <dcterms:created rdf:parseType="Resource">
+            <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>
+          </dcterms:created>
+          <dcterms:modified rdf:parseType="Resource">
+            <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>
+          </dcterms:modified>
+        </rdf:Description>
+      </rdf:RDF>
+    </annotation>
+    <listOfUnitDefinitions>
+      <unitDefinition id="min" name="min">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole" name="mmole">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mM" name="mmole/litre">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+          <unit kind="litre" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole_per_min_l" name="mmole/min/litre">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="0" multiplier="60"/>
+          <unit kind="litre" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment metaid="meta_cell" sboTerm="SBO:0000290" id="cell" name="cell" spatialDimensions="3" size="1" units="litre" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species metaid="meta_S1" sboTerm="SBO:0000247" id="S1" name="substrate" compartment="cell" initialConcentration="8" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species metaid="meta_S2" sboTerm="SBO:0000247" id="S2" name="product" compartment="cell" initialConcentration="0" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="S1_max" name="upper bound of the substrate" value="10" units="mM" constant="true"/>
+      <parameter id="dose" name="dose added by the event" value="5" units="mM" constant="true"/>
+      <parameter id="active" name="switch of the reaction" value="1" units="dimensionless" constant="false"/>
+    </listOfParameters>
+    <listOfConstraints>
+      <constraint metaid="meta_constraint_S1" sboTerm="SBO:0000064">
+        <notes>
+          <body xmlns="http://www.w3.org/1999/xhtml">
+            <p>The rate law of <code>R1</code> was measured below <code>S1_max</code>, so a simulation which leaves that range is no longer a prediction of the system.</p>
+          </body>
+        </notes>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <lt/>
+            <ci> S1 </ci>
+            <ci> S1_max </ci>
+          </apply>
+        </math>
+        <message>
+          <p xmlns="http://www.w3.org/1999/xhtml">The substrate <b>S1</b> left the range of the rate law of <code>R1</code>: it is above <b>S1_max</b> and the results from here on are not valid.</p>
+        </message>
+      </constraint>
+    </listOfConstraints>
+    <listOfReactions>
+      <reaction metaid="meta_R1" sboTerm="SBO:0000176" id="R1" name="conversion of S1 into S2" reversible="false" compartment="cell">
+        <listOfReactants>
+          <speciesReference id="R1_S1" species="S1" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference id="R1_S2" species="S2" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw metaid="meta_R1_kinetic_law" sboTerm="SBO:0000028">
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> active </ci>
+              <ci> cell </ci>
+              <apply>
+                <divide/>
+                <apply>
+                  <times/>
+                  <ci> Vmax </ci>
+                  <ci> S1 </ci>
+                </apply>
+                <apply>
+                  <plus/>
+                  <ci> Km </ci>
+                  <ci> S1 </ci>
+                </apply>
+              </apply>
+            </apply>
+          </math>
+          <listOfLocalParameters>
+            <localParameter sboTerm="SBO:0000186" id="Vmax" name="maximal velocity" value="1" units="mmole_per_min_l"/>
+            <localParameter sboTerm="SBO:0000027" id="Km" name="Michaelis constant" value="2" units="mM"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+    <listOfEvents>
+      <event metaid="meta_E1" id="E1" name="dose of S1 which switches the reaction off" useValuesFromTriggerTime="false">
+        <trigger metaid="meta_E1_trigger" sboTerm="SBO:0000064" id="E1_trigger" initialValue="false" persistent="true">
+          <notes>
+            <body xmlns="http://www.w3.org/1999/xhtml">
+              <p>The dose is given once the system has run for twenty minutes.</p>
+            </body>
+          </notes>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <geq/>
+              <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
+              <cn sbml:units="min"> 20 </cn>
+            </apply>
+          </math>
+        </trigger>
+        <priority metaid="meta_E1_priority" sboTerm="SBO:0000064" id="E1_priority">
+          <notes>
+            <body xmlns="http://www.w3.org/1999/xhtml">
+              <p>The dose is given before any other event of the same moment.</p>
+            </body>
+          </notes>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <cn sbml:units="dimensionless"> 1 </cn>
+          </math>
+        </priority>
+        <delay metaid="meta_E1_delay" sboTerm="SBO:0000064" id="E1_delay">
+          <notes>
+            <body xmlns="http://www.w3.org/1999/xhtml">
+              <p>The dose reaches the compartment five minutes after the trigger.</p>
+            </body>
+          </notes>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <cn sbml:units="min"> 5 </cn>
+          </math>
+        </delay>
+        <listOfEventAssignments>
+          <eventAssignment id="E1_dose" variable="S1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <apply>
+                <plus/>
+                <ci> S1 </ci>
+                <ci> dose </ci>
+              </apply>
+            </math>
+          </eventAssignment>
+          <eventAssignment id="E1_switch" variable="active">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <cn sbml:units="dimensionless"> 0 </cn>
+            </math>
+          </eventAssignment>
+        </listOfEventAssignments>
+      </event>
+    </listOfEvents>
+  </model>
+</sbml>

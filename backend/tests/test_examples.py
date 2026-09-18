@@ -130,3 +130,11 @@ def test_load_examples() -> None:
 def test_load_examples_is_cached() -> None:
     """Examples are only read once."""
     assert load_examples() is load_examples()
+
+
+def test_constraint_event_example_is_served() -> None:
+    """The example of the constraint, the event and the local parameters is served."""
+    example = load_examples()["constraint_event (constraint_event.xml)"]
+    assert example.file.name == "constraint_event.xml"
+    assert example.name == "model with a constraint, an event and local parameters"
+    assert example.description is not None

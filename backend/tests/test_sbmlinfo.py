@@ -23,6 +23,12 @@ def repressilator() -> Report:
     return SBMLDocumentInfo.from_sbml(REPRESSILATOR_SBML)
 
 
+@pytest.fixture(scope="module")
+def constraint_event() -> Report:
+    """The report of the constraint, event and local parameter example."""
+    return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "constraint_event.xml")
+
+
 def test_document(repressilator: Report) -> None:
     """The document carries level, version and its pk."""
     doc = repressilator.document
@@ -613,3 +619,42 @@ def test_assignments_without_an_identifier_keep_their_key() -> None:
     assignment = model.list_of_events[0].list_of_event_assignments[0]
     assert assignment.id is None
     assert assignment.pk == "m/EventAssignment:e1.S1"
+
+
+# -------------------------------------------------------------------------------------
+# the objects of core which carry their own attributes
+# -------------------------------------------------------------------------------------
+def test_constraint_event_example(constraint_event: Report) -> None:
+    """The example carries the objects it was written for.
+
+    `constraint_event.xml` is the Level 3 Version 2 example of the elements no
+    other shipped model contains: a constraint with a message (core §4.10), an
+    event with a trigger, a priority and a delay (§4.12), a kinetic law with
+    local parameters (§4.11.6) and unit definitions built from several units
+    (§4.4.2).
+    """
+    model = constraint_event.models[0]
+    assert model.id == "constraint_event"
+    (constraint,) = model.list_of_constraints
+    assert constraint.math is not None
+    assert constraint.message is not None
+    (reaction,) = model.list_of_reactions
+    assert reaction.kinetic_law is not None
+    assert [lp.id for lp in reaction.kinetic_law.list_of_local_parameters] == [
+        "Vmax",
+        "Km",
+    ]
+    (event,) = model.list_of_events
+    assert event.trigger is not None
+    assert event.priority is not None
+    assert event.delay is not None
+    assert [ea.id for ea in event.list_of_event_assignments] == [
+        "E1_dose",
+        "E1_switch",
+    ]
+    assert [ud.id for ud in model.list_of_unit_definitions] == [
+        "min",
+        "mmole",
+        "mM",
+        "mmole_per_min_l",
+    ]

@@ -64,6 +64,7 @@ EXAMPLE_IDS: list[str] = [
     "algebraic_rule",
     "annotation",
     "assignment",
+    "constraint_event",
     "distrib_comp",
     "distrib_comp_flat",
     "distrib_distributions",
