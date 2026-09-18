@@ -106,9 +106,18 @@ It is shown under "References" of the event and under "Referenced by" of the ass
 label = "variable"
 summary = "the element a rule, an event assignment or a constraint component is about"
 description = """
-An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference. A [component](userdefinedconstraintcomponent.md) of a user defined constraint of fbc names the reaction or the parameter it weighs with the same attribute, which it does not set but reads.
+An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference. A [component](userdefinedconstraintcomponent.md) of a user defined constraint of fbc names the reaction or the parameter it weighs with the same attribute, which it does not set but reads; the second factor of a quadratic component is a link of its own, [second variable](links.md#second-variable).
 
 The link is shown under "References" of the rule or of the assignment, and under "Referenced by" of the element, where it shows what determines its value.
+"""
+
+[links.variable2]
+label = "second variable"
+summary = "the second factor of a quadratic term of a user defined constraint"
+description = """
+A quadratic [component](userdefinedconstraintcomponent.md) of a user defined constraint weighs the product of two variables, the reaction or the parameter of its [variable](links.md#variable) and the one of its [second variable](userdefinedconstraintcomponent.md#second-variable). The second one has a link of its own, so that the element it names says that it is the second factor of a product and not a term of its own.
+
+It is shown under "References" of the component and under "Referenced by" of the reaction or the parameter.
 """
 
 [links.symbol]
@@ -135,20 +144,54 @@ The link is shown under "References" of the element and under "Referenced by" of
 label = "conversion factor"
 summary = "the parameter which converts the values of an element"
 description = """
-A [model](model.md) and a [species](species.md) name a conversion factor parameter for the amounts of species, and a [submodel](submodel.md) names one for its time and one for its reaction extent. In every case the link goes to a constant [parameter](parameter.md) of the model.
+A [model](model.md) and a [species](species.md) name a conversion factor parameter for the amounts of species, and a [replaced element](replacedelement.md) names one for the element it replaces. In every case the link goes to a constant [parameter](parameter.md) of the model. The two conversion factors of a [submodel](submodel.md) are links of their own, [time conversion factor](links.md#time-conversion-factor) and [extent conversion factor](links.md#extent-conversion-factor).
 
 It is shown under "References" of the element and under "Referenced by" of the parameter.
 """
 
+[links.timeConversionFactor]
+label = "time conversion factor"
+summary = "the parameter which converts the time of a submodel"
+description = """
+A [submodel](submodel.md) names the [parameter](parameter.md) which converts the units of time of the model it instantiates into the units of time of the model which contains it, in its [time conversion factor](submodel.md#time-conversion-factor).
+
+It is shown under "References" of the submodel and under "Referenced by" of the parameter.
+"""
+
+[links.extentConversionFactor]
+label = "extent conversion factor"
+summary = "the parameter which converts the reaction extent of a submodel"
+description = """
+A [submodel](submodel.md) names the [parameter](parameter.md) which converts the units of reaction extent of the model it instantiates into those of the model which contains it, in its [extent conversion factor](submodel.md#extent-conversion-factor).
+
+It is shown under "References" of the submodel and under "Referenced by" of the parameter.
+"""
+
 [links.fluxBound]
 label = "flux bound"
-summary = "what bounds the flux of a reaction"
+summary = "the reaction a flux bound of fbc Version 1 constrains"
 description = """
-A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its lower and of its upper flux bound. Both links are of this kind, which parameter is which bound is shown in the attributes of the reaction.
+In a document of fbc Version 1 a [flux bound](fluxbound.md) is an object of its own, which names the [reaction](reaction.md) whose flux it constrains together with an operation and a value. From Version 2 on the bounds are attributes of the reaction, which names their parameters with a [lower flux bound](links.md#lower-flux-bound) and an [upper flux bound](links.md#upper-flux-bound) link.
 
-In a document of Version 1 the link runs the other way: a [flux bound](fluxbound.md) is an object of its own there and names the reaction it constrains, so the kind is the same relation seen from the other end.
+The link is shown under "References" of the flux bound and under "Referenced by" of the reaction, where it shows what bounds its flux.
+"""
 
-The link is shown under "References" of the reaction or of the flux bound, and under "Referenced by" of the parameter or of the reaction, where it shows what bounds a flux.
+[links.lowerFluxBound]
+label = "lower flux bound"
+summary = "the parameter which holds the lowest flux of a reaction"
+description = """
+A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its [lower flux bound](reaction.md#lower-flux-bound). A genome scale model gives hundreds of reactions the same parameter, and the link says of every one of them that it is their lower bound.
+
+It is shown under "References" of the reaction and under "Referenced by" of the parameter.
+"""
+
+[links.upperFluxBound]
+label = "upper flux bound"
+summary = "the parameter which holds the highest flux of a reaction"
+description = """
+A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its [upper flux bound](reaction.md#upper-flux-bound). A genome scale model gives hundreds of reactions the same parameter, and the link says of every one of them that it is their upper bound.
+
+It is shown under "References" of the reaction and under "Referenced by" of the parameter.
 """
 
 [links.geneProduct]
@@ -184,9 +227,18 @@ The link is shown under "References" of the gene product and under "Referenced b
 label = "flux objective"
 summary = "a term of an objective function and the reaction whose flux it weighs"
 description = """
-An [objective](objective.md) names every [flux objective](fluxobjective.md) it is the sum of, and each of those names the [reaction](reaction.md) whose flux it weighs, or from Version 3 of fbc on the two reactions of a quadratic term. Both hops carry this kind, the way a reaction and its species reference both carry the kind of the participation.
+An [objective](objective.md) names every [flux objective](fluxobjective.md) it is the sum of, and each of those names the [reaction](reaction.md) whose flux it weighs. Both hops carry this kind, the way a reaction and its species reference both carry the kind of the participation. From Version 3 of fbc on a quadratic term may multiply the flux with the flux of a second reaction, which is a link of its own, [second reaction](links.md#second-reaction).
 
 The coefficient is an attribute of the flux objective, not of the link. The chain is shown under "References" of the objective and of the flux objective, and under "Referenced by" of the reaction, where it says that this reaction is what the model optimises.
+"""
+
+[links.reaction2]
+label = "second reaction"
+summary = "the second flux of a quadratic term of an objective"
+description = """
+A quadratic [flux objective](fluxobjective.md) of fbc Version 3 weighs the product of the flux of its reaction and the flux of its [second reaction](fluxobjective.md#second-reaction). The second one has a link of its own, so that the reaction it names says that it is the second factor of a product and not a term of the objective of its own.
+
+It is shown under "References" of the flux objective and under "Referenced by" of the reaction.
 """
 
 [links.activeObjective]
@@ -196,6 +248,24 @@ description = """
 A [model](model.md) which defines several [objectives](objective.md) names the one an analysis optimises unless it is told otherwise. It is the only link which starts at the model itself, because the attribute belongs to the list of the objectives, which the report shows as the section of that type.
 
 It is shown under "References" of the model and under "Referenced by" of the objective, where it says that this objective is the one the model was published with.
+"""
+
+[links.lowerBound]
+label = "lower bound"
+summary = "the parameter which holds the lowest value of a user defined constraint"
+description = """
+A [user defined constraint](userdefinedconstraint.md) keeps the weighted sum of its components between two numbers, and it names the [parameter](parameter.md) of the lower one in its [lower bound](userdefinedconstraint.md#lower-bound). The bound limits the sum and not the flux of one reaction, which is why it is not a flux bound.
+
+It is shown under "References" of the constraint and under "Referenced by" of the parameter.
+"""
+
+[links.upperBound]
+label = "upper bound"
+summary = "the parameter which holds the highest value of a user defined constraint"
+description = """
+A [user defined constraint](userdefinedconstraint.md) keeps the weighted sum of its components between two numbers, and it names the [parameter](parameter.md) of the upper one in its [upper bound](userdefinedconstraint.md#upper-bound). The bound limits the sum and not the flux of one reaction, which is why it is not a flux bound.
+
+It is shown under "References" of the constraint and under "Referenced by" of the parameter.
 """
 
 [links.constraintComponent]
@@ -274,9 +344,27 @@ It is shown under "References" of the uncertainty and of a parameter with parame
 label = "var"
 summary = "the element which holds the number of a measure"
 description = """
-A measure of an [uncertainty](uncertainty.md) which is not a fixed number names the element of the model which holds it: the [var](uncertparameter.md#var) of an [uncert parameter](uncertparameter.md), and the [var lower](uncertspan.md#var-lower) and the [var upper](uncertspan.md#var-upper) of an [uncert span](uncertspan.md), which are the two ends of its interval.
+A measure of an [uncertainty](uncertainty.md) which is not a fixed number names the element of the model which holds it in the [var](uncertparameter.md#var) of an [uncert parameter](uncertparameter.md). The two ends of the interval of an [uncert span](uncertspan.md) are links of their own, [var lower](links.md#var-lower) and [var upper](links.md#var-upper).
 
 It is shown under "References" of the measure and under "Referenced by" of the element it names, where it says which measurement that element stands for.
+"""
+
+[links.varLower]
+label = "var lower"
+summary = "the element which holds the lower end of the interval of a measure"
+description = """
+An [uncert span](uncertspan.md) whose lower end is not a fixed number names the element of the model which holds it in its [var lower](uncertspan.md#var-lower). The link says of that element that it is the lower end of the interval, which the element does not say itself.
+
+It is shown under "References" of the span and under "Referenced by" of the element it names.
+"""
+
+[links.varUpper]
+label = "var upper"
+summary = "the element which holds the upper end of the interval of a measure"
+description = """
+An [uncert span](uncertspan.md) whose upper end is not a fixed number names the element of the model which holds it in its [var upper](uncertspan.md#var-upper). The link says of that element that it is the upper end of the interval, which the element does not say itself.
+
+It is shown under "References" of the span and under "Referenced by" of the element it names.
 """
 
 [links.model]

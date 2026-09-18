@@ -1,5 +1,5 @@
 {
-  "uid": "cc9bd312821f4dcba50a6dfc0659dad1",
+  "uid": "7f2e0ca7b5d14075ad8a1f1e7d8c48d3",
   "manifest": {
     "entries": [
       {
@@ -8978,11 +8978,6 @@
             {
               "source": "icg_body/Model:icg_body",
               "target": "icg_body/UnitDefinition:m",
-              "kind": "units"
-            },
-            {
-              "source": "icg_body/Model:icg_body",
-              "target": "icg_body/UnitDefinition:mmole",
               "kind": "units"
             },
             {

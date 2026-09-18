@@ -1398,13 +1398,17 @@
       "label": "event assignment",
       "summary": "a new value an event gives to an element of the model"
     },
+    "extentConversionFactor": {
+      "label": "extent conversion factor",
+      "summary": "the parameter which converts the reaction extent of a submodel"
+    },
     "externalModelDefinition": {
       "label": "external model definition",
       "summary": "a model of another document which this document refers to"
     },
     "fluxBound": {
       "label": "flux bound",
-      "summary": "what bounds the flux of a reaction"
+      "summary": "the reaction a flux bound of fbc Version 1 constrains"
     },
     "fluxObjective": {
       "label": "flux objective",
@@ -1433,6 +1437,14 @@
     "localParameter": {
       "label": "local parameter",
       "summary": "a parameter which only the formula of one kinetic law can read"
+    },
+    "lowerBound": {
+      "label": "lower bound",
+      "summary": "the parameter which holds the lowest value of a user defined constraint"
+    },
+    "lowerFluxBound": {
+      "label": "lower flux bound",
+      "summary": "the parameter which holds the lowest flux of a reaction"
     },
     "math": {
       "label": "math",
@@ -1470,6 +1482,10 @@
       "label": "reactant",
       "summary": "a species a reaction consumes"
     },
+    "reaction2": {
+      "label": "second reaction",
+      "summary": "the second flux of a quadratic term of an objective"
+    },
     "replacedBy": {
       "label": "replaced by",
       "summary": "the element of a submodel which replaces this one"
@@ -1485,6 +1501,10 @@
     "symbol": {
       "label": "symbol",
       "summary": "the element whose initial value an initial assignment computes"
+    },
+    "timeConversionFactor": {
+      "label": "time conversion factor",
+      "summary": "the parameter which converts the time of a submodel"
     },
     "trigger": {
       "label": "trigger",
@@ -1502,13 +1522,33 @@
       "label": "units",
       "summary": "the unit definition an element declares its units with"
     },
+    "upperBound": {
+      "label": "upper bound",
+      "summary": "the parameter which holds the highest value of a user defined constraint"
+    },
+    "upperFluxBound": {
+      "label": "upper flux bound",
+      "summary": "the parameter which holds the highest flux of a reaction"
+    },
     "var": {
       "label": "var",
       "summary": "the element which holds the number of a measure"
     },
+    "varLower": {
+      "label": "var lower",
+      "summary": "the element which holds the lower end of the interval of a measure"
+    },
+    "varUpper": {
+      "label": "var upper",
+      "summary": "the element which holds the upper end of the interval of a measure"
+    },
     "variable": {
       "label": "variable",
       "summary": "the element a rule, an event assignment or a constraint component is about"
+    },
+    "variable2": {
+      "label": "second variable",
+      "summary": "the second factor of a quadratic term of a user defined constraint"
     }
   },
   "concepts": {

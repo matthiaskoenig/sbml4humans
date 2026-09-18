@@ -1,5 +1,5 @@
 {
-  "uid": "d95cd93169d344b58eaace45c7915291",
+  "uid": "b75fd163759a406e83dc91cb8d57bb9d",
   "manifest": {
     "entries": [
       {
@@ -1543,11 +1543,6 @@
               "kind": "units"
             },
             {
-              "source": "fbc_example/Model:fbc_example",
-              "target": "fbc_example/UnitDefinition:mmole",
-              "kind": "units"
-            },
-            {
               "source": "fbc_example/Species:Glcxt",
               "target": "fbc_example/Compartment:bioreactor",
               "kind": "compartment"
@@ -1650,12 +1645,12 @@
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Reaction:v2",
@@ -1695,12 +1690,12 @@
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Reaction:v3",
@@ -1750,12 +1745,12 @@
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Reaction:v4",
@@ -1795,12 +1790,12 @@
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_Ac",
@@ -1815,12 +1810,12 @@
             {
               "source": "fbc_example/Reaction:EX_Ac",
               "target": "fbc_example/Parameter:lb_inf",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_Ac",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_O2",
@@ -1835,12 +1830,12 @@
             {
               "source": "fbc_example/Reaction:EX_O2",
               "target": "fbc_example/Parameter:o2_import",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_O2",
               "target": "fbc_example/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_Glcxt",
@@ -1855,12 +1850,12 @@
             {
               "source": "fbc_example/Reaction:EX_Glcxt",
               "target": "fbc_example/Parameter:glc_import",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_Glcxt",
               "target": "fbc_example/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_X",
@@ -1875,12 +1870,12 @@
             {
               "source": "fbc_example/Reaction:EX_X",
               "target": "fbc_example/Parameter:lb_inf",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_example/Reaction:EX_X",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_example/Model:fbc_example",
@@ -1931,7 +1926,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.01 [s]"
+        "jsonReportTime": "0.009 [s]"
       }
     }
   }

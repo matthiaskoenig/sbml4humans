@@ -1,5 +1,5 @@
 {
-  "uid": "1e845c44afa74f5b96cc1b8c164e11a4",
+  "uid": "070e6115406d4a5db8b46d73cf728cff",
   "manifest": {
     "entries": [
       {
@@ -1184,12 +1184,12 @@
             {
               "source": "distrib_spans/UncertSpan:Km_lysate_ci",
               "target": "distrib_spans/Parameter:Km_lower",
-              "kind": "var"
+              "kind": "varLower"
             },
             {
               "source": "distrib_spans/UncertSpan:Km_lysate_ci",
               "target": "distrib_spans/Parameter:Km_upper",
-              "kind": "var"
+              "kind": "varUpper"
             },
             {
               "source": "distrib_spans/Parameter:Vmax",
@@ -1267,11 +1267,6 @@
               "kind": "units"
             },
             {
-              "source": "distrib_spans/Model:distrib_spans",
-              "target": "distrib_spans/UnitDefinition:mmole",
-              "kind": "units"
-            },
-            {
               "source": "distrib_spans/Species:S",
               "target": "distrib_spans/Compartment:cell",
               "kind": "compartment"
@@ -1335,7 +1330,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.023 [s]"
+        "jsonReportTime": "0.022 [s]"
       }
     }
   }

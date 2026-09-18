@@ -1,5 +1,5 @@
 {
-  "uid": "b26fb0acbe0143bf8cfc57b88ddf805a",
+  "uid": "c9e6f6c3bca84ef3ad09b14ee52a381e",
   "manifest": {
     "entries": [
       {
@@ -1811,12 +1811,12 @@
             {
               "source": "comp_deletion/Submodel:cell2",
               "target": "comp_deletion/Parameter:f_time",
-              "kind": "conversionFactor"
+              "kind": "timeConversionFactor"
             },
             {
               "source": "comp_deletion/Submodel:cell2",
               "target": "comp_deletion/Parameter:f_extent",
-              "kind": "conversionFactor"
+              "kind": "extentConversionFactor"
             },
             {
               "source": "comp_deletion/Submodel:tissue1",
@@ -1927,7 +1927,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.027 [s]"
+        "jsonReportTime": "0.026 [s]"
       }
     }
   }

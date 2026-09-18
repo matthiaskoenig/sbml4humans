@@ -1,5 +1,5 @@
 {
-  "uid": "efd23b8e200b4af59a9efeeab8a3513f",
+  "uid": "d9120c398a4f484ea3b0d57052bb958d",
   "manifest": {
     "entries": [
       {
@@ -830,11 +830,6 @@
             {
               "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
               "target": "fbc_bounds_v1/UnitDefinition:hr",
-              "kind": "units"
-            },
-            {
-              "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
-              "target": "fbc_bounds_v1/UnitDefinition:mmole",
               "kind": "units"
             },
             {

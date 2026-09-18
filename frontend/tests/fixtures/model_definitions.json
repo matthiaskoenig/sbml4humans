@@ -1,5 +1,5 @@
 {
-  "uid": "795d7b1f0e0049ccb312d7734468069f",
+  "uid": "d96f7b64a85c43baaab3446e00f451b6",
   "manifest": {
     "entries": [
       {
@@ -428,11 +428,6 @@
             {
               "source": "model_definitions/Model:model_definitions",
               "target": "model_definitions/UnitDefinition:m2",
-              "kind": "units"
-            },
-            {
-              "source": "model_definitions/Model:model_definitions",
-              "target": "model_definitions/UnitDefinition:mmole",
               "kind": "units"
             },
             {

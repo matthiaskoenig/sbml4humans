@@ -20,13 +20,13 @@ const COLUMNS = [
 <template>
   <AttributeRow label="lower bound" :type="element.sbmlType" field="lowerBound">
     <ElementLink
-      :pk="index?.resolve(element.pk, 'fluxBound', element.lowerBound)"
+      :pk="index?.resolve(element.pk, 'lowerBound', element.lowerBound)"
       :label="element.lowerBound"
     />
   </AttributeRow>
   <AttributeRow label="upper bound" :type="element.sbmlType" field="upperBound">
     <ElementLink
-      :pk="index?.resolve(element.pk, 'fluxBound', element.upperBound)"
+      :pk="index?.resolve(element.pk, 'upperBound', element.upperBound)"
       :label="element.upperBound"
     />
   </AttributeRow>
@@ -45,7 +45,7 @@ const COLUMNS = [
       </template>
       <template #cell-variable2="{ row }">
         <ElementLink
-          :pk="index?.resolve(row.pk, 'variable', row.variable2)"
+          :pk="index?.resolve(row.pk, 'variable2', row.variable2)"
           :label="row.variable2"
         />
       </template>

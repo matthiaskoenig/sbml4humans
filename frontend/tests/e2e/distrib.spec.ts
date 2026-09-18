@@ -71,11 +71,12 @@ test.describe("distrib", () => {
       "Km_lysate_ci confidenceInterval Km_lower to Km_upper",
     ]);
 
-    // the ends of the interval are elements of the model and the report walks to them
+    // the ends of the interval are elements of the model and the report walks to them, and the
+    // element says which end of which interval it holds
     await inspector.getByTestId("uncert-span").getByTestId("element-link").first().click();
     await expect(page).toHaveURL(/pk=distrib_spans\/Parameter:Km_lower$/);
     await expect(
-      inspector.getByTestId("links-referenced-by").getByTestId("links-var"),
+      inspector.getByTestId("links-referenced-by").getByTestId("links-varLower"),
     ).toContainText("Km_lysate_ci");
   });
 

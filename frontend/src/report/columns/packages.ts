@@ -21,13 +21,13 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
       field: "timeConversionFactor",
       header: "time conversion factor",
       kind: "link",
-      link: "conversionFactor",
+      link: "timeConversionFactor",
     },
     {
       field: "extentConversionFactor",
       header: "extent conversion factor",
       kind: "link",
-      link: "conversionFactor",
+      link: "extentConversionFactor",
     },
     { field: "listOfDeletions.length", header: "deletions", kind: "count" },
   ],
@@ -61,8 +61,8 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
   ],
   UserDefinedConstraint: [
     ...ID_COLUMNS,
-    { field: "lowerBound", header: "lower bound", kind: "link", link: "fluxBound" },
-    { field: "upperBound", header: "upper bound", kind: "link", link: "fluxBound" },
+    { field: "lowerBound", header: "lower bound", kind: "link", link: "lowerBound" },
+    { field: "upperBound", header: "upper bound", kind: "link", link: "upperBound" },
     {
       field: "listOfUserDefinedConstraintComponents.length",
       header: "components",

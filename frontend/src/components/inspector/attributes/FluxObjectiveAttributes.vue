@@ -23,7 +23,7 @@ const index = useReportIndex();
     field="reaction2"
   >
     <ElementLink
-      :pk="index?.resolve(element.pk, 'fluxObjective', element.reaction2)"
+      :pk="index?.resolve(element.pk, 'reaction2', element.reaction2)"
       :label="element.reaction2"
     />
   </AttributeRow>

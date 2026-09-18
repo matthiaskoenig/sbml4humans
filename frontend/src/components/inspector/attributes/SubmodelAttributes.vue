@@ -40,7 +40,7 @@ const deletions = computed(() =>
     field="timeConversionFactor"
   >
     <ElementLink
-      :pk="index?.resolve(element.pk, 'conversionFactor', element.timeConversionFactor)"
+      :pk="index?.resolve(element.pk, 'timeConversionFactor', element.timeConversionFactor)"
       :label="element.timeConversionFactor"
     />
   </AttributeRow>
@@ -50,7 +50,7 @@ const deletions = computed(() =>
     field="extentConversionFactor"
   >
     <ElementLink
-      :pk="index?.resolve(element.pk, 'conversionFactor', element.extentConversionFactor)"
+      :pk="index?.resolve(element.pk, 'extentConversionFactor', element.extentConversionFactor)"
       :label="element.extentConversionFactor"
     />
   </AttributeRow>

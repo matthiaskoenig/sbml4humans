@@ -1,5 +1,5 @@
 {
-  "uid": "b2dade4f88b5459ca814e2e907b16b08",
+  "uid": "b404116c46d143329b1a4be9612455d7",
   "manifest": {
     "entries": [
       {
@@ -1441,11 +1441,6 @@
               "kind": "units"
             },
             {
-              "source": "fbc_constraints_v3/Model:fbc_constraints_v3",
-              "target": "fbc_constraints_v3/UnitDefinition:mmole",
-              "kind": "units"
-            },
-            {
               "source": "fbc_constraints_v3/Species:glc",
               "target": "fbc_constraints_v3/Compartment:cell",
               "kind": "compartment"
@@ -1538,12 +1533,12 @@
             {
               "source": "fbc_constraints_v3/Reaction:v1",
               "target": "fbc_constraints_v3/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Reaction:v1",
               "target": "fbc_constraints_v3/Parameter:ub",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Reaction:v1",
@@ -1618,12 +1613,12 @@
             {
               "source": "fbc_constraints_v3/Reaction:v2",
               "target": "fbc_constraints_v3/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Reaction:v2",
               "target": "fbc_constraints_v3/Parameter:ub",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Reaction:v2",
@@ -1653,12 +1648,12 @@
             {
               "source": "fbc_constraints_v3/Reaction:EX_glc",
               "target": "fbc_constraints_v3/Parameter:lb",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Reaction:EX_glc",
               "target": "fbc_constraints_v3/Parameter:ub",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Reaction:EX_biomass",
@@ -1673,12 +1668,12 @@
             {
               "source": "fbc_constraints_v3/Reaction:EX_biomass",
               "target": "fbc_constraints_v3/Parameter:zero",
-              "kind": "fluxBound"
+              "kind": "lowerFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Reaction:EX_biomass",
               "target": "fbc_constraints_v3/Parameter:ub",
-              "kind": "fluxBound"
+              "kind": "upperFluxBound"
             },
             {
               "source": "fbc_constraints_v3/Model:fbc_constraints_v3",
@@ -1708,17 +1703,17 @@
             {
               "source": "fbc_constraints_v3/FluxObjective:fo_uptake",
               "target": "fbc_constraints_v3/Reaction:v2",
-              "kind": "fluxObjective"
+              "kind": "reaction2"
             },
             {
               "source": "fbc_constraints_v3/UserDefinedConstraint:ratio",
               "target": "fbc_constraints_v3/Parameter:ratio_lb",
-              "kind": "fluxBound"
+              "kind": "lowerBound"
             },
             {
               "source": "fbc_constraints_v3/UserDefinedConstraint:ratio",
               "target": "fbc_constraints_v3/Parameter:ratio_ub",
-              "kind": "fluxBound"
+              "kind": "upperBound"
             },
             {
               "source": "fbc_constraints_v3/UserDefinedConstraint:ratio",
@@ -1753,12 +1748,12 @@
             {
               "source": "fbc_constraints_v3/UserDefinedConstraint:budget",
               "target": "fbc_constraints_v3/Parameter:ratio_lb",
-              "kind": "fluxBound"
+              "kind": "lowerBound"
             },
             {
               "source": "fbc_constraints_v3/UserDefinedConstraint:budget",
               "target": "fbc_constraints_v3/Parameter:budget_ub",
-              "kind": "fluxBound"
+              "kind": "upperBound"
             },
             {
               "source": "fbc_constraints_v3/UserDefinedConstraint:budget",
@@ -1773,7 +1768,7 @@
             {
               "source": "fbc_constraints_v3/UserDefinedConstraintComponent:budget_v2",
               "target": "fbc_constraints_v3/Parameter:maintenance",
-              "kind": "variable"
+              "kind": "variable2"
             },
             {
               "source": "fbc_constraints_v3/UserDefinedConstraintComponent:budget_v2",

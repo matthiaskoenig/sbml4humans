@@ -103,14 +103,14 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
       field: "fbc.lowerFluxBound",
       header: "lower bound",
       kind: "link",
-      link: "fluxBound",
+      link: "lowerFluxBound",
       optional: true,
     },
     {
       field: "fbc.upperFluxBound",
       header: "upper bound",
       kind: "link",
-      link: "fluxBound",
+      link: "upperFluxBound",
       optional: true,
     },
     {

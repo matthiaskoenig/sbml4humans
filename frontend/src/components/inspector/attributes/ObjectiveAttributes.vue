@@ -40,7 +40,7 @@ const COLUMNS = [
       </template>
       <template #cell-reaction2="{ row }">
         <ElementLink
-          :pk="index?.resolve(row.pk, 'fluxObjective', row.reaction2)"
+          :pk="index?.resolve(row.pk, 'reaction2', row.reaction2)"
           :label="row.reaction2"
         />
       </template>

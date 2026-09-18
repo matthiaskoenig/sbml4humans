@@ -258,8 +258,9 @@ def test_fbc_edges() -> None:
     m = "e_coli_core"
     reaction = f"{m}/Reaction:R_PFK"
     edges = _edges(report, source=reaction)
-    assert (reaction, f"{m}/Parameter:cobra_0_bound", "fluxBound") in edges
-    assert (reaction, f"{m}/Parameter:cobra_default_ub", "fluxBound") in edges
+    # the two bounds of a reaction are two attributes, and the link says which
+    assert (reaction, f"{m}/Parameter:cobra_0_bound", "lowerFluxBound") in edges
+    assert (reaction, f"{m}/Parameter:cobra_default_ub", "upperFluxBound") in edges
     flux_objective = f"{m}/FluxObjective:obj.fluxObjective.R_BIOMASS_Ecoli_core_w_GAM"
     assert (f"{m}/Objective:obj", flux_objective, "fluxObjective") in _edges(report)
     assert (
@@ -551,12 +552,16 @@ def test_submodel_edge_to_model_definition(synthetic_comp: Report) -> None:
 
 def test_submodel_conversion_factor_edges(synthetic_comp: Report) -> None:
     """A submodel links to the time and extent conversion factors of its model."""
-    assert _edges(
-        synthetic_comp, source="top/Submodel:sm", kind=EdgeKind.CONVERSION_FACTOR
-    ) == {
-        ("top/Submodel:sm", "top/Parameter:ctime", "conversionFactor"),
-        ("top/Submodel:sm", "top/Parameter:cextent", "conversionFactor"),
+    assert _edges(synthetic_comp, source="top/Submodel:sm") >= {
+        ("top/Submodel:sm", "top/Parameter:ctime", "timeConversionFactor"),
+        ("top/Submodel:sm", "top/Parameter:cextent", "extentConversionFactor"),
     }
+    assert (
+        _edges(
+            synthetic_comp, source="top/Submodel:sm", kind=EdgeKind.CONVERSION_FACTOR
+        )
+        == set()
+    )
 
 
 def test_uncertainty_math_edge() -> None:
@@ -654,12 +659,16 @@ def test_uncert_parameter_var_and_units_edges(distrib_spans: Report) -> None:
 
 
 def test_uncert_span_var_edges(distrib_spans: Report) -> None:
-    """A span by reference names the two elements which hold its ends."""
+    """A span by reference names the two elements which hold its ends.
+
+    The lower and the upper end are two attributes (distrib §3.12), and the
+    link says which end an element holds.
+    """
     km = next(p for p in distrib_spans.models[0].list_of_parameters if p.id == "Km")
     span = km.uncertainties[1].uncert_parameters[1]
     assert _edges(distrib_spans, source=span.pk) == {
-        (span.pk, "distrib_spans/Parameter:Km_lower", "var"),
-        (span.pk, "distrib_spans/Parameter:Km_upper", "var"),
+        (span.pk, "distrib_spans/Parameter:Km_lower", "varLower"),
+        (span.pk, "distrib_spans/Parameter:Km_upper", "varUpper"),
     }
 
 
@@ -1219,9 +1228,10 @@ def test_flux_objective_edges_start_at_the_flux_objective() -> None:
     m = "fbc_constraints_v3"
     quadratic = f"{m}/FluxObjective:fo_uptake"
     assert (f"{m}/Objective:uptake_min", quadratic, "fluxObjective") in _edges(report)
+    # the second flux of a product is an attribute of its own, and the link says so
     assert _edges(report, source=quadratic) == {
         (quadratic, f"{m}/Reaction:v1", "fluxObjective"),
-        (quadratic, f"{m}/Reaction:v2", "fluxObjective"),
+        (quadratic, f"{m}/Reaction:v2", "reaction2"),
     }
 
 
@@ -1243,8 +1253,8 @@ def test_user_defined_constraint_edges() -> None:
     constraint = f"{m}/UserDefinedConstraint:ratio"
     component = f"{m}/UserDefinedConstraintComponent:ratio_v1"
     assert _edges(report, source=constraint) == {
-        (constraint, f"{m}/Parameter:ratio_lb", "fluxBound"),
-        (constraint, f"{m}/Parameter:ratio_ub", "fluxBound"),
+        (constraint, f"{m}/Parameter:ratio_lb", "lowerBound"),
+        (constraint, f"{m}/Parameter:ratio_ub", "upperBound"),
         (constraint, component, "constraintComponent"),
         (
             constraint,
@@ -1257,7 +1267,7 @@ def test_user_defined_constraint_edges() -> None:
         (component, f"{m}/Parameter:c_two", "coefficient"),
     }
     quadratic = f"{m}/UserDefinedConstraintComponent:budget_v2"
-    assert (quadratic, f"{m}/Parameter:maintenance", "variable") in _edges(report)
+    assert (quadratic, f"{m}/Parameter:maintenance", "variable2") in _edges(report)
 
 
 @pytest.fixture(scope="module")

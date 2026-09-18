@@ -90,7 +90,7 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(38);
+    expect(EDGE_KINDS).toHaveLength(48);
     // a reaction names its kinetic law behind its participants, an event its assignments behind
     // its trigger, its priority and its delay
     expect(EDGE_KINDS.indexOf("kineticLaw")).toBe(EDGE_KINDS.indexOf("modifier") + 1);
@@ -111,5 +111,11 @@ describe("sbml types", () => {
     expect(edgeKindLabel("uncertainty")).toBe("uncertainty");
     expect(edgeKindLabel("uncertParameter")).toBe("uncert parameter");
     expect(edgeKindLabel("var")).toBe("var");
+    // an attribute of a pair has a kind of its own, so the element it names says which it is
+    expect(EDGE_KINDS.indexOf("varUpper")).toBe(EDGE_KINDS.indexOf("varLower") + 1);
+    expect(edgeKindLabel("lowerFluxBound")).toBe("lower flux bound");
+    expect(edgeKindLabel("reaction2")).toBe("second reaction");
+    expect(edgeKindLabel("variable2")).toBe("second variable");
+    expect(edgeKindLabel("timeConversionFactor")).toBe("time conversion factor");
   });
 });

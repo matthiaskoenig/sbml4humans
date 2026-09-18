@@ -1,5 +1,5 @@
 {
-  "uid": "9e88db41379d4627a0476a35341f4562",
+  "uid": "93617e81dd3a4a1c981ac9cea374d88e",
   "manifest": {
     "entries": [
       {
@@ -971,11 +971,6 @@
               "kind": "units"
             },
             {
-              "source": "constraint_event/Model:constraint_event",
-              "target": "constraint_event/UnitDefinition:mmole",
-              "kind": "units"
-            },
-            {
               "source": "constraint_event/Species:S1",
               "target": "constraint_event/Compartment:cell",
               "kind": "compartment"
@@ -1159,7 +1154,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.079 [s]"
+        "jsonReportTime": "0.053 [s]"
       }
     }
   }

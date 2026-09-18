@@ -322,7 +322,9 @@ class LinkGraphBuilder:
         self._document_edges()
         for model in self.report.models:
             self._model_edges(model)
-        return LinkGraph(nodes=self.nodes, edges=self.edges)
+        # two attributes of one element may name one element, the substance
+        # and the extent units of a model, which is one link and not two
+        return LinkGraph(nodes=self.nodes, edges=list(dict.fromkeys(self.edges)))
 
     # ---------------------------------------------------------------------------------
     # nodes
@@ -439,8 +441,9 @@ class LinkGraphBuilder:
         read: the measures of one uncertainty belong together and a
         distribution is defined by the parameters below it. Every parameter
         names what it refers to itself, the element of its `var` and, for a
-        span, of its `varLower` and its `varUpper` (distrib §3.11.2, §3.12),
-        the unit definition of its units and the elements of its math.
+        span, of its `varLower` and its `varUpper`, each with a kind of its own
+        so that a reader tells the two ends apart (distrib §3.11.2, §3.12), the
+        unit definition of its units and the elements of its math.
         """
         for measure in owner.uncert_parameters:
             self.edges.append(
@@ -452,8 +455,8 @@ class LinkGraphBuilder:
             )
             self._edge(measure, measure.var, EdgeKind.VAR, index)
             if isinstance(measure, UncertSpan):
-                self._edge(measure, measure.var_lower, EdgeKind.VAR, index)
-                self._edge(measure, measure.var_upper, EdgeKind.VAR, index)
+                self._edge(measure, measure.var_lower, EdgeKind.VAR_LOWER, index)
+                self._edge(measure, measure.var_upper, EdgeKind.VAR_UPPER, index)
             self._units_edge(measure, measure.units, index)
             self._math_edges(measure, index)
             self._uncert_edges(measure, index)
@@ -690,8 +693,10 @@ class LinkGraphBuilder:
     def _submodel_edges(self, submodel: Submodel, index: ModelIndex) -> None:
         """The edges of a submodel: its model, its conversion factors, its deletions.
 
-        A submodel lists its deletions and every deletion names the element of
-        the instantiated model which it removes (comp §3.5.3).
+        The time and the extent conversion factor are two attributes (comp
+        §3.5.1), each with a kind of its own. A submodel lists its deletions and
+        every deletion names the element of the instantiated model which it
+        removes (comp §3.5.3).
         """
         target = self.model_refs.get(submodel.model_ref)
         if target is None:
@@ -705,12 +710,15 @@ class LinkGraphBuilder:
                 Edge(source=submodel.pk, target=target, kind=EdgeKind.MODEL_REF)
             )
         self._edge(
-            submodel, submodel.time_conversion_factor, EdgeKind.CONVERSION_FACTOR, index
+            submodel,
+            submodel.time_conversion_factor,
+            EdgeKind.TIME_CONVERSION_FACTOR,
+            index,
         )
         self._edge(
             submodel,
             submodel.extent_conversion_factor,
-            EdgeKind.CONVERSION_FACTOR,
+            EdgeKind.EXTENT_CONVERSION_FACTOR,
             index,
         )
         for deletion in submodel.list_of_deletions:
@@ -861,10 +869,16 @@ class LinkGraphBuilder:
             self._participation_edges(reaction, m, EdgeKind.MODIFIER, index)
         if reaction.fbc is not None:
             self._edge(
-                reaction, reaction.fbc.lower_flux_bound, EdgeKind.FLUX_BOUND, index
+                reaction,
+                reaction.fbc.lower_flux_bound,
+                EdgeKind.LOWER_FLUX_BOUND,
+                index,
             )
             self._edge(
-                reaction, reaction.fbc.upper_flux_bound, EdgeKind.FLUX_BOUND, index
+                reaction,
+                reaction.fbc.upper_flux_bound,
+                EdgeKind.UPPER_FLUX_BOUND,
+                index,
             )
             association = reaction.fbc.gene_product_association
             if association is not None:
@@ -886,13 +900,14 @@ class LinkGraphBuilder:
     ) -> None:
         """The edges of a user defined constraint and of its components.
 
-        The constraint names the parameters which bound it, which is the same
-        relation a reaction has to its flux bounds, and it names its components;
-        every component names the reaction or the parameter it weighs and the
-        parameter which holds its coefficient (fbc §3.14, §3.15).
+        The constraint names the parameters which bound it, the lower and the
+        upper bound each with a kind of its own, and it names its components;
+        every component names the reaction or the parameter it weighs, the
+        second one of a product with a kind of its own, and the parameter which
+        holds its coefficient (fbc §3.14, §3.15).
         """
-        self._edge(constraint, constraint.lower_bound, EdgeKind.FLUX_BOUND, index)
-        self._edge(constraint, constraint.upper_bound, EdgeKind.FLUX_BOUND, index)
+        self._edge(constraint, constraint.lower_bound, EdgeKind.LOWER_BOUND, index)
+        self._edge(constraint, constraint.upper_bound, EdgeKind.UPPER_BOUND, index)
         for component in constraint.list_of_user_defined_constraint_components:
             self.edges.append(
                 Edge(
@@ -902,7 +917,7 @@ class LinkGraphBuilder:
                 )
             )
             self._edge(component, component.variable, EdgeKind.VARIABLE, index)
-            self._edge(component, component.variable2, EdgeKind.VARIABLE, index)
+            self._edge(component, component.variable2, EdgeKind.VARIABLE_2, index)
             self._edge(component, component.coefficient, EdgeKind.COEFFICIENT, index)
 
     def _objective_edges(self, objective: Objective, index: ModelIndex) -> None:
@@ -911,13 +926,14 @@ class LinkGraphBuilder:
         The objective lists its terms and every term names the reaction, or in
         Version 3 the two reactions, whose flux it weighs (fbc §3.6, §3.7), the
         way a reaction names its species references and each of those a species.
+        The second reaction of a product has a kind of its own.
         """
         for fo in objective.list_of_flux_objectives:
             self.edges.append(
                 Edge(source=objective.pk, target=fo.pk, kind=EdgeKind.FLUX_OBJECTIVE)
             )
             self._edge(fo, fo.reaction, EdgeKind.FLUX_OBJECTIVE, index)
-            self._edge(fo, fo.reaction2, EdgeKind.FLUX_OBJECTIVE, index)
+            self._edge(fo, fo.reaction2, EdgeKind.REACTION_2, index)
 
     def _association_edges(
         self,

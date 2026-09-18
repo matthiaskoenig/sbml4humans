@@ -100,13 +100,13 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
   <template v-if="element.fbc">
     <AttributeRow label="lower flux bound" :type="element.sbmlType" field="fbc.lowerFluxBound">
       <ElementLink
-        :pk="index?.resolve(element.pk, 'fluxBound', element.fbc.lowerFluxBound)"
+        :pk="index?.resolve(element.pk, 'lowerFluxBound', element.fbc.lowerFluxBound)"
         :label="element.fbc.lowerFluxBound"
       />
     </AttributeRow>
     <AttributeRow label="upper flux bound" :type="element.sbmlType" field="fbc.upperFluxBound">
       <ElementLink
-        :pk="index?.resolve(element.pk, 'fluxBound', element.fbc.upperFluxBound)"
+        :pk="index?.resolve(element.pk, 'upperFluxBound', element.fbc.upperFluxBound)"
         :label="element.fbc.upperFluxBound"
       />
     </AttributeRow>

@@ -23,7 +23,7 @@ const index = useReportIndex();
     field="variable2"
   >
     <ElementLink
-      :pk="index?.resolve(element.pk, 'variable', element.variable2)"
+      :pk="index?.resolve(element.pk, 'variable2', element.variable2)"
       :label="element.variable2"
     />
   </AttributeRow>
