@@ -3,6 +3,7 @@
 [![CI](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml/badge.svg)](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-sbml4humans-008080.svg)](https://matthiaskoenig.github.io/sbml4humans/)
 [![MIT License](https://img.shields.io/github/license/matthiaskoenig/sbml4humans.svg)](https://opensource.org/license/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22827237.svg)](https://doi.org/10.5281/zenodo.22827237)
 
 [SBML4Humans](https://sbml4humans.de) renders [SBML](sbml.md) models as interactive, human readable reports. Give it a model and it gives you a page which shows what the model contains: its compartments, species, reactions, rules and events, the mathematics of the model as typeset formulas, the units it computes from the file, the references between the elements, and the annotations resolved to the entries they point at.
 
@@ -39,6 +40,27 @@ Open [sbml4humans.de](https://sbml4humans.de) and give it a model. There are thr
 [Loading a model](inputs.md) explains the inputs, the formats which are accepted and what happens when a file cannot be read.
 
 If a term of a report is unfamiliar, the [reference](reference/index.md) explains it: one page per element type with every attribute the report shows, the kinds of links between the elements, and what the report computes on top of the model. [SBML](sbml.md) is the background: what the format is, how a model is built from its elements, and what the Level 3 packages add.
+
+## How to cite
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22827237.svg)](https://doi.org/10.5281/zenodo.22827237)
+
+If you use SBML4Humans please cite the archived software on [Zenodo](https://doi.org/10.5281/zenodo.22827237):
+
+> König, M., & Das, S. (2026). *SBML4Humans: interactive reports of SBML models* (Version 0.4.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22827238
+
+```bibtex
+@software{koenig_sbml4humans,
+  author    = {König, Matthias and Das, Sankha},
+  title     = {SBML4Humans: interactive reports of SBML models},
+  year      = {2026},
+  month     = sep,
+  version   = {0.4.0},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22827238},
+  url       = {https://doi.org/10.5281/zenodo.22827238},
+}
+```
 
 ## Funding and license
 

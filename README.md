@@ -3,6 +3,7 @@
 [![CI](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml/badge.svg)](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-sbml4humans-008080.svg)](https://matthiaskoenig.github.io/sbml4humans/)
 [![MIT License](https://img.shields.io/github/license/matthiaskoenig/sbml4humans.svg)](https://opensource.org/license/MIT)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22827237.svg)](https://doi.org/10.5281/zenodo.22827237)
 
 ## About
 
@@ -21,6 +22,27 @@ Use it at [sbml4humans.de](https://sbml4humans.de) with a file, a url or pasted 
 The documentation is available at [matthiaskoenig.github.io/sbml4humans](https://matthiaskoenig.github.io/sbml4humans/): what [SBML](https://matthiaskoenig.github.io/sbml4humans/sbml/) is, how to [load a model](https://matthiaskoenig.github.io/sbml4humans/inputs/), how to [read a report](https://matthiaskoenig.github.io/sbml4humans/report/), the [reference](https://matthiaskoenig.github.io/sbml4humans/reference/) of every element type with its attributes, and, for contributors, the [development](https://matthiaskoenig.github.io/sbml4humans/development/) of the application.
 
 If you have any questions or issues please [open an issue](https://github.com/matthiaskoenig/sbml4humans/issues).
+
+## How to cite
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22827237.svg)](https://doi.org/10.5281/zenodo.22827237)
+
+If you use SBML4Humans please cite the archived software on [Zenodo](https://doi.org/10.5281/zenodo.22827237):
+
+> König, M., & Das, S. (2026). *SBML4Humans: interactive reports of SBML models* (Version 0.4.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22827238
+
+```bibtex
+@software{koenig_sbml4humans,
+  author    = {König, Matthias and Das, Sankha},
+  title     = {SBML4Humans: interactive reports of SBML models},
+  year      = {2026},
+  month     = sep,
+  version   = {0.4.0},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22827238},
+  url       = {https://doi.org/10.5281/zenodo.22827238},
+}
+```
 
 ## Funding
 
