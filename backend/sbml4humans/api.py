@@ -7,6 +7,7 @@ are reported in the body as `{"errors": [message, traceback], "warnings": [],
 "info": {...}}`, with the query parameters of the request as `info`.
 """
 
+import json
 import logging
 import traceback
 from collections.abc import AsyncIterator
@@ -192,8 +193,16 @@ async def report_from_content(request: Request) -> dict[str, Any]:
 
 
 def _dump(response: ReportResponse) -> dict[str, Any]:
-    """The JSON of a response with camelCase keys."""
-    return response.model_dump(mode="json", by_alias=True)
+    """The JSON of a response with camelCase keys.
+
+    The dump goes through the JSON of the model rather than through
+    `model_dump(mode="json")`, which does not apply the serialisation of an
+    infinite value and of a value which is not a number and would leave the
+    floats of python in the dictionary, where json.dumps writes them as tokens
+    no JSON parser reads.
+    """
+    data: dict[str, Any] = json.loads(response.model_dump_json(by_alias=True))
+    return data
 
 
 @api.get("/api/annotation_resource", tags=["metadata"])
