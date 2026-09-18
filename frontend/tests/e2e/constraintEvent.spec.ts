@@ -41,6 +41,24 @@ test.describe("constraint_event", () => {
     await expect(message).not.toContainText("<message>");
   });
 
+  test("shows the annotation of the model and the term below its taxon", async ({ page }) => {
+    await page.getByTestId("bar-model").click();
+    const inspector = page.getByTestId("inspector");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Model");
+
+    // a term of the model is qualified by a term of its own
+    const nested = inspector.getByTestId("cvterm-nested");
+    await expect(nested).toContainText("BQB_IS_DESCRIBED_BY");
+
+    // the annotation element takes the place of the xml of the model, which is the whole model
+    await inspector.getByTestId("inspector-xml-toggle").click();
+    await expect(inspector.getByTestId("xml-caption")).toHaveText(
+      "The annotation element of the model.",
+    );
+    await expect(inspector.getByTestId("xml-view")).toContainText("sbml4humans:model");
+    await expect(inspector.getByTestId("xml-view")).not.toContainText("<listOfSpecies>");
+  });
+
   test("opens the trigger of an event and walks to the parameter its condition reads", async ({
     page,
   }) => {

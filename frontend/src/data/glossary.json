@@ -274,6 +274,10 @@
       "package": "core",
       "page": "reference/model/",
       "attributes": {
+        "annotationXml": {
+          "label": "annotation",
+          "summary": "the annotation element of the model as the file writes it"
+        },
         "areaUnits": {
           "label": "area units",
           "summary": "the units of the size of the compartments with two dimensions"
@@ -578,6 +582,10 @@
       "package": "core",
       "page": "reference/sbmldocument/",
       "attributes": {
+        "annotationXml": {
+          "label": "annotation",
+          "summary": "the annotation element of the document as the file writes it"
+        },
         "level": {
           "label": "level",
           "summary": "the level of SBML the file is written in"

@@ -751,3 +751,39 @@ def test_constraint_message_is_the_xhtml_of_the_file(constraint_event: Report) -
     assert constraint.message is not None
     assert constraint.message.startswith("<message>")
     assert "<b>S1</b>" in constraint.message
+
+
+def test_document_and_model_carry_their_annotation(constraint_event: Report) -> None:
+    """The annotation element of the document and of the model is part of the report.
+
+    The report does not carry the xml of the document and of the model, which
+    is the whole file, but a tool writes its own vocabulary into their
+    annotation (core §3.2.6) and a reader has to be able to see it.
+    """
+    document = constraint_event.document
+    assert document.xml is None
+    assert document.annotation_xml is not None
+    assert "sbml4humans:document" in document.annotation_xml
+
+    model = constraint_event.models[0]
+    assert model.xml is None
+    assert model.annotation_xml is not None
+    assert "sbml4humans:model" in model.annotation_xml
+    # the annotation element, not the model element
+    assert "<listOfSpecies>" not in model.annotation_xml
+
+
+def test_annotation_of_a_model_without_one(repressilator: Report) -> None:
+    """A model without an annotation carries none."""
+    assert repressilator.document.annotation_xml is None
+
+
+def test_nested_cvterms_are_read(constraint_event: Report) -> None:
+    """A CV term qualified by another CV term keeps the term below it (core §6)."""
+    model = constraint_event.models[0]
+    (term,) = [cv for cv in model.cvterms if cv.qualifier == "BQB_HAS_TAXON"]
+    assert term.resources == ["https://identifiers.org/taxonomy/9606"]
+    (nested,) = term.nested
+    assert nested.qualifier == "BQB_IS_DESCRIBED_BY"
+    assert nested.resources == ["https://identifiers.org/pubmed/31219795"]
+    assert nested.nested == []

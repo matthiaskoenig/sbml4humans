@@ -29,10 +29,15 @@ class Math(ReportModel):
 
 
 class CVTerm(ReportModel):
-    """An annotation: a qualifier (BQB or BQM of pymetadata) with its resources."""
+    """An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.
+
+    A term can carry terms of its own, which qualify it further: the evidence
+    for a relation or the modification of a protein (core §6).
+    """
 
     qualifier: str
     resources: list[str]
+    nested: list[CVTerm] = Field(default_factory=list)
 
 
 class Creator(ReportModel):
@@ -142,12 +147,18 @@ SBase.model_rebuild()
 # core objects
 # -------------------------------------------------------------------------------------
 class SBMLDocument(SBase):
-    """The document: level, version and the packages it uses."""
+    """The document: level, version and the packages it uses.
+
+    `annotation_xml` takes the place of the `xml` of every other element, which
+    is not part of the report for the document and the model because it is the
+    whole file.
+    """
 
     sbml_type: Literal["SBMLDocument"] = "SBMLDocument"
     level: int
     version: int
     packages: list[Package] = Field(default_factory=list)
+    annotation_xml: str | None = None
 
 
 class FunctionDefinition(SBase):
@@ -445,10 +456,16 @@ class Objective(SBase):
 # model and report
 # -------------------------------------------------------------------------------------
 class Model(SBase):
-    """A model or comp model definition with the lists of its elements."""
+    """A model or comp model definition with the lists of its elements.
+
+    `annotation_xml` takes the place of the `xml` of every other element, which
+    is not part of the report for the document and the model because it is the
+    whole file.
+    """
 
     sbml_type: Literal["Model"] = "Model"
     kind: Literal["model", "modelDefinition"] = "model"
+    annotation_xml: str | None = None
     substance_units: str | None = None
     substance_units_latex: str | None = None
     time_units: str | None = None

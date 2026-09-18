@@ -3,6 +3,7 @@ import { computed, reactive, ref, watch } from "vue";
 
 import { MAX_AUTO_RESOLVES } from "@/api/annotations";
 import type { CVTerm } from "@/api/types";
+import CvTermNestedList from "@/components/misc/CvTermNestedList.vue";
 import CvTermResourceList from "@/components/misc/CvTermResourceList.vue";
 import ShowAllButton from "@/components/misc/ShowAllButton.vue";
 import { LIST_LIMIT, useLimitedList } from "@/report/limitedList";
@@ -49,13 +50,28 @@ function autoResolveLimit(index: number): number {
   return autoResolveLimits.value[index] ?? Infinity;
 }
 
-/** The number of shown resources the budget leaves unresolved. */
-const unresolvedCount = computed(() =>
-  shownTerms.value.reduce(
-    (count, term, index) =>
-      count + Math.max(0, Math.min(LIST_LIMIT, term.resources.length) - autoResolveLimit(index)),
+/** The resources of the terms below a term, however deep they nest. */
+function nestedResourceCount(terms: CVTerm[]): number {
+  return terms.reduce(
+    (count, term) => count + term.resources.length + nestedResourceCount(term.nested ?? []),
     0,
-  ),
+  );
+}
+
+/** The automatic resolve budget is spent on the terms of the element itself, so the terms below
+ * a term resolve once that term or the element is expanded by a click. */
+function nestedAutoResolveLimit(index: number): number {
+  return autoResolveLimit(index) === Infinity ? Infinity : 0;
+}
+
+/** The number of shown resources the budget leaves unresolved, the nested ones included. */
+const unresolvedCount = computed(() =>
+  shownTerms.value.reduce((count, term, index) => {
+    const own = Math.max(0, Math.min(LIST_LIMIT, term.resources.length) - autoResolveLimit(index));
+    const nested =
+      nestedAutoResolveLimit(index) === Infinity ? 0 : nestedResourceCount(term.nested ?? []);
+    return count + own + nested;
+  }, 0),
 );
 </script>
 
@@ -69,6 +85,11 @@ const unresolvedCount = computed(() =>
           :resources="term.resources"
           :auto-resolve-limit="autoResolveLimit(i)"
           @show-all="expandedTerms.add(i)"
+        />
+        <CvTermNestedList
+          v-if="term.nested?.length"
+          :terms="term.nested"
+          :auto-resolve-limit="nestedAutoResolveLimit(i)"
         />
       </li>
     </ul>

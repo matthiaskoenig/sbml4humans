@@ -347,6 +347,41 @@ describe("inspector", () => {
     expect(wrapper.get("[data-testid=inspector-id]").text()).toBe(species[1]!.id);
   });
 
+  it("shows the annotation element of the model in the place of its xml", async () => {
+    const model = constraintEvent.mainModel!;
+    const wrapper = mount(InspectorPanel, {
+      props: { pk: model.pk },
+      global: {
+        plugins: [router],
+        directives: { tooltip: vTooltip },
+        provide: { [ReportIndexKey as symbol]: ref(constraintEvent) },
+      },
+    });
+    await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
+    const view = wrapper.get("[data-testid=xml-view]");
+    expect(wrapper.get("[data-testid=xml-caption]").text()).toBe(
+      "The annotation element of the model.",
+    );
+    expect(view.get("pre").text()).toContain("sbml4humans:model");
+    // the annotation element, not the model element
+    expect(view.get("pre").text()).not.toContain("<listOfSpecies>");
+  });
+
+  it("says that a document without an annotation carries none", async () => {
+    const wrapper = mount(InspectorPanel, {
+      props: { pk: repressilator.document.pk },
+      global: {
+        plugins: [router],
+        directives: { tooltip: vTooltip },
+        provide: { [ReportIndexKey as symbol]: ref(repressilator) },
+      },
+    });
+    await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
+    expect(wrapper.get("[data-testid=xml-view]").text()).toContain(
+      "The document carries no annotation",
+    );
+  });
+
   it("renders the header of the panel", async () => {
     const species = repressilator.mainModel!.listOfSpecies![0] as Species;
     const wrapper = mountWith(InspectorPanel, { pk: species.pk }, repressilator);

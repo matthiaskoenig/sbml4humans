@@ -165,6 +165,7 @@ The report shows the objectives of a model as a section of the report.
 | field | type | meaning |
 | --- | --- | --- |
 | [kind](#kind) | `string` | whether the model is the model of the document or a model definition |
+| [annotation](#annotation) | `string` | the annotation element of the model as the file writes it |
 | [rendered substance units](#rendered-substance-units) | `latex` | the substance units of the model rendered as a formula |
 | [rendered time units](#rendered-time-units) | `latex` | the time units of the model rendered as a formula |
 | [rendered volume units](#rendered-volume-units) | `latex` | the volume units of the model rendered as a formula |
@@ -177,6 +178,12 @@ The report shows the objectives of a model as a section of the report.
 A document contains at most one model, but the comp package adds model definitions, which are models that exist to be instantiated by a submodel. The report treats both the same way and marks which of the two an element is.
 
 The kind is shown in the attributes of the inspector of a model, it is `model` or `modelDefinition`.
+
+<span id="annotation"></span>**annotation**
+
+The annotation of the model is where a tool writes what it knows about the model in its own vocabulary, next to the RDF the report reads as [annotations](sbase.md) and as [history](sbase.md). The report does not carry the XML of the model, which is the whole model, so it carries the annotation element alone.
+
+The "XML" button in the header of the inspector shows it.
 
 <span id="rendered-substance-units"></span>**rendered substance units**
 

@@ -285,7 +285,7 @@
       "type": "object"
     },
     "CVTerm": {
-      "description": "An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.",
+      "description": "An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.\n\nA term can carry terms of its own, which qualify it further: the evidence\nfor a relation or the modification of a protein (core §6).",
       "properties": {
         "qualifier": {
           "type": "string"
@@ -293,6 +293,12 @@
         "resources": {
           "items": {
             "type": "string"
+          },
+          "type": "array"
+        },
+        "nested": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
           },
           "type": "array"
         }
@@ -2175,7 +2181,7 @@
       "type": "object"
     },
     "Model": {
-      "description": "A model or comp model definition with the lists of its elements.",
+      "description": "A model or comp model definition with the lists of its elements.\n\n`annotation_xml` takes the place of the `xml` of every other element, which\nis not part of the report for the document and the model because it is the\nwhole file.",
       "properties": {
         "pk": {
           "type": "string"
@@ -2292,6 +2298,17 @@
             "modelDefinition"
           ],
           "type": "string"
+        },
+        "annotationXml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "substanceUnits": {
           "anyOf": [
@@ -3828,7 +3845,7 @@
       "type": "object"
     },
     "SBMLDocument": {
-      "description": "The document: level, version and the packages it uses.",
+      "description": "The document: level, version and the packages it uses.\n\n`annotation_xml` takes the place of the `xml` of every other element, which\nis not part of the report for the document and the model because it is the\nwhole file.",
       "properties": {
         "pk": {
           "type": "string"
@@ -3949,6 +3966,17 @@
             "$ref": "#/$defs/Package"
           },
           "type": "array"
+        },
+        "annotationXml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [

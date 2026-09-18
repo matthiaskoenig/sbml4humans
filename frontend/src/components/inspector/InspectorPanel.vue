@@ -28,9 +28,29 @@ watch(
   () => props.pk,
   () => (showXml.value = false),
 );
+/** The document and the model contain the whole file, so the report carries the annotation
+ * element of the two in the place of their XML: a tool writes its own vocabulary there, and
+ * without it a reader cannot see what a file says about itself. */
+const annotationOf = computed(() => {
+  const sbase = element.value;
+  if (sbase?.sbmlType === "SBMLDocument") return "document";
+  if (sbase?.sbmlType === "Model") return "model";
+  return null;
+});
+const xml = computed(() => {
+  const sbase = element.value;
+  if (!sbase) return null;
+  if (sbase.sbmlType === "SBMLDocument" || sbase.sbmlType === "Model") {
+    return sbase.annotationXml ?? null;
+  }
+  return sbase.xml ?? null;
+});
+const xmlCaption = computed(() =>
+  annotationOf.value ? `The annotation element of the ${annotationOf.value}.` : undefined,
+);
 const xmlEmptyMessage = computed(() =>
-  element.value?.sbmlType === "SBMLDocument" || element.value?.sbmlType === "Model"
-    ? "The XML of the document and the model is not part of the report."
+  annotationOf.value
+    ? `The ${annotationOf.value} carries no annotation, and its XML is the whole file, which is not part of the report.`
     : "No XML available.",
 );
 </script>
@@ -80,7 +100,7 @@ const xmlEmptyMessage = computed(() =>
       </button>
     </header>
     <div v-if="showXml" class="min-h-0 flex-1 overflow-hidden p-3">
-      <XmlView :xml="element.xml" :empty-message="xmlEmptyMessage" />
+      <XmlView :xml="xml" :caption="xmlCaption" :empty-message="xmlEmptyMessage" />
     </div>
     <!-- the inspector is a column of the report page, a third of the window wide, and its three
     sections are one under the other in one scroll; a reader who drags it wider than `@4xl` gets

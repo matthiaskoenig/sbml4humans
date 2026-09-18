@@ -34,6 +34,18 @@ Level 3 is modular: a package adds features on top of the core and is identified
 
 The report lists the prefix and the version of every declared package in the attributes of the document.
 
+## In the report
+
+| field | type | meaning |
+| --- | --- | --- |
+| [annotation](#annotation) | `string` | the annotation element of the document as the file writes it |
+
+<span id="annotation"></span>**annotation**
+
+The annotation of the `sbml` element is where a tool writes what it knows about the file in its own vocabulary, next to the RDF the report reads as [annotations](sbase.md). The report does not carry the XML of the document, which is the whole file, so it carries the annotation element alone.
+
+The "XML" button in the header of the inspector shows it.
+
 ## Related elements
 
 - [Model](model.md): the container of everything a model is made of

@@ -65,6 +65,10 @@ export interface Report {
 }
 /**
  * The document: level, version and the packages it uses.
+ *
+ * `annotation_xml` takes the place of the `xml` of every other element, which
+ * is not part of the report for the document and the model because it is the
+ * whole file.
  */
 export interface SBMLDocument {
   pk: string;
@@ -82,13 +86,18 @@ export interface SBMLDocument {
   level: number;
   version: number;
   packages?: Package[];
+  annotationXml?: string | null;
 }
 /**
  * An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.
+ *
+ * A term can carry terms of its own, which qualify it further: the evidence
+ * for a relation or the modification of a protein (core §6).
  */
 export interface CVTerm {
   qualifier: string;
   resources: string[];
+  nested?: CVTerm[];
 }
 /**
  * The history of an element: creators and dates.
@@ -182,6 +191,10 @@ export interface Package {
 }
 /**
  * A model or comp model definition with the lists of its elements.
+ *
+ * `annotation_xml` takes the place of the `xml` of every other element, which
+ * is not part of the report for the document and the model because it is the
+ * whole file.
  */
 export interface Model {
   pk: string;
@@ -197,6 +210,7 @@ export interface Model {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   kind?: "model" | "modelDefinition";
+  annotationXml?: string | null;
   substanceUnits?: string | null;
   substanceUnitsLatex?: string | null;
   timeUnits?: string | null;

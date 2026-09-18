@@ -175,6 +175,16 @@ class SBMLDocumentInfo:
     # base
     # ---------------------------------------------------------------------------------
     @staticmethod
+    def annotation_xml(sbase: libsbml.SBase) -> str | None:
+        """The annotation element of an element as the file writes it.
+
+        The report carries it for the document and for the model, whose own xml
+        is the whole file and therefore not part of the report, so that a non
+        RDF annotation on either of them stays visible (core §3.2.6).
+        """
+        return sbase.getAnnotationString() if sbase.isSetAnnotation() else None
+
+    @staticmethod
     def _sbml_type(sbase: libsbml.SBase) -> str:
         """The name of the libsbml class of the element."""
         return type(sbase).__name__
@@ -269,19 +279,10 @@ class SBMLDocumentInfo:
         """The annotations of an element, the SBO term as BQB_IS annotation."""
         cvterms: list[CVTerm] = []
         if sbase.isSetAnnotation():
-            for k in range(sbase.getNumCVTerms()):
-                cv: libsbml.CVTerm = sbase.getCVTerm(k)
-                q_type = cv.getQualifierType()
-                if q_type == libsbml.MODEL_QUALIFIER:
-                    qualifier = MODEL_QUALIFIERS[cv.getModelQualifierType()].value
-                elif q_type == libsbml.BIOLOGICAL_QUALIFIER:
-                    qualifier = BIOLOGICAL_QUALIFIERS[
-                        cv.getBiologicalQualifierType()
-                    ].value
-                else:
-                    raise ValueError(f"Unsupported qualifier type: '{q_type}'")
-                resources = [cv.getResourceURI(r) for r in range(cv.getNumResources())]
-                cvterms.append(CVTerm(qualifier=qualifier, resources=resources))
+            cvterms = [
+                SBMLDocumentInfo.cvterm(sbase.getCVTerm(k))
+                for k in range(sbase.getNumCVTerms())
+            ]
 
         if sbase.isSetSBOTerm():
             sbo = sbase.getSBOTermID()
@@ -292,6 +293,29 @@ class SBMLDocumentInfo:
                 )
                 cvterms.insert(0, sbo_term)
         return cvterms
+
+    @staticmethod
+    def cvterm(cv: libsbml.CVTerm) -> CVTerm:
+        """One annotation with its resources and the terms which qualify it.
+
+        A CV term can carry terms of its own, which say how the relation of the
+        term above them is meant, for example the evidence for it (core §6).
+        """
+        q_type = cv.getQualifierType()
+        if q_type == libsbml.MODEL_QUALIFIER:
+            qualifier = MODEL_QUALIFIERS[cv.getModelQualifierType()].value
+        elif q_type == libsbml.BIOLOGICAL_QUALIFIER:
+            qualifier = BIOLOGICAL_QUALIFIERS[cv.getBiologicalQualifierType()].value
+        else:
+            raise ValueError(f"Unsupported qualifier type: '{q_type}'")
+        return CVTerm(
+            qualifier=qualifier,
+            resources=[cv.getResourceURI(r) for r in range(cv.getNumResources())],
+            nested=[
+                SBMLDocumentInfo.cvterm(cv.getNestedCVTerm(k))
+                for k in range(cv.getNumNestedCVTerms())
+            ],
+        )
 
     @staticmethod
     def history(sbase: libsbml.SBase) -> ModelHistory | None:
@@ -366,7 +390,11 @@ class SBMLDocumentInfo:
             pk=f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}",
         )
         return SBMLDocument(
-            **fields, level=doc.getLevel(), version=doc.getVersion(), packages=packages
+            **fields,
+            level=doc.getLevel(),
+            version=doc.getVersion(),
+            packages=packages,
+            annotation_xml=self.annotation_xml(doc),
         )
 
     def model(
@@ -382,6 +410,7 @@ class SBMLDocumentInfo:
         return Model(
             **fields,
             kind=kind,
+            annotation_xml=self.annotation_xml(model),
             conversion_factor=self.conversion_factor(model, model),
             list_of_function_definitions=[
                 self.function_definition(fd)

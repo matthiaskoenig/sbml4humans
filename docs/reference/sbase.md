@@ -56,7 +56,9 @@ The report renders the notes of the selected element in the last section of the 
 
 An annotation relates the element to an entry of an external database, for example to a ChEBI compound, a UniProt protein or a Gene Ontology process. Every relation names a qualifier, such as "is" or "is part of", so that the meaning of the reference is explicit. The qualifiers are those of MIRIAM and the entries are named by their identifiers.org url.
 
-The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource.
+An annotation can carry annotations of its own, which qualify it further: the evidence for a relation, or the modification of the protein a species stands for.
+
+The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource, and shows the terms below a term indented under it.
 
 <span id="history"></span>**history**
 
@@ -96,7 +98,7 @@ The report lists the uncertainties of an element in its inspector with the numbe
 
 <span id="xml"></span>**xml**
 
-The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display.
+The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display. The document and the model are the exception: their XML is the whole file, so the report carries their annotation element instead.
 
 The "XML" button in the header of the inspector puts the XML view in the place of its sections.
 

@@ -1,5 +1,5 @@
 {
-  "uid": "af0217d5e34346979003e59c7daf3cff",
+  "uid": "20eabac2bb364571a72f430aa59ff38c",
   "manifest": {
     "entries": [
       {
@@ -46,7 +46,8 @@
               "prefix": "sbml",
               "version": 0
             }
-          ]
+          ],
+          "annotationXml": "<annotation>\n  <sbml4humans:document xmlns:sbml4humans=\"https://sbml4humans.de/ns/example\" sbml4humans:writtenBy=\"hand\" sbml4humans:purpose=\"constraint, event and local parameter example\"/>\n</annotation>"
         },
         "models": [
           {
@@ -62,6 +63,15 @@
                 "qualifier": "BQB_HAS_TAXON",
                 "resources": [
                   "https://identifiers.org/taxonomy/9606"
+                ],
+                "nested": [
+                  {
+                    "qualifier": "BQB_IS_DESCRIBED_BY",
+                    "resources": [
+                      "https://identifiers.org/pubmed/31219795"
+                    ],
+                    "nested": []
+                  }
                 ]
               }
             ],
@@ -83,6 +93,7 @@
             "comp": null,
             "uncertainties": [],
             "kind": "model",
+            "annotationXml": "<annotation>\n  <sbml4humans:model xmlns:sbml4humans=\"https://sbml4humans.de/ns/example\" sbml4humans:elements=\"constraint event localParameter unitDefinition\"/>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_constraint_event\">\n      <bqbiol:hasTaxon>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"https://identifiers.org/taxonomy/9606\"/>\n          <bqbiol:isDescribedBy>\n            <rdf:Bag>\n              <rdf:li rdf:resource=\"https://identifiers.org/pubmed/31219795\"/>\n            </rdf:Bag>\n          </bqbiol:isDescribedBy>\n        </rdf:Bag>\n      </bqbiol:hasTaxon>\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mmole",
             "substanceUnitsLatex": "mmol",
             "timeUnits": "min",
@@ -223,7 +234,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000290"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -252,7 +264,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000247"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -284,7 +297,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000247"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -417,7 +431,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000064"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -445,7 +460,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000176"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -507,7 +523,8 @@
                       "qualifier": "BQB_IS",
                       "resources": [
                         "https://identifiers.org/SBO:0000028"
-                      ]
+                      ],
+                      "nested": []
                     }
                   ],
                   "history": null,
@@ -533,7 +550,8 @@
                           "qualifier": "BQB_IS",
                           "resources": [
                             "https://identifiers.org/SBO:0000186"
-                          ]
+                          ],
+                          "nested": []
                         }
                       ],
                       "history": null,
@@ -558,7 +576,8 @@
                           "qualifier": "BQB_IS",
                           "resources": [
                             "https://identifiers.org/SBO:0000027"
-                          ]
+                          ],
+                          "nested": []
                         }
                       ],
                       "history": null,
@@ -604,7 +623,8 @@
                       "qualifier": "BQB_IS",
                       "resources": [
                         "https://identifiers.org/SBO:0000064"
-                      ]
+                      ],
+                      "nested": []
                     }
                   ],
                   "history": null,
@@ -631,7 +651,8 @@
                       "qualifier": "BQB_IS",
                       "resources": [
                         "https://identifiers.org/SBO:0000064"
-                      ]
+                      ],
+                      "nested": []
                     }
                   ],
                   "history": null,
@@ -656,7 +677,8 @@
                       "qualifier": "BQB_IS",
                       "resources": [
                         "https://identifiers.org/SBO:0000064"
-                      ]
+                      ],
+                      "nested": []
                     }
                   ],
                   "history": null,
@@ -1069,7 +1091,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.056 [s]"
+        "jsonReportTime": "0.061 [s]"
       }
     }
   }

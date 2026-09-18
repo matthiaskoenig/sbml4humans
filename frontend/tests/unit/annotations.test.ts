@@ -408,6 +408,36 @@ describe("annotations", () => {
     expect(wrapper.get("[data-testid=resolve-all]").text()).toBe("resolve all (50)");
   });
 
+  it("shows the terms which qualify a term under it and resolves them on a resolve all", async () => {
+    vi.mocked(client.getAnnotationResource).mockResolvedValue(info);
+    const cvterms = [
+      {
+        qualifier: "BQB_HAS_TAXON",
+        resources: ["urn:taxon:9606"],
+        nested: [
+          {
+            qualifier: "BQB_IS_DESCRIBED_BY",
+            resources: ["urn:pubmed:1"],
+            nested: [{ qualifier: "BQB_IS", resources: ["urn:eco:1"] }],
+          },
+        ],
+      },
+    ];
+    const wrapper = mount(CvTermList, { props: { cvterms } });
+    await flushPromises();
+    // the nesting is rendered, however deep it goes
+    expect(wrapper.findAll("[data-testid=cvterm-nested]")).toHaveLength(2);
+    expect(wrapper.text()).toContain("BQB_IS_DESCRIBED_BY");
+    // the automatic budget resolves the term of the element, the two below it wait for a click
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(1);
+    expect(wrapper.get("[data-testid=resolve-all]").text()).toBe("resolve all (2)");
+
+    await wrapper.get("[data-testid=resolve-all]").trigger("click");
+    await flushPromises();
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(3);
+    expect(wrapper.find("[data-testid=resolve-all]").exists()).toBe(false);
+  });
+
   it("caps the terms shown, reveals the rest with a show all that then disappears and resets when the element changes", async () => {
     vi.mocked(client.getAnnotationResource).mockResolvedValue(info);
     const cvterms = Array.from({ length: 60 }, (_, i) => ({
