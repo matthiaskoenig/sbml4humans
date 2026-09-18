@@ -1446,6 +1446,7 @@
         "output",
         "functionTerm",
         "defaultTerm",
+        "uncertainty",
         "uncertParameter",
         "var",
         "modelRef",

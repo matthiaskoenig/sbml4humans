@@ -1,5 +1,5 @@
 {
-  "uid": "1c721591bfe74aa2853eb0760edd26e2",
+  "uid": "a14d99c7fc2c4cb08890204e608690cb",
   "manifest": {
     "entries": [
       {
@@ -1092,6 +1092,11 @@
           },
           "edges": [
             {
+              "source": "distrib_spans/Species:S",
+              "target": "distrib_spans/Uncertainty:u_S",
+              "kind": "uncertainty"
+            },
+            {
               "source": "distrib_spans/Uncertainty:u_S",
               "target": "distrib_spans/UncertParameter:u_S.uncertParameter.0",
               "kind": "uncertParameter"
@@ -1110,6 +1115,11 @@
               "source": "distrib_spans/UncertSpan:u_S.uncertSpan.1",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
               "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Km",
+              "target": "distrib_spans/Uncertainty:u_Km_purified",
+              "kind": "uncertainty"
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_purified",
@@ -1147,6 +1157,11 @@
               "kind": "units"
             },
             {
+              "source": "distrib_spans/Parameter:Km",
+              "target": "distrib_spans/Uncertainty:u_Km_lysate",
+              "kind": "uncertainty"
+            },
+            {
               "source": "distrib_spans/Uncertainty:u_Km_lysate",
               "target": "distrib_spans/UncertParameter:u_Km_lysate.uncertParameter.0",
               "kind": "uncertParameter"
@@ -1170,6 +1185,11 @@
               "source": "distrib_spans/UncertSpan:Km_lysate_ci",
               "target": "distrib_spans/Parameter:Km_upper",
               "kind": "var"
+            },
+            {
+              "source": "distrib_spans/Parameter:Vmax",
+              "target": "distrib_spans/Uncertainty:u_Vmax",
+              "kind": "uncertainty"
             },
             {
               "source": "distrib_spans/Uncertainty:u_Vmax",
@@ -1200,6 +1220,11 @@
               "source": "distrib_spans/UncertParameter:Vmax_distribution",
               "target": "distrib_spans/UncertParameter:Vmax_beta",
               "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/AssignmentRule:v",
+              "target": "distrib_spans/Uncertainty:u_v",
+              "kind": "uncertainty"
             },
             {
               "source": "distrib_spans/Uncertainty:u_v",
@@ -1305,7 +1330,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.034 [s]"
+        "jsonReportTime": "0.022 [s]"
       }
     }
   }

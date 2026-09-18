@@ -253,6 +253,23 @@ def _event_children(event: Event) -> Iterator[SBase]:
             yield child
 
 
+def _with_extensions(sbase: SBase) -> Iterator[SBase]:
+    """An element and every object its extensions nest in it.
+
+    distrib gives any element uncertainties, each with its measures (distrib
+    §3.9), and comp gives it replacements, each with the chain of references
+    below it (comp §3.6). All of them are `SBase` in turn and carry the two
+    extensions themselves.
+    """
+    yield sbase
+    for uncertainty in sbase.uncertainties:
+        yield from _with_extensions(uncertainty)
+        for measure in _uncert_measures(uncertainty):
+            yield from _with_extensions(measure)
+    for ref in _comp_refs(sbase):
+        yield from _with_extensions(ref)
+
+
 def _uncert_measures(owner: Uncertainty | UncertParameter) -> Iterator[UncertParameter]:
     """The parameters of an uncertainty, the ones nested in one included.
 
@@ -300,19 +317,14 @@ class LinkGraphBuilder:
     # ---------------------------------------------------------------------------------
     def _add_node(self, sbase: SBase, model_pk: str | None) -> None:
         """Add the node of an element, of its uncertainties and of its replacements."""
-        self.nodes[sbase.pk] = Node(
-            pk=sbase.pk,
-            sbml_type=sbase.sbml_type,
-            id=sbase.id,
-            name=sbase.name,
-            model=model_pk,
-        )
-        for uncertainty in sbase.uncertainties:
-            self._add_node(uncertainty, model_pk)
-            for measure in _uncert_measures(uncertainty):
-                self._add_node(measure, model_pk)
-        for ref in _comp_refs(sbase):
-            self._add_node(ref, model_pk)
+        for element in _with_extensions(sbase):
+            self.nodes[element.pk] = Node(
+                pk=element.pk,
+                sbml_type=element.sbml_type,
+                id=element.id,
+                name=element.name,
+                model=model_pk,
+            )
 
     def _collect_nodes(self) -> None:
         """Every SBase of the report is a node."""
@@ -380,8 +392,25 @@ class LinkGraphBuilder:
                 )
 
     # ---------------------------------------------------------------------------------
-    # distrib: the measures of an uncertainty
+    # distrib: the uncertainties of an element and their measures
     # ---------------------------------------------------------------------------------
+    def _uncertainty_edges(self, element: SBase, index: ModelIndex) -> None:
+        """The edges of the uncertainties of an element.
+
+        An uncertainty is a child of the element whose value it describes
+        (distrib §3.9), so the element names it, the way a reaction names its
+        kinetic law, and the uncertainty names its measures.
+        """
+        for uncertainty in element.uncertainties:
+            self.edges.append(
+                Edge(
+                    source=element.pk,
+                    target=uncertainty.pk,
+                    kind=EdgeKind.UNCERTAINTY,
+                )
+            )
+            self._uncert_edges(uncertainty, index)
+
     def _uncert_edges(
         self, owner: Uncertainty | UncertParameter, index: ModelIndex
     ) -> None:
@@ -665,11 +694,11 @@ class LinkGraphBuilder:
         """The edges of all elements of a model."""
         index = self.indices[model.pk]
         # every element carries the comp and distrib extensions, the model itself
-        # can be replaced as well
+        # can be replaced as well, and so can the objects the extensions nest
         for element in [model, *_nested(model)]:
-            self._comp_edges(element, index)
-            for uncertainty in element.uncertainties:
-                self._uncert_edges(uncertainty, index)
+            for carrier in _with_extensions(element):
+                self._comp_edges(carrier, index)
+                self._uncertainty_edges(carrier, index)
 
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             self._units_edge(model, getattr(model, f"{key}_units"), index)

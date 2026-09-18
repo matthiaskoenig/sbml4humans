@@ -241,6 +241,15 @@ A [transition](transition.md) has exactly one [default term](defaultterm.md), wh
 It is shown under "References" of the transition and under "Referenced by" of the term.
 """
 
+[links.uncertainty]
+label = "uncertainty"
+summary = "a set of measures of how well the value of an element is known"
+description = """
+An element whose value is uncertain names every [uncertainty](uncertainty.md) it carries, and each uncertainty names the [uncert parameters](uncertparameter.md) which are its measures with [uncert parameter](links.md#uncert-parameter) links. An element may carry several uncertainties, one per experiment or publication, so the link is what says which element a set of measures describes.
+
+It is shown under "References" of the element and under "Referenced by" of the uncertainty, which is how a reader gets from an uncertainty back to the value it is about.
+"""
+
 [links.uncertParameter]
 label = "uncert parameter"
 summary = "a measure of an uncertainty"

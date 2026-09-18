@@ -1478,6 +1478,10 @@
       "label": "uncert parameter",
       "summary": "a measure of an uncertainty"
     },
+    "uncertainty": {
+      "label": "uncertainty",
+      "summary": "a set of measures of how well the value of an element is known"
+    },
     "units": {
       "label": "units",
       "summary": "the unit definition an element declares its units with"

@@ -30,6 +30,7 @@ export type EdgeKind =
   | "output"
   | "functionTerm"
   | "defaultTerm"
+  | "uncertainty"
   | "uncertParameter"
   | "var"
   | "modelRef"

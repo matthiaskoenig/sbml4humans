@@ -503,6 +503,40 @@ def test_uncertainty_math_edge() -> None:
     }
 
 
+def test_an_element_names_its_uncertainties(distrib_spans: Report) -> None:
+    """The element an uncertainty describes names it, the way it names its children.
+
+    An uncertainty is a child of the element whose value it describes (distrib
+    §3.9), so without the link the uncertainty could not say which element it
+    belongs to and an element which is read by nothing else was a node without
+    an edge although it carries an uncertainty.
+    """
+    m = "distrib_spans"
+    km = next(p for p in distrib_spans.models[0].list_of_parameters if p.id == "Km")
+    assert _edges(distrib_spans, source=km.pk, kind=EdgeKind.UNCERTAINTY) == {
+        (km.pk, f"{m}/Uncertainty:u_Km_purified", "uncertainty"),
+        (km.pk, f"{m}/Uncertainty:u_Km_lysate", "uncertainty"),
+    }
+    (rule,) = distrib_spans.models[0].list_of_rules
+    (uncertainty,) = rule.uncertainties
+    assert (rule.pk, uncertainty.pk, "uncertainty") in _edges(distrib_spans)
+
+
+def test_a_parameter_with_an_uncertainty_is_no_isolated_node() -> None:
+    """A parameter which nothing reads but which carries an uncertainty is linked."""
+    report = SBMLDocumentInfo.from_sbml(SYNTHETIC_DISTRIB_SBML)
+    parameter = report.models[0].list_of_parameters[0]
+    (uncertainty,) = parameter.uncertainties
+    assert _edges(report, source=parameter.pk) == {
+        (parameter.pk, uncertainty.pk, "uncertainty"),
+    }
+    assert (parameter.pk, uncertainty.pk, "uncertainty") in {
+        (e.source, e.target, e.kind.value)
+        for e in report.link_graph.edges
+        if e.target == uncertainty.pk
+    }
+
+
 def test_uncert_parameters_are_nodes(distrib_spans: Report) -> None:
     """Every uncert parameter is a node, the nested ones included."""
     nodes = distrib_spans.link_graph.nodes

@@ -812,6 +812,7 @@ class EdgeKind(StrEnum):
     OUTPUT = "output"
     FUNCTION_TERM = "functionTerm"
     DEFAULT_TERM = "defaultTerm"
+    UNCERTAINTY = "uncertainty"
     UNCERT_PARAMETER = "uncertParameter"
     VAR = "var"
     MODEL_REF = "modelRef"
