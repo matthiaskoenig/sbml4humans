@@ -18,7 +18,7 @@ Use it at [sbml4humans.de](https://sbml4humans.de) with a file, a url or pasted 
 
 ## Documentation
 
-The documentation is available at [matthiaskoenig.github.io/sbml4humans](https://matthiaskoenig.github.io/sbml4humans/): what [SBML](https://matthiaskoenig.github.io/sbml4humans/sbml/) is, how to [load a model](https://matthiaskoenig.github.io/sbml4humans/inputs/), how to [read a report](https://matthiaskoenig.github.io/sbml4humans/report/), the [reference](https://matthiaskoenig.github.io/sbml4humans/reference/) of every element type with its attributes, and, for contributors, the [development](https://matthiaskoenig.github.io/sbml4humans/development/) and [deployment](https://matthiaskoenig.github.io/sbml4humans/deployment/) of the application.
+The documentation is available at [matthiaskoenig.github.io/sbml4humans](https://matthiaskoenig.github.io/sbml4humans/): what [SBML](https://matthiaskoenig.github.io/sbml4humans/sbml/) is, how to [load a model](https://matthiaskoenig.github.io/sbml4humans/inputs/), how to [read a report](https://matthiaskoenig.github.io/sbml4humans/report/), the [reference](https://matthiaskoenig.github.io/sbml4humans/reference/) of every element type with its attributes, and, for contributors, the [development](https://matthiaskoenig.github.io/sbml4humans/development/) of the application.
 
 If you have any questions or issues please [open an issue](https://github.com/matthiaskoenig/sbml4humans/issues).
 

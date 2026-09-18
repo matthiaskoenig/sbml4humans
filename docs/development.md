@@ -18,7 +18,7 @@ cd sbml4humans
 | `release-notes/` | one file per version, the body of its GitHub release |
 | `nginx/` | the proxy configuration of sbml4humans.de |
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
-| `deploy.sh`, `docker-purge.sh` | deployment of the server, see [Deployment](deployment.md) |
+| `deploy.sh`, `docker-purge.sh`, `deploy.md` | the deployment of sbml4humans.de on its server |
 
 ## Frontend and backend with docker compose
 
