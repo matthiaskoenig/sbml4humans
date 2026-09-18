@@ -188,6 +188,23 @@ describe("misc components", () => {
     expect(link.text()).not.toContain("/");
   });
 
+  it("names the trigger and the delay of an event by their event", () => {
+    // the trigger and the delay of this model are keyed by their meta id, which says nothing
+    // about the event they belong to
+    const cellCycle = new ReportIndex(loadReport("cell_cycle"));
+    const event = cellCycle.mainModel!.listOfEvents!.find((e) => e.delay)!;
+    expect(event.trigger!.id).toBeNull();
+    const link = mount(ElementLink, {
+      props: { pk: event.trigger!.pk },
+      global: {
+        plugins: [router],
+        provide: { [ReportIndexKey as symbol]: ref(cellCycle) },
+        directives: { tooltip },
+      },
+    });
+    expect(link.get("[data-testid=element-link]").text()).toBe(`${event.id}.trigger`);
+  });
+
   it("names a species reference by its reaction and its species", () => {
     // the species references of this model are keyed by their meta id, which says nothing about
     // the participation; the inspector of a species lists them, so they name their reaction
