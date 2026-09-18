@@ -5,7 +5,7 @@ import logging
 import libsbml
 import pytest
 
-from sbml4humans.links import build_link_graph
+from sbml4humans.links import ModelIndex
 from sbml4humans.model import Edge, EdgeKind, Report
 from sbml4humans.report import report_for_path
 from sbml4humans.resources import (
@@ -759,26 +759,23 @@ def test_uncert_parameter_math_edge(distrib_spans: Report) -> None:
     assert _edges(distrib_spans, source=uncertainty.pk, kind=EdgeKind.MATH) == set()
 
 
-def test_level_2_local_parameter_edges(
-    level2_biomodel: Report, caplog: pytest.LogCaptureFixture
-) -> None:
-    """The math of a Level 2 kinetic law links to the parameters of that law."""
-    reaction = next(
-        r for r in level2_biomodel.models[0].list_of_reactions if r.id == "reaction1"
-    )
+def test_level_2_local_parameter_edges(level2_biomodel: Report) -> None:
+    """The math of a Level 2 kinetic law links to the parameters of that law.
+
+    The parameter is in the namespace of its kinetic law and not in the one of
+    the model (core §4.11.5): the model does not know `vi`, the kinetic law
+    resolves it to its own parameter.
+    """
+    model = level2_biomodel.models[0]
+    reaction = next(r for r in model.list_of_reactions if r.id == "reaction1")
     kinetic_law = reaction.kinetic_law
     assert kinetic_law is not None
     (local_parameter,) = kinetic_law.list_of_local_parameters
     assert local_parameter.id == "vi"
     assert (kinetic_law.pk, local_parameter.pk, "math") in _edges(level2_biomodel)
-    # the parameter is in the namespace of its kinetic law, not of the model
-    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
-        graph = build_link_graph(level2_biomodel, {kinetic_law.pk: {"vi"}})
-    assert caplog.text == ""
-    assert (
-        Edge(source=kinetic_law.pk, target=local_parameter.pk, kind=EdgeKind.MATH)
-        in graph.edges
-    )
+    index = ModelIndex(model)
+    assert index.resolve("vi") is None
+    assert index.resolve("vi", kinetic_law.pk) == local_parameter.pk
 
 
 SYNTHETIC_STOICHIOMETRY_SBML = f"""<?xml version="1.0" encoding="UTF-8"?>

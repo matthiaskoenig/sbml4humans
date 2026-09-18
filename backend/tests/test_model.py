@@ -1,6 +1,7 @@
 """Tests of the report data model."""
 
 import json
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -12,7 +13,6 @@ from sbml4humans.model import (
     CVTerm,
     Edge,
     EdgeKind,
-    FluxBound,
     LinkGraph,
     Math,
     Model,
@@ -20,6 +20,7 @@ from sbml4humans.model import (
     Parameter,
     RateRule,
     Report,
+    ReportResponse,
     SBase,
     SBMLDocument,
     Species,
@@ -92,12 +93,38 @@ def test_a_value_which_is_not_a_number_is_carried_as_well() -> None:
     assert dumped["initialAmount"] == "NaN"
 
 
+def _number_properties(schema: object, path: str = "") -> Iterator[tuple[str, object]]:
+    """Every property of a JSON schema which accepts a number, with its path."""
+    if isinstance(schema, dict):
+        for key, value in schema.items():
+            if key == "properties" and isinstance(value, dict):
+                for name, prop in value.items():
+                    if '"number"' in json.dumps(prop):
+                        yield f"{path}.{name}", prop
+            yield from _number_properties(value, f"{path}/{key}")
+    elif isinstance(schema, list):
+        for item in schema:
+            yield from _number_properties(item, path)
+
+
 def test_every_double_of_the_report_carries_them() -> None:
-    """The decision is one of the whole report, not of one class of it."""
-    bound = FluxBound(pk="m/FluxBound:b", id="b", value=float("inf"))
-    compartment = Compartment(pk="m/Compartment:c", id="c", size=float("inf"))
-    assert json.loads(bound.model_dump_json(by_alias=True))["value"] == "Infinity"
-    assert json.loads(compartment.model_dump_json(by_alias=True))["size"] == "Infinity"
+    """Every double of the schema says that it may be one of the three constants.
+
+    The frontend types are generated from the schema, and a renderer only
+    reads the constants where the type of a field names them: a float of the
+    model which is not a `Double` would send "Infinity" to a field typed as a
+    number alone.
+    """
+    schema = ReportResponse.model_json_schema(by_alias=True)
+    properties = dict(_number_properties(schema))
+    assert properties
+    constants = [{"const": "Infinity"}, {"const": "-Infinity"}, {"const": "NaN"}]
+    missing = [
+        path
+        for path, prop in properties.items()
+        if not all(json.dumps(c) in json.dumps(prop) for c in constants)
+    ]
+    assert missing == []
 
 
 def test_an_infinite_value_validates_back() -> None:

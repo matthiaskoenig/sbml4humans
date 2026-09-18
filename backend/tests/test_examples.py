@@ -154,14 +154,6 @@ def test_comp_deletion_example_is_served() -> None:
     assert example.packages == ["comp"]
 
 
-def test_comp_deletion_example_is_valid_sbml() -> None:
-    """The example is a valid SBML document, without an error or a warning."""
-    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / "comp_deletion.xml")
-    doc.checkConsistency()
-    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
-    assert messages == []
-
-
 @pytest.mark.parametrize(
     "example_id, name, packages",
     [
@@ -187,29 +179,12 @@ def test_fbc_version_examples_are_served(
     assert example.packages == packages
 
 
-@pytest.mark.parametrize("name", ["fbc_bounds_v1.xml", "fbc_constraints_v3.xml"])
-def test_fbc_version_examples_are_valid_sbml(name: str) -> None:
-    """The examples are valid SBML documents, without an error or a warning."""
-    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / name)
-    doc.checkConsistency()
-    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
-    assert messages == []
-
-
 def test_qual_example_is_served() -> None:
     """The example of a qualitative model is served with its package."""
     example = load_examples()["qual_example (qual_example.xml)"]
     assert example.name == "Qualitative example model"
     assert example.description is not None
     assert example.packages == ["qual"]
-
-
-def test_qual_example_is_valid_sbml() -> None:
-    """The example is a valid SBML document, without an error or a warning."""
-    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / "qual_example.xml")
-    doc.checkConsistency()
-    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
-    assert messages == []
 
 
 def test_distrib_spans_example_is_served() -> None:
@@ -220,9 +195,22 @@ def test_distrib_spans_example_is_served() -> None:
     assert example.packages == ["distrib"]
 
 
-def test_distrib_spans_example_is_valid_sbml() -> None:
-    """The example is a valid SBML document, without an error or a warning."""
-    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / "distrib_spans.xml")
+# the examples written for the complete data model, one per part of it which no
+# published model of the resources contains
+WRITTEN_EXAMPLES = [
+    "constraint_event.xml",
+    "comp_deletion.xml",
+    "fbc_bounds_v1.xml",
+    "fbc_constraints_v3.xml",
+    "qual_example.xml",
+    "distrib_spans.xml",
+]
+
+
+@pytest.mark.parametrize("name", WRITTEN_EXAMPLES)
+def test_written_examples_are_valid_sbml(name: str) -> None:
+    """An example written to teach is a valid SBML document, without a warning."""
+    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / name)
     doc.checkConsistency()
     messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
     assert messages == []

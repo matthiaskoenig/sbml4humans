@@ -1648,6 +1648,50 @@ def test_transition_with_its_inputs_and_outputs(qual_example: Report) -> None:
     assert output.output_level is None
 
 
+@pytest.mark.parametrize(
+    "sign", ["positive", "negative", "dual", "unknown"], ids=lambda sign: sign
+)
+def test_every_sign_of_an_input_is_the_word_of_the_specification(sign: str) -> None:
+    """The four signs of qual §3.6.1 reach the report as the words they are.
+
+    libsbml answers the sign as the integer of its constant, and the report
+    maps it; no shipped model uses `dual` or `unknown`.
+    """
+    sbml = f"""<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1"
+      level="3" version="1" qual:required="true">
+      <model id="m">
+        <listOfCompartments><compartment id="c" constant="true"/></listOfCompartments>
+        <qual:listOfQualitativeSpecies>
+          <qual:qualitativeSpecies qual:id="A" qual:compartment="c"
+                                   qual:constant="false"/>
+        </qual:listOfQualitativeSpecies>
+        <qual:listOfTransitions>
+          <qual:transition qual:id="t">
+            <qual:listOfInputs>
+              <qual:input qual:qualitativeSpecies="A" qual:transitionEffect="none"
+                          qual:sign="{sign}"/>
+            </qual:listOfInputs>
+            <qual:listOfOutputs>
+              <qual:output qual:qualitativeSpecies="A"
+                           qual:transitionEffect="assignmentLevel"/>
+            </qual:listOfOutputs>
+            <qual:listOfFunctionTerms>
+              <qual:defaultTerm qual:resultLevel="0"/>
+            </qual:listOfFunctionTerms>
+          </qual:transition>
+        </qual:listOfTransitions>
+      </model>
+    </sbml>"""
+    doc: libsbml.SBMLDocument = read_sbml(sbml)
+    doc.checkConsistency()
+    assert doc.getNumErrors(libsbml.LIBSBML_SEV_ERROR) == 0
+    report = SBMLDocumentInfo.from_doc(doc)
+    (transition,) = report.models[0].list_of_transitions
+    (qual_input,) = transition.list_of_inputs
+    assert qual_input.sign == sign
+
+
 def test_petri_net_transition_consumes_and_produces(qual_example: Report) -> None:
     """The second transition carries the two effects of the Petri net formalism."""
     transition = qual_example.models[0].list_of_transitions[1]

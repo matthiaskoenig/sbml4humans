@@ -406,6 +406,36 @@ describe("inspector", () => {
     expect(wrapper.text()).toContain(`g${ASSOCIATION_LIMIT + 2}`);
   });
 
+  it("opens an association deeper than two operator levels one level at a time", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    // five operator levels, every one with a gene of its own next to the level below it, the
+    // shape which keeps an association of Recon3D walkable
+    const gene = (name: string) => ({
+      pk: `m/GeneProductRef:${name}`,
+      sbmlType: "GeneProductRef",
+      geneProduct: name,
+    });
+    let deep: Record<string, unknown> = gene("leaf");
+    for (let level = 4; level >= 0; level--) {
+      const sbmlType = level % 2 === 0 ? "Or" : "And";
+      deep = { pk: `m/${sbmlType}:${level}`, sbmlType, associations: [deep, gene(`g${level}`)] };
+    }
+    const wrapper = mountWith(GeneAssociationView, { node: deep }, fbcConstraints);
+    const open = () => wrapper.findAll("[data-testid=gene-association-open]");
+    expect(wrapper.text()).toContain("g1");
+    expect(wrapper.text()).not.toContain("g2");
+    expect(open().map((button) => button.text())).toEqual(["(or of 2)"]);
+
+    await open()[0]!.trigger("click");
+    expect(wrapper.text()).toContain("g3");
+    expect(wrapper.text()).not.toContain("g4");
+    expect(open().map((button) => button.text())).toEqual(["(or of 2)"]);
+
+    await open()[0]!.trigger("click");
+    expect(wrapper.text()).toContain("leaf");
+    expect(open()).toHaveLength(0);
+  });
+
   it("groups the links by kind in both directions", async () => {
     const species = repressilator.mainModel!.listOfSpecies![0] as Species;
     const wrapper = mountWith(LinksColumn, { pk: species.pk }, repressilator);

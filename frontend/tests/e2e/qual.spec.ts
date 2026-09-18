@@ -113,9 +113,17 @@ test.describe("qual", () => {
     await expect(attribute(page, "result level")).toContainText("1");
 
     // the symbols of the condition are the species whose level and the input whose threshold
-    // it compares
-    const math = inspector.getByTestId("links-references").getByTestId("links-math");
-    await expect(math).toContainText("theta_G_S");
-    await expect(math).toContainText("S");
+    // it compares, each a link of its own: the text `theta_G_S` contains the `S` of the species
+    const links = inspector
+      .getByTestId("links-references")
+      .getByTestId("links-math")
+      .getByTestId("element-link");
+    await expect(links).toHaveCount(4);
+    expect((await links.allTextContents()).map((text) => text.trim()).sort()).toEqual([
+      "P",
+      "S",
+      "theta_G_P",
+      "theta_G_S",
+    ]);
   });
 });
