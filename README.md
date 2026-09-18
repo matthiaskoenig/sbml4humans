@@ -13,6 +13,8 @@ The information in SBML is organized as lists of components, such as compartment
 
 SBML4Humans provides that layer: an interactive and reactive report of an SBML model which allows humans, experts as well as novices, to comprehend the content of a model. A report renders the information of a model for human consumption as an interactive page, navigates between the components (which species take part in which reaction, which reaction a gene product catalyzes, in which formula a parameter appears), resolves the annotations of a component to the entries they identify, searches and filters the model down to the part which matters, and explains every type, column and attribute where it is shown. It reads models, it does not edit them and it does not simulate them.
 
+A report carries the data model of the file: every level and version of SBML which libsbml reads, and the four Level 3 packages comp, fbc, qual and distrib with the objects and the references they add. The submodels, ports, deletions and replacements of a hierarchical model, the objectives, gene products and gene associations of a constraint based one, the qualitative species and transitions of a logical model and the uncertainties of a measured value are elements of the report like the species and the reactions of the core, each with its attributes, its annotations and its place in the graph of references.
+
 [![The report of the repressilator model, with the type bar, the element tables and the inspector of a selected species](docs/images/report-overview.png)](docs/images/report-overview.png)
 
 Use it at [sbml4humans.de](https://sbml4humans.de) with a file, a url or pasted SBML, or with one of the example models which ship with it.
