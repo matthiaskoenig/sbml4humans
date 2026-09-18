@@ -144,6 +144,26 @@ describe("inspector", () => {
     );
   });
 
+  it("lists no package for a Level 3 Version 2 document of core alone", () => {
+    const wrapper = mountWith(
+      AttributesColumn,
+      { element: constraintEvent.document },
+      constraintEvent,
+    );
+    const packages = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((row) => row.find("dt").text() === "packages")!;
+    expect(packages.find("dd").text()).toBe("-");
+  });
+
+  it("lists every package of a document with its version", () => {
+    const wrapper = mountWith(AttributesColumn, { element: qual.document }, qual);
+    const packages = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((row) => row.find("dt").text() === "packages")!;
+    expect(packages.find("dd").text()).toBe("qual v1");
+  });
+
   it("opens the trigger, the priority and the delay of an event as elements of their own", () => {
     const event = constraintEvent.mainModel!.listOfEvents![0] as Event;
     const wrapper = mountWith(AttributesColumn, { element: event }, constraintEvent);

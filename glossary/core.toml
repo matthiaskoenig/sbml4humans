@@ -180,9 +180,9 @@ type = "list"
 spec = { doc = "l3v2", section = "4.1.3" }
 summary = "the Level 3 packages the file uses, with their version"
 description = """
-Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc and distrib and shows the elements they add.
+Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc, qual and distrib and shows the elements they add.
 
-The report lists the prefix and the version of every declared package in the attributes of the document.
+The report lists the prefix and the version of every declared package in the attributes of the document. The namespace of the core itself, which a file declares as well, is no package and is not listed.
 """
 
 [types.Model]

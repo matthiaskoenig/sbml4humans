@@ -141,6 +141,8 @@ def test_constraint_event_example_is_served() -> None:
     assert example.file.name == "constraint_event.xml"
     assert example.name == "model with a constraint, an event and local parameters"
     assert example.description is not None
+    # a Level 3 Version 2 document of core alone uses no package
+    assert example.packages == []
 
 
 def test_comp_deletion_example_is_served() -> None:

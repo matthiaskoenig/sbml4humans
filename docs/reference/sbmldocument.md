@@ -30,9 +30,9 @@ The report shows the version next to the level in the attributes of the document
 
 <span id="packages"></span>**packages**
 
-Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc and distrib and shows the elements they add.
+Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc, qual and distrib and shows the elements they add.
 
-The report lists the prefix and the version of every declared package in the attributes of the document.
+The report lists the prefix and the version of every declared package in the attributes of the document. The namespace of the core itself, which a file declares as well, is no package and is not listed.
 
 ## In the report
 

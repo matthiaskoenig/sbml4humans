@@ -1,5 +1,5 @@
 {
-  "uid": "e41fae1c905f41648964f630fee46df1",
+  "uid": "5493fac33b124871a1221c0e5911d542",
   "manifest": {
     "entries": [
       {
@@ -38,12 +38,7 @@
           "keyValuePairs": [],
           "level": 3,
           "version": 2,
-          "packages": [
-            {
-              "prefix": "",
-              "version": 0
-            }
-          ],
+          "packages": [],
           "annotationXml": "<annotation>\n  <sbml4humans:document xmlns:sbml4humans=\"https://sbml4humans.de/ns/example\" sbml4humans:writtenBy=\"hand\" sbml4humans:purpose=\"constraint, event and local parameter example\"/>\n</annotation>"
         },
         "models": [
@@ -1134,7 +1129,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.053 [s]"
+        "jsonReportTime": "0.008 [s]"
       }
     }
   }

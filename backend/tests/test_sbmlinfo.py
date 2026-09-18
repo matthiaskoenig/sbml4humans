@@ -63,6 +63,33 @@ def test_document(repressilator: Report) -> None:
     assert doc.xml is None
 
 
+def test_packages_of_a_document() -> None:
+    """A document lists the Level 3 packages it declares, with their versions."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "qual_example.xml")
+    assert [(p.prefix, p.version) for p in report.document.packages] == [("qual", 1)]
+
+
+@pytest.mark.parametrize("core_prefix", [None, "sbml"])
+def test_core_namespace_is_no_package(core_prefix: str | None) -> None:
+    """The core namespace of a Level 3 Version 2 document is not a package.
+
+    libsbml implements the math of Level 3 Version 2 as a plugin of the
+    document which carries the namespace of core, with the prefix the file
+    gives that namespace: none on a root which declares it as the default, and
+    a prefix of its own where the root declares it once more. Neither is a
+    package the file uses.
+    """
+    text = (EXAMPLES_DIR / "constraint_event.xml").read_text(encoding="utf-8")
+    if core_prefix is not None:
+        core = "http://www.sbml.org/sbml/level3/version2/core"
+        text = text.replace("<sbml ", f'<sbml xmlns:{core_prefix}="{core}" ', 1)
+    doc: libsbml.SBMLDocument = libsbml.readSBMLFromString(text)
+    assert doc.getNumPlugins() > 0
+    report = SBMLDocumentInfo.from_doc(doc)
+    assert (report.document.level, report.document.version) == (3, 2)
+    assert report.document.packages == []
+
+
 def test_model_and_lists(repressilator: Report) -> None:
     """The main model has the lists of its elements."""
     assert len(repressilator.models) == 1

@@ -65,7 +65,7 @@ const examples = computed(() => {
           }}</span>
           <span v-if="example.packages.length" class="mt-auto flex flex-wrap gap-1 pt-1">
             <span
-              v-for="pkg in example.packages.filter((p) => p)"
+              v-for="pkg in example.packages"
               :key="pkg"
               class="rounded bg-gray-100 px-1.5 py-0.5 text-[11px] text-gray-700"
               >{{ pkg }}</span

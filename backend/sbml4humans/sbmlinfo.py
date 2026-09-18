@@ -82,7 +82,7 @@ from sbml4humans.model import (
     UserDefinedConstraint,
     UserDefinedConstraintComponent,
 )
-from sbml4humans.sbml import read_sbml
+from sbml4humans.sbml import package_plugins, read_sbml
 from sbml4humans.units import udef_to_string
 
 
@@ -413,11 +413,8 @@ class SBMLDocumentInfo:
         """The document with its packages."""
         doc = self.doc
         packages = [
-            Package(
-                prefix=doc.getPlugin(k).getPrefix(),
-                version=doc.getPlugin(k).getPackageVersion(),
-            )
-            for k in range(doc.getNumPlugins())
+            Package(prefix=plugin.getPrefix(), version=plugin.getPackageVersion())
+            for plugin in package_plugins(doc)
         ]
         fields = self.sbase(
             doc,
