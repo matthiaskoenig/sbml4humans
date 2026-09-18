@@ -1,5 +1,5 @@
-// Screenshots of the application for the documentation, taken in place of the
-// `<!-- screenshot: ... -->` markers of docs/index.md, docs/inputs.md and docs/report.md.
+// Screenshots of the application for the documentation, written to docs/images/ and shown by
+// docs/index.md, docs/inputs.md and docs/report.md.
 // Usage: start the backend (cd backend && uv run uvicorn sbml4humans.api:api --port 1444) and
 // the dev server (cd frontend && npx vite --port 3456), then `npm run screenshots`. Rerun it
 // after a change of the user interface, the images are committed alongside the documentation.
@@ -271,7 +271,7 @@ try {
   );
 
   // examples.png: the filter and the first cards of the examples page. The grid holds all the
-  // examples (95 at the time of writing), far taller than any window, so the picture ends below
+  // examples (101 at the time of writing), far taller than any window, so the picture ends below
   // the third row of cards.
   await pages.goto(`${BASE_URL}/examples`);
   await expect.poll(() => pages.getByTestId("example-card").count()).toBeGreaterThan(50);
@@ -314,6 +314,25 @@ try {
   );
   await shot("report-search", report, {
     clip: { x: 0, y: 0, width: REPORT_VIEWPORT.width, height: Math.ceil(filled) + 16 },
+  });
+
+  // report-qual.png: the report of a qualitative model, the one kind of model which is built
+  // from no reaction at all. Its two tables are the state space of the model and its influence
+  // graph, which is what the columns of a qualitative report are for, and nothing is selected so
+  // that both tables have the whole width of the window.
+  await open(report, "qual_example (qual_example.xml)");
+  await expect(report.getByTestId("inspector")).toHaveCount(0);
+  await expect(report.getByTestId("table-QualitativeSpecies")).toBeVisible();
+  await expect(report.getByTestId("table-Transition")).toBeVisible();
+  const qualTables = await report.getByTestId("tables").boundingBox();
+  await restPointer(report);
+  await shot("report-qual", report, {
+    clip: {
+      x: 0,
+      y: 0,
+      width: REPORT_VIEWPORT.width,
+      height: qualTables.y + (await cutWithin(report, qualTables.height)),
+    },
   });
   await report.close();
 
@@ -380,6 +399,20 @@ try {
   const annotations = annotationsColumn.locator("section").first();
   await annotations.scrollIntoViewIfNeeded();
   await shot("inspector-annotations", annotations);
+
+  // inspector-gene-association.png: the attributes of a reaction of a constraint based model, the
+  // rows a reader of such a model comes for: the equation, the two flux bounds and the genes the
+  // reaction needs as the expression their tree stands for. R_CYTBD of the E. coli core model is
+  // an `or` of two `and` groups, the two complexes which each catalyse it, which is the shape of
+  // an association and still one line. The window is grown until the three sections of the
+  // inspector neither scroll nor stretch, so that the attributes are not cut by the pane.
+  await open(parts, "e_coli_core (e_coli_core.xml.gz)");
+  await parts.getByTestId("search-input").fill("R_CYTBD");
+  await selectRow(parts, parts.getByTestId("table-Reaction"), "R_CYTBD");
+  await expect(parts.getByTestId("attributes-column")).toBeVisible();
+  await fitInspector(parts);
+  await restPointer(parts);
+  await shot("inspector-gene-association", parts.getByTestId("attributes-column"));
 
   // archive-entries.png: the context of a COMBINE archive report in the app bar, a strip of the
   // bar from the select of the entries on, as wide as the article column. The bar from the logo
