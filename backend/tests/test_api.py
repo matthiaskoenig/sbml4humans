@@ -100,6 +100,31 @@ def test_example(client: TestClient) -> None:
     assert len(data["reports"]) == 3
 
 
+def test_an_infinite_value_reaches_the_frontend(client: TestClient) -> None:
+    """The api sends an infinite value as the constant the report reads.
+
+    The decision belongs to the whole report: an unbounded flux is the common
+    case of a constraint based model, and `null` is what an attribute the file
+    does not set at all sends.
+    """
+    response = client.get("/api/examples/fbc_bounds_v1 (fbc_bounds_v1.xml)")
+    assert response.status_code == 200
+    report = next(iter(response.json()["reports"].values()))["report"]
+    bounds = {b["id"]: b["value"] for b in report["models"][0]["listOfFluxBounds"]}
+    assert bounds["v1_ub"] == "Infinity"
+    assert bounds["v1_lb"] == 0.0
+
+    response = client.get("/api/examples/fbc_example (fbc_example.xml)")
+    parameters = {
+        p["id"]: p["value"]
+        for p in next(iter(response.json()["reports"].values()))["report"]["models"][0][
+            "listOfParameters"
+        ]
+    }
+    assert parameters["ub_inf"] == "Infinity"
+    assert parameters["lb_inf"] == "-Infinity"
+
+
 def test_example_with_special_characters(client: TestClient) -> None:
     """Example ids with spaces and parentheses are resolved."""
     response = client.get("/api/examples/BIOMD0000000012 (BIOMD0000000012_urn.xml)")

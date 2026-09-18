@@ -28,7 +28,7 @@ The report shows the operation next to the value.
 
 <span id="value"></span>**value**
 
-The value carries the units of a reaction flux, extent per time, which the model defines globally. An infinite value states that the flux is not bounded in that direction; the report cannot show it, because infinity is not a number JSON carries, and leaves the cell empty.
+The value carries the units of a reaction flux, extent per time, which the model defines globally. An infinite value states that the flux is not bounded in that direction, and the report shows it as the [sign of infinity](concepts.md#number) with the direction of that bound.
 
 ## Related elements
 

@@ -1,4 +1,5 @@
 import { fieldValue } from "@/report/columns";
+import { toNumber } from "@/report/number";
 
 export type SortOrder = 1 | -1;
 
@@ -17,12 +18,23 @@ export function isEmptyValue(value: unknown): boolean {
   return typeof value === "object" && !(value instanceof Date) && Object.keys(value).length === 0;
 }
 
-/** Compare two values of a column for `order`: empty values last in both orders, strings with
- * numeric collation (`x2` before `x10`), every other value with `<` and `>`. */
+/** Compare two values of a column for `order`: empty values last in both orders, doubles as the
+ * numbers they stand for, with a value which is not a number last the way an empty one is,
+ * strings with numeric collation (`x2` before `x10`), every other value with `<` and `>`. */
 export function compareValues(a: unknown, b: unknown, order: SortOrder): number {
   const emptyA = isEmptyValue(a);
   const emptyB = isEmptyValue(b);
   if (emptyA || emptyB) return emptyA === emptyB ? 0 : emptyA ? 1 : -1;
+  // an infinite value reaches the frontend as a string, and it sorts where the number it
+  // stands for belongs, at the end of the column
+  const numberA = toNumber(a);
+  const numberB = toNumber(b);
+  if (numberA !== null && numberB !== null) {
+    const nanA = Number.isNaN(numberA);
+    const nanB = Number.isNaN(numberB);
+    if (nanA || nanB) return nanA === nanB ? 0 : nanA ? 1 : -1;
+    return order * (numberA < numberB ? -1 : numberA > numberB ? 1 : 0);
+  }
   if (typeof a === "string" && typeof b === "string") return order * collator.compare(a, b);
   const x = a as number;
   const y = b as number;

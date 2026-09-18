@@ -1,5 +1,5 @@
 {
-  "uid": "6c1b23d48c5f4e0d883e015601e4f535",
+  "uid": "2cd0367cb64d4b3c862763801743cef8",
   "manifest": {
     "entries": [
       {
@@ -408,7 +408,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
-                "value": null,
+                "value": "Infinity",
                 "constant": true,
                 "units": "mmole_per_hr",
                 "unitsLatex": "\\frac{mmol}{hr}",
@@ -436,7 +436,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
-                "value": null,
+                "value": "-Infinity",
                 "constant": true,
                 "units": "mmole_per_hr",
                 "unitsLatex": "\\frac{mmol}{hr}",
@@ -1926,7 +1926,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.01 [s]"
       }
     }
   }

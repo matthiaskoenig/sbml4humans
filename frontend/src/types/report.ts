@@ -219,13 +219,13 @@ export interface UncertSpan {
   keyValuePairs?: KeyValuePair[];
   type?: string | null;
   var?: string | null;
-  value?: number | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   units?: string | null;
   definitionUrl?: string | null;
   math?: Math | null;
   uncertParameters?: (UncertSpan | UncertParameter)[];
-  valueLower?: number | null;
-  valueUpper?: number | null;
+  valueLower?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  valueUpper?: number | "Infinity" | "-Infinity" | "NaN" | null;
   varLower?: string | null;
   varUpper?: string | null;
 }
@@ -260,7 +260,7 @@ export interface UncertParameter {
   keyValuePairs?: KeyValuePair[];
   type?: string | null;
   var?: string | null;
-  value?: number | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   units?: string | null;
   definitionUrl?: string | null;
   math?: Math | null;
@@ -387,7 +387,7 @@ export interface Model {
  */
 export interface ConversionFactor {
   sid: string;
-  value?: number | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   units?: string | null;
 }
 /**
@@ -438,9 +438,9 @@ export interface UnitDefinition {
  */
 export interface Unit {
   kind?: string | null;
-  exponent?: number | null;
+  exponent?: number | "Infinity" | "-Infinity" | "NaN" | null;
   scale?: number | null;
-  multiplier?: number | null;
+  multiplier?: number | "Infinity" | "-Infinity" | "NaN" | null;
 }
 /**
  * A compartment.
@@ -459,8 +459,8 @@ export interface Compartment {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
-  spatialDimensions?: number | null;
-  size?: number | null;
+  spatialDimensions?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  size?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
   units?: string | null;
   unitsLatex?: string | null;
@@ -484,8 +484,8 @@ export interface Species {
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
   compartment: string;
-  initialAmount?: number | null;
-  initialConcentration?: number | null;
+  initialAmount?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  initialConcentration?: number | "Infinity" | "-Infinity" | "NaN" | null;
   substanceUnits?: string | null;
   hasOnlySubstanceUnits?: boolean | null;
   boundaryCondition?: boolean | null;
@@ -503,7 +503,7 @@ export interface Species {
  */
 export interface SpeciesFbc {
   chemicalFormula?: string | null;
-  charge?: number | null;
+  charge?: number | "Infinity" | "-Infinity" | "NaN" | null;
 }
 /**
  * A global parameter.
@@ -522,7 +522,7 @@ export interface Parameter {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
-  value?: number | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
   units?: string | null;
   unitsLatex?: string | null;
@@ -680,7 +680,7 @@ export interface SpeciesReference {
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
   species: string;
-  stoichiometry?: number | null;
+  stoichiometry?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
 }
 /**
@@ -740,7 +740,7 @@ export interface LocalParameter {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
-  value?: number | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   units?: string | null;
   unitsLatex?: string | null;
   derivedUnits?: string | null;
@@ -1058,7 +1058,7 @@ export interface FluxObjective {
   keyValuePairs?: KeyValuePair[];
   reaction: string;
   reaction2?: string | null;
-  coefficient?: number | null;
+  coefficient?: number | "Infinity" | "-Infinity" | "NaN" | null;
   variableType?: string | null;
 }
 /**
@@ -1085,7 +1085,7 @@ export interface FluxBound {
   keyValuePairs?: KeyValuePair[];
   reaction?: string | null;
   operation?: string | null;
-  value?: number | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
 }
 /**
  * A constraint of fbc Version 3 over a combination of model variables.

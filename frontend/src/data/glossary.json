@@ -1504,6 +1504,10 @@
       "label": "model kind",
       "summary": "whether a model is the model of the document or a model definition"
     },
+    "number": {
+      "label": "number",
+      "summary": "how the report shows a number which is infinite or not a number"
+    },
     "pk": {
       "label": "primary key",
       "summary": "the identifier the report gives to every element it shows"

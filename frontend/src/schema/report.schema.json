@@ -609,6 +609,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -618,6 +627,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -832,6 +850,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -2037,6 +2064,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -2184,6 +2220,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -3551,6 +3596,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -4876,6 +4930,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -6687,6 +6750,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -6696,6 +6768,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -6817,6 +6898,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -6952,6 +7042,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -7589,6 +7688,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -7792,6 +7900,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -7849,6 +7966,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -7858,6 +7984,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"
@@ -8051,6 +8186,15 @@
               "type": "number"
             },
             {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
+            },
+            {
               "type": "null"
             }
           ],
@@ -8071,6 +8215,15 @@
           "anyOf": [
             {
               "type": "number"
+            },
+            {
+              "const": "Infinity"
+            },
+            {
+              "const": "-Infinity"
+            },
+            {
+              "const": "NaN"
             },
             {
               "type": "null"

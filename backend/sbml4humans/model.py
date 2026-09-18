@@ -8,14 +8,41 @@ uses snake_case, the JSON of the frontend camelCase (`by_alias=True`).
 from enum import StrEnum
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, WithJsonSchema
 from pydantic.alias_generators import to_camel
 
 
 class ReportModel(BaseModel):
-    """Base of every class of the report: camelCase aliases in JSON."""
+    """Base of every class of the report: camelCase aliases in JSON.
 
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+    `ser_json_inf_nan` writes the three constants of a double which JSON has no
+    literal for as the strings pydantic defines for them, `"Infinity"`,
+    `"-Infinity"` and `"NaN"`. The default of pydantic is `null`, which makes
+    an unbounded flux, a value which is not a number and an attribute the file
+    does not set at all the same three characters in a report.
+    """
+
+    model_config = ConfigDict(
+        alias_generator=to_camel, populate_by_name=True, ser_json_inf_nan="strings"
+    )
+
+
+# a double of SBML, which may be infinite or not a number (core §3.1.5). The
+# schema says what the api sends, so that the generated types of the frontend
+# carry the constants as well and every renderer of a number has to read them.
+Double = Annotated[
+    float,
+    WithJsonSchema(
+        {
+            "anyOf": [
+                {"type": "number"},
+                {"const": "Infinity"},
+                {"const": "-Infinity"},
+                {"const": "NaN"},
+            ]
+        }
+    ),
+]
 
 
 # -------------------------------------------------------------------------------------
@@ -61,7 +88,7 @@ class ConversionFactor(ReportModel):
     """The conversion factor parameter of a model or species."""
 
     sid: str
-    value: float | None = None
+    value: Double | None = None
     units: str | None = None
 
 
@@ -120,7 +147,7 @@ class UncertParameter(SBase):
     sbml_type: Literal["UncertParameter"] = "UncertParameter"
     type: str | None = None
     var: str | None = None
-    value: float | None = None
+    value: Double | None = None
     units: str | None = None
     definition_url: str | None = None
     math: Math | None = None
@@ -137,8 +164,8 @@ class UncertSpan(UncertParameter):
     """
 
     sbml_type: Literal["UncertSpan"] = "UncertSpan"
-    value_lower: float | None = None
-    value_upper: float | None = None
+    value_lower: Double | None = None
+    value_upper: Double | None = None
     var_lower: str | None = None
     var_upper: str | None = None
 
@@ -260,9 +287,9 @@ class Unit(ReportModel):
     """
 
     kind: str | None = None
-    exponent: float | None = None
+    exponent: Double | None = None
     scale: int | None = None
-    multiplier: float | None = None
+    multiplier: Double | None = None
 
 
 class UnitDefinition(SBase):
@@ -277,8 +304,8 @@ class Compartment(SBase):
     """A compartment."""
 
     sbml_type: Literal["Compartment"] = "Compartment"
-    spatial_dimensions: float | None = None
-    size: float | None = None
+    spatial_dimensions: Double | None = None
+    size: Double | None = None
     constant: bool | None = None
     units: str | None = None
     units_latex: str | None = None
@@ -293,7 +320,7 @@ class SpeciesFbc(ReportModel):
     """
 
     chemical_formula: str | None = None
-    charge: float | None = None
+    charge: Double | None = None
 
 
 class Species(SBase):
@@ -301,8 +328,8 @@ class Species(SBase):
 
     sbml_type: Literal["Species"] = "Species"
     compartment: str
-    initial_amount: float | None = None
-    initial_concentration: float | None = None
+    initial_amount: Double | None = None
+    initial_concentration: Double | None = None
     substance_units: str | None = None
     has_only_substance_units: bool | None = None
     boundary_condition: bool | None = None
@@ -317,7 +344,7 @@ class Parameter(SBase):
     """A global parameter."""
 
     sbml_type: Literal["Parameter"] = "Parameter"
-    value: float | None = None
+    value: Double | None = None
     constant: bool | None = None
     units: str | None = None
     units_latex: str | None = None
@@ -377,7 +404,7 @@ class SpeciesReference(SBase):
 
     sbml_type: Literal["SpeciesReference"] = "SpeciesReference"
     species: str
-    stoichiometry: float | None = None
+    stoichiometry: Double | None = None
     constant: bool | None = None
 
 
@@ -392,7 +419,7 @@ class LocalParameter(SBase):
     """A local parameter of a kinetic law."""
 
     sbml_type: Literal["LocalParameter"] = "LocalParameter"
-    value: float | None = None
+    value: Double | None = None
     units: str | None = None
     units_latex: str | None = None
     derived_units: str | None = None
@@ -562,7 +589,7 @@ class FluxObjective(SBase):
     sbml_type: Literal["FluxObjective"] = "FluxObjective"
     reaction: str
     reaction2: str | None = None
-    coefficient: float | None = None
+    coefficient: Double | None = None
     variable_type: str | None = None
 
 
@@ -578,7 +605,7 @@ class FluxBound(SBase):
     sbml_type: Literal["FluxBound"] = "FluxBound"
     reaction: str | None = None
     operation: str | None = None
-    value: float | None = None
+    value: Double | None = None
 
 
 class Objective(SBase):

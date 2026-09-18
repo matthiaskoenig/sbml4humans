@@ -379,6 +379,16 @@ def test_distrib_uncertainties() -> None:
     assert uncertainty.uncert_parameters[0].type is not None
 
 
+def test_infinite_flux_bound_of_an_example() -> None:
+    """The unbounded direction of a flux stays infinite through the report."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_bounds_v1.xml")
+    bound = next(b for b in report.models[0].list_of_flux_bounds if b.id == "v1_ub")
+    assert bound.value == float("inf")
+    data = json.loads(report.model_dump_json(by_alias=True))
+    values = {b["id"]: b["value"] for b in data["models"][0]["listOfFluxBounds"]}
+    assert values["v1_ub"] == "Infinity"
+
+
 def test_distrib_span_of_the_shipped_example() -> None:
     """A span of the shipped example carries the two ends of its interval.
 

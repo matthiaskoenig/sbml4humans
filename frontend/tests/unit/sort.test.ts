@@ -24,6 +24,24 @@ describe("sort", () => {
     ]);
   });
 
+  it("sorts an infinite value as the number it stands for", () => {
+    const rows = [{ v: 2 }, { v: "Infinity" }, { v: -3 }, { v: "-Infinity" }, { v: "NaN" }];
+    expect(sortRows(rows, { field: "v", order: 1 }).map((row) => row.v)).toEqual([
+      "-Infinity",
+      -3,
+      2,
+      "Infinity",
+      "NaN",
+    ]);
+    expect(sortRows(rows, { field: "v", order: -1 }).map((row) => row.v)).toEqual([
+      "Infinity",
+      2,
+      -3,
+      "-Infinity",
+      "NaN",
+    ]);
+  });
+
   it("puts the empty values last in both orders", () => {
     const rows = [{ v: null }, { v: 2 }, { v: undefined }, { v: 1 }, { v: "" }];
     expect(sortRows(rows, { field: "v", order: 1 }).map((row) => row.v)).toEqual([

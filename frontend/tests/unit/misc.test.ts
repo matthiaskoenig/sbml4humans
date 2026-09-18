@@ -74,6 +74,19 @@ describe("misc components", () => {
     ).toBe("abc");
   });
 
+  it("renders an infinite value as the sign of infinity and a NaN as NaN", () => {
+    // JSON has no literal for them, so the report sends the three constants as strings; the
+    // report used to show `null` for all of them, which reads as an unset attribute
+    const render = (value: string | number) =>
+      mount(ValueText, { props: { value }, global: { directives: { tooltip } } }).text();
+    expect(render("Infinity")).toBe("\u221e");
+    expect(render("-Infinity")).toBe("-\u221e");
+    expect(render("NaN")).toBe("NaN");
+    expect(render(Infinity)).toBe("\u221e");
+    expect(render(-Infinity)).toBe("-\u221e");
+    expect(render(NaN)).toBe("NaN");
+  });
+
   it("renders the latex of a math with KaTeX", () => {
     const wrapper = mount(MathView, {
       props: { math: { latex: "\\frac{a}{b}", formula: "a / b" } },

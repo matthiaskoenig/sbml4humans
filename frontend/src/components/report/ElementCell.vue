@@ -20,6 +20,7 @@ import ValueText from "@/components/misc/ValueText.vue";
 import XhtmlView from "@/components/misc/XhtmlView.vue";
 import { fieldValue, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
+import { toNumber } from "@/report/number";
 import { geneAssociationText } from "@/report/geneAssociation";
 
 const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
@@ -29,7 +30,11 @@ const value = computed(() => fieldValue(props.row, props.column.field));
 const text = computed(() => (typeof value.value === "string" ? value.value : null));
 // the casts live here: a union type in a template expression is read as a deprecated filter
 const booleanValue = computed(() => (typeof value.value === "boolean" ? value.value : null));
-const numberValue = computed(() => (typeof value.value === "number" ? value.value : null));
+// an infinite value and a NaN reach the frontend as the strings JSON has a no literal for,
+// and `ValueText` renders them as the signs they stand for
+const numberValue = computed(() =>
+  toNumber(value.value) === null ? null : (value.value as string | number),
+);
 const mathValue = computed(() => (value.value as Math | null | undefined) ?? null);
 
 /** Kind "link": the pk of the referenced element, resolved through the edges of the row. */

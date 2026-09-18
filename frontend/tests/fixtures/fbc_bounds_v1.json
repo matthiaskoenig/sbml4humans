@@ -1,5 +1,5 @@
 {
-  "uid": "794576a9953140a2ad3bc365ea9e752c",
+  "uid": "6adc85eb76da44808e1d06d60675d123",
   "manifest": {
     "entries": [
       {
@@ -600,7 +600,7 @@
                 "keyValuePairs": [],
                 "reaction": "v1",
                 "operation": "lessEqual",
-                "value": null
+                "value": "Infinity"
               },
               {
                 "pk": "fbc_bounds_v1/FluxBound:EX_glc_fixed",

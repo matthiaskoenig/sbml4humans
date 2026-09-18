@@ -1075,7 +1075,7 @@ type = "double"
 spec = { doc = "fbc1", section = "3.5" }
 summary = "the number the flux is compared with"
 description = """
-The value carries the units of a reaction flux, extent per time, which the model defines globally. An infinite value states that the flux is not bounded in that direction; the report cannot show it, because infinity is not a number JSON carries, and leaves the cell empty.
+The value carries the units of a reaction flux, extent per time, which the model defines globally. An infinite value states that the flux is not bounded in that direction, and the report shows it as the [sign of infinity](concepts.md#number) with the direction of that bound.
 """
 
 [types.UserDefinedConstraint]

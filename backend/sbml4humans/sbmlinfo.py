@@ -150,13 +150,6 @@ def _attribute(sbase: Any, key: str) -> Any | None:
     return None
 
 
-def _number(value: float | None) -> float | None:
-    """A float attribute, NaN (not JSON) becomes None."""
-    if value is None or math.isnan(value):
-        return None
-    return value
-
-
 class SBMLDocumentInfo:
     """Builds the `Report` of an `SBMLDocument`.
 
@@ -409,7 +402,7 @@ class SBMLDocumentInfo:
             return ConversionFactor(sid=sid)
         return ConversionFactor(
             sid=sid,
-            value=_number(_attribute(parameter, "value")),
+            value=_attribute(parameter, "value"),
             units=_attribute(parameter, "units"),
         )
 
@@ -519,9 +512,9 @@ class SBMLDocumentInfo:
         """
         return Unit(
             kind=libsbml.UnitKind_toString(u.getKind()) if u.isSetKind() else None,
-            exponent=_number(u.getExponentAsDouble()) if u.isSetExponent() else None,
+            exponent=u.getExponentAsDouble() if u.isSetExponent() else None,
             scale=_attribute(u, "scale"),
-            multiplier=_number(_attribute(u, "multiplier")),
+            multiplier=_attribute(u, "multiplier"),
         )
 
     def compartment(self, c: libsbml.Compartment, model: libsbml.Model) -> Compartment:
@@ -535,8 +528,8 @@ class SBMLDocumentInfo:
         )
         return Compartment(
             **self.sbase(c),
-            spatial_dimensions=_number(spatial_dimensions),
-            size=_number(_attribute(c, "size")),
+            spatial_dimensions=spatial_dimensions,
+            size=_attribute(c, "size"),
             constant=_attribute(c, "constant"),
             units=units,
             units_latex=self.units(units, model),
@@ -549,8 +542,8 @@ class SBMLDocumentInfo:
         return Species(
             **self.sbase(s),
             compartment=s.getCompartment(),
-            initial_amount=_number(_attribute(s, "initialAmount")),
-            initial_concentration=_number(_attribute(s, "initialConcentration")),
+            initial_amount=_attribute(s, "initialAmount"),
+            initial_concentration=_attribute(s, "initialConcentration"),
             substance_units=substance_units,
             has_only_substance_units=_attribute(s, "hasOnlySubstanceUnits"),
             boundary_condition=_attribute(s, "boundaryCondition"),
@@ -566,7 +559,7 @@ class SBMLDocumentInfo:
         units = _attribute(p, "units")
         return Parameter(
             **self.sbase(p),
-            value=_number(_attribute(p, "value")),
+            value=_attribute(p, "value"),
             constant=_attribute(p, "constant"),
             units=units,
             units_latex=self.units(units, model),
@@ -647,7 +640,7 @@ class SBMLDocumentInfo:
         return SpeciesReference(
             **self.sbase(sr, key=key),
             species=sr.getSpecies(),
-            stoichiometry=_number(_attribute(sr, "stoichiometry")),
+            stoichiometry=_attribute(sr, "stoichiometry"),
             constant=_attribute(sr, "constant"),
         )
 
@@ -668,7 +661,7 @@ class SBMLDocumentInfo:
                         key=f"{kinetic_law_key}.{lp.getId()}",
                         use_id=False,
                     ),
-                    value=_number(_attribute(lp, "value")),
+                    value=_attribute(lp, "value"),
                     units=units,
                     units_latex=self.units(units, model),
                     derived_units=udef_to_string(lp.getDerivedUnitDefinition()),
@@ -939,7 +932,7 @@ class SBMLDocumentInfo:
             **self.sbase(f, key=f"{objective_key}.fluxObjective.{f.getReaction()}"),
             reaction=f.getReaction(),
             reaction2=_attribute(f, "reaction2"),
-            coefficient=_number(f.getCoefficient()) if f.isSetCoefficient() else None,
+            coefficient=f.getCoefficient() if f.isSetCoefficient() else None,
             variable_type=f.getVariableTypeAsString()
             if f.isSetVariableType()
             else None,
@@ -959,7 +952,7 @@ class SBMLDocumentInfo:
                 **self.sbase(fb, key=f"fluxBound.{index}"),
                 reaction=_attribute(fb, "reaction"),
                 operation=_attribute(fb, "operation"),
-                value=_number(_attribute(fb, "value")),
+                value=_attribute(fb, "value"),
             )
             for index, fb in enumerate(plugin.getListOfFluxBounds())
         ]
@@ -1011,7 +1004,7 @@ class SBMLDocumentInfo:
         formula = _attribute(plugin, "chemicalFormula")
         if charge is None and formula is None:
             return None
-        return SpeciesFbc(chemical_formula=formula, charge=_number(charge))
+        return SpeciesFbc(chemical_formula=formula, charge=charge)
 
     def reaction_fbc(
         self, r: libsbml.Reaction, reaction_key: str
@@ -1300,7 +1293,7 @@ class SBMLDocumentInfo:
             fields |= {
                 "type": p.getTypeAsString() if p.isSetType() else None,
                 "var": _attribute(p, "var"),
-                "value": _number(_attribute(p, "value")),
+                "value": _attribute(p, "value"),
                 "units": _attribute(p, "units"),
                 "definition_url": _attribute(p, "definitionURL"),
                 "math": self.math(fields["pk"], _attribute(p, "math")),
@@ -1310,8 +1303,8 @@ class SBMLDocumentInfo:
                 measures.append(
                     UncertSpan(
                         **fields,
-                        value_lower=_number(_attribute(p, "valueLower")),
-                        value_upper=_number(_attribute(p, "valueUpper")),
+                        value_lower=_attribute(p, "valueLower"),
+                        value_upper=_attribute(p, "valueUpper"),
                         var_lower=_attribute(p, "varLower"),
                         var_upper=_attribute(p, "varUpper"),
                     )

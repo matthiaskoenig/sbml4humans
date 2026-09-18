@@ -32,6 +32,21 @@ def test_defs_are_titled_without_titled_properties() -> None:
             )
 
 
+def test_a_double_may_be_an_infinite_value() -> None:
+    """The schema says what the api sends, so the frontend types say it too.
+
+    JSON has no literal for an infinite value or for one which is not a number,
+    and the report writes the three constants of a double as strings.
+    """
+    schema = json.loads(schema_json())
+    value = schema["$defs"]["Parameter"]["properties"]["value"]
+    assert {"type": "number"} in value["anyOf"]
+    assert {"const": "Infinity"} in value["anyOf"]
+    assert {"const": "-Infinity"} in value["anyOf"]
+    assert {"const": "NaN"} in value["anyOf"]
+    assert {"type": "null"} in value["anyOf"]
+
+
 def test_committed_schema_is_current() -> None:
     """The schema of the frontend equals the schema of the current model."""
     assert SCHEMA_PATH.read_text(encoding="utf-8") == schema_json(), (

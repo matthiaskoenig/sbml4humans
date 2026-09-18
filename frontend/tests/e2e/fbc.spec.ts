@@ -57,6 +57,24 @@ test.describe("fbc", () => {
     await expect(attribute(page, "lower flux bound")).toHaveCount(0);
   });
 
+  test("shows an unbounded flux as the sign of infinity", async ({ page }) => {
+    await openExample(page, V1);
+    // an infinite value used to serialise as null and to read as the dash of an attribute the
+    // file does not set at all, which is what an unbounded flux is not
+    const bound = page.locator('tbody tr[data-pk$="FluxBound:v1_ub"]');
+    await expect(bound.locator("td").nth(4)).toHaveText("\u221e");
+    await row(page, "FluxBound:v1_ub").click();
+    await expect(attribute(page, "value")).toContainText("\u221e");
+
+    // the same for a parameter of a Version 2 document, which is where the bound of a
+    // reaction of a genome scale model sits
+    await openExample(page, "fbc_example (fbc_example.xml)");
+    await row(page, "Parameter:ub_inf").click();
+    await expect(attribute(page, "value")).toContainText("\u221e");
+    await row(page, "Parameter:lb_inf").click();
+    await expect(attribute(page, "value")).toHaveText(/value\s*-\u221e/);
+  });
+
   test("shows the active objective and the flux objectives of a model", async ({ page }) => {
     await openExample(page, V1);
     await page.getByTestId("bar-model").click();

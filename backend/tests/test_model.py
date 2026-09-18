@@ -1,5 +1,6 @@
 """Tests of the report data model."""
 
+import json
 from pathlib import Path
 
 import pytest
@@ -11,10 +12,12 @@ from sbml4humans.model import (
     CVTerm,
     Edge,
     EdgeKind,
+    FluxBound,
     LinkGraph,
     Math,
     Model,
     Node,
+    Parameter,
     RateRule,
     Report,
     SBase,
@@ -61,6 +64,46 @@ def test_math_and_cvterm() -> None:
     assert (
         cvterm.model_dump(mode="json", by_alias=True)["resources"] == cvterm.resources
     )
+
+
+def test_an_infinite_value_is_carried_as_the_constant_it_is() -> None:
+    """JSON has no literal for an infinite value, the report writes the constant.
+
+    `inf` used to serialise as `null`, so the upper bound `INF` of a reaction,
+    the value of an unbounded parameter and an attribute the file does not set
+    at all read as the same dash in the report.
+    """
+    upper = Parameter(pk="m/Parameter:ub", id="ub", value=float("inf"))
+    lower = Parameter(pk="m/Parameter:lb", id="lb", value=float("-inf"))
+    unset = Parameter(pk="m/Parameter:p", id="p")
+    dumped = [
+        json.loads(p.model_dump_json(by_alias=True))["value"]
+        for p in (upper, lower, unset)
+    ]
+    assert dumped == ["Infinity", "-Infinity", None]
+
+
+def test_a_value_which_is_not_a_number_is_carried_as_well() -> None:
+    """A NaN is a value of a double like an infinite one, and is carried like one."""
+    species = Species(
+        pk="m/Species:s", id="s", compartment="c", initial_amount=float("nan")
+    )
+    dumped = json.loads(species.model_dump_json(by_alias=True))
+    assert dumped["initialAmount"] == "NaN"
+
+
+def test_every_double_of_the_report_carries_them() -> None:
+    """The decision is one of the whole report, not of one class of it."""
+    bound = FluxBound(pk="m/FluxBound:b", id="b", value=float("inf"))
+    compartment = Compartment(pk="m/Compartment:c", id="c", size=float("inf"))
+    assert json.loads(bound.model_dump_json(by_alias=True))["value"] == "Infinity"
+    assert json.loads(compartment.model_dump_json(by_alias=True))["size"] == "Infinity"
+
+
+def test_an_infinite_value_validates_back() -> None:
+    """The constants are read back into the doubles they stand for."""
+    parameter = Parameter.model_validate({"pk": "m/Parameter:ub", "value": "Infinity"})
+    assert parameter.value == float("inf")
 
 
 def _model() -> Model:

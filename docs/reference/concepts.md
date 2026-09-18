@@ -26,6 +26,14 @@ A model does not have to declare units everywhere: a compartment, a species or a
 
 Derived units are shown in the column "derived units" of the tables and in the inspector. They are the fastest check whether a kinetic law is dimensionally what it should be, because the derived units of a kinetic law are extent per time when the law is right.
 
+## number
+
+How the report shows a number which is infinite or not a number.
+
+A double of SBML may be infinite or not a number, `INF`, `-INF` and `NaN` as a file writes them, and both are ordinary values: the upper bound of an unbounded flux is `INF`, and a `NaN` says that a quantity is defined but its number is not known. JSON has no literal for either of them, so the report sends them as the three constants `"Infinity"`, `"-Infinity"` and `"NaN"`, which keeps them apart from `null`, the attribute a file does not set at all.
+
+The report shows an infinite value as the sign of infinity with the direction of its bound, ∞ and -∞, with the `INF` or `-INF` of the file as its tooltip, and a value which is not a number as `NaN`. An attribute which is not set stays the dash every empty cell of the report shows. Every other number is shown with six significant digits, and the full number is the tooltip of the rounded one.
+
 ## equation
 
 The reaction written as a chemical equation.
