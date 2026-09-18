@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { EventAssignment, GeneProductAssociation, SbmlElement, Math } from "@/api/types";
+import type {
+  EventAssignment,
+  GeneProductAssociation,
+  Input,
+  Output,
+  SbmlElement,
+  Math,
+} from "@/api/types";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
+import QualSignMark from "@/components/misc/QualSignMark.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
@@ -58,6 +66,26 @@ const assignments = computed<EventAssignment[]>(() =>
 function variablePk(assignment: EventAssignment): string | null {
   return index.value?.resolve(assignment.pk, "variable", assignment.variable) ?? null;
 }
+
+/** Kind "influence": the inputs or the outputs of a transition, an empty list where the
+ * transition has none, which the cell shows as the placeholder. */
+const influences = computed<(Input | Output)[]>(() =>
+  Array.isArray(value.value) ? (value.value as (Input | Output)[]) : [],
+);
+
+/** The qualitative species an input or an output names, resolved through the edge of that
+ * input or output, which is where the file writes the reference. */
+function speciesPk(influence: Input | Output): string | null {
+  if (!props.column.link) return null;
+  return (
+    index.value?.resolve(influence.pk, props.column.link, influence.qualitativeSpecies) ?? null
+  );
+}
+
+/** The sign of an input, which an output does not carry. */
+function signOf(influence: Input | Output): string | null | undefined {
+  return "sign" in influence ? influence.sign : null;
+}
 </script>
 
 <template>
@@ -87,6 +115,18 @@ function variablePk(assignment: EventAssignment): string | null {
       ><span v-if="i > 0">, </span
       ><ElementLink :pk="variablePk(assignment)" :label="assignment.variable" /><span> = </span
       ><MathView :math="assignment.math"
+    /></template>
+  </span>
+  <!-- the species of the inputs or of the outputs of a transition, on the one line of the row:
+  the species as a link and, for an input, the sign of its influence behind it -->
+  <ValueText v-else-if="column.kind === 'influence' && !influences.length" :value="null" />
+  <span v-else-if="column.kind === 'influence'" data-testid="influence">
+    <template v-for="(influence, i) in influences" :key="influence.pk"
+      ><span v-if="i > 0">, </span
+      ><ElementLink :pk="speciesPk(influence)" :label="influence.qualitativeSpecies" /><QualSignMark
+        v-if="signOf(influence)"
+        class="ml-0.5"
+        :sign="signOf(influence)"
     /></template>
   </span>
   <!-- the expression is capped at the width of its column and cut off with an ellipsis: an

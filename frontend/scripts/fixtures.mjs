@@ -21,6 +21,7 @@ const EXAMPLES = {
   comp_deletion: "comp_deletion (comp_deletion.xml)",
   comp_models: "CompModels",
   distrib_uncertainties: "distrib_uncertainties (distrib_uncertainties.xml)",
+  qual_example: "qual_example (qual_example.xml)",
   constraint_event: "constraint_event (constraint_event.xml)",
 };
 

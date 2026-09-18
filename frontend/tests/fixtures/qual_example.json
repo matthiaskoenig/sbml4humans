@@ -1,0 +1,839 @@
+{
+  "uid": "c81b69b312724541aa3d20595a8744f0",
+  "manifest": {
+    "entries": [
+      {
+        "location": ".",
+        "format": "http://identifiers.org/combine.specifications/omex",
+        "master": false
+      },
+      {
+        "location": "./manifest.xml",
+        "format": "http://identifiers.org/combine.specifications/omex-manifest",
+        "master": false
+      },
+      {
+        "location": "./model.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml",
+        "master": true
+      }
+    ]
+  },
+  "reports": {
+    "./model.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": null,
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "keyValuePairs": [],
+          "level": 3,
+          "version": 1,
+          "packages": [
+            {
+              "prefix": "qual",
+              "version": 1
+            }
+          ],
+          "annotationXml": null
+        },
+        "models": [
+          {
+            "pk": "qual_example/Model:qual_example",
+            "sbmlType": "Model",
+            "id": "qual_example",
+            "metaId": "meta_qual_example",
+            "name": "Qualitative example model",
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>A qualitative model of a small gene regulatory switch. A qualitative species carries a level, a whole number between zero and its maximum level, instead of a concentration, and a transition says which level it takes next.</p>\n    <p>The switch has three qualitative species: the signal is an input of the system which no transition changes, the gene is Boolean, and the protein has the three levels absent, low and high.</p>\n    <p>The transition <code>tr_G</code> is written in the logical formalism: its output assigns the gene the result level of the first function term whose condition holds, and the default term gives the level of every state the terms do not cover. The transition <code>tr_P</code> is written in the Petri net formalism of the package: its input consumes the gene and its output produces one level of protein per result level. Both formalisms are in one file so that a report shows what each of them looks like.</p>\n  </body>\n</notes>",
+            "cvterms": [],
+            "history": null,
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "kind": "model",
+            "annotationXml": null,
+            "substanceUnits": null,
+            "substanceUnitsLatex": null,
+            "timeUnits": null,
+            "timeUnitsLatex": null,
+            "volumeUnits": null,
+            "volumeUnitsLatex": null,
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": null,
+            "extentUnitsLatex": null,
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [],
+            "listOfCompartments": [
+              {
+                "pk": "qual_example/Compartment:cell",
+                "sbmlType": "Compartment",
+                "id": "cell",
+                "metaId": null,
+                "name": "cell",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"cell\" name=\"cell\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [],
+            "listOfParameters": [],
+            "listOfInitialAssignments": [],
+            "listOfRules": [],
+            "listOfConstraints": [],
+            "listOfReactions": [],
+            "listOfEvents": [],
+            "listOfSubmodels": [],
+            "listOfPorts": [],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [
+              {
+                "pk": "qual_example/QualitativeSpecies:S",
+                "sbmlType": "QualitativeSpecies",
+                "id": "S",
+                "metaId": "meta_S",
+                "name": "signal",
+                "sbo": "SBO:0000252",
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The extracellular signal the switch responds to. It is constant, which makes it an input of the system: it is read by the transitions and changed by none of them, and an experiment sets its level. It carries no initial level, because the level it is held at is the condition of the experiment.</p>\n  </body>\n</notes>",
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000252"
+                    ],
+                    "nested": []
+                  },
+                  {
+                    "qualifier": "BQB_IS_VERSION_OF",
+                    "resources": [
+                      "https://identifiers.org/GO:0007165"
+                    ],
+                    "nested": []
+                  }
+                ],
+                "history": null,
+                "xml": "<qual:qualitativeSpecies metaid=\"meta_S\" sboTerm=\"SBO:0000252\" qual:id=\"S\" qual:compartment=\"cell\" qual:constant=\"true\" qual:name=\"signal\" qual:maxLevel=\"1\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The extracellular signal the switch responds to. It is constant, which makes it an input of the system: it is read by the transitions and changed by none of them, and an experiment sets its level. It carries no initial level, because the level it is held at is the condition of the experiment.</p>\n    </body>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_S\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"https://identifiers.org/GO:0007165\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</qual:qualitativeSpecies>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "constant": true,
+                "initialLevel": null,
+                "maxLevel": 1
+              },
+              {
+                "pk": "qual_example/QualitativeSpecies:G",
+                "sbmlType": "QualitativeSpecies",
+                "id": "G",
+                "metaId": null,
+                "name": "gene",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<qual:qualitativeSpecies qual:id=\"G\" qual:compartment=\"cell\" qual:constant=\"false\" qual:name=\"gene\" qual:initialLevel=\"0\" qual:maxLevel=\"1\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "constant": false,
+                "initialLevel": 0,
+                "maxLevel": 1
+              },
+              {
+                "pk": "qual_example/QualitativeSpecies:P",
+                "sbmlType": "QualitativeSpecies",
+                "id": "P",
+                "metaId": null,
+                "name": "protein",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<qual:qualitativeSpecies qual:id=\"P\" qual:compartment=\"cell\" qual:constant=\"false\" qual:name=\"protein\" qual:initialLevel=\"1\" qual:maxLevel=\"2\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "constant": false,
+                "initialLevel": 1,
+                "maxLevel": 2
+              }
+            ],
+            "listOfTransitions": [
+              {
+                "pk": "qual_example/Transition:tr_G",
+                "sbmlType": "Transition",
+                "id": "tr_G",
+                "metaId": "meta_tr_G",
+                "name": "expression of the gene",
+                "sbo": null,
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The gene is switched on by the signal and stays on while it is on, which is the hysteresis of the switch, and the protein switches it off once it reaches its highest level.</p>\n    <p>The two function terms are the two states in which the gene is on. Every state they do not cover is the default term, where the gene is off.</p>\n  </body>\n</notes>",
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS_VERSION_OF",
+                    "resources": [
+                      "https://identifiers.org/GO:0010468"
+                    ],
+                    "nested": []
+                  }
+                ],
+                "history": null,
+                "xml": "<qual:transition metaid=\"meta_tr_G\" qual:id=\"tr_G\" qual:name=\"expression of the gene\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The gene is switched on by the signal and stays on while it is on, which is the hysteresis of the switch, and the protein switches it off once it reaches its highest level.</p>\n      <p>The two function terms are the two states in which the gene is on. Every state they do not cover is the default term, where the gene is off.</p>\n    </body>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_tr_G\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"https://identifiers.org/GO:0010468\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n  <qual:listOfInputs>\n    <qual:input qual:id=\"theta_G_S\" qual:qualitativeSpecies=\"S\" qual:transitionEffect=\"none\" qual:name=\"threshold of the signal\" qual:sign=\"positive\" qual:thresholdLevel=\"1\"/>\n    <qual:input qual:id=\"theta_G_P\" qual:qualitativeSpecies=\"P\" qual:transitionEffect=\"none\" qual:name=\"threshold of the protein\" qual:sign=\"negative\" qual:thresholdLevel=\"2\"/>\n    <qual:input qual:id=\"theta_G_G\" qual:qualitativeSpecies=\"G\" qual:transitionEffect=\"none\" qual:name=\"threshold of the gene\" qual:sign=\"positive\" qual:thresholdLevel=\"1\"/>\n  </qual:listOfInputs>\n  <qual:listOfOutputs>\n    <qual:output qual:id=\"out_G\" qual:qualitativeSpecies=\"G\" qual:transitionEffect=\"assignmentLevel\"/>\n  </qual:listOfOutputs>\n  <qual:listOfFunctionTerms>\n    <qual:defaultTerm qual:resultLevel=\"0\"/>\n    <qual:functionTerm qual:resultLevel=\"1\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <and/>\n          <apply>\n            <geq/>\n            <ci> S </ci>\n            <ci> theta_G_S </ci>\n          </apply>\n          <apply>\n            <lt/>\n            <ci> P </ci>\n            <ci> theta_G_P </ci>\n          </apply>\n        </apply>\n      </math>\n    </qual:functionTerm>\n    <qual:functionTerm qual:resultLevel=\"1\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <and/>\n          <apply>\n            <geq/>\n            <ci> G </ci>\n            <ci> theta_G_G </ci>\n          </apply>\n          <apply>\n            <lt/>\n            <ci> P </ci>\n            <ci> theta_G_P </ci>\n          </apply>\n        </apply>\n      </math>\n    </qual:functionTerm>\n  </qual:listOfFunctionTerms>\n</qual:transition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "listOfInputs": [
+                  {
+                    "pk": "qual_example/Input:theta_G_S",
+                    "sbmlType": "Input",
+                    "id": "theta_G_S",
+                    "metaId": null,
+                    "name": "threshold of the signal",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:input qual:id=\"theta_G_S\" qual:qualitativeSpecies=\"S\" qual:transitionEffect=\"none\" qual:name=\"threshold of the signal\" qual:sign=\"positive\" qual:thresholdLevel=\"1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "qualitativeSpecies": "S",
+                    "thresholdLevel": 1,
+                    "transitionEffect": "none",
+                    "sign": "positive"
+                  },
+                  {
+                    "pk": "qual_example/Input:theta_G_P",
+                    "sbmlType": "Input",
+                    "id": "theta_G_P",
+                    "metaId": null,
+                    "name": "threshold of the protein",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:input qual:id=\"theta_G_P\" qual:qualitativeSpecies=\"P\" qual:transitionEffect=\"none\" qual:name=\"threshold of the protein\" qual:sign=\"negative\" qual:thresholdLevel=\"2\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "qualitativeSpecies": "P",
+                    "thresholdLevel": 2,
+                    "transitionEffect": "none",
+                    "sign": "negative"
+                  },
+                  {
+                    "pk": "qual_example/Input:theta_G_G",
+                    "sbmlType": "Input",
+                    "id": "theta_G_G",
+                    "metaId": null,
+                    "name": "threshold of the gene",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:input qual:id=\"theta_G_G\" qual:qualitativeSpecies=\"G\" qual:transitionEffect=\"none\" qual:name=\"threshold of the gene\" qual:sign=\"positive\" qual:thresholdLevel=\"1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "qualitativeSpecies": "G",
+                    "thresholdLevel": 1,
+                    "transitionEffect": "none",
+                    "sign": "positive"
+                  }
+                ],
+                "listOfOutputs": [
+                  {
+                    "pk": "qual_example/Output:out_G",
+                    "sbmlType": "Output",
+                    "id": "out_G",
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:output qual:id=\"out_G\" qual:qualitativeSpecies=\"G\" qual:transitionEffect=\"assignmentLevel\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "qualitativeSpecies": "G",
+                    "outputLevel": null,
+                    "transitionEffect": "assignmentLevel"
+                  }
+                ],
+                "listOfFunctionTerms": [
+                  {
+                    "pk": "qual_example/FunctionTerm:tr_G.functionTerm.0",
+                    "sbmlType": "FunctionTerm",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:functionTerm qual:resultLevel=\"1\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <and/>\n      <apply>\n        <geq/>\n        <ci> S </ci>\n        <ci> theta_G_S </ci>\n      </apply>\n      <apply>\n        <lt/>\n        <ci> P </ci>\n        <ci> theta_G_P </ci>\n      </apply>\n    </apply>\n  </math>\n</qual:functionTerm>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "resultLevel": 1,
+                    "math": {
+                      "latex": " (\\mathit{S}\\ge \\mathit{theta\\_G\\_S})\\wedge (\\mathit{P}<\\mathit{theta\\_G\\_P})",
+                      "formula": "(S >= theta_G_S) && (P < theta_G_P)"
+                    }
+                  },
+                  {
+                    "pk": "qual_example/FunctionTerm:tr_G.functionTerm.1",
+                    "sbmlType": "FunctionTerm",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:functionTerm qual:resultLevel=\"1\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <and/>\n      <apply>\n        <geq/>\n        <ci> G </ci>\n        <ci> theta_G_G </ci>\n      </apply>\n      <apply>\n        <lt/>\n        <ci> P </ci>\n        <ci> theta_G_P </ci>\n      </apply>\n    </apply>\n  </math>\n</qual:functionTerm>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "resultLevel": 1,
+                    "math": {
+                      "latex": " (\\mathit{G}\\ge \\mathit{theta\\_G\\_G})\\wedge (\\mathit{P}<\\mathit{theta\\_G\\_P})",
+                      "formula": "(G >= theta_G_G) && (P < theta_G_P)"
+                    }
+                  }
+                ],
+                "defaultTerm": {
+                  "pk": "qual_example/DefaultTerm:tr_G.defaultTerm",
+                  "sbmlType": "DefaultTerm",
+                  "id": null,
+                  "metaId": null,
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<qual:defaultTerm qual:resultLevel=\"0\"/>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "keyValuePairs": [],
+                  "resultLevel": 0
+                }
+              },
+              {
+                "pk": "qual_example/Transition:tr_P",
+                "sbmlType": "Transition",
+                "id": "tr_P",
+                "metaId": null,
+                "name": "synthesis of the protein",
+                "sbo": null,
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The protein is made while the gene is on and while it has not reached its highest level yet. The input consumes the gene, the way the firing of a Petri net transition takes the tokens of its places, and the output produces one level of protein for every result level of the term which fires.</p>\n  </body>\n</notes>",
+                "cvterms": [],
+                "history": null,
+                "xml": "<qual:transition qual:id=\"tr_P\" qual:name=\"synthesis of the protein\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The protein is made while the gene is on and while it has not reached its highest level yet. The input consumes the gene, the way the firing of a Petri net transition takes the tokens of its places, and the output produces one level of protein for every result level of the term which fires.</p>\n    </body>\n  </notes>\n  <qual:listOfInputs>\n    <qual:input qual:id=\"w_P_G\" qual:qualitativeSpecies=\"G\" qual:transitionEffect=\"consumption\" qual:name=\"weight of the gene\" qual:sign=\"positive\" qual:thresholdLevel=\"1\"/>\n    <qual:input qual:id=\"theta_P_P\" qual:qualitativeSpecies=\"P\" qual:transitionEffect=\"none\" qual:name=\"threshold of the protein\" qual:sign=\"negative\" qual:thresholdLevel=\"2\"/>\n  </qual:listOfInputs>\n  <qual:listOfOutputs>\n    <qual:output qual:id=\"out_P\" qual:qualitativeSpecies=\"P\" qual:transitionEffect=\"production\" qual:outputLevel=\"1\"/>\n  </qual:listOfOutputs>\n  <qual:listOfFunctionTerms>\n    <qual:defaultTerm qual:resultLevel=\"0\"/>\n    <qual:functionTerm qual:resultLevel=\"2\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <and/>\n          <apply>\n            <geq/>\n            <ci> G </ci>\n            <ci> w_P_G </ci>\n          </apply>\n          <apply>\n            <eq/>\n            <ci> P </ci>\n            <cn type=\"integer\"> 0 </cn>\n          </apply>\n        </apply>\n      </math>\n    </qual:functionTerm>\n    <qual:functionTerm qual:resultLevel=\"1\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <and/>\n          <apply>\n            <geq/>\n            <ci> G </ci>\n            <ci> w_P_G </ci>\n          </apply>\n          <apply>\n            <lt/>\n            <ci> P </ci>\n            <ci> theta_P_P </ci>\n          </apply>\n        </apply>\n      </math>\n    </qual:functionTerm>\n  </qual:listOfFunctionTerms>\n</qual:transition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "listOfInputs": [
+                  {
+                    "pk": "qual_example/Input:w_P_G",
+                    "sbmlType": "Input",
+                    "id": "w_P_G",
+                    "metaId": null,
+                    "name": "weight of the gene",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:input qual:id=\"w_P_G\" qual:qualitativeSpecies=\"G\" qual:transitionEffect=\"consumption\" qual:name=\"weight of the gene\" qual:sign=\"positive\" qual:thresholdLevel=\"1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "qualitativeSpecies": "G",
+                    "thresholdLevel": 1,
+                    "transitionEffect": "consumption",
+                    "sign": "positive"
+                  },
+                  {
+                    "pk": "qual_example/Input:theta_P_P",
+                    "sbmlType": "Input",
+                    "id": "theta_P_P",
+                    "metaId": null,
+                    "name": "threshold of the protein",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:input qual:id=\"theta_P_P\" qual:qualitativeSpecies=\"P\" qual:transitionEffect=\"none\" qual:name=\"threshold of the protein\" qual:sign=\"negative\" qual:thresholdLevel=\"2\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "qualitativeSpecies": "P",
+                    "thresholdLevel": 2,
+                    "transitionEffect": "none",
+                    "sign": "negative"
+                  }
+                ],
+                "listOfOutputs": [
+                  {
+                    "pk": "qual_example/Output:out_P",
+                    "sbmlType": "Output",
+                    "id": "out_P",
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:output qual:id=\"out_P\" qual:qualitativeSpecies=\"P\" qual:transitionEffect=\"production\" qual:outputLevel=\"1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "qualitativeSpecies": "P",
+                    "outputLevel": 1,
+                    "transitionEffect": "production"
+                  }
+                ],
+                "listOfFunctionTerms": [
+                  {
+                    "pk": "qual_example/FunctionTerm:tr_P.functionTerm.0",
+                    "sbmlType": "FunctionTerm",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:functionTerm qual:resultLevel=\"2\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <and/>\n      <apply>\n        <geq/>\n        <ci> G </ci>\n        <ci> w_P_G </ci>\n      </apply>\n      <apply>\n        <eq/>\n        <ci> P </ci>\n        <cn type=\"integer\"> 0 </cn>\n      </apply>\n    </apply>\n  </math>\n</qual:functionTerm>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "resultLevel": 2,
+                    "math": {
+                      "latex": " (\\mathit{G}\\ge \\mathit{w\\_P\\_G})\\wedge (\\mathit{P}=0)",
+                      "formula": "(G >= w_P_G) && (P == 0)"
+                    }
+                  },
+                  {
+                    "pk": "qual_example/FunctionTerm:tr_P.functionTerm.1",
+                    "sbmlType": "FunctionTerm",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<qual:functionTerm qual:resultLevel=\"1\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <and/>\n      <apply>\n        <geq/>\n        <ci> G </ci>\n        <ci> w_P_G </ci>\n      </apply>\n      <apply>\n        <lt/>\n        <ci> P </ci>\n        <ci> theta_P_P </ci>\n      </apply>\n    </apply>\n  </math>\n</qual:functionTerm>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "resultLevel": 1,
+                    "math": {
+                      "latex": " (\\mathit{G}\\ge \\mathit{w\\_P\\_G})\\wedge (\\mathit{P}<\\mathit{theta\\_P\\_P})",
+                      "formula": "(G >= w_P_G) && (P < theta_P_P)"
+                    }
+                  }
+                ],
+                "defaultTerm": {
+                  "pk": "qual_example/DefaultTerm:tr_P.defaultTerm",
+                  "sbmlType": "DefaultTerm",
+                  "id": null,
+                  "metaId": null,
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<qual:defaultTerm qual:resultLevel=\"0\"/>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "keyValuePairs": [],
+                  "resultLevel": 0
+                }
+              }
+            ],
+            "fbc": null
+          }
+        ],
+        "externalModelDefinitions": [],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "qual_example/Model:qual_example": {
+              "pk": "qual_example/Model:qual_example",
+              "sbmlType": "Model",
+              "id": "qual_example",
+              "name": "Qualitative example model",
+              "model": null
+            },
+            "qual_example/Compartment:cell": {
+              "pk": "qual_example/Compartment:cell",
+              "sbmlType": "Compartment",
+              "id": "cell",
+              "name": "cell",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/QualitativeSpecies:S": {
+              "pk": "qual_example/QualitativeSpecies:S",
+              "sbmlType": "QualitativeSpecies",
+              "id": "S",
+              "name": "signal",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/QualitativeSpecies:G": {
+              "pk": "qual_example/QualitativeSpecies:G",
+              "sbmlType": "QualitativeSpecies",
+              "id": "G",
+              "name": "gene",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/QualitativeSpecies:P": {
+              "pk": "qual_example/QualitativeSpecies:P",
+              "sbmlType": "QualitativeSpecies",
+              "id": "P",
+              "name": "protein",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Transition:tr_G": {
+              "pk": "qual_example/Transition:tr_G",
+              "sbmlType": "Transition",
+              "id": "tr_G",
+              "name": "expression of the gene",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Input:theta_G_S": {
+              "pk": "qual_example/Input:theta_G_S",
+              "sbmlType": "Input",
+              "id": "theta_G_S",
+              "name": "threshold of the signal",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Input:theta_G_P": {
+              "pk": "qual_example/Input:theta_G_P",
+              "sbmlType": "Input",
+              "id": "theta_G_P",
+              "name": "threshold of the protein",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Input:theta_G_G": {
+              "pk": "qual_example/Input:theta_G_G",
+              "sbmlType": "Input",
+              "id": "theta_G_G",
+              "name": "threshold of the gene",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Output:out_G": {
+              "pk": "qual_example/Output:out_G",
+              "sbmlType": "Output",
+              "id": "out_G",
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Transition:tr_P": {
+              "pk": "qual_example/Transition:tr_P",
+              "sbmlType": "Transition",
+              "id": "tr_P",
+              "name": "synthesis of the protein",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Input:w_P_G": {
+              "pk": "qual_example/Input:w_P_G",
+              "sbmlType": "Input",
+              "id": "w_P_G",
+              "name": "weight of the gene",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Input:theta_P_P": {
+              "pk": "qual_example/Input:theta_P_P",
+              "sbmlType": "Input",
+              "id": "theta_P_P",
+              "name": "threshold of the protein",
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/Output:out_P": {
+              "pk": "qual_example/Output:out_P",
+              "sbmlType": "Output",
+              "id": "out_P",
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/FunctionTerm:tr_G.functionTerm.0": {
+              "pk": "qual_example/FunctionTerm:tr_G.functionTerm.0",
+              "sbmlType": "FunctionTerm",
+              "id": null,
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/FunctionTerm:tr_G.functionTerm.1": {
+              "pk": "qual_example/FunctionTerm:tr_G.functionTerm.1",
+              "sbmlType": "FunctionTerm",
+              "id": null,
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/DefaultTerm:tr_G.defaultTerm": {
+              "pk": "qual_example/DefaultTerm:tr_G.defaultTerm",
+              "sbmlType": "DefaultTerm",
+              "id": null,
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/FunctionTerm:tr_P.functionTerm.0": {
+              "pk": "qual_example/FunctionTerm:tr_P.functionTerm.0",
+              "sbmlType": "FunctionTerm",
+              "id": null,
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/FunctionTerm:tr_P.functionTerm.1": {
+              "pk": "qual_example/FunctionTerm:tr_P.functionTerm.1",
+              "sbmlType": "FunctionTerm",
+              "id": null,
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            },
+            "qual_example/DefaultTerm:tr_P.defaultTerm": {
+              "pk": "qual_example/DefaultTerm:tr_P.defaultTerm",
+              "sbmlType": "DefaultTerm",
+              "id": null,
+              "name": null,
+              "model": "qual_example/Model:qual_example"
+            }
+          },
+          "edges": [
+            {
+              "source": "qual_example/QualitativeSpecies:S",
+              "target": "qual_example/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "qual_example/QualitativeSpecies:G",
+              "target": "qual_example/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "qual_example/QualitativeSpecies:P",
+              "target": "qual_example/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "qual_example/Transition:tr_G",
+              "target": "qual_example/Input:theta_G_S",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Input:theta_G_S",
+              "target": "qual_example/QualitativeSpecies:S",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Transition:tr_G",
+              "target": "qual_example/Input:theta_G_P",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Input:theta_G_P",
+              "target": "qual_example/QualitativeSpecies:P",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Transition:tr_G",
+              "target": "qual_example/Input:theta_G_G",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Input:theta_G_G",
+              "target": "qual_example/QualitativeSpecies:G",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Transition:tr_G",
+              "target": "qual_example/Output:out_G",
+              "kind": "output"
+            },
+            {
+              "source": "qual_example/Output:out_G",
+              "target": "qual_example/QualitativeSpecies:G",
+              "kind": "output"
+            },
+            {
+              "source": "qual_example/Transition:tr_G",
+              "target": "qual_example/FunctionTerm:tr_G.functionTerm.0",
+              "kind": "functionTerm"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
+              "target": "qual_example/QualitativeSpecies:P",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
+              "target": "qual_example/QualitativeSpecies:S",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
+              "target": "qual_example/Input:theta_G_P",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
+              "target": "qual_example/Input:theta_G_S",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/Transition:tr_G",
+              "target": "qual_example/FunctionTerm:tr_G.functionTerm.1",
+              "kind": "functionTerm"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
+              "target": "qual_example/QualitativeSpecies:G",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
+              "target": "qual_example/QualitativeSpecies:P",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
+              "target": "qual_example/Input:theta_G_G",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
+              "target": "qual_example/Input:theta_G_P",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/Transition:tr_G",
+              "target": "qual_example/DefaultTerm:tr_G.defaultTerm",
+              "kind": "defaultTerm"
+            },
+            {
+              "source": "qual_example/Transition:tr_P",
+              "target": "qual_example/Input:w_P_G",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Input:w_P_G",
+              "target": "qual_example/QualitativeSpecies:G",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Transition:tr_P",
+              "target": "qual_example/Input:theta_P_P",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Input:theta_P_P",
+              "target": "qual_example/QualitativeSpecies:P",
+              "kind": "input"
+            },
+            {
+              "source": "qual_example/Transition:tr_P",
+              "target": "qual_example/Output:out_P",
+              "kind": "output"
+            },
+            {
+              "source": "qual_example/Output:out_P",
+              "target": "qual_example/QualitativeSpecies:P",
+              "kind": "output"
+            },
+            {
+              "source": "qual_example/Transition:tr_P",
+              "target": "qual_example/FunctionTerm:tr_P.functionTerm.0",
+              "kind": "functionTerm"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_P.functionTerm.0",
+              "target": "qual_example/QualitativeSpecies:G",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_P.functionTerm.0",
+              "target": "qual_example/QualitativeSpecies:P",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_P.functionTerm.0",
+              "target": "qual_example/Input:w_P_G",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/Transition:tr_P",
+              "target": "qual_example/FunctionTerm:tr_P.functionTerm.1",
+              "kind": "functionTerm"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
+              "target": "qual_example/QualitativeSpecies:G",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
+              "target": "qual_example/QualitativeSpecies:P",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
+              "target": "qual_example/Input:theta_P_P",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
+              "target": "qual_example/Input:w_P_G",
+              "kind": "math"
+            },
+            {
+              "source": "qual_example/Transition:tr_P",
+              "target": "qual_example/DefaultTerm:tr_P.defaultTerm",
+              "kind": "defaultTerm"
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.002 [s]"
+      }
+    }
+  }
+}

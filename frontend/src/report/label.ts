@@ -16,6 +16,15 @@ const REPLACEMENT_KINDS: Partial<Record<SbmlType, EdgeKind>> = {
   ReplacedBy: "replacedBy",
 };
 
+/** The two influences of a transition with the link kind which leads from the transition to
+ * them. An input and an output carry an identifier in few models, so they are named after
+ * their transition and the species they name, the way a species reference is named after its
+ * reaction and its species. */
+const INFLUENCE_KINDS: Partial<Record<SbmlType, EdgeKind>> = {
+  Input: "input",
+  Output: "output",
+};
+
 /** The name a link and the header of the inspector show for an element.
  *
  * It is the id of the element, and without one the key of its primary key, which is its meta id
@@ -63,6 +72,12 @@ export function elementLabel(
     const edge = index?.referencedBy(pk).find((e) => e.kind === childKind);
     const event = edge ? index?.get(edge.source)?.id : null;
     if (event) return `${event}.${childKind}`;
+  }
+  const influenceKind = element?.sbmlType ? INFLUENCE_KINDS[element.sbmlType] : undefined;
+  if (element && influenceKind && "qualitativeSpecies" in element) {
+    const edge = index?.referencedBy(pk).find((e) => e.kind === influenceKind);
+    const transition = edge ? index?.get(edge.source)?.id : null;
+    if (transition) return `${transition}.${element.qualitativeSpecies}`;
   }
   return pkKey(pk);
 }

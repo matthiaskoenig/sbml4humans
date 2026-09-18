@@ -31,6 +31,8 @@ describe("sbml types", () => {
       "Objective",
       "FluxBound",
       "UserDefinedConstraint",
+      "QualitativeSpecies",
+      "Transition",
     ]);
   });
 
@@ -43,6 +45,15 @@ describe("sbml types", () => {
       expect(info.color).toMatch(/^#[0-9a-f]{6}$/);
       expect(info.icon, info.type).toBeDefined();
     }
+  });
+
+  it("marks the package of the qual types", () => {
+    expect(typeInfo("QualitativeSpecies").pkg).toBe("qual");
+    expect(typeInfo("Transition").pkg).toBe("qual");
+    expect(typeInfo("Input").pkg).toBe("qual");
+    expect(typeInfo("Output").pkg).toBe("qual");
+    expect(typeInfo("FunctionTerm").pkg).toBe("qual");
+    expect(typeInfo("DefaultTerm").pkg).toBe("qual");
   });
 
   it("marks the package of the comp and fbc types", () => {

@@ -1,9 +1,12 @@
 import {
   ActivityIcon,
   AmpersandIcon,
+  ArrowRightFromLineIcon,
   ArrowRightLeftIcon,
+  ArrowRightToLineIcon,
   BoxIcon,
   CalculatorIcon,
+  CornerDownRightIcon,
   ChevronsLeftRightEllipsisIcon,
   CircleArrowLeftIcon,
   CircleDotIcon,
@@ -24,12 +27,15 @@ import {
   NetworkIcon,
   ReplaceIcon,
   ScaleIcon,
+  SignalIcon,
   SlidersHorizontalIcon,
   SplitIcon,
+  Table2Icon,
   TagIcon,
   TargetIcon,
   Trash2Icon,
   WaypointsIcon,
+  WorkflowIcon,
   ZapIcon,
 } from "@lucide/vue";
 import type { Component } from "vue";
@@ -42,7 +48,7 @@ import type {
   SbmlType,
 } from "@/api/types";
 
-export type SbmlPackage = "core" | "comp" | "fbc" | "distrib";
+export type SbmlPackage = "core" | "comp" | "fbc" | "qual" | "distrib";
 
 export interface SbmlTypeInfo<T extends SbmlType = SbmlType> {
   type: T;
@@ -252,6 +258,24 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
     pkg: "fbc",
     listKey: "listOfUserDefinedConstraints",
   },
+  {
+    type: "QualitativeSpecies",
+    label: "Qualitative species",
+    plural: "Qualitative species",
+    color: "#c2a5cf",
+    icon: SignalIcon,
+    pkg: "qual",
+    listKey: "listOfQualitativeSpecies",
+  },
+  {
+    type: "Transition",
+    label: "Transition",
+    plural: "Transitions",
+    color: "#9970ab",
+    icon: WorkflowIcon,
+    pkg: "qual",
+    listKey: "listOfTransitions",
+  },
 ];
 
 export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
@@ -398,6 +422,38 @@ export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
     color: "#d53e4f",
     icon: TagIcon,
     pkg: "fbc",
+  },
+  {
+    type: "Input",
+    label: "Input",
+    plural: "Inputs",
+    color: "#c2a5cf",
+    icon: ArrowRightToLineIcon,
+    pkg: "qual",
+  },
+  {
+    type: "Output",
+    label: "Output",
+    plural: "Outputs",
+    color: "#c2a5cf",
+    icon: ArrowRightFromLineIcon,
+    pkg: "qual",
+  },
+  {
+    type: "FunctionTerm",
+    label: "Function term",
+    plural: "Function terms",
+    color: "#9970ab",
+    icon: Table2Icon,
+    pkg: "qual",
+  },
+  {
+    type: "DefaultTerm",
+    label: "Default term",
+    plural: "Default terms",
+    color: "#9970ab",
+    icon: CornerDownRightIcon,
+    pkg: "qual",
   },
   {
     type: "Uncertainty",

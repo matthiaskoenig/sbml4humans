@@ -3,7 +3,14 @@ import { ID_COLUMNS, type ColumnDef } from "@/report/columns/types";
 
 type PackageType = Extract<
   ElementType,
-  "Submodel" | "Port" | "GeneProduct" | "Objective" | "FluxBound" | "UserDefinedConstraint"
+  | "Submodel"
+  | "Port"
+  | "GeneProduct"
+  | "Objective"
+  | "FluxBound"
+  | "UserDefinedConstraint"
+  | "QualitativeSpecies"
+  | "Transition"
 >;
 
 export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>> = {
@@ -61,5 +68,20 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
       header: "components",
       kind: "count",
     },
+  ],
+  QualitativeSpecies: [
+    ...ID_COLUMNS,
+    { field: "compartment", header: "compartment", kind: "link", link: "compartment" },
+    { field: "initialLevel", header: "initial level", kind: "number" },
+    { field: "maxLevel", header: "max level", kind: "number" },
+    { field: "constant", header: "constant", kind: "boolean" },
+  ],
+  // the species of the inputs with their sign and the species of the outputs are the influence
+  // the transition encodes, which is what a reader of a qualitative model looks for first
+  Transition: [
+    ...ID_COLUMNS,
+    { field: "listOfInputs", header: "inputs", kind: "influence", link: "input" },
+    { field: "listOfOutputs", header: "outputs", kind: "influence", link: "output" },
+    { field: "listOfFunctionTerms.length", header: "function terms", kind: "count" },
   ],
 };

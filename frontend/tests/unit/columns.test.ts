@@ -13,6 +13,7 @@ const indexes = [
   new ReportIndex(loadReport("fbc_example")),
   new ReportIndex(loadReport("fbc_constraints_v3")),
   new ReportIndex(loadReport("distrib_uncertainties")),
+  new ReportIndex(loadReport("qual_example")),
 ];
 const fbcConstraints = indexes[3]!;
 const repressilator = indexes[0]!;
@@ -55,8 +56,14 @@ describe("columns", () => {
   it("link columns name an edge kind and units columns a latex field", () => {
     for (const columns of Object.values(COLUMNS)) {
       for (const column of columns) {
-        if (column.kind === "link") expect(column.link).toBeDefined();
-        if (column.kind !== "link") expect(column.link).toBeUndefined();
+        // an influence column resolves the species of every input or output it renders over
+        // the same edge kind, so it names one as well
+        if (column.kind === "link" || column.kind === "influence") {
+          expect(column.link).toBeDefined();
+        }
+        if (column.kind !== "link" && column.kind !== "influence") {
+          expect(column.link).toBeUndefined();
+        }
       }
     }
   });
@@ -101,6 +108,31 @@ describe("columns", () => {
     expect(text).toContain(`g${GENE_TEXT_LIMIT - 1}`);
     expect(text).not.toContain(`g${GENE_TEXT_LIMIT}`);
     expect(text.endsWith("…)")).toBe(true);
+  });
+
+  it("gives a qualitative species its levels and a transition its influences", () => {
+    const qual = new ReportIndex(loadReport("qual_example"));
+    expect(columnsOf("QualitativeSpecies").map((c) => c.header)).toEqual([
+      "id",
+      "name",
+      "compartment",
+      "initial level",
+      "max level",
+      "constant",
+    ]);
+    expect(columnsOf("Transition").map((c) => c.header)).toEqual([
+      "id",
+      "name",
+      "inputs",
+      "outputs",
+      "function terms",
+    ]);
+    // the cell of the inputs holds the objects, not a string: it renders the species of every
+    // one of them as a link with the sign of its influence behind it
+    const transition = qual.byType("qual_example").get("Transition")![0]!;
+    const inputs = fieldValue(transition, "listOfInputs") as { qualitativeSpecies: string }[];
+    expect(inputs.map((input) => input.qualitativeSpecies)).toEqual(["S", "P", "G"]);
+    expect(fieldValue(transition, "listOfFunctionTerms.length")).toBe(2);
   });
 
   it("resolves dotted paths", () => {

@@ -62,7 +62,7 @@ describe("ReportIndex", () => {
 
   it("groups the elements of a model by type in list order", () => {
     const byType = repressilator.byType("BIOMD0000000012");
-    expect([...byType.keys()]).toHaveLength(18);
+    expect([...byType.keys()]).toHaveLength(20);
     expect(byType.get("Species")).toEqual(repressilator.mainModel!.listOfSpecies);
     expect(byType.get("Submodel")).toEqual([]);
     const rules = definitions.byType("model_definitions");

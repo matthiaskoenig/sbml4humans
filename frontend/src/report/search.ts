@@ -22,6 +22,9 @@ function* maths(element: SBase): Generator<Math | null | undefined> {
   if (element.sbmlType === "Uncertainty") {
     for (const parameter of element.uncertParameters ?? []) yield parameter.math;
   }
+  if (element.sbmlType === "Transition") {
+    for (const term of element.listOfFunctionTerms ?? []) yield term.math;
+  }
 }
 
 /** The searchable text of an element: id, name, metaId, sbo, the element it sets, notes text,

@@ -5,6 +5,7 @@ import type {
   AssignmentRule,
   Compartment,
   Constraint,
+  DefaultTerm,
   Delay,
   Deletion,
   Event,
@@ -13,19 +14,23 @@ import type {
   FluxBound,
   FluxObjective,
   FunctionDefinition,
+  FunctionTerm,
   GeneProduct,
   GeneProductAssociation,
   GeneProductRef,
   InitialAssignment,
+  Input,
   KineticLaw,
   LocalParameter,
   Model,
   ModifierSpeciesReference,
   Objective,
   Or,
+  Output,
   Parameter,
   Port,
   Priority,
+  QualitativeSpecies,
   RateRule,
   Reaction,
   ReplacedBy,
@@ -35,6 +40,7 @@ import type {
   Species,
   SpeciesReference,
   Submodel,
+  Transition,
   Trigger,
   Uncertainty,
   UnitDefinition,
@@ -66,7 +72,9 @@ export type SbmlElement =
   | GeneProduct
   | Objective
   | FluxBound
-  | UserDefinedConstraint;
+  | UserDefinedConstraint
+  | QualitativeSpecies
+  | Transition;
 
 /** The objects nested in another object, reachable through the inspector only. */
 export type NestedElement =
@@ -88,6 +96,10 @@ export type NestedElement =
   | And
   | Or
   | GeneProductRef
+  | Input
+  | Output
+  | FunctionTerm
+  | DefaultTerm
   | Uncertainty;
 
 export type SBase = DocumentElement | SbmlElement | NestedElement;

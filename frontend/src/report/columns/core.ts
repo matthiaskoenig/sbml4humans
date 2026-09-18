@@ -11,7 +11,14 @@ const DERIVED_UNITS: ColumnDef = {
 
 type CoreType = Exclude<
   ElementType,
-  "Submodel" | "Port" | "GeneProduct" | "Objective" | "FluxBound" | "UserDefinedConstraint"
+  | "Submodel"
+  | "Port"
+  | "GeneProduct"
+  | "Objective"
+  | "FluxBound"
+  | "UserDefinedConstraint"
+  | "QualitativeSpecies"
+  | "Transition"
 >;
 
 export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {

@@ -5,9 +5,11 @@ import { ref } from "vue";
 import type {
   Constraint,
   Event,
+  QualitativeSpecies,
   Reaction,
   Species,
   Submodel,
+  Transition,
   Uncertainty,
   UnitDefinition,
 } from "@/api/types";
@@ -19,7 +21,9 @@ import GeneAssociationView from "@/components/misc/GeneAssociationView.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import ReactionAttributes from "@/components/inspector/attributes/ReactionAttributes.vue";
 import ReplacedElementAttributes from "@/components/inspector/attributes/ReplacedElementAttributes.vue";
+import QualitativeSpeciesAttributes from "@/components/inspector/attributes/QualitativeSpeciesAttributes.vue";
 import SubmodelAttributes from "@/components/inspector/attributes/SubmodelAttributes.vue";
+import TransitionAttributes from "@/components/inspector/attributes/TransitionAttributes.vue";
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
@@ -45,6 +49,7 @@ const constraintEvent = new ReportIndex(loadReport("constraint_event"));
 const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
 const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
+const qual = new ReportIndex(loadReport("qual_example"));
 
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
@@ -476,6 +481,56 @@ describe("inspector", () => {
     const wrapper = mountWith(UncertaintyAttributes, { element: unsafe }, distrib);
     expect(wrapper.find("a").exists()).toBe(false);
     expect(wrapper.text()).toContain("javascript:alert(1)");
+  });
+
+  it("shows the levels of a qualitative species with a link to its compartment", async () => {
+    await router.push("/examples/qual_example");
+    const signal = qual.mainModel!.listOfQualitativeSpecies![0] as QualitativeSpecies;
+    const wrapper = mountWith(QualitativeSpeciesAttributes, { element: signal }, qual);
+    const rows = wrapper.findAll("[data-testid=attribute-row]").map((r) => r.get("dt").text());
+    expect(rows).toEqual(["compartment", "initial level", "max level", "constant"]);
+    expect(wrapper.find("[data-testid=element-link]").text()).toBe("cell");
+    // the level the file does not set reads as a dash and not as the integer libsbml answers
+    const initial = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.get("dt").text() === "initial level")!;
+    expect(initial.get("dd").text()).toBe("-");
+  });
+
+  it("shows the function terms of a transition as its transition table", async () => {
+    await router.push("/examples/qual_example");
+    const transition = qual.mainModel!.listOfTransitions![0] as Transition;
+    const wrapper = mountWith(TransitionAttributes, { element: transition }, qual);
+    const tables = wrapper.findAllComponents(NestedTable);
+    expect(tables).toHaveLength(3);
+
+    // the inputs with the species they read and the sign of their influence
+    const inputs = tables[0]!;
+    expect(inputs.findAll("thead th").map((th) => th.text())).toEqual([
+      "id",
+      "species",
+      "sign",
+      "threshold",
+      "effect",
+    ]);
+    expect(inputs.findAll("tbody tr")).toHaveLength(3);
+    expect(inputs.findAll("[data-testid=qual-sign]").map((s) => s.text())).toEqual([
+      "+",
+      "\u2212",
+      "+",
+    ]);
+
+    // the terms in the order in which they are read, the default term as the last row
+    const terms = tables[2]!;
+    expect(terms.findAll("thead th").map((th) => th.text())).toEqual([
+      "term",
+      "condition",
+      "result level",
+    ]);
+    const rows = terms.findAll("tbody tr");
+    expect(rows).toHaveLength(3);
+    expect(rows[2]!.text()).toContain("otherwise");
+    expect(rows[2]!.findAll("td")[2]!.text()).toBe("0");
   });
 
   it("shows the reference of a replacedBy by unit ref when it names no port or id", () => {

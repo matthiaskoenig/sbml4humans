@@ -21,7 +21,8 @@ export type FixtureName =
   | "comp_deletion"
   | "comp_models"
   | "distrib_uncertainties"
-  | "constraint_event";
+  | "constraint_event"
+  | "qual_example";
 
 export function loadFixture(name: FixtureName): ReportResponse {
   const path = join(FIXTURES_DIR, `${name}.json`);

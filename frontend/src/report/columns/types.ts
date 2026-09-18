@@ -11,6 +11,7 @@ export type CellKind =
   | "count"
   | "assignments"
   | "geneAssociation"
+  | "influence"
   | "xhtml";
 
 /** One column of an element table. */
@@ -19,7 +20,8 @@ export interface ColumnDef {
   field: string;
   header: string;
   kind: CellKind;
-  /** Kind "link": the edge kind that resolves the referenced element. */
+  /** Kind "link": the edge kind that resolves the referenced element. Kind "influence": the
+   * edge kind that resolves the qualitative species of every input or output of the cell. */
   link?: EdgeKind;
   /** Kind "units" and kind "link" with `link: "units"`: the field holding the latex of the
    * units, default `${field}Latex`. */

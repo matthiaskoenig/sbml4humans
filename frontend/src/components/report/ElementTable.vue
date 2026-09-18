@@ -89,7 +89,8 @@ function sortable(column: ColumnDef): boolean {
     column.kind !== "math" &&
     column.kind !== "units" &&
     column.kind !== "assignments" &&
-    column.kind !== "geneAssociation"
+    column.kind !== "geneAssociation" &&
+    column.kind !== "influence"
   );
 }
 
