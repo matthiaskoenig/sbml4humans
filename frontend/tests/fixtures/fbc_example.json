@@ -1,5 +1,5 @@
 {
-  "uid": "df2b612582a5400597d86a50585ec224",
+  "uid": "6c73b209338d446c96c684aaee60cb90",
   "manifest": {
     "entries": [
       {
@@ -46,7 +46,8 @@
               "prefix": "fbc",
               "version": 3
             }
-          ]
+          ],
+          "annotationXml": null
         },
         "models": [
           {
@@ -76,6 +77,7 @@
             "comp": null,
             "uncertainties": [],
             "kind": "model",
+            "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_fbc_example\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mmole",
             "substanceUnitsLatex": "mmol",
             "timeUnits": "hr",
@@ -104,7 +106,15 @@
                 "xml": "<unitDefinition id=\"hr\" name=\"hr\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "hr"
+                "unitsLatex": "hr",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "fbc_example/UnitDefinition:m2",
@@ -119,7 +129,15 @@
                 "xml": "<unitDefinition id=\"m2\" name=\"meter^2\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"2\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "m^2"
+                "unitsLatex": "m^2",
+                "listOfUnits": [
+                  {
+                    "kind": "metre",
+                    "exponent": 2,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "fbc_example/UnitDefinition:mmole",
@@ -134,7 +152,15 @@
                 "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "mmol"
+                "unitsLatex": "mmol",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               },
               {
                 "pk": "fbc_example/UnitDefinition:mmole_per_hr",
@@ -149,7 +175,21 @@
                 "xml": "<unitDefinition id=\"mmole_per_hr\" name=\"mmole/hr\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{hr}"
+                "unitsLatex": "\\frac{mmol}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "fbc_example/UnitDefinition:mmole_per_l",
@@ -164,7 +204,21 @@
                 "xml": "<unitDefinition id=\"mmole_per_l\" name=\"mmole/liter\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{l}"
+                "unitsLatex": "\\frac{mmol}{l}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               }
             ],
             "listOfCompartments": [
@@ -317,7 +371,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000625"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -343,7 +398,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000625"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -369,7 +425,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000625"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -395,7 +452,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000625"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -421,7 +479,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000625"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -793,7 +852,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000627"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -846,7 +906,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000627"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -899,7 +960,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000627"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -952,7 +1014,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/SBO:0000627"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1719,7 +1782,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.009 [s]"
       }
     }
   }

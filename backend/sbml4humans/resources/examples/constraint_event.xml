@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" xmlns:sbml="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
   <notes>
     <body xmlns="http://www.w3.org/1999/xhtml">
       <p>Example model of <a href="https://sbml4humans.de">SBML4Humans</a> for the objects of SBML core which carry their own attributes: a constraint with a message, an event with a trigger, a priority and a delay, a kinetic law with local parameters and a unit definition built from several units.</p>
@@ -171,7 +171,7 @@
               <p>The dose is given before any other event of the same moment.</p>
             </body>
           </notes>
-          <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:sbml="http://www.sbml.org/sbml/level3/version2/core">
             <cn sbml:units="dimensionless"> 1 </cn>
           </math>
         </priority>
@@ -196,7 +196,7 @@
             </math>
           </eventAssignment>
           <eventAssignment id="E1_switch" variable="active">
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:sbml="http://www.sbml.org/sbml/level3/version2/core">
               <cn sbml:units="dimensionless"> 0 </cn>
             </math>
           </eventAssignment>

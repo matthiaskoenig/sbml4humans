@@ -1,5 +1,5 @@
 {
-  "uid": "ae3ca541ef784a8292eab2426e402020",
+  "uid": "313a0e1add8a40fa84ebeb9aa16ba4c4",
   "manifest": {
     "entries": [
       {
@@ -46,7 +46,8 @@
               "prefix": "render",
               "version": 1
             }
-          ]
+          ],
+          "annotationXml": null
         },
         "models": [
           {
@@ -62,50 +63,58 @@
                 "qualifier": "BQM_IS",
                 "resources": [
                   "http://identifiers.org/biomodels.db/MODEL6614787694"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQM_IS",
                 "resources": [
                   "http://identifiers.org/biomodels.db/BIOMD0000000007"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQM_IS_DESCRIBED_BY",
                 "resources": [
                   "http://identifiers.org/pubmed/9256450"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQM_IS_DERIVED_FROM",
                 "resources": [
                   "http://identifiers.org/pubmed/10395816"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQB_HAS_TAXON",
                 "resources": [
                   "http://identifiers.org/taxonomy/4896"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQB_IS_VERSION_OF",
                 "resources": [
                   "http://identifiers.org/kegg.pathway/ko04110",
                   "http://identifiers.org/go/GO:0000278"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQB_IS_HOMOLOG_TO",
                 "resources": [
                   "http://identifiers.org/reactome/REACT_152"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQB_HAS_PROPERTY",
                 "resources": [
                   "http://identifiers.org/mamo/MAMO_0000046"
-                ]
+                ],
+                "nested": []
               }
             ],
             "history": {
@@ -132,6 +141,7 @@
             "comp": null,
             "uncertainties": [],
             "kind": "model",
+            "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n    <rdf:Description rdf:about=\"#_000001\">\n      <dc:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Le Novère</vCard:Family>\n              <vCard:Given>Nicolas</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>lenov@ebi.ac.uk</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>EMBL-EBI</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Shapiro</vCard:Family>\n              <vCard:Given>Bruce</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>bshapiro@jpl.nasa.gov</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>NASA Jet Propulsion Laboratory</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dc:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2009-10-15T13:21:50Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2014-03-26T14:20:21Z</dcterms:W3CDTF>\n      </dcterms:modified>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/MODEL6614787694\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/BIOMD0000000007\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:isDescribedBy>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/pubmed/9256450\"/>\n        </rdf:Bag>\n      </bqmodel:isDescribedBy>\n      <bqmodel:isDerivedFrom>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/pubmed/10395816\"/>\n        </rdf:Bag>\n      </bqmodel:isDerivedFrom>\n      <bqbiol:hasTaxon>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/taxonomy/4896\"/>\n        </rdf:Bag>\n      </bqbiol:hasTaxon>\n      <bqbiol:isVersionOf>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/kegg.pathway/ko04110\"/>\n          <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0000278\"/>\n        </rdf:Bag>\n      </bqbiol:isVersionOf>\n      <bqbiol:isHomologTo>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/reactome/REACT_152\"/>\n        </rdf:Bag>\n      </bqbiol:isHomologTo>\n      <bqbiol:hasProperty>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/mamo/MAMO_0000046\"/>\n        </rdf:Bag>\n      </bqbiol:hasProperty>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": null,
             "substanceUnitsLatex": null,
             "timeUnits": null,
@@ -160,7 +170,15 @@
                 "xml": "<unitDefinition metaid=\"metaid_0000018\" id=\"time\" name=\"minutes\">\n  <listOfUnits>\n    <unit metaid=\"_377768\" kind=\"second\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "min"
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               }
             ],
             "listOfCompartments": [
@@ -177,7 +195,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/go/GO:0005623"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -206,7 +225,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0000502"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -238,7 +258,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0000502"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -271,7 +292,8 @@
                     "resources": [
                       "http://identifiers.org/uniprot/P30290",
                       "http://identifiers.org/uniprot/P07527"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -303,7 +325,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/uniprot/P06652"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -336,7 +359,8 @@
                     "resources": [
                       "http://identifiers.org/uniprot/P04551",
                       "http://identifiers.org/uniprot/P10815"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -368,7 +392,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/uniprot/P40380"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -401,7 +426,8 @@
                     "resources": [
                       "http://identifiers.org/uniprot/P04551",
                       "http://identifiers.org/uniprot/P36630"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -459,7 +485,8 @@
                     "resources": [
                       "http://identifiers.org/uniprot/P10815",
                       "http://identifiers.org/uniprot/P04551"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -493,7 +520,8 @@
                       "http://identifiers.org/uniprot/P04551",
                       "http://identifiers.org/uniprot/P36630",
                       "http://identifiers.org/uniprot/P40380"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -527,7 +555,8 @@
                       "http://identifiers.org/uniprot/P04551",
                       "http://identifiers.org/uniprot/P10815",
                       "http://identifiers.org/uniprot/P40380"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -561,7 +590,8 @@
                       "http://identifiers.org/uniprot/P10815",
                       "http://identifiers.org/uniprot/P04551",
                       "http://identifiers.org/uniprot/P40380"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -595,7 +625,8 @@
                       "http://identifiers.org/uniprot/P04551",
                       "http://identifiers.org/uniprot/P10815",
                       "http://identifiers.org/uniprot/P36630"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -628,7 +659,8 @@
                     "resources": [
                       "http://identifiers.org/uniprot/P10815",
                       "http://identifiers.org/uniprot/P04551"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -685,7 +717,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0000502"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -717,7 +750,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0000502"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -750,7 +784,8 @@
                     "resources": [
                       "http://identifiers.org/uniprot/P07527",
                       "http://identifiers.org/uniprot/P30290"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -782,7 +817,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/uniprot/P06652"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -814,7 +850,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/uniprot/P40380"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -846,7 +883,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/uniprot/P10815"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -878,7 +916,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/uniprot/P36630"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2270,21 +2309,24 @@
                     "resources": [
                       "http://identifiers.org/reactome/REACT_6294",
                       "http://identifiers.org/reactome/REACT_6327"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_HAS_PART",
                     "resources": [
                       "http://identifiers.org/reactome/REACT_6257",
                       "http://identifiers.org/reactome/REACT_6178"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/ec-code/2.7.10.2",
                       "http://identifiers.org/go/GO:0006468"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2400,7 +2442,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0006461"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2502,7 +2545,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0006461"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2604,7 +2648,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0030163"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2689,7 +2734,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0030163"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2756,7 +2802,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0030163"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2841,7 +2888,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0030163"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2926,7 +2974,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0008054"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3009,7 +3058,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0008054"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3092,7 +3142,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0008054"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3175,7 +3226,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0008054"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3260,7 +3312,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0008054"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3345,7 +3398,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0008054"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3430,7 +3484,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0006461"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3533,7 +3588,8 @@
                     "resources": [
                       "http://identifiers.org/kegg.pathway/spo04120",
                       "http://identifiers.org/go/GO:0030163"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3635,7 +3691,8 @@
                     "resources": [
                       "http://identifiers.org/kegg.pathway/spo04120",
                       "http://identifiers.org/go/GO:0030163"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -3796,7 +3853,8 @@
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "http://identifiers.org/go/GO:0030163"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4351,7 +4409,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/go/GO:0045750"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4360,6 +4419,18 @@
                 "uncertainties": [],
                 "useValuesFromTriggerTime": true,
                 "trigger": {
+                  "pk": "BIOMD0000000007/Trigger:_378785",
+                  "sbmlType": "Trigger",
+                  "id": null,
+                  "metaId": "_378785",
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<trigger metaid=\"_378785\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <geq/>\n      <ci> SPF </ci>\n      <cn> 0.1 </cn>\n    </apply>\n  </math>\n</trigger>",
+                  "comp": null,
+                  "uncertainties": [],
                   "math": {
                     "latex": " \\mathit{SPF}\\ge 0.1",
                     "formula": "SPF >= 0.1"
@@ -4369,8 +4440,22 @@
                 },
                 "priority": null,
                 "delay": {
-                  "latex": " 60",
-                  "formula": "60"
+                  "pk": "BIOMD0000000007/Delay:_378797",
+                  "sbmlType": "Delay",
+                  "id": null,
+                  "metaId": "_378797",
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<delay metaid=\"_378797\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <cn type=\"integer\"> 60 </cn>\n  </math>\n</delay>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "math": {
+                    "latex": " 60",
+                    "formula": "60"
+                  }
                 },
                 "listOfEventAssignments": [
                   {
@@ -4407,7 +4492,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "http://identifiers.org/go/GO:0051301"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4416,6 +4502,18 @@
                 "uncertainties": [],
                 "useValuesFromTriggerTime": true,
                 "trigger": {
+                  "pk": "BIOMD0000000007/Trigger:_378821",
+                  "sbmlType": "Trigger",
+                  "id": null,
+                  "metaId": "_378821",
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<trigger metaid=\"_378821\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <leq/>\n      <ci> UbE </ci>\n      <cn> 0.1 </cn>\n    </apply>\n  </math>\n</trigger>",
+                  "comp": null,
+                  "uncertainties": [],
                   "math": {
                     "latex": " \\mathit{UbE}\\le 0.1",
                     "formula": "UbE <= 0.1"
@@ -5896,6 +5994,27 @@
               "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
+            },
+            "BIOMD0000000007/Trigger:_378785": {
+              "pk": "BIOMD0000000007/Trigger:_378785",
+              "sbmlType": "Trigger",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000007/Model:BIOMD0000000007"
+            },
+            "BIOMD0000000007/Delay:_378797": {
+              "pk": "BIOMD0000000007/Delay:_378797",
+              "sbmlType": "Delay",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000007/Model:BIOMD0000000007"
+            },
+            "BIOMD0000000007/Trigger:_378821": {
+              "pk": "BIOMD0000000007/Trigger:_378821",
+              "sbmlType": "Trigger",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000007/Model:BIOMD0000000007"
             }
           },
           "edges": [
@@ -7275,7 +7394,7 @@
               "kind": "math"
             },
             {
-              "source": "BIOMD0000000007/Event:Start",
+              "source": "BIOMD0000000007/Trigger:_378785",
               "target": "BIOMD0000000007/Species:SPF",
               "kind": "math"
             },
@@ -7290,7 +7409,7 @@
               "kind": "math"
             },
             {
-              "source": "BIOMD0000000007/Event:Division",
+              "source": "BIOMD0000000007/Trigger:_378821",
               "target": "BIOMD0000000007/Species:UbE",
               "kind": "math"
             },
@@ -7318,7 +7437,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.314 [s]"
+        "jsonReportTime": "0.316 [s]"
       }
     }
   }

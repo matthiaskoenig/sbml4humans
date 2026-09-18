@@ -1,5 +1,5 @@
 {
-  "uid": "20eabac2bb364571a72f430aa59ff38c",
+  "uid": "ab2a5584cc8147d299834a897bab3826",
   "manifest": {
     "entries": [
       {
@@ -40,10 +40,6 @@
           "packages": [
             {
               "prefix": "",
-              "version": 0
-            },
-            {
-              "prefix": "sbml",
               "version": 0
             }
           ],
@@ -1091,7 +1087,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.061 [s]"
+        "jsonReportTime": "0.053 [s]"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "uid": "b45f7589919744ff855060c2d56051ff",
+  "uid": "3bf0bc7830334e31b0dee0289913ebf3",
   "manifest": {
     "entries": [
       {
@@ -42,7 +42,8 @@
               "prefix": "comp",
               "version": 1
             }
-          ]
+          ],
+          "annotationXml": null
         },
         "models": [
           {
@@ -58,13 +59,15 @@
                 "qualifier": "BQB_IS",
                 "resources": [
                   "https://identifiers.org/taxonomy/9606"
-                ]
+                ],
+                "nested": []
               },
               {
                 "qualifier": "BQB_IS_DESCRIBED_BY",
                 "resources": [
                   "https://doi.org/10.1101/2021.06.15.448411"
-                ]
+                ],
+                "nested": []
               }
             ],
             "history": {
@@ -91,6 +94,7 @@
             "comp": null,
             "uncertainties": [],
             "kind": "model",
+            "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_icg_body\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Köller</vCard:Family>\n              <vCard:Given>Adrian</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>adriankl39@googlemail.com</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n      <bqbiol:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"https://identifiers.org/taxonomy/9606\"/>\n        </rdf:Bag>\n      </bqbiol:is>\n      <bqbiol:isDescribedBy>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"https://doi.org/10.1101/2021.06.15.448411\"/>\n        </rdf:Bag>\n      </bqbiol:isDescribedBy>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mmole",
             "substanceUnitsLatex": "mmol",
             "timeUnits": "min",
@@ -119,7 +123,15 @@
                 "xml": "<unitDefinition id=\"cm\" name=\"cm\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"1\" scale=\"0\" multiplier=\"0.01\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "cm"
+                "unitsLatex": "cm",
+                "listOfUnits": [
+                  {
+                    "kind": "metre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.01
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:g_per_mole",
@@ -134,7 +146,21 @@
                 "xml": "<unitDefinition id=\"g_per_mole\" name=\"g/mole\">\n  <listOfUnits>\n    <unit kind=\"gram\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"mole\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{g}{mol}"
+                "unitsLatex": "\\frac{g}{mol}",
+                "listOfUnits": [
+                  {
+                    "kind": "gram",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "mole",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:hr",
@@ -149,7 +175,15 @@
                 "xml": "<unitDefinition id=\"hr\" name=\"hr\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "hr"
+                "unitsLatex": "hr",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:kg",
@@ -164,7 +198,15 @@
                 "xml": "<unitDefinition id=\"kg\" name=\"kg\">\n  <listOfUnits>\n    <unit kind=\"gram\" exponent=\"1\" scale=\"0\" multiplier=\"1000\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "kg"
+                "unitsLatex": "kg",
+                "listOfUnits": [
+                  {
+                    "kind": "gram",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1000
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:l_per_hr",
@@ -179,7 +221,21 @@
                 "xml": "<unitDefinition id=\"l_per_hr\" name=\"l/hr\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{l}{hr}"
+                "unitsLatex": "\\frac{l}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:l_per_kg",
@@ -194,7 +250,21 @@
                 "xml": "<unitDefinition id=\"l_per_kg\" name=\"l/kg\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"gram\" exponent=\"-1\" scale=\"0\" multiplier=\"1000\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{l}{kg}"
+                "unitsLatex": "\\frac{l}{kg}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "gram",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1000
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:l_per_min",
@@ -209,7 +279,21 @@
                 "xml": "<unitDefinition id=\"l_per_min\" name=\"l/min\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{l}{min}"
+                "unitsLatex": "\\frac{l}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:l_per_ml",
@@ -224,7 +308,21 @@
                 "xml": "<unitDefinition id=\"l_per_ml\" name=\"l/ml\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{l}{ml}"
+                "unitsLatex": "\\frac{l}{ml}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:m",
@@ -239,7 +337,15 @@
                 "xml": "<unitDefinition id=\"m\" name=\"meter\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "m"
+                "unitsLatex": "m",
+                "listOfUnits": [
+                  {
+                    "kind": "metre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:m2",
@@ -254,7 +360,15 @@
                 "xml": "<unitDefinition id=\"m2\" name=\"meter^2\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"2\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "m^2"
+                "unitsLatex": "m^2",
+                "listOfUnits": [
+                  {
+                    "kind": "metre",
+                    "exponent": 2,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:m2_per_kg",
@@ -269,7 +383,21 @@
                 "xml": "<unitDefinition id=\"m2_per_kg\" name=\"meter^2/kg\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"2\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"gram\" exponent=\"-1\" scale=\"0\" multiplier=\"1000\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{m^2}{kg}"
+                "unitsLatex": "\\frac{m^2}{kg}",
+                "listOfUnits": [
+                  {
+                    "kind": "metre",
+                    "exponent": 2,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "gram",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1000
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mM",
@@ -284,7 +412,21 @@
                 "xml": "<unitDefinition id=\"mM\" name=\"mmole/liter\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{l}"
+                "unitsLatex": "\\frac{mmol}{l}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mg",
@@ -299,7 +441,15 @@
                 "xml": "<unitDefinition id=\"mg\" name=\"mg\">\n  <listOfUnits>\n    <unit kind=\"gram\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "mg"
+                "unitsLatex": "mg",
+                "listOfUnits": [
+                  {
+                    "kind": "gram",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mg_per_g",
@@ -314,7 +464,21 @@
                 "xml": "<unitDefinition id=\"mg_per_g\" name=\"mg/g\">\n  <listOfUnits>\n    <unit kind=\"gram\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"gram\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mg}{g}"
+                "unitsLatex": "\\frac{mg}{g}",
+                "listOfUnits": [
+                  {
+                    "kind": "gram",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "gram",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mg_per_hr",
@@ -329,7 +493,21 @@
                 "xml": "<unitDefinition id=\"mg_per_hr\" name=\"mg/hr\">\n  <listOfUnits>\n    <unit kind=\"gram\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mg}{hr}"
+                "unitsLatex": "\\frac{mg}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "gram",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mg_per_l",
@@ -344,7 +522,21 @@
                 "xml": "<unitDefinition id=\"mg_per_l\" name=\"mg/l\">\n  <listOfUnits>\n    <unit kind=\"gram\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mg}{l}"
+                "unitsLatex": "\\frac{mg}{l}",
+                "listOfUnits": [
+                  {
+                    "kind": "gram",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mg_per_min",
@@ -359,7 +551,21 @@
                 "xml": "<unitDefinition id=\"mg_per_min\" name=\"mg/min\">\n  <listOfUnits>\n    <unit kind=\"gram\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mg}{min}"
+                "unitsLatex": "\\frac{mg}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "gram",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:min",
@@ -374,7 +580,15 @@
                 "xml": "<unitDefinition id=\"min\" name=\"min\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "min"
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:min_per_hr",
@@ -389,7 +603,21 @@
                 "xml": "<unitDefinition id=\"min_per_hr\" name=\"min/hr\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{min}{hr}"
+                "unitsLatex": "\\frac{min}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:ml",
@@ -404,7 +632,15 @@
                 "xml": "<unitDefinition id=\"ml\" name=\"ml\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "ml"
+                "unitsLatex": "ml",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:ml_per_l",
@@ -419,7 +655,21 @@
                 "xml": "<unitDefinition id=\"ml_per_l\" name=\"ml/l\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{ml}{l}"
+                "unitsLatex": "\\frac{ml}{l}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:ml_per_s",
@@ -434,7 +684,21 @@
                 "xml": "<unitDefinition id=\"ml_per_s\" name=\"ml/s\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{ml}{s}"
+                "unitsLatex": "\\frac{ml}{s}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:ml_per_s_kg",
@@ -449,7 +713,27 @@
                 "xml": "<unitDefinition id=\"ml_per_s_kg\" name=\"ml/s/kg\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"gram\" exponent=\"-1\" scale=\"0\" multiplier=\"1000\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{ml}{s \\cdot kg}"
+                "unitsLatex": "\\frac{ml}{s \\cdot kg}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "gram",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1000
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mmole",
@@ -464,7 +748,15 @@
                 "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "mmol"
+                "unitsLatex": "mmol",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mmole_per_hr",
@@ -479,7 +771,21 @@
                 "xml": "<unitDefinition id=\"mmole_per_hr\" name=\"mmole/hr\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{hr}"
+                "unitsLatex": "\\frac{mmol}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mmole_per_hr_ml",
@@ -494,7 +800,27 @@
                 "xml": "<unitDefinition id=\"mmole_per_hr_ml\" name=\"mmole/hr/ml\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{hr \\cdot ml}"
+                "unitsLatex": "\\frac{mmol}{hr \\cdot ml}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mmole_per_min",
@@ -509,7 +835,21 @@
                 "xml": "<unitDefinition id=\"mmole_per_min\" name=\"mmole/min\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{min}"
+                "unitsLatex": "\\frac{mmol}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mmole_per_min_kg",
@@ -524,7 +864,27 @@
                 "xml": "<unitDefinition id=\"mmole_per_min_kg\" name=\"mmole/min/kg\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n    <unit kind=\"gram\" exponent=\"-1\" scale=\"0\" multiplier=\"1000\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{min \\cdot kg}"
+                "unitsLatex": "\\frac{mmol}{min \\cdot kg}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  },
+                  {
+                    "kind": "gram",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1000
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mmole_per_min_l",
@@ -539,7 +899,27 @@
                 "xml": "<unitDefinition id=\"mmole_per_min_l\" name=\"mmole/min/l\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{mmol}{min \\cdot l}"
+                "unitsLatex": "\\frac{mmol}{min \\cdot l}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mul_per_g",
@@ -554,7 +934,21 @@
                 "xml": "<unitDefinition id=\"mul_per_g\" name=\"microliter/g\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"1e-06\"/>\n    <unit kind=\"gram\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{µl}{g}"
+                "unitsLatex": "\\frac{µl}{g}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.000001
+                  },
+                  {
+                    "kind": "gram",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:mul_per_min_mg",
@@ -569,7 +963,27 @@
                 "xml": "<unitDefinition id=\"mul_per_min_mg\" name=\"microliter/min/mg\">\n  <listOfUnits>\n    <unit kind=\"litre\" exponent=\"1\" scale=\"0\" multiplier=\"1e-06\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n    <unit kind=\"gram\" exponent=\"-1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{µl}{min \\cdot mg}"
+                "unitsLatex": "\\frac{µl}{min \\cdot mg}",
+                "listOfUnits": [
+                  {
+                    "kind": "litre",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.000001
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  },
+                  {
+                    "kind": "gram",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:per_hr",
@@ -584,7 +998,15 @@
                 "xml": "<unitDefinition id=\"per_hr\" name=\"1/hr\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{1}{hr}"
+                "unitsLatex": "\\frac{1}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:per_min",
@@ -599,7 +1021,15 @@
                 "xml": "<unitDefinition id=\"per_min\" name=\"1/min\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{1}{min}"
+                "unitsLatex": "\\frac{1}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:s",
@@ -614,7 +1044,15 @@
                 "xml": "<unitDefinition id=\"s\" name=\"second\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "s"
+                "unitsLatex": "s",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:s_per_hr",
@@ -629,7 +1067,21 @@
                 "xml": "<unitDefinition id=\"s_per_hr\" name=\"s/hr\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{s}{hr}"
+                "unitsLatex": "\\frac{s}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
               },
               {
                 "pk": "icg_body/UnitDefinition:s_per_min",
@@ -644,7 +1096,21 @@
                 "xml": "<unitDefinition id=\"s_per_min\" name=\"s/min\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "\\frac{s}{min}"
+                "unitsLatex": "\\frac{s}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               }
             ],
             "listOfCompartments": [
@@ -663,7 +1129,8 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/FMA:62971",
                       "https://identifiers.org/ncit/C13192"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -703,19 +1170,22 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000290"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62955"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/ncit/C14250"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -745,7 +1215,8 @@
                       "https://identifiers.org/FMA:71132",
                       "https://identifiers.org/BTO:0000511",
                       "https://identifiers.org/ncit/C34082"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -775,7 +1246,8 @@
                       "https://identifiers.org/FMA:7197",
                       "https://identifiers.org/BTO:0000759",
                       "https://identifiers.org/ncit/C12392"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -805,7 +1277,8 @@
                       "https://identifiers.org/FMA:7195",
                       "https://identifiers.org/BTO:0000763",
                       "https://identifiers.org/ncit/C12468"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -834,13 +1307,15 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:50723"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -869,13 +1344,15 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:50720"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -904,13 +1381,15 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:66645"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -939,13 +1418,15 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:14337"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -975,7 +1456,8 @@
                       "https://identifiers.org/FMA:64183",
                       "https://identifiers.org/ncit/C13234",
                       "https://identifiers.org/BTO:0000440"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1018,14 +1500,16 @@
                       "https://identifiers.org/FMA:45732",
                       "https://identifiers.org/ncit/C74601",
                       "https://identifiers.org/BTO:0001539"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62955",
                       "https://identifiers.org/ncit/C14250"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1054,14 +1538,16 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/BTO:0000131"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62955",
                       "https://identifiers.org/ncit/C14250"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1091,7 +1577,8 @@
                       "https://identifiers.org/FMA:45732",
                       "https://identifiers.org/ncit/C74601",
                       "https://identifiers.org/BTO:0001539"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -1099,7 +1586,8 @@
                       "https://identifiers.org/FMA:71132",
                       "https://identifiers.org/BTO:0000511",
                       "https://identifiers.org/ncit/C34082"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1128,7 +1616,8 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/BTO:0000131"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -1136,7 +1625,8 @@
                       "https://identifiers.org/FMA:71132",
                       "https://identifiers.org/BTO:0000511",
                       "https://identifiers.org/ncit/C34082"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1166,7 +1656,8 @@
                       "https://identifiers.org/FMA:45732",
                       "https://identifiers.org/ncit/C74601",
                       "https://identifiers.org/BTO:0001539"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -1174,7 +1665,8 @@
                       "https://identifiers.org/FMA:7197",
                       "https://identifiers.org/BTO:0000759",
                       "https://identifiers.org/ncit/C12392"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1216,7 +1708,8 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/BTO:0000131"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -1224,7 +1717,8 @@
                       "https://identifiers.org/FMA:7197",
                       "https://identifiers.org/BTO:0000759",
                       "https://identifiers.org/ncit/C12392"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1267,7 +1761,8 @@
                       "https://identifiers.org/FMA:45732",
                       "https://identifiers.org/ncit/C74601",
                       "https://identifiers.org/BTO:0001539"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -1275,7 +1770,8 @@
                       "https://identifiers.org/FMA:7195",
                       "https://identifiers.org/BTO:0000763",
                       "https://identifiers.org/ncit/C12468"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1304,7 +1800,8 @@
                       "https://identifiers.org/SBO:0000290",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/BTO:0000131"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -1312,7 +1809,8 @@
                       "https://identifiers.org/FMA:7195",
                       "https://identifiers.org/BTO:0000763",
                       "https://identifiers.org/ncit/C12468"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1344,7 +1842,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1379,7 +1878,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1414,7 +1914,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1462,7 +1963,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1497,7 +1999,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1532,7 +2035,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1567,7 +2071,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1602,7 +2107,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1637,7 +2143,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1684,7 +2191,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1710,7 +2218,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1739,7 +2248,8 @@
                       "https://identifiers.org/efo/0004338",
                       "https://identifiers.org/ncit/C25208",
                       "https://identifiers.org/CMO:0000012"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1767,7 +2277,8 @@
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C25347",
                       "https://identifiers.org/efo/0004339"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1795,7 +2306,8 @@
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C25157",
                       "https://identifiers.org/omit/0003188"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1823,7 +2335,8 @@
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C119246",
                       "https://identifiers.org/omit/0003637"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1851,7 +2364,8 @@
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C119246",
                       "https://identifiers.org/omit/0003637"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1879,7 +2393,8 @@
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C119246",
                       "https://identifiers.org/omit/0003637"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1905,7 +2420,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1934,7 +2450,8 @@
                       "https://identifiers.org/ncit/C64796",
                       "https://identifiers.org/omit/0007571",
                       "https://identifiers.org/efo/0004348"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1960,7 +2477,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -1968,7 +2486,8 @@
                       "https://identifiers.org/FMA:71132",
                       "https://identifiers.org/BTO:0000511",
                       "https://identifiers.org/ncit/C34082"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -1994,14 +2513,16 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62971",
                       "https://identifiers.org/ncit/C13192"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2027,7 +2548,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2035,7 +2557,8 @@
                       "https://identifiers.org/FMA:7197",
                       "https://identifiers.org/BTO:0000759",
                       "https://identifiers.org/ncit/C12392"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2061,7 +2584,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2069,7 +2593,8 @@
                       "https://identifiers.org/FMA:7195",
                       "https://identifiers.org/BTO:0000763",
                       "https://identifiers.org/ncit/C12468"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2095,7 +2620,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2103,7 +2629,8 @@
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/FMA:50723"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2129,7 +2656,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2137,7 +2665,8 @@
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/FMA:50720"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2163,7 +2692,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2171,7 +2701,8 @@
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/FMA:66645"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2197,7 +2728,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2205,7 +2737,8 @@
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/FMA:14337"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2231,14 +2764,16 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62955",
                       "https://identifiers.org/ncit/C14250"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2264,7 +2799,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2272,7 +2808,8 @@
                       "https://identifiers.org/FMA:71132",
                       "https://identifiers.org/BTO:0000511",
                       "https://identifiers.org/ncit/C34082"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2298,7 +2835,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2306,7 +2844,8 @@
                       "https://identifiers.org/BTO:0000131",
                       "https://identifiers.org/ncit/C13356",
                       "https://identifiers.org/FMA:14337"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2332,7 +2871,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
@@ -2340,7 +2880,8 @@
                       "https://identifiers.org/FMA:7195",
                       "https://identifiers.org/BTO:0000763",
                       "https://identifiers.org/ncit/C12468"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2366,14 +2907,16 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62955",
                       "https://identifiers.org/ncit/C14250"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2401,7 +2944,8 @@
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C2951",
                       "https://identifiers.org/efo/0001422"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2428,7 +2972,8 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/HP:0002629"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2454,7 +2999,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2480,7 +3026,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2506,7 +3053,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2532,7 +3080,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2558,13 +3107,15 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "https://identifiers.org/ncit/C158758"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2590,19 +3141,22 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000647"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_VERSION_OF",
                     "resources": [
                       "https://identifiers.org/opb/OPB_01146"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_HAS_PART",
                     "resources": [
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2629,7 +3183,8 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C38274"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2656,7 +3211,8 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C69282"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2682,7 +3238,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000002"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2709,7 +3266,8 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000002",
                       "https://identifiers.org/ncit/C94916"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -2739,7 +3297,8 @@
                       "https://identifiers.org/inchikey/MOFVSTNWEDAEEK-UHFFFAOYSA-M",
                       "https://identifiers.org/CHEBI:31696",
                       "https://identifiers.org/ncit/C65913"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4520,7 +5079,8 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000655",
                       "https://identifiers.org/ncit/C38276"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4588,14 +5148,16 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000655",
                       "https://identifiers.org/ncit/C16353"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62955",
                       "https://identifiers.org/ncit/C14250"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4681,14 +5243,16 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000655",
                       "https://identifiers.org/ncit/C16353"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
                     "resources": [
                       "https://identifiers.org/FMA:62955",
                       "https://identifiers.org/ncit/C14250"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4774,7 +5338,8 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000655",
                       "https://identifiers.org/ncit/C16353"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -4782,7 +5347,8 @@
                       "https://identifiers.org/FMA:71132",
                       "https://identifiers.org/BTO:0000511",
                       "https://identifiers.org/ncit/C34082"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4868,7 +5434,8 @@
                     "resources": [
                       "https://identifiers.org/SBO:0000655",
                       "https://identifiers.org/ncit/C16353"
-                    ]
+                    ],
+                    "nested": []
                   },
                   {
                     "qualifier": "BQB_IS_PART_OF",
@@ -4876,7 +5443,8 @@
                       "https://identifiers.org/FMA:71132",
                       "https://identifiers.org/BTO:0000511",
                       "https://identifiers.org/ncit/C34082"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -4961,7 +5529,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5046,7 +5615,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5131,7 +5701,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5216,7 +5787,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5301,7 +5873,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5386,7 +5959,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5471,7 +6045,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5556,7 +6131,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000655"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5664,7 +6240,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5689,7 +6266,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5714,7 +6292,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5739,7 +6318,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5764,7 +6344,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5789,7 +6370,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5814,7 +6396,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5839,7 +6422,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5864,7 +6448,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5889,7 +6474,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5914,7 +6500,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5939,7 +6526,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5964,7 +6552,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -5989,7 +6578,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -6014,7 +6604,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -6039,7 +6630,8 @@
                     "qualifier": "BQB_IS",
                     "resources": [
                       "https://identifiers.org/SBO:0000599"
-                    ]
+                    ],
+                    "nested": []
                   }
                 ],
                 "history": null,
@@ -9880,7 +10472,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.54 [s]"
+        "jsonReportTime": "0.542 [s]"
       }
     }
   }
