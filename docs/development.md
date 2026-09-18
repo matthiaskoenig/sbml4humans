@@ -18,7 +18,7 @@ cd sbml4humans
 | `release-notes/` | one file per version, the body of its GitHub release |
 | `nginx/` | the proxy configuration of sbml4humans.de |
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
-| `deploy.sh`, `docker-purge.sh` | deployment of the server, see [Deployment](deployment.md) |
+| `deploy.sh`, `docker-purge.sh`, `deploy.md` | the deployment of sbml4humans.de on its server |
 
 ## Frontend and backend with docker compose
 
@@ -165,3 +165,5 @@ The version of SBML4Humans is the version of the backend package in `backend/sbm
     ```
 
     This starts the `CI` workflow, which runs the checks, creates the [GitHub release](https://github.com/matthiaskoenig/sbml4humans/releases) from `release-notes/x.y.z.md` and fast-forwards `main` to the tagged commit. Check the version before pushing, a tag cannot be moved or deleted afterwards.
+
+The release is archived on [Zenodo](https://zenodo.org/), which mints a DOI for it. The first archived release is the one to cite: add its DOI badge and a "How to cite" section with the citation and its bibtex entry to `README.md` and to the home page of the documentation, the way the other repositories of the group do.

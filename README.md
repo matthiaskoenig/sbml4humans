@@ -1,40 +1,30 @@
 # SBML4Humans
 
-[SBML4Humans](https://sbml4humans.de) renders [SBML](https://sbml.org) models as interactive, human readable reports: a Vue frontend on top of a FastAPI backend which creates the report of a model with [libsbml](https://sbml.org/software/libsbml/).
+[![CI](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml/badge.svg)](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-sbml4humans-008080.svg)](https://matthiaskoenig.github.io/sbml4humans/)
+[![MIT License](https://img.shields.io/github/license/matthiaskoenig/sbml4humans.svg)](https://opensource.org/license/MIT)
 
-SBML is an XML format, and XML is written for programs: the mathematics of a model is content MathML, a unit is a product of base units spread over several elements, and an annotation is a URI in an RDF block, so reading a model in a text editor means reassembling it in your head. SBML4Humans gives the view of a model which the file itself does not give you, which is why it was started as the Google Summer of Code project "Interactive SBML report for Humans" ([NRNB GoogleSummerOfCode issue #164](https://github.com/nrnb/GoogleSummerOfCode/issues/164)). It reads models, it does not edit them and it does not simulate them.
+## About
 
-![The report of the repressilator model, with the type rail, the element tables and the inspector of a selected species](docs/images/report-overview.png)
+The Systems Biology Markup Language ([SBML](https://sbml.org)) is the de facto standard for the representation and exchange of mathematical models of biological systems. It represents many different classes of phenomena in biology, among them metabolic networks, signaling pathways and regulatory networks, and supports models of arbitrary complexity, from a single process to a multi-scale model, and it is read and written by a large ecosystem of [software](https://sbml.org/software/). The [specification](https://sbml.org/documents/specifications/level-3/version-2/core/) gives the detailed overview, [Keating et al. 2020](https://doi.org/10.15252/msb.20199110) the high level introduction.
 
-## Features
+The information in SBML is organized as lists of components, such as compartments, species, parameters and reactions, written in XML. A parser reads such a file into a tree of the model and of the relations between its components, but SBML is difficult to read, to comprehend and to interpret for humans directly, and tools are needed which provide an abstraction layer to interact with the SBML objects and the relationships between them.
 
-- one table per element type with the columns which matter for that type, sorted by a click on a column header except for the columns of rendered mathematics and of rendered units, and fast even for a genome scale reconstruction with tens of thousands of elements
-- a search over the whole model and a rail which counts the elements of every type and filters the tables by type
-- an inspector which shows one element in full: its attributes, the elements it references and the elements which reference it, its notes, its annotations and its history, and the raw XML of the element
-- the mathematics typeset as formulas instead of MathML, and the units of every quantity rendered, including the units the report derives
-- annotations resolved to the entries they identify, so a resource shows the name of the molecule, of the pathway or of the publication
-- SBML of any level and version, plain or gzipped, and COMBINE archives with one report per SBML entry
-- the comp, fbc and distrib packages of SBML Level 3
-- example models which ship with the backend, from small models of a single feature over published models to the human reconstruction Recon3D
-- every column of the element tables, every attribute row of the inspector, every type and every kind of link explained where it is shown, from the same glossary the reference of the documentation is generated from
-- the state of a report, that is the selected element, the search and the filter of types, is part of its url, so a report can be linked as it stands
+SBML4Humans provides that layer: an interactive and reactive report of an SBML model which allows humans, experts as well as novices, to comprehend the content of a model. A report renders the information of a model for human consumption as an interactive page, navigates between the components (which species take part in which reaction, which reaction a gene product catalyzes, in which formula a parameter appears), resolves the annotations of a component to the entries they identify, searches and filters the model down to the part which matters, and explains every type, column and attribute where it is shown. It reads models, it does not edit them and it does not simulate them.
+
+[![The report of the repressilator model, with the type rail, the element tables and the inspector of a selected species](docs/images/report-overview.png)](docs/images/report-overview.png)
+
+Use it at [sbml4humans.de](https://sbml4humans.de) with a file, a url or pasted SBML, or with one of the example models which ship with it.
 
 ## Documentation
 
-The documentation is at [matthiaskoenig.github.io/sbml4humans](https://matthiaskoenig.github.io/sbml4humans/):
+The documentation is available at [matthiaskoenig.github.io/sbml4humans](https://matthiaskoenig.github.io/sbml4humans/): what [SBML](https://matthiaskoenig.github.io/sbml4humans/sbml/) is, how to [load a model](https://matthiaskoenig.github.io/sbml4humans/inputs/), how to [read a report](https://matthiaskoenig.github.io/sbml4humans/report/), the [reference](https://matthiaskoenig.github.io/sbml4humans/reference/) of every element type with its attributes, and, for contributors, the [development](https://matthiaskoenig.github.io/sbml4humans/development/) of the application.
 
-- [SBML](https://matthiaskoenig.github.io/sbml4humans/sbml/): what the format is, how a model is built from its elements and what the Level 3 packages add
-- [Loading a model](https://matthiaskoenig.github.io/sbml4humans/inputs/): the three inputs, the accepted formats and the examples
-- [Reading a report](https://matthiaskoenig.github.io/sbml4humans/report/): the type rail, the element tables, the search and the inspector
-- [Reference](https://matthiaskoenig.github.io/sbml4humans/reference/): one page per element type with every attribute the report shows, the link kinds and the concepts the report adds
-- [Development](https://matthiaskoenig.github.io/sbml4humans/development/): the repository layout, the setup of the backend and the frontend, the checks, the branches and the releases
-- [Deployment](https://matthiaskoenig.github.io/sbml4humans/deployment/): the proxy, the certificates and the containers of the server
-
-The sources of the site are in [`docs/`](docs), the site is built with [Zensical](https://zensical.org/) and published from `develop`.
+If you have any questions or issues please [open an issue](https://github.com/matthiaskoenig/sbml4humans/issues).
 
 ## Funding
 
-SBML4Humans was funded by [Google Summer of Code 2021](https://summerofcode.withgoogle.com/). Matthias König is supported by the Federal Ministry of Education and Research (BMBF, Germany) within the research network Systems Medicine of the Liver ([LiSyM](https://lisym.org/), grant number 031L0054) and by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 "[QuaLiPerF](https://qualiperf.de) (Quantifying Liver Perfusion-Function Relationship in Complex Resection - A Systems Medicine Approach)" by grant number 436883643.
+Matthias König is supported by the Federal Ministry of Education and Research (BMBF, Germany) within the research network Systems Medicine of the Liver ([LiSyM](https://lisym.org/), grant number 031L0054) and by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 "[QuaLiPerF](https://qualiperf.de) (Quantifying Liver Perfusion-Function Relationship in Complex Resection - A Systems Medicine Approach)" by grant number 436883643. The first version was funded by [Google Summer of Code 2021](https://summerofcode.withgoogle.com/).
 
 ## License
 

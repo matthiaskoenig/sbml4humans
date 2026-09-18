@@ -1,14 +1,20 @@
 # SBML4Humans
 
+[![CI](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml/badge.svg)](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-sbml4humans-008080.svg)](https://matthiaskoenig.github.io/sbml4humans/)
+[![MIT License](https://img.shields.io/github/license/matthiaskoenig/sbml4humans.svg)](https://opensource.org/license/MIT)
+
 [SBML4Humans](https://sbml4humans.de) renders [SBML](sbml.md) models as interactive, human readable reports. Give it a model and it gives you a page which shows what the model contains: its compartments, species, reactions, rules and events, the mathematics of the model as typeset formulas, the units it computes from the file, the references between the elements, and the annotations resolved to the entries they point at.
 
 [![The report of the repressilator model, with the type rail, the element tables and the inspector of a selected species](images/report-overview.png)](images/report-overview.png)
 
 ## Why it exists
 
-SBML is an XML format, and XML is written for programs. A model file states everything and shows nothing: the mathematics is content MathML, a unit is a product of base units spread over several elements, a species is a line of attributes among thousands of other lines, and an annotation is a URI in an RDF block. Reading a model in a text editor means reassembling it in your head, and a model of a genome scale reconstruction cannot be read that way at all.
+[SBML](sbml.md) is the de facto standard for the representation and exchange of mathematical models of biological systems, from a single process to a multi-scale model, and it is read and written by a large ecosystem of [software](https://sbml.org/software/). Its information is organized as lists of components, such as compartments, species, parameters and reactions, written in XML.
 
-The Google Summer of Code project which started this application was proposed because a human readable, interactive report which conveys the information and the content of an SBML model was urgently needed ([NRNB GoogleSummerOfCode issue #164](https://github.com/nrnb/GoogleSummerOfCode/issues/164)). That is what SBML4Humans is: the view of a model which the file itself does not give you. It does not edit models and it does not simulate them, it reads them.
+XML is written for programs. A model file states everything and shows nothing: the mathematics is content MathML, a unit is a product of base units spread over several elements, a species is a line of attributes among thousands of other lines, and an annotation is a URI in an RDF block. Reading a model in a text editor means reassembling it in your head, and a model of a genome scale reconstruction cannot be read that way at all. Tools are needed which provide an abstraction layer to interact with the SBML objects and the relationships between them.
+
+SBML4Humans provides that layer: an interactive and reactive report which allows humans, experts as well as novices, to comprehend the content of a model. It is the view of a model which the file itself does not give you. It does not edit models and it does not simulate them, it reads them.
 
 It is written for the people who have to read models rather than write them:
 
@@ -36,9 +42,9 @@ If a term of a report is unfamiliar, the [reference](reference/index.md) explain
 
 ## Funding and license
 
-SBML4Humans was started in 2021 as the project "Interactive SBML report for Humans" by Sankha Das, mentored by Matthias König and Ralf Steuer, with the [National Resource for Network Biology](https://nrnb.org/) (NRNB) as the mentoring organisation. It is developed at [github.com/matthiaskoenig/sbml4humans](https://github.com/matthiaskoenig/sbml4humans).
+SBML4Humans is developed at [github.com/matthiaskoenig/sbml4humans](https://github.com/matthiaskoenig/sbml4humans). Its first version was written in 2021 by Sankha Das as the project "Interactive SBML report for Humans", mentored by Matthias König and Ralf Steuer, with the [National Resource for Network Biology](https://nrnb.org/) (NRNB) as the mentoring organisation and funded by [Google Summer of Code 2021](https://summerofcode.withgoogle.com/).
 
-SBML4Humans was funded by [Google Summer of Code 2021](https://summerofcode.withgoogle.com/). Matthias König is supported by the Federal Ministry of Education and Research (BMBF, Germany) within the research network Systems Medicine of the Liver ([LiSyM](https://lisym.org/), grant number 031L0054) and by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 "[QuaLiPerF](https://qualiperf.de) (Quantifying Liver Perfusion-Function Relationship in Complex Resection - A Systems Medicine Approach)" by grant number 436883643.
+Matthias König is supported by the Federal Ministry of Education and Research (BMBF, Germany) within the research network Systems Medicine of the Liver ([LiSyM](https://lisym.org/), grant number 031L0054) and by the German Research Foundation (DFG) within the Research Unit Programme FOR 5151 "[QuaLiPerF](https://qualiperf.de) (Quantifying Liver Perfusion-Function Relationship in Complex Resection - A Systems Medicine Approach)" by grant number 436883643.
 
 The source code is under the [MIT](https://opensource.org/license/MIT) license, this documentation under [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
 

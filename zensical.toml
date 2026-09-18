@@ -60,10 +60,7 @@ nav = [
     { "Report concepts" = "reference/concepts.md" },
   ] },
   { "References" = "references.md" },
-  { "Development" = [
-    { "Development" = "development.md" },
-    { "Deployment" = "deployment.md" },
-  ] },
+  { "Development" = "development.md" },
 ]
 
 [project.theme]
