@@ -157,6 +157,29 @@ describe("inspector", () => {
     expect(referencedBy.findAll("[data-testid=element-link]").length).toBeGreaterThan(0);
   });
 
+  it("names the species a reaction consumes and the reactions which consume a species", () => {
+    const reaction = repressilator.mainModel!.listOfReactions![0]!;
+    const species = repressilator.mainModel!.listOfSpecies![0] as Species;
+    // the graph runs from the reaction over its species reference to the species; the links of
+    // the inspector ask over that hop, so neither side shows the reference in between
+    const reactant = mountWith(LinksColumn, { pk: reaction.pk }, repressilator)
+      .get("[data-testid=links-reactant]")
+      .text();
+    expect(reactant).toContain(reaction.listOfReactants![0]!.species);
+    expect(reactant).not.toContain(".");
+
+    const referencedBy = mountWith(LinksColumn, { pk: species.pk }, repressilator).get(
+      "[data-testid=links-referenced-by]",
+    );
+    const reactions = new Set(
+      repressilator.mainModel!.listOfReactions!.map((r) => r.id).filter((id) => id),
+    );
+    for (const link of referencedBy.findAll(
+      "[data-testid=links-reactant] [data-testid=element-link]",
+    ))
+      expect(reactions).toContain(link.text());
+  });
+
   it("shows none for an element without edges", () => {
     const wrapper = mountWith(LinksColumn, { pk: "nope" }, repressilator);
     expect(wrapper.text()).toContain("none");

@@ -16,11 +16,35 @@ interface Group {
   pks: string[];
 }
 
+/** A species reference stands between a reaction and a species, and the graph says so: the
+ * reaction names the reference and the reference names the species. A reader of the links asks
+ * the question over that hop, "which species does this reaction consume" and "which reactions
+ * consume this species", so a group shows the element at the far end of the hop. The reference
+ * itself keeps its links, and the attributes of a reaction list both. */
+function farEnd(pk: string, kind: EdgeKind, end: "source" | "target"): string {
+  const element = index.value?.get(pk);
+  const type = element?.sbmlType;
+  if (type !== "SpeciesReference" && type !== "ModifierSpeciesReference") return pk;
+  if (end === "target") {
+    const species = index.value?.references(pk).find((edge) => edge.kind === kind)?.target;
+    return species ?? pk;
+  }
+  return index.value?.participation(pk)?.reaction ?? pk;
+}
+
 function group(edges: Edge[], end: "source" | "target"): Group[] {
+  const inspected = index.value?.get(props.pk)?.sbmlType;
+  const hop = inspected !== "SpeciesReference" && inspected !== "ModifierSpeciesReference";
   return EDGE_KINDS.map((kind) => ({
     kind,
     label: edgeKindLabel(kind),
-    pks: [...new Set(edges.filter((edge) => edge.kind === kind).map((edge) => edge[end]))],
+    pks: [
+      ...new Set(
+        edges
+          .filter((edge) => edge.kind === kind)
+          .map((edge) => (hop ? farEnd(edge[end], kind, end) : edge[end])),
+      ),
+    ],
   })).filter((g) => g.pks.length > 0);
 }
 
