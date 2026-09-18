@@ -77,6 +77,43 @@ test.describe("repressilator", () => {
     await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1");
   });
 
+  test("names the reaction whose kinetic law reads a species and walks on to the law", async ({
+    page,
+  }) => {
+    const row = page
+      .getByTestId("table-Species")
+      .locator('tbody tr[data-pk$="Species:PX"]')
+      .first();
+    await row.click();
+    const inspector = page.getByTestId("inspector");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("PX");
+
+    // the math links of a species ask over the kinetic law: they name the reactions whose speed
+    // reads it, and not the meta ids which key their kinetic laws
+    const math = inspector
+      .getByTestId("links-referenced-by")
+      .getByTestId("links-math")
+      .getByTestId("element-link");
+    await expect(math).toHaveText(["Reaction7", "Reaction11"]);
+    await math.first().click();
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction7");
+
+    // the reaction lists what its kinetic law reads and names the law after itself
+    const references = inspector.getByTestId("links-references");
+    await expect(references.getByTestId("links-math")).toContainText("PX");
+    await references.getByTestId("links-kineticLaw").getByTestId("element-link").click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Kinetic law");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction7.kineticLaw");
+
+    // the kinetic law keeps its own links
+    await expect(inspector.getByTestId("links-references").getByTestId("links-math")).toContainText(
+      "PX",
+    );
+    await expect(
+      inspector.getByTestId("links-referenced-by").getByTestId("links-kineticLaw"),
+    ).toContainText("Reaction7");
+  });
+
   test("the search filters the tables", async ({ page }) => {
     const speciesRows = page.getByTestId("table-Species").locator("tbody tr[data-pk]");
     const total = await speciesRows.count();

@@ -8,7 +8,7 @@ The identifier the report gives to every element it shows.
 
 SBML identifies an element by its id, which is unique within one model, and many elements of a model have no id at all. The report therefore builds a key of its own for every element, of the form `<scope>/<type>:<id>`: the scope, which is the model the element belongs to or the document for an element of the document, the type of the element and its id. An element without an id falls back to the element it sets, for an [initial assignment](initialassignment.md) or a rule, then to its meta id, then to a key derived from its parent and its position, and finally to a digest of its XML, so that two reactants of one reaction without ids stay distinct.
 
-The primary key is what the links of a report point at and what the url of a report names when an element is selected. An element without an id is shown by the key alone, without the scope and the type in front of it, in the header of the inspector and as the label of every link to it.
+The primary key is what the links of a report point at and what the url of a report names when an element is selected. An element without an id is shown by the key alone, without the scope and the type in front of it, in the header of the inspector and as the label of every link to it. An element which the file nests in another one is named after that element and its place in it instead, because a meta id says nothing about where it sits: the kinetic law of `Reaction1` reads `Reaction1.kineticLaw`, the trigger of the event `Start` reads `Start.trigger`, an assignment of that event to `kp` reads `Start.kp` and a reactant `X` of `Reaction1` reads `Reaction1.X`.
 
 ## sbml type
 

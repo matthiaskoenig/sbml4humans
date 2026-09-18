@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { Edge, EdgeKind } from "@/api/types";
+import type { Edge, EdgeKind, SbmlType } from "@/api/types";
 import LinksGroup from "@/components/inspector/LinksGroup.vue";
 import { EDGE_KINDS, edgeKindLabel } from "@/data/edgeKinds";
 import { useReportIndex } from "@/report/context";
@@ -14,6 +14,46 @@ interface Group {
   kind: EdgeKind;
   label: string;
   pks: string[];
+}
+
+/** A kinetic law holds the formula of the speed of its reaction and a function term a row of the
+ * transition table of its transition, and the graph says so: the reaction names its kinetic law
+ * and the kinetic law names what its formula reads. A reader asks which reactions and which
+ * transitions read a species, so the math links of the two are shown as the math of the element
+ * they belong to, in both directions, the way a species reference is looked across below. The
+ * kinetic law and the term keep their own links. */
+const MATH_OWNER_KINDS: Partial<Record<SbmlType, EdgeKind>> = {
+  KineticLaw: "kineticLaw",
+  FunctionTerm: "functionTerm",
+};
+
+/** The element whose math the math of a kinetic law or of a function term is, else null. */
+function mathOwner(pk: string): string | null {
+  const type = index.value?.get(pk)?.sbmlType;
+  const kind = type ? MATH_OWNER_KINDS[type] : undefined;
+  if (!kind) return null;
+  return index.value?.referencedBy(pk).find((edge) => edge.kind === kind)?.source ?? null;
+}
+
+/** The edges from the element as its links show them: its own, and the math of the kinetic law
+ * or of the function terms it names. */
+function outgoing(pk: string): Edge[] {
+  const own = index.value?.references(pk) ?? [];
+  const math = own
+    .filter((edge) => mathOwner(edge.target) === pk)
+    .flatMap((edge) => index.value?.references(edge.target) ?? [])
+    .filter((edge) => edge.kind === "math")
+    .map((edge) => ({ ...edge, source: pk }));
+  return [...own, ...math];
+}
+
+/** The edges to the element as its links show them: the math of a kinetic law or of a function
+ * term comes from the element they belong to. */
+function incoming(pk: string): Edge[] {
+  return (index.value?.referencedBy(pk) ?? []).map((edge) => {
+    const owner = edge.kind === "math" ? mathOwner(edge.source) : null;
+    return owner ? { ...edge, source: owner } : edge;
+  });
 }
 
 /** A species reference stands between a reaction and a species, and the graph says so: the
@@ -48,8 +88,8 @@ function group(edges: Edge[], end: "source" | "target"): Group[] {
   })).filter((g) => g.pks.length > 0);
 }
 
-const references = computed(() => group(index.value?.references(props.pk) ?? [], "target"));
-const referencedBy = computed(() => group(index.value?.referencedBy(props.pk) ?? [], "source"));
+const references = computed(() => group(outgoing(props.pk), "target"));
+const referencedBy = computed(() => group(incoming(props.pk), "source"));
 </script>
 
 <template>

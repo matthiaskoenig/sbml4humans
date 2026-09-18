@@ -438,6 +438,64 @@ describe("inspector", () => {
       expect(reactions).toContain(link.text());
   });
 
+  it("names the reactions whose kinetic law reads a species and what the law of a reaction reads", () => {
+    const model = repressilator.mainModel!;
+    const species = model.listOfSpecies!.find((s) => s.id === "PX")!;
+    // the kinetic laws of the repressilator are keyed by their meta id; the math of a kinetic law
+    // is the speed of its reaction, so the links of a species name the reaction and not the law
+    const math = mountWith(LinksColumn, { pk: species.pk }, repressilator)
+      .get("[data-testid=links-referenced-by] [data-testid=links-math]")
+      .findAll("[data-testid=element-link]");
+    expect(math.map((link) => link.text())).toEqual(["Reaction7", "Reaction11"]);
+    for (const link of math) {
+      expect(repressilator.get(link.attributes("data-pk")!)?.sbmlType).toBe("Reaction");
+    }
+
+    // the reaction names its kinetic law after itself and lists what the law reads as its math
+    const reaction = model.listOfReactions!.find((r) => r.id === "Reaction7")!;
+    const links = mountWith(LinksColumn, { pk: reaction.pk }, repressilator).get(
+      "[data-testid=links-references]",
+    );
+    expect(links.get("[data-testid=links-kineticLaw]").text()).toContain("Reaction7.kineticLaw");
+    expect(
+      links
+        .get("[data-testid=links-math]")
+        .findAll("[data-testid=element-link]")
+        .map((link) => link.text()),
+    ).toContain("PX");
+
+    // the kinetic law keeps its own links: its math and the reaction which names it
+    const law = mountWith(LinksColumn, { pk: reaction.kineticLaw!.pk }, repressilator);
+    expect(law.get("[data-testid=links-references] [data-testid=links-math]").text()).toContain(
+      "PX",
+    );
+    expect(
+      law.get("[data-testid=links-referenced-by] [data-testid=links-kineticLaw]").text(),
+    ).toContain("Reaction7");
+  });
+
+  it("names the transition whose function terms read a qualitative species", () => {
+    const species = qual.mainModel!.listOfQualitativeSpecies!.find((s) => s.id === "S")!;
+    const math = mountWith(LinksColumn, { pk: species.pk }, qual).get(
+      "[data-testid=links-referenced-by] [data-testid=links-math]",
+    );
+    expect(math.findAll("[data-testid=element-link]").map((link) => link.text())).toEqual(["tr_G"]);
+
+    const transition = qual.mainModel!.listOfTransitions!.find((t) => t.id === "tr_G")!;
+    const references = mountWith(LinksColumn, { pk: transition.pk }, qual).get(
+      "[data-testid=links-references]",
+    );
+    const read = references
+      .get("[data-testid=links-math]")
+      .findAll("[data-testid=element-link]")
+      .map((link) => link.text());
+    expect(read).toEqual(expect.arrayContaining(["S", "P", "theta_G_S", "theta_G_P"]));
+    // the terms themselves stay links of the transition
+    expect(references.get("[data-testid=links-functionTerm]").text()).toContain(
+      "tr_G.functionTerm.0",
+    );
+  });
+
   it("shows none for an element without edges", () => {
     const wrapper = mountWith(LinksColumn, { pk: "nope" }, repressilator);
     expect(wrapper.text()).toContain("none");

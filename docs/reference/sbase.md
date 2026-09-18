@@ -27,7 +27,7 @@ The report shows these attributes for every element: the id and the name in the 
 
 The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one. On an initial assignment, a rule and an event assignment it is optional and it exists from Level 3 Version 2 on, so most models leave it empty; what such an element sets is its symbol or its variable, not its id.
 
-The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element. An element without an id is named by the key of its [primary key](concepts.md) instead.
+The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element. An element without an id is named by the key of its [primary key](concepts.md) instead, and an element which the file nests in another one after that element.
 
 <span id="name"></span>**name**
 

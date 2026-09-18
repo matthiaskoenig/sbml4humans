@@ -40,7 +40,7 @@ The formula which gives the speed of a reaction.
 
 A [reaction](reaction.md) holds the formula of its speed in a [kinetic law](kineticlaw.md) of its own, and the link runs from the reaction to it. The elements the formula reads are linked from the kinetic law with [math](links.md#math) links, and its local parameters are among them.
 
-It is shown under "References" of the reaction and under "Referenced by" of the kinetic law.
+It is shown under "References" of the reaction and under "Referenced by" of the kinetic law. A reaction has one kinetic law at most, and its formula is the speed of the reaction, so the other links look across it: the reaction lists what its formula reads under "math", and a species or a parameter the formula reads lists the reaction there, not the kinetic law. The kinetic law keeps its own links.
 
 ## trigger
 
@@ -196,7 +196,7 @@ A row of the transition table of a transition.
 
 A [transition](transition.md) names every [function term](functionterm.md) of its list, in the order in which they are read, and the math of a term reaches the qualitative species, the inputs and the outputs it names with [math](links.md#math) links of its own.
 
-It is shown under "References" of the transition and under "Referenced by" of the term.
+It is shown under "References" of the transition and under "Referenced by" of the term. The terms are the rows of the table of their transition, so the other links look across them, the way they look across the kinetic law of a reaction: the transition lists what its conditions read under "math", and a qualitative species a condition reads lists the transition there. A term keeps its own links.
 
 ## default term
 
@@ -274,4 +274,4 @@ An element a formula refers to.
 
 Every formula of a model refers to elements by their identifier: the species and the parameters of a kinetic law, the elements a rule or a trigger reads, the function definition a formula calls. The report collects these symbols of every formula and links each of them to the element it names, resolving the local parameters of a kinetic law before the elements of the model. The arguments of a function definition are local to it and are no references, and a symbol which names nothing, such as the symbol of time, produces no link.
 
-The link is shown under "References" of the element which carries the formula and under "Referenced by" of the element the formula uses, where it answers in which equations a species or a parameter occurs.
+The link is shown under "References" of the element which carries the formula and under "Referenced by" of the element the formula uses, where it answers in which equations a species or a parameter occurs. The formula of a [kinetic law](links.md#kinetic-law) is the speed of its reaction and the condition of a [function term](links.md#function-term) a row of the table of its transition, so their links are shown as those of the reaction and of the transition, and the kinetic law and the term keep their own.

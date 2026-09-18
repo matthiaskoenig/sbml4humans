@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Reaction, Species } from "@/api/types";
+import type { Edge, Reaction, SBase, Species } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 import { elementLabel } from "@/report/label";
 
@@ -208,6 +208,50 @@ describe("ReportIndex", () => {
     const parameter = compDeletion.mainModel!.listOfParameters!.find((p) => p.comp?.replacedBy)!
       .comp!.replacedBy!;
     expect(compDeletion.get(parameter.pk)).toBe(parameter);
+  });
+
+  it("names a kinetic law and an event assignment after the element they belong to", () => {
+    // the curated models key both by their meta id, which says nothing about where they belong
+    const reaction = repressilator.mainModel!.listOfReactions!.find((r) => r.id === "Reaction7")!;
+    expect(reaction.kineticLaw!.id).toBeNull();
+    expect(elementLabel(repressilator, reaction.kineticLaw!.pk)).toBe("Reaction7.kineticLaw");
+
+    const cellCycle = new ReportIndex(loadReport("cell_cycle"));
+    const division = cellCycle.mainModel!.listOfEvents!.find((e) => e.id === "Division")!;
+    const labels = division.listOfEventAssignments!.map((a) => elementLabel(cellCycle, a.pk));
+    expect(labels).toEqual(["Division.kp", "Division.Mass"]);
+
+    // an element which carries an id of its own is named by it
+    const constraintEvent = new ReportIndex(loadReport("constraint_event"));
+    const assignment = constraintEvent.mainModel!.listOfEvents![0]!.listOfEventAssignments![0]!;
+    expect(elementLabel(constraintEvent, assignment.pk)).toBe(assignment.id);
+  });
+
+  it("names a nested element after the name its owner has, whatever keys the two", () => {
+    // an event may carry no id, and a term of a transition a meta id: the trigger is named after
+    // the name of its event, the term after its transition and its place in the table
+    const event = { pk: "m/Event:metaid_1", sbmlType: "Event", id: null };
+    const trigger = { pk: "m/Trigger:_2", sbmlType: "Trigger", id: null };
+    const term = { pk: "m/FunctionTerm:meta_term", sbmlType: "FunctionTerm", id: null };
+    const transition = {
+      pk: "m/Transition:tr",
+      sbmlType: "Transition",
+      id: "tr",
+      listOfFunctionTerms: [{ pk: "m/FunctionTerm:tr.functionTerm.0" }, term],
+    };
+    const elements = new Map<string, unknown>(
+      [event, trigger, term, transition].map((element) => [element.pk, element]),
+    );
+    const edges: Edge[] = [
+      { source: event.pk, target: trigger.pk, kind: "trigger" },
+      { source: transition.pk, target: term.pk, kind: "functionTerm" },
+    ];
+    const fake = {
+      get: (pk: string) => elements.get(pk) as SBase | undefined,
+      referencedBy: (pk: string) => edges.filter((edge) => edge.target === pk),
+    } as unknown as ReportIndex;
+    expect(elementLabel(fake, trigger.pk)).toBe("metaid_1.trigger");
+    expect(elementLabel(fake, term.pk)).toBe("tr.functionTerm.1");
   });
 
   it("names a replacement after its element and the submodel it reaches into", () => {

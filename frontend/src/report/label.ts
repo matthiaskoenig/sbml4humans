@@ -2,11 +2,17 @@ import type { EdgeKind, SbmlType } from "@/api/types";
 import type { ReportIndex } from "@/report/index";
 import { pkKey } from "@/report/pk";
 
-/** The three children of an event with the link kind which leads from the event to them. */
-const EVENT_CHILD_KINDS: Partial<Record<SbmlType, EdgeKind>> = {
+/** The elements a file nests in another one which are named after that element and their place
+ * in it, with the link kind which leads from that element to them: the kinetic law of a
+ * reaction, the trigger, the priority and the delay of an event, and the default term of a
+ * transition. A reaction has one kinetic law and an event one of each of the three, so the place
+ * says which one it is. */
+const PLACE_KINDS: Partial<Record<SbmlType, EdgeKind>> = {
+  KineticLaw: "kineticLaw",
   Trigger: "trigger",
   Priority: "priority",
   Delay: "delay",
+  DefaultTerm: "defaultTerm",
 };
 
 /** The two replacements of the comp package with the link kind which leads from the element
@@ -25,59 +31,89 @@ const INFLUENCE_KINDS: Partial<Record<SbmlType, EdgeKind>> = {
   Output: "output",
 };
 
+/** How many elements the name of an element follows outwards. A file nests an element three
+ * deep at most, a replacement of a species reference of a reaction, so the limit only keeps a
+ * graph which is not a tree from recursing without end. */
+const MAX_DEPTH = 8;
+
 /** The name a link and the header of the inspector show for an element.
  *
  * It is the id of the element, and without one the key of its primary key, which is its meta id
- * or the name its parent gives it. Two kinds of element are named after the element they belong
- * to instead, because they carry an id in few models and a meta id says nothing about where they
- * sit: a species reference is named by its reaction and its species, which is what the inspector
- * of a species asks, the trigger, the priority and the delay of an event are named by their
- * event and what they are, and a replacement of the comp package by the element it belongs to
- * and the submodel it reaches into. */
+ * or the name its parent gives it. An element which the file nests in another one is named after
+ * that element instead, because it carries an id in few models and a meta id says nothing about
+ * where it sits: a species reference by its reaction and its species, which is what the inspector
+ * of a species asks, the kinetic law of a reaction and the trigger, the priority and the delay of
+ * an event by their owner and what they are, an event assignment by its event and the element it
+ * sets, a term of a transition by its transition and its place in the table, and a replacement of
+ * the comp package by the element it belongs to and the submodel it reaches into. The owner is
+ * named by the same rule, so an event without an id lends its key to its trigger. */
 export function elementLabel(
   index: ReportIndex | null | undefined,
   pk: string | null | undefined,
 ): string | null {
+  return label(index, pk, 0);
+}
+
+/** The name of an element whose owners have been followed `depth` elements outwards. */
+function label(
+  index: ReportIndex | null | undefined,
+  pk: string | null | undefined,
+  depth: number,
+): string | null {
   if (!pk) return null;
   const element = index?.get(pk);
   if (element?.id) return element.id;
-  if (
-    element &&
-    (element.sbmlType === "SpeciesReference" || element.sbmlType === "ModifierSpeciesReference")
-  ) {
-    const participation = index?.participation(pk);
-    const reaction = participation ? index?.get(participation.reaction)?.id : null;
-    if (reaction) return `${reaction}.${element.species}`;
+  if (!index || !element || depth > MAX_DEPTH) return pkKey(pk);
+
+  /** The element which names this one through a link of the kind, and the name it has. */
+  const owner = (kind: EdgeKind): { pk: string; name: string | null } | null => {
+    const source = index.referencedBy(pk).find((edge) => edge.kind === kind)?.source;
+    return source ? { pk: source, name: label(index, source, depth + 1) } : null;
+  };
+
+  if (element.sbmlType === "SpeciesReference" || element.sbmlType === "ModifierSpeciesReference") {
+    const reaction = index.participation(pk)?.reaction;
+    const name = reaction ? label(index, reaction, depth + 1) : null;
+    if (name) return `${name}.${element.species}`;
   }
-  const replacementKind = element?.sbmlType ? REPLACEMENT_KINDS[element.sbmlType] : undefined;
-  if (element && replacementKind && "submodelRef" in element) {
-    const edge = index?.referencedBy(pk).find((e) => e.kind === replacementKind);
-    const owner = edge ? index?.get(edge.source)?.id : null;
-    if (owner) return `${owner}.${element.submodelRef}`;
+  const placeKind = element.sbmlType ? PLACE_KINDS[element.sbmlType] : undefined;
+  if (placeKind) {
+    const name = owner(placeKind)?.name;
+    if (name) return `${name}.${placeKind}`;
+  }
+  if (element.sbmlType === "EventAssignment") {
+    const name = owner("eventAssignment")?.name;
+    if (name) return `${name}.${element.variable}`;
+  }
+  if (element.sbmlType === "FunctionTerm") {
+    const transition = owner("functionTerm");
+    const terms = transition ? index.get(transition.pk) : undefined;
+    if (transition?.name && terms?.sbmlType === "Transition") {
+      const place = (terms.listOfFunctionTerms ?? []).findIndex((term) => term.pk === pk);
+      if (place !== -1) return `${transition.name}.functionTerm.${place}`;
+    }
+  }
+  const replacementKind = element.sbmlType ? REPLACEMENT_KINDS[element.sbmlType] : undefined;
+  if (replacementKind && "submodelRef" in element) {
+    const name = owner(replacementKind)?.name;
+    if (name) return `${name}.${element.submodelRef}`;
   }
   // a leaf of a gene product association is named by the gene product it names, the way a link
   // of a comp reference chain is named by what it names
-  if (element?.sbmlType === "GeneProductRef") return element.geneProduct;
+  if (element.sbmlType === "GeneProductRef") return element.geneProduct;
   // a flux objective is named by the reaction it weighs, which is what its objective lists and
   // what its key would otherwise spell out behind the identifier of that objective
-  if (element?.sbmlType === "FluxObjective") return element.reaction;
+  if (element.sbmlType === "FluxObjective") return element.reaction;
   // a link of a reference chain is named by what it names, which is what the file writes and
   // what its key would otherwise spell out as the key of its parent and the word sBaseRef
-  if (element?.sbmlType === "SBaseRef") {
+  if (element.sbmlType === "SBaseRef") {
     const name = element.portRef ?? element.idRef ?? element.unitRef ?? element.metaIdRef;
     if (name) return name;
   }
-  const childKind = element?.sbmlType ? EVENT_CHILD_KINDS[element.sbmlType] : undefined;
-  if (childKind) {
-    const edge = index?.referencedBy(pk).find((e) => e.kind === childKind);
-    const event = edge ? index?.get(edge.source)?.id : null;
-    if (event) return `${event}.${childKind}`;
-  }
-  const influenceKind = element?.sbmlType ? INFLUENCE_KINDS[element.sbmlType] : undefined;
-  if (element && influenceKind && "qualitativeSpecies" in element) {
-    const edge = index?.referencedBy(pk).find((e) => e.kind === influenceKind);
-    const transition = edge ? index?.get(edge.source)?.id : null;
-    if (transition) return `${transition}.${element.qualitativeSpecies}`;
+  const influenceKind = element.sbmlType ? INFLUENCE_KINDS[element.sbmlType] : undefined;
+  if (influenceKind && "qualitativeSpecies" in element) {
+    const name = owner(influenceKind)?.name;
+    if (name) return `${name}.${element.qualitativeSpecies}`;
   }
   return pkKey(pk);
 }
