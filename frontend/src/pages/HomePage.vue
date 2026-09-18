@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
+import logo from "@/assets/logo.png";
 import FileUpload from "@/components/input/FileUpload.vue";
 import PasteInput from "@/components/input/PasteInput.vue";
 import UrlInput from "@/components/input/UrlInput.vue";
@@ -32,7 +33,10 @@ async function submit(load: () => Promise<void>, route: { url?: string } = {}): 
 <template>
   <AppBar />
   <main class="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-10" data-testid="home-page">
-    <h1 class="text-3xl font-semibold tracking-tight">SBML4Humans</h1>
+    <h1 class="flex items-center gap-3 text-3xl font-semibold tracking-tight">
+      <img :src="logo" alt="The logo of SBML4Humans" class="size-9" data-testid="app-logo" />
+      SBML4Humans
+    </h1>
     <p class="mt-2 text-gray-600">
       Interactive, human readable reports of
       <a href="https://sbml.org" class="text-link hover:underline">SBML</a> models.

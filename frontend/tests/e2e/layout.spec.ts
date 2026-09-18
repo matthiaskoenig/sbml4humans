@@ -36,6 +36,19 @@ function clippedTypes(rail: Locator): Promise<string[]> {
   );
 }
 
+test("the landing page shows the logo in the app bar and in the heading", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("home-page")).toBeVisible();
+  const logos = page.getByTestId("app-logo");
+  await expect(logos).toHaveCount(2);
+  // both images are loaded, not broken, and the bar keeps the height of `h-12`
+  for (const logo of await logos.all()) {
+    await expect(logo).toBeVisible();
+    await expect(logo).toHaveJSProperty("naturalWidth", 192);
+  }
+  await expect(page.getByTestId("app-bar")).toHaveJSProperty("offsetHeight", 48);
+});
+
 test("the nested tables of a reaction keep an identifier on one line", async ({ page }) => {
   await openExample(page, "e_coli_core (e_coli_core.xml.gz)");
   await page.getByTestId("search-input").fill("R_PFK");

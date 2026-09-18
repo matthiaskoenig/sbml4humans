@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import logo from "@/assets/logo.png";
 import { DOCS_URL } from "@/report/glossary";
 </script>
 
@@ -7,7 +8,11 @@ import { DOCS_URL } from "@/report/glossary";
     class="flex h-12 shrink-0 items-center gap-4 border-b border-gray-200 bg-white px-4"
     data-testid="app-bar"
   >
-    <RouterLink to="/" class="text-base font-semibold tracking-tight text-gray-900 hover:text-link">
+    <RouterLink
+      to="/"
+      class="flex shrink-0 items-center gap-2 text-base font-semibold tracking-tight text-gray-900 hover:text-link"
+    >
+      <img :src="logo" alt="The logo of SBML4Humans" class="size-6" data-testid="app-logo" />
       SBML4Humans
     </RouterLink>
     <div class="flex min-w-0 flex-1 items-center gap-3">
