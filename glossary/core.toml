@@ -42,7 +42,7 @@ summary = "the identifier other elements of the model use to reference the eleme
 description = """
 The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one.
 
-The report shows the id in the first column of every table and uses it as the label of every link to the element.
+The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element.
 """
 
 [types.SBase.attributes.name]
@@ -1162,7 +1162,7 @@ summary = "the changes the event makes when it is executed"
 description = """
 The list holds the [event assignments](eventassignment.md) of the event, each of which sets one element of the model to the value of a formula.
 
-The report counts the assignments in the column "assignments" and shows them as a table in the inspector of the event.
+The report shows the assignments in the column "assignments", every one of them as the element it sets and the formula it assigns, and as a table in the inspector of the event.
 """
 
 

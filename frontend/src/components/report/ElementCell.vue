@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { SbmlElement, Math } from "@/api/types";
+import type { EventAssignment, SbmlElement, Math } from "@/api/types";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
+import TypeMark from "@/components/misc/TypeMark.vue";
 import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
@@ -36,13 +37,29 @@ const unitsLatex = computed(() => {
   const latex = fieldValue(props.row, props.column.latexField ?? `${props.column.field}Latex`);
   return typeof latex === "string" ? latex : null;
 });
+
+/** Kind "assignments": the event assignments of the event, an empty list when the event has
+ * none, which the cell shows as the placeholder. */
+const assignments = computed<EventAssignment[]>(() =>
+  Array.isArray(value.value) ? (value.value as EventAssignment[]) : [],
+);
+
+/** The element an event assignment sets, resolved through the "variable" edge of the
+ * assignment itself, the way the inspector of the event resolves it. */
+function variablePk(assignment: EventAssignment): string | null {
+  return index.value?.resolve(assignment.pk, "variable", assignment.variable) ?? null;
+}
 </script>
 
 <template>
-  <template v-if="column.kind === 'id'">
+  <!-- the identifier of a row carries the mark of its type: an initial assignment shows the
+  symbol it sets, which is the identifier of a parameter or a species in another table, and the
+  tables of the rules look alike as well -->
+  <span v-if="column.kind === 'id'" class="flex items-center gap-1.5">
+    <TypeMark v-if="row.sbmlType" :type="row.sbmlType" />
     <span v-if="text" class="font-mono font-medium">{{ text }}</span>
     <ValueText v-else :value="text" mono />
-  </template>
+  </span>
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
   <ValueText v-else-if="column.kind === 'number' || column.kind === 'count'" :value="numberValue" />
   <MathView v-else-if="column.kind === 'math'" :math="mathValue" />
@@ -51,5 +68,15 @@ const unitsLatex = computed(() => {
     <UnitsLink v-if="column.link === 'units'" :pk="targetPk" :label="text" :latex="unitsLatex" />
     <ElementLink v-else :pk="targetPk" :label="text" />
   </template>
+  <!-- the assignments of an event, on the one line of the row: "variable = math", separated by
+  a comma and a space -->
+  <ValueText v-else-if="column.kind === 'assignments' && !assignments.length" :value="null" />
+  <span v-else-if="column.kind === 'assignments'" data-testid="assignments">
+    <template v-for="(assignment, i) in assignments" :key="assignment.pk"
+      ><span v-if="i > 0">, </span
+      ><ElementLink :pk="variablePk(assignment)" :label="assignment.variable" /><span> = </span
+      ><MathView :math="assignment.math"
+    /></template>
+  </span>
   <ValueText v-else :value="text" :mono="column.field === 'equation'" />
 </template>

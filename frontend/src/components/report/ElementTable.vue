@@ -75,8 +75,11 @@ const range = computed(() =>
 );
 const visible = computed(() => sorted.value.slice(range.value.start, range.value.end));
 
+/** A column of rendered content has no order a reader could follow: the formulas and the units
+ * have none, and a list of assignments would be compared as a list of objects, which leaves
+ * every row equal and a sort that changes nothing under a header that promises one. */
 function sortable(column: ColumnDef): boolean {
-  return column.kind !== "math" && column.kind !== "units";
+  return column.kind !== "math" && column.kind !== "units" && column.kind !== "assignments";
 }
 
 function toggleSort(column: ColumnDef): void {

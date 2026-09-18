@@ -91,6 +91,6 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
     { field: "trigger.initialValue", header: "initial value", kind: "boolean" },
     { field: "priority", header: "priority", kind: "math" },
     { field: "delay", header: "delay", kind: "math" },
-    { field: "listOfEventAssignments.length", header: "assignments", kind: "count" },
+    { field: "listOfEventAssignments", header: "assignments", kind: "assignments" },
   ],
 };

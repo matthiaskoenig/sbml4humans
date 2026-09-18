@@ -130,6 +130,32 @@ test.describe("repressilator", () => {
   });
 });
 
+test("the events table shows the assignments of an event", async ({ page }) => {
+  await openExample(page, "BIOMD0000000007");
+  const table = page.getByTestId("table-Event");
+  const row = table
+    .locator("tbody tr[data-pk]")
+    .filter({ has: page.locator("td:first-child", { hasText: /^Division$/ }) });
+  // the first column of the row carries the mark of its type next to the identifier
+  await expect(row.locator("td:first-child").getByTestId("type-mark")).toHaveAttribute(
+    "aria-label",
+    "Event",
+  );
+
+  // the two assignments of the event, each as its variable and the formula it assigns
+  const cell = row.getByTestId("assignments");
+  await expect(cell.getByTestId("element-link")).toHaveText(["kp", "Mass"]);
+  await expect(cell.getByTestId("math")).toHaveCount(2);
+  await expect(cell).toHaveText(/^kp = .+, Mass = /);
+  // a rendered list has no order to sort by, the header offers none
+  await expect(table.getByRole("button", { name: "assignments", exact: true })).toHaveCount(0);
+
+  // the variable links the element it sets, the parameter kp of the model
+  await cell.getByTestId("element-link").first().click();
+  await expect(page.getByTestId("inspector-type")).toHaveText("Parameter");
+  await expect(page.getByTestId("inspector-id")).toHaveText("kp");
+});
+
 test("the archive dropdown switches the entry", async ({ page }) => {
   // the backend builds one report per SBML entry of an archive before it answers, so an archive
   // takes longer than a single model, and on CI the parallel workers of the other specs compete

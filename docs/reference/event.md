@@ -60,7 +60,7 @@ The report renders the delay in the column "delay" and in the inspector.
 
 The list holds the [event assignments](eventassignment.md) of the event, each of which sets one element of the model to the value of a formula.
 
-The report counts the assignments in the column "assignments" and shows them as a table in the inspector of the event.
+The report shows the assignments in the column "assignments", every one of them as the element it sets and the formula it assigns, and as a table in the inspector of the event.
 
 ## Related elements
 

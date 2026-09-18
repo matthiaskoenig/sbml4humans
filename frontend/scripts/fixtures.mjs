@@ -9,6 +9,7 @@ const FIXTURES_DIR = fileURLToPath(new URL("../tests/fixtures/", import.meta.url
 /** fixture name -> example id */
 const EXAMPLES = {
   repressilator: "BIOMD0000000012",
+  cell_cycle: "BIOMD0000000007",
   icg_body: "icg_body (icg_body.xml)",
   fbc_example: "fbc_example (fbc_example.xml)",
   model_definitions: "model_definitions (model_definitions.xml)",
