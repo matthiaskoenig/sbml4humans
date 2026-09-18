@@ -5,6 +5,7 @@ import { ref } from "vue";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
+import QualSignMark from "@/components/misc/QualSignMark.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { vTooltip } from "@/directives/tooltip";
@@ -46,6 +47,16 @@ describe("misc components", () => {
     ).toBe(true);
     expect(mount(BooleanMark, { props: { value: false } }).text()).toBe("-");
     expect(mount(BooleanMark, { props: { value: null } }).text()).toBe("-");
+  });
+
+  it("renders the sign of an input as the glyph of an influence graph", () => {
+    const sign = (value: string | null) =>
+      mount(QualSignMark, { props: { sign: value }, global: { directives: { tooltip } } }).text();
+    expect(sign("positive")).toBe("+");
+    expect(sign("negative")).toBe("\u2212");
+    expect(sign("dual")).toBe("\u00b1");
+    expect(sign("unknown")).toBe("?");
+    expect(sign(null)).toBe("-");
   });
 
   it("renders missing values as a dash and rounds numbers", () => {
