@@ -1213,6 +1213,81 @@ def test_port_id_is_no_element_of_the_sid_namespace() -> None:
     assert "ports/Port:Vmax" in report.link_graph.nodes
 
 
+IDENTIFIERS_OF_LEVEL_3_VERSION_2_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" comp:required="true"
+      xmlns:distrib="http://www.sbml.org/sbml/level3/version1/distrib/version1" distrib:required="true">
+  <model id="m">
+    <listOfCompartments>
+      <compartment id="c" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="s" compartment="c" initialAmount="1" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="k" value="1" constant="true">
+        <distrib:listOfUncertainties>
+          <distrib:uncertainty distrib:id="u_k">
+            <distrib:uncertParameter distrib:id="u_k_sd" distrib:type="standardDeviation" distrib:value="0.1"/>
+          </distrib:uncertainty>
+        </distrib:listOfUncertainties>
+      </parameter>
+    </listOfParameters>
+    <listOfReactions>
+      <reaction id="r" reversible="false">
+        <listOfReactants>
+          <speciesReference species="s" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <kineticLaw id="r_law">
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><apply><times/><ci> k </ci><ci> s </ci></apply></math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+    <listOfEvents>
+      <event id="e" useValuesFromTriggerTime="true">
+        <trigger id="e_trigger" initialValue="false" persistent="true">
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><apply><gt/><ci> s </ci><cn> 2 </cn></apply></math>
+        </trigger>
+        <priority id="e_priority">
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+        </priority>
+        <delay id="e_delay">
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+        </delay>
+      </event>
+    </listOfEvents>
+    <comp:listOfPorts>
+      <comp:port comp:id="law_port" comp:idRef="r_law"/>
+      <comp:port comp:id="trigger_port" comp:idRef="e_trigger"/>
+      <comp:port comp:id="priority_port" comp:idRef="e_priority"/>
+      <comp:port comp:id="delay_port" comp:idRef="e_delay"/>
+      <comp:port comp:id="uncertainty_port" comp:idRef="u_k"/>
+      <comp:port comp:id="sd_port" comp:idRef="u_k_sd"/>
+    </comp:listOfPorts>
+  </model>
+</sbml>
+"""
+
+
+def test_a_port_names_the_nested_objects_which_carry_an_id() -> None:
+    """A comp reference reaches every element which carries an SId of the model.
+
+    Level 3 Version 2 gives the kinetic law, the trigger, the priority and the
+    delay an id of the SId namespace of the model (core §3.3), and distrib
+    puts the ids of an uncertainty and of an uncert parameter there as well
+    (distrib §3.8), so a port may name any of them by its id.
+    """
+    report = SBMLDocumentInfo.from_sbml(IDENTIFIERS_OF_LEVEL_3_VERSION_2_SBML)
+    assert _edges(report, kind=EdgeKind.PORT) == {
+        ("m/Port:law_port", "m/KineticLaw:r_law", "port"),
+        ("m/Port:trigger_port", "m/Trigger:e_trigger", "port"),
+        ("m/Port:priority_port", "m/Priority:e_priority", "port"),
+        ("m/Port:delay_port", "m/Delay:e_delay", "port"),
+        ("m/Port:uncertainty_port", "m/Uncertainty:u_k", "port"),
+        ("m/Port:sd_port", "m/UncertParameter:u_k_sd", "port"),
+    }
+
+
 def test_active_objective_edge() -> None:
     """The model names the objective it declares as the active one."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")

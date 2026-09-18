@@ -73,9 +73,17 @@ class ModelIndex:
         for element in _elements(model):
             if element.id is not None:
                 self.sids.setdefault(element.id, element.pk)
-        for element in _nested(model):
-            if element.meta_id is not None:
-                self.meta_ids.setdefault(element.meta_id, element.pk)
+        for node in _nested(model):
+            for element in _with_extensions(node):
+                if element.meta_id is not None:
+                    self.meta_ids.setdefault(element.meta_id, element.pk)
+                # distrib puts the ids of an uncertainty and of its measures in
+                # the SId namespace of the model, wherever they sit (distrib §3.8)
+                if (
+                    isinstance(element, Uncertainty | UncertParameter)
+                    and element.id is not None
+                ):
+                    self.sids.setdefault(element.id, element.pk)
         for ud in model.list_of_unit_definitions:
             if ud.id is not None:
                 self.units[ud.id] = ud.pk
@@ -126,10 +134,12 @@ class ModelIndex:
 def _elements(model: Model) -> Iterator[SBase]:
     """All elements of a model with an SId namespace entry, nested ones included.
 
-    The ports of a model are not among them: comp §3.4.3 keeps the port
-    identifiers in a namespace of their own, so a port may carry the identifier
-    of an element of its model without naming it, and only a reference which
-    says that it means a port resolves against them.
+    The kinetic law of a reaction and the trigger, the priority and the delay
+    of an event are among them, whose id Level 3 Version 2 puts in the SId
+    namespace of the model (core §3.3). The ports of a model are not: comp
+    §3.4.3 keeps the port identifiers in a namespace of their own, so a port
+    may carry the identifier of an element of its model without naming it, and
+    only a reference which says that it means a port resolves against them.
     """
     yield from model.list_of_function_definitions
     yield from model.list_of_compartments
@@ -143,9 +153,12 @@ def _elements(model: Model) -> Iterator[SBase]:
         yield from reaction.list_of_reactants
         yield from reaction.list_of_products
         yield from reaction.list_of_modifiers
+        if reaction.kinetic_law is not None:
+            yield reaction.kinetic_law
         yield from _association_tree(reaction)
     for event in model.list_of_events:
         yield event
+        yield from _event_children(event)
         yield from event.list_of_event_assignments
     yield from model.list_of_submodels
     yield from model.list_of_gene_products
@@ -168,21 +181,19 @@ def _elements(model: Model) -> Iterator[SBase]:
 def _nested(model: Model) -> Iterator[SBase]:
     """All nodes of a model: every element and the objects nested in one.
 
-    The nested objects are the kinetic law of a reaction with its local
-    parameters, the trigger, the priority and the delay of an event and the
-    deletions of a submodel with the references below them. None of them is
-    referenced by an SId, and neither is a port, so they are nodes without
-    being part of the SId namespace of the model.
+    The nested objects are the local parameters of a kinetic law, the terms of
+    a transition and the deletions of a submodel with the references below
+    them. None of them is referenced by an SId, and neither is a port, so they
+    are nodes without being part of the SId namespace of the model. The
+    objects the comp and distrib extensions nest in any of them follow from
+    `_with_extensions`.
     """
     yield from model.list_of_unit_definitions
     yield from _elements(model)
     yield from model.list_of_ports
     for reaction in model.list_of_reactions:
         if reaction.kinetic_law is not None:
-            yield reaction.kinetic_law
             yield from reaction.kinetic_law.list_of_local_parameters
-    for event in model.list_of_events:
-        yield from _event_children(event)
     for transition in model.list_of_transitions:
         yield from _transition_terms(transition)
     for submodel in model.list_of_submodels:
