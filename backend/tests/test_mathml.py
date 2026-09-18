@@ -132,3 +132,26 @@ def test_math_symbols_of_nested_lambda() -> None:
     """The bound variables of a nested lambda are no symbols either."""
     astnode = libsbml.parseL3Formula("lambda(x, lambda(y, x * y * k))")
     assert mathml.math_symbols(astnode) == {"k"}
+
+
+@pytest.mark.parametrize(
+    "formula, expected",
+    [
+        ("and(geq(S, t1), lt(P, t2))", r"\wedge "),
+        ("or(geq(S, 1), lt(P, 2))", r"\vee "),
+        ("not(gt(a, b))", r"\neg "),
+        ("xor(a, b)", r"\oplus "),
+    ],
+)
+def test_logical_connectives_are_rendered_as_operators(
+    formula: str, expected: str
+) -> None:
+    """A connective is the symbol of logic, which latex spaces as an operator.
+
+    The stylesheet wrote the word of the operator into the latex, where it ended
+    up glued to its operands ("(S >= t1)and(P < t2)"), which is what the
+    condition of every function term of a qualitative model is built from.
+    """
+    latex = mathml.math_info(libsbml.parseL3Formula(formula)).latex
+    assert expected in latex
+    assert "and(" not in latex
