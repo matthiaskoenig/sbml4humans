@@ -541,12 +541,13 @@ class SBMLDocumentInfo:
         kinetic_law_key = f"{reaction_key}.kineticLaw"
         fields = self.sbase(klaw, key=kinetic_law_key)
         local_parameters = []
-        for lp in klaw.getListOfLocalParameters():
+        for lp in self._kinetic_law_parameters(klaw):
             units = _attribute(lp, "units")
             local_parameters.append(
                 LocalParameter(
                     **self.sbase(
                         lp,
+                        sbml_type="LocalParameter",
                         key=f"{kinetic_law_key}.{lp.getId()}",
                         use_id=False,
                     ),
@@ -562,6 +563,22 @@ class SBMLDocumentInfo:
             derived_units=udef_to_string(klaw.getDerivedUnitDefinition()),
             list_of_local_parameters=local_parameters,
         )
+
+    @staticmethod
+    def _kinetic_law_parameters(klaw: libsbml.KineticLaw) -> list[libsbml.Parameter]:
+        """The parameters of a kinetic law, of a document of any level.
+
+        Level 3 writes them as `<localParameter>` in a `<listOfLocalParameters>`
+        and libsbml returns them from `getListOfLocalParameters`; Level 1 and
+        Level 2 write them as `<parameter>` in a `<listOfParameters>`, where
+        libsbml keeps them as `Parameter` objects of `getListOfParameters` and
+        leaves `getListOfLocalParameters` empty (core §4.11.5, §4.11.6). Both
+        carry the id, the value and the units the report shows, so the report
+        has one `LocalParameter` for either.
+        """
+        if klaw.getLevel() >= 3:
+            return list(klaw.getListOfLocalParameters())
+        return list(klaw.getListOfParameters())
 
     @staticmethod
     def _equation(reaction: libsbml.Reaction) -> str:

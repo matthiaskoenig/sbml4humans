@@ -5,6 +5,7 @@ import logging
 import libsbml
 import pytest
 
+from sbml4humans.links import build_link_graph
 from sbml4humans.model import Edge, EdgeKind, Report
 from sbml4humans.resources import (
     COMP_ICG_BODY,
@@ -385,3 +386,25 @@ def test_uncertainty_math_edge() -> None:
     assert _edges(report, source=uncertainty.pk) == {
         (uncertainty.pk, "unc/Parameter:p2", "math"),
     }
+
+
+def test_level_2_local_parameter_edges(
+    level2_biomodel: Report, caplog: pytest.LogCaptureFixture
+) -> None:
+    """The math of a Level 2 kinetic law links to the parameters of that law."""
+    reaction = next(
+        r for r in level2_biomodel.models[0].list_of_reactions if r.id == "reaction1"
+    )
+    kinetic_law = reaction.kinetic_law
+    assert kinetic_law is not None
+    (local_parameter,) = kinetic_law.list_of_local_parameters
+    assert local_parameter.id == "vi"
+    assert (kinetic_law.pk, local_parameter.pk, "math") in _edges(level2_biomodel)
+    # the parameter is in the namespace of its kinetic law, not of the model
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        graph = build_link_graph(level2_biomodel, {kinetic_law.pk: {"vi"}})
+    assert caplog.text == ""
+    assert (
+        Edge(source=kinetic_law.pk, target=local_parameter.pk, kind=EdgeKind.MATH)
+        in graph.edges
+    )

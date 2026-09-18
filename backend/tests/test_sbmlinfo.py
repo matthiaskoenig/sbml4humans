@@ -411,3 +411,89 @@ def test_reactant_pks_are_unique_across_reactions() -> None:
         (klaw1.pk, local_parameter_pks[0]),
         (klaw2.pk, local_parameter_pks[1]),
     }
+
+
+# -------------------------------------------------------------------------------------
+# the local parameters of a kinetic law, which Level 2 writes as parameters
+# -------------------------------------------------------------------------------------
+def _kinetic_law_sbml(level: int) -> str:
+    """The same one reaction model as Level 2 Version 4 and as Level 3 Version 2.
+
+    The kinetic law carries one parameter with a value and units, written as
+    `<parameter>` in Level 2 and as `<localParameter>` in Level 3.
+    """
+    namespace = (
+        "http://www.sbml.org/sbml/level2/version4"
+        if level == 2
+        else "http://www.sbml.org/sbml/level3/version2/core"
+    )
+    version = 4 if level == 2 else 2
+    parameters = (
+        '<listOfParameters><parameter id="k" value="0.1" units="per_second"/>'
+        "</listOfParameters>"
+        if level == 2
+        else '<listOfLocalParameters><localParameter id="k" value="0.1" '
+        'units="per_second"/></listOfLocalParameters>'
+    )
+    constant = "" if level == 2 else ' constant="true"'
+    species_attributes = (
+        "" if level == 2 else ' hasOnlySubstanceUnits="false" constant="false"'
+    )
+    return (
+        f'<sbml xmlns="{namespace}" level="{level}" version="{version}">'
+        '<model id="m"><listOfUnitDefinitions>'
+        '<unitDefinition id="per_second"><listOfUnits>'
+        '<unit kind="second" exponent="-1" scale="0" multiplier="1"/>'
+        "</listOfUnits></unitDefinition></listOfUnitDefinitions>"
+        f'<listOfCompartments><compartment id="c" size="1"{constant}/>'
+        "</listOfCompartments><listOfSpecies>"
+        f'<species id="s" compartment="c" initialAmount="1"'
+        f' boundaryCondition="false"{species_attributes}/>'
+        "</listOfSpecies><listOfReactions>"
+        '<reaction id="r1" reversible="false"><listOfReactants>'
+        f'<speciesReference species="s"{constant}/>'
+        "</listOfReactants><kineticLaw>"
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<apply><times/><ci> k </ci><ci> s </ci></apply></math>"
+        f"{parameters}</kineticLaw></reaction>"
+        "</listOfReactions></model></sbml>"
+    )
+
+
+@pytest.mark.parametrize("level", [2, 3])
+def test_kinetic_law_parameters_of_both_levels(level: int) -> None:
+    """A kinetic law of either level carries its parameters as local parameters.
+
+    libsbml fills `getListOfLocalParameters` for a Level 3 document only; in a
+    Level 2 document the parameters of a kinetic law are `Parameter` objects of
+    `getListOfParameters` (core §4.11.5).
+    """
+    report = SBMLDocumentInfo.from_sbml(_kinetic_law_sbml(level))
+    assert report.document.level == level
+    kinetic_law = report.models[0].list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    (local_parameter,) = kinetic_law.list_of_local_parameters
+    assert local_parameter.sbml_type == "LocalParameter"
+    assert local_parameter.id == "k"
+    assert local_parameter.value == 0.1
+    assert local_parameter.units == "per_second"
+    assert local_parameter.units_latex == "\\frac{1}{s}"
+    assert local_parameter.pk == "m/LocalParameter:r1.kineticLaw.k"
+
+
+def test_level_2_biomodel_reports_its_kinetic_law_parameters(
+    level2_biomodel: Report,
+) -> None:
+    """The parameters of the kinetic laws of a curated Level 2 biomodel."""
+    report = level2_biomodel
+    assert report.document.level == 2
+    reaction = next(
+        r for r in report.models[0].list_of_reactions if r.id == "reaction1"
+    )
+    assert reaction.kinetic_law is not None
+    (local_parameter,) = reaction.kinetic_law.list_of_local_parameters
+    assert local_parameter.id == "vi"
+    assert local_parameter.value == 0.025
+    assert local_parameter.sbml_type == "LocalParameter"
+    # the metaId of the file keys the parameter, as it keys its kinetic law
+    assert local_parameter.pk == "BIOMD0000000003/LocalParameter:_961167"
