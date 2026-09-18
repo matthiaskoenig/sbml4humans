@@ -23,8 +23,10 @@ const OUT_DIR = fileURLToPath(new URL("../../docs/images/", import.meta.url));
 const COLUMN_WIDTH = 757;
 // the window a page (the home page, the examples) is captured in: as wide as that column
 const PAGE_VIEWPORT = { width: COLUMN_WIDTH, height: 900 };
-// the window the report as a whole is captured in
-const REPORT_VIEWPORT = { width: 1120, height: 760 };
+// the window the report as a whole is captured in: the narrowest one in which the bar states
+// the entry and the model of a report in full and no value of the inspector is broken inside a
+// token, which a narrower window does to a value such as `SBO:0000252`
+const REPORT_VIEWPORT = { width: 1200, height: 760 };
 // a window wide enough for one of the three columns of the inspector to be as wide as the
 // article column: the inspector spans the report without its rail of 256 px and its divider,
 // and every one of its three columns carries 12 px of padding on each side
