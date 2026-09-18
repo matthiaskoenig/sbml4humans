@@ -424,14 +424,19 @@ class LinkGraphBuilder:
         return self.indices.get(model_pk) if model_pk is not None else None
 
     def _resolve_into(
-        self, source: SBase, ref: SBaseRefFields, submodel: Submodel
+        self,
+        source: SBase,
+        ref: SBaseRefFields,
+        submodel: Submodel,
+        ports: frozenset[str] = frozenset(),
     ) -> str | None:
         """The pk of the element a reference names inside a submodel.
 
         The reference is resolved in the model the submodel instantiates, and a
         reference which carries a reference of its own names a submodel of that
         model and goes on inside it (comp §3.7.2). Every step which does not
-        resolve is logged and ends the chain.
+        resolve is logged and ends the chain. `ports` are the pks of the ports
+        the resolution passes through, which end it where it runs in a circle.
         """
         index = self._submodel_index(submodel)
         if index is None:
@@ -443,7 +448,7 @@ class LinkGraphBuilder:
                 submodel.model_ref,
             )
             return None
-        target = self._resolve_element(source, ref, index)
+        target = self._resolve_element(source, ref, index, ports)
         if target is None:
             return None
         if ref.sbase_ref is None:
@@ -456,10 +461,14 @@ class LinkGraphBuilder:
                 target,
             )
             return None
-        return self._resolve_into(source, ref.sbase_ref, nested_submodel)
+        return self._resolve_into(source, ref.sbase_ref, nested_submodel, ports)
 
     def _resolve_element(
-        self, source: SBase, ref: SBaseRefFields, index: ModelIndex
+        self,
+        source: SBase,
+        ref: SBaseRefFields,
+        index: ModelIndex,
+        ports: frozenset[str] = frozenset(),
     ) -> str | None:
         """The element a reference names in one model, a port being one name of one.
 
@@ -477,11 +486,23 @@ class LinkGraphBuilder:
                 )
             return None
         port = index.port_objects.get(target)
-        return self._port_target(port, index) if port is not None else target
+        return self._port_target(port, index, ports) if port is not None else target
 
-    def _port_target(self, port: Port, index: ModelIndex) -> str | None:
-        """The element a port names, through its nested reference where it has one."""
-        target = self._resolve_element(port, port, index)
+    def _port_target(
+        self, port: Port, index: ModelIndex, ports: frozenset[str] = frozenset()
+    ) -> str | None:
+        """The element a port names, through its nested reference where it has one.
+
+        A port which reaches into a submodel may name a port of that submodel
+        in turn. A model which instantiates itself, which libsbml reads and only
+        its validation rejects, lets that chain come back to a port it already
+        passed, so the resolution stops there and says so.
+        """
+        if port.pk in ports:
+            logger.warning("reference runs in a circle through port '%s'", port.pk)
+            return None
+        ports = ports | {port.pk}
+        target = self._resolve_element(port, port, index, ports)
         if target is None or port.sbase_ref is None:
             return target
         submodel = index.submodels.get(target)
@@ -492,7 +513,7 @@ class LinkGraphBuilder:
                 target,
             )
             return None
-        return self._resolve_into(port, port.sbase_ref, submodel)
+        return self._resolve_into(port, port.sbase_ref, submodel, ports)
 
     def _comp_edges(self, source: SBase, index: ModelIndex) -> None:
         """Add the replacement edges of an element.
@@ -534,7 +555,37 @@ class LinkGraphBuilder:
         the reference to the element cannot be resolved, because the model of
         the submodel is an external one or because the element is not part of
         it, the edge to the submodel is the only one, which is as far as the
-        report can follow the replacement.
+        report can follow the replacement. A submodel reference which names no
+        submodel at all is logged and leaves the replacement with the edges
+        which do not depend on it.
+        """
+        submodel = self._replacement_submodel(replacement, kind, index)
+        if submodel is not None:
+            self.edges.append(
+                Edge(source=replacement.pk, target=submodel.pk, kind=kind)
+            )
+            target = self._resolve_into(replacement, replacement, submodel)
+            if target is not None:
+                self.edges.append(Edge(source=replacement.pk, target=target, kind=kind))
+            if isinstance(replacement, ReplacedElement):
+                self._deletion_edge(replacement, submodel.pk, index)
+        if isinstance(replacement, ReplacedElement):
+            self._edge(
+                replacement,
+                replacement.conversion_factor,
+                EdgeKind.CONVERSION_FACTOR,
+                index,
+            )
+
+    @staticmethod
+    def _replacement_submodel(
+        replacement: ReplacedBy | ReplacedElement, kind: EdgeKind, index: ModelIndex
+    ) -> Submodel | None:
+        """The submodel a replacement reaches into, None where it names none.
+
+        The `submodelRef` of a replacement is an SId of the containing model
+        which has to name a submodel (comp §3.6.2, rule comp-21004), and a file
+        can get that wrong without libsbml refusing to read it.
         """
         submodel_pk = index.resolve(replacement.submodel_ref)
         if submodel_pk is None:
@@ -544,20 +595,16 @@ class LinkGraphBuilder:
                 replacement.pk,
                 replacement.submodel_ref,
             )
-            return
-        submodel = index.submodels[submodel_pk]
-        self.edges.append(Edge(source=replacement.pk, target=submodel_pk, kind=kind))
-        target = self._resolve_into(replacement, replacement, submodel)
-        if target is not None:
-            self.edges.append(Edge(source=replacement.pk, target=target, kind=kind))
-        if isinstance(replacement, ReplacedElement):
-            self._deletion_edge(replacement, submodel_pk, index)
-            self._edge(
-                replacement,
-                replacement.conversion_factor,
-                EdgeKind.CONVERSION_FACTOR,
-                index,
+            return None
+        submodel = index.submodels.get(submodel_pk)
+        if submodel is None:
+            logger.warning(
+                "%s of '%s' names '%s', which is no submodel",
+                kind.value,
+                replacement.pk,
+                submodel_pk,
             )
+        return submodel
 
     def _deletion_edge(
         self, replacement: ReplacedElement, submodel_pk: str, index: ModelIndex

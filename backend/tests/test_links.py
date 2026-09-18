@@ -858,6 +858,103 @@ def test_deletion_in_an_external_model_names_no_element(
     assert "is not part of the report" in caplog.text
 
 
+SUBMODEL_REF_OF_NO_SUBMODEL_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      level="3" version="1" comp:required="true">
+  <model id="top">
+    <listOfCompartments>
+      <compartment id="c" spatialDimensions="3" size="1" constant="true">
+        <comp:listOfReplacedElements>
+          <comp:replacedElement comp:submodelRef="c" comp:idRef="c"
+                                comp:conversionFactor="f"/>
+        </comp:listOfReplacedElements>
+      </compartment>
+    </listOfCompartments>
+    <listOfParameters>
+      <parameter id="f" value="1" constant="true">
+        <comp:replacedBy comp:submodelRef="c" comp:idRef="f"/>
+      </parameter>
+    </listOfParameters>
+    <comp:listOfSubmodels>
+      <comp:submodel comp:id="sm" comp:modelRef="sub"/>
+    </comp:listOfSubmodels>
+  </model>
+  <comp:listOfModelDefinitions>
+    <comp:modelDefinition id="sub">
+      <listOfCompartments>
+        <compartment id="c" spatialDimensions="3" size="1" constant="true"/>
+      </listOfCompartments>
+    </comp:modelDefinition>
+  </comp:listOfModelDefinitions>
+</sbml>"""
+
+
+def test_submodel_ref_which_names_no_submodel_is_logged(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A replacement whose submodel reference names another element ends there.
+
+    libsbml reads such a document and only its validation says that the
+    `submodelRef` has to name a submodel (comp-21004). The report of the
+    document is built: the element still names its replacement and the
+    conversion factor of the replacement, and the reference which names no
+    submodel is logged and produces no edge.
+    """
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        report = SBMLDocumentInfo.from_sbml(SUBMODEL_REF_OF_NO_SUBMODEL_SBML)
+    replaced = "top/ReplacedElement:c.replacedElement.0"
+    replaced_by = "top/ReplacedBy:f.replacedBy"
+    assert ("top/Compartment:c", replaced, "replacedElement") in _edges(report)
+    assert ("top/Parameter:f", replaced_by, "replacedBy") in _edges(report)
+    assert _edges(report, source=replaced) == {
+        (replaced, "top/Parameter:f", "conversionFactor"),
+    }
+    assert _edges(report, source=replaced_by) == set()
+    assert "'top/Compartment:c', which is no submodel" in caplog.text
+
+
+PORT_CIRCLE_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      level="3" version="1" comp:required="true">
+  <model id="top">
+    <comp:listOfSubmodels>
+      <comp:submodel comp:id="a" comp:modelRef="A"/>
+    </comp:listOfSubmodels>
+  </model>
+  <comp:listOfModelDefinitions>
+    <comp:modelDefinition id="A">
+      <comp:listOfSubmodels>
+        <comp:submodel comp:id="inner" comp:modelRef="A"/>
+      </comp:listOfSubmodels>
+      <comp:listOfPorts>
+        <comp:port comp:id="p" comp:idRef="inner">
+          <comp:sBaseRef comp:portRef="p"/>
+        </comp:port>
+      </comp:listOfPorts>
+    </comp:modelDefinition>
+  </comp:listOfModelDefinitions>
+</sbml>"""
+
+
+def test_port_which_names_itself_through_a_submodel_is_logged(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A port whose reference leads back to itself ends where the circle closes.
+
+    The model definition instantiates itself, which only the validation of
+    libsbml rejects, and its port names the same port of that submodel, so
+    following the reference never ends. The report is built without the edge
+    of the port and says why.
+    """
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        report = SBMLDocumentInfo.from_sbml(PORT_CIRCLE_SBML)
+    assert "A/Port:p" in report.link_graph.nodes
+    assert _edges(report, kind=EdgeKind.PORT) == set()
+    assert "runs in a circle through port 'A/Port:p'" in caplog.text
+
+
 def test_replacement_into_an_external_model_ends_at_the_submodel(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
