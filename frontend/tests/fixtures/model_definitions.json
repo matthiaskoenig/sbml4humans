@@ -1,5 +1,5 @@
 {
-  "uid": "e3de5c251ec24228b5055e8fc5745b72",
+  "uid": "795d7b1f0e0049ccb312d7734468069f",
   "manifest": {
     "entries": [
       {
@@ -406,6 +406,16 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "model_definitions/Model:model_definitions",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "m1/Model:m1",
+              "kind": "model"
+            },
+            {
               "source": "model_definitions/Model:model_definitions",
               "target": "model_definitions/UnitDefinition:mmole",
               "kind": "units"
@@ -444,7 +454,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.003 [s]"
       }
     }
   }

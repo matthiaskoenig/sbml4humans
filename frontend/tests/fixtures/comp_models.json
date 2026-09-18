@@ -1,5 +1,5 @@
 {
-  "uid": "90be0f3e507446349509f004e0a817c2",
+  "uid": "2b6372596520478c94677c9f32eecd0c",
   "manifest": {
     "entries": [
       {
@@ -458,6 +458,11 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "omex_minimal/Model:omex_minimal",
+              "kind": "model"
+            },
+            {
               "source": "omex_minimal/Species:S1",
               "target": "omex_minimal/Compartment:cell",
               "kind": "compartment"
@@ -516,7 +521,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.012 [s]"
+        "jsonReportTime": "0.009 [s]"
       }
     },
     "./models/omex_comp.xml": {
@@ -1989,6 +1994,36 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "omex_comp/Model:omex_comp",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:emd0",
+              "kind": "externalModelDefinition"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:emd1",
+              "kind": "externalModelDefinition"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:emd2",
+              "kind": "externalModelDefinition"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:emd3",
+              "kind": "externalModelDefinition"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:emd4",
+              "kind": "externalModelDefinition"
+            },
+            {
               "source": "omex_comp/Compartment:cell0",
               "target": "omex_comp/ReplacedElement:cell0_RE",
               "kind": "replacedElement"
@@ -2302,7 +2337,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.048 [s]"
+        "jsonReportTime": "0.03 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -4031,6 +4066,11 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "omex_comp/Model:omex_comp",
+              "kind": "model"
+            },
+            {
               "source": "omex_comp/Species:S0",
               "target": "omex_comp/Compartment:cell0",
               "kind": "compartment"
@@ -4419,7 +4459,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.062 [s]"
+        "jsonReportTime": "0.041 [s]"
       }
     }
   }

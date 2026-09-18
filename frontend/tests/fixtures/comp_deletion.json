@@ -1,5 +1,5 @@
 {
-  "uid": "6ecbbe9587f6467b9a466b79824d2b5c",
+  "uid": "b26fb0acbe0143bf8cfc57b88ddf805a",
   "manifest": {
     "entries": [
       {
@@ -1609,6 +1609,26 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "comp_deletion/Model:comp_deletion",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "cell/Model:cell",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "tissue/Model:tissue",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:units",
+              "kind": "externalModelDefinition"
+            },
+            {
               "source": "comp_deletion/Compartment:medium",
               "target": "comp_deletion/ReplacedElement:meta_medium_cell1",
               "kind": "replacedElement"
@@ -1652,6 +1672,11 @@
               "source": "comp_deletion/ReplacedElement:meta_medium_tissue",
               "target": "cell/Compartment:c",
               "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_tissue",
+              "target": "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef",
+              "kind": "sBaseRef"
             },
             {
               "source": "comp_deletion/Species:glc",
@@ -1902,7 +1927,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.036 [s]"
+        "jsonReportTime": "0.027 [s]"
       }
     }
   }

@@ -90,10 +90,11 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(34);
+    expect(EDGE_KINDS).toHaveLength(38);
     // a reaction names its kinetic law behind its participants, an event its assignments behind
     // its trigger, its priority and its delay
     expect(EDGE_KINDS.indexOf("kineticLaw")).toBe(EDGE_KINDS.indexOf("modifier") + 1);
+    expect(EDGE_KINDS.indexOf("localParameter")).toBe(EDGE_KINDS.indexOf("kineticLaw") + 1);
     expect(EDGE_KINDS.indexOf("eventAssignment")).toBe(EDGE_KINDS.indexOf("delay") + 1);
     // an element names its uncertainties and each of them its measures
     expect(EDGE_KINDS.indexOf("uncertainty")).toBe(EDGE_KINDS.indexOf("uncertParameter") - 1);
@@ -102,6 +103,9 @@ describe("sbml types", () => {
     expect(edgeKindLabel("geneProductAssociation")).toBe("gene product association");
     expect(edgeKindLabel("fluxBound")).toBe("flux bound");
     expect(edgeKindLabel("replacedBy")).toBe("replaced by");
+    expect(edgeKindLabel("localParameter")).toBe("local parameter");
+    expect(edgeKindLabel("externalModelDefinition")).toBe("external model definition");
+    expect(edgeKindLabel("sBaseRef")).toBe("reference");
     expect(edgeKindLabel("functionTerm")).toBe("function term");
     expect(edgeKindLabel("defaultTerm")).toBe("default term");
     expect(edgeKindLabel("uncertainty")).toBe("uncertainty");

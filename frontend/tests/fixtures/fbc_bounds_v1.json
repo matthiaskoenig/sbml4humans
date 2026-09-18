@@ -1,5 +1,5 @@
 {
-  "uid": "1908d1339081439881dcef380985f6ce",
+  "uid": "efd23b8e200b4af59a9efeeab8a3513f",
   "manifest": {
     "entries": [
       {
@@ -818,6 +818,11 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "fbc_bounds_v1/Model:fbc_bounds_v1",
+              "kind": "model"
+            },
+            {
               "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
               "target": "fbc_bounds_v1/UnitDefinition:mmole",
               "kind": "units"
@@ -981,7 +986,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.006 [s]"
+        "jsonReportTime": "0.004 [s]"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "uid": "a09dc4811a5c422ab2d1febea176470a",
+  "uid": "9f5e57a53eb94abeaa55218d2cf8a12a",
   "manifest": {
     "entries": [
       {
@@ -8891,6 +8891,16 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "icg_body/Model:icg_body",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:liver",
+              "kind": "externalModelDefinition"
+            },
+            {
               "source": "icg_body/Compartment:Vbi",
               "target": "icg_body/ReplacedElement:Vbi_RE",
               "kind": "replacedElement"
@@ -10974,7 +10984,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "1.389 [s]"
+        "jsonReportTime": "0.558 [s]"
       }
     }
   }

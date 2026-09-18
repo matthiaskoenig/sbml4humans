@@ -1,5 +1,5 @@
 {
-  "uid": "09b2f1d1aa3b44e7ae928d7c6e437891",
+  "uid": "d95cd93169d344b58eaace45c7915291",
   "manifest": {
     "entries": [
       {
@@ -1523,6 +1523,11 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "fbc_example/Model:fbc_example",
+              "kind": "model"
+            },
+            {
               "source": "fbc_example/Model:fbc_example",
               "target": "fbc_example/UnitDefinition:mmole",
               "kind": "units"
@@ -1926,7 +1931,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.013 [s]"
+        "jsonReportTime": "0.01 [s]"
       }
     }
   }

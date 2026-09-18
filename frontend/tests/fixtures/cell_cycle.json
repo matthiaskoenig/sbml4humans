@@ -1,5 +1,5 @@
 {
-  "uid": "d33393a58d3e44528921068ed2cbd6c3",
+  "uid": "dac0b90fa9784dd7b52f543926417250",
   "manifest": {
     "entries": [
       {
@@ -6230,6 +6230,11 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "BIOMD0000000007/Model:BIOMD0000000007",
+              "kind": "model"
+            },
+            {
               "source": "BIOMD0000000007/Species:UbE",
               "target": "BIOMD0000000007/Compartment:Cell",
               "kind": "compartment"
@@ -7803,7 +7808,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.656 [s]"
+        "jsonReportTime": "0.325 [s]"
       }
     }
   }

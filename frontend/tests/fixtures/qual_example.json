@@ -1,5 +1,5 @@
 {
-  "uid": "026a503c635244cba2d2d8e7eaae48b7",
+  "uid": "788ee04411ac424fb087f3bffba98685",
   "manifest": {
     "entries": [
       {
@@ -639,6 +639,11 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "qual_example/Model:qual_example",
+              "kind": "model"
+            },
+            {
               "source": "qual_example/QualitativeSpecies:S",
               "target": "qual_example/Compartment:cell",
               "kind": "compartment"
@@ -832,7 +837,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.056 [s]"
+        "jsonReportTime": "0.032 [s]"
       }
     }
   }

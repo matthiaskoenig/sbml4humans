@@ -308,6 +308,7 @@ class LinkGraphBuilder:
     def build(self) -> LinkGraph:
         """Build the graph."""
         self._collect_nodes()
+        self._document_edges()
         for model in self.report.models:
             self._model_edges(model)
         return LinkGraph(nodes=self.nodes, edges=self.edges)
@@ -569,6 +570,20 @@ class LinkGraphBuilder:
             )
             self._replacement_edges(replaced, EdgeKind.REPLACED_ELEMENT, index)
 
+    def _sbase_ref_edge(self, ref: SBaseRefFields) -> None:
+        """The edge from a comp reference to the reference nested in it.
+
+        A reference which reaches into a submodel of the submodel it names
+        carries the next link of the chain (comp §3.7.2). The edge of the
+        reference to the element at the end of the chain starts at the
+        reference which carries the chain, and the links in between are named
+        by the reference above them.
+        """
+        if ref.sbase_ref is not None:
+            self.edges.append(
+                Edge(source=ref.pk, target=ref.sbase_ref.pk, kind=EdgeKind.SBASE_REF)
+            )
+
     def _replacement_edges(
         self,
         replacement: ReplacedBy | ReplacedElement,
@@ -690,6 +705,27 @@ class LinkGraphBuilder:
                     Edge(source=deletion.pk, target=deleted, kind=EdgeKind.DELETION)
                 )
 
+    def _document_edges(self) -> None:
+        """The edges of the document: the models and the external models it lists.
+
+        The document holds its model (core §4.1) and, with comp, the model
+        definitions and the external model definitions of its lists (comp
+        §3.3), the way a reaction holds its kinetic law.
+        """
+        document = self.report.document
+        for model in self.report.models:
+            self.edges.append(
+                Edge(source=document.pk, target=model.pk, kind=EdgeKind.MODEL)
+            )
+        for emd in self.report.external_model_definitions:
+            self.edges.append(
+                Edge(
+                    source=document.pk,
+                    target=emd.pk,
+                    kind=EdgeKind.EXTERNAL_MODEL_DEFINITION,
+                )
+            )
+
     def _model_edges(self, model: Model) -> None:
         """The edges of all elements of a model."""
         index = self.indices[model.pk]
@@ -699,6 +735,8 @@ class LinkGraphBuilder:
             for carrier in _with_extensions(element):
                 self._comp_edges(carrier, index)
                 self._uncertainty_edges(carrier, index)
+                if isinstance(carrier, SBaseRefFields):
+                    self._sbase_ref_edge(carrier)
 
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             self._units_edge(model, getattr(model, f"{key}_units"), index)
@@ -789,8 +827,9 @@ class LinkGraphBuilder:
         each of those names one species (core §4.11.1 to §4.11.4), so the
         edge of a participation is two edges of its kind: one from the
         reaction to the reference and one from the reference to the species.
-        The reaction names its kinetic law as well, and the math edges start at
-        the kinetic law, which holds the formula (core §4.11.5).
+        The reaction names its kinetic law as well, the math edges start at
+        the kinetic law, which holds the formula, and the kinetic law names its
+        local parameters, whether its formula reads them or not (core §4.11.5).
         """
         self._edge(reaction, reaction.compartment, EdgeKind.COMPARTMENT, index)
         for sr in reaction.list_of_reactants:
@@ -816,6 +855,9 @@ class LinkGraphBuilder:
             )
             self._math_edges(klaw, index, kinetic_law_pk=klaw.pk)
             for lp in klaw.list_of_local_parameters:
+                self.edges.append(
+                    Edge(source=klaw.pk, target=lp.pk, kind=EdgeKind.LOCAL_PARAMETER)
+                )
                 self._units_edge(lp, lp.units, index)
 
     def _constraint_edges(

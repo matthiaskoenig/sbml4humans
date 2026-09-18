@@ -424,7 +424,7 @@ def test_local_parameter_shadows_global_parameter(synthetic_fbc: Report) -> None
     """The math of a kinetic law resolves its symbols against the local parameters."""
     klaw = synthetic_fbc.models[0].list_of_reactions[0].kinetic_law
     assert klaw is not None
-    assert _edges(synthetic_fbc, source=klaw.pk) == {
+    assert _edges(synthetic_fbc, source=klaw.pk, kind=EdgeKind.MATH) == {
         (klaw.pk, "synth/LocalParameter:r.kineticLaw.k", "math"),
         (klaw.pk, "synth/Species:s", "math"),
     }
@@ -784,6 +784,87 @@ def test_an_event_assignment_of_a_level_2_model_names_its_event() -> None:
 # -------------------------------------------------------------------------------------
 # the edges of the replacements and the deletions of comp
 # -------------------------------------------------------------------------------------
+def test_the_document_names_its_models(comp_deletion: Report) -> None:
+    """The document names the model, the model definitions and the external ones.
+
+    The document holds its model (core §4.1) and, with comp, the model
+    definitions and the external model definitions of its lists (comp §3.3),
+    so the document is part of the graph and a model definition which no
+    submodel instantiates still says where it belongs.
+    """
+    document = comp_deletion.document.pk
+    assert _edges(comp_deletion, source=document) == {
+        (document, "comp_deletion/Model:comp_deletion", "model"),
+        (document, "cell/Model:cell", "model"),
+        (document, "tissue/Model:tissue", "model"),
+        (
+            document,
+            "document/ExternalModelDefinition:units",
+            "externalModelDefinition",
+        ),
+    }
+
+
+def test_a_kinetic_law_names_its_local_parameters() -> None:
+    """A local parameter is linked from its kinetic law whatever the formula reads.
+
+    The kinetic law lists its local parameters (core §4.11.5), and one which
+    the formula does not read used to be a node without an edge.
+    """
+    sbml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <model id="m">
+    <listOfCompartments>
+      <compartment id="c" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="s" compartment="c" initialAmount="1"
+               hasOnlySubstanceUnits="true" boundaryCondition="false"
+               constant="false"/>
+    </listOfSpecies>
+    <listOfReactions>
+      <reaction id="r" reversible="false">
+        <listOfReactants>
+          <speciesReference species="s" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <kineticLaw>
+          {_mathml("k * s")}
+          <listOfLocalParameters>
+            <localParameter id="k" value="1"/>
+            <localParameter id="unused" value="2"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>"""
+    report = SBMLDocumentInfo.from_sbml(sbml)
+    klaw = report.models[0].list_of_reactions[0].kinetic_law
+    assert klaw is not None
+    assert _edges(report, source=klaw.pk, kind=EdgeKind.LOCAL_PARAMETER) == {
+        (klaw.pk, "m/LocalParameter:r.kineticLaw.k", "localParameter"),
+        (klaw.pk, "m/LocalParameter:r.kineticLaw.unused", "localParameter"),
+    }
+
+
+def test_a_reference_names_the_reference_nested_in_it(comp_deletion: Report) -> None:
+    """The link of a reference chain is named by the reference which carries it.
+
+    A replacement which reaches into a submodel of a submodel carries a
+    reference of its own (comp §3.7.2). The replacement links the element at
+    the end of the chain, and it names the reference it carries, which was a
+    node without an edge.
+    """
+    replaced = "comp_deletion/ReplacedElement:meta_medium_tissue"
+    nested = "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef"
+    assert _edges(comp_deletion, source=replaced, kind=EdgeKind.SBASE_REF) == {
+        (replaced, nested, "sBaseRef"),
+    }
+    assert [e for e in comp_deletion.link_graph.edges if e.target == nested] == [
+        Edge(source=replaced, target=nested, kind=EdgeKind.SBASE_REF)
+    ]
+
+
 def test_submodel_names_its_deletions(comp_deletion: Report) -> None:
     """A submodel lists its deletions and every deletion names what it removes.
 
@@ -831,6 +912,7 @@ def test_replacement_follows_a_nested_reference(comp_deletion: Report) -> None:
     assert _edges(comp_deletion, source=replaced) == {
         (replaced, "comp_deletion/Submodel:tissue1", "replacedElement"),
         (replaced, "cell/Compartment:c", "replacedElement"),
+        (replaced, "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef", "sBaseRef"),
     }
 
 

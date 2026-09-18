@@ -1,5 +1,5 @@
 {
-  "uid": "7e561a58000d4503869ee9310a951ee2",
+  "uid": "9e88db41379d4627a0476a35341f4562",
   "manifest": {
     "entries": [
       {
@@ -956,6 +956,11 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "constraint_event/Model:constraint_event",
+              "kind": "model"
+            },
+            {
               "source": "constraint_event/Model:constraint_event",
               "target": "constraint_event/UnitDefinition:mmole",
               "kind": "units"
@@ -1076,9 +1081,19 @@
               "kind": "math"
             },
             {
+              "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "target": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
+              "kind": "localParameter"
+            },
+            {
               "source": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
               "target": "constraint_event/UnitDefinition:mmole_per_min_l",
               "kind": "units"
+            },
+            {
+              "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "target": "constraint_event/LocalParameter:R1.kineticLaw.Km",
+              "kind": "localParameter"
             },
             {
               "source": "constraint_event/LocalParameter:R1.kineticLaw.Km",
@@ -1144,7 +1159,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.082 [s]"
+        "jsonReportTime": "0.079 [s]"
       }
     }
   }

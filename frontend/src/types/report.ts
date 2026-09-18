@@ -10,6 +10,7 @@ export type EdgeKind =
   | "product"
   | "modifier"
   | "kineticLaw"
+  | "localParameter"
   | "trigger"
   | "priority"
   | "delay"
@@ -33,11 +34,14 @@ export type EdgeKind =
   | "uncertainty"
   | "uncertParameter"
   | "var"
+  | "model"
+  | "externalModelDefinition"
   | "modelRef"
   | "port"
   | "deletion"
   | "replacedBy"
   | "replacedElement"
+  | "sBaseRef"
   | "math";
 
 /**

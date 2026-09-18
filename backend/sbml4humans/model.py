@@ -792,6 +792,7 @@ class EdgeKind(StrEnum):
     PRODUCT = "product"
     MODIFIER = "modifier"
     KINETIC_LAW = "kineticLaw"
+    LOCAL_PARAMETER = "localParameter"
     TRIGGER = "trigger"
     PRIORITY = "priority"
     DELAY = "delay"
@@ -815,11 +816,14 @@ class EdgeKind(StrEnum):
     UNCERTAINTY = "uncertainty"
     UNCERT_PARAMETER = "uncertParameter"
     VAR = "var"
+    MODEL = "model"
+    EXTERNAL_MODEL_DEFINITION = "externalModelDefinition"
     MODEL_REF = "modelRef"
     PORT = "port"
     DELETION = "deletion"
     REPLACED_BY = "replacedBy"
     REPLACED_ELEMENT = "replacedElement"
+    SBASE_REF = "sBaseRef"
     MATH = "math"
 
 

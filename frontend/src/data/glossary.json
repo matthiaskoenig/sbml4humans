@@ -1398,6 +1398,10 @@
       "label": "event assignment",
       "summary": "a new value an event gives to an element of the model"
     },
+    "externalModelDefinition": {
+      "label": "external model definition",
+      "summary": "a model of another document which this document refers to"
+    },
     "fluxBound": {
       "label": "flux bound",
       "summary": "what bounds the flux of a reaction"
@@ -1426,9 +1430,17 @@
       "label": "kinetic law",
       "summary": "the formula which gives the speed of a reaction"
     },
+    "localParameter": {
+      "label": "local parameter",
+      "summary": "a parameter which only the formula of one kinetic law can read"
+    },
     "math": {
       "label": "math",
       "summary": "an element a formula refers to"
+    },
+    "model": {
+      "label": "model",
+      "summary": "a model the document holds"
     },
     "modelRef": {
       "label": "model reference",
@@ -1465,6 +1477,10 @@
     "replacedElement": {
       "label": "replaced element",
       "summary": "the element of a submodel which this one replaces"
+    },
+    "sBaseRef": {
+      "label": "reference",
+      "summary": "the next link of a chain of references into a submodel of a submodel"
     },
     "symbol": {
       "label": "symbol",
