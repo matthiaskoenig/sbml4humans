@@ -111,7 +111,7 @@ const terms = computed<TermRow[]>(() => {
     field="listOfFunctionTerms"
     :wide="!!terms.length"
   >
-    <NestedTable :rows="terms" :columns="TERM_COLUMNS" data-testid="transition-table">
+    <NestedTable :rows="terms" :columns="TERM_COLUMNS">
       <template #cell-term="{ row }"
         ><ElementLink :pk="row.pk" :label="row.isDefault ? 'default' : null"
       /></template>
