@@ -5,13 +5,14 @@ import { useRoute } from "vue-router";
 import type { SbmlElement, ElementType } from "@/api/types";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import AppBar from "@/components/layout/AppBar.vue";
+import AppFooter from "@/components/layout/AppFooter.vue";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import LoadingState from "@/components/layout/LoadingState.vue";
 import SplitPane from "@/components/layout/SplitPane.vue";
 import ContextBar from "@/components/report/ContextBar.vue";
 import ElementSection from "@/components/report/ElementSection.vue";
 import SearchBox from "@/components/report/SearchBox.vue";
-import TypeRail, { type TypeCount } from "@/components/report/TypeRail.vue";
+import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 import { ReportIndexKey } from "@/report/context";
 import { matches } from "@/report/search";
@@ -22,10 +23,14 @@ const route = useRoute();
 const store = useReportStore();
 const view = useReportView();
 
-/** The width the rail opens with, wide enough for the longest type name next to its count in
- * both states of the count: the total alone, and the matches in front of the total while a
- * search is active. */
-const RAIL_WIDTH = 256;
+/** The width the inspector opens with: a third of the window, which leaves the tables the two
+ * thirds they need for their widest columns. A reader who drags the divider keeps their width,
+ * the split pane remembers it. */
+const INSPECTOR_WIDTH = Math.round(window.innerWidth / 3);
+
+/** The narrowest the inspector gets: the label column of an attribute row is 11rem wide, below
+ * this the value next to it has no room left. */
+const INSPECTOR_MIN = 360;
 
 watch(
   () => [route.name, route.params.id, route.query.url] as const,
@@ -108,6 +113,9 @@ watch([selectedPk, index], ([pk, current]) => {
 
 <template>
   <AppBar>
+    <template #search>
+      <SearchBox v-if="index" />
+    </template>
     <template #context>
       <ContextBar
         v-if="index && model && entry"
@@ -116,9 +124,6 @@ watch([selectedPk, index], ([pk, current]) => {
         :entry="entry"
         :model="model"
       />
-    </template>
-    <template #actions>
-      <SearchBox v-if="index" />
     </template>
   </AppBar>
   <LoadingState v-if="store.loading" :message="`Loading ${store.source?.name ?? 'report'}`" />
@@ -131,48 +136,38 @@ watch([selectedPk, index], ([pk, current]) => {
     <p>No report loaded.</p>
     <RouterLink to="/" class="text-link hover:underline">Load a model</RouterLink>
   </div>
-  <SplitPane
-    v-else-if="index && model"
-    direction="horizontal"
-    storage-key="rail"
-    :initial="RAIL_WIDTH"
-    :min="160"
-    data-testid="report-page"
-  >
-    <template #first>
-      <TypeRail :index="index" :model="model" :counts="counts" />
-    </template>
-    <template #second>
-      <SplitPane
-        direction="vertical"
-        storage-key="inspector"
-        :initial="320"
-        :min="160"
-        sized-pane="second"
-        :collapsed="!selectedPk"
-      >
-        <template #first>
-          <div class="h-full overflow-y-auto px-4 pb-8" data-testid="tables">
-            <p
-              v-if="visibleSections.length === 0"
-              class="p-8 text-center text-sm text-gray-500"
-              data-testid="no-matches"
-            >
-              {{ emptyMessage }}
-            </p>
-            <ElementSection
-              v-for="section in visibleSections"
-              :key="section.type"
-              :type="section.type"
-              :rows="section.rows as SbmlElement[]"
-              :total="section.total"
-            />
-          </div>
-        </template>
-        <template #second>
-          <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
-        </template>
-      </SplitPane>
-    </template>
-  </SplitPane>
+  <div v-else-if="index && model" class="flex min-h-0 flex-1 flex-col" data-testid="report-page">
+    <TypeBar :index="index" :model="model" :counts="counts" />
+    <SplitPane
+      direction="horizontal"
+      storage-key="inspector-width"
+      :initial="INSPECTOR_WIDTH"
+      :min="INSPECTOR_MIN"
+      sized-pane="second"
+      :collapsed="!selectedPk"
+    >
+      <template #first>
+        <div class="h-full overflow-y-auto px-4 pb-8" data-testid="tables">
+          <p
+            v-if="visibleSections.length === 0"
+            class="p-8 text-center text-sm text-gray-500"
+            data-testid="no-matches"
+          >
+            {{ emptyMessage }}
+          </p>
+          <ElementSection
+            v-for="section in visibleSections"
+            :key="section.type"
+            :type="section.type"
+            :rows="section.rows as SbmlElement[]"
+            :total="section.total"
+          />
+        </div>
+      </template>
+      <template #second>
+        <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
+      </template>
+    </SplitPane>
+    <AppFooter dense />
+  </div>
 </template>

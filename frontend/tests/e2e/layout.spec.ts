@@ -27,9 +27,9 @@ function truncatedLabels(column: Locator): Promise<string[]> {
   );
 }
 
-/** The type names of the rail which do not fit next to their count and are therefore clipped. */
-function clippedTypes(rail: Locator): Promise<string[]> {
-  return rail.evaluate((element) =>
+/** The entries of the type bar which do not fit on their line and are therefore clipped. */
+function clippedEntries(bar: Locator): Promise<string[]> {
+  return bar.evaluate((element) =>
     [...element.querySelectorAll("button")]
       .filter((button) => button.scrollWidth > button.clientWidth)
       .map((button) => button.textContent.trim()),
@@ -139,17 +139,54 @@ test("every label of the inspector fits its column", async ({ page }) => {
   expect(await truncatedLabels(column)).toEqual([]);
 });
 
-test("every type of the rail fits next to its count, with and without a search", async ({
+test("the type bar wraps its entries instead of cutting them off or scrolling", async ({
+  page,
+}) => {
+  // a model of eight types, whose entries do not fit on one line of the viewport of the tests
+  await openExample(page, "Hepatic_glucose_3 (Hepatic_glucose_3.xml)", 60_000);
+  const bar = page.getByTestId("type-bar");
+  // `Function definitions` is the longest type name, and the count of a type is at its widest
+  // while a search is active, which puts the matches in front of the total
+  await expect(bar).toContainText("Function definitions");
+  expect(await clippedEntries(bar)).toEqual([]);
+  // the row wraps onto as many lines as the model needs, it never scrolls sideways
+  expect(
+    await bar.evaluate((element) => element.scrollWidth - element.clientWidth),
+  ).toBeLessThanOrEqual(0);
+
+  // a search which matches nothing keeps every entry, each with the matches in front of its total
+  await page.getByTestId("search-input").fill("zzzz-nothing");
+  await expect(page.getByTestId("bar-count-Compartment")).toHaveText("0 / 5");
+  await expect(page.getByTestId("bar-count-Parameter")).toHaveText("0 / 258");
+  expect(await clippedEntries(bar)).toEqual([]);
+  expect(
+    await bar.evaluate((element) => element.scrollWidth - element.clientWidth),
+  ).toBeLessThanOrEqual(0);
+});
+
+test("the type bar lists the types the model uses and the tables are left of the inspector", async ({
   page,
 }) => {
   await openExample(page, "BIOMD0000000012");
-  const rail = page.getByTestId("type-rail");
-  // `Function definitions` is the longest type name, and the count of a type without elements
-  // is the widest one while a search is active
-  await expect(rail).toContainText("Function definitions");
-  expect(await clippedTypes(rail)).toEqual([]);
+  const bar = page.getByTestId("type-bar");
+  // the repressilator states no function definition and no event, so neither is an entry
+  await expect(bar.getByTestId("bar-type-Species")).toBeVisible();
+  await expect(bar.getByTestId("bar-type-FunctionDefinition")).toHaveCount(0);
+  await expect(bar.getByTestId("bar-type-Event")).toHaveCount(0);
 
-  await page.getByTestId("search-input").fill("laci");
-  await expect(page.getByTestId("rail-count-FunctionDefinition")).toHaveText("0 / 0");
-  expect(await clippedTypes(rail)).toEqual([]);
+  // the inspector opens at the right of the tables, at about a third of the window
+  await page.getByTestId("table-Species").locator("tbody tr[data-pk]").first().click();
+  const tables = (await page.getByTestId("tables").boundingBox())!;
+  const inspector = (await page.getByTestId("inspector").boundingBox())!;
+  expect(inspector.x).toBeGreaterThanOrEqual(tables.x + tables.width);
+  const window = page.viewportSize()!;
+  expect(inspector.width).toBeGreaterThan(window.width / 4);
+  expect(inspector.width).toBeLessThan(window.width / 2);
+
+  // the footer sits under both of them and stays where it is while the tables scroll
+  const footer = (await page.getByTestId("app-footer").boundingBox())!;
+  expect(footer.y).toBeGreaterThanOrEqual(tables.y + tables.height);
+  expect(footer.y).toBeGreaterThanOrEqual(inspector.y + inspector.height);
+  await page.getByTestId("tables").evaluate((element) => (element.scrollTop = 400));
+  expect((await page.getByTestId("app-footer").boundingBox())!.y).toBe(footer.y);
 });

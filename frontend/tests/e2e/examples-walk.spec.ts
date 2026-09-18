@@ -14,7 +14,7 @@ test("every example renders its sections", async ({ page, request }) => {
   test.setTimeout(examples.length * 15_000);
   for (const example of examples) {
     await openExample(page, example.id, 120_000);
-    await expect(page.getByTestId("type-rail")).toBeVisible();
+    await expect(page.getByTestId("type-bar")).toBeVisible();
     const sections = await page.locator("[data-testid^=section-]").count();
     // a model without any element renders the empty state instead of the sections
     if (sections === 0) await expect(page.getByTestId("no-matches"), example.id).toBeVisible();

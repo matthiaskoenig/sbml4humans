@@ -7,7 +7,7 @@
 
 [SBML4Humans](https://sbml4humans.de) renders [SBML](sbml.md) models as interactive, human readable reports. Give it a model and it gives you a page which shows what the model contains: its compartments, species, reactions, rules and events, the mathematics of the model as typeset formulas, the units it computes from the file, the references between the elements, and the annotations resolved to the entries they point at.
 
-[![The report of the repressilator model, with the type rail, the element tables and the inspector of a selected species](images/report-overview.png)](images/report-overview.png)
+[![The report of the repressilator model, with the type bar, the element tables and the inspector of a selected species](images/report-overview.png)](images/report-overview.png)
 
 ## Why it exists
 
@@ -25,7 +25,7 @@ It is written for the people who have to read models rather than write them:
 
 ## What a report shows
 
-A report is one page per model. The rail on the left lists every element type with the number of elements of that type, the tables in the middle show the elements of each type with the columns which matter for that type, and the inspector shows one element in full: its attributes, everything it references and everything which references it, its notes, its annotations and its history, and the raw XML when that is what you need. Every column header of an element table, every attribute label of the inspector, every mark of a type and every group of links carries a one sentence explanation on hover, and the type in the header of the inspector links its page in the reference.
+A report is one page per model. The bar at the top lists every element type the model uses with the number of elements of that type, the tables under it show the elements of each type with the columns which matter for that type, and the inspector at the right shows one element in full: its attributes, everything it references and everything which references it, its notes, its annotations and its history, and the raw XML when that is what you need. Every column header of an element table, every attribute label of the inspector, every mark of a type and every group of links carries a one sentence explanation on hover, and the type in the header of the inspector links its page in the reference.
 
 [Reading a report](report.md) walks through all of it.
 

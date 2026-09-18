@@ -4,7 +4,7 @@ The attributes every element of an SBML model carries.
 
 Almost every object of an SBML model derives from the abstract type `SBase`, which carries the identifier, the name, the term of the Systems Biology Ontology and the two places for annotation: the notes for human readers and the annotation for machine readable metadata. An element type adds its own attributes on top of these, and may make an inherited attribute required, for example the identifier of a species.
 
-The report shows these attributes for every element: the id and the name in the first two columns of every table, the meta id and the SBO term in the attributes of the inspector, and the notes, the annotations, the history and the XML in the third column of the inspector.
+The report shows these attributes for every element: the id and the name in the first two columns of every table, the meta id and the SBO term in the attributes of the inspector, the notes, the annotations and the history in its last section, and the XML behind the button of its header.
 
 ## Attributes
 
@@ -50,7 +50,7 @@ The report shows the term in the attributes of the inspector and links it to its
 
 The notes hold XHTML written for human readers: a description of what the element stands for, the assumptions behind a rate law, the source of a value. They are the place where the story of a model is told, and many published models carry their documentation here.
 
-The report renders the notes of the selected element in the third column of the inspector, with a restricted set of markup.
+The report renders the notes of the selected element in the last section of the inspector, under its annotations, with a restricted set of markup.
 
 <span id="annotations"></span>**annotations**
 
@@ -98,7 +98,7 @@ The report lists the uncertainties of an element in its inspector with the numbe
 
 The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display.
 
-The XML view is the last section of the third column of the inspector.
+The "XML" button in the header of the inspector puts the XML view in the place of its sections.
 
 ## Specification
 

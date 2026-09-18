@@ -53,7 +53,17 @@ test("the examples page carries the same footer", async ({ page }) => {
   await expectFooterLinks(page);
 });
 
-test("the report page is a full height workspace without a footer", async ({ page }) => {
+test("the report page carries the same footer under its split", async ({ page }) => {
   await openExample(page, "BIOMD0000000012");
-  await expect(page.getByTestId("app-footer")).toHaveCount(0);
+  await expectFooterLinks(page);
+  // the page is a full height workspace: the footer is the last thing in the window and the
+  // window itself does not scroll
+  const element = page.getByTestId("app-footer");
+  const footer = (await element.boundingBox())!;
+  const viewport = page.viewportSize()!;
+  expect(Math.round(footer.y + footer.height)).toBe(viewport.height);
+  const pageHeight = await element.evaluate(
+    (node) => node.ownerDocument.documentElement.scrollHeight,
+  );
+  expect(pageHeight).toBe(viewport.height);
 });

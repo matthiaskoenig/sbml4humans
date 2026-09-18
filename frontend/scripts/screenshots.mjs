@@ -4,13 +4,14 @@
 // the dev server (cd frontend && npx vite --port 3456), then `npm run screenshots`. Rerun it
 // after a change of the user interface, the images are committed alongside the documentation.
 //
-// The article column of the built site is COLUMN_WIDTH wide and renders an image at its own
-// width up to that, so an image of that width is read at the size the application draws it.
-// A page and a part of the report are therefore captured that wide. The report as a whole
-// needs its rail, its tables and its inspector next to each other, which no window that narrow
-// shows: it is captured in REPORT_VIEWPORT, the narrowest window in which the bar of a report
-// states its entry and its model in full, and the documentation links those three images to
-// their file, so that a click opens them at full size.
+// The article column of the built site is at most COLUMN_WIDTH wide and shows an image at the
+// width of the column, since every picture here is taken at twice the device scale and carries
+// more pixels than that. A page and a part of the report are therefore captured exactly that
+// wide, which is what draws their text at the size of the text next to them. The report as a
+// whole needs its type bar, its tables and its inspector at once, which no window that narrow
+// shows: it is captured in REPORT_VIEWPORT, the narrowest window in which the layout is honest,
+// and the documentation links those three images to their file, so that a click opens them at
+// full size.
 import { chromium, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -23,19 +24,23 @@ const OUT_DIR = fileURLToPath(new URL("../../docs/images/", import.meta.url));
 const COLUMN_WIDTH = 757;
 // the window a page (the home page, the examples) is captured in: as wide as that column
 const PAGE_VIEWPORT = { width: COLUMN_WIDTH, height: 900 };
-// the window the report as a whole is captured in: the narrowest one in which the bar states
-// the entry and the model of a report in full and no value of the inspector is broken inside a
-// token, which a narrower window does to a value such as `SBO:0000252`
-const REPORT_VIEWPORT = { width: 1200, height: 760 };
-// a window wide enough for one of the three columns of the inspector to be as wide as the
-// article column: the inspector spans the report without its rail of 256 px and its divider,
-// and every one of its three columns carries 12 px of padding on each side
-const WIDE_VIEWPORT = { width: 3 * (COLUMN_WIDTH + 24) + 256 + 4, height: 1000 };
-// the height of the inspector, as if the divider had been dragged there. The shots of the
-// inspector itself open it far enough for its three columns to show their content instead of
-// scrolling inside the panel, the report as a whole opens it at the height of the element it
-// shows.
-const TALL_INSPECTOR_HEIGHT = 480;
+// the window the report as a whole is captured in: the narrowest one in which the bar states the
+// search, the model, the level and the packages of a report next to each other, the inspector
+// opens at a third of it without breaking a value such as `SBO:0000252` inside the token, and the
+// tables keep the columns of a species left of it. The height is the one the pictures aim at,
+// they end a few pixels above or below it, where no pane is cut through a line.
+const REPORT_VIEWPORT = { width: 1200, height: 800 };
+// the width the inspector is dragged to for the pictures of the inspector alone: the article
+// column, so that its text is the size of the text next to it. It stays one column of three
+// sections below `@4xl`, which is what a reader of a report sees. A section of it is the 24 px of
+// its padding narrower and is shown a breath larger than the panel around it.
+const INSPECTOR_WIDTH = COLUMN_WIDTH;
+// the window the parts of the report are captured in. It is taller than any of them, the picture
+// of the inspector shrinks it to the height its three sections need.
+const PARTS_VIEWPORT = { width: 1200, height: 1600 };
+// the window the strip of the app bar is captured in: wide enough for a strip of COLUMN_WIDTH
+// which starts at the context of the report to end before the links at the right of the bar
+const ARCHIVE_WIDTH = 1600;
 
 /** Fails with a message that says what to start, instead of a bare connection error, when the
  * dev server or the backend is not up. */
@@ -61,14 +66,17 @@ await mkdir(OUT_DIR, { recursive: true });
 
 const browser = await chromium.launch();
 try {
-  /** A page of the given window size, with the height of the inspector remembered the way a
-   * real resize remembers it. */
-  async function newPage(viewport, inspectorHeight = TALL_INSPECTOR_HEIGHT) {
+  /** A page of the given window size. A width remembers the inspector the way a real drag of the
+   * divider remembers it, without one the inspector opens at the third of the window it opens at
+   * for a reader who has never dragged it. */
+  async function newPage(viewport, inspectorWidth = null) {
     const page = await browser.newPage({ viewport, deviceScaleFactor: 2 });
-    await page.addInitScript(
-      (height) => localStorage.setItem("sbml4humans.split.inspector", String(height)),
-      inspectorHeight,
-    );
+    if (inspectorWidth !== null) {
+      await page.addInitScript(
+        (width) => localStorage.setItem("sbml4humans.split.inspector-width", String(width)),
+        inspectorWidth,
+      );
+    }
     return page;
   }
 
@@ -94,8 +102,8 @@ try {
   }
 
   /** The bottom of the content of `locator`, in page coordinates. Only leaf elements are
-   * measured, since a container such as a stretched grid cell is exactly the box that lies
-   * about the content it holds. */
+   * measured, since a container such as a pane of the split is exactly the box that lies about
+   * the content it holds. */
   function contentBottom(locator) {
     return locator.evaluate((element) => {
       let bottom = element.getBoundingClientRect().top;
@@ -107,9 +115,9 @@ try {
     });
   }
 
-  /** Screenshots `locator` cropped to its content instead of to its full box: a column of the
-   * inspector is a stretched grid cell that fills the height of the panel, so its own box
-   * reaches well past its content when the content is short. */
+  /** Screenshots `locator` cropped to its content instead of to its full box: the inspector is a
+   * pane of the split and fills the height of the window, so its own box reaches well past its
+   * content. */
   async function shotFitted(name, page, locator) {
     const box = await locator.boundingBox();
     const height = Math.min(Math.ceil((await contentBottom(locator)) - box.y) + 16, box.height);
@@ -149,19 +157,51 @@ try {
     await expect(page.getByTestId("inspector-id")).toHaveText(id);
   }
 
-  /** The height the open inspector needs for the content of its columns, which is the height
-   * the report as a whole is captured with: taller and the panel ends in empty space, shorter
-   * and its columns scroll inside it. */
-  async function inspectorHeight(page) {
-    const panel = page.getByTestId("inspector");
-    const top = (await panel.boundingBox()).y;
-    return Math.ceil((await contentBottom(panel)) - top) + 8;
+  /** Waits for the label of the SBO term of the species `PX` of the repressilator, which is
+   * resolved in a request of its own: the height of the annotations depends on it, and without
+   * the wait the picture and the height of the window below differ from run to run. */
+  function resolvedSboTerm(page) {
+    return expect(
+      page
+        .getByTestId("annotations-column")
+        .locator('a[href="https://identifiers.org/SBO:0000252"]'),
+    ).toHaveText("polypeptide chain");
   }
 
-  /** The heights at which the tables can be cut without cutting a row in half, measured from
-   * the top of the visible part of the pane: the bottom of every row and of every section. A
-   * picture which ends in the upper pixels of a row is read as a rendering fault rather than as
-   * the edge of the picture.  */
+  /** The height of everything the report page shows above and below its two panes: the app bar,
+   * the type bar and the footer. */
+  async function chromeHeight(page) {
+    const pane = await page.getByTestId("tables").boundingBox();
+    return page.viewportSize().height - pane.height;
+  }
+
+  /** How much of the inspector the window does not show, in px. */
+  function inspectorOverflow(page) {
+    return page
+      .getByTestId("inspector-body")
+      .evaluate(
+        (body) => body.firstElementChild.scrollHeight - body.firstElementChild.clientHeight,
+      );
+  }
+
+  /** Grows the window to the height at which the three sections of the inspector neither scroll
+   * nor stretch. The panel is a pane of the split: in a taller window it stretches its sections
+   * and a picture of it ends in the empty space of that stretch, in a shorter one it scrolls them
+   * and the picture cuts the last. The window starts too short on purpose, and what the sections
+   * then overflow is exactly what it is missing. */
+  async function fitInspector(page, height = 500) {
+    const width = page.viewportSize().width;
+    await page.setViewportSize({ width, height });
+    const overflow = await inspectorOverflow(page);
+    if (overflow <= 0) throw new Error(`the inspector already fits a window of ${height} px`);
+    await page.setViewportSize({ width, height: height + Math.ceil(overflow) });
+    await expect.poll(() => inspectorOverflow(page)).toBeLessThanOrEqual(0);
+  }
+
+  /** The heights at which the tables can be cut without cutting a row in half, measured from the
+   * top of the visible part of the pane: the bottom of every row and of every section. A picture
+   * which ends in the upper pixels of a row is read as a rendering fault rather than as the edge
+   * of the picture. */
   function cutPoints(page) {
     return page.getByTestId("tables").evaluate((pane) => {
       const top = pane.getBoundingClientRect().top;
@@ -174,6 +214,36 @@ try {
   /** The greatest of those heights which stays within `limit`. */
   async function cutWithin(page, limit) {
     return Math.max(...(await cutPoints(page)).filter((offset) => offset <= limit));
+  }
+
+  /** The lines of the open inspector, measured from the top of the pane it shares with the
+   * tables: the box of every leaf, grown by the padding around it. A height which crosses none of
+   * them ends the picture between two lines of the inspector as well. */
+  function inspectorLines(page) {
+    return page.getByTestId("inspector").evaluate((panel) => {
+      const top = panel.getBoundingClientRect().top;
+      const margin = 6;
+      return [...panel.querySelectorAll("*")]
+        .filter((node) => node.children.length === 0)
+        .map((node) => node.getBoundingClientRect())
+        .filter((box) => box.height > 0)
+        .map((box) => [box.top - top - margin, box.bottom - top + margin]);
+    });
+  }
+
+  /** The height of the two panes of the report which is closest to `target` and cuts neither of
+   * them through a line: a row of the tables ends there and no line of the inspector crosses it.
+   * The inspector of an element is taller than any honest window, it scrolls in the picture as it
+   * scrolls for a reader, and this is where the picture lets it end. */
+  async function paneHeight(page, target) {
+    const lines = await inspectorLines(page);
+    const cuts = (await cutPoints(page)).filter((cut) =>
+      lines.every(([top, bottom]) => cut <= top || cut >= bottom),
+    );
+    if (cuts.length === 0) throw new Error("no height cuts both panes between their lines");
+    return cuts.reduce((best, cut) =>
+      Math.abs(cut - target) < Math.abs(best - target) ? cut : best,
+    );
   }
 
   /** Scrolls the tables to the section of `type`, with its heading at the top of the pane. */
@@ -213,11 +283,13 @@ try {
   );
   await pages.close();
 
-  // the report as a whole: the type rail, the element tables and the inspector
+  // the report as a whole: the type bar on top, the element tables and the inspector next to each
+  // other below it, the footer under both
   const report = await newPage(REPORT_VIEWPORT);
 
-  // report-tables.png: the repressilator report with nothing selected, so only the type rail and
-  // the element tables show, no inspector.
+  // report-tables.png: the repressilator report with nothing selected, so the tables have the
+  // whole width of the window and no inspector shows. The picture is the top of the page, it ends
+  // between two rows of the tables instead of at the footer below them.
   await open(report, "BIOMD0000000012");
   await expect(report.getByTestId("inspector")).toHaveCount(0);
   const tables = await report.getByTestId("tables").boundingBox();
@@ -231,38 +303,13 @@ try {
     },
   });
 
-  // inspector-species.png: the inspector of a species alone, with its three columns filled.
-  await selectRow(report, report.getByTestId("table-Species"), "PX");
-  await expect(report.getByTestId("attributes-column")).toBeVisible();
-  // the label of the SBO term of the species is resolved in a request of its own, and the
-  // height of the column depends on it: without this the picture and the height of the panel
-  // below differ from run to run
-  await expect(
-    report
-      .getByTestId("annotations-column")
-      .locator('a[href="https://identifiers.org/SBO:0000252"]'),
-  ).toHaveText("polypeptide chain");
-  await restPointer(report);
-  await shotFitted("inspector-species", report, report.getByTestId("inspector"));
-
-  // the height the inspector of that species needs, and the height of the tables next to it:
-  // the report as a whole opens the inspector so that its columns show their content and the
-  // tables end between two rows
-  const needed = await inspectorHeight(report);
-  await scrollToSection(report, "Species");
-  const withTables = await report.getByTestId("tables").boundingBox();
-  const cut = await cutWithin(report, withTables.height + TALL_INSPECTOR_HEIGHT - needed);
-  const inspector = TALL_INSPECTOR_HEIGHT + withTables.height - cut;
-
-  // report-search.png: the search box filters every table, the rail counts the matches. Nothing
-  // is selected, the picture is about the tables and the rail.
-  await report.getByTestId("inspector-close").click();
-  await expect(report.getByTestId("inspector")).toHaveCount(0);
+  // report-search.png: the search box filters every table, the type bar counts the matches.
+  // Nothing is selected, the picture is about the tables and the bar.
   await report.getByTestId("search-input").fill("laci");
-  await expect(report.getByTestId("rail-count-Species")).toContainText("/");
+  await expect(report.getByTestId("bar-count-Species")).toContainText("/");
   await restPointer(report);
   const filled = Math.max(
-    await contentBottom(report.getByTestId("type-rail")),
+    await contentBottom(report.getByTestId("type-bar")),
     await contentBottom(report.getByTestId("tables")),
   );
   await shot("report-search", report, {
@@ -270,21 +317,42 @@ try {
   });
   await report.close();
 
-  // report-overview.png: the report with an element selected, so that the rail, the tables and
-  // the inspector all show at once. The tables start at the species, whose first row is the
-  // selected one.
-  const overview = await newPage(REPORT_VIEWPORT, inspector);
+  // report-overview.png: the whole page with an element selected, the type bar, the tables, the
+  // inspector of the selected species and the footer. The tables start at the species, whose
+  // first row is the selected one, and the window is as high as the two panes need to end
+  // between two lines.
+  const overview = await newPage(REPORT_VIEWPORT);
   await open(overview, "BIOMD0000000012");
   await selectRow(overview, overview.getByTestId("table-Species"), "PX");
   await expect(overview.getByTestId("attributes-column")).toBeVisible();
+  await resolvedSboTerm(overview);
+  await scrollToSection(overview, "Species");
+  const chrome = await chromeHeight(overview);
+  const height = await paneHeight(overview, REPORT_VIEWPORT.height - chrome);
+  await overview.setViewportSize({
+    width: REPORT_VIEWPORT.width,
+    height: Math.round(height + chrome),
+  });
   await scrollToSection(overview, "Species");
   await restPointer(overview);
   await shot("report-overview", overview);
   await overview.close();
 
-  // the parts of the report which are read on their own, in a window wide enough for them to be
-  // captured at the width of the article column
-  const parts = await newPage(WIDE_VIEWPORT);
+  // the parts of the report which are read on their own, with the inspector dragged to the width
+  // of the article column and a window which holds all of it
+  const parts = await newPage(PARTS_VIEWPORT, INSPECTOR_WIDTH);
+
+  // inspector-species.png: the inspector of a species alone, its three sections one under the
+  // other in the column the inspector is. The window is shrunk to the height the sections need,
+  // which is the height at which they neither scroll nor stretch.
+  await open(parts, "BIOMD0000000012");
+  await selectRow(parts, parts.getByTestId("table-Species"), "PX");
+  await expect(parts.getByTestId("attributes-column")).toBeVisible();
+  await resolvedSboTerm(parts);
+  await fitInspector(parts);
+  await restPointer(parts);
+  await shotFitted("inspector-species", parts, parts.getByTestId("inspector"));
+  await parts.setViewportSize(PARTS_VIEWPORT);
 
   // inspector-annotations.png: an element with resolved annotation labels. icg_body carries an
   // indocyanine green species whose SBO, CHEBI and NCIt resources resolve to a name (the
@@ -307,21 +375,30 @@ try {
     annotationsColumn.locator('a[href="https://identifiers.org/CHEBI:31696"]'),
   ).toHaveText("indocyanine green");
   await restPointer(parts);
-  // the annotations of the column alone: its notes and history follow below the visible area of
-  // the panel, where they would be cut off in the middle of a line
-  await shotFitted("inspector-annotations", parts, annotationsColumn.locator("section").first());
+  // the annotations of the section alone: the notes and the history follow below it, and the
+  // section is scrolled into view of the panel before it is captured
+  const annotations = annotationsColumn.locator("section").first();
+  await annotations.scrollIntoViewIfNeeded();
+  await shot("inspector-annotations", annotations);
 
-  // archive-entries.png: the bar of a COMBINE archive report, cropped to the part which names
-  // the entry, the model, the level and version and the packages of the document. The entries
-  // themselves are in the list the select opens, which the browser draws outside the page,
-  // where no screenshot of the page reaches it.
+  // archive-entries.png: the context of a COMBINE archive report in the app bar, a strip of the
+  // bar from the select of the entries on, as wide as the article column. The bar from the logo
+  // on is wider than that since the search box sits between the logo and the context, and the
+  // search is in the pictures of the whole report anyway. The entries themselves are in the list
+  // the select opens, which the browser draws outside the page, where no screenshot of the page
+  // reaches it.
+  await parts.setViewportSize({ width: ARCHIVE_WIDTH, height: PARTS_VIEWPORT.height });
   await open(parts, "CompModels");
   await expect(parts.getByTestId("entry-select")).toBeVisible();
   await restPointer(parts);
   const bar = await parts.getByTestId("app-bar").boundingBox();
-  await shot("archive-entries", parts, {
-    clip: { x: bar.x, y: bar.y, width: COLUMN_WIDTH, height: bar.height },
-  });
+  const select = await parts.getByTestId("entry-select").boundingBox();
+  const links = await parts.getByTestId("app-bar-docs").boundingBox();
+  const strip = { x: select.x - 12, width: COLUMN_WIDTH };
+  if (strip.x + strip.width > links.x) {
+    throw new Error(`the strip of the bar reaches the links of ${ARCHIVE_WIDTH} px window`);
+  }
+  await shot("archive-entries", parts, { clip: { ...strip, y: bar.y, height: bar.height } });
   await parts.close();
 } finally {
   // a failed expectation must not leave a chromium process behind
