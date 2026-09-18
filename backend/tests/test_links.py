@@ -378,8 +378,11 @@ def test_local_parameter_shadows_global_parameter(synthetic_fbc: Report) -> None
 def test_replaced_by_edge(synthetic_comp: Report) -> None:
     """An element replaced by an element of a submodel links to that element."""
     replaced_by = "top/ReplacedBy:c.replacedBy"
+    assert _edges(synthetic_comp, source=replaced_by) == {
+        (replaced_by, "top/Submodel:sm", "replacedBy"),
+        (replaced_by, "sub/Compartment:c", "replacedBy"),
+    }
     assert ("top/Compartment:c", replaced_by, "replacedBy") in _edges(synthetic_comp)
-    assert (replaced_by, "sub/Compartment:c", "replacedBy") in _edges(synthetic_comp)
 
 
 def test_replacement_edges_of_every_element(synthetic_comp: Report) -> None:
@@ -588,6 +591,7 @@ def test_replacement_ends_at_the_replaced_element(comp_deletion: Report) -> None
     replaced = f"{m}/ReplacedElement:meta_glc_cell1"
     assert (f"{m}/Species:glc", replaced, "replacedElement") in _edges(comp_deletion)
     assert _edges(comp_deletion, source=replaced) == {
+        (replaced, f"{m}/Submodel:cell1", "replacedElement"),
         (replaced, "cell/Species:glc", "replacedElement"),
         (replaced, f"{m}/Parameter:f_amount", "conversionFactor"),
     }
@@ -601,6 +605,7 @@ def test_replacement_follows_a_nested_reference(comp_deletion: Report) -> None:
     """
     replaced = "comp_deletion/ReplacedElement:meta_medium_tissue"
     assert _edges(comp_deletion, source=replaced) == {
+        (replaced, "comp_deletion/Submodel:tissue1", "replacedElement"),
         (replaced, "cell/Compartment:c", "replacedElement"),
     }
 
@@ -623,6 +628,7 @@ def test_replaced_by_ends_at_the_replacing_element(comp_deletion: Report) -> Non
         comp_deletion
     )
     assert _edges(comp_deletion, source=replaced_by) == {
+        (replaced_by, f"{m}/Submodel:cell2", "replacedBy"),
         (replaced_by, "cell/Parameter:Vmax", "replacedBy"),
     }
 
@@ -642,6 +648,24 @@ def test_port_follows_its_reference(comp_deletion: Report) -> None:
         ("cell/Port:glc_port", "cell/Species:glc", "port"),
         ("cell/Port:Vmax_port", "cell/Parameter:Vmax", "port"),
     }
+
+
+def test_deletion_in_an_external_model_names_no_element(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A deletion of an external submodel keeps the name of what it removes.
+
+    The submodel `unit_library` instantiates an external model definition, and
+    the document behind it is not part of the report, so the deletion has no
+    element to link and the report says why.
+    """
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "comp_deletion.xml")
+    m = "comp_deletion"
+    deletion = f"{m}/Deletion:del_external_unit"
+    assert (f"{m}/Submodel:unit_library", deletion, "deletion") in _edges(report)
+    assert _edges(report, source=deletion) == set()
+    assert "is not part of the report" in caplog.text
 
 
 def test_replacement_into_an_external_model_ends_at_the_submodel(

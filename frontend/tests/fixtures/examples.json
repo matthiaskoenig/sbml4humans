@@ -199,6 +199,14 @@
     ]
   },
   {
+    "id": "comp_deletion (comp_deletion.xml)",
+    "name": "Two cells and a tissue in one medium",
+    "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example of the composition machinery of the comp package: a medium holding two cells and a tissue.</p>\n    <p>The model definition <code>cell</code> is instantiated three times: twice directly, as the submodels <code>cell1</code> and <code>cell2</code>, and once through the model definition <code>tissue</code>, which holds a cell of its own. The document also declares an external model definition, which names a model of another file with its checksum; the report does not read that file.</p>\n    <p>The compartment <code>medium</code> replaces the compartment of every cell, so that the four instances share one volume, and the species <code>glc</code> replaces their glucose. The submodel <code>cell1</code> loses its own rate constant and its sink reaction through two deletions, and the parameter <code>k_total</code> of this model records that it takes the place of the deleted constant.</p>\n  </body>\n</notes>",
+    "packages": [
+      "comp"
+    ]
+  },
+  {
     "id": "constraint_event (constraint_event.xml)",
     "name": "model with a constraint, an event and local parameters",
     "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <h1>Model with a constraint, an event and local parameters</h1>\n    <p>A single Michaelis-Menten reaction converts <code>S1</code> into <code>S2</code> in the compartment <code>cell</code>. The rate law keeps its constants <code>Km</code> and <code>Vmax</code> as local parameters, so they belong to this reaction alone.</p>\n    <p>A constraint states that <code>S1</code> stays below <code>S1_max</code> and carries the message which a simulator shows when it does not. The event <code>E1</code> adds a dose of <code>S1</code> five minutes after the twentieth minute and switches the reaction off; its trigger, its priority and its delay each carry their own identifier, SBO term and notes.</p>\n    <h2>Terms of use</h2>\n    <p>This file was written for the SBML4Humans report and is distributed under the <a href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.</p>\n  </body>\n</notes>",

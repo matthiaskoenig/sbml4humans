@@ -1,5 +1,5 @@
 {
-  "uid": "366b72b7f4d24e4e88274268d497151a",
+  "uid": "d3537aa4d3f648d7bfab2b79cbb4a9d9",
   "manifest": {
     "entries": [
       {
@@ -1139,13 +1139,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "icg_body/ReplacedElement:Vbi_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "Vbi_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"Vbi_RE\" comp:portRef=\"Vbi_port\" comp:submodelRef=\"LI\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "Vbi_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "LI",
-                      "sbaseRef": {
-                        "portRef": "Vbi_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -1466,13 +1479,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "icg_body/ReplacedElement:Vfeces_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "Vfeces_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"Vfeces_RE\" comp:portRef=\"Vfeces_port\" comp:submodelRef=\"LI\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "Vfeces_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "LI",
-                      "sbaseRef": {
-                        "portRef": "Vfeces_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -1675,13 +1701,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "icg_body/ReplacedElement:Vli_tissue_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "Vli_tissue_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"Vli_tissue_RE\" comp:portRef=\"Vli_port\" comp:submodelRef=\"LI\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "Vli_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "LI",
-                      "sbaseRef": {
-                        "portRef": "Vli_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -1727,13 +1766,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "icg_body/ReplacedElement:Vli_plasma_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "Vli_plasma_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"Vli_plasma_RE\" comp:portRef=\"Vext_port\" comp:submodelRef=\"LI\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "Vext_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "LI",
-                      "sbaseRef": {
-                        "portRef": "Vext_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -1924,13 +1976,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "icg_body/ReplacedElement:Cli_plasma_icg_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "Cli_plasma_icg_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"Cli_plasma_icg_RE\" comp:portRef=\"icg_ext_port\" comp:submodelRef=\"LI\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "icg_ext_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "LI",
-                      "sbaseRef": {
-                        "portRef": "icg_ext_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -2153,13 +2218,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "icg_body/ReplacedElement:Afeces_icg_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "Afeces_icg_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"Afeces_icg_RE\" comp:portRef=\"icg_feces_port\" comp:submodelRef=\"LI\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "icg_feces_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "LI",
-                      "sbaseRef": {
-                        "portRef": "icg_feces_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -6251,7 +6329,8 @@
                 "portRef": null,
                 "idRef": "Vre_tissue",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Vre_plasma_port",
@@ -6277,7 +6356,8 @@
                 "portRef": null,
                 "idRef": "Vre_plasma",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Vgi_tissue_port",
@@ -6303,7 +6383,8 @@
                 "portRef": null,
                 "idRef": "Vgi_tissue",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Vgi_plasma_port",
@@ -6329,7 +6410,8 @@
                 "portRef": null,
                 "idRef": "Vgi_plasma",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Vli_tissue_port",
@@ -6355,7 +6437,8 @@
                 "portRef": null,
                 "idRef": "Vli_tissue",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Vli_plasma_port",
@@ -6381,7 +6464,8 @@
                 "portRef": null,
                 "idRef": "Vli_plasma",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Vlu_tissue_port",
@@ -6407,7 +6491,8 @@
                 "portRef": null,
                 "idRef": "Vlu_tissue",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Vlu_plasma_port",
@@ -6433,7 +6518,8 @@
                 "portRef": null,
                 "idRef": "Vlu_plasma",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Cre_plasma_icg_port",
@@ -6459,7 +6545,8 @@
                 "portRef": null,
                 "idRef": "Cre_plasma_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Cgi_plasma_icg_port",
@@ -6485,7 +6572,8 @@
                 "portRef": null,
                 "idRef": "Cgi_plasma_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Cli_plasma_icg_port",
@@ -6511,7 +6599,8 @@
                 "portRef": null,
                 "idRef": "Cli_plasma_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Clu_plasma_icg_port",
@@ -6537,7 +6626,8 @@
                 "portRef": null,
                 "idRef": "Clu_plasma_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Cve_icg_port",
@@ -6563,7 +6653,8 @@
                 "portRef": null,
                 "idRef": "Cve_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Car_icg_port",
@@ -6589,7 +6680,8 @@
                 "portRef": null,
                 "idRef": "Car_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Cpo_icg_port",
@@ -6615,7 +6707,8 @@
                 "portRef": null,
                 "idRef": "Cpo_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "icg_body/Port:Chv_icg_port",
@@ -6641,7 +6734,8 @@
                 "portRef": null,
                 "idRef": "Chv_icg",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               }
             ],
             "listOfGeneProducts": [],
@@ -6663,7 +6757,8 @@
             "comp": null,
             "uncertainties": [],
             "source": "icg_liver.xml",
-            "modelRef": "icg_liver"
+            "modelRef": "icg_liver",
+            "md5": null
           }
         ],
         "linkGraph": {
@@ -6948,6 +7043,13 @@
               "name": "bile",
               "model": "icg_body/Model:icg_body"
             },
+            "icg_body/ReplacedElement:Vbi_RE": {
+              "pk": "icg_body/ReplacedElement:Vbi_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
             "icg_body/Compartment:Vre": {
               "pk": "icg_body/Compartment:Vre",
               "sbmlType": "Compartment",
@@ -7011,6 +7113,13 @@
               "name": "feces",
               "model": "icg_body/Model:icg_body"
             },
+            "icg_body/ReplacedElement:Vfeces_RE": {
+              "pk": "icg_body/ReplacedElement:Vfeces_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
             "icg_body/Compartment:Vre_tissue": {
               "pk": "icg_body/Compartment:Vre_tissue",
               "sbmlType": "Compartment",
@@ -7046,11 +7155,25 @@
               "name": "li tissue",
               "model": "icg_body/Model:icg_body"
             },
+            "icg_body/ReplacedElement:Vli_tissue_RE": {
+              "pk": "icg_body/ReplacedElement:Vli_tissue_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "icg_body/Model:icg_body"
+            },
             "icg_body/Compartment:Vli_plasma": {
               "pk": "icg_body/Compartment:Vli_plasma",
               "sbmlType": "Compartment",
               "id": "Vli_plasma",
               "name": "li plasma",
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/ReplacedElement:Vli_plasma_RE": {
+              "pk": "icg_body/ReplacedElement:Vli_plasma_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
               "model": "icg_body/Model:icg_body"
             },
             "icg_body/Compartment:Vlu_tissue": {
@@ -7086,6 +7209,13 @@
               "sbmlType": "Species",
               "id": "Cli_plasma_icg",
               "name": "icg (liver)",
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/ReplacedElement:Cli_plasma_icg_RE": {
+              "pk": "icg_body/ReplacedElement:Cli_plasma_icg_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
               "model": "icg_body/Model:icg_body"
             },
             "icg_body/Species:Clu_plasma_icg": {
@@ -7128,6 +7258,13 @@
               "sbmlType": "Species",
               "id": "Afeces_icg",
               "name": "icg (feces)",
+              "model": "icg_body/Model:icg_body"
+            },
+            "icg_body/ReplacedElement:Afeces_icg_RE": {
+              "pk": "icg_body/ReplacedElement:Afeces_icg_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
               "model": "icg_body/Model:icg_body"
             },
             "icg_body/Parameter:conversion_ml_per_l": {
@@ -8485,31 +8622,61 @@
           "edges": [
             {
               "source": "icg_body/Compartment:Vbi",
+              "target": "icg_body/ReplacedElement:Vbi_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "icg_body/ReplacedElement:Vbi_RE",
               "target": "icg_body/Submodel:LI",
               "kind": "replacedElement"
             },
             {
               "source": "icg_body/Compartment:Vfeces",
+              "target": "icg_body/ReplacedElement:Vfeces_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "icg_body/ReplacedElement:Vfeces_RE",
               "target": "icg_body/Submodel:LI",
               "kind": "replacedElement"
             },
             {
               "source": "icg_body/Compartment:Vli_tissue",
+              "target": "icg_body/ReplacedElement:Vli_tissue_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "icg_body/ReplacedElement:Vli_tissue_RE",
               "target": "icg_body/Submodel:LI",
               "kind": "replacedElement"
             },
             {
               "source": "icg_body/Compartment:Vli_plasma",
+              "target": "icg_body/ReplacedElement:Vli_plasma_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "icg_body/ReplacedElement:Vli_plasma_RE",
               "target": "icg_body/Submodel:LI",
               "kind": "replacedElement"
             },
             {
               "source": "icg_body/Species:Cli_plasma_icg",
+              "target": "icg_body/ReplacedElement:Cli_plasma_icg_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "icg_body/ReplacedElement:Cli_plasma_icg_RE",
               "target": "icg_body/Submodel:LI",
               "kind": "replacedElement"
             },
             {
               "source": "icg_body/Species:Afeces_icg",
+              "target": "icg_body/ReplacedElement:Afeces_icg_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "icg_body/ReplacedElement:Afeces_icg_RE",
               "target": "icg_body/Submodel:LI",
               "kind": "replacedElement"
             },
@@ -10472,7 +10639,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.547 [s]"
+        "jsonReportTime": "0.548 [s]"
       }
     }
   }

@@ -4,7 +4,7 @@
     <notes>
       <body xmlns="http://www.w3.org/1999/xhtml">
         <p>Example of the composition machinery of the comp package: a medium holding two cells and a tissue.</p>
-        <p>The model definition <code>cell</code> is instantiated three times: twice directly, as the submodels <code>cell1</code> and <code>cell2</code>, and once through the model definition <code>tissue</code>, which holds a cell of its own. The document also declares an external model definition, which names a model of another file with its checksum; the report does not read that file.</p>
+        <p>The model definition <code>cell</code> is instantiated three times: twice directly, as the submodels <code>cell1</code> and <code>cell2</code>, and once through the model definition <code>tissue</code>, which holds a cell of its own. The fourth submodel instantiates an external model definition, a document of unit definitions named with its checksum; the report does not read that document, so what its deletion removes stays a name.</p>
         <p>The compartment <code>medium</code> replaces the compartment of every cell, so that the four instances share one volume, and the species <code>glc</code> replaces their glucose. The submodel <code>cell1</code> loses its own rate constant and its sink reaction through two deletions, and the parameter <code>k_total</code> of this model records that it takes the place of the deleted constant.</p>
       </body>
     </notes>
@@ -85,6 +85,11 @@
       </comp:submodel>
       <comp:submodel comp:id="cell2" comp:name="second cell, on its own time and extent scale" comp:modelRef="cell" comp:timeConversionFactor="f_time" comp:extentConversionFactor="f_extent"/>
       <comp:submodel comp:id="tissue1" comp:name="tissue holding a cell of its own" comp:modelRef="tissue"/>
+      <comp:submodel comp:id="unit_library" comp:name="unit definitions of another document" comp:modelRef="units">
+        <comp:listOfDeletions>
+          <comp:deletion comp:id="del_external_unit" comp:name="deletion of a unit definition of the other document" comp:unitRef="mg_per_day"/>
+        </comp:listOfDeletions>
+      </comp:submodel>
     </comp:listOfSubmodels>
     <comp:listOfPorts>
       <comp:port comp:id="medium_port" comp:name="port of the medium" comp:idRef="medium"/>
@@ -162,6 +167,6 @@
     </comp:modelDefinition>
   </comp:listOfModelDefinitions>
   <comp:listOfExternalModelDefinitions>
-    <comp:externalModelDefinition comp:id="minimal" comp:name="the minimal model of another document" comp:source="minimal_model.xml" comp:modelRef="minimal_model" comp:md5="37031fdf7d08f3a8eec79a911abf0da0"/>
+    <comp:externalModelDefinition comp:id="units" comp:name="the unit definitions of another document" comp:source="unit_definitions.xml" comp:modelRef="unit_definitions" comp:md5="bde1522151d26d8fbca09893ce85ac52"/>
   </comp:listOfExternalModelDefinitions>
 </sbml>

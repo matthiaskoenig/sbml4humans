@@ -889,6 +889,6 @@ def test_port_carries_the_nested_reference_of_its_class(comp_deletion: Report) -
 def test_external_model_definition_carries_its_md5(comp_deletion: Report) -> None:
     """The checksum of the referenced document is read (comp §3.3.2)."""
     (emd,) = comp_deletion.external_model_definitions
-    assert emd.source == "minimal_model.xml"
-    assert emd.model_ref == "minimal_model"
-    assert emd.md5 == "37031fdf7d08f3a8eec79a911abf0da0"
+    assert emd.source == "unit_definitions.xml"
+    assert emd.model_ref == "unit_definitions"
+    assert emd.md5 == "bde1522151d26d8fbca09893ce85ac52"

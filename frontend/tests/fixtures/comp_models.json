@@ -1,5 +1,5 @@
 {
-  "uid": "d0083b5ef5e444b9928028df6d122cbb",
+  "uid": "4a64c19b254b46d38e0bd521ca07e9a3",
   "manifest": {
     "entries": [
       {
@@ -324,7 +324,8 @@
                 "portRef": null,
                 "idRef": "cell",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               },
               {
                 "pk": "omex_minimal/Port:S1_port",
@@ -350,7 +351,8 @@
                 "portRef": null,
                 "idRef": "S1",
                 "unitRef": null,
-                "metaIdRef": null
+                "metaIdRef": null,
+                "sbaseRef": null
               }
             ],
             "listOfGeneProducts": [],
@@ -575,13 +577,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:cell0_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "cell0_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"cell0_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel0\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "cell_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel0",
-                      "sbaseRef": {
-                        "portRef": "cell_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -608,13 +623,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:cell1_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "cell1_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"cell1_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel1\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "cell_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel1",
-                      "sbaseRef": {
-                        "portRef": "cell_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -641,13 +669,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:cell2_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "cell2_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"cell2_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel2\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "cell_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel2",
-                      "sbaseRef": {
-                        "portRef": "cell_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -674,13 +715,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:cell3_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "cell3_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"cell3_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel3\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "cell_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel3",
-                      "sbaseRef": {
-                        "portRef": "cell_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -707,13 +761,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:cell4_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "cell4_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"cell4_RE\" comp:portRef=\"cell_port\" comp:submodelRef=\"submodel4\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "cell_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel4",
-                      "sbaseRef": {
-                        "portRef": "cell_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -742,13 +809,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:S0_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "S0_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"S0_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel0\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "S1_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel0",
-                      "sbaseRef": {
-                        "portRef": "S1_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -780,13 +860,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:S1_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "S1_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"S1_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel1\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "S1_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel1",
-                      "sbaseRef": {
-                        "portRef": "S1_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -818,13 +911,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:S2_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "S2_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"S2_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel2\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "S1_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel2",
-                      "sbaseRef": {
-                        "portRef": "S1_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -856,13 +962,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:S3_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "S3_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"S3_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel3\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "S1_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel3",
-                      "sbaseRef": {
-                        "portRef": "S1_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -894,13 +1013,26 @@
                   "replacedBy": null,
                   "replacedElements": [
                     {
+                      "pk": "omex_comp/ReplacedElement:S4_RE",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "S4_RE",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"S4_RE\" comp:portRef=\"S1_port\" comp:submodelRef=\"submodel4\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "portRef": "S1_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
                       "submodelRef": "submodel4",
-                      "sbaseRef": {
-                        "portRef": "S1_port",
-                        "idRef": null,
-                        "unitRef": null,
-                        "metaIdRef": null
-                      }
+                      "deletion": null,
+                      "conversionFactor": null
                     }
                   ]
                 },
@@ -1369,7 +1501,8 @@
             "comp": null,
             "uncertainties": [],
             "source": "omex_minimal.xml",
-            "modelRef": "omex_minimal"
+            "modelRef": "omex_minimal",
+            "md5": null
           },
           {
             "pk": "document/ExternalModelDefinition:emd1",
@@ -1385,7 +1518,8 @@
             "comp": null,
             "uncertainties": [],
             "source": "omex_minimal.xml",
-            "modelRef": "omex_minimal"
+            "modelRef": "omex_minimal",
+            "md5": null
           },
           {
             "pk": "document/ExternalModelDefinition:emd2",
@@ -1401,7 +1535,8 @@
             "comp": null,
             "uncertainties": [],
             "source": "omex_minimal.xml",
-            "modelRef": "omex_minimal"
+            "modelRef": "omex_minimal",
+            "md5": null
           },
           {
             "pk": "document/ExternalModelDefinition:emd3",
@@ -1417,7 +1552,8 @@
             "comp": null,
             "uncertainties": [],
             "source": "omex_minimal.xml",
-            "modelRef": "omex_minimal"
+            "modelRef": "omex_minimal",
+            "md5": null
           },
           {
             "pk": "document/ExternalModelDefinition:emd4",
@@ -1433,7 +1569,8 @@
             "comp": null,
             "uncertainties": [],
             "source": "omex_minimal.xml",
-            "modelRef": "omex_minimal"
+            "modelRef": "omex_minimal",
+            "md5": null
           }
         ],
         "linkGraph": {
@@ -1494,10 +1631,24 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/ReplacedElement:cell0_RE": {
+              "pk": "omex_comp/ReplacedElement:cell0_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Compartment:cell1": {
               "pk": "omex_comp/Compartment:cell1",
               "sbmlType": "Compartment",
               "id": "cell1",
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/ReplacedElement:cell1_RE": {
+              "pk": "omex_comp/ReplacedElement:cell1_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
@@ -1508,10 +1659,24 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/ReplacedElement:cell2_RE": {
+              "pk": "omex_comp/ReplacedElement:cell2_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Compartment:cell3": {
               "pk": "omex_comp/Compartment:cell3",
               "sbmlType": "Compartment",
               "id": "cell3",
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/ReplacedElement:cell3_RE": {
+              "pk": "omex_comp/ReplacedElement:cell3_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
@@ -1522,10 +1687,24 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/ReplacedElement:cell4_RE": {
+              "pk": "omex_comp/ReplacedElement:cell4_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Species:S0": {
               "pk": "omex_comp/Species:S0",
               "sbmlType": "Species",
               "id": "S0",
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/ReplacedElement:S0_RE": {
+              "pk": "omex_comp/ReplacedElement:S0_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
@@ -1536,10 +1715,24 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/ReplacedElement:S1_RE": {
+              "pk": "omex_comp/ReplacedElement:S1_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Species:S2": {
               "pk": "omex_comp/Species:S2",
               "sbmlType": "Species",
               "id": "S2",
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/ReplacedElement:S2_RE": {
+              "pk": "omex_comp/ReplacedElement:S2_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
@@ -1550,10 +1743,24 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/ReplacedElement:S3_RE": {
+              "pk": "omex_comp/ReplacedElement:S3_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Species:S4": {
               "pk": "omex_comp/Species:S4",
               "sbmlType": "Species",
               "id": "S4",
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/ReplacedElement:S4_RE": {
+              "pk": "omex_comp/ReplacedElement:S4_RE",
+              "sbmlType": "ReplacedElement",
+              "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
@@ -1715,51 +1922,101 @@
           "edges": [
             {
               "source": "omex_comp/Compartment:cell0",
+              "target": "omex_comp/ReplacedElement:cell0_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell0_RE",
               "target": "omex_comp/Submodel:submodel0",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Compartment:cell1",
+              "target": "omex_comp/ReplacedElement:cell1_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell1_RE",
               "target": "omex_comp/Submodel:submodel1",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Compartment:cell2",
+              "target": "omex_comp/ReplacedElement:cell2_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell2_RE",
               "target": "omex_comp/Submodel:submodel2",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Compartment:cell3",
+              "target": "omex_comp/ReplacedElement:cell3_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell3_RE",
               "target": "omex_comp/Submodel:submodel3",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Compartment:cell4",
+              "target": "omex_comp/ReplacedElement:cell4_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell4_RE",
               "target": "omex_comp/Submodel:submodel4",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Species:S0",
+              "target": "omex_comp/ReplacedElement:S0_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S0_RE",
               "target": "omex_comp/Submodel:submodel0",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Species:S1",
+              "target": "omex_comp/ReplacedElement:S1_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S1_RE",
               "target": "omex_comp/Submodel:submodel1",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Species:S2",
+              "target": "omex_comp/ReplacedElement:S2_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S2_RE",
               "target": "omex_comp/Submodel:submodel2",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Species:S3",
+              "target": "omex_comp/ReplacedElement:S3_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S3_RE",
               "target": "omex_comp/Submodel:submodel3",
               "kind": "replacedElement"
             },
             {
               "source": "omex_comp/Species:S4",
+              "target": "omex_comp/ReplacedElement:S4_RE",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S4_RE",
               "target": "omex_comp/Submodel:submodel4",
               "kind": "replacedElement"
             },
@@ -1957,7 +2214,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.028 [s]"
+        "jsonReportTime": "0.029 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -4037,7 +4294,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.039 [s]"
+        "jsonReportTime": "0.04 [s]"
       }
     }
   }

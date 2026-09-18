@@ -419,13 +419,16 @@ class LinkGraphBuilder:
         kind: EdgeKind,
         index: ModelIndex,
     ) -> None:
-        """The edges of one replacement: its element, its deletion and its factor.
+        """The edges of one replacement: its submodel, its element, its deletion.
 
-        The edge of the replacement ends at the element of the submodel which
-        the reference names. Where the reference cannot be resolved, because
-        the model of the submodel is an external one or because the element is
-        not there, it ends at the submodel itself, which is as far as the
-        report can follow it.
+        A replacement names two elements, the submodel it reaches into and the
+        element of that submodel which is replaced (comp §3.6.2, §3.6.4), and
+        both edges carry the kind of the replacement, the way a reaction and
+        its species reference both carry the kind of the participation. Where
+        the reference to the element cannot be resolved, because the model of
+        the submodel is an external one or because the element is not part of
+        it, the edge to the submodel is the only one, which is as far as the
+        report can follow the replacement.
         """
         submodel_pk = index.resolve(replacement.submodel_ref)
         if submodel_pk is None:
@@ -437,10 +440,10 @@ class LinkGraphBuilder:
             )
             return
         submodel = index.submodels[submodel_pk]
+        self.edges.append(Edge(source=replacement.pk, target=submodel_pk, kind=kind))
         target = self._resolve_into(replacement, replacement, submodel)
-        self.edges.append(
-            Edge(source=replacement.pk, target=target or submodel_pk, kind=kind)
-        )
+        if target is not None:
+            self.edges.append(Edge(source=replacement.pk, target=target, kind=kind))
         if isinstance(replacement, ReplacedElement):
             self._deletion_edge(replacement, submodel_pk, index)
             self._edge(
