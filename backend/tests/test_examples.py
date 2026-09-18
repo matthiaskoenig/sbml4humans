@@ -208,3 +208,19 @@ def test_qual_example_is_valid_sbml() -> None:
     doc.checkConsistency()
     messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
     assert messages == []
+
+
+def test_distrib_spans_example_is_served() -> None:
+    """The example of the spans and distributions of distrib is served."""
+    example = load_examples()["distrib_spans (distrib_spans.xml)"]
+    assert example.name == "Uncertainty spans and distributions"
+    assert example.description is not None
+    assert example.packages == ["distrib"]
+
+
+def test_distrib_spans_example_is_valid_sbml() -> None:
+    """The example is a valid SBML document, without an error or a warning."""
+    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / "distrib_spans.xml")
+    doc.checkConsistency()
+    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
+    assert messages == []
