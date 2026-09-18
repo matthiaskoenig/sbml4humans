@@ -16,6 +16,7 @@ import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
+import ReplacedElementAttributes from "@/components/inspector/attributes/ReplacedElementAttributes.vue";
 import SubmodelAttributes from "@/components/inspector/attributes/SubmodelAttributes.vue";
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
@@ -38,6 +39,7 @@ const fixtures = [
 const indexes = fixtures.map((name) => new ReportIndex(loadReport(name)));
 const repressilator = indexes[0]!;
 const constraintEvent = new ReportIndex(loadReport("constraint_event"));
+const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
@@ -213,6 +215,51 @@ describe("inspector", () => {
       .find((r) => r.find("dt").text() === "time conversion factor")!;
     expect(row.find("a").exists()).toBe(false);
     expect(row.find("dd").text()).toBe("-");
+  });
+
+  it("links the submodel of a replacement and the element inside it which it replaces", () => {
+    const species = compDeletion.mainModel!.listOfSpecies![0] as Species;
+    const wrapper = mountWith(AttributesColumn, { element: species }, compDeletion);
+    const row = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "replaced elements")!;
+    const pks = row.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
+    expect(pks).toContain("comp_deletion/Submodel:cell1");
+    // the port of the submodel names the species, and the edge ends at that species
+    expect(pks).toContain("cell/Species:glc");
+  });
+
+  it("shows the conversion factor and the deletion a replacement carries", () => {
+    const species = compDeletion.mainModel!.listOfSpecies![0] as Species;
+    const replaced = species.comp!.replacedElements![0]!;
+    const rows = mountWith(ReplacedElementAttributes, { element: replaced }, compDeletion)
+      .findAll("[data-testid=attribute-row]")
+      .map((r) => [r.find("dt").text(), r.find("dd").text()]);
+    expect(rows).toContainEqual(["submodel", "cell1"]);
+    expect(rows).toContainEqual(["conversion factor", "f_amount"]);
+
+    const parameter = compDeletion.mainModel!.listOfParameters!.find(
+      (p) => p.comp?.replacedElements?.[0]?.deletion,
+    )!;
+    const scoped = parameter.comp!.replacedElements![0]!;
+    const deletionRow = mountWith(ReplacedElementAttributes, { element: scoped }, compDeletion)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "deletion")!;
+    expect(deletionRow.find("[data-testid=element-link]").attributes("data-pk")).toBe(
+      "comp_deletion/Deletion:del_k",
+    );
+  });
+
+  it("links every deletion of a submodel and the element it removes", () => {
+    const submodel = compDeletion.mainModel!.listOfSubmodels![0] as Submodel;
+    const wrapper = mountWith(SubmodelAttributes, { element: submodel }, compDeletion);
+    const row = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "deletions")!;
+    const pks = row.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
+    expect(pks).toContain("comp_deletion/Deletion:del_k");
+    expect(pks).toContain("cell/Parameter:k");
+    expect(pks).toContain("cell/Reaction:sink");
   });
 
   it("groups the links by kind in both directions", async () => {

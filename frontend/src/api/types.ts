@@ -5,6 +5,7 @@ import type {
   Compartment,
   Constraint,
   Delay,
+  Deletion,
   Event,
   EventAssignment,
   ExternalModelDefinition,
@@ -21,6 +22,9 @@ import type {
   Priority,
   RateRule,
   Reaction,
+  ReplacedBy,
+  ReplacedElement,
+  SBaseRef,
   SBMLDocument,
   Species,
   SpeciesReference,
@@ -64,6 +68,10 @@ export type NestedElement =
   | Priority
   | Delay
   | EventAssignment
+  | Deletion
+  | ReplacedElement
+  | ReplacedBy
+  | SBaseRef
   | Uncertainty;
 
 export type SBase = DocumentElement | SbmlElement | NestedElement;

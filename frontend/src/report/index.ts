@@ -124,9 +124,14 @@ export class ReportIndex {
     return null;
   }
 
+  /** An element and everything nested in it which carries a pk of its own: its uncertainties,
+   * the replacements of the comp package it carries and the chain of references below one. */
   private add(element: SBase): void {
     this.elements.set(element.pk, element);
     for (const uncertainty of element.uncertainties ?? []) this.add(uncertainty);
+    if (element.comp?.replacedBy) this.add(element.comp.replacedBy);
+    for (const replaced of element.comp?.replacedElements ?? []) this.add(replaced);
+    if ("sbaseRef" in element && element.sbaseRef) this.add(element.sbaseRef);
   }
 
   private addModel(model: Model): void {
@@ -157,6 +162,9 @@ export class ReportIndex {
           for (const parameter of element.kineticLaw.listOfLocalParameters ?? [])
             this.add(parameter);
         }
+        break;
+      case "Submodel":
+        for (const deletion of element.listOfDeletions ?? []) this.add(deletion);
         break;
       case "Event":
         if (element.trigger) this.add(element.trigger);

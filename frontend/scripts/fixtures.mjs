@@ -16,6 +16,7 @@ const EXAMPLES = {
   icg_body: "icg_body (icg_body.xml)",
   fbc_example: "fbc_example (fbc_example.xml)",
   model_definitions: "model_definitions (model_definitions.xml)",
+  comp_deletion: "comp_deletion (comp_deletion.xml)",
   comp_models: "CompModels",
   distrib_uncertainties: "distrib_uncertainties (distrib_uncertainties.xml)",
   constraint_event: "constraint_event (constraint_event.xml)",

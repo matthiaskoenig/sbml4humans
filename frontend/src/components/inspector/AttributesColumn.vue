@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { ReplacedBy, ReplacedElement, SBase, SBaseRef } from "@/api/types";
+import type { ReplacedBy, ReplacedElement, SBase } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import ValueText from "@/components/misc/ValueText.vue";
+import { referenceName, referenceTarget } from "@/report/comp";
 import { useReportIndex } from "@/report/context";
 
 const props = defineProps<{ element: SBase }>();
@@ -29,26 +30,43 @@ const uncertainties = computed(() =>
   })),
 );
 
-/** The element a comp reference names, in the order of the comp specification. */
-function sbaseRefLabel(ref: SBaseRef | ReplacedElement | ReplacedBy): string {
-  return ref.portRef ?? ref.idRef ?? ref.unitRef ?? ref.metaIdRef ?? "-";
+/** One row of a replacement: the submodel it names, and the element inside it which it replaces
+ * or which replaces this element. A replacement scoped to a deletion names that deletion in the
+ * place of an element, and a reference into an external model, whose document the report does
+ * not read, keeps its name without a link. */
+function replacementRow(
+  replacement: ReplacedElement | ReplacedBy,
+  kind: "replacedElement" | "replacedBy",
+) {
+  const submodel = index.value?.resolve(replacement.pk, kind, replacement.submodelRef) ?? null;
+  const deletion =
+    "deletion" in replacement && replacement.deletion
+      ? (index.value?.resolve(replacement.pk, "deletion", replacement.deletion) ?? null)
+      : null;
+  const target = referenceTarget(index.value, replacement.pk, kind, submodel) ?? deletion;
+  const name =
+    referenceName(replacement) ??
+    ("deletion" in replacement ? (replacement.deletion ?? null) : null);
+  // the element names itself where the report resolved the reference, and the reference keeps
+  // the name of the file where it does not, which is the port or the id of another document
+  return {
+    pk: replacement.pk,
+    submodelRef: replacement.submodelRef,
+    submodel,
+    name: target ? null : name,
+    target,
+  };
 }
 
-const replacedBySubmodel = computed(() =>
+const replacedBy = computed(() =>
   props.element.comp?.replacedBy
-    ? (index.value?.resolve(
-        props.element.pk,
-        "replacedBy",
-        props.element.comp.replacedBy.submodelRef,
-      ) ?? null)
+    ? replacementRow(props.element.comp.replacedBy, "replacedBy")
     : null,
 );
 const replacedElements = computed(() =>
-  (props.element.comp?.replacedElements ?? []).map((replaced) => ({
-    ...replaced,
-    pk: index.value?.resolve(props.element.pk, "replacedElement", replaced.submodelRef) ?? null,
-    ref: sbaseRefLabel(replaced),
-  })),
+  (props.element.comp?.replacedElements ?? []).map((replaced) =>
+    replacementRow(replaced, "replacedElement"),
+  ),
 );
 </script>
 
@@ -70,15 +88,14 @@ const replacedElements = computed(() =>
     </AttributeRow>
     <template v-if="element.comp">
       <AttributeRow
-        v-if="element.comp.replacedBy"
+        v-if="replacedBy"
         label="replaced by"
         :type="element.sbmlType"
         field="comp.replacedBy"
       >
-        <ElementLink :pk="replacedBySubmodel" :label="element.comp.replacedBy.submodelRef" />
-        <span class="ml-2 font-mono text-gray-600">{{
-          sbaseRefLabel(element.comp.replacedBy)
-        }}</span>
+        <ElementLink :pk="replacedBy.submodel" :label="replacedBy.submodelRef" />
+        <span class="mx-1 text-gray-400">/</span>
+        <ElementLink :pk="replacedBy.target" :label="replacedBy.name" />
       </AttributeRow>
       <AttributeRow
         v-if="replacedElements.length"
@@ -91,11 +108,14 @@ const replacedElements = computed(() =>
           :rows="replacedElements"
           :columns="[
             { key: 'submodelRef', header: 'submodel' },
-            { key: 'ref', header: 'element' },
+            { key: 'name', header: 'element' },
           ]"
         >
           <template #cell-submodelRef="{ row }"
-            ><ElementLink :pk="row.pk" :label="row.submodelRef"
+            ><ElementLink :pk="row.submodel" :label="row.submodelRef"
+          /></template>
+          <template #cell-name="{ row }"
+            ><ElementLink :pk="row.target" :label="row.name"
           /></template>
         </NestedTable>
       </AttributeRow>

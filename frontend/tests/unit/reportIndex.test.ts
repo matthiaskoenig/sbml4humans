@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Reaction, Species } from "@/api/types";
 import { ReportIndex } from "@/report/index";
+import { elementLabel } from "@/report/label";
 
 import { loadFixture, loadReport, type FixtureName } from "./fixtures";
 
@@ -9,6 +10,7 @@ const repressilator = new ReportIndex(loadReport("repressilator"));
 const icgBody = new ReportIndex(loadReport("icg_body"));
 const definitions = new ReportIndex(loadReport("model_definitions"));
 const distrib = new ReportIndex(loadReport("distrib_uncertainties"));
+const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 
 const FIXTURE_NAMES: FixtureName[] = [
   "repressilator",
@@ -16,6 +18,7 @@ const FIXTURE_NAMES: FixtureName[] = [
   "fbc_example",
   "model_definitions",
   "comp_models",
+  "comp_deletion",
   "distrib_uncertainties",
 ];
 
@@ -166,5 +169,28 @@ describe("ReportIndex", () => {
       checked += pks.length;
     }
     expect(checked).toBeGreaterThan(50);
+  });
+
+  it("indexes the replacements, the deletions and the reference chains of comp", () => {
+    // the replacements and the deletions carry a pk of their own, so the inspector opens them
+    // like any other element and a link reaches them
+    const species = compDeletion.mainModel!.listOfSpecies![0]!;
+    const replaced = species.comp!.replacedElements![0]!;
+    expect(compDeletion.get(replaced.pk)).toBe(replaced);
+    const submodel = compDeletion.mainModel!.listOfSubmodels![0]!;
+    const deletion = submodel.listOfDeletions![0]!;
+    expect(compDeletion.get(deletion.pk)).toBe(deletion);
+    const compartment = compDeletion.mainModel!.listOfCompartments![0]!;
+    const nested = compartment.comp!.replacedElements!.find((r) => r.sbaseRef)!.sbaseRef!;
+    expect(compDeletion.get(nested.pk)).toBe(nested);
+    const parameter = compDeletion.mainModel!.listOfParameters!.find((p) => p.comp?.replacedBy)!
+      .comp!.replacedBy!;
+    expect(compDeletion.get(parameter.pk)).toBe(parameter);
+  });
+
+  it("names a replacement after its element and the submodel it reaches into", () => {
+    const species = compDeletion.mainModel!.listOfSpecies![0]!;
+    const replaced = species.comp!.replacedElements![0]!;
+    expect(elementLabel(compDeletion, replaced.pk)).toBe(`${species.id}.${replaced.submodelRef}`);
   });
 });

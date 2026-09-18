@@ -16,6 +16,7 @@ export type FixtureName =
   | "icg_body"
   | "fbc_example"
   | "model_definitions"
+  | "comp_deletion"
   | "comp_models"
   | "distrib_uncertainties"
   | "constraint_event";
