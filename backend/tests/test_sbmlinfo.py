@@ -268,7 +268,14 @@ def test_read_sbml_invalid() -> None:
     [
         ("mmole/min", r"\frac{mmol}{min}"),
         ("meter^3", "m^3"),
-        ("dimensionless", "-"),
+        # dimensionless is a unit, the dash is the placeholder of units which
+        # are not declared or cannot be derived
+        ("dimensionless", "dimensionless"),
+        ("1/dimensionless", "dimensionless"),
+        ("mole*dimensionless", "mol"),
+        ("empty", "-"),
+        # Level 3 allows a fractional exponent, which `getExponent` truncates
+        ("sqrt(meter)", "m^0.5"),
     ],
 )
 def test_udef_to_string(definition: str, expected: str) -> None:
@@ -287,16 +294,46 @@ def test_udef_to_string(definition: str, expected: str) -> None:
     assert udef_to_string(udef) == expected
 
 
-def _units(definition: str) -> list[tuple[int, int, int, float]]:
+def _units(definition: str) -> list[tuple[int, float, int, float]]:
     """Units of the test definitions as (kind, exponent, scale, multiplier)."""
-    return {
+    units: dict[str, list[tuple[int, float, int, float]]] = {
         "mmole/min": [
             (libsbml.UNIT_KIND_MOLE, 1, -3, 1.0),
             (libsbml.UNIT_KIND_SECOND, -1, 0, 60.0),
         ],
         "meter^3": [(libsbml.UNIT_KIND_METRE, 3, 0, 1.0)],
         "dimensionless": [(libsbml.UNIT_KIND_DIMENSIONLESS, 1, 0, 1.0)],
-    }[definition]
+        "1/dimensionless": [(libsbml.UNIT_KIND_DIMENSIONLESS, -1, 0, 1.0)],
+        "mole*dimensionless": [
+            (libsbml.UNIT_KIND_MOLE, 1, 0, 1.0),
+            (libsbml.UNIT_KIND_DIMENSIONLESS, 1, 0, 1.0),
+        ],
+        "empty": [],
+        "sqrt(meter)": [(libsbml.UNIT_KIND_METRE, 0.5, 0, 1.0)],
+    }
+    return units[definition]
+
+
+def test_udef_to_string_of_a_unit_without_its_attributes() -> None:
+    """A unit which leaves out the attributes Level 3 requires renders at once.
+
+    libsbml reads a `<unit kind="second" multiplier="60"/>` of Level 3 and
+    answers the unset scale with the largest integer, which the rendering
+    raised ten to the power of: the report of such a file never finished. The
+    rendering reads a missing attribute as the value Level 2 gives it.
+    """
+    doc = libsbml.readSBMLFromString(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m"><listOfUnitDefinitions>'
+        '<unitDefinition id="per_min"><listOfUnits>'
+        '<unit kind="second" exponent="-1" multiplier="60"/>'
+        '</listOfUnits></unitDefinition><unitDefinition id="huge"><listOfUnits>'
+        '<unit kind="mole" exponent="1" scale="400" multiplier="1"/>'
+        "</listOfUnits></unitDefinition></listOfUnitDefinitions></model></sbml>"
+    )
+    model = doc.getModel()
+    assert udef_to_string(model.getUnitDefinition("per_min")) == r"\frac{1}{min}"
+    assert udef_to_string(model.getUnitDefinition("huge")) == r"10^{400} \cdot mol"
 
 
 def test_comp_model_definitions() -> None:

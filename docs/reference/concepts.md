@@ -22,7 +22,7 @@ The type is shown as the mark in front of every element, as the header of every 
 
 The units of a quantity or of a formula as they follow from the model.
 
-A model does not have to declare units everywhere: a compartment, a species or a parameter inherits the units of the model when it declares none, and the units of a formula follow from the units of the elements it uses. The report derives the units which follow from the model, reduces them to base units with their exponent, scale and multiplier, and renders the result as a formula.
+A model does not have to declare units everywhere: a compartment, a species or a parameter inherits the units of the model when it declares none, and the units of a formula follow from the units of the elements it uses. The report derives the units which follow from the model, reduces them to base units with their exponent, scale and multiplier, and renders the result as a formula. A quantity without a dimension reads `dimensionless`, and a dash says that the units are not declared or that the model does not say enough to derive them.
 
 Derived units are shown in the column "derived units" of the tables and in the inspector. They are the fastest check whether a kinetic law is dimensionally what it should be, because the derived units of a kinetic law are extent per time when the law is right.
 

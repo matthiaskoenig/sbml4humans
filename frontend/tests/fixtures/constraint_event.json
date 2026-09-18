@@ -1,5 +1,5 @@
 {
-  "uid": "93617e81dd3a4a1c981ac9cea374d88e",
+  "uid": "f3c3ae22c4db4d0da33de8ece09bd8e2",
   "manifest": {
     "entries": [
       {
@@ -377,7 +377,7 @@
                 "constant": false,
                 "units": "dimensionless",
                 "unitsLatex": "-",
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "constraint_event/Parameter:t_dose",
@@ -890,27 +890,6 @@
               "name": null,
               "model": "constraint_event/Model:constraint_event"
             },
-            "constraint_event/Event:E1": {
-              "pk": "constraint_event/Event:E1",
-              "sbmlType": "Event",
-              "id": "E1",
-              "name": "dose of S1 which switches the reaction off",
-              "model": "constraint_event/Model:constraint_event"
-            },
-            "constraint_event/EventAssignment:E1_dose": {
-              "pk": "constraint_event/EventAssignment:E1_dose",
-              "sbmlType": "EventAssignment",
-              "id": "E1_dose",
-              "name": null,
-              "model": "constraint_event/Model:constraint_event"
-            },
-            "constraint_event/EventAssignment:E1_switch": {
-              "pk": "constraint_event/EventAssignment:E1_switch",
-              "sbmlType": "EventAssignment",
-              "id": "E1_switch",
-              "name": null,
-              "model": "constraint_event/Model:constraint_event"
-            },
             "constraint_event/KineticLaw:meta_R1_kinetic_law": {
               "pk": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "sbmlType": "KineticLaw",
@@ -918,18 +897,11 @@
               "name": null,
               "model": "constraint_event/Model:constraint_event"
             },
-            "constraint_event/LocalParameter:R1.kineticLaw.Vmax": {
-              "pk": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
-              "sbmlType": "LocalParameter",
-              "id": "Vmax",
-              "name": "maximal velocity",
-              "model": "constraint_event/Model:constraint_event"
-            },
-            "constraint_event/LocalParameter:R1.kineticLaw.Km": {
-              "pk": "constraint_event/LocalParameter:R1.kineticLaw.Km",
-              "sbmlType": "LocalParameter",
-              "id": "Km",
-              "name": "Michaelis constant",
+            "constraint_event/Event:E1": {
+              "pk": "constraint_event/Event:E1",
+              "sbmlType": "Event",
+              "id": "E1",
+              "name": "dose of S1 which switches the reaction off",
               "model": "constraint_event/Model:constraint_event"
             },
             "constraint_event/Trigger:E1_trigger": {
@@ -951,6 +923,34 @@
               "sbmlType": "Delay",
               "id": "E1_delay",
               "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/EventAssignment:E1_dose": {
+              "pk": "constraint_event/EventAssignment:E1_dose",
+              "sbmlType": "EventAssignment",
+              "id": "E1_dose",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/EventAssignment:E1_switch": {
+              "pk": "constraint_event/EventAssignment:E1_switch",
+              "sbmlType": "EventAssignment",
+              "id": "E1_switch",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/LocalParameter:R1.kineticLaw.Vmax": {
+              "pk": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
+              "sbmlType": "LocalParameter",
+              "id": "Vmax",
+              "name": "maximal velocity",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/LocalParameter:R1.kineticLaw.Km": {
+              "pk": "constraint_event/LocalParameter:R1.kineticLaw.Km",
+              "sbmlType": "LocalParameter",
+              "id": "Km",
+              "name": "Michaelis constant",
               "model": "constraint_event/Model:constraint_event"
             }
           },

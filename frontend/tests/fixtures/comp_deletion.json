@@ -1,5 +1,5 @@
 {
-  "uid": "c9e6f6c3bca84ef3ad09b14ee52a381e",
+  "uid": "b262427ebf2141c8ae0fee0533dc8f0b",
   "manifest": {
     "entries": [
       {
@@ -459,7 +459,7 @@
                 "constant": true,
                 "units": "dimensionless",
                 "unitsLatex": "-",
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "comp_deletion/Parameter:f_time",
@@ -479,7 +479,7 @@
                 "constant": true,
                 "units": "dimensionless",
                 "unitsLatex": "-",
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "comp_deletion/Parameter:f_extent",
@@ -499,7 +499,7 @@
                 "constant": true,
                 "units": "dimensionless",
                 "unitsLatex": "-",
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "comp_deletion/Parameter:glc_amount",
@@ -1550,6 +1550,13 @@
               "name": null,
               "model": "cell/Model:cell"
             },
+            "cell/KineticLaw:sink.kineticLaw": {
+              "pk": "cell/KineticLaw:sink.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "cell/Model:cell"
+            },
             "cell/Port:cell_port": {
               "pk": "cell/Port:cell_port",
               "sbmlType": "Port",
@@ -1569,13 +1576,6 @@
               "sbmlType": "Port",
               "id": "Vmax_port",
               "name": "port of the maximal rate",
-              "model": "cell/Model:cell"
-            },
-            "cell/KineticLaw:sink.kineticLaw": {
-              "pk": "cell/KineticLaw:sink.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
               "model": "cell/Model:cell"
             },
             "tissue/Model:tissue": {

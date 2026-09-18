@@ -1,5 +1,5 @@
 {
-  "uid": "4ce9a0cc82ac420b86425a767e189e3f",
+  "uid": "d2a742d6f0c64bb8a54bc1cba9873867",
   "manifest": {
     "entries": [
       {
@@ -1000,7 +1000,7 @@
                   "latex": " \\frac{\\mathit{tau_{mRNA}}}{\\mathrm{ln}2}",
                   "formula": "tau_mRNA / ln(2)"
                 },
-                "derivedUnits": "\\frac{1}{1}"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "BIOMD0000000012/AssignmentRule:beta",
@@ -1105,7 +1105,7 @@
                   "latex": " \\frac{\\mathrm{ln}2}{\\mathit{tau_{prot}}}",
                   "formula": "ln(2) / tau_prot"
                 },
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "BIOMD0000000012/AssignmentRule:kd_mRNA",
@@ -1126,7 +1126,7 @@
                   "latex": " \\frac{\\mathrm{ln}2}{\\mathit{tau_{mRNA}}}",
                   "formula": "ln(2) / tau_mRNA"
                 },
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "BIOMD0000000012/AssignmentRule:alpha",
@@ -1147,7 +1147,7 @@
                   "latex": " \\frac{\\mathit{a_{tr}}·\\mathit{eff}·\\mathit{tau_{prot}}}{\\mathrm{ln}2·\\mathit{KM}}",
                   "formula": "a_tr * eff * tau_prot / (ln(2) * KM)"
                 },
-                "derivedUnits": "\\frac{1}{1}"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "BIOMD0000000012/AssignmentRule:alpha0",
@@ -1168,7 +1168,7 @@
                   "latex": " \\frac{\\mathit{a0_{tr}}·\\mathit{eff}·\\mathit{tau_{prot}}}{\\mathrm{ln}2·\\mathit{KM}}",
                   "formula": "a0_tr * eff * tau_prot / (ln(2) * KM)"
                 },
-                "derivedUnits": "\\frac{1}{1}"
+                "derivedUnits": "dimensionless"
               }
             ],
             "listOfConstraints": [],
@@ -2620,6 +2620,13 @@
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
+            "BIOMD0000000012/KineticLaw:_420986": {
+              "pk": "BIOMD0000000012/KineticLaw:_420986",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
             "BIOMD0000000012/Reaction:Reaction2": {
               "pk": "BIOMD0000000012/Reaction:Reaction2",
               "sbmlType": "Reaction",
@@ -2634,6 +2641,13 @@
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
+            "BIOMD0000000012/KineticLaw:_421012": {
+              "pk": "BIOMD0000000012/KineticLaw:_421012",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
             "BIOMD0000000012/Reaction:Reaction3": {
               "pk": "BIOMD0000000012/Reaction:Reaction3",
               "sbmlType": "Reaction",
@@ -2644,6 +2658,13 @@
             "BIOMD0000000012/SpeciesReference:_421025": {
               "pk": "BIOMD0000000012/SpeciesReference:_421025",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
+            "BIOMD0000000012/KineticLaw:_421038": {
+              "pk": "BIOMD0000000012/KineticLaw:_421038",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
@@ -2669,6 +2690,13 @@
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
+            "BIOMD0000000012/KineticLaw:_421076": {
+              "pk": "BIOMD0000000012/KineticLaw:_421076",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
             "BIOMD0000000012/Reaction:Reaction5": {
               "pk": "BIOMD0000000012/Reaction:Reaction5",
               "sbmlType": "Reaction",
@@ -2686,6 +2714,13 @@
             "BIOMD0000000012/ModifierSpeciesReference:_421100": {
               "pk": "BIOMD0000000012/ModifierSpeciesReference:_421100",
               "sbmlType": "ModifierSpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
+            "BIOMD0000000012/KineticLaw:_421112": {
+              "pk": "BIOMD0000000012/KineticLaw:_421112",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
@@ -2711,6 +2746,13 @@
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
+            "BIOMD0000000012/KineticLaw:_421148": {
+              "pk": "BIOMD0000000012/KineticLaw:_421148",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
             "BIOMD0000000012/Reaction:Reaction7": {
               "pk": "BIOMD0000000012/Reaction:Reaction7",
               "sbmlType": "Reaction",
@@ -2721,6 +2763,13 @@
             "BIOMD0000000012/SpeciesReference:_421160": {
               "pk": "BIOMD0000000012/SpeciesReference:_421160",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
+            "BIOMD0000000012/KineticLaw:_421172": {
+              "pk": "BIOMD0000000012/KineticLaw:_421172",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
@@ -2739,6 +2788,13 @@
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
+            "BIOMD0000000012/KineticLaw:_421196": {
+              "pk": "BIOMD0000000012/KineticLaw:_421196",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
             "BIOMD0000000012/Reaction:Reaction9": {
               "pk": "BIOMD0000000012/Reaction:Reaction9",
               "sbmlType": "Reaction",
@@ -2749,6 +2805,13 @@
             "BIOMD0000000012/SpeciesReference:_421208": {
               "pk": "BIOMD0000000012/SpeciesReference:_421208",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
+            "BIOMD0000000012/KineticLaw:_421220": {
+              "pk": "BIOMD0000000012/KineticLaw:_421220",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
@@ -2774,6 +2837,13 @@
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
+            "BIOMD0000000012/KineticLaw:_421256": {
+              "pk": "BIOMD0000000012/KineticLaw:_421256",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
             "BIOMD0000000012/Reaction:Reaction11": {
               "pk": "BIOMD0000000012/Reaction:Reaction11",
               "sbmlType": "Reaction",
@@ -2795,6 +2865,13 @@
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
+            "BIOMD0000000012/KineticLaw:_421292": {
+              "pk": "BIOMD0000000012/KineticLaw:_421292",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "BIOMD0000000012/Model:BIOMD0000000012"
+            },
             "BIOMD0000000012/Reaction:Reaction12": {
               "pk": "BIOMD0000000012/Reaction:Reaction12",
               "sbmlType": "Reaction",
@@ -2812,83 +2889,6 @@
             "BIOMD0000000012/ModifierSpeciesReference:_421317": {
               "pk": "BIOMD0000000012/ModifierSpeciesReference:_421317",
               "sbmlType": "ModifierSpeciesReference",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_420986": {
-              "pk": "BIOMD0000000012/KineticLaw:_420986",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421012": {
-              "pk": "BIOMD0000000012/KineticLaw:_421012",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421038": {
-              "pk": "BIOMD0000000012/KineticLaw:_421038",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421076": {
-              "pk": "BIOMD0000000012/KineticLaw:_421076",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421112": {
-              "pk": "BIOMD0000000012/KineticLaw:_421112",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421148": {
-              "pk": "BIOMD0000000012/KineticLaw:_421148",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421172": {
-              "pk": "BIOMD0000000012/KineticLaw:_421172",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421196": {
-              "pk": "BIOMD0000000012/KineticLaw:_421196",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421220": {
-              "pk": "BIOMD0000000012/KineticLaw:_421220",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421256": {
-              "pk": "BIOMD0000000012/KineticLaw:_421256",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "BIOMD0000000012/Model:BIOMD0000000012"
-            },
-            "BIOMD0000000012/KineticLaw:_421292": {
-              "pk": "BIOMD0000000012/KineticLaw:_421292",
-              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
@@ -3496,7 +3496,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.148 [s]"
+        "jsonReportTime": "0.151 [s]"
       }
     }
   }

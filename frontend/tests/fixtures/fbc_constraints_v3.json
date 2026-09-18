@@ -1,5 +1,5 @@
 {
-  "uid": "846aafe6f684423da706f8b12f56b9f7",
+  "uid": "9bf6cd731c5843e18087c22e33f47bb8",
   "manifest": {
     "entries": [
       {
@@ -440,7 +440,7 @@
                 "constant": true,
                 "units": "dimensionless",
                 "unitsLatex": "-",
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "fbc_constraints_v3/Parameter:c_two",
@@ -460,7 +460,7 @@
                 "constant": true,
                 "units": "dimensionless",
                 "unitsLatex": "-",
-                "derivedUnits": "-"
+                "derivedUnits": "dimensionless"
               },
               {
                 "pk": "fbc_constraints_v3/Parameter:maintenance",
