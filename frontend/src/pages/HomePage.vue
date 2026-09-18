@@ -7,6 +7,7 @@ import FileUpload from "@/components/input/FileUpload.vue";
 import PasteInput from "@/components/input/PasteInput.vue";
 import UrlInput from "@/components/input/UrlInput.vue";
 import AppBar from "@/components/layout/AppBar.vue";
+import AppFooter from "@/components/layout/AppFooter.vue";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import LoadingState from "@/components/layout/LoadingState.vue";
 import { useReportStore } from "@/stores/report";
@@ -91,28 +92,6 @@ async function submit(load: () => Promise<void>, route: { url?: string } = {}): 
       >.
     </p>
 
-    <footer class="mt-auto border-t border-gray-200 pt-6 text-xs text-gray-500">
-      <p>
-        SBML4Humans is developed on
-        <a href="https://github.com/matthiaskoenig/sbml4humans" class="text-link hover:underline"
-          >GitHub</a
-        >
-        (MIT). If you use it in your work, cite
-        <a href="https://zenodo.org/badge/latestdoi/55952847" class="text-link hover:underline"
-          >the Zenodo DOI</a
-        >. Funded by
-        <a href="https://summerofcode.withgoogle.com/" class="text-link hover:underline"
-          >Google Summer of Code 2021</a
-        >
-        and the German Research Foundation (DFG) within the Research Unit Programme FOR 5151
-        <a href="https://qualiperf.de" class="text-link hover:underline">QuaLiPerF</a>.
-        <a
-          href="https://github.com/matthiaskoenig/sbml4humans/blob/main/frontend/privacy_notice.md"
-          class="text-link hover:underline"
-          >Privacy notice</a
-        >.
-      </p>
-      <p class="mt-1">&copy; 2021-2026 Matthias König</p>
-    </footer>
+    <AppFooter />
   </main>
 </template>

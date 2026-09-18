@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package*.json /app/
 RUN npm ci
 COPY . /app/
+# the commit the footer links: the build context has no repository to read it from, so the build
+# takes it as an argument. Without it the footer shows the version alone.
+ARG VITE_COMMIT=""
+ENV VITE_COMMIT=$VITE_COMMIT
 RUN npm run build
 
 # production stage: the static files are copied into the nginx volume

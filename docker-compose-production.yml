@@ -30,6 +30,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile-production
+      # the commit the footer links, from the environment of the host, e.g. `deploy.sh`
+      args:
+        VITE_COMMIT: "${VITE_COMMIT:-}"
     command: tail -f /dev/null
     volumes:
       - ./frontend:/app
