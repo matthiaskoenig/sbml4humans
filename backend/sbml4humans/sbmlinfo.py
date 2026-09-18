@@ -73,6 +73,30 @@ BIOLOGICAL_QUALIFIERS: dict[int, BQB] = {getattr(libsbml, q.value): q for q in B
 
 DOCUMENT_SCOPE = "document"
 
+# libsbml aliases `getId()` and `isSetId()` of these classes to the attribute
+# which names what they set, for compatibility with the levels in which they
+# had no id: the `symbol` of an initial assignment (core §4.8.2), the
+# `variable` of an assignment or rate rule (§4.9.1) and the `variable` of an
+# event assignment (§4.12.5). Their id is `getIdAttribute()`.
+ALIASED_ID_CLASSES = (
+    libsbml.InitialAssignment,
+    libsbml.Rule,
+    libsbml.EventAssignment,
+)
+
+# the classes whose aliased `getId()` names a target which is unique within the
+# model, so that it keys the element as long as it carries no id of its own: a
+# model has at most one initial assignment per symbol and at most one rule per
+# variable (core §4.8.2, §4.9.1), while two events may assign one variable
+KEYED_BY_TARGET_CLASSES = (libsbml.InitialAssignment, libsbml.Rule)
+
+
+def _identifier(sbase: libsbml.SBase) -> str | None:
+    """The id of an element as the file carries it, None when it has none."""
+    if isinstance(sbase, ALIASED_ID_CLASSES):
+        return sbase.getIdAttribute() if sbase.isSetIdAttribute() else None
+    return sbase.getId() if sbase.isSetId() else None
+
 
 def _attribute(sbase: Any, key: str) -> Any | None:
     """The attribute `key` of a libsbml object if it is set, else None."""
@@ -162,22 +186,24 @@ class SBMLDocumentInfo:
         the xml, which is byte identical for siblings such as two reactant
         references without ids and would otherwise collide.
 
-        `use_id` is False when the id, though set, is not a globally unique
-        identity and must not be used for the pk:
+        An initial assignment and a rule without an id of their own are keyed
+        by the symbol or the variable they set, which a model has at most one
+        of them for. That is where the report has kept them since its first
+        release, and it keeps the permalink of a rule of a Level 2 document,
+        where these elements cannot carry an id at all, out of the digest.
 
-        * an `EventAssignment`: libsbml aliases its `getId()`/`isSetId()` to
-          the `variable` attribute, which is not a genuine id and, unlike the
-          `symbol` of an initial assignment or the `variable` of a rule, is
-          not unique across the events of a model (two events may assign the
-          same variable).
-        * a `LocalParameter`: its id is a genuine id, required by SBML, but
-          scoped to its own kinetic law, not to the model (two kinetic laws
-          may each have a local parameter of the same id), so `key` (which
-          includes the kinetic law) is used for the pk instead; the `id`
-          field of the report object still carries the local parameter id.
+        `use_id` is False for a `LocalParameter`: its id is a genuine id,
+        required by SBML, but scoped to its own kinetic law, not to the model
+        (two kinetic laws may each have a local parameter of the same id), so
+        `key` (which includes the kinetic law) is used for the pk instead; the
+        `id` field of the report object still carries the local parameter id.
         """
-        if use_id and sbase.isSetId():
-            return sbase.getId()
+        if use_id:
+            identifier = _identifier(sbase)
+            if identifier is not None:
+                return identifier
+            if isinstance(sbase, KEYED_BY_TARGET_CLASSES) and sbase.isSetId():
+                return sbase.getId()
         if sbase.isSetMetaId():
             return sbase.getMetaId()
         if key is not None:
@@ -223,7 +249,7 @@ class SBMLDocumentInfo:
             "pk": pk
             if pk is not None
             else self._pk(sbase, scope, sbml_type, key, use_id),
-            "id": sbase.getId() if sbase.isSetId() else None,
+            "id": _identifier(sbase),
             "meta_id": sbase.getMetaId() if sbase.isSetMetaId() else None,
             "name": sbase.getName() if sbase.isSetName() else None,
             "sbo": sbase.getSBOTermID() if sbase.isSetSBOTerm() else None,
@@ -625,9 +651,7 @@ class SBMLDocumentInfo:
             )
         assignments = []
         for ea in e.getListOfEventAssignments():
-            ea_fields = self.sbase(
-                ea, key=f"{event_key}.{ea.getVariable()}", use_id=False
-            )
+            ea_fields = self.sbase(ea, key=f"{event_key}.{ea.getVariable()}")
             assignments.append(
                 EventAssignment(
                     **ea_fields,

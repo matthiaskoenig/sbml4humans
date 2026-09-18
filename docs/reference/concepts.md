@@ -6,9 +6,9 @@ A report shows more than the model file contains: it resolves references, derive
 
 The identifier the report gives to every element it shows.
 
-SBML identifies an element by its id, which is unique within one model, and many elements of a model have no id at all. The report therefore builds a key of its own for every element, of the form `<scope>/<type>:<id>`: the scope, which is the model the element belongs to or the document for an element of the document, the type of the element and its id. An element without an id falls back to its meta id, then to a key derived from its parent and its position, and finally to a digest of its XML, so that two reactants of one reaction without ids stay distinct.
+SBML identifies an element by its id, which is unique within one model, and many elements of a model have no id at all. The report therefore builds a key of its own for every element, of the form `<scope>/<type>:<id>`: the scope, which is the model the element belongs to or the document for an element of the document, the type of the element and its id. An element without an id falls back to the element it sets, for an [initial assignment](initialassignment.md) or a rule, then to its meta id, then to a key derived from its parent and its position, and finally to a digest of its XML, so that two reactants of one reaction without ids stay distinct.
 
-The primary key is what the links of a report point at, what the url of a report names when an element is selected and what the inspector shows when an element has neither an id nor a meta id.
+The primary key is what the links of a report point at and what the url of a report names when an element is selected. An element without an id is shown by the key alone, without the scope and the type in front of it, in the header of the inspector and as the label of every link to it.
 
 ## sbml type
 

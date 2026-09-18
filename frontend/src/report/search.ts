@@ -24,7 +24,9 @@ function* maths(element: SBase): Generator<Math | null | undefined> {
   }
 }
 
-/** The searchable text of an element: id, name, metaId, sbo, notes text, formulas and equation. */
+/** The searchable text of an element: id, name, metaId, sbo, the element it sets, notes text,
+ * formulas and equation. An initial assignment, a rule and an event assignment carry no id in
+ * most models, and a reader looks for them by the symbol or the variable they set. */
 function searchText(element: SBase): string {
   const cached = texts.get(element);
   if (cached !== undefined) return cached;
@@ -34,6 +36,8 @@ function searchText(element: SBase): string {
     element.metaId,
     element.sbo,
   ];
+  if ("symbol" in element) parts.push(element.symbol);
+  if ("variable" in element) parts.push(element.variable);
   if (element.notes) parts.push(stripHtml(element.notes));
   for (const math of maths(element)) parts.push(math?.formula);
   if (element.sbmlType === "Reaction") parts.push(element.equation);

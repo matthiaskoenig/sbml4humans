@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Species } from "@/api/types";
+import type { AssignmentRule, Species } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 import { matches, normalizeQuery } from "@/report/search";
 
@@ -48,6 +48,13 @@ describe("search", () => {
       .split(/\s+/)[0]!;
     expect(matches(withNotes, text)).toBe(true);
     expect(matches(withNotes, "<p>")).toBe(false);
+  });
+
+  it("matches a rule by the variable it sets", () => {
+    // the rules of a Level 2 model have no id, and a reader looks for the element they set
+    const rule = model.listOfRules!.find((r) => "variable" in r)!;
+    expect(rule.id).toBeNull();
+    expect(matches(rule, (rule as AssignmentRule).variable)).toBe(true);
   });
 
   it("does not match a species by the compartment id", () => {

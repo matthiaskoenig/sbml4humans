@@ -408,3 +408,56 @@ def test_level_2_local_parameter_edges(
         Edge(source=kinetic_law.pk, target=local_parameter.pk, kind=EdgeKind.MATH)
         in graph.edges
     )
+
+
+SYNTHETIC_STOICHIOMETRY_SBML = f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <model id="var">
+    <listOfCompartments>
+      <compartment id="c" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="S1" compartment="c" initialConcentration="1"
+               hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="S2" compartment="c" initialConcentration="0"
+               hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="p" value="2" constant="true"/>
+    </listOfParameters>
+    <listOfRules>
+      <assignmentRule id="rule_sr1" variable="sr1">{_mathml("p")}</assignmentRule>
+    </listOfRules>
+    <listOfReactions>
+      <reaction id="R1" reversible="false">
+        <listOfReactants>
+          <speciesReference id="sr1" species="S1" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="S2" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>{_mathml("sr1 * S1")}</kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>"""
+
+
+def test_rule_of_a_species_reference_does_not_shadow_it() -> None:
+    """A rule setting a stoichiometry links to the species reference.
+
+    The variable of the rule is the id of a species reference, which used to
+    be shadowed in the index by the rule itself, because libsbml reports the
+    variable as the id of the rule (core §4.9.1, §4.11.3).
+    """
+    report = SBMLDocumentInfo.from_sbml(SYNTHETIC_STOICHIOMETRY_SBML)
+    model = report.models[0]
+    rule = model.list_of_rules[0]
+    species_reference = model.list_of_reactions[0].list_of_reactants[0]
+    kinetic_law = model.list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    assert rule.pk == "var/AssignmentRule:rule_sr1"
+    assert species_reference.pk == "var/SpeciesReference:sr1"
+    assert not [e for e in report.link_graph.edges if e.source == e.target]
+    assert (rule.pk, species_reference.pk, "variable") in _edges(report)
+    assert (kinetic_law.pk, species_reference.pk, "math") in _edges(report)

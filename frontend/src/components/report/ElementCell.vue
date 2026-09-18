@@ -52,9 +52,8 @@ function variablePk(assignment: EventAssignment): string | null {
 </script>
 
 <template>
-  <!-- the identifier of a row carries the mark of its type: an initial assignment shows the
-  symbol it sets, which is the identifier of a parameter or a species in another table, and the
-  tables of the rules look alike as well -->
+  <!-- the identifier of a row carries the mark of its type, so that the tables of the rules,
+  which look alike, and a row of an element without an id are told apart by the mark -->
   <span v-if="column.kind === 'id'" class="flex items-center gap-1.5">
     <TypeMark v-if="row.sbmlType" :type="row.sbmlType" />
     <span v-if="text" class="font-mono font-medium">{{ text }}</span>

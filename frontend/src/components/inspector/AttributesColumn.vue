@@ -25,7 +25,6 @@ const uncertaintyColumns = [
 const uncertainties = computed(() =>
   (props.element.uncertainties ?? []).map((u) => ({
     pk: u.pk,
-    id: u.id ?? u.metaId ?? u.pk,
     count: u.uncertParameters?.length ?? 0,
   })),
 );
@@ -110,7 +109,7 @@ const replacedElements = computed(() =>
       wide
     >
       <NestedTable :rows="uncertainties" :columns="uncertaintyColumns">
-        <template #cell-id="{ row }"><ElementLink :pk="row.pk" :label="row.id" /></template>
+        <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       </NestedTable>
     </AttributeRow>
   </dl>

@@ -1,5 +1,5 @@
 {
-  "uid": "5f435b2d2d614075820481e774fabd74",
+  "uid": "29a8c44c40bc4662b82838e82df6146b",
   "manifest": {
     "entries": [
       {
@@ -893,7 +893,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:t_ave",
                 "sbmlType": "AssignmentRule",
-                "id": "t_ave",
+                "id": null,
                 "metaId": "metaid_0500035",
                 "name": null,
                 "sbo": null,
@@ -913,7 +913,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:beta",
                 "sbmlType": "AssignmentRule",
-                "id": "beta",
+                "id": null,
                 "metaId": "metaid_0240045",
                 "name": null,
                 "sbo": null,
@@ -933,7 +933,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:k_tl",
                 "sbmlType": "AssignmentRule",
-                "id": "k_tl",
+                "id": null,
                 "metaId": "metaid_0400235",
                 "name": null,
                 "sbo": null,
@@ -953,7 +953,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:a_tr",
                 "sbmlType": "AssignmentRule",
-                "id": "a_tr",
+                "id": null,
                 "metaId": "metaid_1000237",
                 "name": null,
                 "sbo": null,
@@ -973,7 +973,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:a0_tr",
                 "sbmlType": "AssignmentRule",
-                "id": "a0_tr",
+                "id": null,
                 "metaId": "metaid_0100236",
                 "name": null,
                 "sbo": null,
@@ -993,7 +993,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:kd_prot",
                 "sbmlType": "AssignmentRule",
-                "id": "kd_prot",
+                "id": null,
                 "metaId": "metaid_0010335",
                 "name": null,
                 "sbo": null,
@@ -1013,7 +1013,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:kd_mRNA",
                 "sbmlType": "AssignmentRule",
-                "id": "kd_mRNA",
+                "id": null,
                 "metaId": "metaid_0020435",
                 "name": null,
                 "sbo": null,
@@ -1033,7 +1033,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:alpha",
                 "sbmlType": "AssignmentRule",
-                "id": "alpha",
+                "id": null,
                 "metaId": "metaid_0230035",
                 "name": null,
                 "sbo": null,
@@ -1053,7 +1053,7 @@
               {
                 "pk": "BIOMD0000000012/AssignmentRule:alpha0",
                 "sbmlType": "AssignmentRule",
-                "id": "alpha0",
+                "id": null,
                 "metaId": "metaid_0240035",
                 "name": null,
                 "sbo": null,
@@ -2360,63 +2360,63 @@
             "BIOMD0000000012/AssignmentRule:t_ave": {
               "pk": "BIOMD0000000012/AssignmentRule:t_ave",
               "sbmlType": "AssignmentRule",
-              "id": "t_ave",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:beta": {
               "pk": "BIOMD0000000012/AssignmentRule:beta",
               "sbmlType": "AssignmentRule",
-              "id": "beta",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:k_tl": {
               "pk": "BIOMD0000000012/AssignmentRule:k_tl",
               "sbmlType": "AssignmentRule",
-              "id": "k_tl",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:a_tr": {
               "pk": "BIOMD0000000012/AssignmentRule:a_tr",
               "sbmlType": "AssignmentRule",
-              "id": "a_tr",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:a0_tr": {
               "pk": "BIOMD0000000012/AssignmentRule:a0_tr",
               "sbmlType": "AssignmentRule",
-              "id": "a0_tr",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:kd_prot": {
               "pk": "BIOMD0000000012/AssignmentRule:kd_prot",
               "sbmlType": "AssignmentRule",
-              "id": "kd_prot",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:kd_mRNA": {
               "pk": "BIOMD0000000012/AssignmentRule:kd_mRNA",
               "sbmlType": "AssignmentRule",
-              "id": "kd_mRNA",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:alpha": {
               "pk": "BIOMD0000000012/AssignmentRule:alpha",
               "sbmlType": "AssignmentRule",
-              "id": "alpha",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
             "BIOMD0000000012/AssignmentRule:alpha0": {
               "pk": "BIOMD0000000012/AssignmentRule:alpha0",
               "sbmlType": "AssignmentRule",
-              "id": "alpha0",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000012/Model:BIOMD0000000012"
             },
@@ -3140,7 +3140,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.164 [s]"
+        "jsonReportTime": "0.143 [s]"
       }
     }
   }

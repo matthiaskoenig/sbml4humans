@@ -11,6 +11,7 @@ import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { MAX_LATEX_LENGTH } from "@/report/latex";
+import { pkKey } from "@/report/pk";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
@@ -176,5 +177,14 @@ describe("misc components", () => {
     const text = mountWithIndex(ElementLink, { pk: null, label: "litre" });
     expect(text.find("[data-testid=element-link]").exists()).toBe(false);
     expect(text.text()).toBe("litre");
+  });
+
+  it("names an element without an id by the key of its primary key", () => {
+    // the rules of a Level 2 model carry no id, their key is the variable they set
+    const rule = index.mainModel!.listOfRules![0]!;
+    expect(rule.id).toBeNull();
+    const link = mountWithIndex(ElementLink, { pk: rule.pk });
+    expect(link.get("[data-testid=element-link]").text()).toBe(pkKey(rule.pk));
+    expect(link.text()).not.toContain("/");
   });
 });

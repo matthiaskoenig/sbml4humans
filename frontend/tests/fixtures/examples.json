@@ -2,7 +2,7 @@
   {
     "id": "icg_model",
     "name": "icg_model",
-    "description": "entries=[ManifestEntry(location='.', format='http://identifiers.org/combine.specifications/omex', master=False), ManifestEntry(location='./manifest.xml', format='http://identifiers.org/combine.specifications/omex-manifest', master=False), ManifestEntry(location='./models/icg_body.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-1', master=False), ManifestEntry(location='./models/icg_body_flat.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-1', master=True), ManifestEntry(location='./models/icg_liver.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-1', master=False)]",
+    "description": "COMBINE archive with 3 SBML entries: icg_liver.xml, icg_body.xml, icg_body_flat.xml",
     "packages": [
       "OMEX"
     ]
@@ -10,7 +10,7 @@
   {
     "id": "omeprazole_model",
     "name": "omeprazole_model",
-    "description": "entries=[ManifestEntry(location='.', format='http://identifiers.org/combine.specifications/omex', master=False), ManifestEntry(location='./manifest.xml', format='http://identifiers.org/combine.specifications/omex-manifest', master=False), ManifestEntry(location='./models/omeprazole_body_flat.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-2', master=True), ManifestEntry(location='./models/omeprazole_liver.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-2', master=False), ManifestEntry(location='./models/omeprazole_body.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-2', master=False), ManifestEntry(location='./models/omeprazole_kidney.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-2', master=False), ManifestEntry(location='./models/omeprazole_stomach.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-2', master=False)]",
+    "description": "COMBINE archive with 5 SBML entries",
     "packages": [
       "OMEX"
     ]
@@ -18,7 +18,7 @@
   {
     "id": "CompModels",
     "name": "CompModels",
-    "description": "entries=[ManifestEntry(location='.', format='http://identifiers.org/combine.specifications/omex', master=False), ManifestEntry(location='./manifest.xml', format='http://identifiers.org/combine.specifications/omex-manifest', master=False), ManifestEntry(location='./README.md', format='http://purl.org/NET/mediatypes/text/x-markdown', master=False), ManifestEntry(location='./models/omex_comp_flat.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-1', master=False), ManifestEntry(location='./models/omex_minimal.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-1', master=False), ManifestEntry(location='./models/omex_comp.xml', format='http://identifiers.org/combine.specifications/sbml.level-3.version-1', master=False)]",
+    "description": "COMBINE archive with 3 SBML entries: omex_minimal.xml, omex_comp.xml, omex_comp_flat.xml",
     "packages": [
       "OMEX"
     ]
@@ -26,7 +26,7 @@
   {
     "id": "CombineArchiveShowCase",
     "name": "CombineArchiveShowCase",
-    "description": "entries=[ManifestEntry(location='.', format='http://identifiers.org/combine.specifications/omex', master=False), ManifestEntry(location='./manifest.xml', format='http://identifiers.org/combine.specifications/omex-manifest', master=False), ManifestEntry(location='./metadata.rdf', format='http://identifiers.org/combine.specifications/omex-metadata', master=False), ManifestEntry(location='./README.md', format='http://purl.org/NET/mediatypes/text/x-markdown', master=False), ManifestEntry(location='./result/Fig1B-top-COPASI.svg', format='http://purl.org/NET/mediatypes/image/svg+xml', master=False), ManifestEntry(location='./result/Fig1B-bottom-COPASI.svg', format='http://purl.org/NET/mediatypes/image/svg+xml', master=False), ManifestEntry(location='./result/Fig1B-top-webtools.png', format='http://purl.org/NET/mediatypes/image/png', master=False), ManifestEntry(location='./result/Fig1B-bottom-webtools.png', format='http://purl.org/NET/mediatypes/image/png', master=False), ManifestEntry(location='./model/calzone_thieffry_tyson_novak_2007.cellml', format='http://identifiers.org/combine.specifications/cellml', master=False), ManifestEntry(location='./model/calzone_2007.ai', format='http://purl.org/NET/mediatypes/application/illustrator', master=False), ManifestEntry(location='./model/BIOMD0000000144.xml', format='http://identifiers.org/combine.specifications/sbml.level-2.version-1', master=False), ManifestEntry(location='./model/calzone_2007.svg', format='http://purl.org/NET/mediatypes/image/svg+xml', master=False), ManifestEntry(location='./model/calzone_2007.png', format='http://purl.org/NET/mediatypes/image/png', master=False), ManifestEntry(location='./model/sbgn/Calzone2007.pdf', format='http://purl.org/NET/mediatypes/application/pdf', master=False), ManifestEntry(location='./model/sbgn/Calzone2007.graphml', format='http://purl.org/NET/mediatypes/application/xml', master=False), ManifestEntry(location='./model/sbgn/Calzone2007.gml', format='http://purl.org/NET/mediatypes/text/plain', master=False), ManifestEntry(location='./model/sbgn/Calzone2007.png', format='http://purl.org/NET/mediatypes/image/png', master=False), ManifestEntry(location='./model/sbgn/Calzone2007.sbgn', format='http://identifiers.org/combine.specifications/sbgn.pd', master=False), ManifestEntry(location='./documentation/Calzone2007.pdf', format='http://purl.org/NET/mediatypes/application/pdf', master=False), ManifestEntry(location='./documentation/Calzone2007-supplementary-material.pdf', format='http://purl.org/NET/mediatypes/application/pdf', master=False), ManifestEntry(location='./experiment/Calzone2007-default-simulation.xml', format='http://identifiers.org/combine.specifications/sed-ml.level-1.version-1', master=False), ManifestEntry(location='./experiment/Calzone2007-simulation-figure-1B.xml', format='http://identifiers.org/combine.specifications/sed-ml.level-1.version-1', master=True)]",
+    "description": "COMBINE archive with 1 SBML entry: BIOMD0000000144.xml",
     "packages": [
       "OMEX"
     ]

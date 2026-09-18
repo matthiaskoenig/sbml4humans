@@ -497,3 +497,119 @@ def test_level_2_biomodel_reports_its_kinetic_law_parameters(
     assert local_parameter.sbml_type == "LocalParameter"
     # the metaId of the file keys the parameter, as it keys its kinetic law
     assert local_parameter.pk == "BIOMD0000000003/LocalParameter:_961167"
+
+
+# -------------------------------------------------------------------------------------
+# the identity of an initial assignment, a rule and an event assignment
+# -------------------------------------------------------------------------------------
+def _identifier_sbml(math: str = "<ci> p1 </ci>") -> str:
+    """A Level 3 Version 2 model whose assignments and rules carry an id.
+
+    `math` is the math of the algebraic rule, so that the same document can be
+    read twice with a different formula.
+    """
+    return (
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" '
+        'level="3" version="2"><model id="m">'
+        '<listOfCompartments><compartment id="c" constant="true" size="1"/>'
+        "</listOfCompartments><listOfSpecies>"
+        '<species id="S1" compartment="c" hasOnlySubstanceUnits="false" '
+        'boundaryCondition="false" constant="false" initialConcentration="1"/>'
+        "</listOfSpecies><listOfParameters>"
+        '<parameter id="p1" value="1" constant="false"/>'
+        "</listOfParameters><listOfInitialAssignments>"
+        '<initialAssignment id="ia1" symbol="S1">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><ci> p1 </ci></math>'
+        "</initialAssignment></listOfInitialAssignments><listOfRules>"
+        '<algebraicRule id="ar1" name="my rule" sboTerm="SBO:0000064">'
+        f'<math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>'
+        "</algebraicRule>"
+        '<rateRule id="rr1" variable="p1">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>'
+        "</rateRule></listOfRules><listOfEvents>"
+        '<event id="e1" useValuesFromTriggerTime="true"><trigger '
+        'initialValue="false" persistent="true">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>'
+        "</trigger><listOfEventAssignments>"
+        '<eventAssignment id="ea1" variable="S1">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>'
+        "</eventAssignment></listOfEventAssignments></event>"
+        "</listOfEvents></model></sbml>"
+    )
+
+
+def test_identifier_of_assignments_and_rules() -> None:
+    """The id of the file is reported, not the symbol or the variable.
+
+    libsbml aliases `getId()` of an initial assignment, a rule and an event
+    assignment to the target they set; the identifier of Level 3 Version 2 is
+    `getIdAttribute()` (core §4.8.1, §4.9.1, §4.12.5).
+    """
+    model = SBMLDocumentInfo.from_sbml(_identifier_sbml()).models[0]
+    initial_assignment = model.list_of_initial_assignments[0]
+    assert (initial_assignment.id, initial_assignment.symbol) == ("ia1", "S1")
+    assert initial_assignment.pk == "m/InitialAssignment:ia1"
+
+    algebraic, rate = model.list_of_rules
+    assert algebraic.id == "ar1"
+    assert algebraic.name == "my rule"
+    assert algebraic.pk == "m/AlgebraicRule:ar1"
+    assert rate.sbml_type == "RateRule"
+    assert (rate.id, getattr(rate, "variable", None)) == ("rr1", "p1")
+    assert rate.pk == "m/RateRule:rr1"
+
+    assignment = model.list_of_events[0].list_of_event_assignments[0]
+    assert (assignment.id, assignment.variable) == ("ea1", "S1")
+    assert assignment.pk == "m/EventAssignment:ea1"
+
+
+def test_identified_rule_keeps_its_key_when_its_math_changes() -> None:
+    """The permalink of a rule with an id does not depend on its formula."""
+    first = SBMLDocumentInfo.from_sbml(_identifier_sbml()).models[0].list_of_rules[0]
+    second = (
+        SBMLDocumentInfo.from_sbml(_identifier_sbml(math="<cn> 2 </cn>"))
+        .models[0]
+        .list_of_rules[0]
+    )
+    assert first.pk == second.pk == "m/AlgebraicRule:ar1"
+
+
+def test_assignments_without_an_identifier_keep_their_key() -> None:
+    """Without an id, an assignment or a rule is keyed by what it sets.
+
+    A Level 2 document has no id on these elements at all, so the key stays
+    the symbol of the initial assignment and the variable of the rule, and the
+    id of the report is empty.
+    """
+    report = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level2/version4" '
+        'level="2" version="4"><model id="m">'
+        '<listOfCompartments><compartment id="c" size="1"/></listOfCompartments>'
+        '<listOfSpecies><species id="S1" compartment="c" '
+        'initialConcentration="1"/></listOfSpecies>'
+        '<listOfParameters><parameter id="p1" value="1" constant="false"/>'
+        "</listOfParameters><listOfInitialAssignments>"
+        '<initialAssignment symbol="S1">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><ci> p1 </ci></math>'
+        "</initialAssignment></listOfInitialAssignments><listOfRules>"
+        '<assignmentRule variable="p1">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>'
+        "</assignmentRule></listOfRules><listOfEvents>"
+        '<event id="e1"><trigger>'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>'
+        "</trigger><listOfEventAssignments>"
+        '<eventAssignment variable="S1">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>'
+        "</eventAssignment></listOfEventAssignments></event>"
+        "</listOfEvents></model></sbml>"
+    )
+    model = report.models[0]
+    initial_assignment = model.list_of_initial_assignments[0]
+    assert initial_assignment.id is None
+    assert initial_assignment.pk == "m/InitialAssignment:S1"
+    rule = model.list_of_rules[0]
+    assert rule.id is None
+    assert rule.pk == "m/AssignmentRule:p1"
+    assignment = model.list_of_events[0].list_of_event_assignments[0]
+    assert assignment.id is None
+    assert assignment.pk == "m/EventAssignment:e1.S1"

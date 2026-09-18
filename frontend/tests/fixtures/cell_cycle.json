@@ -1,5 +1,5 @@
 {
-  "uid": "9d1d762326374269bfdc96ab0872a269",
+  "uid": "da4de33191424b4eb41fc6a413e5b6be",
   "manifest": {
     "entries": [
       {
@@ -1836,7 +1836,7 @@
               {
                 "pk": "BIOMD0000000007/RateRule:Mass",
                 "sbmlType": "RateRule",
-                "id": "Mass",
+                "id": null,
                 "metaId": "rule1",
                 "name": null,
                 "sbo": null,
@@ -1856,7 +1856,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:IEB",
                 "sbmlType": "AssignmentRule",
-                "id": "IEB",
+                "id": null,
                 "metaId": "rule2",
                 "name": null,
                 "sbo": null,
@@ -1876,7 +1876,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:UbEB",
                 "sbmlType": "AssignmentRule",
-                "id": "UbEB",
+                "id": null,
                 "metaId": "rule3",
                 "name": null,
                 "sbo": null,
@@ -1896,7 +1896,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:UbE2B",
                 "sbmlType": "AssignmentRule",
-                "id": "UbE2B",
+                "id": null,
                 "metaId": "rule4",
                 "name": null,
                 "sbo": null,
@@ -1916,7 +1916,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:Wee1B",
                 "sbmlType": "AssignmentRule",
-                "id": "Wee1B",
+                "id": null,
                 "metaId": "rule5",
                 "name": null,
                 "sbo": null,
@@ -1936,7 +1936,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:Cdc25B",
                 "sbmlType": "AssignmentRule",
-                "id": "Cdc25B",
+                "id": null,
                 "metaId": "rule6",
                 "name": null,
                 "sbo": null,
@@ -1956,7 +1956,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:Rum1Total",
                 "sbmlType": "AssignmentRule",
-                "id": "Rum1Total",
+                "id": null,
                 "metaId": "rule7",
                 "name": null,
                 "sbo": null,
@@ -1976,7 +1976,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:Cdc13Total",
                 "sbmlType": "AssignmentRule",
-                "id": "Cdc13Total",
+                "id": null,
                 "metaId": "rule8",
                 "name": null,
                 "sbo": null,
@@ -1996,7 +1996,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:Cig2Total",
                 "sbmlType": "AssignmentRule",
-                "id": "Cig2Total",
+                "id": null,
                 "metaId": "rule9",
                 "name": null,
                 "sbo": null,
@@ -2016,7 +2016,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:k2",
                 "sbmlType": "AssignmentRule",
-                "id": "k2",
+                "id": null,
                 "metaId": "rule10",
                 "name": null,
                 "sbo": null,
@@ -2036,7 +2036,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:k6",
                 "sbmlType": "AssignmentRule",
-                "id": "k6",
+                "id": null,
                 "metaId": "rule11",
                 "name": null,
                 "sbo": null,
@@ -2056,7 +2056,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:kwee",
                 "sbmlType": "AssignmentRule",
-                "id": "kwee",
+                "id": null,
                 "metaId": "rule12",
                 "name": null,
                 "sbo": null,
@@ -2076,7 +2076,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:k25",
                 "sbmlType": "AssignmentRule",
-                "id": "k25",
+                "id": null,
                 "metaId": "rule13",
                 "name": null,
                 "sbo": null,
@@ -2096,7 +2096,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:MPF",
                 "sbmlType": "AssignmentRule",
-                "id": "MPF",
+                "id": null,
                 "metaId": "rule14",
                 "name": null,
                 "sbo": null,
@@ -2116,7 +2116,7 @@
               {
                 "pk": "BIOMD0000000007/AssignmentRule:SPF",
                 "sbmlType": "AssignmentRule",
-                "id": "SPF",
+                "id": null,
                 "metaId": "rule15",
                 "name": null,
                 "sbo": null,
@@ -4376,7 +4376,7 @@
                   {
                     "pk": "BIOMD0000000007/EventAssignment:_378809",
                     "sbmlType": "EventAssignment",
-                    "id": "kp",
+                    "id": null,
                     "metaId": "_378809",
                     "name": null,
                     "sbo": null,
@@ -4429,7 +4429,7 @@
                   {
                     "pk": "BIOMD0000000007/EventAssignment:_378833",
                     "sbmlType": "EventAssignment",
-                    "id": "kp",
+                    "id": null,
                     "metaId": "_378833",
                     "name": null,
                     "sbo": null,
@@ -4448,7 +4448,7 @@
                   {
                     "pk": "BIOMD0000000007/EventAssignment:_378845",
                     "sbmlType": "EventAssignment",
-                    "id": "Mass",
+                    "id": null,
                     "metaId": "_378845",
                     "name": null,
                     "sbo": null,
@@ -5004,105 +5004,105 @@
             "BIOMD0000000007/RateRule:Mass": {
               "pk": "BIOMD0000000007/RateRule:Mass",
               "sbmlType": "RateRule",
-              "id": "Mass",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:IEB": {
               "pk": "BIOMD0000000007/AssignmentRule:IEB",
               "sbmlType": "AssignmentRule",
-              "id": "IEB",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:UbEB": {
               "pk": "BIOMD0000000007/AssignmentRule:UbEB",
               "sbmlType": "AssignmentRule",
-              "id": "UbEB",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:UbE2B": {
               "pk": "BIOMD0000000007/AssignmentRule:UbE2B",
               "sbmlType": "AssignmentRule",
-              "id": "UbE2B",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:Wee1B": {
               "pk": "BIOMD0000000007/AssignmentRule:Wee1B",
               "sbmlType": "AssignmentRule",
-              "id": "Wee1B",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:Cdc25B": {
               "pk": "BIOMD0000000007/AssignmentRule:Cdc25B",
               "sbmlType": "AssignmentRule",
-              "id": "Cdc25B",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:Rum1Total": {
               "pk": "BIOMD0000000007/AssignmentRule:Rum1Total",
               "sbmlType": "AssignmentRule",
-              "id": "Rum1Total",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:Cdc13Total": {
               "pk": "BIOMD0000000007/AssignmentRule:Cdc13Total",
               "sbmlType": "AssignmentRule",
-              "id": "Cdc13Total",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:Cig2Total": {
               "pk": "BIOMD0000000007/AssignmentRule:Cig2Total",
               "sbmlType": "AssignmentRule",
-              "id": "Cig2Total",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:k2": {
               "pk": "BIOMD0000000007/AssignmentRule:k2",
               "sbmlType": "AssignmentRule",
-              "id": "k2",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:k6": {
               "pk": "BIOMD0000000007/AssignmentRule:k6",
               "sbmlType": "AssignmentRule",
-              "id": "k6",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:kwee": {
               "pk": "BIOMD0000000007/AssignmentRule:kwee",
               "sbmlType": "AssignmentRule",
-              "id": "kwee",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:k25": {
               "pk": "BIOMD0000000007/AssignmentRule:k25",
               "sbmlType": "AssignmentRule",
-              "id": "k25",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:MPF": {
               "pk": "BIOMD0000000007/AssignmentRule:MPF",
               "sbmlType": "AssignmentRule",
-              "id": "MPF",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/AssignmentRule:SPF": {
               "pk": "BIOMD0000000007/AssignmentRule:SPF",
               "sbmlType": "AssignmentRule",
-              "id": "SPF",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
@@ -5697,7 +5697,7 @@
             "BIOMD0000000007/EventAssignment:_378809": {
               "pk": "BIOMD0000000007/EventAssignment:_378809",
               "sbmlType": "EventAssignment",
-              "id": "kp",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
@@ -5711,14 +5711,14 @@
             "BIOMD0000000007/EventAssignment:_378833": {
               "pk": "BIOMD0000000007/EventAssignment:_378833",
               "sbmlType": "EventAssignment",
-              "id": "kp",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
             "BIOMD0000000007/EventAssignment:_378845": {
               "pk": "BIOMD0000000007/EventAssignment:_378845",
               "sbmlType": "EventAssignment",
-              "id": "Mass",
+              "id": null,
               "name": null,
               "model": "BIOMD0000000007/Model:BIOMD0000000007"
             },
@@ -7028,7 +7028,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.021 [s]"
+        "jsonReportTime": "0.311 [s]"
       }
     }
   }
