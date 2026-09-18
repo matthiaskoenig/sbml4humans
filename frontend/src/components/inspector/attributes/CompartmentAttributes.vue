@@ -12,17 +12,23 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="spatial dimensions"
+  <AttributeRow label="spatial dimensions" :type="element.sbmlType" field="spatialDimensions"
     ><ValueText :value="element.spatialDimensions"
   /></AttributeRow>
-  <AttributeRow label="size"><ValueText :value="element.size" /></AttributeRow>
-  <AttributeRow label="units">
+  <AttributeRow label="size" :type="element.sbmlType" field="size"
+    ><ValueText :value="element.size"
+  /></AttributeRow>
+  <AttributeRow label="units" :type="element.sbmlType" field="units">
     <UnitsLink
       :pk="index?.resolve(element.pk, 'units', element.units)"
       :label="element.units"
       :latex="element.unitsLatex"
     />
   </AttributeRow>
-  <AttributeRow label="constant"><BooleanMark :value="element.constant" /></AttributeRow>
-  <AttributeRow label="derived units"><UnitsView :latex="element.derivedUnits" /></AttributeRow>
+  <AttributeRow label="constant" :type="element.sbmlType" field="constant"
+    ><BooleanMark :value="element.constant"
+  /></AttributeRow>
+  <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
+    ><UnitsView :latex="element.derivedUnits"
+  /></AttributeRow>
 </template>

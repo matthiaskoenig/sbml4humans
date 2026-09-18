@@ -59,6 +59,9 @@
           },
           {
             "context": "ty"
+          },
+          {
+            "context": "docs"
           }
         ]
       }

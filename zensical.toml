@@ -1,0 +1,138 @@
+[project]
+site_name = "SBML4Humans"
+site_url = "https://matthiaskoenig.github.io/sbml4humans/"
+site_description = "Interactive, human readable reports of SBML models"
+site_author = "Matthias König"
+
+copyright = 'Copyright &copy; 2021-2026 <a href="https://livermetabolism.com">Matthias König</a>'
+
+repo_url = "https://github.com/matthiaskoenig/sbml4humans"
+repo_name = "matthiaskoenig/sbml4humans"
+edit_uri = "edit/develop/docs/"
+
+nav = [
+  { "Home" = "index.md" },
+  { "SBML" = "sbml.md" },
+  { "User guide" = [
+    { "Loading a model" = "inputs.md" },
+    { "Reading a report" = "report.md" },
+  ] },
+  { "Reference" = [
+    { "Overview" = "reference/index.md" },
+    { "Core" = [
+      { "SBase" = "reference/sbase.md" },
+      { "Document" = "reference/sbmldocument.md" },
+      { "Model" = "reference/model.md" },
+      { "Function definition" = "reference/functiondefinition.md" },
+      { "Unit definition" = "reference/unitdefinition.md" },
+      { "Compartment" = "reference/compartment.md" },
+      { "Species" = "reference/species.md" },
+      { "Parameter" = "reference/parameter.md" },
+      { "Initial assignment" = "reference/initialassignment.md" },
+      { "Assignment rule" = "reference/assignmentrule.md" },
+      { "Rate rule" = "reference/raterule.md" },
+      { "Algebraic rule" = "reference/algebraicrule.md" },
+      { "Constraint" = "reference/constraint.md" },
+      { "Reaction" = "reference/reaction.md" },
+      { "Event" = "reference/event.md" },
+      { "Species reference" = "reference/speciesreference.md" },
+      { "Modifier species reference" = "reference/modifierspeciesreference.md" },
+      { "Kinetic law" = "reference/kineticlaw.md" },
+      { "Local parameter" = "reference/localparameter.md" },
+      { "Event assignment" = "reference/eventassignment.md" },
+    ] },
+    { "Hierarchical Model Composition (comp)" = [
+      { "Hierarchical Model Composition (comp)" = "reference/comp.md" },
+      { "External model definition" = "reference/externalmodeldefinition.md" },
+      { "Submodel" = "reference/submodel.md" },
+      { "Port" = "reference/port.md" },
+    ] },
+    { "Flux Balance Constraints (fbc)" = [
+      { "Flux Balance Constraints (fbc)" = "reference/fbc.md" },
+      { "Gene product" = "reference/geneproduct.md" },
+      { "Objective" = "reference/objective.md" },
+    ] },
+    { "Distributions (distrib)" = [
+      { "Distributions (distrib)" = "reference/distrib.md" },
+      { "Uncertainty" = "reference/uncertainty.md" },
+    ] },
+    { "Link kinds" = "reference/links.md" },
+    { "Report concepts" = "reference/concepts.md" },
+  ] },
+  { "References" = "references.md" },
+  { "Development" = [
+    { "Development" = "development.md" },
+    { "Deployment" = "deployment.md" },
+  ] },
+]
+
+[project.theme]
+language = "en"
+features = [
+  "content.action.edit",
+  "content.code.annotate",
+  "content.code.copy",
+  "content.tooltips",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.sections",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+  "search.suggest",
+  "toc.follow",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "teal"
+accent = "teal"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "teal"
+accent = "teal"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/matthiaskoenig/sbml4humans"
+
+[project.markdown_extensions]
+abbr = {}
+admonition = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+tables = {}
+toc.permalink = true
+pymdownx.betterem = {}
+pymdownx.caret = {}
+pymdownx.details = {}
+pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"
+pymdownx.emoji.emoji_index = "zensical.extensions.emoji.twemoji"
+pymdownx.highlight.anchor_linenums = true
+pymdownx.highlight.line_spans = "__span"
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.inlinehilite = {}
+pymdownx.keys = {}
+pymdownx.magiclink = {}
+pymdownx.mark = {}
+pymdownx.smartsymbols = {}
+pymdownx.superfences = {}
+pymdownx.tabbed.alternate_style = true
+pymdownx.tasklist.custom_checkbox = true
+pymdownx.tilde = {}

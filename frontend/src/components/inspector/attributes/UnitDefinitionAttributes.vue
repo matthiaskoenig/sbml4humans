@@ -7,5 +7,7 @@ defineProps<{ element: UnitDefinition }>();
 </script>
 
 <template>
-  <AttributeRow label="units"><UnitsView :latex="element.unitsLatex" /></AttributeRow>
+  <AttributeRow label="units" :type="element.sbmlType" field="unitsLatex"
+    ><UnitsView :latex="element.unitsLatex"
+  /></AttributeRow>
 </template>

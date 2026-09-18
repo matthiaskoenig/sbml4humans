@@ -11,12 +11,16 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="symbol">
+  <AttributeRow label="symbol" :type="element.sbmlType" field="symbol">
     <ElementLink
       :pk="index?.resolve(element.pk, 'symbol', element.symbol)"
       :label="element.symbol"
     />
   </AttributeRow>
-  <AttributeRow label="math"><MathView :math="element.math" display /></AttributeRow>
-  <AttributeRow label="derived units"><UnitsView :latex="element.derivedUnits" /></AttributeRow>
+  <AttributeRow label="math" :type="element.sbmlType" field="math"
+    ><MathView :math="element.math" display
+  /></AttributeRow>
+  <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
+    ><UnitsView :latex="element.derivedUnits"
+  /></AttributeRow>
 </template>

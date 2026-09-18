@@ -8,6 +8,10 @@ defineProps<{ element: Constraint }>();
 </script>
 
 <template>
-  <AttributeRow label="math"><MathView :math="element.math" display /></AttributeRow>
-  <AttributeRow label="message"><ValueText :value="element.message" /></AttributeRow>
+  <AttributeRow label="math" :type="element.sbmlType" field="math"
+    ><MathView :math="element.math" display
+  /></AttributeRow>
+  <AttributeRow label="message" :type="element.sbmlType" field="message"
+    ><ValueText :value="element.message"
+  /></AttributeRow>
 </template>

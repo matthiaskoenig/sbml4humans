@@ -8,6 +8,10 @@ defineProps<{ element: AlgebraicRule }>();
 </script>
 
 <template>
-  <AttributeRow label="math"><MathView :math="element.math" display /></AttributeRow>
-  <AttributeRow label="derived units"><UnitsView :latex="element.derivedUnits" /></AttributeRow>
+  <AttributeRow label="math" :type="element.sbmlType" field="math"
+    ><MathView :math="element.math" display
+  /></AttributeRow>
+  <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
+    ><UnitsView :latex="element.derivedUnits"
+  /></AttributeRow>
 </template>

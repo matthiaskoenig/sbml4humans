@@ -1,0 +1,65 @@
+name: documentation
+
+on:
+  push:
+    # feature branches are built through their pull request
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  # never cancel a running deployment, it would leave the site half published
+  cancel-in-progress: false
+
+jobs:
+  docs:
+    # required by the branch protection, see .github/rulesets/develop.json
+    name: docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          python-version: "3.14"
+          enable-cache: true
+      - name: Install the backend
+        # the dev group, which zensical is part of, is installed by default
+        working-directory: backend
+        run: uv sync
+      - name: Check that the generated reference is current
+        run: uv run --project backend python -m sbml4humans.glossary --check
+      - name: Build the documentation
+        # --strict turns a broken link or a broken anchor of a page into a failure
+        run: uv run --project backend zensical build --clean --strict
+      - name: Upload the site
+        # only the branch which deploys needs the artifact
+        if: github.ref == 'refs/heads/develop'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: docs
+    # only the default branch publishes to https://matthiaskoenig.github.io/sbml4humans
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write     # deploy to GitHub Pages
+      id-token: write  # verify the deployment originates from this workflow
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

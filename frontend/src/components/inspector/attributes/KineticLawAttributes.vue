@@ -17,9 +17,18 @@ const COLUMNS = [
 </script>
 
 <template>
-  <AttributeRow label="math"><MathView :math="element.math" display /></AttributeRow>
-  <AttributeRow label="derived units"><UnitsView :latex="element.derivedUnits" /></AttributeRow>
-  <AttributeRow label="local parameters">
+  <AttributeRow label="math" :type="element.sbmlType" field="math"
+    ><MathView :math="element.math" display
+  /></AttributeRow>
+  <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
+    ><UnitsView :latex="element.derivedUnits"
+  /></AttributeRow>
+  <AttributeRow
+    label="local parameters"
+    :type="element.sbmlType"
+    field="listOfLocalParameters"
+    :wide="!!element.listOfLocalParameters?.length"
+  >
     <NestedTable :rows="element.listOfLocalParameters ?? []" :columns="COLUMNS">
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" :label="row.id" /></template>
       <template #cell-unitsLatex="{ row }"

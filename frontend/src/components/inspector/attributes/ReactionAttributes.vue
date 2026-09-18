@@ -25,18 +25,27 @@ const species = (kind: EdgeKind, id: string) =>
 </script>
 
 <template>
-  <AttributeRow label="reversible"><BooleanMark :value="element.reversible" /></AttributeRow>
-  <AttributeRow label="fast"><BooleanMark :value="element.fast" /></AttributeRow>
-  <AttributeRow label="compartment">
+  <AttributeRow label="reversible" :type="element.sbmlType" field="reversible"
+    ><BooleanMark :value="element.reversible"
+  /></AttributeRow>
+  <AttributeRow label="fast" :type="element.sbmlType" field="fast"
+    ><BooleanMark :value="element.fast"
+  /></AttributeRow>
+  <AttributeRow label="compartment" :type="element.sbmlType" field="compartment">
     <ElementLink
       :pk="index?.resolve(element.pk, 'compartment', element.compartment)"
       :label="element.compartment"
     />
   </AttributeRow>
-  <AttributeRow label="equation"
+  <AttributeRow label="equation" :type="element.sbmlType" field="equation"
     ><span class="font-mono">{{ element.equation }}</span></AttributeRow
   >
-  <AttributeRow label="reactants">
+  <AttributeRow
+    label="reactants"
+    :type="element.sbmlType"
+    field="listOfReactants"
+    :wide="!!element.listOfReactants?.length"
+  >
     <NestedTable :rows="element.listOfReactants ?? []" :columns="PARTICIPANT_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
@@ -47,7 +56,12 @@ const species = (kind: EdgeKind, id: string) =>
       <template #cell-constant="{ row }"><BooleanMark :value="row.constant" /></template>
     </NestedTable>
   </AttributeRow>
-  <AttributeRow label="products">
+  <AttributeRow
+    label="products"
+    :type="element.sbmlType"
+    field="listOfProducts"
+    :wide="!!element.listOfProducts?.length"
+  >
     <NestedTable :rows="element.listOfProducts ?? []" :columns="PARTICIPANT_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
@@ -58,7 +72,12 @@ const species = (kind: EdgeKind, id: string) =>
       <template #cell-constant="{ row }"><BooleanMark :value="row.constant" /></template>
     </NestedTable>
   </AttributeRow>
-  <AttributeRow label="modifiers">
+  <AttributeRow
+    label="modifiers"
+    :type="element.sbmlType"
+    field="listOfModifiers"
+    :wide="!!element.listOfModifiers?.length"
+  >
     <NestedTable :rows="element.listOfModifiers ?? []" :columns="MODIFIER_COLUMNS">
       <template #cell-id="{ row }"
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
@@ -68,7 +87,7 @@ const species = (kind: EdgeKind, id: string) =>
       /></template>
     </NestedTable>
   </AttributeRow>
-  <AttributeRow label="kinetic law">
+  <AttributeRow label="kinetic law" :type="element.sbmlType" field="kineticLaw">
     <template v-if="element.kineticLaw">
       <ElementLink :pk="element.kineticLaw.pk" :label="element.kineticLaw.id ?? 'kinetic law'" />
       <MathView :math="element.kineticLaw.math" display />
@@ -77,22 +96,25 @@ const species = (kind: EdgeKind, id: string) =>
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <template v-if="element.fbc">
-    <AttributeRow label="lower flux bound">
+    <AttributeRow label="lower flux bound" :type="element.sbmlType" field="fbc.lowerFluxBound">
       <ElementLink
         :pk="index?.resolve(element.pk, 'fluxBound', element.fbc.lowerFluxBound)"
         :label="element.fbc.lowerFluxBound"
       />
     </AttributeRow>
-    <AttributeRow label="upper flux bound">
+    <AttributeRow label="upper flux bound" :type="element.sbmlType" field="fbc.upperFluxBound">
       <ElementLink
         :pk="index?.resolve(element.pk, 'fluxBound', element.fbc.upperFluxBound)"
         :label="element.fbc.upperFluxBound"
       />
     </AttributeRow>
-    <AttributeRow label="gene product association"
+    <AttributeRow
+      label="gene product association"
+      :type="element.sbmlType"
+      field="fbc.geneProductAssociation"
       ><ValueText :value="element.fbc.geneProductAssociation" mono
     /></AttributeRow>
-    <AttributeRow label="gene products">
+    <AttributeRow label="gene products" :type="element.sbmlType" field="fbc.geneProducts">
       <span v-if="!element.fbc.geneProducts?.length" class="text-gray-400">-</span>
       <ElementLink
         v-for="gp in element.fbc.geneProducts"

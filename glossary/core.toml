@@ -1,0 +1,1403 @@
+# The glossary of the SBML core types and of their attributes as the report
+# shows them. It is the only place where an explanation is written: the summary
+# becomes a tooltip of the application, the description becomes a reference page
+# of the documentation site. Run `uv run python -m sbml4humans.glossary` after a
+# change and commit the generated files.
+#
+# The prose is written from the specification named in the `spec` of the entry,
+# it does not repeat it. `summary` is one sentence without a final period,
+# `description` is markdown without hard line wraps.
+
+[specs.l3v2]
+label = "SBML Level 3 Version 2 Core"
+short = "core"
+citation = "Hucka et al. 2019, J Integr Bioinform 16(2):20190021"
+url = "https://sbml.org/documents/specifications/level-3/version-2/core/"
+
+[specs.keating]
+label = "SBML Level 3: an extensible format for the exchange and reuse of biological models"
+citation = "Keating et al. 2020, Mol Syst Biol 16(8):e9110"
+url = "https://doi.org/10.15252/msb.20199110"
+
+
+# ----------------------------------------------------------------------------
+# the attributes every element carries
+# ----------------------------------------------------------------------------
+[types.SBase]
+label = "SBase"
+package = "core"
+spec = { doc = "l3v2", section = "3.2" }
+summary = "the attributes every element of an SBML model carries"
+description = """
+Almost every object of an SBML model derives from the abstract type `SBase`, which carries the identifier, the name, the term of the Systems Biology Ontology and the two places for annotation: the notes for human readers and the annotation for machine readable metadata. An element type adds its own attributes on top of these, and may make an inherited attribute required, for example the identifier of a species.
+
+The report shows these attributes for every element: the id and the name in the first two columns of every table, the meta id and the SBO term in the attributes of the inspector, and the notes, the annotations, the history and the XML in the third column of the inspector.
+"""
+
+[types.SBase.attributes.id]
+label = "id"
+type = "SId"
+spec = { doc = "l3v2", section = "3.2.1" }
+summary = "the identifier other elements of the model use to reference the element"
+description = """
+The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one.
+
+The report shows the id in the first column of every table and uses it as the label of every link to the element.
+"""
+
+[types.SBase.attributes.name]
+label = "name"
+type = "string"
+spec = { doc = "l3v2", section = "3.2.2" }
+summary = "the readable name of the element"
+description = """
+The name is meant for human readers and has no meaning inside the model: it is not used for cross references and it does not have to be unique. A model which uses short identifiers usually carries the readable label here, for example "glucose 6-phosphate" for the species `g6p`.
+
+The report shows the name in the second column of every table, next to the id.
+"""
+
+[types.SBase.attributes.metaId]
+label = "metaId"
+type = "ID"
+spec = { doc = "l3v2", section = "3.2.3" }
+summary = "the identifier the annotations of the element point at"
+description = """
+The meta id exists so that the RDF metadata in the annotation of an element can name the element it describes. It is unique within the whole file, not only within the model, and it has no meaning for the mathematics of the model.
+
+The report shows the meta id in the attributes of the inspector and uses it as a fallback label when an element has no id.
+"""
+
+[types.SBase.attributes.sbo]
+label = "sbo"
+type = "SBOTerm"
+spec = { doc = "l3v2", section = "3.2.4" }
+summary = "the term of the Systems Biology Ontology which classifies the element"
+description = """
+The Systems Biology Ontology is a set of controlled terms for the parts of a model, for example "simple chemical" for a species or "mass action rate law" for a kinetic law. The term makes the intention of the model author explicit for software which understands the ontology, and a model stays interpretable without it.
+
+The report shows the term in the attributes of the inspector and links it to its entry on identifiers.org.
+"""
+
+[types.SBase.attributes.notes]
+label = "notes"
+type = "XHTML"
+spec = { doc = "l3v2", section = "3.2.5" }
+summary = "the free text the model author wrote about the element"
+description = """
+The notes hold XHTML written for human readers: a description of what the element stands for, the assumptions behind a rate law, the source of a value. They are the place where the story of a model is told, and many published models carry their documentation here.
+
+The report renders the notes of the selected element in the third column of the inspector, with a restricted set of markup.
+"""
+
+[types.SBase.attributes.cvterms]
+label = "annotations"
+type = "list"
+spec = { doc = "l3v2", section = "6.5" }
+summary = "the controlled vocabulary terms which link the element to database entries"
+description = """
+An annotation relates the element to an entry of an external database, for example to a ChEBI compound, a UniProt protein or a Gene Ontology process. Every relation names a qualifier, such as "is" or "is part of", so that the meaning of the reference is explicit. The qualifiers are those of MIRIAM and the entries are named by their identifiers.org url.
+
+The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource.
+"""
+
+[types.SBase.attributes.history]
+label = "history"
+type = "ModelHistory"
+spec = { doc = "l3v2", section = "6.6" }
+summary = "who created the element and when it was modified"
+description = """
+The history is part of the standard annotation and records the creators of an element with their affiliation and electronic mail address, the date of creation and the dates of the modifications.
+
+The report shows the history of the selected element below its annotations.
+"""
+
+[types.SBase.attributes.xml]
+label = "xml"
+package = "report"
+type = "string"
+summary = "the element as it is written in the SBML file"
+description = """
+The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display.
+
+The XML view is the last section of the third column of the inspector.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the document and the model
+# ----------------------------------------------------------------------------
+[types.SBMLDocument]
+label = "Document"
+package = "core"
+spec = { doc = "l3v2", section = "4.1" }
+summary = "the container of an SBML file, with its level, version and packages"
+description = """
+An SBML file is one `sbml` element which declares the level and the version of the language it is written in, the packages it uses, and which contains at most one model. The level and the version decide which constructs are available and how they are interpreted, so they are the first thing to look at when reading an unfamiliar model.
+
+The report shows one document per file of a submission, and a [Model](model.md) below it.
+"""
+related = ["Model"]
+
+[types.SBMLDocument.attributes.level]
+label = "level"
+type = "positiveInteger"
+spec = { doc = "l3v2", section = "4.1" }
+summary = "the level of SBML the file is written in"
+description = """
+A level is a major edition of the language; Level 3 is the current one and is the only level which supports packages. All constructs of a lower level can be mapped to Level 3, but a file of one level is not a file of another.
+
+The report shows the level in the attributes of the document.
+"""
+
+[types.SBMLDocument.attributes.version]
+label = "version"
+type = "positiveInteger"
+spec = { doc = "l3v2", section = "4.1" }
+summary = "the version of the level the file is written in"
+description = """
+A version is a minor revision within a level which corrects and refines the language. The `fast` attribute of a reaction, for example, exists in Level 3 Version 1 and is removed in Version 2.
+
+The report shows the version next to the level in the attributes of the document.
+"""
+
+[types.SBMLDocument.attributes.packages]
+label = "packages"
+type = "list"
+spec = { doc = "l3v2", section = "4.1.3" }
+summary = "the Level 3 packages the file uses, with their version"
+description = """
+Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc and distrib and shows the elements they add.
+
+The report lists the prefix and the version of every declared package in the attributes of the document.
+"""
+
+[types.Model]
+label = "Model"
+package = "core"
+spec = { doc = "l3v2", section = "4.2" }
+summary = "the container of everything a model is made of"
+description = """
+The model holds the lists of every element: the function definitions, the unit definitions, the compartments, the species, the parameters, the initial assignments, the rules, the constraints, the reactions and the events. It also sets the units which the elements inherit when they do not declare their own, in particular the unit of time, which exists nowhere else.
+
+The report shows the model as the root of the report, its lists as the sections of the report, and its units in the attributes of the inspector.
+"""
+related = ["SBMLDocument", "Compartment", "Species", "Parameter", "Reaction"]
+
+[types.Model.attributes.kind]
+label = "kind"
+package = "report"
+type = "string"
+summary = "whether the model is the model of the document or a model definition"
+description = """
+A document contains at most one model, but the comp package adds model definitions, which are models that exist to be instantiated by a submodel. The report treats both the same way and marks which of the two an element is.
+
+The kind is shown in the attributes of the inspector of a model, it is `model` or `modelDefinition`.
+"""
+
+[types.Model.attributes.substanceUnits]
+label = "substance units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.2.2" }
+summary = "the units of the amounts of the species which do not declare their own"
+description = """
+A species which does not set its substance units inherits this unit of the model. If neither is set, the amounts of that species have no declared unit, which is valid but makes the model harder to check.
+
+The report shows the units of the model in the attributes of the inspector and renders them as a formula.
+"""
+
+[types.Model.attributes.substanceUnitsLatex]
+label = "rendered substance units"
+package = "report"
+type = "latex"
+summary = "the substance units of the model rendered as a formula"
+description = """
+The report resolves the unit definition which the model declares for the amounts of its species and renders it as a formula, so that `mmol` is shown as the unit itself instead of as an identifier.
+
+It is shown next to the substance units in the attributes of the model.
+"""
+
+[types.Model.attributes.timeUnits]
+label = "time units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.2.3" }
+summary = "the unit in which time is measured in the model"
+description = """
+This is the only place where the unit of time of a model is declared. It applies everywhere, in particular to the rate of every reaction and of every rate rule, which are per time.
+
+The report shows the time units in the attributes of the model.
+"""
+
+[types.Model.attributes.timeUnitsLatex]
+label = "rendered time units"
+package = "report"
+type = "latex"
+summary = "the time units of the model rendered as a formula"
+description = """
+The report resolves the unit definition which the model declares for time and renders it as a formula. Since the unit of time is declared nowhere else, this is where a reader sees whether a simulation runs in seconds, in minutes or in hours.
+
+It is shown next to the time units in the attributes of the model.
+"""
+
+[types.Model.attributes.volumeUnits]
+label = "volume units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.2.4" }
+summary = "the units of the size of the compartments with three dimensions"
+description = """
+A compartment which does not declare its own units inherits its units from the model, and which of the three attributes applies depends on the spatial dimensions of the compartment: volume for three, area for two, length for one.
+
+The report shows the volume units in the attributes of the model.
+"""
+
+[types.Model.attributes.volumeUnitsLatex]
+label = "rendered volume units"
+package = "report"
+type = "latex"
+summary = "the volume units of the model rendered as a formula"
+description = """
+The report resolves the unit definition which the model declares for the size of its compartments with three dimensions and renders it as a formula.
+
+It is shown next to the volume units in the attributes of the model.
+"""
+
+[types.Model.attributes.areaUnits]
+label = "area units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.2.4" }
+summary = "the units of the size of the compartments with two dimensions"
+description = """
+A two dimensional compartment, a membrane for example, which does not declare its own units inherits them from this attribute of the model.
+
+The report shows the area units in the attributes of the model.
+"""
+
+[types.Model.attributes.areaUnitsLatex]
+label = "rendered area units"
+package = "report"
+type = "latex"
+summary = "the area units of the model rendered as a formula"
+description = """
+The report resolves the unit definition which the model declares for the size of its compartments with two dimensions and renders it as a formula.
+
+It is shown next to the area units in the attributes of the model.
+"""
+
+[types.Model.attributes.lengthUnits]
+label = "length units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.2.4" }
+summary = "the units of the size of the compartments with one dimension"
+description = """
+A one dimensional compartment which does not declare its own units inherits them from this attribute of the model.
+
+The report shows the length units in the attributes of the model.
+"""
+
+[types.Model.attributes.lengthUnitsLatex]
+label = "rendered length units"
+package = "report"
+type = "latex"
+summary = "the length units of the model rendered as a formula"
+description = """
+The report resolves the unit definition which the model declares for the size of its compartments with one dimension and renders it as a formula.
+
+It is shown next to the length units in the attributes of the model.
+"""
+
+[types.Model.attributes.extentUnits]
+label = "extent units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.2.5" }
+summary = "the units in which the extent of a reaction is measured"
+description = """
+The extent of a reaction counts how often it has occurred, and its rate of change is what a kinetic law computes. The units of every kinetic law of the model are therefore the extent units divided by the time units, which also means that every reaction of a model has the same units.
+
+The report shows the extent units in the attributes of the model and uses them when it derives the units of a kinetic law.
+"""
+
+[types.Model.attributes.extentUnitsLatex]
+label = "rendered extent units"
+package = "report"
+type = "latex"
+summary = "the extent units of the model rendered as a formula"
+description = """
+The report resolves the unit definition which the model declares for the extent of its reactions and renders it as a formula. Together with the time units it says what the rate of every kinetic law is measured in.
+
+It is shown next to the extent units in the attributes of the model.
+"""
+
+[types.Model.attributes.conversionFactor]
+label = "conversion factor"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.2.6" }
+summary = "the parameter which converts between the units of a species and the extent of a reaction"
+description = """
+A species whose amount is not measured in the extent units of the reactions needs a factor to convert between the two, and SBML makes that conversion explicit instead of guessing it. The model can name a constant parameter which every species inherits when it does not name its own.
+
+The report shows the referenced parameter with its value and its units in the attributes of the model.
+"""
+
+[types.Model.attributes.listOfFunctionDefinitions]
+label = "function definitions"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the user defined functions of the model"
+description = """
+The lists of the model group its elements by type. This one holds the [function definitions](functiondefinition.md).
+
+The report shows the list as the section "Function definitions" of the report and counts its entries in the type rail.
+"""
+
+[types.Model.attributes.listOfUnitDefinitions]
+label = "unit definitions"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the units the model defines"
+description = """
+This list holds the [unit definitions](unitdefinition.md) which the elements of the model reference by their identifier.
+
+The report shows the list as the section "Unit definitions" of the report.
+"""
+
+[types.Model.attributes.listOfCompartments]
+label = "compartments"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the compartments of the model"
+description = """
+This list holds the [compartments](compartment.md) the species of the model live in.
+
+The report shows the list as the section "Compartments" of the report.
+"""
+
+[types.Model.attributes.listOfSpecies]
+label = "species"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the species of the model"
+description = """
+This list holds the [species](species.md), the pools whose quantities the model computes.
+
+The report shows the list as the section "Species" of the report.
+"""
+
+[types.Model.attributes.listOfParameters]
+label = "parameters"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the global parameters of the model"
+description = """
+This list holds the [parameters](parameter.md) which every mathematical expression of the model may use.
+
+The report shows the list as the section "Parameters" of the report.
+"""
+
+[types.Model.attributes.listOfInitialAssignments]
+label = "initial assignments"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the initial assignments of the model"
+description = """
+This list holds the [initial assignments](initialassignment.md) which compute values at the start of a simulation.
+
+The report shows the list as the section "Initial assignments" of the report.
+"""
+
+[types.Model.attributes.listOfRules]
+label = "rules"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the assignment, rate and algebraic rules of the model"
+description = """
+This list holds the three kinds of rule together: [assignment rules](assignmentrule.md), [rate rules](raterule.md) and [algebraic rules](algebraicrule.md).
+
+The report separates them into three sections, because the three say very different things about a model.
+"""
+
+[types.Model.attributes.listOfConstraints]
+label = "constraints"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the constraints of the model"
+description = """
+This list holds the [constraints](constraint.md), the conditions a simulation of the model has to satisfy.
+
+The report shows the list as the section "Constraints" of the report.
+"""
+
+[types.Model.attributes.listOfReactions]
+label = "reactions"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the reactions of the model"
+description = """
+This list holds the [reactions](reaction.md), the processes which change the quantities of the species.
+
+The report shows the list as the section "Reactions" of the report.
+"""
+
+[types.Model.attributes.listOfEvents]
+label = "events"
+type = "list"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "the events of the model"
+description = """
+This list holds the [events](event.md), the discontinuous changes of the state of the model.
+
+The report shows the list as the section "Events" of the report.
+"""
+
+
+# ----------------------------------------------------------------------------
+# functions, units, compartments, species and parameters
+# ----------------------------------------------------------------------------
+[types.FunctionDefinition]
+label = "Function definition"
+package = "core"
+spec = { doc = "l3v2", section = "4.3" }
+summary = "a named function which the mathematics of the model can call"
+description = """
+A function definition gives a name to a formula with arguments, so that a rate law which appears in many reactions is written once. The capabilities are deliberately limited: a function may only use its own arguments and other functions, it cannot read a species or a parameter, and it cannot call itself.
+
+The report shows the body of the function as rendered mathematics, in the table and in the inspector.
+"""
+related = ["Model"]
+
+[types.FunctionDefinition.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.3.2" }
+summary = "the formula of the function, with its arguments"
+description = """
+The math of a function definition is a MathML lambda expression: it declares the arguments and the expression which is computed from them. It is the only place in SBML core where a lambda is allowed.
+
+The report renders the formula and shows it in the column "math" and in the inspector.
+"""
+
+[types.UnitDefinition]
+label = "Unit definition"
+package = "core"
+spec = { doc = "l3v2", section = "4.4" }
+summary = "a named unit built from the base units of SBML"
+description = """
+A unit definition composes a unit from base units, each raised to an exponent, scaled by a power of ten and multiplied by a factor; "millimole per litre per second" is such a product. Its identifier can then be used wherever a model declares units. Unit definitions are optional and a model has to be numerically consistent without them, but they let a reader and a tool check what the numbers mean.
+
+The report renders every unit definition as a formula instead of listing its parts, both in the table and in the inspector.
+"""
+related = ["Model", "Compartment", "Species", "Parameter"]
+
+[types.UnitDefinition.attributes.unitsLatex]
+label = "units"
+package = "report"
+type = "latex"
+summary = "the composed unit rendered as a formula"
+description = """
+The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example millimole per litre per second as a fraction.
+
+The rendered unit is the column "units" of the table of unit definitions and the row "units" of the inspector.
+"""
+
+[types.Compartment]
+label = "Compartment"
+package = "core"
+spec = { doc = "l3v2", section = "4.5" }
+summary = "a bounded space in which species are located"
+description = """
+A compartment is the place where something is: a cell, an organelle, a membrane, the extracellular space. Every species of a model has to be located in one, which is why a model with species always has at least one compartment. A compartment does not have to correspond to a physical structure, it is whatever the model treats as one well mixed space.
+
+The report shows the size of a compartment, the units of that size and the units it derives, and links the species which are located in it.
+"""
+related = ["Model", "Species", "UnitDefinition"]
+
+[types.Compartment.attributes.spatialDimensions]
+label = "dimensions"
+type = "double"
+spec = { doc = "l3v2", section = "4.5.2" }
+summary = "the number of dimensions of the compartment"
+description = """
+Three dimensions means the size is a volume, two means an area, one means a length. The value does not enter the mathematics of the model, but it decides which units of the model a compartment inherits when it does not declare its own.
+
+The report shows the dimensions in the column "dimensions" and in the inspector.
+"""
+
+[types.Compartment.attributes.size]
+label = "size"
+type = "double"
+spec = { doc = "l3v2", section = "4.5.3" }
+summary = "the size of the compartment at the start of the simulation"
+description = """
+The size is the volume, the area or the length of the compartment, depending on its dimensions. It is optional: a missing size means that the value is unknown or that it is computed by an initial assignment or a rule, it does not mean one. When the compartment is not constant, the size can change during a simulation.
+
+The report shows the size in the table and in the inspector, and the identifier of a compartment stands for its size in every formula of the model.
+"""
+
+[types.Compartment.attributes.units]
+label = "units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.5.4" }
+summary = "the units of the size of the compartment"
+description = """
+The units are either a unit definition of the model or one of the base units. When they are not declared, the compartment inherits the volume, area or length units of the model according to its dimensions, and when the model does not declare those either, the size has no units.
+
+The report links the referenced unit definition and renders it as a formula.
+"""
+
+[types.Compartment.attributes.unitsLatex]
+label = "rendered units"
+package = "report"
+type = "latex"
+summary = "the units of the size rendered as a formula"
+description = """
+The report resolves the unit definition the compartment references and renders it as a formula, so that the table shows the unit itself and not only its identifier.
+"""
+
+[types.Compartment.attributes.constant]
+label = "constant"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.5.5" }
+summary = "whether the size of the compartment stays fixed during a simulation"
+description = """
+A constant compartment keeps its size for the whole simulation and can only be given a value by an initial assignment. A compartment which is not constant can be changed by a rule or by an event, which is how a growing cell is modelled.
+
+The report shows the flag as a mark in the column "constant".
+"""
+
+[types.Compartment.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the size as the report derives them"
+description = """
+The report derives the units of a compartment from its own units, or from the units of the model which it inherits, and renders them as a formula. Derived units make it visible what a value means even when the model does not declare units everywhere.
+"""
+
+[types.Species]
+label = "Species"
+package = "core"
+spec = { doc = "l3v2", section = "4.6" }
+summary = "a pool of a chemical entity in a compartment"
+description = """
+A species is a pool of entities which the model treats as indistinguishable: a metabolite, a protein, an ion, a gene. It is located in exactly one [compartment](compartment.md), it may participate in reactions, and its quantity is what most simulations compute. The quantity is an amount or a concentration, depending on the attribute "only substance units".
+
+The report shows the initial quantity of a species, its units, the flags which say how it may change, and links its compartment and every reaction it takes part in.
+"""
+related = ["Compartment", "Reaction", "SpeciesReference", "Parameter"]
+
+[types.Species.attributes.compartment]
+label = "compartment"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.6.3" }
+summary = "the compartment the species is located in"
+description = """
+Every species names the compartment it is in; SBML has no default compartment. The size of that compartment is what converts between the amount and the concentration of the species.
+
+The report links the compartment in the table and in the inspector.
+"""
+
+[types.Species.attributes.initialAmount]
+label = "initial amount"
+type = "double"
+spec = { doc = "l3v2", section = "4.6.4" }
+summary = "the amount of the species when the simulation starts"
+description = """
+The initial amount is the quantity of the species at the start of a simulation, measured in its substance units. A species sets either an initial amount or an initial concentration, never both, and it may set neither, in which case the value comes from an initial assignment or a rule.
+
+The report shows the initial amount in the table and in the inspector.
+"""
+
+[types.Species.attributes.initialConcentration]
+label = "initial concentration"
+type = "double"
+spec = { doc = "l3v2", section = "4.6.4" }
+summary = "the concentration of the species when the simulation starts"
+description = """
+The initial concentration is the amount of the species divided by the size of its compartment at the start of a simulation. It excludes the initial amount, a species sets at most one of the two.
+
+The report shows the initial concentration in the table and in the inspector.
+"""
+
+[types.Species.attributes.substanceUnits]
+label = "substance units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.6.4" }
+summary = "the units of the amount of the species"
+description = """
+The substance units say what a quantity of one means, for example one mole, one millimole or one item. When the species does not declare them, it inherits the substance units of the model.
+
+The report links the referenced unit definition and renders it as a formula.
+"""
+
+[types.Species.attributes.hasOnlySubstanceUnits]
+label = "only substance units"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.6.5" }
+summary = "whether the identifier of the species stands for an amount instead of a concentration"
+description = """
+This flag decides what the identifier of the species means when it appears in a formula: with "true" it is an amount, with "false" it is an amount divided by the size of its compartment, that is a concentration. The flag is needed as its own attribute because the initial quantity and the units are both optional.
+
+The report shows the flag as a mark in the column "only substance units" and uses it when it derives the units of the species.
+"""
+
+[types.Species.attributes.boundaryCondition]
+label = "boundary condition"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.6.6" }
+summary = "whether the quantity of the species is left unchanged by the reactions"
+description = """
+A species on the boundary of the reaction system may appear as a reactant or a product, but the reactions do not determine its quantity; it is held by the modeller, for example as a constant supply of glucose. A species which is not a boundary condition is changed by every reaction it takes part in.
+
+The report shows the flag as a mark in the column "boundary condition".
+"""
+
+[types.Species.attributes.constant]
+label = "constant"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.6.6" }
+summary = "whether the quantity of the species stays fixed during a simulation"
+description = """
+A constant species keeps its amount for the whole simulation, whatever happens around it, and only an initial assignment may set it. Its concentration may still change, because the compartment it is located in may change size. Together with the boundary condition, the flag says whether the species is a variable of the model or a given value.
+
+The report shows the flag as a mark in the column "constant".
+"""
+
+[types.Species.attributes.unitsLatex]
+label = "rendered substance units"
+package = "report"
+type = "latex"
+summary = "the substance units of the species rendered as a formula"
+description = """
+The report resolves the unit definition the species references and renders it as a formula next to its identifier.
+"""
+
+[types.Species.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the quantity of the species as the report derives them"
+description = """
+The report derives the units of a species from its substance units, from the units of its compartment and from the flag "only substance units", and renders the result as a formula. This is the unit a formula sees when it uses the identifier of the species.
+"""
+
+[types.Species.attributes.conversionFactor]
+label = "conversion factor"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.6.7" }
+summary = "the parameter which converts the extent of a reaction into the quantity of the species"
+description = """
+When the amount of a species is not measured in the extent units of the reactions, a constant parameter states the factor between the two, instead of leaving the conversion implicit. A factor on the species overrides the one of the model.
+
+The report shows the referenced parameter with its value in the attributes of the species.
+"""
+
+[types.Parameter]
+label = "Parameter"
+package = "core"
+spec = { doc = "l3v2", section = "4.7" }
+summary = "a named value which the mathematics of the model can use"
+description = """
+A parameter associates an identifier with a numerical value, and the flag "constant" decides whether it is a constant of the model or another variable of it. Kinetic constants, thresholds and conversion factors are parameters, and so is a quantity which a rule computes over time.
+
+The report shows the value of a parameter, its units and the units it derives, and links every element which references it.
+"""
+related = ["Model", "UnitDefinition", "LocalParameter"]
+
+[types.Parameter.attributes.value]
+label = "value"
+type = "double"
+spec = { doc = "l3v2", section = "4.7.2" }
+summary = "the value of the parameter at the start of the simulation"
+description = """
+The value is a literal number. It is optional: a missing value means that it is unknown or that it is computed by an initial assignment or a rule, which can express things a literal number cannot.
+
+The report shows the value in the table and in the inspector.
+"""
+
+[types.Parameter.attributes.units]
+label = "units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.7.3" }
+summary = "the units of the value of the parameter"
+description = """
+The units are a unit definition of the model or a base unit. A parameter inherits nothing from the model: when it declares no units, its value has none, which is why the units of a formula which uses it cannot always be checked.
+
+The report links the referenced unit definition and renders it as a formula.
+"""
+
+[types.Parameter.attributes.unitsLatex]
+label = "rendered units"
+package = "report"
+type = "latex"
+summary = "the units of the parameter rendered as a formula"
+description = """
+The report resolves the unit definition the parameter references and renders it as a formula next to its identifier.
+"""
+
+[types.Parameter.attributes.constant]
+label = "constant"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.7.4" }
+summary = "whether the value of the parameter stays fixed during a simulation"
+description = """
+A constant parameter keeps its value for the whole simulation and can only be set by an initial assignment. A parameter which is not constant is a variable of the model and is computed by a rule or changed by an event.
+
+The report shows the flag as a mark in the column "constant".
+"""
+
+[types.Parameter.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the value as the report derives them"
+description = """
+The report resolves the units of the parameter and renders them as a formula. A parameter without units is shown without derived units, because there is nothing to inherit.
+"""
+
+
+# ----------------------------------------------------------------------------
+# initial assignments, rules and constraints
+# ----------------------------------------------------------------------------
+[types.InitialAssignment]
+label = "Initial assignment"
+package = "core"
+spec = { doc = "l3v2", section = "4.8" }
+summary = "a formula which computes the value of an element at the start of the simulation"
+description = """
+An initial assignment computes the value of a compartment, a species, a parameter or a stoichiometry before the simulation starts, from the values of other elements. It exists because the attributes of an element can only hold a literal number, and an initial value is often derived from other quantities. It applies up to the start of time and, unlike an assignment rule, it may also set a constant.
+
+The report shows the element which is assigned, the rendered formula and the units the formula produces.
+"""
+related = ["AssignmentRule", "Parameter", "Species", "Compartment"]
+
+[types.InitialAssignment.attributes.symbol]
+label = "symbol"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.8.2" }
+summary = "the element whose initial value the assignment computes"
+description = """
+The symbol names the compartment, species, species reference or parameter which receives the value. It is called symbol rather than variable because an initial assignment may also set an element which is constant.
+
+The report links the named element in the column "symbol" and in the inspector.
+"""
+
+[types.InitialAssignment.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.8.3" }
+summary = "the formula which computes the initial value"
+description = """
+The math is an arbitrary expression over the elements of the model. Its units should be the units of the element it assigns to.
+
+The report renders the formula in the column "math" and in the inspector.
+"""
+
+[types.InitialAssignment.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the formula as the report derives them"
+description = """
+The report derives the units of the formula from the units of the quantities it uses and renders them as a formula. Comparing them with the units of the assigned element is the quickest check of an initial assignment.
+"""
+
+[types.AssignmentRule]
+label = "Assignment rule"
+package = "core"
+spec = { doc = "l3v2", section = "4.9.3" }
+summary = "a formula which holds at every moment of the simulation"
+description = """
+An assignment rule states that a variable of the model equals an expression, at all times, and not only at the start: `x = f(V)`. It is the way to define a quantity which follows from others, for example a total concentration or a saturation. The element it assigns to must not be constant, and no other rule may assign to the same element.
+
+The report shows the variable, the rendered formula and the units the formula produces.
+"""
+related = ["RateRule", "AlgebraicRule", "InitialAssignment"]
+
+[types.AssignmentRule.attributes.variable]
+label = "variable"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.9.3" }
+summary = "the element the rule assigns to"
+description = """
+The variable names the compartment, species, species reference or parameter whose value the rule determines. It must not be constant, and a model may not contain a second rule for the same variable.
+
+The report links the named element in the column "variable" and in the inspector.
+"""
+
+[types.AssignmentRule.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.9.1" }
+summary = "the formula which computes the value of the variable"
+description = """
+The math is an arbitrary expression which returns a number. Its units should be the units of the variable.
+
+The report renders the formula in the column "math" and in the inspector.
+"""
+
+[types.AssignmentRule.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the formula as the report derives them"
+description = """
+The report derives the units of the formula from the units of the quantities it uses. They should be the units of the variable the rule assigns to.
+"""
+
+[types.RateRule]
+label = "Rate rule"
+package = "core"
+spec = { doc = "l3v2", section = "4.9.4" }
+summary = "a formula which gives the rate of change of an element"
+description = """
+A rate rule states the derivative of a variable with respect to time: `dx/dt = f(W)`. It is how a model describes a change which is not the result of reactions, for example the growth of a compartment or an ordinary differential equation written directly. The element it changes must not be constant, and a species which is produced or consumed by a reaction may only have a rate rule when it is a boundary condition.
+
+The report shows the variable, the rendered formula and the units the formula produces, which are the units of the variable per unit of time.
+"""
+related = ["AssignmentRule", "AlgebraicRule", "Reaction"]
+
+[types.RateRule.attributes.variable]
+label = "variable"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.9.4" }
+summary = "the element whose rate of change the rule gives"
+description = """
+The variable names the compartment, species, species reference or parameter which changes. It must not be constant, and no other rule may determine the same variable.
+
+The report links the named element in the column "variable" and in the inspector.
+"""
+
+[types.RateRule.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.9.1" }
+summary = "the formula which computes the rate of change"
+description = """
+The math is an arbitrary expression which returns a number. Its units should be the units of the variable divided by the time units of the model.
+
+The report renders the formula in the column "math" and in the inspector.
+"""
+
+[types.RateRule.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the formula as the report derives them"
+description = """
+The report derives the units of the formula from the units of the quantities it uses. They should be the units of the variable per unit of time of the model.
+"""
+
+[types.AlgebraicRule]
+label = "Algebraic rule"
+package = "core"
+spec = { doc = "l3v2", section = "4.9.2" }
+summary = "an equation which has to hold at every moment of the simulation"
+description = """
+An algebraic rule states that an expression is zero: `0 = f(W)`. It constrains the elements of the model without saying which of them it determines, which is why a simulator has to solve it together with the rest of the system. A model must not be overdetermined, so at least one element of the equation has to be free, that is not constant and not determined by another rule or by the reactions.
+
+The report shows the rendered equation and the units it produces; which element it determines follows from the rest of the model.
+"""
+related = ["AssignmentRule", "RateRule"]
+
+[types.AlgebraicRule.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.9.1" }
+summary = "the expression which has to be zero"
+description = """
+The math is an arbitrary expression which returns a number, and the rule says that this number is zero at all times.
+
+The report renders the expression in the column "math" and in the inspector.
+"""
+
+[types.AlgebraicRule.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the expression as the report derives them"
+description = """
+The report derives the units of the expression from the units of the quantities it uses. The terms of an equation should all have the same units.
+"""
+
+[types.Constraint]
+label = "Constraint"
+package = "core"
+spec = { doc = "l3v2", section = "4.10" }
+summary = "a condition which a valid simulation of the model has to satisfy"
+description = """
+A constraint is an expression which has to stay true while a simulation runs, for example that a concentration stays inside the range in which a rate law was measured. It does not change anything in the model: as soon as it is violated, the results from that moment on are no longer valid, and the software has to tell the user.
+
+The report shows the rendered condition and the message which explains a violation.
+"""
+related = ["Model", "Parameter"]
+
+[types.Constraint.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.10.1" }
+summary = "the condition which has to stay true"
+description = """
+The math is an expression which returns a boolean value. It is checked at the start of the simulation and at every moment after it.
+
+The report renders the condition in the column "math" and in the inspector.
+"""
+
+[types.Constraint.attributes.message]
+label = "message"
+type = "XHTML"
+spec = { doc = "l3v2", section = "4.10.2" }
+summary = "the text which is shown when the condition is violated"
+description = """
+The message is XHTML written for the user of a simulation, for example "the concentration of S1 left the range of the rate law". It is the place where the model author explains why the constraint exists.
+
+The report shows the message next to the condition.
+"""
+
+
+# ----------------------------------------------------------------------------
+# reactions
+# ----------------------------------------------------------------------------
+[types.Reaction]
+label = "Reaction"
+package = "core"
+spec = { doc = "l3v2", section = "4.11" }
+summary = "a process which changes the quantities of species"
+description = """
+A reaction is any process which changes how much of a species there is: a chemical conversion, a transport across a membrane, a binding, a degradation. It names the species it consumes as reactants and the species it produces as products, each with a stoichiometry, and it may name modifiers which influence its speed without being changed. How fast it runs is given by its [kinetic law](kineticlaw.md), which is optional: without one the speed of the reaction is undefined.
+
+The report shows the equation of a reaction, its kinetic law and the units of that law, and lists its reactants, products and modifiers with links to the species.
+"""
+related = ["Species", "SpeciesReference", "ModifierSpeciesReference", "KineticLaw", "Compartment"]
+
+[types.Reaction.attributes.reversible]
+label = "reversible"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.11.1" }
+summary = "whether the reaction can also run backwards"
+description = """
+The flag says whether the process can proceed in both directions. It does not change the equations of a simulation, it is an assertion which structural analyses such as elementary mode analysis rely on, and which says that the rate of an irreversible reaction never becomes negative.
+
+The report shows the flag as a mark in the column "reversible" and writes the equation with a double arrow when it is set.
+"""
+
+[types.Reaction.attributes.fast]
+label = "fast"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.11.1" }
+summary = "whether the reaction was declared to be much faster than the others"
+description = """
+In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a quasi steady state immediately. The attribute was removed in Level 3 Version 2, where the speed of every reaction is given by its kinetic law alone.
+
+The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written.
+"""
+
+[types.Reaction.attributes.compartment]
+label = "compartment"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.11.1" }
+summary = "the compartment in which the reaction takes place"
+description = """
+The compartment is optional and has no effect on the equations of the model; it helps a reader, a visualisation or a tool which checks a rate law to know where the process happens.
+
+The report links the compartment in the column "compartment" and in the inspector.
+"""
+
+[types.Reaction.attributes.listOfReactants]
+label = "reactants"
+type = "list"
+spec = { doc = "l3v2", section = "4.11.1" }
+summary = "the species the reaction consumes, with their stoichiometry"
+description = """
+Every reactant is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event consumes. A reaction has at least one reactant or one product.
+
+The report lists the reactants in the inspector of the reaction, with a link to every species, and writes them on the left of the equation.
+"""
+
+[types.Reaction.attributes.listOfProducts]
+label = "products"
+type = "list"
+spec = { doc = "l3v2", section = "4.11.1" }
+summary = "the species the reaction produces, with their stoichiometry"
+description = """
+Every product is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event produces.
+
+The report lists the products in the inspector of the reaction and writes them on the right of the equation.
+"""
+
+[types.Reaction.attributes.listOfModifiers]
+label = "modifiers"
+type = "list"
+spec = { doc = "l3v2", section = "4.11.1" }
+summary = "the species which influence the reaction without being consumed"
+description = """
+A modifier is a [modifier species reference](modifierspeciesreference.md): a catalyst, an inhibitor or an activator which appears in the kinetic law but is neither created nor destroyed. Modifiers have no stoichiometry.
+
+The report lists the modifiers in the inspector of the reaction, with a link to every species; they are not part of the equation, which shows what a reaction consumes and produces.
+"""
+
+[types.Reaction.attributes.kineticLaw]
+label = "kinetic law"
+type = "KineticLaw"
+spec = { doc = "l3v2", section = "4.11.5" }
+summary = "the formula which gives the speed of the reaction"
+description = """
+The [kinetic law](kineticlaw.md) holds the rate formula of the reaction and the local parameters it uses. It is optional, and a reaction without one has no defined speed, which different simulators treat differently.
+
+The report shows the rendered formula in the column "kinetic law" and the whole kinetic law in the inspector of the reaction.
+"""
+
+[types.Reaction.attributes."kineticLaw.math"]
+label = "kinetic law"
+package = "report"
+type = "Math"
+summary = "the rate formula of the reaction's kinetic law, rendered"
+description = """
+The table of reactions shows the formula of the [kinetic law](kineticlaw.md) directly in its own column "kinetic law", so a reader does not have to open the reaction to see how fast it runs. It is the same formula the inspector renders under "math" of the kinetic law; a reaction without a kinetic law shows a dash.
+"""
+
+[types.Reaction.attributes."kineticLaw.derivedUnits"]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units the report derives for the rate formula of the kinetic law"
+description = """
+The report derives the units of the [kinetic law](kineticlaw.md)'s formula from the units of the quantities it uses, and shows them in the column "derived units" of the table of reactions, next to the formula. They should be the extent units of the model divided by its time units, which is the check a modeller wants to make on a rate law.
+"""
+
+[types.Reaction.attributes.equation]
+label = "equation"
+package = "report"
+type = "string"
+summary = "the reaction written as a chemical equation"
+description = """
+The report builds the equation from the reactants and the products of the reaction, with a single or a double arrow according to the flag "reversible". A stoichiometry of one is left out, a stoichiometry of minus one becomes a minus in front of the species, and a stoichiometry which is no number, because a rule or an initial assignment sets it, is replaced by the identifier of the species reference, or by a question mark when it has none. The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
+
+The equation is a column of the table of reactions and a row of the inspector.
+"""
+
+# ----------------------------------------------------------------------------
+# events
+# ----------------------------------------------------------------------------
+[types.Event]
+label = "Event"
+package = "core"
+spec = { doc = "l3v2", section = "4.12" }
+summary = "an instantaneous change of the model when a condition becomes true"
+description = """
+An event describes a discontinuous change: when its trigger turns from false to true, the assignments of the event are executed and set new values for compartments, species, stoichiometries or parameters. A dose which is given at a fixed time, a switch which flips at a threshold or a medium which is exchanged are events. The change can be delayed, and a priority decides which of several simultaneous events is executed first.
+
+The report shows the rendered trigger, the priority and the delay of an event, the flags of its trigger and the table of its assignments.
+"""
+related = ["EventAssignment", "Parameter", "Species"]
+
+[types.Event.attributes.useValuesFromTriggerTime]
+label = "values from trigger time"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.1" }
+summary = "whether the assignments use the values of the moment the event was triggered"
+description = """
+An event which is delayed is triggered at one moment and executed at another, and the two moments can give different values. With "true" the formulas of the assignments are evaluated when the event triggers, with "false" when it is executed.
+
+The report shows the flag as a mark in the column "values from trigger time".
+"""
+
+[types.Event.attributes."trigger.math"]
+label = "trigger"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition whose change from false to true fires the event"
+description = """
+The trigger holds an expression which returns a boolean value, and the event fires at the moment that expression turns from false to true. It can fire again whenever the expression makes that transition again. An event without a trigger can never fire.
+
+The report renders the condition in the column "trigger" and in the inspector.
+"""
+
+[types.Event.attributes."trigger.initialValue"]
+label = "initial value"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the condition is taken to be true just before the simulation starts"
+description = """
+To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
+
+The report shows the flag as a mark, in the column "initial value" and in the inspector.
+"""
+
+[types.Event.attributes."trigger.persistent"]
+label = "persistent"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the event is still executed when its condition becomes false again before execution"
+description = """
+Between the moment an event triggers and the moment it is executed, its condition may turn false again, because the event is delayed or because another event changed the model. With "true" the assignments are carried out anyway, with "false" the event is dropped.
+
+The report shows the flag as a mark, in the column "persistent" and in the inspector.
+"""
+
+[types.Event.attributes.priority]
+label = "priority"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the formula which orders this event against other events of the same moment"
+description = """
+When several events are executed at the same moment, the one with the higher priority goes first; a larger number means a higher priority and the value is dimensionless. An event without a priority has none, and the order of simultaneous events is then not fixed.
+
+The report renders the priority in the column "priority" and in the inspector.
+"""
+
+[types.Event.attributes.delay]
+label = "delay"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the formula which gives the time between the trigger and the execution"
+description = """
+The delay is evaluated at the moment the event triggers and has to be a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
+
+The report renders the delay in the column "delay" and in the inspector.
+"""
+
+[types.Event.attributes.listOfEventAssignments]
+label = "assignments"
+type = "list"
+spec = { doc = "l3v2", section = "4.12.5" }
+summary = "the changes the event makes when it is executed"
+description = """
+The list holds the [event assignments](eventassignment.md) of the event, each of which sets one element of the model to the value of a formula.
+
+The report counts the assignments in the column "assignments" and shows them as a table in the inspector of the event.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the nested elements: the participants of a reaction, the kinetic law with its
+# local parameters and the assignments of an event
+# ----------------------------------------------------------------------------
+[types.SpeciesReference]
+label = "Species reference"
+package = "core"
+spec = { doc = "l3v2", section = "4.11.3" }
+summary = "the participation of a species in a reaction as a reactant or a product"
+description = """
+A species reference does not introduce a species, it points at one of the species of the model and says how much of it one reaction event consumes or produces. Its stoichiometry can itself be a variable of the model, which is what a model with a variable yield uses.
+
+The report shows a species reference as an element of its own, with a link to the reaction it belongs to, the role it plays there and a link to the species.
+"""
+related = ["Reaction", "Species", "ModifierSpeciesReference"]
+
+[types.SpeciesReference.attributes.species]
+label = "species"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.11.2" }
+summary = "the species which participates in the reaction"
+description = """
+The value is the identifier of a species of the model. Whether the species is consumed or produced follows from the list the reference appears in.
+
+The report links the species in the table of the reaction and in the inspector.
+"""
+
+[types.SpeciesReference.attributes.stoichiometry]
+label = "stoichiometry"
+type = "double"
+spec = { doc = "l3v2", section = "4.11.3" }
+summary = "how much of the species one reaction event consumes or produces"
+description = """
+The stoichiometry is the factor with which the rate of the reaction enters the change of the species. A missing value means that it is unknown or that it is computed elsewhere, and when the reference is not constant, a rule or an event may change it during the simulation.
+
+The report shows the stoichiometry in the list of reactants and products of a reaction and in the inspector.
+"""
+
+[types.SpeciesReference.attributes.constant]
+label = "constant"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.11.3" }
+summary = "whether the stoichiometry stays fixed during a simulation"
+description = """
+A constant species reference keeps its stoichiometry for the whole simulation and can only be set by an initial assignment. A reference which is not constant may be changed by a rule or by an event.
+
+The report shows the flag as a mark in the inspector of the species reference.
+"""
+
+[types.SpeciesReference.attributes.reaction]
+label = "reaction"
+package = "report"
+type = "Reaction"
+summary = "the reaction which lists this species reference"
+description = """
+A species reference is written inside the list of reactants or of products of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it.
+
+The reaction is the first row of the inspector of a species reference.
+"""
+
+[types.SpeciesReference.attributes.role]
+label = "role"
+package = "report"
+type = "string"
+summary = "whether the reference is a reactant, a product or a modifier of its reaction"
+description = """
+SBML says the role of a participant by the list it stands in and not by an attribute of its own. The report looks up the list which holds the reference and shows the role as `reactant`, `product` or, for a [modifier species reference](modifierspeciesreference.md), `modifier`.
+
+The role is shown in the inspector, below the reaction.
+"""
+
+[types.ModifierSpeciesReference]
+label = "Modifier species reference"
+package = "core"
+spec = { doc = "l3v2", section = "4.11.4" }
+summary = "the participation of a species in a reaction as a modifier"
+description = """
+A modifier is a species which appears in the rate formula of a reaction but is neither consumed nor produced by it, for example an enzyme or an inhibitor. SBML calls all of them modifiers and leaves the precise role to the term of the Systems Biology Ontology. A modifier has no stoichiometry.
+
+The report shows a modifier species reference with a link to its reaction and to the species.
+"""
+related = ["Reaction", "Species", "SpeciesReference"]
+
+[types.ModifierSpeciesReference.attributes.species]
+label = "species"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.11.2" }
+summary = "the species which modifies the reaction"
+description = """
+The value is the identifier of a species of the model. Every species which appears in the kinetic law of a reaction has to be declared as a reactant, a product or a modifier of it.
+
+The report links the species in the list of modifiers of the reaction and in the inspector.
+"""
+
+[types.ModifierSpeciesReference.attributes.reaction]
+label = "reaction"
+package = "report"
+type = "Reaction"
+summary = "the reaction which lists this modifier"
+description = """
+A modifier species reference is written inside the list of modifiers of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it.
+
+The reaction is the first row of the inspector of a modifier species reference.
+"""
+
+
+[types.KineticLaw]
+label = "Kinetic law"
+package = "core"
+spec = { doc = "l3v2", section = "4.11.5" }
+summary = "the formula which gives the speed of a reaction"
+description = """
+The kinetic law of a reaction holds the formula which computes how fast the process runs, and the local parameters which only that formula uses. The formula may use the global elements of the model, its own local parameters and the species which the reaction declares as reactants, products or modifiers. Its units are the extent units of the model divided by its time units.
+
+The report shows the rendered formula, the units it derives for it and the table of the local parameters.
+"""
+related = ["Reaction", "LocalParameter", "Parameter"]
+
+[types.KineticLaw.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.11.5" }
+summary = "the rate formula of the reaction"
+description = """
+The math is an expression which returns a number, the rate of change of the extent of the reaction. A kinetic law without a formula leaves the speed of the reaction undefined.
+
+The report renders the formula in the column "kinetic law" of the reactions and in the inspector.
+"""
+
+[types.KineticLaw.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the rate formula as the report derives them"
+description = """
+The report derives the units of the formula from the units of the quantities it uses. They should be the extent units of the model divided by its time units, which is the check a modeller wants to make on a rate law.
+"""
+
+[types.KineticLaw.attributes.listOfLocalParameters]
+label = "local parameters"
+type = "list"
+spec = { doc = "l3v2", section = "4.11.6" }
+summary = "the parameters which only this kinetic law uses"
+description = """
+The list holds the [local parameters](localparameter.md) of the kinetic law. A local parameter hides a global parameter of the same identifier inside the formula, which is worth knowing when a value looks surprising.
+
+The report shows the local parameters as a table in the inspector of the kinetic law and of the reaction.
+"""
+
+[types.LocalParameter]
+label = "Local parameter"
+package = "core"
+spec = { doc = "l3v2", section = "4.11.6" }
+summary = "a named value which only one kinetic law uses"
+description = """
+A local parameter is defined inside a kinetic law, which keeps a constant that belongs to one reaction out of the global parameters. Its identifier is scoped to the whole reaction: within that reaction it shadows an element of the model with the same identifier, and in SBML core the math of the kinetic law is the only place which can read it. It can never be the target of an initial assignment, of a rule or of an event assignment.
+
+The report shows a local parameter as an element of its own, with its value, its units and the reaction it belongs to.
+"""
+related = ["KineticLaw", "Parameter", "Reaction"]
+
+[types.LocalParameter.attributes.value]
+label = "value"
+type = "double"
+spec = { doc = "l3v2", section = "4.11.6" }
+summary = "the value of the local parameter"
+description = """
+The value is a literal number. Unlike a global parameter, a local parameter is always constant: nothing outside the kinetic law can see it, so nothing can change it.
+
+The report shows the value in the table of local parameters and in the inspector.
+"""
+
+[types.LocalParameter.attributes.units]
+label = "units"
+type = "UnitSIdRef"
+spec = { doc = "l3v2", section = "4.11.6" }
+summary = "the units of the value of the local parameter"
+description = """
+The units are a unit definition of the model or a base unit, and nothing is inherited when they are missing.
+
+The report links the referenced unit definition and renders it as a formula.
+"""
+
+[types.LocalParameter.attributes.unitsLatex]
+label = "rendered units"
+package = "report"
+type = "latex"
+summary = "the units of the local parameter rendered as a formula"
+description = """
+The report resolves the unit definition the local parameter references and renders it as a formula next to its identifier.
+"""
+
+[types.LocalParameter.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "latex"
+summary = "the units of the value as the report derives them"
+description = """
+The report resolves the units of the local parameter and renders them as a formula, so that the units of a rate constant can be compared with the units the rate law needs.
+"""
+
+
+[types.EventAssignment]
+label = "Event assignment"
+package = "core"
+spec = { doc = "l3v2", section = "4.12.5" }
+summary = "the new value an event gives to one element of the model"
+description = """
+An event assignment sets a compartment, a species, a stoichiometry or a parameter to the value of its formula at the moment the event is executed. The element must not be constant, because a constant cannot be changed by an event.
+
+The report shows an event assignment as an element of its own, with a link to the element it changes and the rendered formula.
+"""
+related = ["Event", "AssignmentRule"]
+
+[types.EventAssignment.attributes.variable]
+label = "variable"
+type = "SIdRef"
+spec = { doc = "l3v2", section = "4.12.5" }
+summary = "the element the assignment changes"
+description = """
+The variable names the compartment, species, species reference or parameter which receives the new value. It must not be constant.
+
+The report links the named element in the table of the event and in the inspector.
+"""
+
+[types.EventAssignment.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.5" }
+summary = "the formula which computes the new value"
+description = """
+The math is an arbitrary expression over the elements of the model. Whether it is evaluated when the event triggers or when it is executed is decided by the flag "values from trigger time" of the event.
+
+The report renders the formula in the table of the event and in the inspector.
+"""

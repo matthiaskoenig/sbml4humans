@@ -26,7 +26,11 @@ const { shown, hiddenCount, showAll } = useLimitedList(() => props.rows);
       </thead>
       <tbody>
         <tr v-for="(row, i) in shown" :key="i" class="border-b border-gray-100 align-top">
-          <td v-for="column in columns" :key="column.key" class="py-1 pr-3 break-all">
+          <!-- `break-words` only breaks inside a word when the word does not fit a line of its
+          own, and it leaves the minimum width of a column at the width of its longest word, so
+          the automatic layout gives an identifier the column it needs instead of wrapping
+          `M_atp_c` into `M_at` and `p_c`. -->
+          <td v-for="column in columns" :key="column.key" class="py-1 pr-3 break-words">
             <slot :name="`cell-${column.key}`" :row="row">
               <ValueText :value="cell(row, column.key)" />
             </slot>

@@ -23,11 +23,19 @@ const resolve = (id: string | null | undefined) =>
 </script>
 
 <template>
-  <AttributeRow label="kind">{{ element.kind ?? "model" }}</AttributeRow>
-  <AttributeRow v-for="[label, idKey, latexKey] in UNITS" :key="idKey" :label="`${label} units`">
+  <AttributeRow label="kind" :type="element.sbmlType" field="kind">{{
+    element.kind ?? "model"
+  }}</AttributeRow>
+  <AttributeRow
+    v-for="[label, idKey, latexKey] in UNITS"
+    :key="idKey"
+    :label="`${label} units`"
+    :type="element.sbmlType"
+    :field="idKey"
+  >
     <UnitsLink :pk="resolve(element[idKey])" :label="element[idKey]" :latex="element[latexKey]" />
   </AttributeRow>
-  <AttributeRow label="conversion factor">
+  <AttributeRow label="conversion factor" :type="element.sbmlType" field="conversionFactor">
     <template v-if="element.conversionFactor">
       <ElementLink
         :pk="index?.resolve(element.pk, 'conversionFactor', element.conversionFactor.sid)"

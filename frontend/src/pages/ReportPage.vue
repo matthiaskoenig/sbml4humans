@@ -22,6 +22,11 @@ const route = useRoute();
 const store = useReportStore();
 const view = useReportView();
 
+/** The width the rail opens with, wide enough for the longest type name next to its count in
+ * both states of the count: the total alone, and the matches in front of the total while a
+ * search is active. */
+const RAIL_WIDTH = 256;
+
 watch(
   () => [route.name, route.params.id, route.query.url] as const,
   ([name, id, url]) => {
@@ -130,7 +135,7 @@ watch([selectedPk, index], ([pk, current]) => {
     v-else-if="index && model"
     direction="horizontal"
     storage-key="rail"
-    :initial="240"
+    :initial="RAIL_WIDTH"
     :min="160"
     data-testid="report-page"
   >

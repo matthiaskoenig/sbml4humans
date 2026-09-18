@@ -1,6 +1,16 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+
 import { expect, test, type Locator } from "@playwright/test";
 
 import { openExample, query } from "./helpers";
+
+// read, not imported, so the typecheck of the e2e project (which has no json module support
+// and no "@/" alias) does not need to know about the shape of the glossary
+const glossary: { types: Record<string, { attributes: Record<string, { summary: string }> }> } =
+  JSON.parse(
+    readFileSync(fileURLToPath(new URL("../../src/data/glossary.json", import.meta.url)), "utf-8"),
+  );
 
 test.describe("repressilator", () => {
   test.beforeEach(async ({ page }) => {
@@ -98,6 +108,25 @@ test.describe("repressilator", () => {
     expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
     await page.mouse.move(0, 0);
     await expect(tooltip).toBeHidden();
+  });
+
+  test("hovering the id column header shows its tooltip and the inspector type links to the reference page", async ({
+    page,
+  }) => {
+    const table = page.getByTestId("table-Species");
+    const idHeader = table.getByRole("button", { name: "id", exact: true });
+    await idHeader.hover();
+    const tooltip = page.getByRole("tooltip");
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toHaveText(glossary.types.SBase!.attributes.id!.summary);
+    await page.mouse.move(0, 0);
+    await expect(tooltip).toBeHidden();
+
+    await table.locator("tbody tr[data-pk]").first().click();
+    await expect(page.getByTestId("inspector-type-link")).toHaveAttribute(
+      "href",
+      /reference\/species\//,
+    );
   });
 });
 

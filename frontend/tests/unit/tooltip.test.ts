@@ -14,19 +14,22 @@ const computePosition = vi.mocked(floating.computePosition);
 
 /** A span with the tooltip below it, as the call sites use it. */
 const Host = defineComponent({
-  props: { text: { type: String, required: false, default: undefined } },
+  props: {
+    text: { type: String, required: false, default: undefined },
+    mono: { type: Boolean, default: false },
+  },
   setup(props) {
     return () =>
       withDirectives(h("span", { "data-testid": "host", tabindex: 0 }, "value"), [
-        [vTooltip, props.text, "", { bottom: true }],
+        [vTooltip, props.text, "", { bottom: true, mono: props.mono }],
       ]);
   },
 });
 
 let wrapper: { unmount(): void } | null = null;
 
-function mountHost(text: string | undefined) {
-  const mounted = mount(Host, { props: { text }, attachTo: document.body });
+function mountHost(text: string | undefined, mono = false) {
+  const mounted = mount(Host, { props: { text, mono }, attachTo: document.body });
   wrapper = mounted;
   return mounted;
 }
@@ -62,6 +65,17 @@ describe("v-tooltip", () => {
       expect.objectContaining({ placement: "bottom", strategy: "fixed" }),
     );
     expect(tooltip()?.style.transform).toBe("translate(12px, 31px)");
+  });
+
+  it("shows an explanation in the font of the text and a value in monospace", async () => {
+    // the explanations of the glossary are sentences, the ids, values and formulas are not
+    await mountHost("the identifier of the element")
+      .get("[data-testid=host]")
+      .trigger("mouseenter");
+    expect(tooltip()?.className).not.toContain("font-mono");
+    wrapper?.unmount();
+    await mountHost("kd_mRNA * X", true).get("[data-testid=host]").trigger("mouseenter");
+    expect(tooltip()?.className).toContain("font-mono");
   });
 
   it("shows on keyboard focus and hides on Escape", async () => {

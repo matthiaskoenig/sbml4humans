@@ -13,6 +13,7 @@ from sbml4humans.examples import (
     example_from_sbml,
     load_examples,
     main_sbml_entry,
+    omex_description,
 )
 from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
@@ -52,7 +53,24 @@ def test_example_from_omex() -> None:
     assert example.name == "icg_model"
     assert example.file == OMEX_ICGMODEL
     assert example.packages == ["OMEX"]
-    assert "icg_body.xml" in (example.description or "")
+    # a sentence about the content of the archive, not the repr of its manifest
+    assert example.description == (
+        "COMBINE archive with 3 SBML entries: "
+        "icg_liver.xml, icg_body.xml, icg_body_flat.xml"
+    )
+
+
+def test_omex_description_counts_entries_without_naming_them() -> None:
+    """Entries whose names are too long for the sentence are only counted."""
+    omex = Omex.from_omex(OMEX_ICGMODEL)
+    for k, entry in enumerate(omex.entries_by_format(format_key="sbml")):
+        entry.location = f"./models/a_model_with_a_very_long_name_{k}.xml"
+    assert omex_description(omex) == "COMBINE archive with 3 SBML entries"
+
+
+def test_omex_description_without_sbml() -> None:
+    """An archive without an SBML entry says so."""
+    assert omex_description(Omex()) == "COMBINE archive without an SBML entry"
 
 
 def test_biomodel_examples_without_directory(tmp_path: Path) -> None:

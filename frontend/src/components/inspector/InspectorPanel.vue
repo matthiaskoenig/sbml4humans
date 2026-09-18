@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { XIcon } from "@lucide/vue";
+import { ExternalLinkIcon, XIcon } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 
 import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
@@ -9,6 +9,7 @@ import TypeMark from "@/components/misc/TypeMark.vue";
 import XmlView from "@/components/misc/XmlView.vue";
 import { typeInfo } from "@/data/sbmlTypes";
 import { useReportIndex } from "@/report/context";
+import { referenceUrl } from "@/report/glossary";
 import { useReportView } from "@/report/view";
 
 const props = defineProps<{ pk: string }>();
@@ -39,9 +40,18 @@ const xmlEmptyMessage = computed(() =>
   >
     <header class="flex h-10 shrink-0 items-center gap-2 border-b border-gray-200 px-3 text-sm">
       <TypeMark v-if="element.sbmlType" :type="element.sbmlType" size="md" />
-      <span class="text-gray-500" data-testid="inspector-type" :title="element.sbmlType">{{
-        label
-      }}</span>
+      <a
+        v-if="element.sbmlType"
+        :href="referenceUrl(element.sbmlType)"
+        target="_blank"
+        rel="noopener"
+        data-testid="inspector-type-link"
+        class="flex items-center gap-1 text-link hover:underline"
+      >
+        <span data-testid="inspector-type">{{ label }}</span>
+        <ExternalLinkIcon class="size-3" />
+      </a>
+      <span v-else class="text-gray-500" data-testid="inspector-type">{{ label }}</span>
       <span class="font-mono font-semibold" data-testid="inspector-id">{{
         element.id ?? element.metaId ?? element.pk
       }}</span>

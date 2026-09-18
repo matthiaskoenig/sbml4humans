@@ -1,0 +1,171 @@
+# A small glossary in the format of `glossary/` used by the tests of the
+# generator. It is not the glossary of the application.
+
+[specs.l3v2]
+label = "SBML Level 3 Version 2 Core"
+short = "core"
+citation = "Hucka et al. 2019, J Integr Bioinform 16(2):20190021"
+url = "https://sbml.org/documents/specifications/level-3/version-2/core/"
+
+[types.SBase]
+label = "SBase"
+package = "core"
+spec = { doc = "l3v2", section = "3.2" }
+summary = "the attributes every element of a model carries"
+description = """
+Every element of a model carries an identifier, a name and the two places for annotation.
+"""
+
+[types.SBase.attributes.id]
+label = "id"
+type = "SId"
+summary = "the identifier of the element"
+description = """
+The id is the name of the element inside the model.
+"""
+
+[types.SBase.attributes.name]
+label = "name"
+type = "string"
+summary = "the readable name of the element"
+description = """
+The name is meant for a human reader and has no meaning inside the model.
+"""
+
+[types.SBase.attributes.metaId]
+label = "metaId"
+type = "ID"
+summary = "the identifier the annotations of the element point at"
+description = """
+The meta id is unique within the file and is what the annotation of an element names.
+"""
+
+[types.SBase.attributes.sbo]
+label = "sbo"
+type = "SBOTerm"
+summary = "the term of the Systems Biology Ontology of the element"
+description = """
+The term classifies the element with a controlled vocabulary.
+"""
+
+[types.SBase.attributes.notes]
+label = "notes"
+type = "XHTML"
+summary = "the free text the model author wrote about the element"
+description = """
+The notes hold the text a reader of the model is meant to read.
+"""
+
+[types.SBase.attributes.cvterms]
+label = "annotations"
+type = "list"
+summary = "the controlled vocabulary terms of the element"
+description = """
+An annotation relates the element to an entry of an external database.
+"""
+
+[types.SBase.attributes.history]
+label = "history"
+type = "ModelHistory"
+summary = "who created the element and when it was modified"
+description = """
+The history records the creators of an element and the dates of its changes.
+"""
+
+[types.SBase.attributes.xml]
+label = "xml"
+package = "report"
+type = "string"
+summary = "the element as it is written in the SBML file"
+description = """
+The report keeps the XML of every element.
+"""
+
+[types.SBase.attributes.comp]
+label = "replacements"
+type = "CompSBase"
+summary = "how the element replaces an element of a submodel or is replaced by one"
+description = """
+The comp package lets an element replace an element of a submodel.
+"""
+
+[types.SBase.attributes."comp.replacedBy"]
+label = "replaced by"
+type = "ReplacedBy"
+summary = "the element of a submodel which takes the place of this element"
+description = """
+An element which is replaced disappears from the composed model.
+"""
+
+[types.SBase.attributes."comp.replacedElements"]
+label = "replaced elements"
+type = "list"
+summary = "the elements of submodels which this element takes the place of"
+description = """
+Every entry names a submodel and the element inside it which this element replaces.
+"""
+
+[types.Species]
+label = "Species"
+package = "core"
+spec = { doc = "l3v2", section = "4.6" }
+summary = "a pool of a chemical entity in a compartment"
+description = """
+A species is a pool of entities which the model treats as indistinguishable, for example a metabolite or a protein. Every species is located in a [Compartment](compartment.md).
+"""
+related = ["Compartment"]
+
+[types.Species.attributes.initialAmount]
+label = "initial amount"
+type = "double"
+spec = { doc = "l3v2", section = "4.6.4" }
+summary = "the amount of the species when the simulation starts"
+description = """
+The initial amount is the quantity of the species at the start of a simulation, in the substance units of the species.
+"""
+
+[types.Species.attributes.derivedUnits]
+label = "derived units"
+package = "report"
+type = "units"
+summary = "the units of the species as the report derives them"
+description = """
+The report derives the units of the species from its substance units and from the size of its compartment.
+"""
+
+[types.Compartment]
+label = "Compartment"
+package = "core"
+spec = { doc = "l3v2", section = "4.5" }
+summary = "a bounded space in which species are located"
+description = """
+A compartment is the space a species lives in, for example the cytosol of a cell.
+"""
+
+[links.compartment]
+label = "compartment"
+summary = "the compartment an element is located in"
+description = """
+The inspector of a species shows the compartment it is located in under "References".
+"""
+
+[concepts.derivedUnits]
+label = "derived units"
+summary = "the units the report derives for an element"
+description = """
+The report derives the units of an element from the units of the quantities of its model, and shows them as a rendered formula.
+"""
+
+[concepts.pk]
+label = "primary key"
+summary = "the identifier the report gives to every element it shows"
+description = """
+The report builds a key of its own for every element, because not every element has an id.
+"""
+
+[concepts.sbmlType]
+label = "sbml type"
+summary = "the kind of element, which decides how the report shows it"
+description = """
+Every element of a report carries the name of its SBML class.
+"""

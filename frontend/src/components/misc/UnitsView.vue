@@ -15,5 +15,5 @@ const html = computed(() => (hasUnitsLatex(props.latex) ? renderLatex(props.late
 <template>
   <span v-if="html === null" class="text-gray-400">{{ units || "-" }}</span>
   <!-- eslint-disable-next-line vue/no-v-html -->
-  <span v-else v-tooltip.bottom="units ?? undefined" data-testid="units" v-html="html" />
+  <span v-else v-tooltip.bottom.mono="units ?? undefined" data-testid="units" v-html="html" />
 </template>

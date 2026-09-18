@@ -45,9 +45,11 @@ def report_for_sbml(source: Path | str, uid: str = "") -> ReportEntry:
     start = time.perf_counter()
     info = SBMLDocumentInfo(SBMLDocumentInfo.read(source))
     if info.doc.getModel() is None:
+        # the message reaches the user, who can act on the errors of libsbml
+        # but not on the temporary path the file was read from; `read_sbml`
+        # logs that path for the server
         raise ValueError(
-            f"No SBML model could be read from '{source}':\n"
-            f"{info.doc.getErrorLog().toString()}"
+            f"No SBML model could be read:\n{info.doc.getErrorLog().toString()}"
         )
     report = info.build()
     elapsed = round(time.perf_counter() - start, 3)

@@ -10,8 +10,10 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="label"><ValueText :value="element.label" mono /></AttributeRow>
-  <AttributeRow label="associated species">
+  <AttributeRow label="label" :type="element.sbmlType" field="label"
+    ><ValueText :value="element.label" mono
+  /></AttributeRow>
+  <AttributeRow label="associated species" :type="element.sbmlType" field="associatedSpecies">
     <ElementLink
       :pk="index?.resolve(element.pk, 'associatedSpecies', element.associatedSpecies)"
       :label="element.associatedSpecies"

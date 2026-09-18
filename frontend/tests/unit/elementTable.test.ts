@@ -7,11 +7,13 @@ import ElementCell from "@/components/report/ElementCell.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
 import { vTooltip } from "@/directives/tooltip";
 import { columnsOf, type ColumnDef } from "@/report/columns";
+import { attributeEntry } from "@/report/glossary";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
+import { summaryOf } from "./summary";
 
 // jsdom does not implement scrollIntoView.
 Element.prototype.scrollIntoView ??= function () {};
@@ -70,6 +72,15 @@ describe("ElementTable", () => {
     expect(table.findAll("thead th").map((th) => th.text())).toContain("compartment");
   });
 
+  it("shows the summary of the column's attribute as the tooltip of its header", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(species);
+    await header(table, "id").get("[data-testid=sort-button]").trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      summaryOf(attributeEntry("Species", "id"), "Species.id"),
+    );
+  });
+
   it("sorts by a click on the header and toggles the order", async () => {
     await router.push("/examples/BIOMD0000000012");
     const table = mountTable(species);
@@ -109,6 +120,17 @@ describe("ElementTable", () => {
     const derived = header(mountTable(species), "derived units");
     expect(derived.find("[data-testid=sort-button]").exists()).toBe(false);
     expect(derived.attributes("aria-sort")).toBeUndefined();
+  });
+
+  it("shows the summary as the tooltip of a non sortable header too", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const derived = header(mountTable(species), "derived units");
+    // the non sortable header has no button, the tooltip sits on the plain span instead
+    expect(derived.find("[data-testid=sort-button]").exists()).toBe(false);
+    await derived.get("span").trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      summaryOf(attributeEntry("Species", "derivedUnits"), "Species.derivedUnits"),
+    );
   });
 
   it("selects a row by a click and clears the selection by a second click", async () => {
