@@ -1,5 +1,5 @@
 {
-  "uid": "5493fac33b124871a1221c0e5911d542",
+  "uid": "7e561a58000d4503869ee9310a951ee2",
   "manifest": {
     "entries": [
       {
@@ -1046,6 +1046,11 @@
               "kind": "product"
             },
             {
+              "source": "constraint_event/Reaction:R1",
+              "target": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/LocalParameter:R1.kineticLaw.Km",
               "kind": "math"
@@ -1106,6 +1111,11 @@
               "kind": "math"
             },
             {
+              "source": "constraint_event/Event:E1",
+              "target": "constraint_event/EventAssignment:E1_dose",
+              "kind": "eventAssignment"
+            },
+            {
               "source": "constraint_event/EventAssignment:E1_dose",
               "target": "constraint_event/Species:S1",
               "kind": "variable"
@@ -1121,6 +1131,11 @@
               "kind": "math"
             },
             {
+              "source": "constraint_event/Event:E1",
+              "target": "constraint_event/EventAssignment:E1_switch",
+              "kind": "eventAssignment"
+            },
+            {
               "source": "constraint_event/EventAssignment:E1_switch",
               "target": "constraint_event/Parameter:active",
               "kind": "variable"
@@ -1129,7 +1144,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.082 [s]"
       }
     }
   }

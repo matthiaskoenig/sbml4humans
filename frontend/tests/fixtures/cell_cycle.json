@@ -1,5 +1,5 @@
 {
-  "uid": "d5c8c69be31a41c694f8dc0f5734675d",
+  "uid": "d33393a58d3e44528921068ed2cbd6c3",
   "manifest": {
     "entries": [
       {
@@ -6605,6 +6605,11 @@
               "kind": "product"
             },
             {
+              "source": "BIOMD0000000007/Reaction:G2K_Creation",
+              "target": "BIOMD0000000007/KineticLaw:_377792",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_377792",
               "target": "BIOMD0000000007/Parameter:k1",
               "kind": "math"
@@ -6618,6 +6623,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_377804",
               "target": "BIOMD0000000007/Species:G1K",
               "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:G1K_Creation",
+              "target": "BIOMD0000000007/KineticLaw:_377816",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_377816",
@@ -6663,6 +6673,11 @@
               "source": "BIOMD0000000007/ModifierSpeciesReference:_377864",
               "target": "BIOMD0000000007/Species:Cdc25",
               "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:Cdc2Phos",
+              "target": "BIOMD0000000007/KineticLaw:_377876",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_377876",
@@ -6713,6 +6728,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_377913",
               "target": "BIOMD0000000007/Species:G2R",
               "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:G2R_Creation",
+              "target": "BIOMD0000000007/KineticLaw:_377925",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_377925",
@@ -6770,6 +6790,11 @@
               "kind": "product"
             },
             {
+              "source": "BIOMD0000000007/Reaction:PG2R_Creation",
+              "target": "BIOMD0000000007/KineticLaw:_377973",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_377973",
               "target": "BIOMD0000000007/Species:PG2",
               "kind": "math"
@@ -6815,6 +6840,11 @@
               "kind": "product"
             },
             {
+              "source": "BIOMD0000000007/Reaction:Rum1DegInG2R",
+              "target": "BIOMD0000000007/KineticLaw:_378009",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378009",
               "target": "BIOMD0000000007/Species:G2R",
               "kind": "math"
@@ -6833,6 +6863,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_378021",
               "target": "BIOMD0000000007/Species:R",
               "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:Rum1Deg",
+              "target": "BIOMD0000000007/KineticLaw:_378033",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378033",
@@ -6865,6 +6900,11 @@
               "kind": "product"
             },
             {
+              "source": "BIOMD0000000007/Reaction:Rum1DegInPG2R",
+              "target": "BIOMD0000000007/KineticLaw:_378069",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378069",
               "target": "BIOMD0000000007/Species:PG2R",
               "kind": "math"
@@ -6893,6 +6933,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_378094",
               "target": "BIOMD0000000007/Species:G1K",
               "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:RumDegInG1R",
+              "target": "BIOMD0000000007/KineticLaw:_378106",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378106",
@@ -6925,6 +6970,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000007/Reaction:G2K_dissoc",
+              "target": "BIOMD0000000007/KineticLaw:_378142",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378142",
               "target": "BIOMD0000000007/Species:G2K",
               "kind": "math"
@@ -6953,6 +7003,11 @@
               "source": "BIOMD0000000007/ModifierSpeciesReference:_378167",
               "target": "BIOMD0000000007/Species:UbE",
               "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:PG2_dissoc",
+              "target": "BIOMD0000000007/KineticLaw:_378179",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378179",
@@ -6985,6 +7040,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000007/Reaction:G1K_Dissociation",
+              "target": "BIOMD0000000007/KineticLaw:_378215",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378215",
               "target": "BIOMD0000000007/Species:G1K",
               "kind": "math"
@@ -7013,6 +7073,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_378239",
               "target": "BIOMD0000000007/Species:R",
               "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:PG2R_Dissociation",
+              "target": "BIOMD0000000007/KineticLaw:_378251",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378251",
@@ -7045,6 +7110,11 @@
               "kind": "product"
             },
             {
+              "source": "BIOMD0000000007/Reaction:G2R_Dissociation",
+              "target": "BIOMD0000000007/KineticLaw:_378288",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378288",
               "target": "BIOMD0000000007/Species:G2R",
               "kind": "math"
@@ -7073,6 +7143,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_378313",
               "target": "BIOMD0000000007/Species:R",
               "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:G1R_Dissociation",
+              "target": "BIOMD0000000007/KineticLaw:_378325",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378325",
@@ -7113,6 +7188,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_378361",
               "target": "BIOMD0000000007/Species:G1R",
               "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:G1R_Binding",
+              "target": "BIOMD0000000007/KineticLaw:_378373",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378373",
@@ -7170,6 +7250,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000007/Reaction:G2R_Dissociation_UbE",
+              "target": "BIOMD0000000007/KineticLaw:_378422",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378422",
               "target": "BIOMD0000000007/Species:G2R",
               "kind": "math"
@@ -7210,6 +7295,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000007/Reaction:PG2R_Dissociation_UbE",
+              "target": "BIOMD0000000007/KineticLaw:_378471",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378471",
               "target": "BIOMD0000000007/Species:PG2R",
               "kind": "math"
@@ -7228,6 +7318,11 @@
               "source": "BIOMD0000000007/SpeciesReference:_378483",
               "target": "BIOMD0000000007/Species:R",
               "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:Rum1_Production",
+              "target": "BIOMD0000000007/KineticLaw:_378495",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378495",
@@ -7253,6 +7348,11 @@
               "source": "BIOMD0000000007/ModifierSpeciesReference:_378519",
               "target": "BIOMD0000000007/Species:SPF",
               "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:Rum1_Deg_SPF",
+              "target": "BIOMD0000000007/KineticLaw:_378531",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378531",
@@ -7308,6 +7408,11 @@
               "source": "BIOMD0000000007/ModifierSpeciesReference:_378568",
               "target": "BIOMD0000000007/Species:MPF",
               "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:IE_Reaction",
+              "target": "BIOMD0000000007/KineticLaw:_378580",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378580",
@@ -7375,6 +7480,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000007/Reaction:UbE_Reaction",
+              "target": "BIOMD0000000007/KineticLaw:_378628",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378628",
               "target": "BIOMD0000000007/Species:IE",
               "kind": "math"
@@ -7438,6 +7548,11 @@
               "source": "BIOMD0000000007/ModifierSpeciesReference:_378665",
               "target": "BIOMD0000000007/Species:MPF",
               "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000007/Reaction:UbE2_Reaction",
+              "target": "BIOMD0000000007/KineticLaw:_378677",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000007/KineticLaw:_378677",
@@ -7505,6 +7620,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000007/Reaction:Wee1_Reaction",
+              "target": "BIOMD0000000007/KineticLaw:_378725",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378725",
               "target": "BIOMD0000000007/Parameter:Kmw",
               "kind": "math"
@@ -7570,6 +7690,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000007/Reaction:Cdc25_Reaction",
+              "target": "BIOMD0000000007/KineticLaw:_378773",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000007/KineticLaw:_378773",
               "target": "BIOMD0000000007/Species:Cdc25",
               "kind": "math"
@@ -7620,6 +7745,11 @@
               "kind": "math"
             },
             {
+              "source": "BIOMD0000000007/Event:Start",
+              "target": "BIOMD0000000007/EventAssignment:_378809",
+              "kind": "eventAssignment"
+            },
+            {
               "source": "BIOMD0000000007/EventAssignment:_378809",
               "target": "BIOMD0000000007/Parameter:kp",
               "kind": "variable"
@@ -7640,6 +7770,11 @@
               "kind": "math"
             },
             {
+              "source": "BIOMD0000000007/Event:Division",
+              "target": "BIOMD0000000007/EventAssignment:_378833",
+              "kind": "eventAssignment"
+            },
+            {
               "source": "BIOMD0000000007/EventAssignment:_378833",
               "target": "BIOMD0000000007/Parameter:kp",
               "kind": "variable"
@@ -7648,6 +7783,11 @@
               "source": "BIOMD0000000007/EventAssignment:_378833",
               "target": "BIOMD0000000007/Parameter:kp",
               "kind": "math"
+            },
+            {
+              "source": "BIOMD0000000007/Event:Division",
+              "target": "BIOMD0000000007/EventAssignment:_378845",
+              "kind": "eventAssignment"
             },
             {
               "source": "BIOMD0000000007/EventAssignment:_378845",
@@ -7663,7 +7803,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.333 [s]"
+        "jsonReportTime": "0.656 [s]"
       }
     }
   }

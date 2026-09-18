@@ -7,7 +7,9 @@ import pytest
 
 from sbml4humans.links import build_link_graph
 from sbml4humans.model import Edge, EdgeKind, Report
+from sbml4humans.report import report_for_path
 from sbml4humans.resources import (
+    BIOMODELS_CURATED_PATH,
     COMP_ICG_BODY,
     EXAMPLES_DIR,
     FBC_ECOLI_CORE_SBML,
@@ -70,16 +72,23 @@ def test_edges_reference_nodes(repressilator: Report) -> None:
 
 
 def test_reaction_edges(repressilator: Report) -> None:
-    """A reaction links to its participants and its kinetic law to its symbols."""
+    """A reaction links to its participants and its kinetic law to its symbols.
+
+    The reaction names its kinetic law (core §4.11.1), the way it names its
+    species references, so the formula which gives the speed of a reaction is
+    reached from the reaction and the reaction from every element the formula
+    reads.
+    """
     m = "BIOMD0000000012"
     reaction = repressilator.models[0].list_of_reactions[0]
     assert reaction.pk == f"{m}/Reaction:Reaction1"
     reactant = reaction.list_of_reactants[0]
-    assert _edges(repressilator, source=reaction.pk) == {
-        (reaction.pk, reactant.pk, "reactant"),
-    }
     kinetic_law = reaction.kinetic_law
     assert kinetic_law is not None
+    assert _edges(repressilator, source=reaction.pk) == {
+        (reaction.pk, reactant.pk, "reactant"),
+        (reaction.pk, kinetic_law.pk, "kineticLaw"),
+    }
     assert _edges(repressilator, source=kinetic_law.pk) == {
         (kinetic_law.pk, f"{m}/Parameter:kd_mRNA", "math"),
         (kinetic_law.pk, f"{m}/Species:X", "math"),
@@ -656,24 +665,86 @@ def test_math_edges_start_at_the_trigger_and_the_delay() -> None:
         assert pk in nodes
 
 
-def test_an_event_names_its_trigger_its_priority_and_its_delay() -> None:
-    """The event is in the graph over the three objects which hold its math.
+def test_an_event_names_its_trigger_its_priority_its_delay_and_its_assignments() -> (
+    None
+):
+    """The event is in the graph over the objects which hold its math.
 
     An event carries no reference of its own: its math belongs to its trigger,
-    its priority and its delay (core §4.12.1), so without the three links the
-    event would be a node without an edge and the links of the inspector would
-    be empty.
+    its priority, its delay and its event assignments (core §4.12.1), so
+    without these links the event would be a node without an edge, the links
+    of the inspector would be empty and an assignment could not say which
+    event it belongs to.
     """
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "constraint_event.xml")
     (event,) = report.models[0].list_of_events
     assert event.trigger is not None
     assert event.priority is not None
     assert event.delay is not None
+    dose, switch = event.list_of_event_assignments
     assert _edges(report, source=event.pk) == {
         (event.pk, event.trigger.pk, "trigger"),
         (event.pk, event.priority.pk, "priority"),
         (event.pk, event.delay.pk, "delay"),
+        (event.pk, dose.pk, "eventAssignment"),
+        (event.pk, switch.pk, "eventAssignment"),
     }
+
+
+def test_a_kinetic_law_which_reads_nothing_is_connected() -> None:
+    """A kinetic law is part of the graph whatever its formula reads.
+
+    A kinetic law of a constant rate names no element in its math, and before
+    its reaction named it, it was a node without an edge.
+    """
+    sbml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <model id="m">
+    <listOfCompartments>
+      <compartment id="c" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="s" compartment="c" initialAmount="0"
+               hasOnlySubstanceUnits="true" boundaryCondition="false"
+               constant="false"/>
+    </listOfSpecies>
+    <listOfReactions>
+      <reaction id="influx" reversible="false">
+        <listOfProducts>
+          <speciesReference species="s" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>{_mathml("1")}</kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>"""
+    report = SBMLDocumentInfo.from_sbml(sbml)
+    (reaction,) = report.models[0].list_of_reactions
+    assert reaction.kinetic_law is not None
+    assert _edges(report, source=reaction.kinetic_law.pk) == set()
+    assert _edges(report, kind=EdgeKind.KINETIC_LAW) == {
+        (reaction.pk, reaction.kinetic_law.pk, "kineticLaw")
+    }
+
+
+def test_an_event_assignment_of_a_level_2_model_names_its_event() -> None:
+    """An assignment keyed by its meta id is reached from its event.
+
+    A Level 2 event assignment cannot carry an id, and the curated models key
+    it by its meta id, so the link from its event is what says where it
+    belongs.
+    """
+    response = report_for_path(BIOMODELS_CURATED_PATH / "BIOMD0000000007.omex")
+    report = next(iter(response.reports.values())).report
+    events = {e.id: e for e in report.models[0].list_of_events}
+    (assignment,) = events["Start"].list_of_event_assignments
+    assert assignment.id is None
+    assert assignment.pk == "BIOMD0000000007/EventAssignment:_378809"
+    assert {
+        e
+        for e in _edges(report, kind=EdgeKind.EVENT_ASSIGNMENT)
+        if e[1] == assignment.pk
+    } == {(events["Start"].pk, assignment.pk, "eventAssignment")}
 
 
 # -------------------------------------------------------------------------------------

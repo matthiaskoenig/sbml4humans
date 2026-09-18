@@ -1,5 +1,5 @@
 {
-  "uid": "6b05b88bcf0943c2be088a6d1b3fd72c",
+  "uid": "6ecbbe9587f6467b9a466b79824d2b5c",
   "manifest": {
     "entries": [
       {
@@ -1854,6 +1854,11 @@
               "kind": "reactant"
             },
             {
+              "source": "cell/Reaction:sink",
+              "target": "cell/KineticLaw:sink.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "cell/KineticLaw:sink.kineticLaw",
               "target": "cell/Compartment:c",
               "kind": "math"
@@ -1897,7 +1902,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.026 [s]"
+        "jsonReportTime": "0.036 [s]"
       }
     }
   }

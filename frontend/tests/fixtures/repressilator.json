@@ -1,5 +1,5 @@
 {
-  "uid": "07f7f05c1a9f41efb3c944e6b876b9fa",
+  "uid": "2aec3148f40d415995155506c28bfe9d",
   "manifest": {
     "entries": [
       {
@@ -3078,6 +3078,11 @@
               "kind": "reactant"
             },
             {
+              "source": "BIOMD0000000012/Reaction:Reaction1",
+              "target": "BIOMD0000000012/KineticLaw:_420986",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000012/KineticLaw:_420986",
               "target": "BIOMD0000000012/Species:X",
               "kind": "math"
@@ -3098,6 +3103,11 @@
               "kind": "reactant"
             },
             {
+              "source": "BIOMD0000000012/Reaction:Reaction2",
+              "target": "BIOMD0000000012/KineticLaw:_421012",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000012/KineticLaw:_421012",
               "target": "BIOMD0000000012/Species:Y",
               "kind": "math"
@@ -3116,6 +3126,11 @@
               "source": "BIOMD0000000012/SpeciesReference:_421025",
               "target": "BIOMD0000000012/Species:Z",
               "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/Reaction:Reaction3",
+              "target": "BIOMD0000000012/KineticLaw:_421038",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421038",
@@ -3148,6 +3163,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000012/Reaction:Reaction4",
+              "target": "BIOMD0000000012/KineticLaw:_421076",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000012/KineticLaw:_421076",
               "target": "BIOMD0000000012/Species:X",
               "kind": "math"
@@ -3176,6 +3196,11 @@
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421100",
               "target": "BIOMD0000000012/Species:Y",
               "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/Reaction:Reaction5",
+              "target": "BIOMD0000000012/KineticLaw:_421112",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421112",
@@ -3208,6 +3233,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000012/Reaction:Reaction6",
+              "target": "BIOMD0000000012/KineticLaw:_421148",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000012/KineticLaw:_421148",
               "target": "BIOMD0000000012/Species:Z",
               "kind": "math"
@@ -3226,6 +3256,11 @@
               "source": "BIOMD0000000012/SpeciesReference:_421160",
               "target": "BIOMD0000000012/Species:PX",
               "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/Reaction:Reaction7",
+              "target": "BIOMD0000000012/KineticLaw:_421172",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421172",
@@ -3248,6 +3283,11 @@
               "kind": "reactant"
             },
             {
+              "source": "BIOMD0000000012/Reaction:Reaction8",
+              "target": "BIOMD0000000012/KineticLaw:_421196",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000012/KineticLaw:_421196",
               "target": "BIOMD0000000012/Species:PY",
               "kind": "math"
@@ -3266,6 +3306,11 @@
               "source": "BIOMD0000000012/SpeciesReference:_421208",
               "target": "BIOMD0000000012/Species:PZ",
               "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/Reaction:Reaction9",
+              "target": "BIOMD0000000012/KineticLaw:_421220",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421220",
@@ -3296,6 +3341,11 @@
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421244",
               "target": "BIOMD0000000012/Species:PZ",
               "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/Reaction:Reaction10",
+              "target": "BIOMD0000000012/KineticLaw:_421256",
+              "kind": "kineticLaw"
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421256",
@@ -3343,6 +3393,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000012/Reaction:Reaction11",
+              "target": "BIOMD0000000012/KineticLaw:_421292",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000012/KineticLaw:_421292",
               "target": "BIOMD0000000012/Parameter:KM",
               "kind": "math"
@@ -3388,6 +3443,11 @@
               "kind": "modifier"
             },
             {
+              "source": "BIOMD0000000012/Reaction:Reaction12",
+              "target": "BIOMD0000000012/KineticLaw:_421329",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "BIOMD0000000012/KineticLaw:_421329",
               "target": "BIOMD0000000012/Parameter:KM",
               "kind": "math"
@@ -3416,7 +3476,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.149 [s]"
+        "jsonReportTime": "0.279 [s]"
       }
     }
   }

@@ -34,6 +34,14 @@ The link is two links of one kind: from the [reaction](reaction.md) to every [mo
 
 It is shown under "References" of the reaction and under "Referenced by" of the species. A species which is a modifier of a reaction usually also appears in the math of its kinetic law, which is a link of the kind "math".
 
+## kinetic law
+
+The formula which gives the speed of a reaction.
+
+A [reaction](reaction.md) holds the formula of its speed in a [kinetic law](kineticlaw.md) of its own, and the link runs from the reaction to it. The elements the formula reads are linked from the kinetic law with [math](links.md#math) links, and its local parameters are among them.
+
+It is shown under "References" of the reaction and under "Referenced by" of the kinetic law.
+
 ## trigger
 
 The condition an event fires on.
@@ -57,6 +65,14 @@ The formula which postpones the execution of an event.
 An [event](event.md) may hold a [delay](delay.md) of its own, and the link runs from the event to it.
 
 It is shown under "References" of the event and under "Referenced by" of the delay.
+
+## event assignment
+
+A new value an event gives to an element of the model.
+
+An [event](event.md) names every [event assignment](eventassignment.md) of its list, and each assignment names the element it sets with a [variable](links.md#variable) link and the elements its formula reads with [math](links.md#math) links. An assignment carries no identifier in most models, so this link is what says which event it belongs to.
+
+It is shown under "References" of the event and under "Referenced by" of the assignment.
 
 ## variable
 

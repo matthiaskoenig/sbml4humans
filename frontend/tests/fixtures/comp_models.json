@@ -1,5 +1,5 @@
 {
-  "uid": "d949fa5cd85d47ae96e0192bb2a7d449",
+  "uid": "90be0f3e507446349509f004e0a817c2",
   "manifest": {
     "entries": [
       {
@@ -488,6 +488,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_minimal/Reaction:J0",
+              "target": "omex_minimal/KineticLaw:J0.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_minimal/KineticLaw:J0.kineticLaw",
               "target": "omex_minimal/Species:S2",
               "kind": "math"
@@ -511,7 +516,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.012 [s]"
       }
     },
     "./models/omex_comp.xml": {
@@ -2129,6 +2134,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_comp/Reaction:J0",
+              "target": "omex_comp/KineticLaw:J0.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
@@ -2162,6 +2172,11 @@
               "source": "omex_comp/SpeciesReference:J1.product.S2",
               "target": "omex_comp/Species:S2",
               "kind": "product"
+            },
+            {
+              "source": "omex_comp/Reaction:J1",
+              "target": "omex_comp/KineticLaw:J1.kineticLaw",
+              "kind": "kineticLaw"
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
@@ -2199,6 +2214,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_comp/Reaction:J2",
+              "target": "omex_comp/KineticLaw:J2.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
@@ -2232,6 +2252,11 @@
               "source": "omex_comp/SpeciesReference:J3.product.S4",
               "target": "omex_comp/Species:S4",
               "kind": "product"
+            },
+            {
+              "source": "omex_comp/Reaction:J3",
+              "target": "omex_comp/KineticLaw:J3.kineticLaw",
+              "kind": "kineticLaw"
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
@@ -2277,7 +2302,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.031 [s]"
+        "jsonReportTime": "0.048 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -4076,6 +4101,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_comp/Reaction:J0",
+              "target": "omex_comp/KineticLaw:J0.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
@@ -4109,6 +4139,11 @@
               "source": "omex_comp/SpeciesReference:J1.product.S2",
               "target": "omex_comp/Species:S2",
               "kind": "product"
+            },
+            {
+              "source": "omex_comp/Reaction:J1",
+              "target": "omex_comp/KineticLaw:J1.kineticLaw",
+              "kind": "kineticLaw"
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
@@ -4146,6 +4181,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_comp/Reaction:J2",
+              "target": "omex_comp/KineticLaw:J2.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Parameter:D",
               "kind": "math"
@@ -4179,6 +4219,11 @@
               "source": "omex_comp/SpeciesReference:J3.product.S4",
               "target": "omex_comp/Species:S4",
               "kind": "product"
+            },
+            {
+              "source": "omex_comp/Reaction:J3",
+              "target": "omex_comp/KineticLaw:J3.kineticLaw",
+              "kind": "kineticLaw"
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
@@ -4216,6 +4261,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_comp/Reaction:submodel0__J0",
+              "target": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
               "target": "omex_comp/Species:submodel0__S2",
               "kind": "math"
@@ -4244,6 +4294,11 @@
               "source": "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2",
               "target": "omex_comp/Species:submodel1__S2",
               "kind": "product"
+            },
+            {
+              "source": "omex_comp/Reaction:submodel1__J0",
+              "target": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
+              "kind": "kineticLaw"
             },
             {
               "source": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
@@ -4276,6 +4331,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_comp/Reaction:submodel2__J0",
+              "target": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
               "target": "omex_comp/Species:submodel2__S2",
               "kind": "math"
@@ -4304,6 +4364,11 @@
               "source": "omex_comp/SpeciesReference:submodel3__J0.product.submodel3__S2",
               "target": "omex_comp/Species:submodel3__S2",
               "kind": "product"
+            },
+            {
+              "source": "omex_comp/Reaction:submodel3__J0",
+              "target": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
+              "kind": "kineticLaw"
             },
             {
               "source": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
@@ -4336,6 +4401,11 @@
               "kind": "product"
             },
             {
+              "source": "omex_comp/Reaction:submodel4__J0",
+              "target": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
               "source": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
               "target": "omex_comp/Species:submodel4__S2",
               "kind": "math"
@@ -4349,7 +4419,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.039 [s]"
+        "jsonReportTime": "0.062 [s]"
       }
     }
   }

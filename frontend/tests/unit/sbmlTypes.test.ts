@@ -90,7 +90,13 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(31);
+    expect(EDGE_KINDS).toHaveLength(33);
+    // a reaction names its kinetic law behind its participants, an event its assignments behind
+    // its trigger, its priority and its delay
+    expect(EDGE_KINDS.indexOf("kineticLaw")).toBe(EDGE_KINDS.indexOf("modifier") + 1);
+    expect(EDGE_KINDS.indexOf("eventAssignment")).toBe(EDGE_KINDS.indexOf("delay") + 1);
+    expect(edgeKindLabel("kineticLaw")).toBe("kinetic law");
+    expect(edgeKindLabel("eventAssignment")).toBe("event assignment");
     expect(edgeKindLabel("geneProductAssociation")).toBe("gene product association");
     expect(edgeKindLabel("fluxBound")).toBe("flux bound");
     expect(edgeKindLabel("replacedBy")).toBe("replaced by");

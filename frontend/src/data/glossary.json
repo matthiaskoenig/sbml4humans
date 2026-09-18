@@ -1394,6 +1394,10 @@
       "label": "deletion",
       "summary": "an element which a submodel removes, and the deletion which removes it"
     },
+    "eventAssignment": {
+      "label": "event assignment",
+      "summary": "a new value an event gives to an element of the model"
+    },
     "fluxBound": {
       "label": "flux bound",
       "summary": "what bounds the flux of a reaction"
@@ -1417,6 +1421,10 @@
     "input": {
       "label": "input",
       "summary": "a qualitative species a transition reads"
+    },
+    "kineticLaw": {
+      "label": "kinetic law",
+      "summary": "the formula which gives the speed of a reaction"
     },
     "math": {
       "label": "math",

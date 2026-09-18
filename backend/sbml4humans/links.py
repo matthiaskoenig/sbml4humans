@@ -713,6 +713,8 @@ class LinkGraphBuilder:
         each of those names one species (core §4.11.1 to §4.11.4), so the
         edge of a participation is two edges of its kind: one from the
         reaction to the reference and one from the reference to the species.
+        The reaction names its kinetic law as well, and the math edges start at
+        the kinetic law, which holds the formula (core §4.11.5).
         """
         self._edge(reaction, reaction.compartment, EdgeKind.COMPARTMENT, index)
         for sr in reaction.list_of_reactants:
@@ -733,6 +735,9 @@ class LinkGraphBuilder:
                 self._association_edges(reaction, association, index)
         klaw = reaction.kinetic_law
         if klaw is not None:
+            self.edges.append(
+                Edge(source=reaction.pk, target=klaw.pk, kind=EdgeKind.KINETIC_LAW)
+            )
             self._math_edges(klaw, index, kinetic_law_pk=klaw.pk)
             for lp in klaw.list_of_local_parameters:
                 self._units_edge(lp, lp.units, index)
@@ -859,10 +864,11 @@ class LinkGraphBuilder:
     def _event_edges(self, event: Event, index: ModelIndex) -> None:
         """The edges of an event: those of its children and of its assignments.
 
-        The math of an event belongs to its trigger, its priority and its
-        delay (core §4.12.2 to §4.12.4), so every math edge starts at the
-        object which reads the element, not at the event around it, and the
-        event names the three the way a reaction names its species references.
+        The math of an event belongs to its trigger, its priority, its delay
+        and its event assignments (core §4.12.2 to §4.12.5), so every math
+        edge starts at the object which reads the element, not at the event
+        around it, and the event names each of them the way a reaction names
+        its species references.
         """
         for child, kind in (
             (event.trigger, EdgeKind.TRIGGER),
@@ -874,6 +880,9 @@ class LinkGraphBuilder:
         for child in _event_children(event):
             self._math_edges(child, index)
         for ea in event.list_of_event_assignments:
+            self.edges.append(
+                Edge(source=event.pk, target=ea.pk, kind=EdgeKind.EVENT_ASSIGNMENT)
+            )
             self._edge(ea, ea.variable, EdgeKind.VARIABLE, index)
             self._math_edges(ea, index)
 
