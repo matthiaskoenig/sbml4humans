@@ -107,7 +107,7 @@ The report lists the uncertainties of an element in its inspector with the numbe
 
 <span id="xml"></span>**xml**
 
-The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display. The document and the model are the exception: their XML is the whole file, so the report carries their annotation element instead.
+The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display. The document and the model are the exception: their XML is the whole file, so the report carries their annotation element instead. The nodes of a [gene product association](geneproductassociation.md) carry none either, because the XML of their [reaction](reaction.md) contains the whole association and every node of a deep tree would repeat the part below it.
 
 The "XML" button in the header of the inspector puts the XML view in the place of its sections.
 

@@ -1213,9 +1213,70 @@ def test_gene_product_association_is_the_tree_of_the_specification() -> None:
     assert isinstance(single, GeneProductRef)
     assert single.id == "ref_galP"
     assert single.gene_product == "g_galP"
-    assert (
-        single.xml == '<fbc:geneProductRef fbc:id="ref_galP" fbc:geneProduct="g_galP"/>'
-    )
+
+
+def test_the_nodes_of_an_association_leave_their_xml_to_the_reaction() -> None:
+    """The xml of an association is part of the xml of its reaction.
+
+    Every node of the tree repeated the xml of its subtree, so the bytes of an
+    association grew with its depth times its size: 5 MB of the report of
+    Recon3D. The reaction carries the whole association as the file writes it.
+    """
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    reaction = next(r for r in report.models[0].list_of_reactions if r.id == "v1")
+    assert reaction.xml is not None
+    assert '<fbc:geneProductRef fbc:id="ref_galP"' in reaction.xml
+    assert reaction.fbc is not None
+    association = reaction.fbc.gene_product_association
+    assert association is not None
+    root = association.association
+    assert isinstance(root, Or)
+    nodes = [association, root, *root.associations]
+    assert [node.xml for node in nodes] == [None] * len(nodes)
+
+
+def test_the_json_of_an_association_node_leaves_out_what_it_does_not_carry() -> None:
+    """A node of an association tree is written without its empty attributes.
+
+    The 33000 nodes of the association trees of Recon3D carry none of the
+    attributes of `SBase` in the file, and their nulls and empty lists were
+    4.5 MB of the report. Every one of the attributes is optional in the
+    schema, and the JSON reads back into the same node.
+    """
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    reaction = next(r for r in report.models[0].list_of_reactions if r.id == "v1")
+    assert reaction.fbc is not None
+    association = reaction.fbc.gene_product_association
+    assert association is not None
+    data = json.loads(association.model_dump_json(by_alias=True))
+    assert data["id"] == "gpa_v1"
+    root = data["association"]
+    assert set(root) == {"pk", "sbmlType", "associations"}
+    complex_, single = root["associations"]
+    assert set(complex_) == {"pk", "sbmlType", "associations"}
+    assert set(complex_["associations"][0]) == {"pk", "sbmlType", "geneProduct"}
+    assert set(single) == {"pk", "sbmlType", "id", "geneProduct"}
+    assert type(association).model_validate(data) == association
+    # an element of every other type keeps its attributes, empty or not
+    assert "notes" in json.loads(reaction.model_dump_json(by_alias=True))
+
+
+def test_the_document_is_keyed_without_writing_its_xml(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The key of the document is given, so the report never serialises the file.
+
+    Every call of the key of an element fell back to the digest of its xml,
+    and for the document, whose key is fixed, that was the whole file three
+    times over: 0.8 s of the report of Recon3D, for a key nothing used.
+    """
+    doc = read_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+
+    def to_sbml(_: libsbml.SBMLDocument) -> str:
+        raise AssertionError("the document is written to xml")
+
+    monkeypatch.setattr(libsbml.SBMLDocument, "toSBML", to_sbml)
+    assert SBMLDocumentInfo(doc).document().pk == "document/SBMLDocument:document"
 
 
 def test_association_of_a_single_gene_product() -> None:

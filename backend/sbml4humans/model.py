@@ -6,9 +6,16 @@ uses snake_case, the JSON of the frontend camelCase (`by_alias=True`).
 """
 
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, WithJsonSchema
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    WithJsonSchema,
+    model_serializer,
+)
 from pydantic.alias_generators import to_camel
 
 
@@ -543,21 +550,44 @@ class GeneProduct(SBase):
     associated_species: str | None = None
 
 
-class GeneProductRef(SBase):
+class AssociationNode(SBase):
+    """An element of a gene product association, written without its empty fields.
+
+    The association trees are the bulk of a genome scale model, 33000 nodes of
+    Recon3D, and their nodes carry none of the attributes of `SBase` in a real
+    file, whose nulls and empty lists were 4.5 MB of its report. Every field
+    left out is optional in the schema and reads back as the default it is.
+    The class holds the serialisation alone and leaves `sbml_type` to the
+    classes below it, the way `SBaseRefFields` does.
+    """
+
+    @model_serializer(mode="wrap")
+    def _leave_out_empty_fields(
+        self, handler: SerializerFunctionWrapHandler
+    ) -> dict[str, Any]:
+        """The fields of the node which carry a value."""
+        return {
+            key: value
+            for key, value in handler(self).items()
+            if value is not None and value != []
+        }
+
+
+class GeneProductRef(AssociationNode):
     """A leaf of a gene product association: the gene product it names."""
 
     sbml_type: Literal["GeneProductRef"] = "GeneProductRef"
     gene_product: str
 
 
-class And(SBase):
+class And(AssociationNode):
     """Associations which are all needed at once: the subunits of a complex."""
 
     sbml_type: Literal["And"] = "And"
     associations: list[Association] = Field(default_factory=list)
 
 
-class Or(SBase):
+class Or(AssociationNode):
     """Associations of which one suffices: the isozymes of a reaction."""
 
     sbml_type: Literal["Or"] = "Or"
@@ -571,7 +601,7 @@ class Or(SBase):
 Association = GeneProductRef | And | Or
 
 
-class GeneProductAssociation(SBase):
+class GeneProductAssociation(AssociationNode):
     """The genes under which a reaction can run, as the tree of fbc §3.9."""
 
     sbml_type: Literal["GeneProductAssociation"] = "GeneProductAssociation"

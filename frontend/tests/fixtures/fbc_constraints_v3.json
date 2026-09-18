@@ -1,5 +1,5 @@
 {
-  "uid": "b404116c46d143329b1a4be9612455d7",
+  "uid": "846aafe6f684423da706f8b12f56b9f7",
   "manifest": {
     "entries": [
       {
@@ -560,76 +560,23 @@
                     "pk": "fbc_constraints_v3/GeneProductAssociation:gpa_v1",
                     "sbmlType": "GeneProductAssociation",
                     "id": "gpa_v1",
-                    "metaId": null,
                     "name": "association of the uptake",
-                    "sbo": null,
-                    "notes": null,
-                    "cvterms": [],
-                    "history": null,
-                    "xml": "<fbc:geneProductAssociation fbc:id=\"gpa_v1\" fbc:name=\"association of the uptake\">\n  <fbc:or>\n    <fbc:and>\n      <fbc:geneProductRef fbc:geneProduct=\"g_ptsG\"/>\n      <fbc:geneProductRef fbc:geneProduct=\"g_ptsH\"/>\n    </fbc:and>\n    <fbc:geneProductRef fbc:id=\"ref_galP\" fbc:geneProduct=\"g_galP\"/>\n  </fbc:or>\n</fbc:geneProductAssociation>",
-                    "comp": null,
-                    "uncertainties": [],
-                    "keyValuePairs": [],
                     "association": {
                       "pk": "fbc_constraints_v3/Or:gpa_v1.association",
                       "sbmlType": "Or",
-                      "id": null,
-                      "metaId": null,
-                      "name": null,
-                      "sbo": null,
-                      "notes": null,
-                      "cvterms": [],
-                      "history": null,
-                      "xml": "<fbc:or>\n  <fbc:and>\n    <fbc:geneProductRef fbc:geneProduct=\"g_ptsG\"/>\n    <fbc:geneProductRef fbc:geneProduct=\"g_ptsH\"/>\n  </fbc:and>\n  <fbc:geneProductRef fbc:id=\"ref_galP\" fbc:geneProduct=\"g_galP\"/>\n</fbc:or>",
-                      "comp": null,
-                      "uncertainties": [],
-                      "keyValuePairs": [],
                       "associations": [
                         {
                           "pk": "fbc_constraints_v3/And:gpa_v1.association.0",
                           "sbmlType": "And",
-                          "id": null,
-                          "metaId": null,
-                          "name": null,
-                          "sbo": null,
-                          "notes": null,
-                          "cvterms": [],
-                          "history": null,
-                          "xml": "<fbc:and>\n  <fbc:geneProductRef fbc:geneProduct=\"g_ptsG\"/>\n  <fbc:geneProductRef fbc:geneProduct=\"g_ptsH\"/>\n</fbc:and>",
-                          "comp": null,
-                          "uncertainties": [],
-                          "keyValuePairs": [],
                           "associations": [
                             {
                               "pk": "fbc_constraints_v3/GeneProductRef:gpa_v1.association.0.0",
                               "sbmlType": "GeneProductRef",
-                              "id": null,
-                              "metaId": null,
-                              "name": null,
-                              "sbo": null,
-                              "notes": null,
-                              "cvterms": [],
-                              "history": null,
-                              "xml": "<fbc:geneProductRef fbc:geneProduct=\"g_ptsG\"/>",
-                              "comp": null,
-                              "uncertainties": [],
-                              "keyValuePairs": [],
                               "geneProduct": "g_ptsG"
                             },
                             {
                               "pk": "fbc_constraints_v3/GeneProductRef:gpa_v1.association.0.1",
                               "sbmlType": "GeneProductRef",
-                              "id": null,
-                              "metaId": null,
-                              "name": null,
-                              "sbo": null,
-                              "notes": null,
-                              "cvterms": [],
-                              "history": null,
-                              "xml": "<fbc:geneProductRef fbc:geneProduct=\"g_ptsH\"/>",
-                              "comp": null,
-                              "uncertainties": [],
-                              "keyValuePairs": [],
                               "geneProduct": "g_ptsH"
                             }
                           ]
@@ -638,16 +585,6 @@
                           "pk": "fbc_constraints_v3/GeneProductRef:ref_galP",
                           "sbmlType": "GeneProductRef",
                           "id": "ref_galP",
-                          "metaId": null,
-                          "name": null,
-                          "sbo": null,
-                          "notes": null,
-                          "cvterms": [],
-                          "history": null,
-                          "xml": "<fbc:geneProductRef fbc:id=\"ref_galP\" fbc:geneProduct=\"g_galP\"/>",
-                          "comp": null,
-                          "uncertainties": [],
-                          "keyValuePairs": [],
                           "geneProduct": "g_galP"
                         }
                       ]
@@ -721,31 +658,9 @@
                   "geneProductAssociation": {
                     "pk": "fbc_constraints_v3/GeneProductAssociation:v2.geneProductAssociation",
                     "sbmlType": "GeneProductAssociation",
-                    "id": null,
-                    "metaId": null,
-                    "name": null,
-                    "sbo": null,
-                    "notes": null,
-                    "cvterms": [],
-                    "history": null,
-                    "xml": "<fbc:geneProductAssociation>\n  <fbc:geneProductRef fbc:geneProduct=\"g_galP\"/>\n</fbc:geneProductAssociation>",
-                    "comp": null,
-                    "uncertainties": [],
-                    "keyValuePairs": [],
                     "association": {
                       "pk": "fbc_constraints_v3/GeneProductRef:v2.geneProductAssociation.association",
                       "sbmlType": "GeneProductRef",
-                      "id": null,
-                      "metaId": null,
-                      "name": null,
-                      "sbo": null,
-                      "notes": null,
-                      "cvterms": [],
-                      "history": null,
-                      "xml": "<fbc:geneProductRef fbc:geneProduct=\"g_galP\"/>",
-                      "comp": null,
-                      "uncertainties": [],
-                      "keyValuePairs": [],
                       "geneProduct": "g_galP"
                     }
                   }

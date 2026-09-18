@@ -334,23 +334,6 @@ class SBMLDocumentInfo:
             return key
         return hashlib.sha1(sbase.toSBML().encode("utf-8")).hexdigest()
 
-    def _pk(
-        self,
-        sbase: libsbml.SBase,
-        scope: str | None = None,
-        sbml_type: str | None = None,
-        key: str | None = None,
-        use_id: bool = True,
-    ) -> str:
-        """The primary key `<scope>/<type>:<id>` of an element.
-
-        The type is the `sbml_type` of the report object, which differs from the
-        libsbml class for a comp model definition. The id falls back to the
-        metaId, then to `key` and finally to the digest of the xml.
-        """
-        type_ = sbml_type or self._sbml_type(sbase)
-        return f"{scope or self.scope}/{type_}:{self._key(sbase, key, use_id)}"
-
     def sbase(
         self,
         sbase: libsbml.SBase,
@@ -359,20 +342,37 @@ class SBMLDocumentInfo:
         pk: str | None = None,
         key: str | None = None,
         use_id: bool = True,
+        with_xml: bool = True,
     ) -> dict[str, Any]:
         """The fields of `SBase` of an element, for the constructor of its class.
 
-        A known pk is passed in, every other pk is built from scope and type.
-        A nested element without an id or metaId uses `key`, derived from its
-        parent, instead of the digest of its xml (see `_key`).
+        The primary key is `<scope>/<type>:<key>`. The type is the `sbml_type`
+        of the report object, which differs from the libsbml class for a comp
+        model definition, and the key is the one of `_key`, which falls back to
+        `key`, derived from the parent of a nested element without an id or a
+        metaId. It is computed once and keys the replacements and the
+        uncertainties of the element as well. A known pk is passed in with its
+        key, which is how the document is keyed without the digest of the
+        whole file.
+
+        `with_xml` is False for an element whose xml is part of the xml of its
+        parent in full and says nothing more, a node of a gene product
+        association, which would otherwise repeat its subtree at every level.
         """
+        if pk is None:
+            key = self._key(sbase, key, use_id)
+            type_ = sbml_type or self._sbml_type(sbase)
+            pk = f"{scope or self.scope}/{type_}:{key}"
+        elif key is None:
+            key = pk
         xml = None
-        if sbase.getTypeCode() not in {libsbml.SBML_DOCUMENT, libsbml.SBML_MODEL}:
+        if with_xml and sbase.getTypeCode() not in {
+            libsbml.SBML_DOCUMENT,
+            libsbml.SBML_MODEL,
+        }:
             xml = sbase.toSBML()
         return {
-            "pk": pk
-            if pk is not None
-            else self._pk(sbase, scope, sbml_type, key, use_id),
+            "pk": pk,
             "id": _identifier(sbase),
             "meta_id": sbase.getMetaId() if sbase.isSetMetaId() else None,
             "name": sbase.getName() if sbase.isSetName() else None,
@@ -381,8 +381,8 @@ class SBMLDocumentInfo:
             "cvterms": self.cvterms(sbase),
             "history": self.history(sbase),
             "xml": xml,
-            "comp": self.comp_sbase(sbase, self._key(sbase, key, use_id)),
-            "uncertainties": self.uncertainties(sbase, self._key(sbase, key, use_id)),
+            "comp": self.comp_sbase(sbase, key),
+            "uncertainties": self.uncertainties(sbase, key),
             "key_value_pairs": self.key_value_pairs(sbase),
         }
 
@@ -497,8 +497,8 @@ class SBMLDocumentInfo:
         ]
         fields = self.sbase(
             doc,
-            scope=DOCUMENT_SCOPE,
             pk=f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}",
+            key=DOCUMENT_SCOPE,
         )
         return SBMLDocument(
             **fields,
@@ -1267,7 +1267,7 @@ class SBMLDocumentInfo:
             else None
         )
         return GeneProductAssociation(
-            **self.sbase(gpa, key=key), association=association
+            **self.sbase(gpa, key=key, with_xml=False), association=association
         )
 
     def association(self, a: libsbml.FbcAssociation, key: str) -> Association:
@@ -1279,18 +1279,19 @@ class SBMLDocumentInfo:
         """
         if isinstance(a, libsbml.GeneProductRef):
             return GeneProductRef(
-                **self.sbase(a, key=key), gene_product=a.getGeneProduct()
+                **self.sbase(a, key=key, with_xml=False),
+                gene_product=a.getGeneProduct(),
             )
         # the type of the report is the name the specification gives the element,
         # which is the name of the libsbml class without its package prefix
         if isinstance(a, libsbml.FbcAnd):
             return And(
-                **self.sbase(a, sbml_type="And", key=key),
+                **self.sbase(a, sbml_type="And", key=key, with_xml=False),
                 associations=self._associations(a, key),
             )
         if isinstance(a, libsbml.FbcOr):
             return Or(
-                **self.sbase(a, sbml_type="Or", key=key),
+                **self.sbase(a, sbml_type="Or", key=key, with_xml=False),
                 associations=self._associations(a, key),
             )
         raise TypeError(a)
