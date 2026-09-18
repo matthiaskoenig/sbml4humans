@@ -1,5 +1,5 @@
 {
-  "uid": "051946e236b54b75b5add56f284ff172",
+  "uid": "7903fb2a548146dcbd534fa2d6dd9e2c",
   "manifest": {
     "entries": [
       {
@@ -223,7 +223,9 @@
             "listOfSubmodels": [],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           }
         ],
         "externalModelDefinitions": [],

@@ -52,6 +52,8 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Flux Balance Constraints (fbc)](fbc.md) | the package which describes a constraint based model |
 | [Gene product](geneproduct.md) | a gene or one of its products which the reactions of the model depend on |
 | [Objective](objective.md) | the function a flux balance analysis maximises or minimises |
+| [Flux objective](fluxobjective.md) | one term of an objective: a reaction weighted by a coefficient |
+| [Flux bound](fluxbound.md) | a constraint on the flux of a reaction, as fbc Version 1 writes it |
 | [Gene product association](geneproductassociation.md) | the genes a reaction needs, as the tree of operators over them |
 | [And](and.md) | the associations below it are all needed at once |
 | [Or](or.md) | one of the associations below it suffices |

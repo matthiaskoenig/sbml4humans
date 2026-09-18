@@ -17,10 +17,10 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 | [products](#products) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [modifiers](#modifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [kinetic law](#kinetic-law) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [gene product association](#gene-product-association) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc 3.9](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [gene product association](#gene-product-association) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

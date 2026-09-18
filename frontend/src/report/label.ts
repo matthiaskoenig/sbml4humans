@@ -49,6 +49,9 @@ export function elementLabel(
   // a leaf of a gene product association is named by the gene product it names, the way a link
   // of a comp reference chain is named by what it names
   if (element?.sbmlType === "GeneProductRef") return element.geneProduct;
+  // a flux objective is named by the reaction it weighs, which is what its objective lists and
+  // what its key would otherwise spell out behind the identifier of that objective
+  if (element?.sbmlType === "FluxObjective") return element.reaction;
   // a link of a reference chain is named by what it names, which is what the file writes and
   // what its key would otherwise spell out as the key of its parent and the word sBaseRef
   if (element?.sbmlType === "SBaseRef") {

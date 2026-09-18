@@ -177,6 +177,9 @@ export class ReportIndex {
           this.addAssociation(element.fbc.geneProductAssociation.association);
         }
         break;
+      case "Objective":
+        for (const fluxObjective of element.listOfFluxObjectives ?? []) this.add(fluxObjective);
+        break;
       case "Submodel":
         for (const deletion of element.listOfDeletions ?? []) this.add(deletion);
         break;

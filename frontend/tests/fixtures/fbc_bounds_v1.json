@@ -1,5 +1,5 @@
 {
-  "uid": "f95d2ece623e43cc86c5496a8ed81e17",
+  "uid": "0248382052b84124a8d52e5696105858",
   "manifest": {
     "entries": [
       {
@@ -502,8 +502,22 @@
                 "type": "maximize",
                 "listOfFluxObjectives": [
                   {
+                    "pk": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"EX_biomass\" fbc:coefficient=\"1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "EX_biomass",
-                    "coefficient": 1
+                    "reaction2": null,
+                    "coefficient": 1,
+                    "variableType": null
                   }
                 ]
               },
@@ -523,12 +537,83 @@
                 "type": "minimize",
                 "listOfFluxObjectives": [
                   {
+                    "pk": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"EX_glc\" fbc:coefficient=\"-1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "EX_glc",
-                    "coefficient": -1
+                    "reaction2": null,
+                    "coefficient": -1,
+                    "variableType": null
                   }
                 ]
               }
-            ]
+            ],
+            "listOfFluxBounds": [
+              {
+                "pk": "fbc_bounds_v1/FluxBound:v1_lb",
+                "sbmlType": "FluxBound",
+                "id": "v1_lb",
+                "metaId": "meta_v1_lb",
+                "name": "lower bound of the glycolysis",
+                "sbo": null,
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The reaction is irreversible, so its flux may not become negative.</p>\n  </body>\n</notes>",
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:fluxBound metaid=\"meta_v1_lb\" fbc:id=\"v1_lb\" fbc:name=\"lower bound of the glycolysis\" fbc:reaction=\"v1\" fbc:operation=\"greaterEqual\" fbc:value=\"0\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The reaction is irreversible, so its flux may not become negative.</p>\n    </body>\n  </notes>\n</fbc:fluxBound>",
+                "comp": null,
+                "uncertainties": [],
+                "reaction": "v1",
+                "operation": "greaterEqual",
+                "value": 0
+              },
+              {
+                "pk": "fbc_bounds_v1/FluxBound:v1_ub",
+                "sbmlType": "FluxBound",
+                "id": "v1_ub",
+                "metaId": null,
+                "name": "upper bound of the glycolysis",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:fluxBound fbc:id=\"v1_ub\" fbc:name=\"upper bound of the glycolysis\" fbc:reaction=\"v1\" fbc:operation=\"lessEqual\" fbc:value=\"INF\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "reaction": "v1",
+                "operation": "lessEqual",
+                "value": null
+              },
+              {
+                "pk": "fbc_bounds_v1/FluxBound:EX_glc_fixed",
+                "sbmlType": "FluxBound",
+                "id": "EX_glc_fixed",
+                "metaId": null,
+                "name": "fixed glucose uptake",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:fluxBound fbc:id=\"EX_glc_fixed\" fbc:name=\"fixed glucose uptake\" fbc:reaction=\"EX_glc\" fbc:operation=\"equal\" fbc:value=\"-10\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "reaction": "EX_glc",
+                "operation": "equal",
+                "value": -10
+              }
+            ],
+            "fbc": {
+              "strict": null,
+              "activeObjective": "biomass_max"
+            }
           }
         ],
         "externalModelDefinitions": [],
@@ -667,6 +752,27 @@
               "name": null,
               "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
             },
+            "fbc_bounds_v1/FluxBound:v1_lb": {
+              "pk": "fbc_bounds_v1/FluxBound:v1_lb",
+              "sbmlType": "FluxBound",
+              "id": "v1_lb",
+              "name": "lower bound of the glycolysis",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxBound:v1_ub": {
+              "pk": "fbc_bounds_v1/FluxBound:v1_ub",
+              "sbmlType": "FluxBound",
+              "id": "v1_ub",
+              "name": "upper bound of the glycolysis",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxBound:EX_glc_fixed": {
+              "pk": "fbc_bounds_v1/FluxBound:EX_glc_fixed",
+              "sbmlType": "FluxBound",
+              "id": "EX_glc_fixed",
+              "name": "fixed glucose uptake",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
             "fbc_bounds_v1/Objective:biomass_max": {
               "pk": "fbc_bounds_v1/Objective:biomass_max",
               "sbmlType": "Objective",
@@ -674,11 +780,25 @@
               "name": "maximal biomass",
               "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
             },
+            "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass": {
+              "pk": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
+              "sbmlType": "FluxObjective",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
             "fbc_bounds_v1/Objective:glc_min": {
               "pk": "fbc_bounds_v1/Objective:glc_min",
               "sbmlType": "Objective",
               "id": "glc_min",
               "name": "minimal glucose uptake",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc": {
+              "pk": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
+              "sbmlType": "FluxObjective",
+              "id": null,
+              "name": null,
               "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
             }
           },
@@ -804,14 +924,44 @@
               "kind": "reactant"
             },
             {
+              "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
+              "target": "fbc_bounds_v1/Objective:biomass_max",
+              "kind": "activeObjective"
+            },
+            {
               "source": "fbc_bounds_v1/Objective:biomass_max",
+              "target": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
               "target": "fbc_bounds_v1/Reaction:EX_biomass",
               "kind": "fluxObjective"
             },
             {
               "source": "fbc_bounds_v1/Objective:glc_min",
+              "target": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
               "target": "fbc_bounds_v1/Reaction:EX_glc",
               "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxBound:v1_lb",
+              "target": "fbc_bounds_v1/Reaction:v1",
+              "kind": "fluxBound"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxBound:v1_ub",
+              "target": "fbc_bounds_v1/Reaction:v1",
+              "kind": "fluxBound"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxBound:EX_glc_fixed",
+              "target": "fbc_bounds_v1/Reaction:EX_glc",
+              "kind": "fluxBound"
             }
           ]
         }

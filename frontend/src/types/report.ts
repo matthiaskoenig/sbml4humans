@@ -21,6 +21,7 @@ export type EdgeKind =
   | "geneProductAssociation"
   | "associatedSpecies"
   | "fluxObjective"
+  | "activeObjective"
   | "modelRef"
   | "port"
   | "deletion"
@@ -294,6 +295,8 @@ export interface Model {
   listOfPorts?: Port[];
   listOfGeneProducts?: GeneProduct[];
   listOfObjectives?: Objective[];
+  listOfFluxBounds?: FluxBound[];
+  fbc?: ModelFbc | null;
 }
 /**
  * The conversion factor parameter of a model or species.
@@ -664,7 +667,7 @@ export interface GeneProductAssociation {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
-  association?: (GeneProductRef | And | Or) | null;
+  association?: GeneProductRef | And | Or | null;
 }
 /**
  * A leaf of a gene product association: the gene product it names.
@@ -921,11 +924,61 @@ export interface Objective {
   listOfFluxObjectives?: FluxObjective[];
 }
 /**
- * A weighted reaction of an objective.
+ * One term of an objective: a reaction weighted by a coefficient.
  */
 export interface FluxObjective {
+  pk: string;
+  sbmlType?: "FluxObjective";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
   reaction: string;
+  reaction2?: string | null;
   coefficient?: number | null;
+  variableType?: string | null;
+}
+/**
+ * A bound of the flux of a reaction, the constraint of fbc Version 1.
+ *
+ * Version 2 replaced it by the `lowerFluxBound` and `upperFluxBound`
+ * attributes of a reaction, which name a parameter instead of holding a
+ * value, so a bound of a Version 1 document is an element of the report and
+ * of no later one.
+ */
+export interface FluxBound {
+  pk: string;
+  sbmlType?: "FluxBound";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  reaction?: string | null;
+  operation?: string | null;
+  value?: number | null;
+}
+/**
+ * The fbc extension of a model.
+ *
+ * `strict` exists from Version 2 on and `active_objective` is the attribute
+ * of the `listOfObjectives`, which the report does not carry as an object of
+ * its own (fbc §3.3, §3.3.1).
+ */
+export interface ModelFbc {
+  strict?: boolean | null;
+  activeObjective?: string | null;
 }
 /**
  * A comp reference to a model in another document.

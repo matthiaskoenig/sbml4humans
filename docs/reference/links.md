@@ -92,11 +92,13 @@ It is shown under "References" of the element and under "Referenced by" of the p
 
 ## flux bound
 
-The parameter which bounds the flux of a reaction.
+What bounds the flux of a reaction.
 
-A [reaction](reaction.md) of a model which uses fbc names the [parameter](parameter.md) of its lower and of its upper flux bound. Both links are of this kind, which parameter is which bound is shown in the attributes of the reaction.
+A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its lower and of its upper flux bound. Both links are of this kind, which parameter is which bound is shown in the attributes of the reaction.
 
-The link is shown under "References" of the reaction and under "Referenced by" of the parameter, where it shows which reactions a bound belongs to.
+In a document of Version 1 the link runs the other way: a [flux bound](fluxbound.md) is an object of its own there and names the reaction it constrains, so the kind is the same relation seen from the other end.
+
+The link is shown under "References" of the reaction or of the flux bound, and under "Referenced by" of the parameter or of the reaction, where it shows what bounds a flux.
 
 ## gene product
 
@@ -126,11 +128,19 @@ The link is shown under "References" of the gene product and under "Referenced b
 
 ## flux objective
 
-A reaction which appears in an objective function.
+A term of an objective function and the reaction whose flux it weighs.
 
-The link goes from the [objective](objective.md) to every [reaction](reaction.md) one of its flux objectives names. The coefficient the flux is weighted with is shown in the attributes of the objective, not on the link.
+An [objective](objective.md) names every [flux objective](fluxobjective.md) it is the sum of, and each of those names the [reaction](reaction.md) whose flux it weighs, or from Version 3 of fbc on the two reactions of a quadratic term. Both hops carry this kind, the way a reaction and its species reference both carry the kind of the participation.
 
-It is shown under "References" of the objective and under "Referenced by" of the reaction, where it says that this reaction is what the model optimises.
+The coefficient is an attribute of the flux objective, not of the link. The chain is shown under "References" of the objective and of the flux objective, and under "Referenced by" of the reaction, where it says that this reaction is what the model optimises.
+
+## active objective
+
+The objective a model declares as the one which is optimised.
+
+A [model](model.md) which defines several [objectives](objective.md) names the one an analysis optimises unless it is told otherwise. It is the only link which starts at the model itself, because the attribute belongs to the list of the objectives, which the report shows as the section of that type.
+
+It is shown under "References" of the model and under "Referenced by" of the objective, where it says that this objective is the one the model was published with.
 
 ## model reference
 

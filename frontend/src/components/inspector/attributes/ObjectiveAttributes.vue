@@ -10,8 +10,11 @@ defineProps<{ element: Objective }>();
 const index = useReportIndex();
 
 const COLUMNS = [
+  { key: "id", header: "id" },
   { key: "reaction", header: "reaction" },
+  { key: "reaction2", header: "second reaction" },
   { key: "coefficient", header: "coefficient" },
+  { key: "variableType", header: "variable type" },
 ];
 </script>
 
@@ -26,10 +29,19 @@ const COLUMNS = [
     :wide="!!element.listOfFluxObjectives?.length"
   >
     <NestedTable :rows="element.listOfFluxObjectives ?? []" :columns="COLUMNS">
+      <template #cell-id="{ row }"
+        ><ElementLink :pk="row.pk" :label="row.id ?? row.reaction"
+      /></template>
       <template #cell-reaction="{ row }">
         <ElementLink
-          :pk="index?.resolve(element.pk, 'fluxObjective', row.reaction)"
+          :pk="index?.resolve(row.pk, 'fluxObjective', row.reaction)"
           :label="row.reaction"
+        />
+      </template>
+      <template #cell-reaction2="{ row }">
+        <ElementLink
+          :pk="index?.resolve(row.pk, 'fluxObjective', row.reaction2)"
+          :label="row.reaction2"
         />
       </template>
     </NestedTable>

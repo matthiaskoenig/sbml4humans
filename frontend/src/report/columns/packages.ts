@@ -1,7 +1,10 @@
 import type { ElementType } from "@/api/types";
 import { ID_COLUMNS, type ColumnDef } from "@/report/columns/types";
 
-type PackageType = Extract<ElementType, "Submodel" | "Port" | "GeneProduct" | "Objective">;
+type PackageType = Extract<
+  ElementType,
+  "Submodel" | "Port" | "GeneProduct" | "Objective" | "FluxBound"
+>;
 
 export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>> = {
   Submodel: [
@@ -42,5 +45,11 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
     ...ID_COLUMNS,
     { field: "type", header: "type", kind: "text" },
     { field: "listOfFluxObjectives.length", header: "flux objectives", kind: "count" },
+  ],
+  FluxBound: [
+    ...ID_COLUMNS,
+    { field: "reaction", header: "reaction", kind: "link", link: "fluxBound" },
+    { field: "operation", header: "operation", kind: "text" },
+    { field: "value", header: "value", kind: "number" },
   ],
 };

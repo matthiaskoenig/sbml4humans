@@ -4,6 +4,7 @@ import {
   ArrowRightLeftIcon,
   BoxIcon,
   CalculatorIcon,
+  ChevronsLeftRightEllipsisIcon,
   CircleArrowLeftIcon,
   CircleDotIcon,
   CircleIcon,
@@ -232,6 +233,15 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
     pkg: "fbc",
     listKey: "listOfObjectives",
   },
+  {
+    type: "FluxBound",
+    label: "Flux bound",
+    plural: "Flux bounds",
+    color: "#f46d43",
+    icon: ChevronsLeftRightEllipsisIcon,
+    pkg: "fbc",
+    listKey: "listOfFluxBounds",
+  },
 ];
 
 export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
@@ -330,6 +340,14 @@ export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
     color: "#fed9a6",
     icon: WaypointsIcon,
     pkg: "comp",
+  },
+  {
+    type: "FluxObjective",
+    label: "Flux objective",
+    plural: "Flux objectives",
+    color: "#f46d43",
+    icon: TargetIcon,
+    pkg: "fbc",
   },
   {
     type: "GeneProductAssociation",

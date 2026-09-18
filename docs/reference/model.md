@@ -29,8 +29,12 @@ The report shows the model as the root of the report, its lists as the sections 
 | [events](#events) | `list` | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [submodels](#submodels) | `list` | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [ports](#ports) | `list` | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [gene products](#gene-products) | `list` | the genes and gene products the reactions of the model depend on | [fbc 3.3.2](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [objectives](#objectives) | `list` | the objective functions of the constraint based model | [fbc 3.3.1](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [gene products](#gene-products) | `list` | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc](#fbc) | `ModelFbc` | what the model says about the constraint based problem it describes | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [strict](#strict) | `boolean` | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [active objective](#active-objective) | `SIdRef` | the objective which is optimised unless an analysis says otherwise | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [flux bounds](#flux-bounds) | `list` | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
+| [objectives](#objectives) | `list` | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -153,6 +157,32 @@ The report shows the ports of a model as a section of the report.
 Every [gene product](geneproduct.md) stands for one gene or one of its products and carries the label under which the reconstruction knows it. The reactions name them in their gene product association.
 
 The report shows the gene products of a model as a section of the report.
+
+<span id="fbc"></span>**fbc**
+
+The block holds the two attributes which belong to the model as a whole: whether it keeps to the restrictions of a strict problem, and which of its objectives is the active one.
+
+The report shows both in the inspector of a model of a document which uses fbc.
+
+<span id="strict"></span>**strict**
+
+A strict model can be handed to a solver which does not read arbitrary mathematics: every reaction has both flux bounds, every bound is a constant [parameter](parameter.md) with a value which is not missing and not infinite in the direction which would remove the bound, every stoichiometry is a constant number, every coefficient of a flux objective is finite, and no initial assignment touches a bound or a stoichiometry.
+
+A model which is not strict may compute a bound during a simulation, with an initial assignment, a rule or an event, which is how a hybrid model changes the capacity of a reaction over time. The attribute therefore says how every other number of the report has to be read, and it is required from Version 2 of the package on; a Version 1 document has none.
+
+The report shows it in the inspector of the model.
+
+<span id="active-objective"></span>**active objective**
+
+A model may carry several [objectives](objective.md), for example the growth it was published with next to the alternatives it was studied with, and this attribute names the one which describes the published simulation. It is an attribute of the list of objectives, which the report does not carry as an object of its own, so it sits next to `strict` in the fbc block of the model.
+
+The report links the objective in the inspector of the model, and the inspector of that objective shows the model under "referenced by".
+
+<span id="flux-bounds"></span>**flux bounds**
+
+A [flux bound](fluxbound.md) is how the first version of the package constrained a reaction. Version 2 removed the construct and replaced it by the two attributes of a [reaction](reaction.md) which name a parameter, so the list is empty for every document of a later version.
+
+The report shows the flux bounds of a Version 1 model as a section of the report.
 
 <span id="objectives"></span>**objectives**
 

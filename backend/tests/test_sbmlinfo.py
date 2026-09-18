@@ -950,3 +950,74 @@ def test_reaction_without_gene_product_association() -> None:
     reaction = next(r for r in report.models[0].list_of_reactions if r.id == "EX_glc")
     assert reaction.fbc is not None
     assert reaction.fbc.gene_product_association is None
+
+
+def test_flux_bounds_of_a_version_1_model() -> None:
+    """A Version 1 document carries its flux bounds, which no later version has."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_bounds_v1.xml")
+    model = report.models[0]
+    assert [b.id for b in model.list_of_flux_bounds] == [
+        "v1_lb",
+        "v1_ub",
+        "EX_glc_fixed",
+    ]
+    lower, upper, fixed = model.list_of_flux_bounds
+    assert lower.pk == "fbc_bounds_v1/FluxBound:v1_lb"
+    assert lower.sbml_type == "FluxBound"
+    assert (lower.reaction, lower.operation, lower.value) == ("v1", "greaterEqual", 0.0)
+    assert lower.name == "lower bound of the glycolysis"
+    assert lower.notes is not None
+    assert (upper.reaction, upper.operation) == ("v1", "lessEqual")
+    assert upper.value == float("inf")
+    assert (fixed.reaction, fixed.operation, fixed.value) == ("EX_glc", "equal", -10.0)
+
+
+def test_version_2_model_has_no_flux_bound_object() -> None:
+    """Version 2 replaced the flux bounds by the two attributes of a reaction."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_mass_charge.xml")
+    assert report.models[0].list_of_flux_bounds == []
+
+
+def test_strict_and_active_objective() -> None:
+    """The model says whether it is strict and which of its objectives is optimised."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    fbc = report.models[0].fbc
+    assert fbc is not None
+    assert fbc.strict is False
+    assert fbc.active_objective == "growth_max"
+
+
+def test_version_1_model_has_no_strict() -> None:
+    """The strict attribute exists from Version 2 on, a Version 1 model reports none."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_bounds_v1.xml")
+    fbc = report.models[0].fbc
+    assert fbc is not None
+    assert fbc.strict is None
+    assert fbc.active_objective == "biomass_max"
+
+
+def test_flux_objective_is_an_element() -> None:
+    """A flux objective carries its own identity, its variable type and its reactions."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    objectives = {o.id: o for o in report.models[0].list_of_objectives}
+    linear = objectives["growth_max"].list_of_flux_objectives[0]
+    assert linear.pk == "fbc_constraints_v3/FluxObjective:fo_biomass"
+    assert linear.sbml_type == "FluxObjective"
+    assert linear.name == "the biomass term"
+    assert (linear.reaction, linear.coefficient) == ("EX_biomass", 1.0)
+    assert linear.variable_type == "linear"
+    assert linear.reaction2 is None
+
+    quadratic = objectives["uptake_min"].list_of_flux_objectives[0]
+    assert quadratic.variable_type == "quadratic"
+    assert (quadratic.reaction, quadratic.reaction2) == ("v1", "v2")
+
+
+def test_flux_objective_without_an_id_is_keyed_by_its_objective() -> None:
+    """A flux objective which carries no id is named by its objective and its reaction."""
+    report = SBMLDocumentInfo.from_sbml(FBC_ECOLI_CORE_SBML)
+    flux_objective = report.models[0].list_of_objectives[0].list_of_flux_objectives[0]
+    assert flux_objective.pk == (
+        "e_coli_core/FluxObjective:obj.fluxObjective.R_BIOMASS_Ecoli_core_w_GAM"
+    )
+    assert flux_objective.variable_type is None

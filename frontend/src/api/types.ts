@@ -10,6 +10,8 @@ import type {
   Event,
   EventAssignment,
   ExternalModelDefinition,
+  FluxBound,
+  FluxObjective,
   FunctionDefinition,
   GeneProduct,
   GeneProductAssociation,
@@ -60,7 +62,8 @@ export type SbmlElement =
   | Submodel
   | Port
   | GeneProduct
-  | Objective;
+  | Objective
+  | FluxBound;
 
 /** The objects nested in another object, reachable through the inspector only. */
 export type NestedElement =
@@ -76,6 +79,7 @@ export type NestedElement =
   | ReplacedElement
   | ReplacedBy
   | SBaseRef
+  | FluxObjective
   | GeneProductAssociation
   | And
   | Or

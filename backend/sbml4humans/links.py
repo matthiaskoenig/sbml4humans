@@ -22,6 +22,7 @@ from sbml4humans.model import (
     Model,
     ModifierSpeciesReference,
     Node,
+    Objective,
     Or,
     Port,
     Reaction,
@@ -138,7 +139,10 @@ def _elements(model: Model) -> Iterator[SBase]:
         yield from event.list_of_event_assignments
     yield from model.list_of_submodels
     yield from model.list_of_gene_products
-    yield from model.list_of_objectives
+    yield from model.list_of_flux_bounds
+    for objective in model.list_of_objectives:
+        yield objective
+        yield from objective.list_of_flux_objectives
 
 
 def _nested(model: Model) -> Iterator[SBase]:
@@ -586,9 +590,14 @@ class LinkGraphBuilder:
             self._port_edge(port, index)
         for gp in model.list_of_gene_products:
             self._edge(gp, gp.associated_species, EdgeKind.ASSOCIATED_SPECIES, index)
+        if model.fbc is not None:
+            self._edge(
+                model, model.fbc.active_objective, EdgeKind.ACTIVE_OBJECTIVE, index
+            )
         for objective in model.list_of_objectives:
-            for fo in objective.list_of_flux_objectives:
-                self._edge(objective, fo.reaction, EdgeKind.FLUX_OBJECTIVE, index)
+            self._objective_edges(objective, index)
+        for bound in model.list_of_flux_bounds:
+            self._edge(bound, bound.reaction, EdgeKind.FLUX_BOUND, index)
 
     def _participation_edges(
         self,
@@ -648,6 +657,20 @@ class LinkGraphBuilder:
             self._math_edges(klaw, index, kinetic_law_pk=klaw.pk)
             for lp in klaw.list_of_local_parameters:
                 self._units_edge(lp, lp.units, index)
+
+    def _objective_edges(self, objective: Objective, index: ModelIndex) -> None:
+        """The edges of an objective: its flux objectives and their reactions.
+
+        The objective lists its terms and every term names the reaction, or in
+        Version 3 the two reactions, whose flux it weighs (fbc §3.6, §3.7), the
+        way a reaction names its species references and each of those a species.
+        """
+        for fo in objective.list_of_flux_objectives:
+            self.edges.append(
+                Edge(source=objective.pk, target=fo.pk, kind=EdgeKind.FLUX_OBJECTIVE)
+            )
+            self._edge(fo, fo.reaction, EdgeKind.FLUX_OBJECTIVE, index)
+            self._edge(fo, fo.reaction2, EdgeKind.FLUX_OBJECTIVE, index)
 
     def _association_edges(
         self,

@@ -1,5 +1,5 @@
 {
-  "uid": "c2592bc11544460dac934545192c625b",
+  "uid": "e696ae29207344398c51685c48263d7e",
   "manifest": {
     "entries": [
       {
@@ -2257,7 +2257,9 @@
             "listOfSubmodels": [],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           }
         ],
         "externalModelDefinitions": [],
@@ -3332,7 +3334,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.148 [s]"
+        "jsonReportTime": "0.163 [s]"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "uid": "27fe617120694b3788f8d184fc063d0a",
+  "uid": "8287036961264d3387687082a5c9287c",
   "manifest": {
     "entries": [
       {
@@ -355,7 +355,12 @@
               }
             ],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": {
+              "strict": false,
+              "activeObjective": null
+            }
           }
         ],
         "externalModelDefinitions": [],
@@ -1482,7 +1487,9 @@
             ],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           }
         ],
         "externalModelDefinitions": [
@@ -3519,7 +3526,12 @@
             "listOfSubmodels": [],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": {
+              "strict": false,
+              "activeObjective": null
+            }
           }
         ],
         "externalModelDefinitions": [],
@@ -4284,7 +4296,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.038 [s]"
+        "jsonReportTime": "0.039 [s]"
       }
     }
   }

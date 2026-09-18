@@ -1,5 +1,5 @@
 {
-  "uid": "0f8913f7745f482ba006d7f4b4919215",
+  "uid": "b6e023c6b3b84c4ab9f8467959895bd2",
   "manifest": {
     "entries": [
       {
@@ -1069,24 +1069,85 @@
                 "type": "maximize",
                 "listOfFluxObjectives": [
                   {
+                    "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v1",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"v1\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "v1",
-                    "coefficient": 1
+                    "reaction2": null,
+                    "coefficient": 1,
+                    "variableType": "linear"
                   },
                   {
+                    "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v2",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"v2\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "v2",
-                    "coefficient": 1
+                    "reaction2": null,
+                    "coefficient": 1,
+                    "variableType": "linear"
                   },
                   {
+                    "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v3",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"v3\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "v3",
-                    "coefficient": 1
+                    "reaction2": null,
+                    "coefficient": 1,
+                    "variableType": "linear"
                   },
                   {
+                    "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v4",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"v4\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "v4",
-                    "coefficient": 1
+                    "reaction2": null,
+                    "coefficient": 1,
+                    "variableType": "linear"
                   }
                 ]
               }
-            ]
+            ],
+            "listOfFluxBounds": [],
+            "fbc": {
+              "strict": false,
+              "activeObjective": "biomass_max"
+            }
           }
         ],
         "externalModelDefinitions": [],
@@ -1390,6 +1451,34 @@
               "pk": "fbc_example/Objective:biomass_max",
               "sbmlType": "Objective",
               "id": "biomass_max",
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/FluxObjective:biomass_max.fluxObjective.v1": {
+              "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v1",
+              "sbmlType": "FluxObjective",
+              "id": null,
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/FluxObjective:biomass_max.fluxObjective.v2": {
+              "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v2",
+              "sbmlType": "FluxObjective",
+              "id": null,
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/FluxObjective:biomass_max.fluxObjective.v3": {
+              "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v3",
+              "sbmlType": "FluxObjective",
+              "id": null,
+              "name": null,
+              "model": "fbc_example/Model:fbc_example"
+            },
+            "fbc_example/FluxObjective:biomass_max.fluxObjective.v4": {
+              "pk": "fbc_example/FluxObjective:biomass_max.fluxObjective.v4",
+              "sbmlType": "FluxObjective",
+              "id": null,
               "name": null,
               "model": "fbc_example/Model:fbc_example"
             }
@@ -1751,22 +1840,47 @@
               "kind": "fluxBound"
             },
             {
+              "source": "fbc_example/Model:fbc_example",
+              "target": "fbc_example/Objective:biomass_max",
+              "kind": "activeObjective"
+            },
+            {
               "source": "fbc_example/Objective:biomass_max",
+              "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v1",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v1",
               "target": "fbc_example/Reaction:v1",
               "kind": "fluxObjective"
             },
             {
               "source": "fbc_example/Objective:biomass_max",
+              "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v2",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v2",
               "target": "fbc_example/Reaction:v2",
               "kind": "fluxObjective"
             },
             {
               "source": "fbc_example/Objective:biomass_max",
+              "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v3",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v3",
               "target": "fbc_example/Reaction:v3",
               "kind": "fluxObjective"
             },
             {
               "source": "fbc_example/Objective:biomass_max",
+              "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v4",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v4",
               "target": "fbc_example/Reaction:v4",
               "kind": "fluxObjective"
             }

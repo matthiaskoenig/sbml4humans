@@ -1,5 +1,5 @@
 {
-  "uid": "7ff9bfd4f48549858c494a89997fb1ad",
+  "uid": "5b2d5e2ce4844f1f80babac8ef9f60de",
   "manifest": {
     "entries": [
       {
@@ -728,7 +728,9 @@
               }
             ],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           },
           {
             "pk": "cell/Model:cell",
@@ -1052,7 +1054,9 @@
               }
             ],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           },
           {
             "pk": "tissue/Model:tissue",
@@ -1159,7 +1163,9 @@
             ],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           }
         ],
         "externalModelDefinitions": [
@@ -1831,7 +1837,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.025 [s]"
+        "jsonReportTime": "0.024 [s]"
       }
     }
   }

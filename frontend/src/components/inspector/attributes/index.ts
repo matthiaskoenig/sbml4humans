@@ -12,6 +12,8 @@ import DeletionAttributes from "./DeletionAttributes.vue";
 import EventAssignmentAttributes from "./EventAssignmentAttributes.vue";
 import EventAttributes from "./EventAttributes.vue";
 import ExternalModelDefinitionAttributes from "./ExternalModelDefinitionAttributes.vue";
+import FluxBoundAttributes from "./FluxBoundAttributes.vue";
+import FluxObjectiveAttributes from "./FluxObjectiveAttributes.vue";
 import FunctionDefinitionAttributes from "./FunctionDefinitionAttributes.vue";
 import GeneProductAssociationAttributes from "./GeneProductAssociationAttributes.vue";
 import GeneProductAttributes from "./GeneProductAttributes.vue";
@@ -64,6 +66,8 @@ export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
   Or: OrAttributes,
   GeneProductRef: GeneProductRefAttributes,
   Objective: ObjectiveAttributes,
+  FluxObjective: FluxObjectiveAttributes,
+  FluxBound: FluxBoundAttributes,
   SpeciesReference: SpeciesReferenceAttributes,
   ModifierSpeciesReference: ModifierSpeciesReferenceAttributes,
   KineticLaw: KineticLawAttributes,

@@ -220,6 +220,50 @@
         }
       }
     },
+    "FluxBound": {
+      "label": "Flux bound",
+      "summary": "a constraint on the flux of a reaction, as fbc Version 1 writes it",
+      "package": "fbc",
+      "page": "reference/fluxbound/",
+      "attributes": {
+        "operation": {
+          "label": "operation",
+          "summary": "how the flux is related to the value: greaterEqual, lessEqual or equal"
+        },
+        "reaction": {
+          "label": "reaction",
+          "summary": "the reaction whose flux the bound constrains"
+        },
+        "value": {
+          "label": "value",
+          "summary": "the number the flux is compared with"
+        }
+      }
+    },
+    "FluxObjective": {
+      "label": "Flux objective",
+      "summary": "one term of an objective: a reaction weighted by a coefficient",
+      "package": "fbc",
+      "page": "reference/fluxobjective/",
+      "attributes": {
+        "coefficient": {
+          "label": "coefficient",
+          "summary": "the number the flux of the reaction is multiplied with"
+        },
+        "reaction": {
+          "label": "reaction",
+          "summary": "the reaction whose flux this term of the objective weighs"
+        },
+        "reaction2": {
+          "label": "second reaction",
+          "summary": "the second reaction of a mixed quadratic term, from Version 3 on"
+        },
+        "variableType": {
+          "label": "variable type",
+          "summary": "whether the flux enters the objective linearly or quadratically"
+        }
+      }
+    },
     "FunctionDefinition": {
       "label": "Function definition",
       "summary": "a named function which the mathematics of the model can call",
@@ -366,6 +410,18 @@
           "label": "rendered extent units",
           "summary": "the extent units of the model rendered as a formula"
         },
+        "fbc": {
+          "label": "fbc",
+          "summary": "what the model says about the constraint based problem it describes"
+        },
+        "fbc.activeObjective": {
+          "label": "active objective",
+          "summary": "the objective which is optimised unless an analysis says otherwise"
+        },
+        "fbc.strict": {
+          "label": "strict",
+          "summary": "whether the model keeps to the restrictions of a linear or quadratic program"
+        },
         "kind": {
           "label": "kind",
           "summary": "whether the model is the model of the document or a model definition"
@@ -389,6 +445,10 @@
         "listOfEvents": {
           "label": "events",
           "summary": "the events of the model"
+        },
+        "listOfFluxBounds": {
+          "label": "flux bounds",
+          "summary": "the constraints of the fluxes of a Version 1 model"
         },
         "listOfFunctionDefinitions": {
           "label": "function definitions",
@@ -1019,6 +1079,10 @@
     }
   },
   "links": {
+    "activeObjective": {
+      "label": "active objective",
+      "summary": "the objective a model declares as the one which is optimised"
+    },
     "associatedSpecies": {
       "label": "associated species",
       "summary": "the species a gene product stands for"
@@ -1041,11 +1105,11 @@
     },
     "fluxBound": {
       "label": "flux bound",
-      "summary": "the parameter which bounds the flux of a reaction"
+      "summary": "what bounds the flux of a reaction"
     },
     "fluxObjective": {
       "label": "flux objective",
-      "summary": "a reaction which appears in an objective function"
+      "summary": "a term of an objective function and the reaction whose flux it weighs"
     },
     "geneProduct": {
       "label": "gene product",

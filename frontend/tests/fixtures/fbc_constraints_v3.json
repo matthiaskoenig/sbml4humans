@@ -1,5 +1,5 @@
 {
-  "uid": "e28214f4584c416096b57fb73c560c1c",
+  "uid": "2d062b695bb44b718fccb5f1f915a72a",
   "manifest": {
     "entries": [
       {
@@ -866,8 +866,22 @@
                 "type": "maximize",
                 "listOfFluxObjectives": [
                   {
+                    "pk": "fbc_constraints_v3/FluxObjective:fo_biomass",
+                    "sbmlType": "FluxObjective",
+                    "id": "fo_biomass",
+                    "metaId": null,
+                    "name": "the biomass term",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:id=\"fo_biomass\" fbc:name=\"the biomass term\" fbc:reaction=\"EX_biomass\" fbc:coefficient=\"1\" fbc:variableType=\"linear\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "EX_biomass",
-                    "coefficient": 1
+                    "reaction2": null,
+                    "coefficient": 1,
+                    "variableType": "linear"
                   }
                 ]
               },
@@ -887,12 +901,31 @@
                 "type": "minimize",
                 "listOfFluxObjectives": [
                   {
+                    "pk": "fbc_constraints_v3/FluxObjective:fo_uptake",
+                    "sbmlType": "FluxObjective",
+                    "id": "fo_uptake",
+                    "metaId": null,
+                    "name": "the quadratic uptake term",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:id=\"fo_uptake\" fbc:name=\"the quadratic uptake term\" fbc:reaction=\"v1\" fbc:coefficient=\"4\" fbc:variableType=\"quadratic\" fbc:reaction2=\"v2\"/>",
+                    "comp": null,
+                    "uncertainties": [],
                     "reaction": "v1",
-                    "coefficient": 4
+                    "reaction2": "v2",
+                    "coefficient": 4,
+                    "variableType": "quadratic"
                   }
                 ]
               }
-            ]
+            ],
+            "listOfFluxBounds": [],
+            "fbc": {
+              "strict": false,
+              "activeObjective": "growth_max"
+            }
           }
         ],
         "externalModelDefinitions": [],
@@ -1178,11 +1211,25 @@
               "name": "maximal growth",
               "model": "fbc_constraints_v3/Model:fbc_constraints_v3"
             },
+            "fbc_constraints_v3/FluxObjective:fo_biomass": {
+              "pk": "fbc_constraints_v3/FluxObjective:fo_biomass",
+              "sbmlType": "FluxObjective",
+              "id": "fo_biomass",
+              "name": "the biomass term",
+              "model": "fbc_constraints_v3/Model:fbc_constraints_v3"
+            },
             "fbc_constraints_v3/Objective:uptake_min": {
               "pk": "fbc_constraints_v3/Objective:uptake_min",
               "sbmlType": "Objective",
               "id": "uptake_min",
               "name": "minimal squared uptake",
+              "model": "fbc_constraints_v3/Model:fbc_constraints_v3"
+            },
+            "fbc_constraints_v3/FluxObjective:fo_uptake": {
+              "pk": "fbc_constraints_v3/FluxObjective:fo_uptake",
+              "sbmlType": "FluxObjective",
+              "id": "fo_uptake",
+              "name": "the quadratic uptake term",
               "model": "fbc_constraints_v3/Model:fbc_constraints_v3"
             }
           },
@@ -1438,13 +1485,33 @@
               "kind": "fluxBound"
             },
             {
+              "source": "fbc_constraints_v3/Model:fbc_constraints_v3",
+              "target": "fbc_constraints_v3/Objective:growth_max",
+              "kind": "activeObjective"
+            },
+            {
               "source": "fbc_constraints_v3/Objective:growth_max",
+              "target": "fbc_constraints_v3/FluxObjective:fo_biomass",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_constraints_v3/FluxObjective:fo_biomass",
               "target": "fbc_constraints_v3/Reaction:EX_biomass",
               "kind": "fluxObjective"
             },
             {
               "source": "fbc_constraints_v3/Objective:uptake_min",
+              "target": "fbc_constraints_v3/FluxObjective:fo_uptake",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_constraints_v3/FluxObjective:fo_uptake",
               "target": "fbc_constraints_v3/Reaction:v1",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_constraints_v3/FluxObjective:fo_uptake",
+              "target": "fbc_constraints_v3/Reaction:v2",
               "kind": "fluxObjective"
             }
           ]

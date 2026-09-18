@@ -62,6 +62,8 @@ nav = [
       { "Or" = "reference/or.md" },
       { "Gene product reference" = "reference/geneproductref.md" },
       { "Objective" = "reference/objective.md" },
+      { "Flux objective" = "reference/fluxobjective.md" },
+      { "Flux bound" = "reference/fluxbound.md" },
     ] },
     { "Distributions (distrib)" = [
       { "Distributions (distrib)" = "reference/distrib.md" },

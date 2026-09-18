@@ -12,7 +12,7 @@ The report shows the association in the inspector of its reaction and gives ever
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [association](#association) | `Association` | the single node the association holds | [fbc 3.9](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [association](#association) | `Association` | the single node the association holds | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -32,4 +32,4 @@ The report renders the node and everything below it as the expression it stands 
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf), Section 3.9 (Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082).
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.9 (Olivier and Bergmann, COMBINE specification).

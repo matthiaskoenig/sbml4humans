@@ -44,6 +44,7 @@ const repressilator = indexes[0]!;
 const constraintEvent = new ReportIndex(loadReport("constraint_event"));
 const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
+const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
 
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
@@ -264,6 +265,40 @@ describe("inspector", () => {
     expect(pks).toContain("comp_deletion/Deletion:del_k");
     expect(pks).toContain("cell/Parameter:k");
     expect(pks).toContain("cell/Reaction:sink");
+  });
+
+  it("shows the flux bound of a Version 1 model with the reaction it constrains", async () => {
+    await router.push("/examples/fbc_bounds_v1");
+    const bound = fbcBounds.mainModel!.listOfFluxBounds![0]!;
+    const rows = mountWith(AttributesColumn, { element: bound }, fbcBounds)
+      .findAll("[data-testid=attribute-row]")
+      .map((r) => [r.find("dt").text(), r.find("dd").text()]);
+    expect(rows).toContainEqual(["reaction", "v1"]);
+    expect(rows).toContainEqual(["operation", "greaterEqual"]);
+    expect(rows).toContainEqual(["value", "0"]);
+  });
+
+  it("shows the strictness of a model and links its active objective", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    const row = mountWith(AttributesColumn, { element: fbcConstraints.mainModel! }, fbcConstraints)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "active objective")!;
+    expect(row.find("[data-testid=element-link]").attributes("data-pk")).toBe(
+      "fbc_constraints_v3/Objective:growth_max",
+    );
+  });
+
+  it("links both reactions of a quadratic flux objective", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    const objective = fbcConstraints.mainModel!.listOfObjectives!.find(
+      (o) => o.id === "uptake_min",
+    )!;
+    const wrapper = mountWith(AttributesColumn, { element: objective }, fbcConstraints);
+    const pks = wrapper.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
+    expect(pks).toContain("fbc_constraints_v3/FluxObjective:fo_uptake");
+    expect(pks).toContain("fbc_constraints_v3/Reaction:v1");
+    expect(pks).toContain("fbc_constraints_v3/Reaction:v2");
+    expect(wrapper.text()).toContain("quadratic");
   });
 
   it("renders the gene product association of a reaction as its tree", async () => {

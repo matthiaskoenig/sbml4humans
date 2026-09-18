@@ -169,8 +169,10 @@ def test_fbc_edges() -> None:
     edges = _edges(report, source=reaction)
     assert (reaction, f"{m}/Parameter:cobra_0_bound", "fluxBound") in edges
     assert (reaction, f"{m}/Parameter:cobra_default_ub", "fluxBound") in edges
+    flux_objective = f"{m}/FluxObjective:obj.fluxObjective.R_BIOMASS_Ecoli_core_w_GAM"
+    assert (f"{m}/Objective:obj", flux_objective, "fluxObjective") in _edges(report)
     assert (
-        f"{m}/Objective:obj",
+        flux_objective,
         f"{m}/Reaction:R_BIOMASS_Ecoli_core_w_GAM",
         "fluxObjective",
     ) in _edges(report)
@@ -761,3 +763,35 @@ def test_port_id_is_no_element_of_the_sid_namespace() -> None:
         ("ports/Port:Vmax", "ports/Parameter:k", "port"),
     }
     assert "ports/Port:Vmax" in report.link_graph.nodes
+
+
+def test_active_objective_edge() -> None:
+    """The model names the objective it declares as the active one."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    m = "fbc_constraints_v3"
+    assert _edges(report, kind=EdgeKind.ACTIVE_OBJECTIVE) == {
+        (f"{m}/Model:{m}", f"{m}/Objective:growth_max", "activeObjective"),
+    }
+
+
+def test_flux_objective_edges_start_at_the_flux_objective() -> None:
+    """The objective names its flux objectives and each of them names its reactions."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    m = "fbc_constraints_v3"
+    quadratic = f"{m}/FluxObjective:fo_uptake"
+    assert (f"{m}/Objective:uptake_min", quadratic, "fluxObjective") in _edges(report)
+    assert _edges(report, source=quadratic) == {
+        (quadratic, f"{m}/Reaction:v1", "fluxObjective"),
+        (quadratic, f"{m}/Reaction:v2", "fluxObjective"),
+    }
+
+
+def test_flux_bound_edge_of_a_version_1_model() -> None:
+    """A flux bound of a Version 1 model names the reaction it constrains."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_bounds_v1.xml")
+    m = "fbc_bounds_v1"
+    assert _edges(report, kind=EdgeKind.FLUX_BOUND) == {
+        (f"{m}/FluxBound:v1_lb", f"{m}/Reaction:v1", "fluxBound"),
+        (f"{m}/FluxBound:v1_ub", f"{m}/Reaction:v1", "fluxBound"),
+        (f"{m}/FluxBound:EX_glc_fixed", f"{m}/Reaction:EX_glc", "fluxBound"),
+    }

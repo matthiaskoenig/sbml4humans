@@ -502,11 +502,29 @@ Or.model_rebuild()
 ReactionFbc.model_rebuild()
 
 
-class FluxObjective(ReportModel):
-    """A weighted reaction of an objective."""
+class FluxObjective(SBase):
+    """One term of an objective: a reaction weighted by a coefficient."""
 
+    sbml_type: Literal["FluxObjective"] = "FluxObjective"
     reaction: str
+    reaction2: str | None = None
     coefficient: float | None = None
+    variable_type: str | None = None
+
+
+class FluxBound(SBase):
+    """A bound of the flux of a reaction, the constraint of fbc Version 1.
+
+    Version 2 replaced it by the `lowerFluxBound` and `upperFluxBound`
+    attributes of a reaction, which name a parameter instead of holding a
+    value, so a bound of a Version 1 document is an element of the report and
+    of no later one.
+    """
+
+    sbml_type: Literal["FluxBound"] = "FluxBound"
+    reaction: str | None = None
+    operation: str | None = None
+    value: float | None = None
 
 
 class Objective(SBase):
@@ -515,6 +533,18 @@ class Objective(SBase):
     sbml_type: Literal["Objective"] = "Objective"
     type: str | None = None
     list_of_flux_objectives: list[FluxObjective] = Field(default_factory=list)
+
+
+class ModelFbc(ReportModel):
+    """The fbc extension of a model.
+
+    `strict` exists from Version 2 on and `active_objective` is the attribute
+    of the `listOfObjectives`, which the report does not carry as an object of
+    its own (fbc §3.3, §3.3.1).
+    """
+
+    strict: bool | None = None
+    active_objective: str | None = None
 
 
 # -------------------------------------------------------------------------------------
@@ -558,6 +588,8 @@ class Model(SBase):
     list_of_ports: list[Port] = Field(default_factory=list)
     list_of_gene_products: list[GeneProduct] = Field(default_factory=list)
     list_of_objectives: list[Objective] = Field(default_factory=list)
+    list_of_flux_bounds: list[FluxBound] = Field(default_factory=list)
+    fbc: ModelFbc | None = None
 
 
 class Node(ReportModel):
@@ -596,6 +628,7 @@ class EdgeKind(StrEnum):
     GENE_PRODUCT_ASSOCIATION = "geneProductAssociation"
     ASSOCIATED_SPECIES = "associatedSpecies"
     FLUX_OBJECTIVE = "fluxObjective"
+    ACTIVE_OBJECTIVE = "activeObjective"
     MODEL_REF = "modelRef"
     PORT = "port"
     DELETION = "deletion"

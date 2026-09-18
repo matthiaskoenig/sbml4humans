@@ -1233,6 +1233,7 @@
         "geneProductAssociation",
         "associatedSpecies",
         "fluxObjective",
+        "activeObjective",
         "modelRef",
         "port",
         "deletion",
@@ -1688,13 +1689,140 @@
       "title": "ExternalModelDefinition",
       "type": "object"
     },
-    "FluxObjective": {
-      "description": "A weighted reaction of an objective.",
+    "FluxBound": {
+      "description": "A bound of the flux of a reaction, the constraint of fbc Version 1.\n\nVersion 2 replaced it by the `lowerFluxBound` and `upperFluxBound`\nattributes of a reaction, which name a parameter instead of holding a\nvalue, so a bound of a Version 1 document is an element of the report and\nof no later one.",
       "properties": {
-        "reaction": {
+        "pk": {
           "type": "string"
         },
-        "coefficient": {
+        "sbmlType": {
+          "const": "FluxBound",
+          "default": "FluxBound",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "reaction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
           "anyOf": [
             {
               "type": "number"
@@ -1707,6 +1835,161 @@
         }
       },
       "required": [
+        "pk"
+      ],
+      "title": "FluxBound",
+      "type": "object"
+    },
+    "FluxObjective": {
+      "description": "One term of an objective: a reaction weighted by a coefficient.",
+      "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "FluxObjective",
+          "default": "FluxObjective",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "reaction": {
+          "type": "string"
+        },
+        "reaction2": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "coefficient": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "variableType": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk",
         "reaction"
       ],
       "title": "FluxObjective",
@@ -3134,12 +3417,58 @@
             "$ref": "#/$defs/Objective"
           },
           "type": "array"
+        },
+        "listOfFluxBounds": {
+          "items": {
+            "$ref": "#/$defs/FluxBound"
+          },
+          "type": "array"
+        },
+        "fbc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelFbc"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
         "pk"
       ],
       "title": "Model",
+      "type": "object"
+    },
+    "ModelFbc": {
+      "description": "The fbc extension of a model.\n\n`strict` exists from Version 2 on and `active_objective` is the attribute\nof the `listOfObjectives`, which the report does not carry as an object of\nits own (fbc §3.3, §3.3.1).",
+      "properties": {
+        "strict": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "activeObjective": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "ModelFbc",
       "type": "object"
     },
     "ModelHistory": {

@@ -1,5 +1,5 @@
 {
-  "uid": "b0624e794ae24613a7fc13cafb52f26d",
+  "uid": "f49bd8e447ac4886aef678f9dce1ca43",
   "manifest": {
     "entries": [
       {
@@ -217,7 +217,9 @@
             "listOfSubmodels": [],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           },
           {
             "pk": "m1/Model:m1",
@@ -307,7 +309,9 @@
             "listOfSubmodels": [],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "fbc": null
           }
         ],
         "externalModelDefinitions": [],

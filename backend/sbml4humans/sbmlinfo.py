@@ -33,6 +33,7 @@ from sbml4humans.model import (
     Event,
     EventAssignment,
     ExternalModelDefinition,
+    FluxBound,
     FluxObjective,
     FunctionDefinition,
     GeneProduct,
@@ -43,6 +44,7 @@ from sbml4humans.model import (
     LocalParameter,
     Math,
     Model,
+    ModelFbc,
     ModelHistory,
     ModifierSpeciesReference,
     Objective,
@@ -448,6 +450,8 @@ class SBMLDocumentInfo:
             list_of_ports=self.ports(model),
             list_of_gene_products=self.gene_products(model),
             list_of_objectives=self.objectives(model),
+            list_of_flux_bounds=self.flux_bounds(model),
+            fbc=self.model_fbc(model),
         )
 
     # ---------------------------------------------------------------------------------
@@ -857,26 +861,77 @@ class SBMLDocumentInfo:
             for gp in plugin.getListOfGeneProducts()
         ]
 
+    def model_fbc(self, model: libsbml.Model) -> ModelFbc | None:
+        """The fbc extension of a model: its strictness and its active objective.
+
+        `strict` is required from Version 2 on and does not exist in Version 1,
+        where `isSetStrict` is False, and `activeObjective` is the attribute of
+        the list of objectives (fbc §3.3, §3.3.1).
+        """
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return None
+        active = plugin.getActiveObjectiveId()
+        return ModelFbc(
+            strict=_attribute(plugin, "strict"),
+            active_objective=active or None,
+        )
+
     def objectives(self, model: libsbml.Model) -> list[Objective]:
-        """The fbc objectives of a model."""
+        """The fbc objectives of a model with their flux objectives."""
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return []
+        objectives = []
+        for o in plugin.getListOfObjectives():
+            objective_key = self._key(o)
+            objectives.append(
+                Objective(
+                    **self.sbase(o),
+                    type=_attribute(o, "type"),
+                    list_of_flux_objectives=[
+                        self.flux_objective(f, objective_key)
+                        for f in o.getListOfFluxObjectives()
+                    ],
+                )
+            )
+        return objectives
+
+    def flux_objective(
+        self, f: libsbml.FluxObjective, objective_key: str
+    ) -> FluxObjective:
+        """One term of an objective, keyed by its objective and its reaction.
+
+        `reaction2` and `variableType` were added in Version 3, where the type
+        is required; a document of an earlier version sets neither of them.
+        """
+        return FluxObjective(
+            **self.sbase(f, key=f"{objective_key}.fluxObjective.{f.getReaction()}"),
+            reaction=f.getReaction(),
+            reaction2=_attribute(f, "reaction2"),
+            coefficient=_number(f.getCoefficient()) if f.isSetCoefficient() else None,
+            variable_type=f.getVariableTypeAsString()
+            if f.isSetVariableType()
+            else None,
+        )
+
+    def flux_bounds(self, model: libsbml.Model) -> list[FluxBound]:
+        """The flux bounds of a model, which only fbc Version 1 has.
+
+        libsbml keeps the list empty for a document of a later version, where
+        the bounds of a reaction are the two attributes which name a parameter.
+        """
         plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
         if not plugin:
             return []
         return [
-            Objective(
-                **self.sbase(o),
-                type=_attribute(o, "type"),
-                list_of_flux_objectives=[
-                    FluxObjective(
-                        reaction=f.getReaction(),
-                        coefficient=_number(f.getCoefficient())
-                        if f.isSetCoefficient()
-                        else None,
-                    )
-                    for f in o.getListOfFluxObjectives()
-                ],
+            FluxBound(
+                **self.sbase(fb, key=f"fluxBound.{index}"),
+                reaction=_attribute(fb, "reaction"),
+                operation=_attribute(fb, "operation"),
+                value=_number(_attribute(fb, "value")),
             )
-            for o in plugin.getListOfObjectives()
+            for index, fb in enumerate(plugin.getListOfFluxBounds())
         ]
 
     def reaction_fbc(

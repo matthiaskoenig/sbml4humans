@@ -9,7 +9,10 @@ const DERIVED_UNITS: ColumnDef = {
   latexField: "derivedUnits",
 };
 
-type CoreType = Exclude<ElementType, "Submodel" | "Port" | "GeneProduct" | "Objective">;
+type CoreType = Exclude<
+  ElementType,
+  "Submodel" | "Port" | "GeneProduct" | "Objective" | "FluxBound"
+>;
 
 export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
   FunctionDefinition: [...ID_COLUMNS, MATH],
