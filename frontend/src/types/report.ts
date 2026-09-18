@@ -22,6 +22,7 @@ export type EdgeKind =
   | "fluxObjective"
   | "modelRef"
   | "port"
+  | "deletion"
   | "replacedBy"
   | "replacedElement"
   | "math";

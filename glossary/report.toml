@@ -165,22 +165,37 @@ A [port](port.md) names exactly one element of its model, by its identifier, by 
 The link is shown under "References" of the port and under "Referenced by" of the element, where it says that the element is part of the interface of the model.
 """
 
+[links.deletion]
+label = "deletion"
+summary = "an element which a submodel removes, and the deletion which removes it"
+description = """
+A [submodel](submodel.md) names every [deletion](deletion.md) it carries, and each deletion names the element of the instantiated model which it removes, so the link leads from the submodel over the deletion to the element which the composed model does not contain. The same kind leads from a [replaced element](replacedelement.md) to the deletion it stands for, which is how a model records that an element of its own takes the place of something a submodel lost.
+
+Where the model of the submodel is an external one, which the report does not read, the deletion has no element to name and the link ends at the deletion.
+
+The link is shown under "References" of the submodel and of the deletion, and under "Referenced by" of the element which is removed.
+"""
+
 [links.replacedBy]
 label = "replaced by"
-summary = "the submodel which holds the element replacing this one"
+summary = "the element of a submodel which replaces this one"
 description = """
-An element which is replaced names the [submodel](submodel.md) whose element takes its place. The link goes to the submodel, because that is the element of this model which the reference names; which element inside the submodel is meant is shown in the attributes.
+An element which is replaced names the [replacement](replacedby.md) it carries, and the replacement names the element of the [submodel](submodel.md) which takes the place of the element, so the link leads from the replaced element over the replacement to the element which stays in the composed model.
 
-It is shown under "References" of the replaced element and under "Referenced by" of the submodel.
+Where the reference cannot be resolved, because the model of the submodel is an external one which the report does not read or because the named element is not part of it, the link ends at the submodel, which is as far as the report can follow it.
+
+The link is shown under "References" of the replaced element and of the replacement, and under "Referenced by" of the element which replaces it.
 """
 
 [links.replacedElement]
 label = "replaced element"
-summary = "the submodel which holds an element this one replaces"
+summary = "the element of a submodel which this one replaces"
 description = """
-An element may replace elements of submodels, and names the [submodel](submodel.md) of every one of them. It is the opposite direction of "replaced by" and the usual way a composed model connects its parts.
+An element may replace elements of submodels. It names every [replacement](replacedelement.md) it carries, and each replacement names the [submodel](submodel.md) it reaches into and the element inside it which disappears from the composed model. It is the opposite direction of "replaced by" and the usual way a composed model connects its parts.
 
-The link is shown under "References" of the replacing element and under "Referenced by" of the submodel.
+Where the reference cannot be resolved, because the model of the submodel is an external one which the report does not read or because the named element is not part of it, the link ends at the submodel.
+
+The link is shown under "References" of the replacing element and of the replacement, and under "Referenced by" of the element which is replaced.
 """
 
 [links.math]

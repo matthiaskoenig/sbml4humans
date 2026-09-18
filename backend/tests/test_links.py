@@ -33,6 +33,12 @@ def repressilator() -> Report:
     return SBMLDocumentInfo.from_sbml(REPRESSILATOR_SBML)
 
 
+@pytest.fixture(scope="module")
+def comp_deletion() -> Report:
+    """The report of the deletion and replacement example of comp."""
+    return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "comp_deletion.xml")
+
+
 def test_every_sbase_is_a_node(repressilator: Report) -> None:
     """Document, model, elements and nested elements are nodes."""
     nodes = repressilator.link_graph.nodes
@@ -149,11 +155,10 @@ def test_comp_edges() -> None:
         f"{m}/Compartment:Vre_tissue",
         "port",
     ) in _edges(report)
-    assert (
-        f"{m}/Species:Cli_plasma_icg",
-        f"{m}/Submodel:LI",
-        "replacedElement",
-    ) in _edges(report)
+    replaced = f"{m}/ReplacedElement:Cli_plasma_icg_RE"
+    assert (f"{m}/Species:Cli_plasma_icg", replaced, "replacedElement") in _edges(
+        report
+    )
 
 
 def test_fbc_edges() -> None:
@@ -371,21 +376,21 @@ def test_local_parameter_shadows_global_parameter(synthetic_fbc: Report) -> None
 
 
 def test_replaced_by_edge(synthetic_comp: Report) -> None:
-    """An element replaced by an element of a submodel links to the submodel."""
-    assert (
-        "top/Compartment:c",
-        "top/Submodel:sm",
-        "replacedBy",
-    ) in _edges(synthetic_comp)
+    """An element replaced by an element of a submodel links to that element."""
+    replaced_by = "top/ReplacedBy:c.replacedBy"
+    assert ("top/Compartment:c", replaced_by, "replacedBy") in _edges(synthetic_comp)
+    assert (replaced_by, "sub/Compartment:c", "replacedBy") in _edges(synthetic_comp)
 
 
 def test_replacement_edges_of_every_element(synthetic_comp: Report) -> None:
     """Replacements are edges for every element type, not only the core lists."""
+    replaced = "top/ReplacedElement:per_second.replacedElement.0"
     assert (
         "top/UnitDefinition:per_second",
-        "top/Submodel:sm",
+        replaced,
         "replacedElement",
     ) in _edges(synthetic_comp)
+    assert (replaced, "top/Submodel:sm", "replacedElement") in _edges(synthetic_comp)
 
 
 def test_port_unit_ref_edge(synthetic_comp: Report) -> None:
@@ -547,3 +552,110 @@ def test_an_event_names_its_trigger_its_priority_and_its_delay() -> None:
         (event.pk, event.priority.pk, "priority"),
         (event.pk, event.delay.pk, "delay"),
     }
+
+
+# -------------------------------------------------------------------------------------
+# the edges of the replacements and the deletions of comp
+# -------------------------------------------------------------------------------------
+def test_submodel_names_its_deletions(comp_deletion: Report) -> None:
+    """A submodel lists its deletions and every deletion names what it removes.
+
+    The reference of a deletion is resolved in the model the submodel
+    instantiates (comp §3.5.3), by port, id, unit id or meta id.
+    """
+    m = "comp_deletion"
+    assert _edges(comp_deletion, source=f"{m}/Submodel:cell1") == {
+        (f"{m}/Submodel:cell1", f"{m}/Deletion:del_k", "deletion"),
+        (f"{m}/Submodel:cell1", f"{m}/Deletion:del_sink", "deletion"),
+        (f"{m}/Submodel:cell1", "cell/Model:cell", "modelRef"),
+    }
+    assert _edges(comp_deletion, source=f"{m}/Deletion:del_k") == {
+        (f"{m}/Deletion:del_k", "cell/Parameter:k", "deletion"),
+    }
+    assert _edges(comp_deletion, source=f"{m}/Deletion:del_sink") == {
+        (f"{m}/Deletion:del_sink", "cell/Reaction:sink", "deletion"),
+    }
+
+
+def test_replacement_ends_at_the_replaced_element(comp_deletion: Report) -> None:
+    """A replacement links to the element of the submodel it names (comp §3.6.2).
+
+    The element lists its replacements, and every replacement names the
+    submodel and the element inside it, so that a reader of the species reaches
+    the species it replaces instead of the submodel around it.
+    """
+    m = "comp_deletion"
+    replaced = f"{m}/ReplacedElement:meta_glc_cell1"
+    assert (f"{m}/Species:glc", replaced, "replacedElement") in _edges(comp_deletion)
+    assert _edges(comp_deletion, source=replaced) == {
+        (replaced, "cell/Species:glc", "replacedElement"),
+        (replaced, f"{m}/Parameter:f_amount", "conversionFactor"),
+    }
+
+
+def test_replacement_follows_a_nested_reference(comp_deletion: Report) -> None:
+    """A replacement reaching into a submodel of a submodel ends at its element.
+
+    The chain of comp §3.7.2 names the submodel of the submodel first and the
+    element of its model below that.
+    """
+    replaced = "comp_deletion/ReplacedElement:meta_medium_tissue"
+    assert _edges(comp_deletion, source=replaced) == {
+        (replaced, "cell/Compartment:c", "replacedElement"),
+    }
+
+
+def test_replacement_of_a_deleted_element(comp_deletion: Report) -> None:
+    """A replacement scoped to a deletion names the deletion (comp §3.6.2)."""
+    m = "comp_deletion"
+    replaced = f"{m}/ReplacedElement:meta_k_total_cell1"
+    assert _edges(comp_deletion, source=replaced) == {
+        (replaced, f"{m}/Deletion:del_k", "deletion"),
+        (replaced, f"{m}/Submodel:cell1", "replacedElement"),
+    }
+
+
+def test_replaced_by_ends_at_the_replacing_element(comp_deletion: Report) -> None:
+    """The element which replaces an element is linked (comp §3.6.4)."""
+    m = "comp_deletion"
+    replaced_by = f"{m}/ReplacedBy:meta_Vmax_shared"
+    assert (f"{m}/Parameter:Vmax_shared", replaced_by, "replacedBy") in _edges(
+        comp_deletion
+    )
+    assert _edges(comp_deletion, source=replaced_by) == {
+        (replaced_by, "cell/Parameter:Vmax", "replacedBy"),
+    }
+
+
+def test_port_follows_its_reference(comp_deletion: Report) -> None:
+    """A port links to the element it names, whichever of the four ways it uses."""
+    m = "comp_deletion"
+    assert _edges(comp_deletion, kind=EdgeKind.PORT) == {
+        (f"{m}/Port:medium_port", f"{m}/Compartment:medium", "port"),
+        (f"{m}/Port:per_min_port", f"{m}/UnitDefinition:per_min", "port"),
+        (
+            f"{m}/Port:glc_amount_rule_port",
+            f"{m}/AssignmentRule:glc_amount",
+            "port",
+        ),
+        ("cell/Port:cell_port", "cell/Compartment:c", "port"),
+        ("cell/Port:glc_port", "cell/Species:glc", "port"),
+        ("cell/Port:Vmax_port", "cell/Parameter:Vmax", "port"),
+    }
+
+
+def test_replacement_into_an_external_model_ends_at_the_submodel(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A reference the report cannot follow ends at the submodel, and says why.
+
+    The submodel of `icg_body` instantiates an external model definition, whose
+    document the report does not read, so the element the replacement names is
+    not part of the report.
+    """
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        report = SBMLDocumentInfo.from_sbml(COMP_ICG_BODY)
+    m = "icg_body"
+    replaced = f"{m}/ReplacedElement:Cli_plasma_icg_RE"
+    assert (replaced, f"{m}/Submodel:LI", "replacedElement") in _edges(report)
+    assert "not part of the report" in caplog.text

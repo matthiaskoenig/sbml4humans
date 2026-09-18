@@ -1100,6 +1100,7 @@
         "fluxObjective",
         "modelRef",
         "port",
+        "deletion",
         "replacedBy",
         "replacedElement",
         "math"

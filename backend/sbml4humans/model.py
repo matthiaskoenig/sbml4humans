@@ -562,6 +562,7 @@ class EdgeKind(StrEnum):
     FLUX_OBJECTIVE = "fluxObjective"
     MODEL_REF = "modelRef"
     PORT = "port"
+    DELETION = "deletion"
     REPLACED_BY = "replacedBy"
     REPLACED_ELEMENT = "replacedElement"
     MATH = "math"

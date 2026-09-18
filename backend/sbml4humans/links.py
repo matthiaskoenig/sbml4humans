@@ -18,11 +18,15 @@ from sbml4humans.model import (
     Model,
     ModifierSpeciesReference,
     Node,
+    Port,
     Reaction,
+    ReplacedBy,
+    ReplacedElement,
     Report,
     SBase,
     SBaseRefFields,
     SpeciesReference,
+    Submodel,
 )
 
 
@@ -30,20 +34,46 @@ logger = logging.getLogger(__name__)
 
 
 class ModelIndex:
-    """The SIds of one model resolved to pks."""
+    """The identifiers of one model resolved to pks.
+
+    SBML keeps the identifiers of a model in namespaces of their own (core
+    §3.3, comp §3.4.3): the SIds of its elements, the unit identifiers of its
+    unit definitions, the port identifiers of its ports, the meta ids of the
+    file and the local parameters of every kinetic law. A comp reference names
+    which of them it means, so each has its own index.
+    """
 
     def __init__(self, model: Model) -> None:
-        """Index the elements of the model by their ids."""
+        """Index the elements of the model by their identifiers."""
         self.model = model
         self.sids: dict[str, str] = {}
         self.units: dict[str, str] = {}
+        self.ports: dict[str, str] = {}
+        self.port_objects: dict[str, Port] = {}
+        self.meta_ids: dict[str, str] = {}
+        self.submodels: dict[str, Submodel] = {}
+        self.deletions: dict[str, dict[str, str]] = {}
         self.locals: dict[str, dict[str, str]] = {}
         for element in _elements(model):
             if element.id is not None:
                 self.sids.setdefault(element.id, element.pk)
+        for element in _nested(model):
+            if element.meta_id is not None:
+                self.meta_ids.setdefault(element.meta_id, element.pk)
         for ud in model.list_of_unit_definitions:
             if ud.id is not None:
                 self.units[ud.id] = ud.pk
+        for port in model.list_of_ports:
+            self.port_objects[port.pk] = port
+            if port.id is not None:
+                self.ports[port.id] = port.pk
+        for submodel in model.list_of_submodels:
+            self.submodels[submodel.pk] = submodel
+            self.deletions[submodel.pk] = {
+                deletion.id: deletion.pk
+                for deletion in submodel.list_of_deletions
+                if deletion.id is not None
+            }
         for reaction in model.list_of_reactions:
             if reaction.kinetic_law is not None:
                 self.locals[reaction.kinetic_law.pk] = {
@@ -57,6 +87,24 @@ class ModelIndex:
         if kinetic_law_pk is not None and sid in self.locals.get(kinetic_law_pk, {}):
             return self.locals[kinetic_law_pk][sid]
         return self.sids.get(sid)
+
+    def resolve_ref(self, ref: SBaseRefFields) -> str | None:
+        """The pk of the element a comp reference names in this model.
+
+        Exactly one of the four references of an `SBaseRef` is set and each of
+        them names its own namespace (comp §3.7.1). A reference which sets none
+        of them names nothing here: a replaced element which is scoped to a
+        deletion carries that deletion instead.
+        """
+        if ref.port_ref is not None:
+            return self.ports.get(ref.port_ref)
+        if ref.id_ref is not None:
+            return self.sids.get(ref.id_ref)
+        if ref.unit_ref is not None:
+            return self.units.get(ref.unit_ref)
+        if ref.meta_id_ref is not None:
+            return self.meta_ids.get(ref.meta_id_ref)
+        return None
 
 
 def _elements(model: Model) -> Iterator[SBase]:
@@ -127,6 +175,19 @@ def _comp_refs(sbase: SBase) -> Iterator[SBaseRefFields]:
         yield from _ref_chain(sbase.comp.replaced_by)
     for replaced in sbase.comp.replaced_elements:
         yield from _ref_chain(replaced)
+
+
+def _names_an_element(ref: SBaseRefFields) -> bool:
+    """Whether a comp reference names an element at all.
+
+    A replaced element which is scoped to a deletion sets none of the four
+    references of `SBaseRef` (comp §3.6.2), so it names nothing to resolve and
+    nothing is missing when nothing resolves.
+    """
+    return any(
+        value is not None
+        for value in (ref.port_ref, ref.id_ref, ref.unit_ref, ref.meta_id_ref)
+    )
 
 
 def _event_children(event: Event) -> Iterator[SBase]:
@@ -237,19 +298,206 @@ class LinkGraphBuilder:
                     Edge(source=source.pk, target=target, kind=EdgeKind.MATH)
                 )
 
+    # ---------------------------------------------------------------------------------
+    # comp: the references which reach into a submodel
+    # ---------------------------------------------------------------------------------
+    def _submodel_index(self, submodel: Submodel) -> ModelIndex | None:
+        """The index of the model a submodel instantiates, None for an external one.
+
+        A submodel instantiates a model definition of the document or an
+        external model definition (comp §3.5.1). The document of an external
+        one is not read, so the report has no model to resolve a reference in.
+        """
+        model_pk = self.model_refs.get(submodel.model_ref)
+        return self.indices.get(model_pk) if model_pk is not None else None
+
+    def _resolve_into(
+        self, source: SBase, ref: SBaseRefFields, submodel: Submodel
+    ) -> str | None:
+        """The pk of the element a reference names inside a submodel.
+
+        The reference is resolved in the model the submodel instantiates, and a
+        reference which carries a reference of its own names a submodel of that
+        model and goes on inside it (comp §3.7.2). Every step which does not
+        resolve is logged and ends the chain.
+        """
+        index = self._submodel_index(submodel)
+        if index is None:
+            logger.warning(
+                "reference of '%s' stops at submodel '%s': the model '%s' it "
+                "instantiates is not part of the report",
+                source.pk,
+                submodel.pk,
+                submodel.model_ref,
+            )
+            return None
+        target = self._resolve_element(source, ref, index)
+        if target is None:
+            return None
+        if ref.sbase_ref is None:
+            return target
+        nested_submodel = index.submodels.get(target)
+        if nested_submodel is None:
+            logger.warning(
+                "nested reference of '%s' names '%s', which is no submodel",
+                source.pk,
+                target,
+            )
+            return None
+        return self._resolve_into(source, ref.sbase_ref, nested_submodel)
+
+    def _resolve_element(
+        self, source: SBase, ref: SBaseRefFields, index: ModelIndex
+    ) -> str | None:
+        """The element a reference names in one model, a port being one name of one.
+
+        A reference by port names the element the port stands for, so the edge
+        ends at that element and not at the port, which is where the reference
+        would stop halfway (comp §3.7.1).
+        """
+        target = index.resolve_ref(ref)
+        if target is None:
+            if _names_an_element(ref):
+                logger.warning(
+                    "reference of '%s' names no element of model '%s'",
+                    source.pk,
+                    index.model.pk,
+                )
+            return None
+        port = index.port_objects.get(target)
+        return self._port_target(port, index) if port is not None else target
+
+    def _port_target(self, port: Port, index: ModelIndex) -> str | None:
+        """The element a port names, through its nested reference where it has one."""
+        target = self._resolve_element(port, port, index)
+        if target is None or port.sbase_ref is None:
+            return target
+        submodel = index.submodels.get(target)
+        if submodel is None:
+            logger.warning(
+                "nested reference of '%s' names '%s', which is no submodel",
+                port.pk,
+                target,
+            )
+            return None
+        return self._resolve_into(port, port.sbase_ref, submodel)
+
     def _comp_edges(self, source: SBase, index: ModelIndex) -> None:
-        """Add the replacement edges of an element."""
+        """Add the replacement edges of an element.
+
+        The element names its replacements, and every replacement names the
+        submodel it reaches into and the element inside it (comp §3.6), the way
+        a reaction names its species references and each of those its species.
+        """
         if source.comp is None:
             return
         if source.comp.replaced_by is not None:
+            replaced_by = source.comp.replaced_by
+            self.edges.append(
+                Edge(source=source.pk, target=replaced_by.pk, kind=EdgeKind.REPLACED_BY)
+            )
+            self._replacement_edges(replaced_by, EdgeKind.REPLACED_BY, index)
+        for replaced in source.comp.replaced_elements:
+            self.edges.append(
+                Edge(
+                    source=source.pk,
+                    target=replaced.pk,
+                    kind=EdgeKind.REPLACED_ELEMENT,
+                )
+            )
+            self._replacement_edges(replaced, EdgeKind.REPLACED_ELEMENT, index)
+
+    def _replacement_edges(
+        self,
+        replacement: ReplacedBy | ReplacedElement,
+        kind: EdgeKind,
+        index: ModelIndex,
+    ) -> None:
+        """The edges of one replacement: its element, its deletion and its factor.
+
+        The edge of the replacement ends at the element of the submodel which
+        the reference names. Where the reference cannot be resolved, because
+        the model of the submodel is an external one or because the element is
+        not there, it ends at the submodel itself, which is as far as the
+        report can follow it.
+        """
+        submodel_pk = index.resolve(replacement.submodel_ref)
+        if submodel_pk is None:
+            logger.warning(
+                "%s of '%s' references unknown submodel '%s'",
+                kind.value,
+                replacement.pk,
+                replacement.submodel_ref,
+            )
+            return
+        submodel = index.submodels[submodel_pk]
+        target = self._resolve_into(replacement, replacement, submodel)
+        self.edges.append(
+            Edge(source=replacement.pk, target=target or submodel_pk, kind=kind)
+        )
+        if isinstance(replacement, ReplacedElement):
+            self._deletion_edge(replacement, submodel_pk, index)
             self._edge(
-                source,
-                source.comp.replaced_by.submodel_ref,
-                EdgeKind.REPLACED_BY,
+                replacement,
+                replacement.conversion_factor,
+                EdgeKind.CONVERSION_FACTOR,
                 index,
             )
-        for replaced in source.comp.replaced_elements:
-            self._edge(source, replaced.submodel_ref, EdgeKind.REPLACED_ELEMENT, index)
+
+    def _deletion_edge(
+        self, replacement: ReplacedElement, submodel_pk: str, index: ModelIndex
+    ) -> None:
+        """The edge to the deletion a replacement stands for (comp §3.6.2)."""
+        if replacement.deletion is None:
+            return
+        target = index.deletions.get(submodel_pk, {}).get(replacement.deletion)
+        if target is None:
+            logger.warning(
+                "deletion of '%s' references unknown '%s' of submodel '%s'",
+                replacement.pk,
+                replacement.deletion,
+                submodel_pk,
+            )
+            return
+        self.edges.append(
+            Edge(source=replacement.pk, target=target, kind=EdgeKind.DELETION)
+        )
+
+    def _submodel_edges(self, submodel: Submodel, index: ModelIndex) -> None:
+        """The edges of a submodel: its model, its conversion factors, its deletions.
+
+        A submodel lists its deletions and every deletion names the element of
+        the instantiated model which it removes (comp §3.5.3).
+        """
+        target = self.model_refs.get(submodel.model_ref)
+        if target is None:
+            logger.warning(
+                "modelRef of '%s' references unknown '%s'",
+                submodel.pk,
+                submodel.model_ref,
+            )
+        else:
+            self.edges.append(
+                Edge(source=submodel.pk, target=target, kind=EdgeKind.MODEL_REF)
+            )
+        self._edge(
+            submodel, submodel.time_conversion_factor, EdgeKind.CONVERSION_FACTOR, index
+        )
+        self._edge(
+            submodel,
+            submodel.extent_conversion_factor,
+            EdgeKind.CONVERSION_FACTOR,
+            index,
+        )
+        for deletion in submodel.list_of_deletions:
+            self.edges.append(
+                Edge(source=submodel.pk, target=deletion.pk, kind=EdgeKind.DELETION)
+            )
+            deleted = self._resolve_into(deletion, deletion, submodel)
+            if deleted is not None:
+                self.edges.append(
+                    Edge(source=deletion.pk, target=deleted, kind=EdgeKind.DELETION)
+                )
 
     def _model_edges(self, model: Model) -> None:
         """The edges of all elements of a model."""
@@ -295,34 +543,9 @@ class LinkGraphBuilder:
         for event in model.list_of_events:
             self._event_edges(event, index)
         for submodel in model.list_of_submodels:
-            target = self.model_refs.get(submodel.model_ref)
-            if target is None:
-                logger.warning(
-                    "modelRef of '%s' references unknown '%s'",
-                    submodel.pk,
-                    submodel.model_ref,
-                )
-            else:
-                self.edges.append(
-                    Edge(source=submodel.pk, target=target, kind=EdgeKind.MODEL_REF)
-                )
-            self._edge(
-                submodel,
-                submodel.time_conversion_factor,
-                EdgeKind.CONVERSION_FACTOR,
-                index,
-            )
-            self._edge(
-                submodel,
-                submodel.extent_conversion_factor,
-                EdgeKind.CONVERSION_FACTOR,
-                index,
-            )
+            self._submodel_edges(submodel, index)
         for port in model.list_of_ports:
-            self._edge(port, port.id_ref, EdgeKind.PORT, index)
-            if port.unit_ref is not None:
-                self._units_edge(port, port.unit_ref, index, kind=EdgeKind.PORT)
-            self._meta_id_edge(port, port.meta_id_ref, model)
+            self._port_edge(port, index)
         for gp in model.list_of_gene_products:
             self._edge(gp, gp.associated_species, EdgeKind.ASSOCIATED_SPECIES, index)
         for objective in model.list_of_objectives:
@@ -345,17 +568,17 @@ class LinkGraphBuilder:
         self.edges.append(Edge(source=reaction.pk, target=reference.pk, kind=kind))
         self._edge(reference, reference.species, kind, index)
 
-    def _meta_id_edge(self, port: SBase, meta_id: str | None, model: Model) -> None:
-        """A port referencing an element by metaId."""
-        if meta_id is None:
+    def _port_edge(self, port: Port, index: ModelIndex) -> None:
+        """The edge of a port to the element it names.
+
+        A port names one element of its own model by its id, its unit id or its
+        meta id (comp §3.4.3), and reaches into a submodel of it with a nested
+        reference.
+        """
+        target = self._port_target(port, index)
+        if target is None:
             return
-        for element in _nested(model):
-            if element.meta_id == meta_id:
-                self.edges.append(
-                    Edge(source=port.pk, target=element.pk, kind=EdgeKind.PORT)
-                )
-                return
-        logger.warning("port of '%s' references unknown metaId '%s'", port.pk, meta_id)
+        self.edges.append(Edge(source=port.pk, target=target, kind=EdgeKind.PORT))
 
     def _reaction_edges(self, reaction: Reaction, index: ModelIndex) -> None:
         """The edges of a reaction, its participants and its kinetic law.

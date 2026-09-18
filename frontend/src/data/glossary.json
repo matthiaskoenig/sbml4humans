@@ -991,6 +991,10 @@
       "label": "delay",
       "summary": "the formula which postpones the execution of an event"
     },
+    "deletion": {
+      "label": "deletion",
+      "summary": "an element which a submodel removes, and the deletion which removes it"
+    },
     "fluxBound": {
       "label": "flux bound",
       "summary": "the parameter which bounds the flux of a reaction"
@@ -1033,11 +1037,11 @@
     },
     "replacedBy": {
       "label": "replaced by",
-      "summary": "the submodel which holds the element replacing this one"
+      "summary": "the element of a submodel which replaces this one"
     },
     "replacedElement": {
       "label": "replaced element",
-      "summary": "the submodel which holds an element this one replaces"
+      "summary": "the element of a submodel which this one replaces"
     },
     "symbol": {
       "label": "symbol",
