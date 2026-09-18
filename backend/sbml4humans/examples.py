@@ -24,6 +24,9 @@ logger = logging.getLogger(__name__)
 
 # number of curated biomodels served as examples (BIOMD0000000001, ...)
 BIOMODELS_COUNT = 49
+# length up to which the description of an archive names its SBML entries
+# instead of counting them alone, in characters
+DESCRIPTION_NAMES_LENGTH = 60
 
 
 class ExampleMetaData(BaseModel):
@@ -72,9 +75,28 @@ def example_from_omex(omex_path: Path) -> ExampleMetaData:
         id=omex_path.stem,
         file=omex_path,
         name=omex_path.stem,
-        description=str(omex.manifest),
+        description=omex_description(omex),
         packages=["OMEX"],
     )
+
+
+def omex_description(omex: Omex) -> str:
+    """Describe the content of an archive in one sentence.
+
+    The number of SBML entries is what the description of an example says
+    about an archive, because the report holds one report per SBML entry. The
+    entries are named as well as long as their names stay short enough for the
+    sentence to be read at a glance.
+    """
+    entries = omex.entries_by_format(format_key="sbml")
+    if not entries:
+        return "COMBINE archive without an SBML entry"
+
+    count = f"{len(entries)} SBML {'entry' if len(entries) == 1 else 'entries'}"
+    names = ", ".join(Path(entry.location).name for entry in entries)
+    if len(names) > DESCRIPTION_NAMES_LENGTH:
+        return f"COMBINE archive with {count}"
+    return f"COMBINE archive with {count}: {names}"
 
 
 def biomodel_examples(

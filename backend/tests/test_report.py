@@ -1,6 +1,7 @@
 """Tests of the report creation."""
 
 import gzip
+import tempfile
 from collections import Counter
 from pathlib import Path
 
@@ -160,6 +161,21 @@ def test_report_for_sbml_without_model() -> None:
     """An SBML document without model raises with the libsbml errors."""
     with pytest.raises(ValueError, match="No SBML model"):
         report_for_sbml('<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>')
+
+
+def test_error_of_unreadable_content_names_no_path() -> None:
+    """The error of content which is not SBML holds the libsbml diagnosis alone.
+
+    The user reads this message. The temporary file the content was written to
+    is the business of the server and is only logged, not shown.
+    """
+    with pytest.raises(ValueError) as error:
+        report_for_bytes(b"<not-sbml/>")
+    message = str(error.value)
+    assert message.startswith("No SBML model could be read:")
+    assert "line 1:" in message
+    assert tempfile.gettempdir() not in message
+    assert "model.xml" not in message
 
 
 def test_uid_differs_between_reports() -> None:

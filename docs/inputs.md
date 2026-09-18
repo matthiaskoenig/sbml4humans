@@ -28,7 +28,7 @@ An SBML file is read as a single [document](reference/sbmldocument.md) with one 
 
 ## The examples
 
-The examples page lists the models the backend ships with, with a filter above the list which searches the id, the name and the description of an example. A card shows the id of the example, a name, a description and badges. For a model the name is the name of the model, the description is the first lines of its notes and the badges are the packages the file declares. For one of the four COMBINE archives the name is the file name without its extension, the description is the manifest of the archive and the single badge says `OMEX`.
+The examples page lists the models the backend ships with, with a filter above the list which searches the id, the name and the description of an example. A card shows the id of the example, a name, a description and badges. For a model the name is the name of the model, the description is the first lines of its notes and the badges are the packages the file declares. For one of the four COMBINE archives the name is the file name without its extension, the description says how many SBML entries the archive holds and names them as long as the names stay short, and the single badge says `OMEX`.
 
 ![The examples page, with a filter above a grid of example cards](images/examples.png)
 
