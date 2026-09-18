@@ -68,7 +68,7 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
     DERIVED_UNITS,
   ],
   AlgebraicRule: [...ID_COLUMNS, MATH, DERIVED_UNITS],
-  Constraint: [...ID_COLUMNS, MATH, { field: "message", header: "message", kind: "text" }],
+  Constraint: [...ID_COLUMNS, MATH, { field: "message", header: "message", kind: "xhtml" }],
   Reaction: [
     ...ID_COLUMNS,
     { field: "reversible", header: "reversible", kind: "boolean" },
@@ -89,8 +89,8 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
     { field: "trigger.math", header: "trigger", kind: "math" },
     { field: "trigger.persistent", header: "persistent", kind: "boolean" },
     { field: "trigger.initialValue", header: "initial value", kind: "boolean" },
-    { field: "priority", header: "priority", kind: "math" },
-    { field: "delay", header: "delay", kind: "math" },
+    { field: "priority.math", header: "priority", kind: "math" },
+    { field: "delay.math", header: "delay", kind: "math" },
     { field: "listOfEventAssignments", header: "assignments", kind: "assignments" },
   ],
 };

@@ -91,6 +91,8 @@
       <parameter id="S1_max" name="upper bound of the substrate" value="10" units="mM" constant="true"/>
       <parameter id="dose" name="dose added by the event" value="5" units="mM" constant="true"/>
       <parameter id="active" name="switch of the reaction" value="1" units="dimensionless" constant="false"/>
+      <parameter id="t_dose" name="time of the dose" value="20" units="min" constant="true"/>
+      <parameter id="t_delay" name="time the dose needs to reach the compartment" value="5" units="min" constant="true"/>
     </listOfParameters>
     <listOfConstraints>
       <constraint metaid="meta_constraint_S1" sboTerm="SBO:0000064">
@@ -159,7 +161,7 @@
             <apply>
               <geq/>
               <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/time"> time </csymbol>
-              <cn sbml:units="min"> 20 </cn>
+              <ci> t_dose </ci>
             </apply>
           </math>
         </trigger>
@@ -180,7 +182,7 @@
             </body>
           </notes>
           <math xmlns="http://www.w3.org/1998/Math/MathML">
-            <cn sbml:units="min"> 5 </cn>
+            <ci> t_delay </ci>
           </math>
         </delay>
         <listOfEventAssignments>

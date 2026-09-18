@@ -159,6 +159,9 @@ export class ReportIndex {
         }
         break;
       case "Event":
+        if (element.trigger) this.add(element.trigger);
+        if (element.priority) this.add(element.priority);
+        if (element.delay) this.add(element.delay);
         for (const assignment of element.listOfEventAssignments ?? []) this.add(assignment);
         break;
       default:

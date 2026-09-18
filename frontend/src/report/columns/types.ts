@@ -1,7 +1,16 @@
 import type { EdgeKind } from "@/api/types";
 
 export type CellKind =
-  "id" | "text" | "number" | "boolean" | "math" | "units" | "link" | "count" | "assignments";
+  | "id"
+  | "text"
+  | "number"
+  | "boolean"
+  | "math"
+  | "units"
+  | "link"
+  | "count"
+  | "assignments"
+  | "xhtml";
 
 /** One column of an element table. */
 export interface ColumnDef {

@@ -9,7 +9,7 @@ import {
   resolveAnnotation,
 } from "@/api/annotations";
 import CvTermList from "@/components/misc/CvTermList.vue";
-import NotesView from "@/components/misc/NotesView.vue";
+import XhtmlView from "@/components/misc/XhtmlView.vue";
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
@@ -570,9 +570,9 @@ describe("annotations", () => {
   });
 
   it("sanitises the notes", () => {
-    const wrapper = mount(NotesView, {
+    const wrapper = mount(XhtmlView, {
       props: {
-        notes: "<p>Hello <b>world</b></p><script>alert(1)</script><img src=x onerror=alert(1)>",
+        xhtml: "<p>Hello <b>world</b></p><script>alert(1)</script><img src=x onerror=alert(1)>",
       },
     });
     expect(wrapper.html()).toContain("<b>world</b>");

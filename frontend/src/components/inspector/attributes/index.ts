@@ -6,6 +6,7 @@ import AlgebraicRuleAttributes from "./AlgebraicRuleAttributes.vue";
 import AssignmentRuleAttributes from "./AssignmentRuleAttributes.vue";
 import CompartmentAttributes from "./CompartmentAttributes.vue";
 import ConstraintAttributes from "./ConstraintAttributes.vue";
+import DelayAttributes from "./DelayAttributes.vue";
 import EventAssignmentAttributes from "./EventAssignmentAttributes.vue";
 import EventAttributes from "./EventAttributes.vue";
 import ExternalModelDefinitionAttributes from "./ExternalModelDefinitionAttributes.vue";
@@ -19,12 +20,14 @@ import ModifierSpeciesReferenceAttributes from "./ModifierSpeciesReferenceAttrib
 import ObjectiveAttributes from "./ObjectiveAttributes.vue";
 import ParameterAttributes from "./ParameterAttributes.vue";
 import PortAttributes from "./PortAttributes.vue";
+import PriorityAttributes from "./PriorityAttributes.vue";
 import RateRuleAttributes from "./RateRuleAttributes.vue";
 import ReactionAttributes from "./ReactionAttributes.vue";
 import SBMLDocumentAttributes from "./SBMLDocumentAttributes.vue";
 import SpeciesAttributes from "./SpeciesAttributes.vue";
 import SpeciesReferenceAttributes from "./SpeciesReferenceAttributes.vue";
 import SubmodelAttributes from "./SubmodelAttributes.vue";
+import TriggerAttributes from "./TriggerAttributes.vue";
 import UncertaintyAttributes from "./UncertaintyAttributes.vue";
 import UnitDefinitionAttributes from "./UnitDefinitionAttributes.vue";
 
@@ -53,6 +56,9 @@ export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
   ModifierSpeciesReference: ModifierSpeciesReferenceAttributes,
   KineticLaw: KineticLawAttributes,
   LocalParameter: LocalParameterAttributes,
+  Trigger: TriggerAttributes,
+  Priority: PriorityAttributes,
+  Delay: DelayAttributes,
   EventAssignment: EventAssignmentAttributes,
   Uncertainty: UncertaintyAttributes,
 };

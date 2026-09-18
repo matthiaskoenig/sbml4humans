@@ -600,17 +600,65 @@ export interface Event {
   uncertainties?: Uncertainty[];
   useValuesFromTriggerTime?: boolean | null;
   trigger?: Trigger | null;
-  priority?: Math | null;
-  delay?: Math | null;
+  priority?: Priority | null;
+  delay?: Delay | null;
   listOfEventAssignments?: EventAssignment[];
 }
 /**
- * The trigger of an event.
+ * The trigger of an event: the condition which fires it.
  */
 export interface Trigger {
+  pk: string;
+  sbmlType?: "Trigger";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
   math?: Math | null;
   initialValue?: boolean | null;
   persistent?: boolean | null;
+}
+/**
+ * The priority of an event: the order of the events of one moment.
+ */
+export interface Priority {
+  pk: string;
+  sbmlType?: "Priority";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  math?: Math | null;
+}
+/**
+ * The delay of an event: the time between the trigger and the execution.
+ */
+export interface Delay {
+  pk: string;
+  sbmlType?: "Delay";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  math?: Math | null;
 }
 /**
  * An assignment executed by an event.

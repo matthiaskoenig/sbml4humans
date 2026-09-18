@@ -82,13 +82,28 @@ def _elements(model: Model) -> Iterator[SBase]:
 
 
 def _nested(model: Model) -> Iterator[SBase]:
-    """All nodes of a model: every element, kinetic laws and local parameters."""
+    """All nodes of a model: every element and the objects nested in one.
+
+    The nested objects are the kinetic law of a reaction with its local
+    parameters and the trigger, the priority and the delay of an event. None of
+    them is referenced by an SId, so they are nodes without being part of the
+    namespace of the model.
+    """
     yield from model.list_of_unit_definitions
     yield from _elements(model)
     for reaction in model.list_of_reactions:
         if reaction.kinetic_law is not None:
             yield reaction.kinetic_law
             yield from reaction.kinetic_law.list_of_local_parameters
+    for event in model.list_of_events:
+        yield from _event_children(event)
+
+
+def _event_children(event: Event) -> Iterator[SBase]:
+    """The trigger, the priority and the delay of an event, those it has."""
+    for child in (event.trigger, event.priority, event.delay):
+        if child is not None:
+            yield child
 
 
 class LinkGraphBuilder:
@@ -341,8 +356,14 @@ class LinkGraphBuilder:
                 self._units_edge(lp, lp.units, index)
 
     def _event_edges(self, event: Event, index: ModelIndex) -> None:
-        """The edges of an event: the symbols of trigger, priority and delay, the assignments."""
-        self._math_edges(event, index)
+        """The edges of an event: those of its children and of its assignments.
+
+        The math of an event belongs to its trigger, its priority and its
+        delay (core §4.12.2 to §4.12.4), so every math edge starts at the
+        object which reads the element, not at the event around it.
+        """
+        for child in _event_children(event):
+            self._math_edges(child, index)
         for ea in event.list_of_event_assignments:
             self._edge(ea, ea.variable, EdgeKind.VARIABLE, index)
             self._math_edges(ea, index)

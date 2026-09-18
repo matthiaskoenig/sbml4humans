@@ -9,6 +9,7 @@ import TypeMark from "@/components/misc/TypeMark.vue";
 import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
+import XhtmlView from "@/components/misc/XhtmlView.vue";
 import { fieldValue, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
 
@@ -62,6 +63,9 @@ function variablePk(assignment: EventAssignment): string | null {
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
   <ValueText v-else-if="column.kind === 'number' || column.kind === 'count'" :value="numberValue" />
   <MathView v-else-if="column.kind === 'math'" :math="mathValue" />
+  <!-- the message of a constraint is XHTML, not text: it is rendered with the markup the notes
+  are rendered with -->
+  <XhtmlView v-else-if="column.kind === 'xhtml'" :xhtml="text" />
   <UnitsView v-else-if="column.kind === 'units'" :latex="text" />
   <template v-else-if="column.kind === 'link'">
     <UnitsLink v-if="column.link === 'units'" :pk="targetPk" :label="text" :latex="unitsLatex" />

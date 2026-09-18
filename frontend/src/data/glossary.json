@@ -84,6 +84,18 @@
         }
       }
     },
+    "Delay": {
+      "label": "Delay",
+      "summary": "the formula which gives the time between the trigger of an event and its execution",
+      "package": "core",
+      "page": "reference/delay/",
+      "attributes": {
+        "math": {
+          "label": "math",
+          "summary": "the formula which gives the time between the trigger and the execution"
+        }
+      }
+    },
     "Event": {
       "label": "Event",
       "summary": "an instantaneous change of the model when a condition becomes true",
@@ -91,6 +103,10 @@
       "page": "reference/event/",
       "attributes": {
         "delay": {
+          "label": "delay",
+          "summary": "the element which postpones the execution of the event"
+        },
+        "delay.math": {
           "label": "delay",
           "summary": "the formula which gives the time between the trigger and the execution"
         },
@@ -100,7 +116,15 @@
         },
         "priority": {
           "label": "priority",
+          "summary": "the element which orders the event against other events of the same moment"
+        },
+        "priority.math": {
+          "label": "priority",
           "summary": "the formula which orders this event against other events of the same moment"
+        },
+        "trigger": {
+          "label": "trigger",
+          "summary": "the condition of the event, as an element of its own"
         },
         "trigger.initialValue": {
           "label": "initial value",
@@ -448,6 +472,18 @@
         }
       }
     },
+    "Priority": {
+      "label": "Priority",
+      "summary": "the formula which orders an event against the other events of the same moment",
+      "package": "core",
+      "page": "reference/priority/",
+      "attributes": {
+        "math": {
+          "label": "math",
+          "summary": "the formula whose value orders the events of one moment"
+        }
+      }
+    },
     "RateRule": {
       "label": "Rate rule",
       "summary": "a formula which gives the rate of change of an element",
@@ -721,6 +757,26 @@
         "timeConversionFactor": {
           "label": "time conversion factor",
           "summary": "the parameter which converts the time of the submodel into the time of this model"
+        }
+      }
+    },
+    "Trigger": {
+      "label": "Trigger",
+      "summary": "the condition of an event, whose change from false to true fires it",
+      "package": "core",
+      "page": "reference/trigger/",
+      "attributes": {
+        "initialValue": {
+          "label": "initial value",
+          "summary": "whether the condition is taken to be true just before the simulation starts"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the condition whose change from false to true fires the event"
+        },
+        "persistent": {
+          "label": "persistent",
+          "summary": "whether the event is still executed when its condition becomes false again before execution"
         }
       }
     },

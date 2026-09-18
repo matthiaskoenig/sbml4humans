@@ -681,3 +681,73 @@ def test_unit_definition_carries_its_units(constraint_event: Report) -> None:
         ("litre", -1.0, 0, 1.0),
     ]
     assert len(definitions["min"].list_of_units) == 1
+
+
+def test_trigger_priority_and_delay_are_objects(constraint_event: Report) -> None:
+    """The three children of an event carry the attributes of the file.
+
+    A trigger, a priority and a delay are `SBase` in Level 3 Version 2 (core
+    §4.12.2 to §4.12.4), so each of them carries an id, a metaId, an SBO term
+    and notes of its own, which the report reduced to two flags and three
+    formulas before.
+    """
+    (event,) = constraint_event.models[0].list_of_events
+    trigger = event.trigger
+    assert trigger is not None
+    assert trigger.sbml_type == "Trigger"
+    assert trigger.pk == "constraint_event/Trigger:E1_trigger"
+    assert trigger.id == "E1_trigger"
+    assert trigger.meta_id == "meta_E1_trigger"
+    assert trigger.sbo == "SBO:0000064"
+    assert trigger.notes is not None
+    assert trigger.initial_value is False
+    assert trigger.persistent is True
+    assert trigger.math is not None
+    assert trigger.math.formula == "time >= t_dose"
+
+    priority = event.priority
+    assert priority is not None
+    assert priority.sbml_type == "Priority"
+    assert priority.pk == "constraint_event/Priority:E1_priority"
+    assert priority.notes is not None
+    assert priority.math is not None
+
+    delay = event.delay
+    assert delay is not None
+    assert delay.sbml_type == "Delay"
+    assert delay.pk == "constraint_event/Delay:E1_delay"
+    assert delay.notes is not None
+    assert delay.math is not None
+    assert delay.math.formula == "t_delay"
+
+
+def test_trigger_priority_and_delay_without_an_identifier() -> None:
+    """Without an id or a metaId the three are keyed by their event."""
+    report = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" '
+        'level="3" version="1"><model id="m"><listOfEvents>'
+        '<event id="e1" useValuesFromTriggerTime="true">'
+        '<trigger initialValue="false" persistent="true">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math></trigger>'
+        '<delay><math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<cn> 1 </cn></math></delay>"
+        '<priority><math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<cn> 2 </cn></math></priority>"
+        "</event></listOfEvents></model></sbml>"
+    )
+    (event,) = report.models[0].list_of_events
+    assert event.trigger is not None
+    assert event.trigger.id is None
+    assert event.trigger.pk == "m/Trigger:e1.trigger"
+    assert event.priority is not None
+    assert event.priority.pk == "m/Priority:e1.priority"
+    assert event.delay is not None
+    assert event.delay.pk == "m/Delay:e1.delay"
+
+
+def test_constraint_message_is_the_xhtml_of_the_file(constraint_event: Report) -> None:
+    """The message of a constraint is the XHTML of the file (core §4.10.2)."""
+    (constraint,) = constraint_event.models[0].list_of_constraints
+    assert constraint.message is not None
+    assert constraint.message.startswith("<message>")
+    assert "<b>S1</b>" in constraint.message

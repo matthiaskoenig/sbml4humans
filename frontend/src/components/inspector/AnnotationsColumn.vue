@@ -2,7 +2,7 @@
 import type { SBase } from "@/api/types";
 import CvTermList from "@/components/misc/CvTermList.vue";
 import HistoryView from "@/components/misc/HistoryView.vue";
-import NotesView from "@/components/misc/NotesView.vue";
+import XhtmlView from "@/components/misc/XhtmlView.vue";
 
 defineProps<{ element: SBase }>();
 </script>
@@ -15,7 +15,7 @@ defineProps<{ element: SBase }>();
     </section>
     <section>
       <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">Notes</h3>
-      <NotesView :notes="element.notes" />
+      <XhtmlView :xhtml="element.notes" testid="notes" />
     </section>
     <section v-if="element.history">
       <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">History</h3>

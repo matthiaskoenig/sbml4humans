@@ -342,12 +342,27 @@ class Reaction(SBase):
     fbc: ReactionFbc | None = None
 
 
-class Trigger(ReportModel):
-    """The trigger of an event."""
+class Trigger(SBase):
+    """The trigger of an event: the condition which fires it."""
 
+    sbml_type: Literal["Trigger"] = "Trigger"
     math: Math | None = None
     initial_value: bool | None = None
     persistent: bool | None = None
+
+
+class Priority(SBase):
+    """The priority of an event: the order of the events of one moment."""
+
+    sbml_type: Literal["Priority"] = "Priority"
+    math: Math | None = None
+
+
+class Delay(SBase):
+    """The delay of an event: the time between the trigger and the execution."""
+
+    sbml_type: Literal["Delay"] = "Delay"
+    math: Math | None = None
 
 
 class EventAssignment(SBase):
@@ -364,8 +379,8 @@ class Event(SBase):
     sbml_type: Literal["Event"] = "Event"
     use_values_from_trigger_time: bool | None = None
     trigger: Trigger | None = None
-    priority: Math | None = None
-    delay: Math | None = None
+    priority: Priority | None = None
+    delay: Delay | None = None
     list_of_event_assignments: list[EventAssignment] = Field(default_factory=list)
 
 

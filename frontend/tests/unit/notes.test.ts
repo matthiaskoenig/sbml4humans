@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 
-import NotesView from "@/components/misc/NotesView.vue";
+import XhtmlView from "@/components/misc/XhtmlView.vue";
 import { sanitizeNotes } from "@/report/notes";
 
 /** The tags and attributes the real notes of the examples use, wrapped the way libsbml returns
@@ -106,11 +106,11 @@ describe("sanitizeNotes", () => {
   });
 });
 
-describe("NotesView", () => {
+describe("XhtmlView", () => {
   it("renders the sanitised notes and forbids the style element the profile alone would keep", () => {
-    const wrapper = mount(NotesView, {
+    const wrapper = mount(XhtmlView, {
       props: {
-        notes: `<p>hello</p><style>body{display:none}</style><script>alert(1)</script><img src=x onerror=alert(1)>`,
+        xhtml: `<p>hello</p><style>body{display:none}</style><script>alert(1)</script><img src=x onerror=alert(1)>`,
       },
     });
     expect(wrapper.html()).toContain("hello");

@@ -27,6 +27,9 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Modifier species reference](modifierspeciesreference.md) | the participation of a species in a reaction as a modifier |
 | [Kinetic law](kineticlaw.md) | the formula which gives the speed of a reaction |
 | [Local parameter](localparameter.md) | a named value which only one kinetic law uses |
+| [Trigger](trigger.md) | the condition of an event, whose change from false to true fires it |
+| [Priority](priority.md) | the formula which orders an event against the other events of the same moment |
+| [Delay](delay.md) | the formula which gives the time between the trigger of an event and its execution |
 | [Event assignment](eventassignment.md) | the new value an event gives to one element of the model |
 
 ## Hierarchical models (comp)

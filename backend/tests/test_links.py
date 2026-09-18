@@ -503,3 +503,27 @@ def test_rule_of_a_species_reference_does_not_shadow_it() -> None:
     assert not [e for e in report.link_graph.edges if e.source == e.target]
     assert (rule.pk, species_reference.pk, "variable") in _edges(report)
     assert (kinetic_law.pk, species_reference.pk, "math") in _edges(report)
+
+
+def test_math_edges_start_at_the_trigger_and_the_delay() -> None:
+    """Every math of an event is read by the object which carries it.
+
+    The trigger, the priority and the delay each hold their own math (core
+    §4.12.2 to §4.12.4), so a reader can tell whether an element is read by the
+    condition or by the delay expression.
+    """
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "constraint_event.xml")
+    (event,) = report.models[0].list_of_events
+    assert event.trigger is not None
+    assert event.delay is not None
+    assert _edges(report, source=event.pk) == set()
+    assert _edges(report, source=event.trigger.pk) == {
+        (event.trigger.pk, "constraint_event/Parameter:t_dose", "math")
+    }
+    assert _edges(report, source=event.delay.pk) == {
+        (event.delay.pk, "constraint_event/Parameter:t_delay", "math")
+    }
+    nodes = report.link_graph.nodes
+    assert event.priority is not None
+    for pk in (event.trigger.pk, event.priority.pk, event.delay.pk):
+        assert pk in nodes

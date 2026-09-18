@@ -15,8 +15,8 @@ function* maths(element: SBase): Generator<Math | null | undefined> {
   if (element.sbmlType === "Reaction") yield element.kineticLaw?.math;
   if (element.sbmlType === "Event") {
     yield element.trigger?.math;
-    yield element.priority;
-    yield element.delay;
+    yield element.priority?.math;
+    yield element.delay?.math;
     for (const assignment of element.listOfEventAssignments ?? []) yield assignment.math;
   }
   if (element.sbmlType === "Uncertainty") {
@@ -39,6 +39,9 @@ function searchText(element: SBase): string {
   if ("symbol" in element) parts.push(element.symbol);
   if ("variable" in element) parts.push(element.variable);
   if (element.notes) parts.push(stripHtml(element.notes));
+  // the message of a constraint is XHTML written for a reader, like the notes, and a reader
+  // looks for a constraint by what its message says
+  if (element.sbmlType === "Constraint" && element.message) parts.push(stripHtml(element.message));
   for (const math of maths(element)) parts.push(math?.formula);
   if (element.sbmlType === "Reaction") parts.push(element.equation);
   const text = parts

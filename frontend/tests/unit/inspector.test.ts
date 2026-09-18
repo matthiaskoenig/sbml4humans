@@ -2,7 +2,15 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
-import type { Reaction, Species, Submodel, Uncertainty, UnitDefinition } from "@/api/types";
+import type {
+  Constraint,
+  Event,
+  Reaction,
+  Species,
+  Submodel,
+  Uncertainty,
+  UnitDefinition,
+} from "@/api/types";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
@@ -121,6 +129,38 @@ describe("inspector", () => {
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
       summaryOf(linkEntry("compartment"), "the link kind compartment"),
     );
+  });
+
+  it("opens the trigger, the priority and the delay of an event as elements of their own", () => {
+    const event = constraintEvent.mainModel!.listOfEvents![0] as Event;
+    const wrapper = mountWith(AttributesColumn, { element: event }, constraintEvent);
+    const pks = wrapper.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
+    expect(pks).toContain(event.trigger!.pk);
+    expect(pks).toContain(event.priority!.pk);
+    expect(pks).toContain(event.delay!.pk);
+    // each of the three is an element of the index, so the link opens it
+    for (const pk of [event.trigger!.pk, event.priority!.pk, event.delay!.pk]) {
+      expect(constraintEvent.get(pk), pk).toBeDefined();
+    }
+  });
+
+  it("shows the condition and the flags of a trigger", () => {
+    const trigger = constraintEvent.mainModel!.listOfEvents![0]!.trigger!;
+    const wrapper = mountWith(AttributesColumn, { element: trigger }, constraintEvent);
+    const labels = wrapper.findAll("[data-testid=attribute-row] dt").map((dt) => dt.text());
+    expect(labels).toEqual(["metaId", "sbo", "math", "initial value", "persistent"]);
+    const rows = wrapper.findAll("[data-testid=attribute-row]");
+    // initial value is false, persistent is true: the check mark is the mark of a true flag
+    expect(rows[3]!.find("[aria-label=true]").exists()).toBe(false);
+    expect(rows[4]!.find("[aria-label=true]").exists()).toBe(true);
+  });
+
+  it("renders the message of a constraint as the xhtml it is", () => {
+    const constraint = constraintEvent.mainModel!.listOfConstraints![0] as Constraint;
+    const wrapper = mountWith(AttributesColumn, { element: constraint }, constraintEvent);
+    const message = wrapper.get("[data-testid=message]");
+    expect(message.html()).toContain("<b>S1</b>");
+    expect(message.text()).not.toContain("<message>");
   });
 
   it("lists the units of a unit definition next to its formula", () => {

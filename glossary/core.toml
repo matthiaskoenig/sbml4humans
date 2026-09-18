@@ -1095,9 +1095,9 @@ summary = "an instantaneous change of the model when a condition becomes true"
 description = """
 An event describes a discontinuous change: when its trigger turns from false to true, the assignments of the event are executed and set new values for compartments, species, stoichiometries or parameters. A dose which is given at a fixed time, a switch which flips at a threshold or a medium which is exchanged are events. The change can be delayed, and a priority decides which of several simultaneous events is executed first.
 
-The report shows the rendered trigger, the priority and the delay of an event, the flags of its trigger and the table of its assignments.
+The report shows the rendered trigger, the priority and the delay of an event, the flags of its trigger and the table of its assignments, and opens the [trigger](trigger.md), the [priority](priority.md) and the [delay](delay.md) as elements of their own.
 """
-related = ["EventAssignment", "Parameter", "Species"]
+related = ["Trigger", "Priority", "Delay", "EventAssignment"]
 
 [types.Event.attributes.useValuesFromTriggerTime]
 label = "values from trigger time"
@@ -1108,6 +1108,15 @@ description = """
 An event which is delayed is triggered at one moment and executed at another, and the two moments can give different values. With "true" the formulas of the assignments are evaluated when the event triggers, with "false" when it is executed.
 
 The report shows the flag as a mark in the column "values from trigger time".
+"""
+
+[types.Event.attributes.trigger]
+label = "trigger"
+type = "Trigger"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition of the event, as an element of its own"
+description = """
+Every event has a [trigger](trigger.md), the element which holds the condition and the two flags which say how it is read. The report opens it in the inspector, with its own SBO term, notes and annotations.
 """
 
 [types.Event.attributes."trigger.math"]
@@ -1145,24 +1154,42 @@ The report shows the flag as a mark, in the column "persistent" and in the inspe
 
 [types.Event.attributes.priority]
 label = "priority"
+type = "Priority"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the element which orders the event against other events of the same moment"
+description = """
+An event may carry a [priority](priority.md), the element whose formula decides which of several events of one moment is executed first. An event without a priority has none, and the order of simultaneous events is then not fixed.
+"""
+
+[types.Event.attributes."priority.math"]
+label = "priority"
 type = "Math"
 spec = { doc = "l3v2", section = "4.12.3" }
 summary = "the formula which orders this event against other events of the same moment"
 description = """
-When several events are executed at the same moment, the one with the higher priority goes first; a larger number means a higher priority and the value is dimensionless. An event without a priority has none, and the order of simultaneous events is then not fixed.
+When several events are executed at the same moment, the one with the higher priority goes first; a larger number means a higher priority and the value is dimensionless.
 
-The report renders the priority in the column "priority" and in the inspector.
+The report renders the priority in the column "priority" of the events and in the inspector.
 """
 
 [types.Event.attributes.delay]
+label = "delay"
+type = "Delay"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the element which postpones the execution of the event"
+description = """
+An event may carry a [delay](delay.md), the element whose formula gives the time between the trigger and the execution. An event without a delay is executed immediately.
+"""
+
+[types.Event.attributes."delay.math"]
 label = "delay"
 type = "Math"
 spec = { doc = "l3v2", section = "4.12.4" }
 summary = "the formula which gives the time between the trigger and the execution"
 description = """
-The delay is evaluated at the moment the event triggers and has to be a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
+The delay is evaluated at the moment the event triggers and has to be a value which is not negative, in the time units of the model.
 
-The report renders the delay in the column "delay" and in the inspector.
+The report renders the delay in the column "delay" of the events and in the inspector.
 """
 
 [types.Event.attributes.listOfEventAssignments]
@@ -1378,6 +1405,97 @@ description = """
 The report resolves the units of the local parameter and renders them as a formula, so that the units of a rate constant can be compared with the units the rate law needs.
 """
 
+
+[types.Trigger]
+label = "Trigger"
+package = "core"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition of an event, whose change from false to true fires it"
+description = """
+The trigger holds the condition of an [event](event.md) as a formula which returns a boolean value, and it decides when the event fires: at the moment the formula turns from false to true. It is an element of its own, so a model can say with an SBO term what kind of condition it is and explain in its notes what the condition stands for.
+
+The report shows the trigger as an element of its own, and its rendered condition and its two flags in the table and in the inspector of the event.
+"""
+related = ["Event", "Priority", "Delay", "EventAssignment"]
+
+[types.Trigger.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition whose change from false to true fires the event"
+description = """
+The math is an expression which returns a boolean value, and the event fires at the moment it turns from false to true. It can fire again whenever the expression makes that transition again. A trigger without a formula can never fire.
+
+The report renders the condition in the column "trigger" of the events and in the inspector, and links the elements the condition reads.
+"""
+
+[types.Trigger.attributes.initialValue]
+label = "initial value"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the condition is taken to be true just before the simulation starts"
+description = """
+To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
+
+The report shows the flag as a mark, in the column "initial value" of the events and in the inspector.
+"""
+
+[types.Trigger.attributes.persistent]
+label = "persistent"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the event is still executed when its condition becomes false again before execution"
+description = """
+Between the moment an event triggers and the moment it is executed, its condition may turn false again, because the event is delayed or because another event changed the model. With "true" the assignments are carried out anyway, with "false" the event is dropped.
+
+The report shows the flag as a mark, in the column "persistent" of the events and in the inspector.
+"""
+
+[types.Priority]
+label = "Priority"
+package = "core"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the formula which orders an event against the other events of the same moment"
+description = """
+The priority of an [event](event.md) decides which of several events executed at the same moment goes first: the one with the larger value. It is an element of its own, which a model can annotate and explain, and only a Level 3 model can carry one.
+
+The report shows the priority as an element of its own and its rendered formula in the table and in the inspector of the event.
+"""
+related = ["Event", "Trigger", "Delay"]
+
+[types.Priority.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the formula whose value orders the events of one moment"
+description = """
+The math returns a dimensionless number, and a larger value means the event is executed earlier. An event without a priority has none, and the order of simultaneous events is then not fixed.
+
+The report renders the formula in the column "priority" of the events and in the inspector, and links the elements it reads.
+"""
+
+[types.Delay]
+label = "Delay"
+package = "core"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the formula which gives the time between the trigger of an event and its execution"
+description = """
+The delay of an [event](event.md) postpones its assignments: the event fires at one moment and is carried out later. It is an element of its own, which a model can annotate and explain; whether the values of the assignments are taken from the moment of the trigger or from the moment of the execution is decided by the flag "values from trigger time" of the event.
+
+The report shows the delay as an element of its own and its rendered formula in the table and in the inspector of the event.
+"""
+related = ["Event", "Trigger", "Priority"]
+
+[types.Delay.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the formula which gives the time between the trigger and the execution"
+description = """
+The math is evaluated at the moment the event triggers and has to give a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
+
+The report renders the formula in the column "delay" of the events and in the inspector, and links the elements it reads.
+"""
 
 [types.EventAssignment]
 label = "Event assignment"

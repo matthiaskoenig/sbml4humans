@@ -4,6 +4,7 @@ import type {
   AssignmentRule,
   Compartment,
   Constraint,
+  Delay,
   Event,
   EventAssignment,
   ExternalModelDefinition,
@@ -17,12 +18,14 @@ import type {
   Objective,
   Parameter,
   Port,
+  Priority,
   RateRule,
   Reaction,
   SBMLDocument,
   Species,
   SpeciesReference,
   Submodel,
+  Trigger,
   Uncertainty,
   UnitDefinition,
 } from "@/types/report";
@@ -57,6 +60,9 @@ export type NestedElement =
   | ModifierSpeciesReference
   | KineticLaw
   | LocalParameter
+  | Trigger
+  | Priority
+  | Delay
   | EventAssignment
   | Uncertainty;
 

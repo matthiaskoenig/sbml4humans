@@ -751,6 +751,135 @@
       "title": "Debug",
       "type": "object"
     },
+    "Delay": {
+      "description": "The delay of an event: the time between the trigger and the execution.",
+      "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Delay",
+          "default": "Delay",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Delay",
+      "type": "object"
+    },
     "Edge": {
       "description": "A directed reference from one object to another.\n\nEdges are immutable values, so that they can be used in sets and as keys.",
       "properties": {
@@ -932,7 +1061,7 @@
         "priority": {
           "anyOf": [
             {
-              "$ref": "#/$defs/Math"
+              "$ref": "#/$defs/Priority"
             },
             {
               "type": "null"
@@ -943,7 +1072,7 @@
         "delay": {
           "anyOf": [
             {
-              "$ref": "#/$defs/Math"
+              "$ref": "#/$defs/Delay"
             },
             {
               "type": "null"
@@ -3105,6 +3234,135 @@
       "title": "Port",
       "type": "object"
     },
+    "Priority": {
+      "description": "The priority of an event: the order of the events of one moment.",
+      "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Priority",
+          "default": "Priority",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "Priority",
+      "type": "object"
+    },
     "RateRule": {
       "description": "A rate rule of a variable.",
       "properties": {
@@ -4308,8 +4566,116 @@
       "type": "object"
     },
     "Trigger": {
-      "description": "The trigger of an event.",
+      "description": "The trigger of an event: the condition which fires it.",
       "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "Trigger",
+          "default": "Trigger",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
         "math": {
           "anyOf": [
             {
@@ -4344,6 +4710,9 @@
           "default": null
         }
       },
+      "required": [
+        "pk"
+      ],
       "title": "Trigger",
       "type": "object"
     },

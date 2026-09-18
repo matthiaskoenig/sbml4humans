@@ -26,6 +26,7 @@ from sbml4humans.model import (
     ConversionFactor,
     Creator,
     CVTerm,
+    Delay,
     Event,
     EventAssignment,
     ExternalModelDefinition,
@@ -43,6 +44,7 @@ from sbml4humans.model import (
     Package,
     Parameter,
     Port,
+    Priority,
     RateRule,
     Reaction,
     ReactionFbc,
@@ -659,15 +661,32 @@ class SBMLDocumentInfo:
     def event(self, e: libsbml.Event) -> Event:
         """An event with trigger, priority, delay and assignments."""
         fields = self.sbase(e)
-        pk = fields["pk"]
         event_key = self._key(e)
         trigger = None
         if e.isSetTrigger():
             t: libsbml.Trigger = e.getTrigger()
+            trigger_fields = self.sbase(t, key=f"{event_key}.trigger")
             trigger = Trigger(
-                math=self.math(pk, _attribute(t, "math")),
+                **trigger_fields,
+                math=self.math(trigger_fields["pk"], _attribute(t, "math")),
                 initial_value=_attribute(t, "initialValue"),
                 persistent=_attribute(t, "persistent"),
+            )
+        priority = None
+        if e.isSetPriority():
+            p: libsbml.Priority = e.getPriority()
+            priority_fields = self.sbase(p, key=f"{event_key}.priority")
+            priority = Priority(
+                **priority_fields,
+                math=self.math(priority_fields["pk"], _attribute(p, "math")),
+            )
+        delay = None
+        if e.isSetDelay():
+            d: libsbml.Delay = e.getDelay()
+            delay_fields = self.sbase(d, key=f"{event_key}.delay")
+            delay = Delay(
+                **delay_fields,
+                math=self.math(delay_fields["pk"], _attribute(d, "math")),
             )
         assignments = []
         for ea in e.getListOfEventAssignments():
@@ -683,12 +702,8 @@ class SBMLDocumentInfo:
             **fields,
             use_values_from_trigger_time=_attribute(e, "useValuesFromTriggerTime"),
             trigger=trigger,
-            priority=self.math(pk, _attribute(e.getPriority(), "math"))
-            if e.isSetPriority()
-            else None,
-            delay=self.math(pk, _attribute(e.getDelay(), "math"))
-            if e.isSetDelay()
-            else None,
+            priority=priority,
+            delay=delay,
             list_of_event_assignments=assignments,
         )
 

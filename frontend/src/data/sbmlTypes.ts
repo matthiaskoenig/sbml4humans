@@ -6,6 +6,7 @@ import {
   CircleArrowLeftIcon,
   CircleDotIcon,
   CircleIcon,
+  ChevronsUpIcon,
   CircleQuestionMarkIcon,
   ClockIcon,
   CodeIcon,
@@ -13,6 +14,7 @@ import {
   ExternalLinkIcon,
   FileIcon,
   HashIcon,
+  HourglassIcon,
   LayoutGridIcon,
   LockIcon,
   LogInIcon,
@@ -20,6 +22,7 @@ import {
   SlidersHorizontalIcon,
   TagIcon,
   TargetIcon,
+  ZapIcon,
 } from "@lucide/vue";
 import type { Component } from "vue";
 
@@ -256,6 +259,30 @@ export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
     plural: "Local parameters",
     color: "#fdae61",
     icon: SlidersHorizontalIcon,
+    pkg: "core",
+  },
+  {
+    type: "Trigger",
+    label: "Trigger",
+    plural: "Triggers",
+    color: "#fed08b",
+    icon: ZapIcon,
+    pkg: "core",
+  },
+  {
+    type: "Priority",
+    label: "Priority",
+    plural: "Priorities",
+    color: "#fed08b",
+    icon: ChevronsUpIcon,
+    pkg: "core",
+  },
+  {
+    type: "Delay",
+    label: "Delay",
+    plural: "Delays",
+    color: "#fed08b",
+    icon: HourglassIcon,
     pkg: "core",
   },
   {

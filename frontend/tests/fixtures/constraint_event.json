@@ -1,5 +1,5 @@
 {
-  "uid": "386b505d3cd64c21b31501880a785b53",
+  "uid": "af0217d5e34346979003e59c7daf3cff",
   "manifest": {
     "entries": [
       {
@@ -361,6 +361,44 @@
                 "units": "dimensionless",
                 "unitsLatex": "-",
                 "derivedUnits": "-"
+              },
+              {
+                "pk": "constraint_event/Parameter:t_dose",
+                "sbmlType": "Parameter",
+                "id": "t_dose",
+                "metaId": null,
+                "name": "time of the dose",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"t_dose\" name=\"time of the dose\" value=\"20\" units=\"min\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "value": 20,
+                "constant": true,
+                "units": "min",
+                "unitsLatex": "min",
+                "derivedUnits": "min"
+              },
+              {
+                "pk": "constraint_event/Parameter:t_delay",
+                "sbmlType": "Parameter",
+                "id": "t_delay",
+                "metaId": null,
+                "name": "time the dose needs to reach the compartment",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"t_delay\" name=\"time the dose needs to reach the compartment\" value=\"5\" units=\"min\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "value": 5,
+                "constant": true,
+                "units": "min",
+                "unitsLatex": "min",
+                "derivedUnits": "min"
               }
             ],
             "listOfInitialAssignments": [],
@@ -549,25 +587,86 @@
                 "notes": null,
                 "cvterms": [],
                 "history": null,
-                "xml": "<event metaid=\"meta_E1\" id=\"E1\" name=\"dose of S1 which switches the reaction off\" useValuesFromTriggerTime=\"false\">\n  <trigger metaid=\"meta_E1_trigger\" sboTerm=\"SBO:0000064\" id=\"E1_trigger\" initialValue=\"false\" persistent=\"true\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given once the system has run for twenty minutes.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <apply>\n        <geq/>\n        <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/time\"> time </csymbol>\n        <cn sbml:units=\"min\"> 20 </cn>\n      </apply>\n    </math>\n  </trigger>\n  <delay metaid=\"meta_E1_delay\" sboTerm=\"SBO:0000064\" id=\"E1_delay\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose reaches the compartment five minutes after the trigger.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <cn sbml:units=\"min\"> 5 </cn>\n    </math>\n  </delay>\n  <priority metaid=\"meta_E1_priority\" sboTerm=\"SBO:0000064\" id=\"E1_priority\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given before any other event of the same moment.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <cn sbml:units=\"dimensionless\"> 1 </cn>\n    </math>\n  </priority>\n  <listOfEventAssignments>\n    <eventAssignment id=\"E1_dose\" variable=\"S1\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <plus/>\n          <ci> S1 </ci>\n          <ci> dose </ci>\n        </apply>\n      </math>\n    </eventAssignment>\n    <eventAssignment id=\"E1_switch\" variable=\"active\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n        <cn sbml:units=\"dimensionless\"> 0 </cn>\n      </math>\n    </eventAssignment>\n  </listOfEventAssignments>\n</event>",
+                "xml": "<event metaid=\"meta_E1\" id=\"E1\" name=\"dose of S1 which switches the reaction off\" useValuesFromTriggerTime=\"false\">\n  <trigger metaid=\"meta_E1_trigger\" sboTerm=\"SBO:0000064\" id=\"E1_trigger\" initialValue=\"false\" persistent=\"true\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given once the system has run for twenty minutes.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <geq/>\n        <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/time\"> time </csymbol>\n        <ci> t_dose </ci>\n      </apply>\n    </math>\n  </trigger>\n  <delay metaid=\"meta_E1_delay\" sboTerm=\"SBO:0000064\" id=\"E1_delay\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose reaches the compartment five minutes after the trigger.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <ci> t_delay </ci>\n    </math>\n  </delay>\n  <priority metaid=\"meta_E1_priority\" sboTerm=\"SBO:0000064\" id=\"E1_priority\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given before any other event of the same moment.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <cn sbml:units=\"dimensionless\"> 1 </cn>\n    </math>\n  </priority>\n  <listOfEventAssignments>\n    <eventAssignment id=\"E1_dose\" variable=\"S1\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <plus/>\n          <ci> S1 </ci>\n          <ci> dose </ci>\n        </apply>\n      </math>\n    </eventAssignment>\n    <eventAssignment id=\"E1_switch\" variable=\"active\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n        <cn sbml:units=\"dimensionless\"> 0 </cn>\n      </math>\n    </eventAssignment>\n  </listOfEventAssignments>\n</event>",
                 "comp": null,
                 "uncertainties": [],
                 "useValuesFromTriggerTime": false,
                 "trigger": {
+                  "pk": "constraint_event/Trigger:E1_trigger",
+                  "sbmlType": "Trigger",
+                  "id": "E1_trigger",
+                  "metaId": "meta_E1_trigger",
+                  "name": null,
+                  "sbo": "SBO:0000064",
+                  "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The dose is given once the system has run for twenty minutes.</p>\n  </body>\n</notes>",
+                  "cvterms": [
+                    {
+                      "qualifier": "BQB_IS",
+                      "resources": [
+                        "https://identifiers.org/SBO:0000064"
+                      ]
+                    }
+                  ],
+                  "history": null,
+                  "xml": "<trigger metaid=\"meta_E1_trigger\" sboTerm=\"SBO:0000064\" id=\"E1_trigger\" initialValue=\"false\" persistent=\"true\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The dose is given once the system has run for twenty minutes.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <geq/>\n      <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/time\"> time </csymbol>\n      <ci> t_dose </ci>\n    </apply>\n  </math>\n</trigger>",
+                  "comp": null,
+                  "uncertainties": [],
                   "math": {
-                    "latex": " \\mathrm{time}\\ge 20",
-                    "formula": "time >= 20 min"
+                    "latex": " \\mathrm{time}\\ge \\mathit{t_{dose}}",
+                    "formula": "time >= t_dose"
                   },
                   "initialValue": false,
                   "persistent": true
                 },
                 "priority": {
-                  "latex": " 1",
-                  "formula": "1 dimensionless"
+                  "pk": "constraint_event/Priority:E1_priority",
+                  "sbmlType": "Priority",
+                  "id": "E1_priority",
+                  "metaId": "meta_E1_priority",
+                  "name": null,
+                  "sbo": "SBO:0000064",
+                  "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The dose is given before any other event of the same moment.</p>\n  </body>\n</notes>",
+                  "cvterms": [
+                    {
+                      "qualifier": "BQB_IS",
+                      "resources": [
+                        "https://identifiers.org/SBO:0000064"
+                      ]
+                    }
+                  ],
+                  "history": null,
+                  "xml": "<priority metaid=\"meta_E1_priority\" sboTerm=\"SBO:0000064\" id=\"E1_priority\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The dose is given before any other event of the same moment.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n    <cn sbml:units=\"dimensionless\"> 1 </cn>\n  </math>\n</priority>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "math": {
+                    "latex": " 1",
+                    "formula": "1 dimensionless"
+                  }
                 },
                 "delay": {
-                  "latex": " 5",
-                  "formula": "5 min"
+                  "pk": "constraint_event/Delay:E1_delay",
+                  "sbmlType": "Delay",
+                  "id": "E1_delay",
+                  "metaId": "meta_E1_delay",
+                  "name": null,
+                  "sbo": "SBO:0000064",
+                  "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The dose reaches the compartment five minutes after the trigger.</p>\n  </body>\n</notes>",
+                  "cvterms": [
+                    {
+                      "qualifier": "BQB_IS",
+                      "resources": [
+                        "https://identifiers.org/SBO:0000064"
+                      ]
+                    }
+                  ],
+                  "history": null,
+                  "xml": "<delay metaid=\"meta_E1_delay\" sboTerm=\"SBO:0000064\" id=\"E1_delay\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The dose reaches the compartment five minutes after the trigger.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <ci> t_delay </ci>\n  </math>\n</delay>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "math": {
+                    "latex": " \\mathit{t_{delay}}",
+                    "formula": "t_delay"
+                  }
                 },
                 "listOfEventAssignments": [
                   {
@@ -704,6 +803,20 @@
               "name": "switch of the reaction",
               "model": "constraint_event/Model:constraint_event"
             },
+            "constraint_event/Parameter:t_dose": {
+              "pk": "constraint_event/Parameter:t_dose",
+              "sbmlType": "Parameter",
+              "id": "t_dose",
+              "name": "time of the dose",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Parameter:t_delay": {
+              "pk": "constraint_event/Parameter:t_delay",
+              "sbmlType": "Parameter",
+              "id": "t_delay",
+              "name": "time the dose needs to reach the compartment",
+              "model": "constraint_event/Model:constraint_event"
+            },
             "constraint_event/Constraint:meta_constraint_S1": {
               "pk": "constraint_event/Constraint:meta_constraint_S1",
               "sbmlType": "Constraint",
@@ -773,6 +886,27 @@
               "id": "Km",
               "name": "Michaelis constant",
               "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Trigger:E1_trigger": {
+              "pk": "constraint_event/Trigger:E1_trigger",
+              "sbmlType": "Trigger",
+              "id": "E1_trigger",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Priority:E1_priority": {
+              "pk": "constraint_event/Priority:E1_priority",
+              "sbmlType": "Priority",
+              "id": "E1_priority",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Delay:E1_delay": {
+              "pk": "constraint_event/Delay:E1_delay",
+              "sbmlType": "Delay",
+              "id": "E1_delay",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
             }
           },
           "edges": [
@@ -819,6 +953,16 @@
             {
               "source": "constraint_event/Parameter:dose",
               "target": "constraint_event/UnitDefinition:mM",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Parameter:t_dose",
+              "target": "constraint_event/UnitDefinition:min",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Parameter:t_delay",
+              "target": "constraint_event/UnitDefinition:min",
               "kind": "units"
             },
             {
@@ -892,6 +1036,16 @@
               "kind": "units"
             },
             {
+              "source": "constraint_event/Trigger:E1_trigger",
+              "target": "constraint_event/Parameter:t_dose",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/Delay:E1_delay",
+              "target": "constraint_event/Parameter:t_delay",
+              "kind": "math"
+            },
+            {
               "source": "constraint_event/EventAssignment:E1_dose",
               "target": "constraint_event/Species:S1",
               "kind": "variable"
@@ -915,7 +1069,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.054 [s]"
+        "jsonReportTime": "0.056 [s]"
       }
     }
   }
