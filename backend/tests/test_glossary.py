@@ -3,7 +3,8 @@
 import json
 import shutil
 from pathlib import Path
-from typing import Any
+from types import UnionType
+from typing import Annotated, Any, Union, get_args, get_origin
 
 import pytest
 
@@ -17,6 +18,7 @@ from sbml4humans.glossary import (
     render_type_page,
     write,
 )
+from sbml4humans.model import Model
 
 
 FIXTURE = Path(__file__).parent / "data" / "glossary"
@@ -398,6 +400,37 @@ def test_coverage_accepts_the_glossary_of_the_repository() -> None:
     """The glossary of the repository covers the report in both directions."""
     root = glossary_module.REPO_ROOT
     Glossary.from_directory(root / glossary_module.GLOSSARY_DIR).validate_coverage(root)
+
+
+def _classes(annotation: Any) -> list[Any]:
+    """The classes an annotation names, through a list, a union and a metadata."""
+    origin = get_origin(annotation)
+    if origin is Annotated:
+        return _classes(get_args(annotation)[0])
+    if origin in (list, Union, UnionType):
+        return [cls for arg in get_args(annotation) for cls in _classes(arg)]
+    return [annotation]
+
+
+def test_a_package_page_names_every_section_the_package_adds() -> None:
+    """The page of a package links every type it gives a section of a model.
+
+    Every list of a model is a section of the report, so the page which says
+    what the report shows of a package names each of them.
+    """
+    root = glossary_module.REPO_ROOT
+    glossary = Glossary.from_directory(root / glossary_module.GLOSSARY_DIR)
+    missing: list[str] = []
+    for name, field in Model.model_fields.items():
+        if not name.startswith("list_of_"):
+            continue
+        for cls in _classes(field.annotation):
+            entry = glossary.types[cls.__name__]
+            if entry.package == "core":
+                continue
+            if f"({entry.slug}.md)" not in glossary.types[entry.package].description:
+                missing.append(f"{entry.package} names no {cls.__name__}")
+    assert missing == []
 
 
 def test_a_missing_image_is_an_error(tmp_path: Path) -> None:
