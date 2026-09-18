@@ -5,9 +5,12 @@ import { createServer } from "node:http";
 export const REPOSITORY = new URL("../../../", import.meta.url).pathname;
 export const REPRESSILATOR_FILE = `${REPOSITORY}backend/sbml4humans/resources/models/repressilator/BIOMD0000000012_urn.xml`;
 
-/** Open the report of an example and wait for the tables. Without a `timeout` the configured
- * expect timeout applies, only the walk over every example needs a longer one. */
-export async function openExample(page: Page, id: string, timeout?: number): Promise<void> {
+/** Open the report of an example and wait for the tables. Creating that report is CPU bound in
+ * the backend, and on CI the parallel workers of the other specs compete for the runner, so the
+ * wait is longer than the ten seconds of the configured expect timeout by default; an example
+ * which takes even longer, an archive of several entries or a model of thousands of elements,
+ * passes its own `timeout`. */
+export async function openExample(page: Page, id: string, timeout = 30_000): Promise<void> {
   await page.goto(`/examples/${encodeURIComponent(id)}`);
   await expect(page.getByTestId("report-page")).toBeVisible({ timeout });
 }

@@ -131,7 +131,10 @@ test.describe("repressilator", () => {
 });
 
 test("the events table shows the assignments of an event", async ({ page }) => {
-  await openExample(page, "BIOMD0000000007");
+  // the example is a COMBINE archive, whose entries the backend reports one by one before it
+  // answers, and on CI the parallel workers of the other specs compete for the runner's CPU
+  // while it does, the same way the archive of the entry dropdown does
+  await openExample(page, "BIOMD0000000007", 60_000);
   const table = page.getByTestId("table-Event");
   const row = table
     .locator("tbody tr[data-pk]")
