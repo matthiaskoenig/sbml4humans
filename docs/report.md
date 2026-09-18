@@ -2,7 +2,7 @@
 
 A report shows one [model](reference/model.md) of one SBML file at a time. The type rail on the left says what the model is made of, the tables in the middle show the elements of every type, and the inspector at the bottom shows one element in full. The whole model is on the page, the three parts are three views of it.
 
-![The type rail and the element tables of the repressilator report](images/report-tables.png)
+[![The type rail and the element tables of the repressilator report](images/report-tables.png)](images/report-tables.png)
 
 The rail, the tables and the inspector are separated by draggable dividers, and the position of a divider is kept for the next report.
 
@@ -42,7 +42,7 @@ A table with more than 200 rows shows 15 rows in a scroll area of its own and re
 
 The search box in the bar at the top filters every table at once. It matches the text of an element without regard to case: the id, the name, the meta id, the SBO term, the text of the notes, the formulas of the element and the equation of a reaction.
 
-![The search box filtering the tables and the rail counts for the text "laci"](images/report-search.png)
+[![The search box filtering the tables and the rail counts for the text "laci"](images/report-search.png)](images/report-search.png)
 
 While a search is active, every table shows only the matching rows, a type without a match disappears from the tables, and the rail counts the matches per type in front of the totals. `Esc` in the box clears the search. The search text is part of the url of the report.
 
@@ -50,7 +50,7 @@ While a search is active, every table shows only the matching rows, a type witho
 
 The inspector opens at the bottom of the page for the selected element and shows everything the report has about it.
 
-![The inspector of a species, with its attributes, links and annotations columns filled](images/inspector-species.png)
+[![The inspector of a species, with its attributes, links and annotations columns filled](images/inspector-species.png)](images/inspector-species.png)
 
 Its header carries the mark and the name of the type, the id of the element, its name, and two buttons. The name of the type is a link into the [reference](reference/index.md) of this documentation, which explains the type and all of its attributes. The "XML" button switches the inspector to the XML of the element, and the cross closes it.
 
@@ -74,7 +74,7 @@ The "XML" button in the header replaces the three columns by the SBML of the ele
 
 The bar at the top says which file and which model the report shows: the entry of the COMBINE archive, the model inside it, the level and the version of SBML and the packages the file declares. A model which was not submitted as an archive is wrapped in one by the backend, under the location `./model.xml`, which is the entry the bar then shows.
 
-![The top bar of a COMBINE archive report, offering its entries for selection](images/archive-entries.png)
+![The bar of a COMBINE archive report, with the select of its entries, the model of the entry which is shown, and the level, version and packages of the document](images/archive-entries.png)
 
 An archive with more than one SBML entry offers its entries for selection, named by their location in the archive. The report opens the master entry of the manifest when that entry has a report of its own, and the first entry otherwise; an archive does not have to mark a master entry, and `CompModels`, one of the example archives, marks none. A file which uses the comp package can hold model definitions next to its model; they are offered in the same way, with "(definition)" behind the id of a model definition, and the report opens the model of the document first. A [submodel](reference/submodel.md) is an element of the model which instantiates it, and the model definition it instantiates is one of the models offered here.
 
