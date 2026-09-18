@@ -1,5 +1,5 @@
 {
-  "uid": "f988f9e41bb54a64b4f44539a26a5945",
+  "uid": "19b478d15d504dedac947ad72da50600",
   "manifest": {
     "entries": [
       {
@@ -176,7 +176,7 @@
                     "keyValuePairs": [],
                     "uncertParameters": [
                       {
-                        "pk": "distrib_uncertainties/UncertSpan:p1.uncertainty.0.uncertSpan.0",
+                        "pk": "distrib_uncertainties/UncertSpan:p1.uncertainty.0.range",
                         "sbmlType": "UncertSpan",
                         "id": null,
                         "metaId": null,
@@ -202,7 +202,7 @@
                         "varUpper": null
                       },
                       {
-                        "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.1",
+                        "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.mean",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -224,7 +224,7 @@
                         "uncertParameters": []
                       },
                       {
-                        "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.2",
+                        "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.standardDeviation",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -246,7 +246,7 @@
                         "uncertParameters": []
                       },
                       {
-                        "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.3",
+                        "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.distribution",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -342,29 +342,29 @@
               "name": null,
               "model": "distrib_uncertainties/Model:distrib_uncertainties"
             },
-            "distrib_uncertainties/UncertSpan:p1.uncertainty.0.uncertSpan.0": {
-              "pk": "distrib_uncertainties/UncertSpan:p1.uncertainty.0.uncertSpan.0",
+            "distrib_uncertainties/UncertSpan:p1.uncertainty.0.range": {
+              "pk": "distrib_uncertainties/UncertSpan:p1.uncertainty.0.range",
               "sbmlType": "UncertSpan",
               "id": null,
               "name": null,
               "model": "distrib_uncertainties/Model:distrib_uncertainties"
             },
-            "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.1": {
-              "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.1",
+            "distrib_uncertainties/UncertParameter:p1.uncertainty.0.mean": {
+              "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.mean",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
               "model": "distrib_uncertainties/Model:distrib_uncertainties"
             },
-            "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.2": {
-              "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.2",
+            "distrib_uncertainties/UncertParameter:p1.uncertainty.0.standardDeviation": {
+              "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.standardDeviation",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
               "model": "distrib_uncertainties/Model:distrib_uncertainties"
             },
-            "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.3": {
-              "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.3",
+            "distrib_uncertainties/UncertParameter:p1.uncertainty.0.distribution": {
+              "pk": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.distribution",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
@@ -384,22 +384,22 @@
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
-              "target": "distrib_uncertainties/UncertSpan:p1.uncertainty.0.uncertSpan.0",
+              "target": "distrib_uncertainties/UncertSpan:p1.uncertainty.0.range",
               "kind": "uncertParameter"
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
-              "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.1",
+              "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.mean",
               "kind": "uncertParameter"
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
-              "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.2",
+              "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.standardDeviation",
               "kind": "uncertParameter"
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
-              "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.uncertParameter.3",
+              "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.distribution",
               "kind": "uncertParameter"
             },
             {
@@ -416,7 +416,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.011 [s]"
+        "jsonReportTime": "0.009 [s]"
       }
     }
   }

@@ -97,6 +97,10 @@ BIOLOGICAL_QUALIFIERS: dict[int, BQB] = {getattr(libsbml, q.value): q for q in B
 
 DOCUMENT_SCOPE = "document"
 
+# the key of the model of a document which carries neither an id nor a metaId,
+# which its id is optional for in Level 3 (core §4.2.1)
+MAIN_MODEL_KEY = "model"
+
 # libsbml aliases `getId()` and `isSetId()` of these classes to the attribute
 # which names what they set, for compatibility with the levels in which they
 # had no id: the `symbol` of an initial assignment (core §4.8.2), the
@@ -190,6 +194,25 @@ def _keyed[T: libsbml.SBase](
         (child, key_of(child) if _has_own_key(child) else next(derived))
         for child in children
     ]
+
+
+def _reference_path(ref: libsbml.SBaseRef) -> list[str]:
+    """The identifiers a comp reference and the chain of references below it name.
+
+    A reference names one element by its port, its id, its unit id or its meta
+    id, exactly one of them (comp §3.7.1), and a reference into a submodel of
+    a submodel carries the next one.
+    """
+    path: list[str] = []
+    link: libsbml.SBaseRef | None = ref
+    while link is not None:
+        for attribute in ("portRef", "idRef", "unitRef", "metaIdRef"):
+            value = _attribute(link, attribute)
+            if value is not None:
+                path.append(value)
+                break
+        link = link.getSBaseRef() if link.isSetSBaseRef() else None
+    return path
 
 
 def _attribute(sbase: Any, key: str) -> Any | None:
@@ -488,9 +511,15 @@ class SBMLDocumentInfo:
     def model(
         self, model: libsbml.Model, kind: Literal["model", "modelDefinition"]
     ) -> Model:
-        """A model or model definition with the lists of its elements."""
-        self.scope = self._key(model)
-        fields = self.sbase(model, sbml_type="Model")
+        """A model or model definition with the lists of its elements.
+
+        The model of the document without an id or a metaId is keyed as the
+        model, where the digest of its xml moved every primary key of it
+        whenever any value of it changed. A model definition carries an id.
+        """
+        key = self._main_model_key() if kind == "model" else None
+        self.scope = self._key(model, key)
+        fields = self.sbase(model, sbml_type="Model", key=key)
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             sid = _attribute(model, f"{key}Units")
             fields[f"{key}_units"] = sid
@@ -518,14 +547,18 @@ class SBMLDocumentInfo:
                 self.initial_assignment(ia)
                 for ia in model.getListOfInitialAssignments()
             ],
-            list_of_rules=[self.rule(r) for r in model.getListOfRules()],
+            list_of_rules=self.rules(model),
             list_of_constraints=[
-                self.constraint(c) for c in model.getListOfConstraints()
+                self.constraint(c, f"constraint.{index}")
+                for index, c in enumerate(model.getListOfConstraints())
             ],
             list_of_reactions=[
                 self.reaction(r, model) for r in model.getListOfReactions()
             ],
-            list_of_events=[self.event(e) for e in model.getListOfEvents()],
+            list_of_events=[
+                self.event(e, f"event.{index}")
+                for index, e in enumerate(model.getListOfEvents())
+            ],
             list_of_submodels=self.submodels(model),
             list_of_ports=self.ports(model),
             list_of_gene_products=self.gene_products(model),
@@ -629,9 +662,44 @@ class SBMLDocumentInfo:
             derived_units=udef_to_string(ia.getDerivedUnitDefinition()),
         )
 
-    def rule(self, rule: libsbml.Rule) -> AssignmentRule | RateRule | AlgebraicRule:
-        """A rule, by its libsbml class."""
-        fields = self.sbase(rule)
+    def _main_model_key(self) -> str | None:
+        """The key of the model of the document when it carries no identifier.
+
+        It is `model`, unless a model definition of the document carries that
+        id, where the digest of the xml keeps the two apart.
+        """
+        plugin: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
+        if plugin and any(
+            md.getId() == MAIN_MODEL_KEY for md in plugin.getListOfModelDefinitions()
+        ):
+            return None
+        return MAIN_MODEL_KEY
+
+    def rules(
+        self, model: libsbml.Model
+    ) -> list[AssignmentRule | RateRule | AlgebraicRule]:
+        """The rules of a model, an algebraic rule keyed by its place.
+
+        An assignment and a rate rule are keyed by the variable they set, which
+        a model has one rule for at most (core §4.9.1). An algebraic rule sets
+        no variable, so one without an id or a metaId is keyed by its place
+        among the algebraic rules, which an edit of its formula does not move.
+        """
+        rules: list[AssignmentRule | RateRule | AlgebraicRule] = []
+        algebraic = 0
+        for r in model.getListOfRules():
+            key = None
+            if isinstance(r, libsbml.AlgebraicRule):
+                key = f"algebraicRule.{algebraic}"
+                algebraic += 1
+            rules.append(self.rule(r, key))
+        return rules
+
+    def rule(
+        self, rule: libsbml.Rule, key: str | None = None
+    ) -> AssignmentRule | RateRule | AlgebraicRule:
+        """A rule, by its libsbml class, `key` names it without an identifier."""
+        fields = self.sbase(rule, key=key)
         math_ = self.math(fields["pk"], _attribute(rule, "math"))
         derived = udef_to_string(rule.getDerivedUnitDefinition())
         if isinstance(rule, libsbml.AssignmentRule):
@@ -646,9 +714,9 @@ class SBMLDocumentInfo:
             return AlgebraicRule(**fields, math=math_, derived_units=derived)
         raise TypeError(rule)
 
-    def constraint(self, c: libsbml.Constraint) -> Constraint:
-        """A constraint."""
-        fields = self.sbase(c)
+    def constraint(self, c: libsbml.Constraint, key: str) -> Constraint:
+        """A constraint, `key` names it by its place when it carries no identifier."""
+        fields = self.sbase(c, key=key)
         return Constraint(
             **fields,
             math=self.math(fields["pk"], _attribute(c, "math")),
@@ -781,10 +849,14 @@ class SBMLDocumentInfo:
                 items.append(f"{stoichiometry} {species}")
         return " + ".join(items)
 
-    def event(self, e: libsbml.Event) -> Event:
-        """An event with trigger, priority, delay and assignments."""
-        fields = self.sbase(e)
-        event_key = self._key(e)
+    def event(self, e: libsbml.Event, key: str) -> Event:
+        """An event with trigger, priority, delay and assignments.
+
+        `key` names the event by its place when it carries no identifier, and
+        every object of the event is keyed after the event.
+        """
+        fields = self.sbase(e, key=key)
+        event_key = self._key(e, key)
         trigger = None
         if e.isSetTrigger():
             t: libsbml.Trigger = e.getTrigger()
@@ -877,16 +949,33 @@ class SBMLDocumentInfo:
             )
         replaced_elements = [
             ReplacedElement(
-                **self._sbase_ref_fields(re, f"{key}.replacedElement.{index}"),
+                **self._sbase_ref_fields(re, re_key),
                 submodel_ref=re.getSubmodelRef(),
                 deletion=_attribute(re, "deletion"),
                 conversion_factor=_attribute(re, "conversionFactor"),
             )
-            for index, re in enumerate(plugin.getListOfReplacedElements() or [])
+            for re, re_key in _keyed(
+                plugin.getListOfReplacedElements() or [],
+                partial(self._replaced_element_key, element_key=key),
+            )
         ]
         if replaced_by is None and not replaced_elements:
             return None
         return CompSBase(replaced_by=replaced_by, replaced_elements=replaced_elements)
+
+    @staticmethod
+    def _replaced_element_key(re: libsbml.ReplacedElement, element_key: str) -> str:
+        """The key of a replacement: its element, its submodel and what it names.
+
+        No element of a submodel may be named by more than one port, replaced
+        element or deletion (comp §3.4.3), so the submodel and the chain of
+        references name the replacement whatever the order of the list, and a
+        replacement which stands for a deletion is named by that deletion.
+        """
+        path = _reference_path(re)
+        if not path and re.isSetDeletion():
+            path = [re.getDeletion()]
+        return ".".join([element_key, "replacedElement", re.getSubmodelRef(), *path])
 
     def external_model_definition(
         self, emd: libsbml.ExternalModelDefinition
@@ -911,14 +1000,25 @@ class SBMLDocumentInfo:
                 time_conversion_factor=_attribute(s, "timeConversionFactor"),
                 extent_conversion_factor=_attribute(s, "extentConversionFactor"),
                 list_of_deletions=[
-                    Deletion(
-                        **self._sbase_ref_fields(d, f"{self._key(s)}.deletion.{index}")
+                    Deletion(**self._sbase_ref_fields(d, key))
+                    for d, key in _keyed(
+                        s.getListOfDeletions(),
+                        partial(self._deletion_key, submodel_key=self._key(s)),
                     )
-                    for index, d in enumerate(s.getListOfDeletions())
                 ],
             )
             for s in plugin.getListOfSubmodels()
         ]
+
+    @staticmethod
+    def _deletion_key(d: libsbml.Deletion, submodel_key: str) -> str:
+        """The key of a deletion: its submodel and the element it names.
+
+        No element of a submodel may be named by more than one port, replaced
+        element or deletion (comp §3.4.3), so what a deletion names keys it
+        whatever the order of the list.
+        """
+        return ".".join([submodel_key, "deletion", *_reference_path(d)])
 
     def ports(self, model: libsbml.Model) -> list[Port]:
         """The comp ports of a model."""
@@ -1364,12 +1464,26 @@ class SBMLDocumentInfo:
         the parameters which define it as a list of its own, to any depth
         (distrib §3.11.7), and a parameter whose statistic is an interval is an
         `UncertSpan` with the two ends of that interval (distrib §3.12).
-        libsbml keeps both classes in one list and names each of them after its
-        class, which is the name a parameter without an id is keyed by.
+        libsbml keeps both classes in one list.
+
+        A measure of an uncertainty without an id or a metaId is keyed by its
+        type, which an uncertainty carries once at most, and an external
+        parameter by its definition url, which is unique among the external
+        parameters of an uncertainty (distrib §3.10). The parameters of a
+        parameter have no rule of that kind and are keyed by their place.
         """
         measures: list[UncertMeasure] = []
-        for index, p in enumerate(parent.getListOfUncertParameters()):
-            key = f"{parent_key}.{p.getElementName()}.{index}"
+        children = list(parent.getListOfUncertParameters())
+        if isinstance(parent, libsbml.Uncertainty):
+            keyed = _keyed(
+                children, partial(self._uncert_measure_key, uncertainty_key=parent_key)
+            )
+        else:
+            keyed = [
+                (p, f"{parent_key}.{p.getElementName()}.{index}")
+                for index, p in enumerate(children)
+            ]
+        for p, key in keyed:
             fields = self.sbase(p, key=key)
             fields |= {
                 "type": p.getTypeAsString() if p.isSetType() else None,
@@ -1393,3 +1507,18 @@ class SBMLDocumentInfo:
             else:
                 measures.append(UncertParameter(**fields))
         return measures
+
+    @staticmethod
+    def _uncert_measure_key(p: libsbml.UncertParameter, uncertainty_key: str) -> str:
+        """The key of a measure of an uncertainty: its type, or its definition.
+
+        An uncertainty carries every type of measure once at most, the
+        external parameters apart, which are told apart by their definition
+        url (distrib §3.10).
+        """
+        if not p.isSetType():
+            return f"{uncertainty_key}.{p.getElementName()}"
+        kind = p.getTypeAsString()
+        if kind == "externalParameter" and p.isSetDefinitionURL():
+            return f"{uncertainty_key}.{kind}.{p.getDefinitionURL()}"
+        return f"{uncertainty_key}.{kind}"

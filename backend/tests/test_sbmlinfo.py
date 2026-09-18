@@ -198,6 +198,29 @@ def test_document_without_model() -> None:
     assert report.models == []
 
 
+def test_model_without_an_identifier_is_scoped_as_the_model() -> None:
+    """A model without an id and a metaId is the model of its document.
+
+    Its id is optional in Level 3, and a scope of the digest of the whole
+    model moved every permalink of it whenever any value of it changed.
+    """
+
+    def model(value: str) -> Model:
+        """The report of the model without identifier with a parameter of the value."""
+        report = SBMLDocumentInfo.from_sbml(
+            '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" '
+            'level="3" version="2"><model><listOfParameters>'
+            f'<parameter id="k" value="{value}" constant="true"/>'
+            "</listOfParameters></model></sbml>"
+        )
+        return report.models[0]
+
+    first, second = model("1"), model("2")
+    assert first.pk == second.pk == "model/Model:model"
+    assert first.list_of_parameters[0].pk == "model/Parameter:k"
+    assert second.list_of_parameters[0].pk == "model/Parameter:k"
+
+
 def test_model_without_id_is_scoped_by_its_key() -> None:
     """A model without id uses its metaId as scope of the pks."""
     report = SBMLDocumentInfo.from_sbml(
@@ -464,16 +487,77 @@ def test_distrib_uncert_parameter_is_an_element(distrib_spans: Report) -> None:
 
 
 def test_distrib_uncert_parameter_without_an_id(distrib_spans: Report) -> None:
-    """A parameter without an id is keyed by its uncertainty and its position."""
+    """A measure without an id is keyed by its uncertainty and its type.
+
+    An uncertainty carries each type of measure at most once (distrib §3.10),
+    so the type names the measure within it whatever the order of the list.
+    """
     km = _parameter(distrib_spans, "Km")
     deviation = km.uncertainties[0].uncert_parameters[1]
     assert deviation.id is None
     assert deviation.pk == (
-        "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.1"
+        "distrib_spans/UncertParameter:u_Km_purified.standardDeviation"
     )
     span = km.uncertainties[0].uncert_parameters[3]
     assert span.sbml_type == "UncertSpan"
     assert span.pk == "distrib_spans/UncertSpan:Km_purified_range"
+    (species,) = distrib_spans.models[0].list_of_species
+    assert [m.pk for m in species.uncertainties[0].uncert_parameters] == [
+        "distrib_spans/UncertParameter:u_S.mean",
+        "distrib_spans/UncertSpan:u_S.confidenceInterval",
+    ]
+
+
+def test_distrib_external_parameters_are_keyed_by_their_definition() -> None:
+    """An external parameter is keyed by its definition, a nested one by its place.
+
+    An uncertainty may carry several external parameters, each with a
+    definition url of its own (distrib §3.10), while the parameters nested in
+    a distribution have no uniqueness rule at all (distrib §3.11.7).
+    """
+    sbml = """<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:distrib="http://www.sbml.org/sbml/level3/version1/distrib/version1"
+      level="3" version="1" distrib:required="true">
+      <model id="m">
+        <listOfParameters>
+          <parameter id="k" value="1" constant="true">
+            <distrib:listOfUncertainties>
+              <distrib:uncertainty>
+                <distrib:uncertParameter distrib:type="externalParameter"
+                    distrib:definitionURL="http://dist.org/CI" distrib:value="0.1"/>
+                <distrib:uncertParameter distrib:type="externalParameter"
+                    distrib:definitionURL="http://dist.org/CIpercent"
+                    distrib:value="99"/>
+                <distrib:uncertParameter distrib:type="distribution"
+                    distrib:definitionURL="http://dist.org/beta">
+                  <distrib:listOfUncertParameters>
+                    <distrib:uncertParameter distrib:type="externalParameter"
+                        distrib:definitionURL="http://dist.org/beta#alpha"
+                        distrib:value="2"/>
+                    <distrib:uncertParameter distrib:type="externalParameter"
+                        distrib:definitionURL="http://dist.org/beta#beta"
+                        distrib:value="5"/>
+                  </distrib:listOfUncertParameters>
+                </distrib:uncertParameter>
+              </distrib:uncertainty>
+            </distrib:listOfUncertainties>
+          </parameter>
+        </listOfParameters>
+      </model>
+    </sbml>"""
+    report = SBMLDocumentInfo.from_sbml(sbml)
+    (uncertainty,) = _parameter(report, "k").uncertainties
+    first, second, distribution = uncertainty.uncert_parameters
+    key = "k.uncertainty.0"
+    assert first.pk == f"m/UncertParameter:{key}.externalParameter.http://dist.org/CI"
+    assert second.pk == (
+        f"m/UncertParameter:{key}.externalParameter.http://dist.org/CIpercent"
+    )
+    assert distribution.pk == f"m/UncertParameter:{key}.distribution"
+    assert [m.pk for m in distribution.uncert_parameters] == [
+        f"m/UncertParameter:{key}.distribution.uncertParameter.0",
+        f"m/UncertParameter:{key}.distribution.uncertParameter.1",
+    ]
 
 
 def test_distrib_nested_uncert_parameters(distrib_spans: Report) -> None:
@@ -783,6 +867,58 @@ def test_assignments_without_an_identifier_keep_their_key() -> None:
     assignment = model.list_of_events[0].list_of_event_assignments[0]
     assert assignment.id is None
     assert assignment.pk == "m/EventAssignment:e1.S1"
+
+
+def test_elements_without_an_identifier_are_keyed_by_their_place() -> None:
+    """An algebraic rule, a constraint and an event without an id are keyed by place.
+
+    None of them sets an element which could name it, a Level 2 or Level 3
+    Version 1 file cannot give a rule or a constraint an id, and the digest of
+    their xml which keyed them moved their permalink with every change of
+    their formula. They are keyed by their place among the elements of their
+    type, the way a transition without an id is.
+    """
+
+    def report(algebraic_math: str) -> Report:
+        """The report of the model whose first algebraic rule has the math."""
+        return SBMLDocumentInfo.from_sbml(
+            '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" '
+            'level="3" version="1"><model id="m"><listOfParameters>'
+            '<parameter id="x" value="1" constant="false"/>'
+            '<parameter id="y" value="1" constant="false"/>'
+            "</listOfParameters><listOfRules><algebraicRule>"
+            f'<math xmlns="http://www.w3.org/1998/Math/MathML">{algebraic_math}</math>'
+            '</algebraicRule><assignmentRule variable="y">'
+            '<math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>'
+            "</assignmentRule><algebraicRule>"
+            '<math xmlns="http://www.w3.org/1998/Math/MathML"><ci> x </ci></math>'
+            "</algebraicRule></listOfRules><listOfConstraints><constraint>"
+            '<math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>'
+            "</constraint><constraint>"
+            '<math xmlns="http://www.w3.org/1998/Math/MathML"><false/></math>'
+            "</constraint></listOfConstraints><listOfEvents>"
+            '<event useValuesFromTriggerTime="true">'
+            '<trigger initialValue="false" persistent="true">'
+            '<math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>'
+            "</trigger></event></listOfEvents></model></sbml>"
+        )
+
+    model = report("<ci> x </ci>").models[0]
+    assert [r.pk for r in model.list_of_rules] == [
+        "m/AlgebraicRule:algebraicRule.0",
+        "m/AssignmentRule:y",
+        "m/AlgebraicRule:algebraicRule.1",
+    ]
+    assert [c.pk for c in model.list_of_constraints] == [
+        "m/Constraint:constraint.0",
+        "m/Constraint:constraint.1",
+    ]
+    (event,) = model.list_of_events
+    assert event.pk == "m/Event:event.0"
+    assert event.trigger is not None
+    assert event.trigger.pk == "m/Trigger:event.0.trigger"
+    changed = report("<apply><minus/><ci> x </ci><cn> 1 </cn></apply>").models[0]
+    assert changed.list_of_rules[0].pk == "m/AlgebraicRule:algebraicRule.0"
 
 
 # -------------------------------------------------------------------------------------

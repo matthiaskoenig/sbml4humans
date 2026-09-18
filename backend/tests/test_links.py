@@ -519,13 +519,87 @@ def test_replaced_by_edge(synthetic_comp: Report) -> None:
 
 def test_replacement_edges_of_every_element(synthetic_comp: Report) -> None:
     """Replacements are edges for every element type, not only the core lists."""
-    replaced = "top/ReplacedElement:per_second.replacedElement.0"
+    replaced = "top/ReplacedElement:per_second.replacedElement.sm.per_second"
     assert (
         "top/UnitDefinition:per_second",
         replaced,
         "replacedElement",
     ) in _edges(synthetic_comp)
     assert (replaced, "top/Submodel:sm", "replacedElement") in _edges(synthetic_comp)
+
+
+KEYS_OF_COMP_REFERENCES_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      level="3" version="1" comp:required="true">
+  <model id="top">
+    <listOfParameters>
+      <parameter id="k" value="1" constant="true">
+        <comp:listOfReplacedElements>
+          <comp:replacedElement comp:submodelRef="outer" comp:idRef="inner">
+            <comp:sBaseRef comp:idRef="k"/>
+          </comp:replacedElement>
+          <comp:replacedElement comp:submodelRef="outer" comp:idRef="k"/>
+          <comp:replacedElement comp:submodelRef="outer" comp:deletion="del_v"/>
+        </comp:listOfReplacedElements>
+      </parameter>
+    </listOfParameters>
+    <comp:listOfSubmodels>
+      <comp:submodel comp:id="outer" comp:modelRef="middle">
+        <comp:listOfDeletions>
+          <comp:deletion comp:idRef="v"/>
+          <comp:deletion comp:id="del_v" comp:idRef="w"/>
+          <comp:deletion comp:portRef="k_port"/>
+        </comp:listOfDeletions>
+      </comp:submodel>
+    </comp:listOfSubmodels>
+  </model>
+  <comp:listOfModelDefinitions>
+    <comp:modelDefinition id="middle">
+      <listOfParameters>
+        <parameter id="k" value="1" constant="true"/>
+        <parameter id="v" value="1" constant="true"/>
+        <parameter id="w" value="1" constant="true"/>
+        <parameter id="u" value="1" constant="true"/>
+      </listOfParameters>
+      <comp:listOfSubmodels>
+        <comp:submodel comp:id="inner" comp:modelRef="leaf"/>
+      </comp:listOfSubmodels>
+      <comp:listOfPorts>
+        <comp:port comp:id="k_port" comp:idRef="u"/>
+      </comp:listOfPorts>
+    </comp:modelDefinition>
+    <comp:modelDefinition id="leaf">
+      <listOfParameters>
+        <parameter id="k" value="1" constant="true"/>
+      </listOfParameters>
+    </comp:modelDefinition>
+  </comp:listOfModelDefinitions>
+</sbml>"""
+
+
+def test_comp_references_are_keyed_by_what_they_name() -> None:
+    """A replacement and a deletion without an id are keyed by what they name.
+
+    No element of a submodel may be named by more than one port, replaced
+    element or deletion (comp §3.4.3), so the submodel and the chain of
+    references name a replacement and a deletion whatever the order of their
+    lists; one which stands for a deletion is named by that deletion.
+    """
+    report = SBMLDocumentInfo.from_sbml(KEYS_OF_COMP_REFERENCES_SBML)
+    (parameter,) = report.models[0].list_of_parameters
+    assert parameter.comp is not None
+    assert [r.pk for r in parameter.comp.replaced_elements] == [
+        "top/ReplacedElement:k.replacedElement.outer.inner.k",
+        "top/ReplacedElement:k.replacedElement.outer.k",
+        "top/ReplacedElement:k.replacedElement.outer.del_v",
+    ]
+    (submodel,) = report.models[0].list_of_submodels
+    assert [d.pk for d in submodel.list_of_deletions] == [
+        "top/Deletion:outer.deletion.v",
+        "top/Deletion:del_v",
+        "top/Deletion:outer.deletion.k_port",
+    ]
 
 
 def test_port_unit_ref_edge(synthetic_comp: Report) -> None:
@@ -1104,7 +1178,7 @@ def test_submodel_ref_which_names_no_submodel_is_logged(
     """
     with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
         report = SBMLDocumentInfo.from_sbml(SUBMODEL_REF_OF_NO_SUBMODEL_SBML)
-    replaced = "top/ReplacedElement:c.replacedElement.0"
+    replaced = "top/ReplacedElement:c.replacedElement.c.c"
     replaced_by = "top/ReplacedBy:f.replacedBy"
     assert ("top/Compartment:c", replaced, "replacedElement") in _edges(report)
     assert ("top/Parameter:f", replaced_by, "replacedBy") in _edges(report)

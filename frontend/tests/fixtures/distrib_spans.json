@@ -1,5 +1,5 @@
 {
-  "uid": "070e6115406d4a5db8b46d73cf728cff",
+  "uid": "91ab6ac1f50f44d183bd4ada9d710cd6",
   "manifest": {
     "entries": [
       {
@@ -270,7 +270,7 @@
                     "keyValuePairs": [],
                     "uncertParameters": [
                       {
-                        "pk": "distrib_spans/UncertParameter:u_S.uncertParameter.0",
+                        "pk": "distrib_spans/UncertParameter:u_S.mean",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -292,7 +292,7 @@
                         "uncertParameters": []
                       },
                       {
-                        "pk": "distrib_spans/UncertSpan:u_S.uncertSpan.1",
+                        "pk": "distrib_spans/UncertSpan:u_S.confidenceInterval",
                         "sbmlType": "UncertSpan",
                         "id": null,
                         "metaId": null,
@@ -386,7 +386,7 @@
                         "uncertParameters": []
                       },
                       {
-                        "pk": "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.1",
+                        "pk": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -408,7 +408,7 @@
                         "uncertParameters": []
                       },
                       {
-                        "pk": "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.2",
+                        "pk": "distrib_spans/UncertParameter:u_Km_purified.sampleSize",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -473,7 +473,7 @@
                     "keyValuePairs": [],
                     "uncertParameters": [
                       {
-                        "pk": "distrib_spans/UncertParameter:u_Km_lysate.uncertParameter.0",
+                        "pk": "distrib_spans/UncertParameter:u_Km_lysate.median",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -769,7 +769,7 @@
                     "keyValuePairs": [],
                     "uncertParameters": [
                       {
-                        "pk": "distrib_spans/UncertParameter:u_v.uncertParameter.0",
+                        "pk": "distrib_spans/UncertParameter:u_v.standardDeviation",
                         "sbmlType": "UncertParameter",
                         "id": null,
                         "metaId": null,
@@ -914,15 +914,15 @@
               "name": "titration of the substrate",
               "model": "distrib_spans/Model:distrib_spans"
             },
-            "distrib_spans/UncertParameter:u_S.uncertParameter.0": {
-              "pk": "distrib_spans/UncertParameter:u_S.uncertParameter.0",
+            "distrib_spans/UncertParameter:u_S.mean": {
+              "pk": "distrib_spans/UncertParameter:u_S.mean",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
               "model": "distrib_spans/Model:distrib_spans"
             },
-            "distrib_spans/UncertSpan:u_S.uncertSpan.1": {
-              "pk": "distrib_spans/UncertSpan:u_S.uncertSpan.1",
+            "distrib_spans/UncertSpan:u_S.confidenceInterval": {
+              "pk": "distrib_spans/UncertSpan:u_S.confidenceInterval",
               "sbmlType": "UncertSpan",
               "id": null,
               "name": null,
@@ -949,15 +949,15 @@
               "name": "mean of the fitted constants",
               "model": "distrib_spans/Model:distrib_spans"
             },
-            "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.1": {
-              "pk": "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.1",
+            "distrib_spans/UncertParameter:u_Km_purified.standardDeviation": {
+              "pk": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
               "model": "distrib_spans/Model:distrib_spans"
             },
-            "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.2": {
-              "pk": "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.2",
+            "distrib_spans/UncertParameter:u_Km_purified.sampleSize": {
+              "pk": "distrib_spans/UncertParameter:u_Km_purified.sampleSize",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
@@ -977,8 +977,8 @@
               "name": "Baker 2012, cell lysate",
               "model": "distrib_spans/Model:distrib_spans"
             },
-            "distrib_spans/UncertParameter:u_Km_lysate.uncertParameter.0": {
-              "pk": "distrib_spans/UncertParameter:u_Km_lysate.uncertParameter.0",
+            "distrib_spans/UncertParameter:u_Km_lysate.median": {
+              "pk": "distrib_spans/UncertParameter:u_Km_lysate.median",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
@@ -1075,8 +1075,8 @@
               "name": "propagated uncertainty of the rate",
               "model": "distrib_spans/Model:distrib_spans"
             },
-            "distrib_spans/UncertParameter:u_v.uncertParameter.0": {
-              "pk": "distrib_spans/UncertParameter:u_v.uncertParameter.0",
+            "distrib_spans/UncertParameter:u_v.standardDeviation": {
+              "pk": "distrib_spans/UncertParameter:u_v.standardDeviation",
               "sbmlType": "UncertParameter",
               "id": null,
               "name": null,
@@ -1103,21 +1103,21 @@
             },
             {
               "source": "distrib_spans/Uncertainty:u_S",
-              "target": "distrib_spans/UncertParameter:u_S.uncertParameter.0",
+              "target": "distrib_spans/UncertParameter:u_S.mean",
               "kind": "uncertParameter"
             },
             {
-              "source": "distrib_spans/UncertParameter:u_S.uncertParameter.0",
+              "source": "distrib_spans/UncertParameter:u_S.mean",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
               "kind": "units"
             },
             {
               "source": "distrib_spans/Uncertainty:u_S",
-              "target": "distrib_spans/UncertSpan:u_S.uncertSpan.1",
+              "target": "distrib_spans/UncertSpan:u_S.confidenceInterval",
               "kind": "uncertParameter"
             },
             {
-              "source": "distrib_spans/UncertSpan:u_S.uncertSpan.1",
+              "source": "distrib_spans/UncertSpan:u_S.confidenceInterval",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
               "kind": "units"
             },
@@ -1138,17 +1138,17 @@
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_purified",
-              "target": "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.1",
+              "target": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
               "kind": "uncertParameter"
             },
             {
-              "source": "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.1",
+              "source": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
               "kind": "units"
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_purified",
-              "target": "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.2",
+              "target": "distrib_spans/UncertParameter:u_Km_purified.sampleSize",
               "kind": "uncertParameter"
             },
             {
@@ -1168,11 +1168,11 @@
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_lysate",
-              "target": "distrib_spans/UncertParameter:u_Km_lysate.uncertParameter.0",
+              "target": "distrib_spans/UncertParameter:u_Km_lysate.median",
               "kind": "uncertParameter"
             },
             {
-              "source": "distrib_spans/UncertParameter:u_Km_lysate.uncertParameter.0",
+              "source": "distrib_spans/UncertParameter:u_Km_lysate.median",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
               "kind": "units"
             },
@@ -1233,11 +1233,11 @@
             },
             {
               "source": "distrib_spans/Uncertainty:u_v",
-              "target": "distrib_spans/UncertParameter:u_v.uncertParameter.0",
+              "target": "distrib_spans/UncertParameter:u_v.standardDeviation",
               "kind": "uncertParameter"
             },
             {
-              "source": "distrib_spans/UncertParameter:u_v.uncertParameter.0",
+              "source": "distrib_spans/UncertParameter:u_v.standardDeviation",
               "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
               "kind": "units"
             },
@@ -1330,7 +1330,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.022 [s]"
+        "jsonReportTime": "0.028 [s]"
       }
     }
   }
