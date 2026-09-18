@@ -17,7 +17,8 @@ export type FixtureName =
   | "fbc_example"
   | "model_definitions"
   | "comp_models"
-  | "distrib_uncertainties";
+  | "distrib_uncertainties"
+  | "constraint_event";
 
 export function loadFixture(name: FixtureName): ReportResponse {
   const path = join(FIXTURES_DIR, `${name}.json`);

@@ -58,6 +58,7 @@ from sbml4humans.model import (
     Trigger,
     Uncertainty,
     UncertParameter,
+    Unit,
     UnitDefinition,
 )
 from sbml4humans.sbml import read_sbml
@@ -423,8 +424,27 @@ class SBMLDocumentInfo:
         )
 
     def unit_definition(self, ud: libsbml.UnitDefinition) -> UnitDefinition:
-        """A unit definition."""
-        return UnitDefinition(**self.sbase(ud), units_latex=udef_to_string(ud))
+        """A unit definition with its units and their rendered formula."""
+        return UnitDefinition(
+            **self.sbase(ud),
+            units_latex=udef_to_string(ud),
+            list_of_units=[self.unit(u) for u in ud.getListOfUnits()],
+        )
+
+    @staticmethod
+    def unit(u: libsbml.Unit) -> Unit:
+        """One unit of a unit definition.
+
+        The kind is the name of the base unit, which libsbml returns as the
+        integer of its constant, and the exponent is read as a double because
+        Level 3 allows a fractional one (core §4.4.2).
+        """
+        return Unit(
+            kind=libsbml.UnitKind_toString(u.getKind()) if u.isSetKind() else None,
+            exponent=_number(u.getExponentAsDouble()) if u.isSetExponent() else None,
+            scale=_attribute(u, "scale"),
+            multiplier=_number(_attribute(u, "multiplier")),
+        )
 
     def compartment(self, c: libsbml.Compartment, model: libsbml.Model) -> Compartment:
         """A compartment."""

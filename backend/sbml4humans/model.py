@@ -157,11 +157,26 @@ class FunctionDefinition(SBase):
     math: Math | None = None
 
 
+class Unit(ReportModel):
+    """One factor of a unit definition: a base unit with exponent, scale and multiplier.
+
+    A unit carries no identifier and nothing in SBML refers to it, so it is a
+    nested object of its definition and not an element of the report with a
+    primary key of its own.
+    """
+
+    kind: str | None = None
+    exponent: float | None = None
+    scale: int | None = None
+    multiplier: float | None = None
+
+
 class UnitDefinition(SBase):
-    """A unit definition with its rendered units."""
+    """A unit definition with its units and their rendered formula."""
 
     sbml_type: Literal["UnitDefinition"] = "UnitDefinition"
     units_latex: str | None = None
+    list_of_units: list[Unit] = Field(default_factory=list)
 
 
 class Compartment(SBase):

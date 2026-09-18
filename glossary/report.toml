@@ -220,7 +220,7 @@ summary = "the units an element declares, rendered as a formula"
 description = """
 A units attribute names a unit definition, and a unit definition is a list of base units with an exponent, a scale and a multiplier. The report resolves the reference and renders the product as a formula, so that a table shows millimole over litre as a fraction instead of the identifier `mmol_per_l`, next to the identifier it comes from.
 
-The rendered units appear in the units columns of the tables, in the units of the inspector and as the whole content of the table of unit definitions.
+The rendered units appear in the units columns of the tables, in the units of the inspector and in the units column of the table of unit definitions, whose inspector shows them as the formula above the units the definition is built from.
 """
 
 [concepts.modelKind]

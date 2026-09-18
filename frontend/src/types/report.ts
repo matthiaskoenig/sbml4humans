@@ -252,7 +252,7 @@ export interface FunctionDefinition {
   math?: Math | null;
 }
 /**
- * A unit definition with its rendered units.
+ * A unit definition with its units and their rendered formula.
  */
 export interface UnitDefinition {
   pk: string;
@@ -268,6 +268,20 @@ export interface UnitDefinition {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   unitsLatex?: string | null;
+  listOfUnits?: Unit[];
+}
+/**
+ * One factor of a unit definition: a base unit with exponent, scale and multiplier.
+ *
+ * A unit carries no identifier and nothing in SBML refers to it, so it is a
+ * nested object of its definition and not an element of the report with a
+ * primary key of its own.
+ */
+export interface Unit {
+  kind?: string | null;
+  exponent?: number | null;
+  scale?: number | null;
+  multiplier?: number | null;
 }
 /**
  * A compartment.

@@ -742,8 +742,12 @@
       "package": "core",
       "page": "reference/unitdefinition/",
       "attributes": {
-        "unitsLatex": {
+        "listOfUnits": {
           "label": "units",
+          "summary": "the units the definition multiplies, each with its exponent, scale and multiplier"
+        },
+        "unitsLatex": {
+          "label": "formula",
           "summary": "the composed unit rendered as a formula"
         }
       }

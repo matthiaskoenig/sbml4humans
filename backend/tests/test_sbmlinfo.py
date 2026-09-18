@@ -658,3 +658,26 @@ def test_constraint_event_example(constraint_event: Report) -> None:
         "mM",
         "mmole_per_min_l",
     ]
+
+
+def test_unit_definition_carries_its_units(constraint_event: Report) -> None:
+    """A unit definition carries the units of the file next to the formula.
+
+    The four attributes of a unit are what the file says (core §4.4.2), the
+    formula is what the report makes of them, and a reader needs both to check
+    one against the other.
+    """
+    definitions = {
+        ud.id: ud for ud in constraint_event.models[0].list_of_unit_definitions
+    }
+    definition = definitions["mmole_per_min_l"]
+    assert definition.units_latex == "\\frac{mmol}{min \\cdot l}"
+    assert [
+        (unit.kind, unit.exponent, unit.scale, unit.multiplier)
+        for unit in definition.list_of_units
+    ] == [
+        ("mole", 1.0, -3, 1.0),
+        ("second", -1.0, 0, 60.0),
+        ("litre", -1.0, 0, 1.0),
+    ]
+    assert len(definitions["min"].list_of_units) == 1

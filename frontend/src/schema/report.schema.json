@@ -4544,8 +4544,59 @@
       "title": "Uncertainty",
       "type": "object"
     },
+    "Unit": {
+      "description": "One factor of a unit definition: a base unit with exponent, scale and multiplier.\n\nA unit carries no identifier and nothing in SBML refers to it, so it is a\nnested object of its definition and not an element of the report with a\nprimary key of its own.",
+      "properties": {
+        "kind": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "exponent": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "scale": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "multiplier": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Unit",
+      "type": "object"
+    },
     "UnitDefinition": {
-      "description": "A unit definition with its rendered units.",
+      "description": "A unit definition with its units and their rendered formula.",
       "properties": {
         "pk": {
           "type": "string"
@@ -4665,6 +4716,12 @@
             }
           ],
           "default": null
+        },
+        "listOfUnits": {
+          "items": {
+            "$ref": "#/$defs/Unit"
+          },
+          "type": "array"
         }
       },
       "required": [

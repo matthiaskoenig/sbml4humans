@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
-import type { Reaction, Species, Submodel, Uncertainty } from "@/api/types";
+import type { Reaction, Species, Submodel, Uncertainty, UnitDefinition } from "@/api/types";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
@@ -29,6 +29,7 @@ const fixtures = [
 ] as const;
 const indexes = fixtures.map((name) => new ReportIndex(loadReport(name)));
 const repressilator = indexes[0]!;
+const constraintEvent = new ReportIndex(loadReport("constraint_event"));
 
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
@@ -120,6 +121,32 @@ describe("inspector", () => {
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
       summaryOf(linkEntry("compartment"), "the link kind compartment"),
     );
+  });
+
+  it("lists the units of a unit definition next to its formula", () => {
+    const definition = constraintEvent.mainModel!.listOfUnitDefinitions!.find(
+      (u) => u.id === "mmole_per_min_l",
+    ) as UnitDefinition;
+    const wrapper = mountWith(AttributesColumn, { element: definition }, constraintEvent);
+    const rows = wrapper.findAll("[data-testid=attribute-row]");
+    expect(
+      rows
+        .find((r) => r.find("dt").text() === "formula")!
+        .find("dd")
+        .text(),
+    ).not.toBe("-");
+    const units = rows.find((r) => r.find("dt").text() === "units")!;
+    expect(units.findAll("thead th").map((th) => th.text())).toEqual([
+      "kind",
+      "exponent",
+      "scale",
+      "multiplier",
+    ]);
+    expect(units.findAll("tbody tr").map((tr) => tr.findAll("td").map((td) => td.text()))).toEqual([
+      ["mole", "1", "-3", "1"],
+      ["second", "-1", "0", "60"],
+      ["litre", "-1", "0", "1"],
+    ]);
   });
 
   it("lists the reactants of a reaction with links to the species reference and the species", async () => {

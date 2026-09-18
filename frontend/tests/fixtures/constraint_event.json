@@ -1,0 +1,922 @@
+{
+  "uid": "386b505d3cd64c21b31501880a785b53",
+  "manifest": {
+    "entries": [
+      {
+        "location": ".",
+        "format": "http://identifiers.org/combine.specifications/omex",
+        "master": false
+      },
+      {
+        "location": "./manifest.xml",
+        "format": "http://identifiers.org/combine.specifications/omex-manifest",
+        "master": false
+      },
+      {
+        "location": "./model.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml",
+        "master": true
+      }
+    ]
+  },
+  "reports": {
+    "./model.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example model of <a href=\"https://sbml4humans.de\">SBML4Humans</a> for the objects of SBML core which carry their own attributes: a constraint with a message, an event with a trigger, a priority and a delay, a kinetic law with local parameters and a unit definition built from several units.</p>\n  </body>\n</notes>",
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "level": 3,
+          "version": 2,
+          "packages": [
+            {
+              "prefix": "",
+              "version": 0
+            },
+            {
+              "prefix": "sbml",
+              "version": 0
+            }
+          ]
+        },
+        "models": [
+          {
+            "pk": "constraint_event/Model:constraint_event",
+            "sbmlType": "Model",
+            "id": "constraint_event",
+            "metaId": "meta_constraint_event",
+            "name": "model with a constraint, an event and local parameters",
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <h1>Model with a constraint, an event and local parameters</h1>\n    <p>A single Michaelis-Menten reaction converts <code>S1</code> into <code>S2</code> in the compartment <code>cell</code>. The rate law keeps its constants <code>Km</code> and <code>Vmax</code> as local parameters, so they belong to this reaction alone.</p>\n    <p>A constraint states that <code>S1</code> stays below <code>S1_max</code> and carries the message which a simulator shows when it does not. The event <code>E1</code> adds a dose of <code>S1</code> five minutes after the twentieth minute and switches the reaction off; its trigger, its priority and its delay each carry their own identifier, SBO term and notes.</p>\n    <h2>Terms of use</h2>\n    <p>This file was written for the SBML4Humans report and is distributed under the <a href=\"http://creativecommons.org/licenses/by/4.0/\">Creative Commons Attribution 4.0 International License</a>.</p>\n  </body>\n</notes>",
+            "cvterms": [
+              {
+                "qualifier": "BQB_HAS_TAXON",
+                "resources": [
+                  "https://identifiers.org/taxonomy/9606"
+                ]
+              }
+            ],
+            "history": {
+              "creators": [
+                {
+                  "givenName": "Matthias",
+                  "familyName": "König",
+                  "organization": "Humboldt-University Berlin, Institute for Theoretical Biology",
+                  "email": "koenigmx@hu-berlin.de"
+                }
+              ],
+              "createdDate": "1900-01-01T00:00:00Z",
+              "modifiedDates": [
+                "1900-01-01T00:00:00Z"
+              ]
+            },
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "kind": "model",
+            "substanceUnits": "mmole",
+            "substanceUnitsLatex": "mmol",
+            "timeUnits": "min",
+            "timeUnitsLatex": "min",
+            "volumeUnits": "litre",
+            "volumeUnitsLatex": "l",
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": "mmole",
+            "extentUnitsLatex": "mmol",
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [
+              {
+                "pk": "constraint_event/UnitDefinition:min",
+                "sbmlType": "UnitDefinition",
+                "id": "min",
+                "metaId": null,
+                "name": "min",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"min\" name=\"min\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              },
+              {
+                "pk": "constraint_event/UnitDefinition:mmole",
+                "sbmlType": "UnitDefinition",
+                "id": "mmole",
+                "metaId": null,
+                "name": "mmole",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "unitsLatex": "mmol",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  }
+                ]
+              },
+              {
+                "pk": "constraint_event/UnitDefinition:mM",
+                "sbmlType": "UnitDefinition",
+                "id": "mM",
+                "metaId": null,
+                "name": "mmole/litre",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mM\" name=\"mmole/litre\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "unitsLatex": "\\frac{mmol}{l}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
+              },
+              {
+                "pk": "constraint_event/UnitDefinition:mmole_per_min_l",
+                "sbmlType": "UnitDefinition",
+                "id": "mmole_per_min_l",
+                "metaId": null,
+                "name": "mmole/min/litre",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mmole_per_min_l\" name=\"mmole/min/litre\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "unitsLatex": "\\frac{mmol}{min \\cdot l}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
+              }
+            ],
+            "listOfCompartments": [
+              {
+                "pk": "constraint_event/Compartment:cell",
+                "sbmlType": "Compartment",
+                "id": "cell",
+                "metaId": "meta_cell",
+                "name": "cell",
+                "sbo": "SBO:0000290",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000290"
+                    ]
+                  }
+                ],
+                "history": null,
+                "xml": "<compartment metaid=\"meta_cell\" sboTerm=\"SBO:0000290\" id=\"cell\" name=\"cell\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "constraint_event/Species:S1",
+                "sbmlType": "Species",
+                "id": "S1",
+                "metaId": "meta_S1",
+                "name": "substrate",
+                "sbo": "SBO:0000247",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000247"
+                    ]
+                  }
+                ],
+                "history": null,
+                "xml": "<species metaid=\"meta_S1\" sboTerm=\"SBO:0000247\" id=\"S1\" name=\"substrate\" compartment=\"cell\" initialConcentration=\"8\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 8,
+                "substanceUnits": "mmole",
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mmol",
+                "derivedUnits": "\\frac{mmol}{l}",
+                "conversionFactor": null,
+                "fbc": null
+              },
+              {
+                "pk": "constraint_event/Species:S2",
+                "sbmlType": "Species",
+                "id": "S2",
+                "metaId": "meta_S2",
+                "name": "product",
+                "sbo": "SBO:0000247",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000247"
+                    ]
+                  }
+                ],
+                "history": null,
+                "xml": "<species metaid=\"meta_S2\" sboTerm=\"SBO:0000247\" id=\"S2\" name=\"product\" compartment=\"cell\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 0,
+                "substanceUnits": "mmole",
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mmol",
+                "derivedUnits": "\\frac{mmol}{l}",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [
+              {
+                "pk": "constraint_event/Parameter:S1_max",
+                "sbmlType": "Parameter",
+                "id": "S1_max",
+                "metaId": null,
+                "name": "upper bound of the substrate",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"S1_max\" name=\"upper bound of the substrate\" value=\"10\" units=\"mM\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "value": 10,
+                "constant": true,
+                "units": "mM",
+                "unitsLatex": "\\frac{mmol}{l}",
+                "derivedUnits": "\\frac{mmol}{l}"
+              },
+              {
+                "pk": "constraint_event/Parameter:dose",
+                "sbmlType": "Parameter",
+                "id": "dose",
+                "metaId": null,
+                "name": "dose added by the event",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"dose\" name=\"dose added by the event\" value=\"5\" units=\"mM\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "value": 5,
+                "constant": true,
+                "units": "mM",
+                "unitsLatex": "\\frac{mmol}{l}",
+                "derivedUnits": "\\frac{mmol}{l}"
+              },
+              {
+                "pk": "constraint_event/Parameter:active",
+                "sbmlType": "Parameter",
+                "id": "active",
+                "metaId": null,
+                "name": "switch of the reaction",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"active\" name=\"switch of the reaction\" value=\"1\" units=\"dimensionless\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "value": 1,
+                "constant": false,
+                "units": "dimensionless",
+                "unitsLatex": "-",
+                "derivedUnits": "-"
+              }
+            ],
+            "listOfInitialAssignments": [],
+            "listOfRules": [],
+            "listOfConstraints": [
+              {
+                "pk": "constraint_event/Constraint:meta_constraint_S1",
+                "sbmlType": "Constraint",
+                "id": null,
+                "metaId": "meta_constraint_S1",
+                "name": null,
+                "sbo": "SBO:0000064",
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The rate law of <code>R1</code> was measured below <code>S1_max</code>, so a simulation which leaves that range is no longer a prediction of the system.</p>\n  </body>\n</notes>",
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000064"
+                    ]
+                  }
+                ],
+                "history": null,
+                "xml": "<constraint metaid=\"meta_constraint_S1\" sboTerm=\"SBO:0000064\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The rate law of <code>R1</code> was measured below <code>S1_max</code>, so a simulation which leaves that range is no longer a prediction of the system.</p>\n    </body>\n  </notes>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <lt/>\n      <ci> S1 </ci>\n      <ci> S1_max </ci>\n    </apply>\n  </math>\n  <message>\n    <p xmlns=\"http://www.w3.org/1999/xhtml\">The substrate <b>S1</b> left the range of the rate law of <code>R1</code>: it is above <b>S1_max</b> and the results from here on are not valid.</p>\n  </message>\n</constraint>",
+                "comp": null,
+                "uncertainties": [],
+                "math": {
+                  "latex": " \\mathit{S1}<\\mathit{S1_{max}}",
+                  "formula": "S1 < S1_max"
+                },
+                "message": "<message>\n  <p xmlns=\"http://www.w3.org/1999/xhtml\">The substrate <b>S1</b> left the range of the rate law of <code>R1</code>: it is above <b>S1_max</b> and the results from here on are not valid.</p>\n</message>"
+              }
+            ],
+            "listOfReactions": [
+              {
+                "pk": "constraint_event/Reaction:R1",
+                "sbmlType": "Reaction",
+                "id": "R1",
+                "metaId": "meta_R1",
+                "name": "conversion of S1 into S2",
+                "sbo": "SBO:0000176",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000176"
+                    ]
+                  }
+                ],
+                "history": null,
+                "xml": "<reaction metaid=\"meta_R1\" sboTerm=\"SBO:0000176\" id=\"R1\" name=\"conversion of S1 into S2\" reversible=\"false\" compartment=\"cell\">\n  <listOfReactants>\n    <speciesReference id=\"R1_S1\" species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference id=\"R1_S2\" species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw metaid=\"meta_R1_kinetic_law\" sboTerm=\"SBO:0000028\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> active </ci>\n        <ci> cell </ci>\n        <apply>\n          <divide/>\n          <apply>\n            <times/>\n            <ci> Vmax </ci>\n            <ci> S1 </ci>\n          </apply>\n          <apply>\n            <plus/>\n            <ci> Km </ci>\n            <ci> S1 </ci>\n          </apply>\n        </apply>\n      </apply>\n    </math>\n    <listOfLocalParameters>\n      <localParameter sboTerm=\"SBO:0000186\" id=\"Vmax\" name=\"maximal velocity\" value=\"1\" units=\"mmole_per_min_l\"/>\n      <localParameter sboTerm=\"SBO:0000027\" id=\"Km\" name=\"Michaelis constant\" value=\"2\" units=\"mM\"/>\n    </listOfLocalParameters>\n  </kineticLaw>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "reversible": false,
+                "fast": null,
+                "compartment": "cell",
+                "listOfReactants": [
+                  {
+                    "pk": "constraint_event/SpeciesReference:R1_S1",
+                    "sbmlType": "SpeciesReference",
+                    "id": "R1_S1",
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference id=\"R1_S1\" species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "species": "S1",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [
+                  {
+                    "pk": "constraint_event/SpeciesReference:R1_S2",
+                    "sbmlType": "SpeciesReference",
+                    "id": "R1_S2",
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference id=\"R1_S2\" species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "species": "S2",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfModifiers": [],
+                "kineticLaw": {
+                  "pk": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+                  "sbmlType": "KineticLaw",
+                  "id": null,
+                  "metaId": "meta_R1_kinetic_law",
+                  "name": null,
+                  "sbo": "SBO:0000028",
+                  "notes": null,
+                  "cvterms": [
+                    {
+                      "qualifier": "BQB_IS",
+                      "resources": [
+                        "https://identifiers.org/SBO:0000028"
+                      ]
+                    }
+                  ],
+                  "history": null,
+                  "xml": "<kineticLaw metaid=\"meta_R1_kinetic_law\" sboTerm=\"SBO:0000028\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> active </ci>\n      <ci> cell </ci>\n      <apply>\n        <divide/>\n        <apply>\n          <times/>\n          <ci> Vmax </ci>\n          <ci> S1 </ci>\n        </apply>\n        <apply>\n          <plus/>\n          <ci> Km </ci>\n          <ci> S1 </ci>\n        </apply>\n      </apply>\n    </apply>\n  </math>\n  <listOfLocalParameters>\n    <localParameter sboTerm=\"SBO:0000186\" id=\"Vmax\" name=\"maximal velocity\" value=\"1\" units=\"mmole_per_min_l\"/>\n    <localParameter sboTerm=\"SBO:0000027\" id=\"Km\" name=\"Michaelis constant\" value=\"2\" units=\"mM\"/>\n  </listOfLocalParameters>\n</kineticLaw>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "math": {
+                    "latex": " \\mathit{active}·\\mathit{cell}·\\frac{\\mathit{Vmax}·\\mathit{S1}}{\\mathit{Km}+\\mathit{S1}}",
+                    "formula": "active * cell * (Vmax * S1 / (Km + S1))"
+                  },
+                  "derivedUnits": "\\frac{mmol}{min}",
+                  "listOfLocalParameters": [
+                    {
+                      "pk": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
+                      "sbmlType": "LocalParameter",
+                      "id": "Vmax",
+                      "metaId": null,
+                      "name": "maximal velocity",
+                      "sbo": "SBO:0000186",
+                      "notes": null,
+                      "cvterms": [
+                        {
+                          "qualifier": "BQB_IS",
+                          "resources": [
+                            "https://identifiers.org/SBO:0000186"
+                          ]
+                        }
+                      ],
+                      "history": null,
+                      "xml": "<localParameter sboTerm=\"SBO:0000186\" id=\"Vmax\" name=\"maximal velocity\" value=\"1\" units=\"mmole_per_min_l\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "value": 1,
+                      "units": "mmole_per_min_l",
+                      "unitsLatex": "\\frac{mmol}{min \\cdot l}",
+                      "derivedUnits": "\\frac{mmol}{min \\cdot l}"
+                    },
+                    {
+                      "pk": "constraint_event/LocalParameter:R1.kineticLaw.Km",
+                      "sbmlType": "LocalParameter",
+                      "id": "Km",
+                      "metaId": null,
+                      "name": "Michaelis constant",
+                      "sbo": "SBO:0000027",
+                      "notes": null,
+                      "cvterms": [
+                        {
+                          "qualifier": "BQB_IS",
+                          "resources": [
+                            "https://identifiers.org/SBO:0000027"
+                          ]
+                        }
+                      ],
+                      "history": null,
+                      "xml": "<localParameter sboTerm=\"SBO:0000027\" id=\"Km\" name=\"Michaelis constant\" value=\"2\" units=\"mM\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "value": 2,
+                      "units": "mM",
+                      "unitsLatex": "\\frac{mmol}{l}",
+                      "derivedUnits": "\\frac{mmol}{l}"
+                    }
+                  ]
+                },
+                "equation": "S1 ➞ S2",
+                "fbc": null
+              }
+            ],
+            "listOfEvents": [
+              {
+                "pk": "constraint_event/Event:E1",
+                "sbmlType": "Event",
+                "id": "E1",
+                "metaId": "meta_E1",
+                "name": "dose of S1 which switches the reaction off",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<event metaid=\"meta_E1\" id=\"E1\" name=\"dose of S1 which switches the reaction off\" useValuesFromTriggerTime=\"false\">\n  <trigger metaid=\"meta_E1_trigger\" sboTerm=\"SBO:0000064\" id=\"E1_trigger\" initialValue=\"false\" persistent=\"true\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given once the system has run for twenty minutes.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <apply>\n        <geq/>\n        <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/time\"> time </csymbol>\n        <cn sbml:units=\"min\"> 20 </cn>\n      </apply>\n    </math>\n  </trigger>\n  <delay metaid=\"meta_E1_delay\" sboTerm=\"SBO:0000064\" id=\"E1_delay\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose reaches the compartment five minutes after the trigger.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <cn sbml:units=\"min\"> 5 </cn>\n    </math>\n  </delay>\n  <priority metaid=\"meta_E1_priority\" sboTerm=\"SBO:0000064\" id=\"E1_priority\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The dose is given before any other event of the same moment.</p>\n      </body>\n    </notes>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n      <cn sbml:units=\"dimensionless\"> 1 </cn>\n    </math>\n  </priority>\n  <listOfEventAssignments>\n    <eventAssignment id=\"E1_dose\" variable=\"S1\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n        <apply>\n          <plus/>\n          <ci> S1 </ci>\n          <ci> dose </ci>\n        </apply>\n      </math>\n    </eventAssignment>\n    <eventAssignment id=\"E1_switch\" variable=\"active\">\n      <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n        <cn sbml:units=\"dimensionless\"> 0 </cn>\n      </math>\n    </eventAssignment>\n  </listOfEventAssignments>\n</event>",
+                "comp": null,
+                "uncertainties": [],
+                "useValuesFromTriggerTime": false,
+                "trigger": {
+                  "math": {
+                    "latex": " \\mathrm{time}\\ge 20",
+                    "formula": "time >= 20 min"
+                  },
+                  "initialValue": false,
+                  "persistent": true
+                },
+                "priority": {
+                  "latex": " 1",
+                  "formula": "1 dimensionless"
+                },
+                "delay": {
+                  "latex": " 5",
+                  "formula": "5 min"
+                },
+                "listOfEventAssignments": [
+                  {
+                    "pk": "constraint_event/EventAssignment:E1_dose",
+                    "sbmlType": "EventAssignment",
+                    "id": "E1_dose",
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<eventAssignment id=\"E1_dose\" variable=\"S1\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <plus/>\n      <ci> S1 </ci>\n      <ci> dose </ci>\n    </apply>\n  </math>\n</eventAssignment>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "variable": "S1",
+                    "math": {
+                      "latex": " \\mathit{S1}+\\mathit{dose}",
+                      "formula": "S1 + dose"
+                    }
+                  },
+                  {
+                    "pk": "constraint_event/EventAssignment:E1_switch",
+                    "sbmlType": "EventAssignment",
+                    "id": "E1_switch",
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<eventAssignment id=\"E1_switch\" variable=\"active\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\" xmlns:sbml=\"http://www.sbml.org/sbml/level3/version2/core\">\n    <cn sbml:units=\"dimensionless\"> 0 </cn>\n  </math>\n</eventAssignment>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "variable": "active",
+                    "math": {
+                      "latex": " 0",
+                      "formula": "0 dimensionless"
+                    }
+                  }
+                ]
+              }
+            ],
+            "listOfSubmodels": [],
+            "listOfPorts": [],
+            "listOfGeneProducts": [],
+            "listOfObjectives": []
+          }
+        ],
+        "externalModelDefinitions": [],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "constraint_event/Model:constraint_event": {
+              "pk": "constraint_event/Model:constraint_event",
+              "sbmlType": "Model",
+              "id": "constraint_event",
+              "name": "model with a constraint, an event and local parameters",
+              "model": null
+            },
+            "constraint_event/UnitDefinition:min": {
+              "pk": "constraint_event/UnitDefinition:min",
+              "sbmlType": "UnitDefinition",
+              "id": "min",
+              "name": "min",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/UnitDefinition:mmole": {
+              "pk": "constraint_event/UnitDefinition:mmole",
+              "sbmlType": "UnitDefinition",
+              "id": "mmole",
+              "name": "mmole",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/UnitDefinition:mM": {
+              "pk": "constraint_event/UnitDefinition:mM",
+              "sbmlType": "UnitDefinition",
+              "id": "mM",
+              "name": "mmole/litre",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/UnitDefinition:mmole_per_min_l": {
+              "pk": "constraint_event/UnitDefinition:mmole_per_min_l",
+              "sbmlType": "UnitDefinition",
+              "id": "mmole_per_min_l",
+              "name": "mmole/min/litre",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Compartment:cell": {
+              "pk": "constraint_event/Compartment:cell",
+              "sbmlType": "Compartment",
+              "id": "cell",
+              "name": "cell",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Species:S1": {
+              "pk": "constraint_event/Species:S1",
+              "sbmlType": "Species",
+              "id": "S1",
+              "name": "substrate",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Species:S2": {
+              "pk": "constraint_event/Species:S2",
+              "sbmlType": "Species",
+              "id": "S2",
+              "name": "product",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Parameter:S1_max": {
+              "pk": "constraint_event/Parameter:S1_max",
+              "sbmlType": "Parameter",
+              "id": "S1_max",
+              "name": "upper bound of the substrate",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Parameter:dose": {
+              "pk": "constraint_event/Parameter:dose",
+              "sbmlType": "Parameter",
+              "id": "dose",
+              "name": "dose added by the event",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Parameter:active": {
+              "pk": "constraint_event/Parameter:active",
+              "sbmlType": "Parameter",
+              "id": "active",
+              "name": "switch of the reaction",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Constraint:meta_constraint_S1": {
+              "pk": "constraint_event/Constraint:meta_constraint_S1",
+              "sbmlType": "Constraint",
+              "id": null,
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Reaction:R1": {
+              "pk": "constraint_event/Reaction:R1",
+              "sbmlType": "Reaction",
+              "id": "R1",
+              "name": "conversion of S1 into S2",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/SpeciesReference:R1_S1": {
+              "pk": "constraint_event/SpeciesReference:R1_S1",
+              "sbmlType": "SpeciesReference",
+              "id": "R1_S1",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/SpeciesReference:R1_S2": {
+              "pk": "constraint_event/SpeciesReference:R1_S2",
+              "sbmlType": "SpeciesReference",
+              "id": "R1_S2",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/Event:E1": {
+              "pk": "constraint_event/Event:E1",
+              "sbmlType": "Event",
+              "id": "E1",
+              "name": "dose of S1 which switches the reaction off",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/EventAssignment:E1_dose": {
+              "pk": "constraint_event/EventAssignment:E1_dose",
+              "sbmlType": "EventAssignment",
+              "id": "E1_dose",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/EventAssignment:E1_switch": {
+              "pk": "constraint_event/EventAssignment:E1_switch",
+              "sbmlType": "EventAssignment",
+              "id": "E1_switch",
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/KineticLaw:meta_R1_kinetic_law": {
+              "pk": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/LocalParameter:R1.kineticLaw.Vmax": {
+              "pk": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
+              "sbmlType": "LocalParameter",
+              "id": "Vmax",
+              "name": "maximal velocity",
+              "model": "constraint_event/Model:constraint_event"
+            },
+            "constraint_event/LocalParameter:R1.kineticLaw.Km": {
+              "pk": "constraint_event/LocalParameter:R1.kineticLaw.Km",
+              "sbmlType": "LocalParameter",
+              "id": "Km",
+              "name": "Michaelis constant",
+              "model": "constraint_event/Model:constraint_event"
+            }
+          },
+          "edges": [
+            {
+              "source": "constraint_event/Model:constraint_event",
+              "target": "constraint_event/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Model:constraint_event",
+              "target": "constraint_event/UnitDefinition:min",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Model:constraint_event",
+              "target": "constraint_event/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Species:S1",
+              "target": "constraint_event/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "constraint_event/Species:S1",
+              "target": "constraint_event/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Species:S2",
+              "target": "constraint_event/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "constraint_event/Species:S2",
+              "target": "constraint_event/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Parameter:S1_max",
+              "target": "constraint_event/UnitDefinition:mM",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Parameter:dose",
+              "target": "constraint_event/UnitDefinition:mM",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/Constraint:meta_constraint_S1",
+              "target": "constraint_event/Species:S1",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/Constraint:meta_constraint_S1",
+              "target": "constraint_event/Parameter:S1_max",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/Reaction:R1",
+              "target": "constraint_event/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "constraint_event/Reaction:R1",
+              "target": "constraint_event/SpeciesReference:R1_S1",
+              "kind": "reactant"
+            },
+            {
+              "source": "constraint_event/SpeciesReference:R1_S1",
+              "target": "constraint_event/Species:S1",
+              "kind": "reactant"
+            },
+            {
+              "source": "constraint_event/Reaction:R1",
+              "target": "constraint_event/SpeciesReference:R1_S2",
+              "kind": "product"
+            },
+            {
+              "source": "constraint_event/SpeciesReference:R1_S2",
+              "target": "constraint_event/Species:S2",
+              "kind": "product"
+            },
+            {
+              "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "target": "constraint_event/LocalParameter:R1.kineticLaw.Km",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "target": "constraint_event/Species:S1",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "target": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "target": "constraint_event/Parameter:active",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
+              "target": "constraint_event/Compartment:cell",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
+              "target": "constraint_event/UnitDefinition:mmole_per_min_l",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/LocalParameter:R1.kineticLaw.Km",
+              "target": "constraint_event/UnitDefinition:mM",
+              "kind": "units"
+            },
+            {
+              "source": "constraint_event/EventAssignment:E1_dose",
+              "target": "constraint_event/Species:S1",
+              "kind": "variable"
+            },
+            {
+              "source": "constraint_event/EventAssignment:E1_dose",
+              "target": "constraint_event/Species:S1",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/EventAssignment:E1_dose",
+              "target": "constraint_event/Parameter:dose",
+              "kind": "math"
+            },
+            {
+              "source": "constraint_event/EventAssignment:E1_switch",
+              "target": "constraint_event/Parameter:active",
+              "kind": "variable"
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.054 [s]"
+      }
+    }
+  }
+}
