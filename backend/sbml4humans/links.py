@@ -108,7 +108,13 @@ class ModelIndex:
 
 
 def _elements(model: Model) -> Iterator[SBase]:
-    """All elements of a model with an SId namespace entry, nested ones included."""
+    """All elements of a model with an SId namespace entry, nested ones included.
+
+    The ports of a model are not among them: comp §3.4.3 keeps the port
+    identifiers in a namespace of their own, so a port may carry the identifier
+    of an element of its model without naming it, and only a reference which
+    says that it means a port resolves against them.
+    """
     yield from model.list_of_function_definitions
     yield from model.list_of_compartments
     yield from model.list_of_species
@@ -125,7 +131,6 @@ def _elements(model: Model) -> Iterator[SBase]:
         yield event
         yield from event.list_of_event_assignments
     yield from model.list_of_submodels
-    yield from model.list_of_ports
     yield from model.list_of_gene_products
     yield from model.list_of_objectives
 
@@ -136,11 +141,12 @@ def _nested(model: Model) -> Iterator[SBase]:
     The nested objects are the kinetic law of a reaction with its local
     parameters, the trigger, the priority and the delay of an event and the
     deletions of a submodel with the references below them. None of them is
-    referenced by an SId, so they are nodes without being part of the namespace
-    of the model.
+    referenced by an SId, and neither is a port, so they are nodes without
+    being part of the SId namespace of the model.
     """
     yield from model.list_of_unit_definitions
     yield from _elements(model)
+    yield from model.list_of_ports
     for reaction in model.list_of_reactions:
         if reaction.kinetic_law is not None:
             yield reaction.kinetic_law

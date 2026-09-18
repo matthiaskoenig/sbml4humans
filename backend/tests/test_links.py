@@ -659,3 +659,43 @@ def test_replacement_into_an_external_model_ends_at_the_submodel(
     replaced = f"{m}/ReplacedElement:Cli_plasma_icg_RE"
     assert (replaced, f"{m}/Submodel:LI", "replacedElement") in _edges(report)
     assert "not part of the report" in caplog.text
+
+
+# -------------------------------------------------------------------------------------
+# the identifiers of a port are a namespace of their own
+# -------------------------------------------------------------------------------------
+PORT_NAMESPACE_SBML = f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      level="3" version="1" comp:required="true">
+  <model id="ports">
+    <listOfParameters>
+      <parameter id="k" value="1" constant="true"/>
+      <parameter id="v" value="0" constant="false"/>
+    </listOfParameters>
+    <listOfRules>
+      <assignmentRule variable="v">{_mathml("Vmax")}</assignmentRule>
+    </listOfRules>
+    <comp:listOfPorts>
+      <comp:port comp:id="Vmax" comp:idRef="k"/>
+    </comp:listOfPorts>
+  </model>
+</sbml>"""
+
+
+def test_port_id_is_no_element_of_the_sid_namespace() -> None:
+    """A port identifier is a namespace of its own (comp §3.4.3).
+
+    A port identifier may be the identifier of an element of the model without
+    naming it, so a symbol of a formula never resolves to a port: `Vmax` above
+    is the identifier of a port and of nothing else, and the formula which uses
+    it names nothing.
+    """
+    report = SBMLDocumentInfo.from_sbml(PORT_NAMESPACE_SBML)
+    assert _edges(report, source="ports/AssignmentRule:v") == {
+        ("ports/AssignmentRule:v", "ports/Parameter:v", "variable"),
+    }
+    assert _edges(report, source="ports/Port:Vmax") == {
+        ("ports/Port:Vmax", "ports/Parameter:k", "port"),
+    }
+    assert "ports/Port:Vmax" in report.link_graph.nodes
