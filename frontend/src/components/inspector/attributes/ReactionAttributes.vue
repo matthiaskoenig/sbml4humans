@@ -9,7 +9,7 @@ import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
 
-const props = defineProps<{ element: Reaction }>();
+defineProps<{ element: Reaction }>();
 const index = useReportIndex();
 
 const PARTICIPANT_COLUMNS = [
@@ -20,8 +20,10 @@ const PARTICIPANT_COLUMNS = [
 ];
 const MODIFIER_COLUMNS = PARTICIPANT_COLUMNS.slice(0, 2);
 
-const species = (kind: EdgeKind, id: string) =>
-  index.value?.resolve(props.element.pk, kind, id) ?? null;
+/** The species a participant of the reaction names, resolved through the edge of the species
+ * reference itself, which is where the reference to the species is. */
+const species = (referencePk: string, kind: EdgeKind, id: string) =>
+  index.value?.resolve(referencePk, kind, id) ?? null;
 </script>
 
 <template>
@@ -51,7 +53,7 @@ const species = (kind: EdgeKind, id: string) =>
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
       /></template>
       <template #cell-species="{ row }"
-        ><ElementLink :pk="species('reactant', row.species)" :label="row.species"
+        ><ElementLink :pk="species(row.pk, 'reactant', row.species)" :label="row.species"
       /></template>
       <template #cell-constant="{ row }"><BooleanMark :value="row.constant" /></template>
     </NestedTable>
@@ -67,7 +69,7 @@ const species = (kind: EdgeKind, id: string) =>
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
       /></template>
       <template #cell-species="{ row }"
-        ><ElementLink :pk="species('product', row.species)" :label="row.species"
+        ><ElementLink :pk="species(row.pk, 'product', row.species)" :label="row.species"
       /></template>
       <template #cell-constant="{ row }"><BooleanMark :value="row.constant" /></template>
     </NestedTable>
@@ -83,7 +85,7 @@ const species = (kind: EdgeKind, id: string) =>
         ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
       /></template>
       <template #cell-species="{ row }"
-        ><ElementLink :pk="species('modifier', row.species)" :label="row.species"
+        ><ElementLink :pk="species(row.pk, 'modifier', row.species)" :label="row.species"
       /></template>
     </NestedTable>
   </AttributeRow>

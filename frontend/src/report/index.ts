@@ -12,6 +12,11 @@ import type {
 } from "@/api/types";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 
+/** The edge kinds of a participation: a reaction links to every reactant, product and modifier
+ * it lists, and each of those links to its species with the same kind. */
+export const PARTICIPATION_KINDS = ["reactant", "product", "modifier"] as const;
+export type ParticipationKind = (typeof PARTICIPATION_KINDS)[number];
+
 function push<K, V>(map: Map<K, V[]>, key: K, value: V): void {
   const list = map.get(key);
   if (list) list.push(value);
@@ -89,6 +94,21 @@ export class ReportIndex {
   /** The edges from the elements referencing the element. */
   referencedBy(pk: string): Edge[] {
     return this.incoming.get(pk) ?? [];
+  }
+
+  /** The reaction which lists a species or modifier reference and the role the reference plays
+   * in it, read from the edge of the reaction to the reference. A species reference belongs to
+   * exactly one list of one reaction, so there is at most one such edge. */
+  participation(pk: string): { reaction: string; role: ParticipationKind } | null {
+    for (const edge of this.referencedBy(pk)) {
+      // the species a reference names carries the same kinds, from the reference; only the edge
+      // of a reaction names a participation
+      if (this.nodes.get(edge.source)?.sbmlType !== "Reaction") continue;
+      if (PARTICIPATION_KINDS.includes(edge.kind as ParticipationKind)) {
+        return { reaction: edge.source, role: edge.kind as ParticipationKind };
+      }
+    }
+    return null;
   }
 
   /** The pk of the element with the id, or failing that the metaId, referenced by the source

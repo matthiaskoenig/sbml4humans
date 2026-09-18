@@ -1,5 +1,5 @@
 {
-  "uid": "29a8c44c40bc4662b82838e82df6146b",
+  "uid": "78846b16e0834b7f86ccda9408a45c5c",
   "manifest": {
     "entries": [
       {
@@ -2883,6 +2883,11 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction1",
+              "target": "BIOMD0000000012/SpeciesReference:_420973",
+              "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_420973",
               "target": "BIOMD0000000012/Species:X",
               "kind": "reactant"
             },
@@ -2898,6 +2903,11 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction2",
+              "target": "BIOMD0000000012/SpeciesReference:_420999",
+              "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_420999",
               "target": "BIOMD0000000012/Species:Y",
               "kind": "reactant"
             },
@@ -2913,6 +2923,11 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction3",
+              "target": "BIOMD0000000012/SpeciesReference:_421025",
+              "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421025",
               "target": "BIOMD0000000012/Species:Z",
               "kind": "reactant"
             },
@@ -2928,11 +2943,21 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction4",
+              "target": "BIOMD0000000012/SpeciesReference:_421051",
+              "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421051",
               "target": "BIOMD0000000012/Species:PX",
               "kind": "product"
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction4",
+              "target": "BIOMD0000000012/ModifierSpeciesReference:_421064",
+              "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/ModifierSpeciesReference:_421064",
               "target": "BIOMD0000000012/Species:X",
               "kind": "modifier"
             },
@@ -2948,11 +2973,21 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction5",
+              "target": "BIOMD0000000012/SpeciesReference:_421088",
+              "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421088",
               "target": "BIOMD0000000012/Species:PY",
               "kind": "product"
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction5",
+              "target": "BIOMD0000000012/ModifierSpeciesReference:_421100",
+              "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/ModifierSpeciesReference:_421100",
               "target": "BIOMD0000000012/Species:Y",
               "kind": "modifier"
             },
@@ -2968,11 +3003,21 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction6",
+              "target": "BIOMD0000000012/SpeciesReference:_421124",
+              "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421124",
               "target": "BIOMD0000000012/Species:PZ",
               "kind": "product"
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction6",
+              "target": "BIOMD0000000012/ModifierSpeciesReference:_421136",
+              "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/ModifierSpeciesReference:_421136",
               "target": "BIOMD0000000012/Species:Z",
               "kind": "modifier"
             },
@@ -2988,6 +3033,11 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction7",
+              "target": "BIOMD0000000012/SpeciesReference:_421160",
+              "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421160",
               "target": "BIOMD0000000012/Species:PX",
               "kind": "reactant"
             },
@@ -3003,6 +3053,11 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction8",
+              "target": "BIOMD0000000012/SpeciesReference:_421184",
+              "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421184",
               "target": "BIOMD0000000012/Species:PY",
               "kind": "reactant"
             },
@@ -3018,6 +3073,11 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction9",
+              "target": "BIOMD0000000012/SpeciesReference:_421208",
+              "kind": "reactant"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421208",
               "target": "BIOMD0000000012/Species:PZ",
               "kind": "reactant"
             },
@@ -3033,11 +3093,21 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction10",
+              "target": "BIOMD0000000012/SpeciesReference:_421232",
+              "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421232",
               "target": "BIOMD0000000012/Species:X",
               "kind": "product"
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction10",
+              "target": "BIOMD0000000012/ModifierSpeciesReference:_421244",
+              "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/ModifierSpeciesReference:_421244",
               "target": "BIOMD0000000012/Species:PZ",
               "kind": "modifier"
             },
@@ -3068,11 +3138,21 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction11",
+              "target": "BIOMD0000000012/SpeciesReference:_421268",
+              "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421268",
               "target": "BIOMD0000000012/Species:Y",
               "kind": "product"
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction11",
+              "target": "BIOMD0000000012/ModifierSpeciesReference:_421280",
+              "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/ModifierSpeciesReference:_421280",
               "target": "BIOMD0000000012/Species:PX",
               "kind": "modifier"
             },
@@ -3103,11 +3183,21 @@
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction12",
+              "target": "BIOMD0000000012/SpeciesReference:_421304",
+              "kind": "product"
+            },
+            {
+              "source": "BIOMD0000000012/SpeciesReference:_421304",
               "target": "BIOMD0000000012/Species:Z",
               "kind": "product"
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction12",
+              "target": "BIOMD0000000012/ModifierSpeciesReference:_421317",
+              "kind": "modifier"
+            },
+            {
+              "source": "BIOMD0000000012/ModifierSpeciesReference:_421317",
               "target": "BIOMD0000000012/Species:PY",
               "kind": "modifier"
             },
@@ -3140,7 +3230,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.143 [s]"
+        "jsonReportTime": "0.153 [s]"
       }
     }
   }

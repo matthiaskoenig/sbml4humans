@@ -16,10 +16,12 @@ from sbml4humans.model import (
     Event,
     LinkGraph,
     Model,
+    ModifierSpeciesReference,
     Node,
     Reaction,
     Report,
     SBase,
+    SpeciesReference,
 )
 
 
@@ -280,6 +282,22 @@ class LinkGraphBuilder:
             for fo in objective.list_of_flux_objectives:
                 self._edge(objective, fo.reaction, EdgeKind.FLUX_OBJECTIVE, index)
 
+    def _participation_edges(
+        self,
+        reaction: Reaction,
+        reference: SpeciesReference | ModifierSpeciesReference,
+        kind: EdgeKind,
+        index: ModelIndex,
+    ) -> None:
+        """The two edges of a participation, both of its kind.
+
+        The reaction lists the reference and the reference names the species,
+        so the reference is a node of the graph instead of an isolated one and
+        the role of the participation is on both edges.
+        """
+        self.edges.append(Edge(source=reaction.pk, target=reference.pk, kind=kind))
+        self._edge(reference, reference.species, kind, index)
+
     def _meta_id_edge(self, port: SBase, meta_id: str | None, model: Model) -> None:
         """A port referencing an element by metaId."""
         if meta_id is None:
@@ -293,14 +311,20 @@ class LinkGraphBuilder:
         logger.warning("port of '%s' references unknown metaId '%s'", port.pk, meta_id)
 
     def _reaction_edges(self, reaction: Reaction, index: ModelIndex) -> None:
-        """The edges of a reaction, its participants and its kinetic law."""
+        """The edges of a reaction, its participants and its kinetic law.
+
+        A reaction names its reactants, its products and its modifiers, and
+        each of those names one species (core §4.11.1 to §4.11.4), so the
+        edge of a participation is two edges of its kind: one from the
+        reaction to the reference and one from the reference to the species.
+        """
         self._edge(reaction, reaction.compartment, EdgeKind.COMPARTMENT, index)
         for sr in reaction.list_of_reactants:
-            self._edge(reaction, sr.species, EdgeKind.REACTANT, index)
+            self._participation_edges(reaction, sr, EdgeKind.REACTANT, index)
         for sr in reaction.list_of_products:
-            self._edge(reaction, sr.species, EdgeKind.PRODUCT, index)
+            self._participation_edges(reaction, sr, EdgeKind.PRODUCT, index)
         for m in reaction.list_of_modifiers:
-            self._edge(reaction, m.species, EdgeKind.MODIFIER, index)
+            self._participation_edges(reaction, m, EdgeKind.MODIFIER, index)
         if reaction.fbc is not None:
             self._edge(
                 reaction, reaction.fbc.lower_flux_bound, EdgeKind.FLUX_BOUND, index

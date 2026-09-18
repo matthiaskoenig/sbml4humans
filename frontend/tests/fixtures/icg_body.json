@@ -1,5 +1,5 @@
 {
-  "uid": "cb7048ebf61f4ba1b9944b84d5d27198",
+  "uid": "b45f7589919744ff855060c2d56051ff",
   "manifest": {
     "entries": [
       {
@@ -9378,6 +9378,11 @@
             },
             {
               "source": "icg_body/Reaction:iv_icg",
+              "target": "icg_body/SpeciesReference:iv_icg.product.Cve_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:iv_icg.product.Cve_icg",
               "target": "icg_body/Species:Cve_icg",
               "kind": "product"
             },
@@ -9398,11 +9403,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_ar_arre_icg",
+              "target": "icg_body/SpeciesReference:Flow_ar_arre_icg.reactant.Car_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_ar_arre_icg.reactant.Car_icg",
               "target": "icg_body/Species:Car_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_ar_arre_icg",
+              "target": "icg_body/SpeciesReference:Flow_ar_arre_icg.product.Cre_plasma_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_ar_arre_icg.product.Cre_plasma_icg",
               "target": "icg_body/Species:Cre_plasma_icg",
               "kind": "product"
             },
@@ -9418,11 +9433,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_re_ve_icg",
+              "target": "icg_body/SpeciesReference:Flow_re_ve_icg.reactant.Cre_plasma_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_re_ve_icg.reactant.Cre_plasma_icg",
               "target": "icg_body/Species:Cre_plasma_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_re_ve_icg",
+              "target": "icg_body/SpeciesReference:Flow_re_ve_icg.product.Cve_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_re_ve_icg.product.Cve_icg",
               "target": "icg_body/Species:Cve_icg",
               "kind": "product"
             },
@@ -9438,11 +9463,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_ar_argi_icg",
+              "target": "icg_body/SpeciesReference:Flow_ar_argi_icg.reactant.Car_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_ar_argi_icg.reactant.Car_icg",
               "target": "icg_body/Species:Car_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_ar_argi_icg",
+              "target": "icg_body/SpeciesReference:Flow_ar_argi_icg.product.Cgi_plasma_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_ar_argi_icg.product.Cgi_plasma_icg",
               "target": "icg_body/Species:Cgi_plasma_icg",
               "kind": "product"
             },
@@ -9458,11 +9493,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_gi_po_icg",
+              "target": "icg_body/SpeciesReference:Flow_gi_po_icg.reactant.Cgi_plasma_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_gi_po_icg.reactant.Cgi_plasma_icg",
               "target": "icg_body/Species:Cgi_plasma_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_gi_po_icg",
+              "target": "icg_body/SpeciesReference:Flow_gi_po_icg.product.Cpo_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_gi_po_icg.product.Cpo_icg",
               "target": "icg_body/Species:Cpo_icg",
               "kind": "product"
             },
@@ -9478,11 +9523,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_arli_li_icg",
+              "target": "icg_body/SpeciesReference:Flow_arli_li_icg.reactant.Car_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_arli_li_icg.reactant.Car_icg",
               "target": "icg_body/Species:Car_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_arli_li_icg",
+              "target": "icg_body/SpeciesReference:Flow_arli_li_icg.product.Cli_plasma_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_arli_li_icg.product.Cli_plasma_icg",
               "target": "icg_body/Species:Cli_plasma_icg",
               "kind": "product"
             },
@@ -9503,11 +9558,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_arli_hv_icg",
+              "target": "icg_body/SpeciesReference:Flow_arli_hv_icg.reactant.Car_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_arli_hv_icg.reactant.Car_icg",
               "target": "icg_body/Species:Car_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_arli_hv_icg",
+              "target": "icg_body/SpeciesReference:Flow_arli_hv_icg.product.Chv_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_arli_hv_icg.product.Chv_icg",
               "target": "icg_body/Species:Chv_icg",
               "kind": "product"
             },
@@ -9528,11 +9593,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_po_li_icg",
+              "target": "icg_body/SpeciesReference:Flow_po_li_icg.reactant.Cpo_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_po_li_icg.reactant.Cpo_icg",
               "target": "icg_body/Species:Cpo_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_po_li_icg",
+              "target": "icg_body/SpeciesReference:Flow_po_li_icg.product.Cli_plasma_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_po_li_icg.product.Cli_plasma_icg",
               "target": "icg_body/Species:Cli_plasma_icg",
               "kind": "product"
             },
@@ -9553,11 +9628,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_po_hv_icg",
+              "target": "icg_body/SpeciesReference:Flow_po_hv_icg.reactant.Cpo_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_po_hv_icg.reactant.Cpo_icg",
               "target": "icg_body/Species:Cpo_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_po_hv_icg",
+              "target": "icg_body/SpeciesReference:Flow_po_hv_icg.product.Chv_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_po_hv_icg.product.Chv_icg",
               "target": "icg_body/Species:Chv_icg",
               "kind": "product"
             },
@@ -9578,11 +9663,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_li_hv_icg",
+              "target": "icg_body/SpeciesReference:Flow_li_hv_icg.reactant.Cli_plasma_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_li_hv_icg.reactant.Cli_plasma_icg",
               "target": "icg_body/Species:Cli_plasma_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_li_hv_icg",
+              "target": "icg_body/SpeciesReference:Flow_li_hv_icg.product.Chv_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_li_hv_icg.product.Chv_icg",
               "target": "icg_body/Species:Chv_icg",
               "kind": "product"
             },
@@ -9608,11 +9703,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_hv_ve_icg",
+              "target": "icg_body/SpeciesReference:Flow_hv_ve_icg.reactant.Chv_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_hv_ve_icg.reactant.Chv_icg",
               "target": "icg_body/Species:Chv_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_hv_ve_icg",
+              "target": "icg_body/SpeciesReference:Flow_hv_ve_icg.product.Cve_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_hv_ve_icg.product.Cve_icg",
               "target": "icg_body/Species:Cve_icg",
               "kind": "product"
             },
@@ -9628,11 +9733,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_ve_lu_icg",
+              "target": "icg_body/SpeciesReference:Flow_ve_lu_icg.reactant.Cve_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_ve_lu_icg.reactant.Cve_icg",
               "target": "icg_body/Species:Cve_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_ve_lu_icg",
+              "target": "icg_body/SpeciesReference:Flow_ve_lu_icg.product.Clu_plasma_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_ve_lu_icg.product.Clu_plasma_icg",
               "target": "icg_body/Species:Clu_plasma_icg",
               "kind": "product"
             },
@@ -9648,11 +9763,21 @@
             },
             {
               "source": "icg_body/Reaction:Flow_lu_ar_icg",
+              "target": "icg_body/SpeciesReference:Flow_lu_ar_icg.reactant.Clu_plasma_icg",
+              "kind": "reactant"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_lu_ar_icg.reactant.Clu_plasma_icg",
               "target": "icg_body/Species:Clu_plasma_icg",
               "kind": "reactant"
             },
             {
               "source": "icg_body/Reaction:Flow_lu_ar_icg",
+              "target": "icg_body/SpeciesReference:Flow_lu_ar_icg.product.Car_icg",
+              "kind": "product"
+            },
+            {
+              "source": "icg_body/SpeciesReference:Flow_lu_ar_icg.product.Car_icg",
               "target": "icg_body/Species:Car_icg",
               "kind": "product"
             },
@@ -9755,7 +9880,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.535 [s]"
+        "jsonReportTime": "0.54 [s]"
       }
     }
   }

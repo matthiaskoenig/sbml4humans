@@ -43,13 +43,13 @@ The report shows the flag as a mark in the inspector of the species reference.
 
 <span id="reaction"></span>**reaction**
 
-A species reference is written inside the list of reactants or of products of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it.
+A species reference is written inside the list of reactants or of products of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it; the link of that reaction to the reference is what says which reaction it is.
 
 The reaction is the first row of the inspector of a species reference.
 
 <span id="role"></span>**role**
 
-SBML says the role of a participant by the list it stands in and not by an attribute of its own. The report looks up the list which holds the reference and shows the role as `reactant`, `product` or, for a [modifier species reference](modifierspeciesreference.md), `modifier`.
+SBML says the role of a participant by the list it stands in and not by an attribute of its own. The report reads it from the link of the reaction to the reference and shows it as `reactant`, `product` or, for a [modifier species reference](modifierspeciesreference.md), `modifier`.
 
 The role is shown in the inspector, below the reaction.
 

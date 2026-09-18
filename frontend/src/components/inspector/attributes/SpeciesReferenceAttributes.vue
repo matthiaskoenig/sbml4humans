@@ -7,28 +7,27 @@ import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
-import { parentReaction } from "@/report/parentReaction";
 
 const props = defineProps<{ element: SpeciesReference }>();
 const index = useReportIndex();
 
-/** The reaction listing the reference and the role of the reference in it. */
-const parent = computed(() => parentReaction(index.value, props.element.pk));
+/** The reaction listing the reference and the role of the reference in it, both read from the
+ * edge of the reaction to the reference. */
+const parent = computed(() => index.value?.participation(props.element.pk) ?? null);
 
 const speciesPk = computed(() =>
   parent.value
-    ? (index.value?.resolve(parent.value.reaction.pk, parent.value.kind, props.element.species) ??
-      null)
+    ? (index.value?.resolve(props.element.pk, parent.value.role, props.element.species) ?? null)
     : null,
 );
 </script>
 
 <template>
   <AttributeRow label="reaction" :type="element.sbmlType" field="reaction"
-    ><ElementLink :pk="parent?.reaction.pk" :label="parent?.reaction.id ?? '-'"
+    ><ElementLink :pk="parent?.reaction"
   /></AttributeRow>
   <AttributeRow label="role" :type="element.sbmlType" field="role">{{
-    parent?.kind ?? "-"
+    parent?.role ?? "-"
   }}</AttributeRow>
   <AttributeRow label="species" :type="element.sbmlType" field="species"
     ><ElementLink :pk="speciesPk" :label="element.species"

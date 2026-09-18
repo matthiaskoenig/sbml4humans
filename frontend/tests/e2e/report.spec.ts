@@ -42,6 +42,28 @@ test.describe("repressilator", () => {
     await expect(page.getByTestId("inspector")).toHaveCount(0);
   });
 
+  test("walks from a species over its participation to the reaction which consumes it", async ({
+    page,
+  }) => {
+    const row = page.getByTestId("table-Species").locator('tbody tr[data-pk$="Species:X"]').first();
+    await row.click();
+    const inspector = page.getByTestId("inspector");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("X");
+
+    // the species is referenced by its participations, each named after its reaction
+    const reactants = inspector.getByTestId("links-referenced-by").getByTestId("links-reactant");
+    const participation = reactants.getByTestId("element-link").first();
+    await expect(participation).toHaveText("Reaction1.X");
+    await participation.click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Species reference");
+
+    // the participation names its reaction, its role and its species
+    const rows = inspector.getByTestId("attribute-row");
+    await expect(rows.filter({ hasText: "role" }).first()).toContainText("reactant");
+    await rows.filter({ hasText: "reaction" }).first().getByTestId("element-link").click();
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1");
+  });
+
   test("the search filters the tables", async ({ page }) => {
     const speciesRows = page.getByTestId("table-Species").locator("tbody tr[data-pk]");
     const total = await speciesRows.count();

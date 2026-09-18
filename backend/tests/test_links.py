@@ -58,18 +58,60 @@ def test_edges_reference_nodes(repressilator: Report) -> None:
 
 
 def test_reaction_edges(repressilator: Report) -> None:
-    """A reaction links to its species and the symbols of its kinetic law."""
+    """A reaction links to its participants and its kinetic law to its symbols."""
     m = "BIOMD0000000012"
-    reaction = f"{m}/Reaction:Reaction1"
-    assert _edges(repressilator, source=reaction) == {
-        (reaction, f"{m}/Species:X", "reactant"),
+    reaction = repressilator.models[0].list_of_reactions[0]
+    assert reaction.pk == f"{m}/Reaction:Reaction1"
+    reactant = reaction.list_of_reactants[0]
+    assert _edges(repressilator, source=reaction.pk) == {
+        (reaction.pk, reactant.pk, "reactant"),
     }
-    kinetic_law = repressilator.models[0].list_of_reactions[0].kinetic_law
+    kinetic_law = reaction.kinetic_law
     assert kinetic_law is not None
     assert _edges(repressilator, source=kinetic_law.pk) == {
         (kinetic_law.pk, f"{m}/Parameter:kd_mRNA", "math"),
         (kinetic_law.pk, f"{m}/Species:X", "math"),
     }
+
+
+def test_species_reference_edges(repressilator: Report) -> None:
+    """The reference to a species starts at the species reference which names it.
+
+    The reaction names its reactants, its products and its modifiers, and each
+    of them names one species (core §4.11.1-4), so the two hops of one kind
+    lead from a reaction to the species it consumes and back.
+    """
+    m = "BIOMD0000000012"
+    model = repressilator.models[0]
+    reactant = model.list_of_reactions[0].list_of_reactants[0]
+    assert _edges(repressilator, source=reactant.pk) == {
+        (reactant.pk, f"{m}/Species:X", "reactant"),
+    }
+    with_product = next(r for r in model.list_of_reactions if r.list_of_products)
+    product = with_product.list_of_products[0]
+    assert (with_product.pk, product.pk, "product") in _edges(repressilator)
+    assert (product.pk, f"{m}/Species:{product.species}", "product") in _edges(
+        repressilator
+    )
+    with_modifier = next(r for r in model.list_of_reactions if r.list_of_modifiers)
+    modifier = with_modifier.list_of_modifiers[0]
+    assert (with_modifier.pk, modifier.pk, "modifier") in _edges(repressilator)
+    assert (modifier.pk, f"{m}/Species:{modifier.species}", "modifier") in _edges(
+        repressilator
+    )
+
+
+def test_no_species_reference_is_isolated(repressilator: Report) -> None:
+    """Every species reference of a model is part of the graph."""
+    graph = repressilator.link_graph
+    connected = {e.source for e in graph.edges} | {e.target for e in graph.edges}
+    references = [
+        node
+        for node in graph.nodes.values()
+        if node.sbml_type in {"SpeciesReference", "ModifierSpeciesReference"}
+    ]
+    assert len(references) == 18
+    assert [node.pk for node in references if node.pk not in connected] == []
 
 
 def test_species_and_rule_edges(repressilator: Report) -> None:

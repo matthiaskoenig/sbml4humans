@@ -129,9 +129,8 @@ describe("inspector", () => {
     const wrapper = mountWith(AttributesColumn, { element: reaction }, repressilator);
     const pks = wrapper.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
     expect(pks).toContain(reaction.listOfReactants![0]!.pk);
-    expect(pks).toContain(
-      repressilator.resolve(reaction.pk, "reactant", reaction.listOfReactants![0]!.species),
-    );
+    const reactant = reaction.listOfReactants![0]!;
+    expect(pks).toContain(repressilator.resolve(reactant.pk, "reactant", reactant.species));
   });
 
   it("shows an unresolved submodel conversion factor as plain text, not a link", () => {

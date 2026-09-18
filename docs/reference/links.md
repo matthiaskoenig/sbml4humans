@@ -14,15 +14,15 @@ The link is shown under "References" of the species or of the reaction, and unde
 
 A species a reaction consumes.
 
-The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its reactants names, not from the [species reference](speciesreference.md), so that the participants of a reaction are seen on the reaction itself.
+The link is two links of one kind: from the [reaction](reaction.md) to every [species reference](speciesreference.md) of its list of reactants, and from each of those to the [species](species.md) it names. Every link starts at the element which carries the reference, so a species reference is part of the graph instead of standing alone.
 
-It is shown under "References" of the reaction and under "Referenced by" of the species, where it answers which reactions consume it.
+It is shown under "References" of the reaction, where it lists what the reaction consumes, and under "Referenced by" of the species, where it answers which reactions consume it.
 
 ## product
 
 A species a reaction produces.
 
-The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its products names.
+The link is two links of one kind: from the [reaction](reaction.md) to every [species reference](speciesreference.md) of its list of products, and from each of those to the [species](species.md) it names.
 
 It is shown under "References" of the reaction and under "Referenced by" of the species, where it answers which reactions produce it.
 
@@ -30,7 +30,7 @@ It is shown under "References" of the reaction and under "Referenced by" of the 
 
 A species which influences a reaction without being consumed.
 
-The link goes from the [reaction](reaction.md) to the [species](species.md) which one of its modifiers names: a catalyst, an inhibitor or an activator.
+The link is two links of one kind: from the [reaction](reaction.md) to every [modifier species reference](modifierspeciesreference.md) of its list of modifiers, and from each of those to the [species](species.md) it names: a catalyst, an inhibitor or an activator.
 
 It is shown under "References" of the reaction and under "Referenced by" of the species. A species which is a modifier of a reaction usually also appears in the math of its kinetic law, which is a link of the kind "math".
 

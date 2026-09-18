@@ -33,7 +33,7 @@ const referencedBy = computed(() => group(index.value?.referencedBy(props.pk) ??
     <section data-testid="links-references">
       <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">References</h3>
       <p v-if="references.length === 0" class="text-gray-400">none</p>
-      <dl v-for="g in references" :key="g.kind" class="mb-2">
+      <dl v-for="g in references" :key="g.kind" class="mb-2" :data-testid="`links-${g.kind}`">
         <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
           {{ g.label }}
         </dt>
@@ -45,7 +45,7 @@ const referencedBy = computed(() => group(index.value?.referencedBy(props.pk) ??
         Referenced by
       </h3>
       <p v-if="referencedBy.length === 0" class="text-gray-400">none</p>
-      <dl v-for="g in referencedBy" :key="g.kind" class="mb-2">
+      <dl v-for="g in referencedBy" :key="g.kind" class="mb-2" :data-testid="`links-${g.kind}`">
         <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
           {{ g.label }}
         </dt>

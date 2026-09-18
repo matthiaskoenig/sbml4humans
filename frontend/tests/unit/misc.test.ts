@@ -187,4 +187,16 @@ describe("misc components", () => {
     expect(link.get("[data-testid=element-link]").text()).toBe(pkKey(rule.pk));
     expect(link.text()).not.toContain("/");
   });
+
+  it("names a species reference by its reaction and its species", () => {
+    // the species references of this model are keyed by their meta id, which says nothing about
+    // the participation; the inspector of a species lists them, so they name their reaction
+    const reaction = index.mainModel!.listOfReactions!.find((r) => r.listOfReactants!.length > 0)!;
+    const reactant = reaction.listOfReactants![0]!;
+    expect(reactant.id).toBeNull();
+    const link = mountWithIndex(ElementLink, { pk: reactant.pk });
+    expect(link.get("[data-testid=element-link]").text()).toBe(
+      `${reaction.id}.${reactant.species}`,
+    );
+  });
 });

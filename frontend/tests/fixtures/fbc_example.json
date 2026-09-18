@@ -1,5 +1,5 @@
 {
-  "uid": "43968939db4b43b19a58777279156b2b",
+  "uid": "df2b612582a5400597d86a50585ec224",
   "manifest": {
     "entries": [
       {
@@ -1432,16 +1432,31 @@
             },
             {
               "source": "fbc_example/Reaction:v1",
+              "target": "fbc_example/SpeciesReference:v1.reactant.Ac",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v1.reactant.Ac",
               "target": "fbc_example/Species:Ac",
               "kind": "reactant"
             },
             {
               "source": "fbc_example/Reaction:v1",
+              "target": "fbc_example/SpeciesReference:v1.reactant.O2",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v1.reactant.O2",
               "target": "fbc_example/Species:O2",
               "kind": "reactant"
             },
             {
               "source": "fbc_example/Reaction:v1",
+              "target": "fbc_example/SpeciesReference:v1.product.X",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v1.product.X",
               "target": "fbc_example/Species:X",
               "kind": "product"
             },
@@ -1462,16 +1477,31 @@
             },
             {
               "source": "fbc_example/Reaction:v2",
+              "target": "fbc_example/SpeciesReference:v2.reactant.Glcxt",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v2.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
               "kind": "reactant"
             },
             {
               "source": "fbc_example/Reaction:v2",
+              "target": "fbc_example/SpeciesReference:v2.reactant.O2",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v2.reactant.O2",
               "target": "fbc_example/Species:O2",
               "kind": "reactant"
             },
             {
               "source": "fbc_example/Reaction:v2",
+              "target": "fbc_example/SpeciesReference:v2.product.X",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v2.product.X",
               "target": "fbc_example/Species:X",
               "kind": "product"
             },
@@ -1492,21 +1522,41 @@
             },
             {
               "source": "fbc_example/Reaction:v3",
+              "target": "fbc_example/SpeciesReference:v3.reactant.Glcxt",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v3.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
               "kind": "reactant"
             },
             {
               "source": "fbc_example/Reaction:v3",
+              "target": "fbc_example/SpeciesReference:v3.reactant.O2",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v3.reactant.O2",
               "target": "fbc_example/Species:O2",
               "kind": "reactant"
             },
             {
               "source": "fbc_example/Reaction:v3",
+              "target": "fbc_example/SpeciesReference:v3.product.Ac",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v3.product.Ac",
               "target": "fbc_example/Species:Ac",
               "kind": "product"
             },
             {
               "source": "fbc_example/Reaction:v3",
+              "target": "fbc_example/SpeciesReference:v3.product.X",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v3.product.X",
               "target": "fbc_example/Species:X",
               "kind": "product"
             },
@@ -1527,16 +1577,31 @@
             },
             {
               "source": "fbc_example/Reaction:v4",
+              "target": "fbc_example/SpeciesReference:v4.reactant.Glcxt",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v4.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
               "kind": "reactant"
             },
             {
               "source": "fbc_example/Reaction:v4",
+              "target": "fbc_example/SpeciesReference:v4.product.Ac",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v4.product.Ac",
               "target": "fbc_example/Species:Ac",
               "kind": "product"
             },
             {
               "source": "fbc_example/Reaction:v4",
+              "target": "fbc_example/SpeciesReference:v4.product.X",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:v4.product.X",
               "target": "fbc_example/Species:X",
               "kind": "product"
             },
@@ -1552,6 +1617,11 @@
             },
             {
               "source": "fbc_example/Reaction:EX_Ac",
+              "target": "fbc_example/SpeciesReference:EX_Ac.reactant.Ac",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:EX_Ac.reactant.Ac",
               "target": "fbc_example/Species:Ac",
               "kind": "reactant"
             },
@@ -1567,6 +1637,11 @@
             },
             {
               "source": "fbc_example/Reaction:EX_O2",
+              "target": "fbc_example/SpeciesReference:EX_O2.reactant.O2",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:EX_O2.reactant.O2",
               "target": "fbc_example/Species:O2",
               "kind": "reactant"
             },
@@ -1582,6 +1657,11 @@
             },
             {
               "source": "fbc_example/Reaction:EX_Glcxt",
+              "target": "fbc_example/SpeciesReference:EX_Glcxt.reactant.Glcxt",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:EX_Glcxt.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
               "kind": "reactant"
             },
@@ -1597,6 +1677,11 @@
             },
             {
               "source": "fbc_example/Reaction:EX_X",
+              "target": "fbc_example/SpeciesReference:EX_X.reactant.X",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_example/SpeciesReference:EX_X.reactant.X",
               "target": "fbc_example/Species:X",
               "kind": "reactant"
             },
@@ -1634,7 +1719,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.008 [s]"
       }
     }
   }

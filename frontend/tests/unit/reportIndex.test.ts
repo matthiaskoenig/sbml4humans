@@ -101,15 +101,30 @@ describe("ReportIndex", () => {
     expect(icgBody.resolve(port.pk, "port", "unknown-meta-id")).toBeNull();
   });
 
-  it("resolves the species of a reactant from the reaction", () => {
-    // the reactant, product and modifier edges start at the reaction, not at the species reference
+  it("resolves the species of a reactant from the species reference", () => {
+    // the reaction links to its reactant, the reactant links to its species, both as "reactant"
     const reaction = repressilator.mainModel!.listOfReactions!.find(
       (r) => r.listOfReactants!.length > 0,
     ) as Reaction;
     const reactant = reaction.listOfReactants![0]!;
-    const pk = repressilator.resolve(reaction.pk, "reactant", reactant.species);
+    const pk = repressilator.resolve(reactant.pk, "reactant", reactant.species);
     expect(repressilator.get(pk!)?.sbmlType).toBe("Species");
-    expect(repressilator.resolve(reactant.pk, "reactant", reactant.species)).toBeNull();
+    expect(repressilator.resolve(reaction.pk, "reactant", reactant.species)).toBeNull();
+  });
+
+  it("tells the reaction of a species reference and the role it plays in it", () => {
+    const model = repressilator.mainModel!;
+    const reaction = model.listOfReactions!.find((r) => r.listOfModifiers!.length > 0) as Reaction;
+    const modifier = reaction.listOfModifiers![0]!;
+    expect(repressilator.participation(modifier.pk)).toEqual({
+      reaction: reaction.pk,
+      role: "modifier",
+    });
+    const reactant = model.listOfReactions!.find((r) => r.listOfReactants!.length > 0)!
+      .listOfReactants![0]!;
+    expect(repressilator.participation(reactant.pk)?.role).toBe("reactant");
+    // a species is no participation, it is what one names
+    expect(repressilator.participation(model.listOfSpecies![0]!.pk)).toBeNull();
   });
 
   it("tells the model of an element", () => {
@@ -131,7 +146,7 @@ describe("ReportIndex", () => {
 
   it("keys every species and modifier reference pk uniquely within its report", () => {
     // the backend derives a nested reference's pk from its parent reaction, not a digest of its
-    // own content: `parentReaction` relies on that to find exactly one owning reaction per pk.
+    // own content, so that the edge of the reaction reaches exactly one reference.
     let checked = 0;
     for (const index of allReportIndexes()) {
       const pks: string[] = [];

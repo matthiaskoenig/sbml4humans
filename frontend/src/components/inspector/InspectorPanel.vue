@@ -10,7 +10,7 @@ import XmlView from "@/components/misc/XmlView.vue";
 import { typeInfo } from "@/data/sbmlTypes";
 import { useReportIndex } from "@/report/context";
 import { referenceUrl } from "@/report/glossary";
-import { pkKey } from "@/report/pk";
+import { elementLabel } from "@/report/label";
 import { useReportView } from "@/report/view";
 
 const props = defineProps<{ pk: string }>();
@@ -21,9 +21,8 @@ const element = computed(() => index.value?.get(props.pk) ?? null);
 const label = computed(() =>
   element.value?.sbmlType ? typeInfo(element.value.sbmlType).label : "",
 );
-/** The element is named by its id, and without one by the key of its primary key, which is its
- * meta id or the name its parent gives it; the type is already named next to it. */
-const name = computed(() => element.value?.id ?? pkKey(element.value?.pk) ?? "");
+/** The element is named as every link to it names it; the type is already named next to it. */
+const name = computed(() => elementLabel(index.value, props.pk) ?? "");
 const showXml = ref(false);
 watch(
   () => props.pk,
