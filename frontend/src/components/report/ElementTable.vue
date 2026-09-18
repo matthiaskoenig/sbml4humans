@@ -4,7 +4,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from 
 
 import type { ElementType, SbmlElement } from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
-import { columnsOf, type ColumnDef } from "@/report/columns";
+import { visibleColumns, type ColumnDef } from "@/report/columns";
 import { attributeEntry } from "@/report/glossary";
 import { rowWindow } from "@/report/rowWindow";
 import { sortRows, type SortState } from "@/report/sort";
@@ -26,10 +26,16 @@ const SORT_ICON_STROKE = 2.25;
 /** A click on these elements of a row does not change the selection. */
 const INTERACTIVE = "a, button, input, select, textarea, [contenteditable]";
 
-const props = defineProps<{ type: ElementType; rows: SbmlElement[] }>();
+const props = defineProps<{
+  type: ElementType;
+  rows: SbmlElement[];
+  /** Every row of the type, which decides the optional columns; the rows of a search are a
+   * part of it and would let a column come and go while a reader types. */
+  allRows?: SbmlElement[];
+}>();
 const view = useReportView();
 
-const columns = computed(() => columnsOf(props.type));
+const columns = computed(() => visibleColumns(props.type, props.allRows ?? props.rows));
 const sort = ref<SortState | null>(null);
 const sorted = computed(() => sortRows(props.rows, sort.value));
 const virtual = computed(() => props.rows.length > VIRTUAL_ROWS);
@@ -79,7 +85,12 @@ const visible = computed(() => sorted.value.slice(range.value.start, range.value
  * have none, and a list of assignments would be compared as a list of objects, which leaves
  * every row equal and a sort that changes nothing under a header that promises one. */
 function sortable(column: ColumnDef): boolean {
-  return column.kind !== "math" && column.kind !== "units" && column.kind !== "assignments";
+  return (
+    column.kind !== "math" &&
+    column.kind !== "units" &&
+    column.kind !== "assignments" &&
+    column.kind !== "geneAssociation"
+  );
 }
 
 function toggleSort(column: ColumnDef): void {

@@ -25,7 +25,7 @@ import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
 import { attributeEntry, linkEntry, referenceUrl } from "@/report/glossary";
-import { LIST_LIMIT } from "@/report/limitedList";
+import { ASSOCIATION_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
@@ -361,23 +361,23 @@ describe("inspector", () => {
     );
   });
 
-  it("caps the nodes of one group of an association at the list limit", async () => {
+  it("caps the nodes of one group of an association", async () => {
     await router.push("/examples/fbc_constraints_v3");
     const wide = {
       pk: "m/Or:wide",
       sbmlType: "Or",
-      associations: Array.from({ length: LIST_LIMIT + 3 }, (_, k) => ({
+      associations: Array.from({ length: ASSOCIATION_LIMIT + 3 }, (_, k) => ({
         pk: `m/GeneProductRef:${k}`,
         sbmlType: "GeneProductRef",
         geneProduct: `g${k}`,
       })),
     };
     const wrapper = mountWith(GeneAssociationView, { node: wide }, fbcConstraints);
-    expect(wrapper.text()).toContain(`g${LIST_LIMIT - 1}`);
-    expect(wrapper.text()).not.toContain(`g${LIST_LIMIT}`);
+    expect(wrapper.text()).toContain(`g${ASSOCIATION_LIMIT - 1}`);
+    expect(wrapper.text()).not.toContain(`g${ASSOCIATION_LIMIT}`);
     expect(wrapper.find("[data-testid=show-all]").text()).toBe("show all (3)");
     await wrapper.get("[data-testid=show-all]").trigger("click");
-    expect(wrapper.text()).toContain(`g${LIST_LIMIT + 2}`);
+    expect(wrapper.text()).toContain(`g${ASSOCIATION_LIMIT + 2}`);
   });
 
   it("groups the links by kind in both directions", async () => {

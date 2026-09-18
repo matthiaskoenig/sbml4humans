@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { EventAssignment, SbmlElement, Math } from "@/api/types";
+import type { EventAssignment, GeneProductAssociation, SbmlElement, Math } from "@/api/types";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
@@ -12,6 +12,7 @@ import ValueText from "@/components/misc/ValueText.vue";
 import XhtmlView from "@/components/misc/XhtmlView.vue";
 import { fieldValue, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
+import { geneAssociationText } from "@/report/geneAssociation";
 
 const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
 const index = useReportIndex();
@@ -38,6 +39,13 @@ const unitsLatex = computed(() => {
   const latex = fieldValue(props.row, props.column.latexField ?? `${props.column.field}Latex`);
   return typeof latex === "string" ? latex : null;
 });
+
+/** Kind "geneAssociation": the tree of the reaction as the expression it stands for, capped at
+ * the first genes so that one huge association does not fill the row. The genes are links in
+ * the inspector; the cell is one line of text. */
+const geneAssociation = computed(() =>
+  geneAssociationText((value.value as GeneProductAssociation | null | undefined)?.association),
+);
 
 /** Kind "assignments": the event assignments of the event, an empty list when the event has
  * none, which the cell shows as the placeholder. */
@@ -81,5 +89,20 @@ function variablePk(assignment: EventAssignment): string | null {
       ><MathView :math="assignment.math"
     /></template>
   </span>
-  <ValueText v-else :value="text" :mono="column.field === 'equation'" />
+  <!-- the expression is capped at the width of its column and cut off with an ellipsis: an
+  association of a genome scale model runs over thousands of genes, and the inspector is where
+  the whole tree is read -->
+  <span
+    v-else-if="column.kind === 'geneAssociation'"
+    class="block max-w-64 truncate font-mono"
+    :class="{ 'text-gray-400': !geneAssociation }"
+    data-testid="gene-cell"
+    >{{ geneAssociation || "-" }}</span
+  >
+  <!-- the equation of a reaction of a genome scale model is longer than any pane: it is capped
+  at the width of its column and cut off with an ellipsis, and the inspector shows it whole -->
+  <span v-else-if="column.field === 'equation'" class="block max-w-96 truncate font-mono">{{
+    text
+  }}</span>
+  <ValueText v-else :value="text" />
 </template>

@@ -4,7 +4,12 @@ import TypeMark from "@/components/misc/TypeMark.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
 import { typeInfo } from "@/data/sbmlTypes";
 
-defineProps<{ type: ElementType; rows: SbmlElement[]; total: number }>();
+defineProps<{
+  type: ElementType;
+  rows: SbmlElement[];
+  allRows: SbmlElement[];
+  total: number;
+}>();
 </script>
 
 <template>
@@ -17,7 +22,7 @@ defineProps<{ type: ElementType; rows: SbmlElement[]; total: number }>();
       </span>
     </h2>
     <div class="overflow-hidden rounded border border-gray-200">
-      <ElementTable :type="type" :rows="rows" />
+      <ElementTable :type="type" :rows="rows" :all-rows="allRows" />
     </div>
   </section>
 </template>

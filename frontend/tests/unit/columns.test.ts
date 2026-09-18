@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
-import { COLUMNS, columnsOf, fieldValue } from "@/report/columns";
+import { COLUMNS, columnsOf, fieldValue, visibleColumns } from "@/report/columns";
+import { geneAssociationText, GENE_TEXT_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
 
 import { loadReport } from "./fixtures";
@@ -10,8 +11,11 @@ const indexes = [
   new ReportIndex(loadReport("repressilator")),
   new ReportIndex(loadReport("icg_body")),
   new ReportIndex(loadReport("fbc_example")),
+  new ReportIndex(loadReport("fbc_constraints_v3")),
   new ReportIndex(loadReport("distrib_uncertainties")),
 ];
+const fbcConstraints = indexes[3]!;
+const repressilator = indexes[0]!;
 
 describe("columns", () => {
   it("defines columns for every element type, id and name first", () => {
@@ -55,6 +59,48 @@ describe("columns", () => {
         if (column.kind !== "link") expect(column.link).toBeUndefined();
       }
     }
+  });
+
+  it("shows the fbc columns only in a table a row of which fills them", () => {
+    const headers = (type: "Species" | "Reaction", index: ReportIndex, model: string) =>
+      visibleColumns(type, index.byType(model).get(type) ?? []).map((c) => c.header);
+    expect(headers("Species", fbcConstraints, "fbc_constraints_v3")).toContain("formula");
+    expect(headers("Species", fbcConstraints, "fbc_constraints_v3")).toContain("charge");
+    expect(headers("Reaction", fbcConstraints, "fbc_constraints_v3")).toEqual(
+      expect.arrayContaining(["lower bound", "upper bound", "gene association"]),
+    );
+    // a model without the package keeps the table it had
+    expect(headers("Species", repressilator, "BIOMD0000000012")).not.toContain("formula");
+    expect(headers("Reaction", repressilator, "BIOMD0000000012")).not.toContain("lower bound");
+    // and a column no row of a table fills is left out, whichever package it belongs to: a
+    // constraint based model has no kinetic law, a model of amounts no concentration
+    expect(headers("Reaction", fbcConstraints, "fbc_constraints_v3")).not.toContain("kinetic law");
+    expect(headers("Species", repressilator, "BIOMD0000000012")).not.toContain(
+      "initial concentration",
+    );
+    expect(headers("Species", repressilator, "BIOMD0000000012")).toContain("initial amount");
+  });
+
+  it("writes a gene association as the expression it stands for", () => {
+    const reaction = fbcConstraints.byType("fbc_constraints_v3").get("Reaction")![0]!;
+    const association = (reaction as { fbc?: { geneProductAssociation?: unknown } }).fbc
+      ?.geneProductAssociation as { association?: never } | undefined;
+    expect(geneAssociationText(association?.association)).toBe("((g_ptsG and g_ptsH) or g_galP)");
+    expect(geneAssociationText(null)).toBe("");
+    // a wide association is cut off after the first genes, whatever its size
+    const wide = {
+      pk: "m/Or:wide",
+      sbmlType: "Or" as const,
+      associations: Array.from({ length: 1000 }, (_, k) => ({
+        pk: `m/GeneProductRef:${k}`,
+        sbmlType: "GeneProductRef" as const,
+        geneProduct: `g${k}`,
+      })),
+    };
+    const text = geneAssociationText(wide);
+    expect(text).toContain(`g${GENE_TEXT_LIMIT - 1}`);
+    expect(text).not.toContain(`g${GENE_TEXT_LIMIT}`);
+    expect(text.endsWith("…)")).toBe(true);
   });
 
   it("resolves dotted paths", () => {

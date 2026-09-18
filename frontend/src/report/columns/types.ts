@@ -10,6 +10,7 @@ export type CellKind =
   | "link"
   | "count"
   | "assignments"
+  | "geneAssociation"
   | "xhtml";
 
 /** One column of an element table. */
@@ -24,6 +25,9 @@ export interface ColumnDef {
    * units, default `${field}Latex`. */
   latexField?: string;
   width?: string;
+  /** A column which is left out of a table no row of which fills it: the fbc columns of a
+   * species or a reaction of a model which does not use the package. */
+  optional?: boolean;
 }
 
 export const ID_COLUMNS: readonly ColumnDef[] = [

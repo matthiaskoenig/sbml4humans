@@ -82,6 +82,7 @@ const sections = computed(() => {
     return {
       type: info.type,
       rows,
+      all,
       total: all.length,
       visible: types === null || types.includes(info.type),
     };
@@ -160,6 +161,7 @@ watch([selectedPk, index], ([pk, current]) => {
             :key="section.type"
             :type="section.type"
             :rows="section.rows as SbmlElement[]"
+            :all-rows="section.all as SbmlElement[]"
             :total="section.total"
           />
         </div>
