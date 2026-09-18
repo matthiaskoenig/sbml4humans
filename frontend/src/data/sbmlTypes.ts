@@ -361,8 +361,8 @@ export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
   },
   {
     type: "UserDefinedConstraintComponent",
-    label: "Constraint component",
-    plural: "Constraint components",
+    label: "User defined constraint component",
+    plural: "User defined constraint components",
     color: "#f46d43",
     icon: ScaleIcon,
     pkg: "fbc",
