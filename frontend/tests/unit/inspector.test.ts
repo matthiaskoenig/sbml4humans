@@ -50,6 +50,7 @@ const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
 const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
 const qual = new ReportIndex(loadReport("qual_example"));
+const distribSpans = new ReportIndex(loadReport("distrib_spans"));
 
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
@@ -483,6 +484,77 @@ describe("inspector", () => {
     const wrapper = mountWith(UncertaintyAttributes, { element: unsafe }, distrib);
     expect(wrapper.find("a").exists()).toBe(false);
     expect(wrapper.text()).toContain("javascript:alert(1)");
+  });
+
+  it("shows a span as the interval it is and links the ends it names", async () => {
+    await router.push("/examples/distrib_spans");
+    const km = distribSpans.mainModel!.listOfParameters!.find((p) => p.id === "Km")!;
+    const byValues = km.uncertainties![0] as Uncertainty;
+    const rows = mountWith(UncertaintyAttributes, { element: byValues }, distribSpans)
+      .findAll("[data-testid=uncert-value]")
+      .map((cell) => cell.text().replace(/\s+/g, " "));
+    // the range of the measurement reads as the interval the file writes, where the report
+    // used to show the word "range" and five empty cells
+    expect(rows).toEqual(["0.5", "0.06", "12", "0.38 to 0.63"]);
+
+    const byReference = km.uncertainties![1] as Uncertainty;
+    const wrapper = mountWith(UncertaintyAttributes, { element: byReference }, distribSpans);
+    const span = wrapper.get("[data-testid=uncert-span]");
+    expect(span.text().replace(/\s+/g, " ")).toBe("Km_lower to Km_upper");
+    expect(
+      span.findAll("[data-testid=element-link]").map((link) => link.attributes("data-pk")),
+    ).toEqual(["distrib_spans/Parameter:Km_lower", "distrib_spans/Parameter:Km_upper"]);
+  });
+
+  it("shows the parameters of a distribution under the parameter they define", async () => {
+    await router.push("/examples/distrib_spans");
+    const vmax = distribSpans.mainModel!.listOfParameters!.find((p) => p.id === "Vmax")!;
+    const wrapper = mountWith(
+      UncertaintyAttributes,
+      { element: vmax.uncertainties![0] as Uncertainty },
+      distribSpans,
+    );
+    const measures = wrapper
+      .findAll("[data-testid=uncert-measure]")
+      .map((cell) => cell.get("[data-testid=element-link]").text());
+    expect(measures).toEqual(["Vmax_mean_measure", "Vmax_distribution", "Vmax_alpha", "Vmax_beta"]);
+    // the type stays next to an identifier, because the identifier does not say what the
+    // measure is
+    expect(wrapper.findAll("[data-testid=uncert-type]").map((cell) => cell.text())).toEqual([
+      "mean",
+      "distribution",
+      "externalParameter",
+      "externalParameter",
+    ]);
+    // the two parameters of the distribution are indented below it
+    const depths = wrapper
+      .findAll("[data-testid=uncert-measure]")
+      .map((cell) => cell.attributes("data-depth"));
+    expect(depths).toEqual(["0", "0", "1", "1"]);
+    // the mean of the maximal rate is not a number but the parameter which holds it
+    expect(wrapper.findAll("[data-testid=uncert-value]")[0]!.text()).toBe("Vmax_mean");
+  });
+
+  it("shows the attributes of an uncert parameter and of a span", async () => {
+    await router.push("/examples/distrib_spans");
+    const km = distribSpans.mainModel!.listOfParameters!.find((p) => p.id === "Km")!;
+    const mean = km.uncertainties![0]!.uncertParameters![0]!;
+    const meanRows = mountWith(AttributesColumn, { element: mean }, distribSpans)
+      .findAll("[data-testid=attribute-row]")
+      .map((row) => row.get("dt").text());
+    expect(meanRows).toContain("type");
+    expect(meanRows).toContain("value");
+    expect(meanRows).toContain("units");
+
+    const span = km.uncertainties![1]!.uncertParameters![1]!;
+    const spanWrapper = mountWith(AttributesColumn, { element: span }, distribSpans);
+    const spanRows = spanWrapper
+      .findAll("[data-testid=attribute-row]")
+      .map((row) => row.get("dt").text());
+    expect(spanRows).toContain("interval");
+    expect(spanWrapper.get("[data-testid=uncert-span]").text().replace(/\s+/g, " ")).toBe(
+      "Km_lower to Km_upper",
+    );
   });
 
   it("shows the levels of a qualitative species with a link to its compartment", async () => {

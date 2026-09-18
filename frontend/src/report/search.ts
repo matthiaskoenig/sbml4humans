@@ -1,4 +1,4 @@
-import type { Math, SBase } from "@/api/types";
+import type { Math, SBase, UncertMeasure } from "@/api/types";
 
 const texts = new WeakMap<SBase, string>();
 
@@ -8,6 +8,15 @@ export function normalizeQuery(query: string): string {
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, " ");
+}
+
+/** The math of every measure of an uncertainty, of the ones nested in a distribution as
+ * well (distrib §3.11.7). */
+function* measureMaths(measures: UncertMeasure[]): Generator<Math | null | undefined> {
+  for (const measure of measures) {
+    yield measure.math;
+    yield* measureMaths(measure.uncertParameters ?? []);
+  }
 }
 
 function* maths(element: SBase): Generator<Math | null | undefined> {
@@ -20,7 +29,7 @@ function* maths(element: SBase): Generator<Math | null | undefined> {
     for (const assignment of element.listOfEventAssignments ?? []) yield assignment.math;
   }
   if (element.sbmlType === "Uncertainty") {
-    for (const parameter of element.uncertParameters ?? []) yield parameter.math;
+    yield* measureMaths(element.uncertParameters ?? []);
   }
   if (element.sbmlType === "Transition") {
     for (const term of element.listOfFunctionTerms ?? []) yield term.math;

@@ -1294,7 +1294,7 @@ summary = "the statistical measures which make up the uncertainty"
 description = """
 Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 
-The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
+The report shows every parameter of an uncertainty as a row of the table in the inspector of that uncertainty, with its value or the interval of a span, its units, its definition and its math, and links every parameter to the element it is, where its notes say where the measurement comes from.
 """
 
 
@@ -1393,7 +1393,7 @@ summary = "the parameters which define a distribution or an external parameter"
 description = """
 A distribution is defined by the parameters it takes: a Beta distribution by its alpha and its beta, a zeta distribution by its shape. They are uncert parameters of the parameter which names the distribution, of any type and to any depth, and without them a report shows the name of a distribution and none of its numbers.
 
-The report shows them as a table below the parameter they belong to, in the inspector of the uncertainty and of the parameter.
+The report shows every one of them indented below the parameter it defines, in the table of the measures of the uncertainty and in the inspector of that parameter.
 """
 
 [types.UncertSpan]
@@ -1409,6 +1409,17 @@ Each end is either a number, in [value lower](uncertspan.md#value-lower) and [va
 The report shows a span as the interval it is, `1 to 4`, with a link where an end names an element.
 """
 related = ["UncertParameter", "Uncertainty", "distrib"]
+
+[types.UncertSpan.attributes.interval]
+label = "interval"
+package = "report"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the two ends of the span as the interval they stand for"
+description = """
+The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.
+
+The row is the reading of [value lower](uncertspan.md#value-lower), [value upper](uncertspan.md#value-upper), [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper), each of which the file writes on its own.
+"""
 
 [types.UncertSpan.attributes.valueLower]
 label = "value lower"
@@ -1535,7 +1546,7 @@ summary = "the parameters which define an external parameter"
 description = """
 A span of the type `externalParameter` may be defined by parameters of its own, the way a [distribution](uncertparameter.md#uncert-parameters) is. The four intervals the specification defines need none, because their two ends define them.
 
-The report shows them as a table below the span they belong to.
+The report shows every one of them indented below the span it defines.
 """
 
 # ----------------------------------------------------------------------------

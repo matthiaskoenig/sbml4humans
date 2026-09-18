@@ -5,3 +5,12 @@
 export function isHttpUrl(text: string | null | undefined): boolean {
   return text !== null && text !== undefined && /^https?:\/\//i.test(text.trim());
 }
+
+/** The name a definition url is shown by: its last segment, behind the last `/` and the last
+ * `#`, which is the local name of the term it names (`.../Beta_distribution#alpha` reads as
+ * `alpha`). A url which ends in a separator keeps the segment before it, and a url without one
+ * is shown whole. The full url is the tooltip of the link. */
+export function definitionLabel(url: string): string {
+  const segments = url.split(/[/#]/).filter((segment) => segment !== "");
+  return segments[segments.length - 1] ?? url;
+}

@@ -45,6 +45,8 @@ import SubmodelAttributes from "./SubmodelAttributes.vue";
 import TransitionAttributes from "./TransitionAttributes.vue";
 import TriggerAttributes from "./TriggerAttributes.vue";
 import UncertaintyAttributes from "./UncertaintyAttributes.vue";
+import UncertParameterAttributes from "./UncertParameterAttributes.vue";
+import UncertSpanAttributes from "./UncertSpanAttributes.vue";
 import UnitDefinitionAttributes from "./UnitDefinitionAttributes.vue";
 import UserDefinedConstraintAttributes from "./UserDefinedConstraintAttributes.vue";
 import UserDefinedConstraintComponentAttributes from "./UserDefinedConstraintComponentAttributes.vue";
@@ -93,6 +95,8 @@ export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
   Delay: DelayAttributes,
   EventAssignment: EventAssignmentAttributes,
   Uncertainty: UncertaintyAttributes,
+  UncertParameter: UncertParameterAttributes,
+  UncertSpan: UncertSpanAttributes,
   Deletion: DeletionAttributes,
   ReplacedElement: ReplacedElementAttributes,
   ReplacedBy: ReplacedByAttributes,

@@ -1210,6 +1210,10 @@
           "label": "definition url",
           "summary": "what an external parameter which is an interval means"
         },
+        "interval": {
+          "label": "interval",
+          "summary": "the two ends of the span as the interval they stand for"
+        },
         "math": {
           "label": "math",
           "summary": "the formula of an external parameter which is an interval"

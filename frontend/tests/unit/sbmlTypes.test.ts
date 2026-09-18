@@ -56,6 +56,13 @@ describe("sbml types", () => {
     expect(typeInfo("DefaultTerm").pkg).toBe("qual");
   });
 
+  it("marks the package of the distrib types", () => {
+    expect(typeInfo("Uncertainty").pkg).toBe("distrib");
+    expect(typeInfo("UncertParameter").pkg).toBe("distrib");
+    expect(typeInfo("UncertSpan").pkg).toBe("distrib");
+    expect(typeInfo("UncertSpan").label).toBe("Uncert span");
+  });
+
   it("marks the package of the comp and fbc types", () => {
     expect(typeInfo("Submodel").pkg).toBe("comp");
     expect(typeInfo("Port").pkg).toBe("comp");

@@ -20,7 +20,7 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 
-The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
+The report shows every parameter of an uncertainty as a row of the table in the inspector of that uncertainty, with its value or the interval of a span, its units, its definition and its math, and links every parameter to the element it is, where its notes say where the measurement comes from.
 
 ## Related elements
 

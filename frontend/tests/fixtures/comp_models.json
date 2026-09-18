@@ -1,5 +1,5 @@
 {
-  "uid": "da1784fe90f34d30bebf38a0c80d10ea",
+  "uid": "b096237bf95f4bf4be8081416bf7c9ff",
   "manifest": {
     "entries": [
       {
@@ -360,6 +360,8 @@
             "listOfObjectives": [],
             "listOfFluxBounds": [],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": {
               "strict": false,
               "activeObjective": null
@@ -509,7 +511,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.002 [s]"
       }
     },
     "./models/omex_comp.xml": {
@@ -1537,6 +1539,8 @@
             "listOfObjectives": [],
             "listOfFluxBounds": [],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": null
           }
         ],
@@ -2273,7 +2277,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.03 [s]"
+        "jsonReportTime": "0.003 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -3575,6 +3579,8 @@
             "listOfObjectives": [],
             "listOfFluxBounds": [],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": {
               "strict": false,
               "activeObjective": null
@@ -4343,7 +4349,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.04 [s]"
+        "jsonReportTime": "0.004 [s]"
       }
     }
   }

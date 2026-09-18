@@ -21,6 +21,7 @@ export type FixtureName =
   | "comp_deletion"
   | "comp_models"
   | "distrib_uncertainties"
+  | "distrib_spans"
   | "constraint_event"
   | "qual_example";
 

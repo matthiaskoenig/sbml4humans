@@ -62,7 +62,7 @@ The report renders the formula and links every element it names, from the parame
 
 A distribution is defined by the parameters it takes: a Beta distribution by its alpha and its beta, a zeta distribution by its shape. They are uncert parameters of the parameter which names the distribution, of any type and to any depth, and without them a report shows the name of a distribution and none of its numbers.
 
-The report shows them as a table below the parameter they belong to, in the inspector of the uncertainty and of the parameter.
+The report shows every one of them indented below the parameter it defines, in the table of the measures of the uncertainty and in the inspector of that parameter.
 
 ## Related elements
 

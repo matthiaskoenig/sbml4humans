@@ -86,7 +86,19 @@ The report renders the formula and links every element it names from the span wh
 
 A span of the type `externalParameter` may be defined by parameters of its own, the way a [distribution](uncertparameter.md#uncert-parameters) is. The four intervals the specification defines need none, because their two ends define them.
 
-The report shows them as a table below the span they belong to.
+The report shows every one of them indented below the span it defines.
+
+## In the report
+
+| field | type | meaning |
+| --- | --- | --- |
+| [interval](#interval) | - | the two ends of the span as the interval they stand for |
+
+<span id="interval"></span>**interval**
+
+The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.
+
+The row is the reading of [value lower](uncertspan.md#value-lower), [value upper](uncertspan.md#value-upper), [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper), each of which the file writes on its own.
 
 ## Related elements
 

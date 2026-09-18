@@ -1,5 +1,5 @@
 {
-  "uid": "8e1665e7081f4a528b264d1a3311c707",
+  "uid": "4085e31c70fb4f71aaa40bda5499aff6",
   "manifest": {
     "entries": [
       {
@@ -761,6 +761,8 @@
             "listOfObjectives": [],
             "listOfFluxBounds": [],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": null
           }
         ],
@@ -1132,7 +1134,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.053 [s]"
+        "jsonReportTime": "0.008 [s]"
       }
     }
   }

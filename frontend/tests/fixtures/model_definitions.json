@@ -1,5 +1,5 @@
 {
-  "uid": "7306f0fda55e4a54b256a13c0580fb6c",
+  "uid": "d57b82e14c6a4236bb46e2ac8e268cdd",
   "manifest": {
     "entries": [
       {
@@ -227,6 +227,8 @@
             "listOfObjectives": [],
             "listOfFluxBounds": [],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": null
           },
           {
@@ -323,6 +325,8 @@
             "listOfObjectives": [],
             "listOfFluxBounds": [],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": null
           }
         ],

@@ -43,6 +43,8 @@ import type {
   Transition,
   Trigger,
   Uncertainty,
+  UncertParameter,
+  UncertSpan,
   UnitDefinition,
   UserDefinedConstraint,
   UserDefinedConstraintComponent,
@@ -100,10 +102,15 @@ export type NestedElement =
   | Output
   | FunctionTerm
   | DefaultTerm
-  | Uncertainty;
+  | Uncertainty
+  | UncertParameter
+  | UncertSpan;
 
 export type SBase = DocumentElement | SbmlElement | NestedElement;
 export type Rule = AssignmentRule | RateRule | AlgebraicRule;
+/** One measure of an uncertainty: a single statistic or the interval a span stands for
+ * (distrib §3.11, §3.12). */
+export type UncertMeasure = UncertSpan | UncertParameter;
 /** One node of the gene product association of a reaction (fbc §3.10). */
 export type Association = GeneProductRef | And | Or;
 

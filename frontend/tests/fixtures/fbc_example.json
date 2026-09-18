@@ -1,5 +1,5 @@
 {
-  "uid": "7a681b59f309411f8ed3a0ced72de4a2",
+  "uid": "6c1b23d48c5f4e0d883e015601e4f535",
   "manifest": {
     "entries": [
       {
@@ -1180,6 +1180,8 @@
             ],
             "listOfFluxBounds": [],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": {
               "strict": false,
               "activeObjective": "biomass_max"

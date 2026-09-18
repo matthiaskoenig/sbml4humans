@@ -10,6 +10,8 @@ import type {
   Report,
   SBMLDocument,
   SBase,
+  UncertMeasure,
+  Uncertainty,
 } from "@/api/types";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 
@@ -129,7 +131,7 @@ export class ReportIndex {
    * the replacements of the comp package it carries and the chain of references below one. */
   private add(element: SBase): void {
     this.elements.set(element.pk, element);
-    for (const uncertainty of element.uncertainties ?? []) this.add(uncertainty);
+    for (const uncertainty of element.uncertainties ?? []) this.addUncertainty(uncertainty);
     if (element.comp?.replacedBy) this.add(element.comp.replacedBy);
     for (const replaced of element.comp?.replacedElements ?? []) this.add(replaced);
     if ("sbaseRef" in element && element.sbaseRef) this.add(element.sbaseRef);
@@ -149,6 +151,13 @@ export class ReportIndex {
       for (const element of elements) this.addElement(element);
     }
     if (model.id) this.byModel.set(model.id, byType);
+  }
+
+  /** An uncertainty or one of its measures and every measure below it: a distribution is
+   * defined by uncert parameters of its own, to any depth (distrib §3.11.7). */
+  private addUncertainty(owner: Uncertainty | UncertMeasure): void {
+    this.add(owner);
+    for (const measure of owner.uncertParameters ?? []) this.addUncertainty(measure);
   }
 
   /** A node of a gene product association and every node below it (fbc §3.10). */

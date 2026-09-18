@@ -1,5 +1,5 @@
 {
-  "uid": "999d62083d844020816919a4f4febb79",
+  "uid": "bc0a47080d434d5bae733781395369c4",
   "manifest": {
     "entries": [
       {
@@ -1076,6 +1076,8 @@
                 ]
               }
             ],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": {
               "strict": false,
               "activeObjective": "growth_max"

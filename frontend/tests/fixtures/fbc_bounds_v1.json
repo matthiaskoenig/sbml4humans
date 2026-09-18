@@ -1,5 +1,5 @@
 {
-  "uid": "8a6fd0f7dac44779a4c69e9527a087d9",
+  "uid": "794576a9953140a2ad3bc365ea9e752c",
   "manifest": {
     "entries": [
       {
@@ -622,6 +622,8 @@
               }
             ],
             "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
             "fbc": {
               "strict": null,
               "activeObjective": "biomass_max"
@@ -979,7 +981,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.005 [s]"
+        "jsonReportTime": "0.004 [s]"
       }
     }
   }
