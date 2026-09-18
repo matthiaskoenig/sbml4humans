@@ -80,7 +80,7 @@ The report shows the referenced parameter with its value and its units in the at
 
 The lists of the model group its elements by type. This one holds the [function definitions](functiondefinition.md).
 
-The report shows the list as the section "Function definitions" of the report and counts its entries in the type rail.
+The report shows the list as the section "Function definitions" of the report and counts its entries in the type bar.
 
 <span id="unit-definitions"></span>**unit definitions**
 
