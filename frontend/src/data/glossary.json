@@ -1164,6 +1164,94 @@
         }
       }
     },
+    "UncertParameter": {
+      "label": "Uncert parameter",
+      "summary": "one statistical measure of an uncertainty",
+      "package": "distrib",
+      "page": "reference/uncertparameter/",
+      "attributes": {
+        "definitionUrl": {
+          "label": "definition url",
+          "summary": "what a distribution or an external parameter means"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the formula which defines a distribution"
+        },
+        "type": {
+          "label": "type",
+          "summary": "which statistical measure the parameter is"
+        },
+        "uncertParameters": {
+          "label": "uncert parameters",
+          "summary": "the parameters which define a distribution or an external parameter"
+        },
+        "units": {
+          "label": "units",
+          "summary": "the units the measure is given in"
+        },
+        "value": {
+          "label": "value",
+          "summary": "the number of the measure"
+        },
+        "var": {
+          "label": "var",
+          "summary": "the element of the model which holds the number of the measure"
+        }
+      }
+    },
+    "UncertSpan": {
+      "label": "Uncert span",
+      "summary": "a measure of an uncertainty which is an interval",
+      "package": "distrib",
+      "page": "reference/uncertspan/",
+      "attributes": {
+        "definitionUrl": {
+          "label": "definition url",
+          "summary": "what an external parameter which is an interval means"
+        },
+        "math": {
+          "label": "math",
+          "summary": "the formula of an external parameter which is an interval"
+        },
+        "type": {
+          "label": "type",
+          "summary": "which interval the span is"
+        },
+        "uncertParameters": {
+          "label": "uncert parameters",
+          "summary": "the parameters which define an external parameter"
+        },
+        "units": {
+          "label": "units",
+          "summary": "the units both ends of the interval are given in"
+        },
+        "value": {
+          "label": "value",
+          "summary": "the single number of a measure, which a span does not use"
+        },
+        "valueLower": {
+          "label": "value lower",
+          "summary": "the lower end of the interval as a number"
+        },
+        "valueUpper": {
+          "label": "value upper",
+          "summary": "the upper end of the interval as a number"
+        },
+        "var": {
+          "label": "var",
+          "summary": "the element of a single number, which a span does not use"
+        },
+        "varLower": {
+          "label": "var lower",
+          "summary": "the element of the model which holds the lower end"
+        },
+        "varUpper": {
+          "label": "var upper",
+          "summary": "the element of the model which holds the upper end"
+        }
+      }
+    },
     "Uncertainty": {
       "label": "Uncertainty",
       "summary": "a set of statistical measures of the value of an element",
@@ -1374,9 +1462,17 @@
       "label": "trigger",
       "summary": "the condition an event fires on"
     },
+    "uncertParameter": {
+      "label": "uncert parameter",
+      "summary": "a measure of an uncertainty"
+    },
     "units": {
       "label": "units",
       "summary": "the unit definition an element declares its units with"
+    },
+    "var": {
+      "label": "var",
+      "summary": "the element which holds the number of a measure"
     },
     "variable": {
       "label": "variable",

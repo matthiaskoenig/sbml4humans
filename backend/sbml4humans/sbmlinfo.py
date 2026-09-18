@@ -74,7 +74,9 @@ from sbml4humans.model import (
     Transition,
     Trigger,
     Uncertainty,
+    UncertMeasure,
     UncertParameter,
+    UncertSpan,
     Unit,
     UnitDefinition,
     UserDefinedConstraint,
@@ -1267,17 +1269,53 @@ class SBMLDocumentInfo:
             return []
         uncertainties = []
         for index, u in enumerate(plugin.getListOfUncertainties()):
-            fields = self.sbase(u, key=f"{parent_key}.uncertainty.{index}")
-            parameters = [
-                UncertParameter(
-                    var=_attribute(p, "var"),
-                    value=_number(_attribute(p, "value")),
-                    units=_attribute(p, "units"),
-                    type=p.getTypeAsString() if p.isSetType() else None,
-                    definition_url=_attribute(p, "definitionURL"),
-                    math=self.math(fields["pk"], _attribute(p, "math")),
+            key = f"{parent_key}.uncertainty.{index}"
+            fields = self.sbase(u, key=key)
+            uncertainties.append(
+                Uncertainty(
+                    **fields,
+                    uncert_parameters=self.uncert_parameters(u, self._key(u, key)),
                 )
-                for p in u.getListOfUncertParameters()
-            ]
-            uncertainties.append(Uncertainty(**fields, uncert_parameters=parameters))
+            )
         return uncertainties
+
+    def uncert_parameters(
+        self,
+        parent: libsbml.Uncertainty | libsbml.UncertParameter,
+        parent_key: str,
+    ) -> list[UncertMeasure]:
+        """The uncert parameters of an uncertainty or of a parameter.
+
+        A parameter of the type `distribution` or `externalParameter` carries
+        the parameters which define it as a list of its own, to any depth
+        (distrib §3.11.7), and a parameter whose statistic is an interval is an
+        `UncertSpan` with the two ends of that interval (distrib §3.12).
+        libsbml keeps both classes in one list and names each of them after its
+        class, which is the name a parameter without an id is keyed by.
+        """
+        measures: list[UncertMeasure] = []
+        for index, p in enumerate(parent.getListOfUncertParameters()):
+            key = f"{parent_key}.{p.getElementName()}.{index}"
+            fields = self.sbase(p, key=key)
+            fields |= {
+                "type": p.getTypeAsString() if p.isSetType() else None,
+                "var": _attribute(p, "var"),
+                "value": _number(_attribute(p, "value")),
+                "units": _attribute(p, "units"),
+                "definition_url": _attribute(p, "definitionURL"),
+                "math": self.math(fields["pk"], _attribute(p, "math")),
+                "uncert_parameters": self.uncert_parameters(p, self._key(p, key)),
+            }
+            if isinstance(p, libsbml.UncertSpan):
+                measures.append(
+                    UncertSpan(
+                        **fields,
+                        value_lower=_number(_attribute(p, "valueLower")),
+                        value_upper=_number(_attribute(p, "valueUpper")),
+                        var_lower=_attribute(p, "varLower"),
+                        var_upper=_attribute(p, "varUpper"),
+                    )
+                )
+            else:
+                measures.append(UncertParameter(**fields))
+        return measures

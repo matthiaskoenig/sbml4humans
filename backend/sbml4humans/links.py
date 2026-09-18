@@ -34,6 +34,9 @@ from sbml4humans.model import (
     SpeciesReference,
     Submodel,
     Transition,
+    Uncertainty,
+    UncertParameter,
+    UncertSpan,
     UserDefinedConstraint,
 )
 
@@ -250,6 +253,17 @@ def _event_children(event: Event) -> Iterator[SBase]:
             yield child
 
 
+def _uncert_measures(owner: Uncertainty | UncertParameter) -> Iterator[UncertParameter]:
+    """The parameters of an uncertainty, the ones nested in one included.
+
+    A parameter of the type `distribution` or `externalParameter` is defined by
+    parameters of its own, to any depth (distrib §3.11.7).
+    """
+    for measure in owner.uncert_parameters:
+        yield measure
+        yield from _uncert_measures(measure)
+
+
 def _transition_terms(transition: Transition) -> Iterator[SBase]:
     """The function terms of a transition and its default term (qual §3.6.3).
 
@@ -295,6 +309,8 @@ class LinkGraphBuilder:
         )
         for uncertainty in sbase.uncertainties:
             self._add_node(uncertainty, model_pk)
+            for measure in _uncert_measures(uncertainty):
+                self._add_node(measure, model_pk)
         for ref in _comp_refs(sbase):
             self._add_node(ref, model_pk)
 
@@ -362,6 +378,37 @@ class LinkGraphBuilder:
                 self.edges.append(
                     Edge(source=source.pk, target=target, kind=EdgeKind.MATH)
                 )
+
+    # ---------------------------------------------------------------------------------
+    # distrib: the measures of an uncertainty
+    # ---------------------------------------------------------------------------------
+    def _uncert_edges(
+        self, owner: Uncertainty | UncertParameter, index: ModelIndex
+    ) -> None:
+        """The edges of the parameters of an uncertainty or of a parameter.
+
+        The owner names every parameter it carries, the way an uncertainty is
+        read: the measures of one uncertainty belong together and a
+        distribution is defined by the parameters below it. Every parameter
+        names what it refers to itself, the element of its `var` and, for a
+        span, of its `varLower` and its `varUpper` (distrib §3.11.2, §3.12),
+        the unit definition of its units and the elements of its math.
+        """
+        for measure in owner.uncert_parameters:
+            self.edges.append(
+                Edge(
+                    source=owner.pk,
+                    target=measure.pk,
+                    kind=EdgeKind.UNCERT_PARAMETER,
+                )
+            )
+            self._edge(measure, measure.var, EdgeKind.VAR, index)
+            if isinstance(measure, UncertSpan):
+                self._edge(measure, measure.var_lower, EdgeKind.VAR, index)
+                self._edge(measure, measure.var_upper, EdgeKind.VAR, index)
+            self._units_edge(measure, measure.units, index)
+            self._math_edges(measure, index)
+            self._uncert_edges(measure, index)
 
     # ---------------------------------------------------------------------------------
     # comp: the references which reach into a submodel
@@ -575,7 +622,7 @@ class LinkGraphBuilder:
         for element in [model, *_nested(model)]:
             self._comp_edges(element, index)
             for uncertainty in element.uncertainties:
-                self._math_edges(uncertainty, index)
+                self._uncert_edges(uncertainty, index)
 
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             self._units_edge(model, getattr(model, f"{key}_units"), index)

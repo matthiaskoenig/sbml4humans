@@ -108,22 +108,52 @@ class KeyValuePair(ReportModel):
     uri: str | None = None
 
 
-class UncertParameter(ReportModel):
-    """A parameter of a distrib uncertainty."""
+class UncertParameter(SBase):
+    """One statistical measure of a distrib uncertainty (distrib §3.11).
 
+    The `type` says which statistic the parameter describes, and the statistic
+    is given either as a number in `value` or as the element `var` names. A
+    parameter of the type `distribution` or `externalParameter` describes
+    itself by its `definition_url`, its math and the parameters nested in it.
+    """
+
+    sbml_type: Literal["UncertParameter"] = "UncertParameter"
+    type: str | None = None
     var: str | None = None
     value: float | None = None
     units: str | None = None
-    type: str | None = None
     definition_url: str | None = None
     math: Math | None = None
+    uncert_parameters: list[UncertMeasure] = Field(default_factory=list)
+
+
+class UncertSpan(UncertParameter):
+    """An uncertainty which is an interval (distrib §3.12).
+
+    The four kinds of uncertainty which are a span, the range, the confidence
+    interval, the credible interval and the interquartile range, carry their
+    two ends here instead of the single `value` of an `UncertParameter`: each
+    end as a number or as the element the `var` of that end names.
+    """
+
+    sbml_type: Literal["UncertSpan"] = "UncertSpan"
+    value_lower: float | None = None
+    value_upper: float | None = None
+    var_lower: str | None = None
+    var_upper: str | None = None
+
+
+# a measure of an uncertainty is a parameter or the span a parameter becomes
+# when the statistic is an interval (distrib §3.11.1). The span comes first,
+# because it validates as the parameter it derives from as well.
+UncertMeasure = UncertSpan | UncertParameter
 
 
 class Uncertainty(SBase):
     """A distrib uncertainty of an element."""
 
     sbml_type: Literal["Uncertainty"] = "Uncertainty"
-    uncert_parameters: list[UncertParameter] = Field(default_factory=list)
+    uncert_parameters: list[UncertMeasure] = Field(default_factory=list)
 
 
 # -------------------------------------------------------------------------------------
@@ -190,6 +220,10 @@ class CompSBase(ReportModel):
 
 SBaseRefFields.model_rebuild()
 SBase.model_rebuild()
+# the two classes of distrib carry the comp extension of an `SBase` and the
+# parameters nested in them, so both are built once every name they use exists
+UncertParameter.model_rebuild()
+UncertSpan.model_rebuild()
 
 
 # -------------------------------------------------------------------------------------
@@ -749,6 +783,8 @@ class EdgeKind(StrEnum):
     OUTPUT = "output"
     FUNCTION_TERM = "functionTerm"
     DEFAULT_TERM = "defaultTerm"
+    UNCERT_PARAMETER = "uncertParameter"
+    VAR = "var"
     MODEL_REF = "modelRef"
     PORT = "port"
     DELETION = "deletion"

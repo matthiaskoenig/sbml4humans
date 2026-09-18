@@ -5,7 +5,16 @@ import json
 import libsbml
 import pytest
 
-from sbml4humans.model import And, EdgeKind, GeneProductRef, Model, Or, Report
+from sbml4humans.model import (
+    And,
+    EdgeKind,
+    GeneProductRef,
+    Model,
+    Or,
+    Parameter,
+    Report,
+    UncertSpan,
+)
 from sbml4humans.resources import (
     COMP_ICG_BODY,
     EXAMPLES_DIR,
@@ -33,6 +42,17 @@ def constraint_event() -> Report:
 def comp_deletion() -> Report:
     """The report of the deletion and replacement example of comp."""
     return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "comp_deletion.xml")
+
+
+@pytest.fixture(scope="module")
+def distrib_spans() -> Report:
+    """The report of the example of the spans and distributions of distrib."""
+    return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "distrib_spans.xml")
+
+
+def _parameter(report: Report, sid: str) -> Parameter:
+    """The parameter of the first model of the report with the id."""
+    return next(p for p in report.models[0].list_of_parameters if p.id == sid)
 
 
 def test_document(repressilator: Report) -> None:
@@ -357,6 +377,106 @@ def test_distrib_uncertainties() -> None:
     assert uncertainty.sbml_type == "Uncertainty"
     assert uncertainty.uncert_parameters
     assert uncertainty.uncert_parameters[0].type is not None
+
+
+def test_distrib_span_of_the_shipped_example() -> None:
+    """A span of the shipped example carries the two ends of its interval.
+
+    An `uncertSpan` was read as a plain `uncertParameter`, so the four
+    attributes of the span were lost and the range of `p1` was reported as the
+    word "range" without a single number (distrib §3.12).
+    """
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "distrib_uncertainties.xml")
+    uncertainty = report.models[0].list_of_parameters[0].uncertainties[0]
+    span = uncertainty.uncert_parameters[0]
+    assert isinstance(span, UncertSpan)
+    assert span.sbml_type == "UncertSpan"
+    assert span.type == "range"
+    assert (span.value_lower, span.value_upper) == (1.0, 4.0)
+    assert (span.var_lower, span.var_upper) == (None, None)
+
+
+def test_distrib_span_by_reference(distrib_spans: Report) -> None:
+    """A span names the two parameters which hold its ends (distrib §3.12)."""
+    km = _parameter(distrib_spans, "Km")
+    span = km.uncertainties[1].uncert_parameters[1]
+    assert isinstance(span, UncertSpan)
+    assert span.id == "Km_lysate_ci"
+    assert span.name == "95% confidence interval"
+    assert span.type == "confidenceInterval"
+    assert (span.var_lower, span.var_upper) == ("Km_lower", "Km_upper")
+    assert (span.value_lower, span.value_upper) == (None, None)
+
+
+def test_distrib_uncert_parameter_is_an_element(distrib_spans: Report) -> None:
+    """An uncert parameter carries the attributes of an SBase (distrib §3.11.5).
+
+    The provenance of a measurement is what the package exists to record, and
+    the notes of the parameter are where a file writes it.
+    """
+    km = _parameter(distrib_spans, "Km")
+    mean = km.uncertainties[0].uncert_parameters[0]
+    assert mean.sbml_type == "UncertParameter"
+    assert mean.pk == "distrib_spans/UncertParameter:Km_purified_mean"
+    assert mean.id == "Km_purified_mean"
+    assert mean.name == "mean of the fitted constants"
+    assert mean.meta_id == "meta_u_Km_purified_mean"
+    assert mean.notes is not None
+    assert "the parameter of the model is set to" in mean.notes
+    assert (mean.type, mean.value, mean.units) == ("mean", 0.5, "mmole_per_l")
+
+
+def test_distrib_uncert_parameter_without_an_id(distrib_spans: Report) -> None:
+    """A parameter without an id is keyed by its uncertainty and its position."""
+    km = _parameter(distrib_spans, "Km")
+    deviation = km.uncertainties[0].uncert_parameters[1]
+    assert deviation.id is None
+    assert deviation.pk == (
+        "distrib_spans/UncertParameter:u_Km_purified.uncertParameter.1"
+    )
+    span = km.uncertainties[0].uncert_parameters[3]
+    assert span.sbml_type == "UncertSpan"
+    assert span.pk == "distrib_spans/UncertSpan:Km_purified_range"
+
+
+def test_distrib_nested_uncert_parameters(distrib_spans: Report) -> None:
+    """A distribution carries the parameters it is defined by (distrib §3.11.7)."""
+    vmax = _parameter(distrib_spans, "Vmax")
+    distribution = vmax.uncertainties[0].uncert_parameters[1]
+    assert distribution.type == "distribution"
+    assert (
+        distribution.definition_url == "https://en.wikipedia.org/wiki/Beta_distribution"
+    )
+    assert [p.name for p in distribution.uncert_parameters] == ["alpha", "beta"]
+    alpha, beta = distribution.uncert_parameters
+    assert (alpha.type, alpha.value) == ("externalParameter", 2.0)
+    assert (beta.type, beta.value) == ("externalParameter", 5.0)
+    assert beta.definition_url == "https://en.wikipedia.org/wiki/Beta_distribution#beta"
+
+
+def test_distrib_several_uncertainties_of_one_element(distrib_spans: Report) -> None:
+    """Measurements from two sources are two uncertainties (distrib §3.10)."""
+    km = _parameter(distrib_spans, "Km")
+    assert [u.id for u in km.uncertainties] == ["u_Km_purified", "u_Km_lysate"]
+    assert [u.name for u in km.uncertainties] == [
+        "Wilson 1997, purified enzyme",
+        "Baker 2012, cell lysate",
+    ]
+    assert all(u.notes for u in km.uncertainties)
+    assert km.uncertainties[0].notes != km.uncertainties[1].notes
+
+
+def test_distrib_uncertainty_of_a_species_and_of_a_rule(distrib_spans: Report) -> None:
+    """An uncertainty belongs to any element with a mathematical meaning."""
+    model = distrib_spans.models[0]
+    (species,) = model.list_of_species
+    assert [u.id for u in species.uncertainties] == ["u_S"]
+    assert species.uncertainties[0].uncert_parameters[1].sbml_type == "UncertSpan"
+    (rule,) = model.list_of_rules
+    assert [u.id for u in rule.uncertainties] == ["u_v"]
+    distribution = rule.uncertainties[0].uncert_parameters[1]
+    assert distribution.math is not None
+    assert "normal" in distribution.math.formula
 
 
 def test_reactant_pks_are_unique_across_reactions() -> None:

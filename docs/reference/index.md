@@ -79,3 +79,5 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | --- | --- |
 | [Distributions (distrib)](distrib.md) | the package which records the uncertainty of a value |
 | [Uncertainty](uncertainty.md) | a set of statistical measures of the value of an element |
+| [Uncert parameter](uncertparameter.md) | one statistical measure of an uncertainty |
+| [Uncert span](uncertspan.md) | a measure of an uncertainty which is an interval |

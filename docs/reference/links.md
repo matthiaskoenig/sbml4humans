@@ -190,6 +190,22 @@ A [transition](transition.md) has exactly one [default term](defaultterm.md), wh
 
 It is shown under "References" of the transition and under "Referenced by" of the term.
 
+## uncert parameter
+
+A measure of an uncertainty.
+
+An [uncertainty](uncertainty.md) names every [uncert parameter](uncertparameter.md) it lists, and a parameter of the type `distribution` or `externalParameter` names the parameters which define it in turn, so the link carries the whole tree of a distribution.
+
+It is shown under "References" of the uncertainty and of a parameter with parameters of its own, and under "Referenced by" of the measure, which is how a reader gets from a measure back to the set it belongs to.
+
+## var
+
+The element which holds the number of a measure.
+
+A measure of an [uncertainty](uncertainty.md) which is not a fixed number names the element of the model which holds it: the [var](uncertparameter.md#var) of an [uncert parameter](uncertparameter.md), and the [var lower](uncertspan.md#var-lower) and the [var upper](uncertspan.md#var-upper) of an [uncert span](uncertspan.md), which are the two ends of its interval.
+
+It is shown under "References" of the measure and under "Referenced by" of the element it names, where it says which measurement that element stands for.
+
 ## model reference
 
 The model a submodel instantiates.

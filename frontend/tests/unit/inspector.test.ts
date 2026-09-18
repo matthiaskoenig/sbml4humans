@@ -469,6 +469,8 @@ describe("inspector", () => {
       ...uncertainty,
       uncertParameters: [
         {
+          pk: "unsafe/UncertParameter:unsafe",
+          sbmlType: "UncertParameter",
           var: null,
           value: null,
           units: null,

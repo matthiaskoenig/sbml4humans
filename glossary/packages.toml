@@ -1298,6 +1298,246 @@ The report lists the type, the variable, the value, the units, the definition an
 """
 
 
+[types.UncertParameter]
+label = "Uncert parameter"
+package = "distrib"
+spec = { doc = "distrib", section = "3.11" }
+summary = "one statistical measure of an uncertainty"
+description = """
+An uncert parameter is one measure of the [uncertainty](uncertainty.md) it belongs to: its mean, its standard deviation, the size of the sample it was measured on, or the distribution the value was drawn from. Its [type](uncertparameter.md#type) says which of the sixteen measures of the package it is, and the number behind that measure is either its [value](uncertparameter.md#value) or the element its [var](uncertparameter.md#var) names.
+
+It is an element of the report and not a row of its uncertainty, because the specification derives it from `SBase` and from the `DistribBase` of the package: it may carry an identifier, a name, an SBO term, notes and annotations, and the notes of a measure are where a file records which paper or which experiment the number comes from, which is what the package exists for.
+
+A measure which is an interval is an [uncert span](uncertspan.md), a class of its own, and a measure of the type `distribution` or `externalParameter` carries the parameters which define it as [uncert parameters](uncertparameter.md#uncert-parameters) of its own.
+"""
+related = ["Uncertainty", "UncertSpan", "Parameter", "distrib"]
+
+[types.UncertParameter.attributes.type]
+label = "type"
+package = "distrib"
+type = "UncertKind"
+spec = { doc = "distrib", section = "3.11.1" }
+summary = "which statistical measure the parameter is"
+description = """
+The attribute is required and is one of sixteen values. Ten of them are a single number: `mean`, `median`, `mode`, `variance`, `standardDeviation`, `standardError`, `coefficientOfVariation`, `skewness`, `kurtosis` and `sampleSize`. Four of them are an interval and are written as an [uncert span](uncertspan.md): `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, where the confidence and the credible interval are always the 95 percent interval. The last two say where a value comes from: `distribution`, the distribution it was drawn from, and `externalParameter`, a measure this specification does not define, which names what it means in its [definition](uncertparameter.md#definition-url).
+
+The report shows the type in the first column of the parameters of an uncertainty and as the name of a parameter which carries no identifier.
+"""
+
+[types.UncertParameter.attributes.value]
+label = "value"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the number of the measure"
+description = """
+A measure which is a single number carries it here, in the [units](uncertparameter.md#units) of the parameter. A file writes either the value or the [var](uncertparameter.md#var), never both: the value is the measurement as it was made, the var is the element of the model which holds it.
+
+The report shows the value in the column "value" of the parameters of an uncertainty and in the inspector of the parameter.
+"""
+
+[types.UncertParameter.attributes.var]
+label = "var"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the element of the model which holds the number of the measure"
+description = """
+Where the measure is not a fixed number but a quantity of the model, the parameter names that element instead of writing a value: the standard deviation of a parameter may be a parameter of its own, which a simulation reads and a sampling changes. The identifier of the uncert parameter itself has no mathematical meaning and cannot be used for this, which is why the specification defines the attribute.
+
+The report links the element the var names, and the inspector of that element shows the measure under "referenced by".
+"""
+
+[types.UncertParameter.attributes.units]
+label = "units"
+package = "distrib"
+type = "UnitSIdRef"
+spec = { doc = "distrib", section = "3.11.3" }
+summary = "the units the measure is given in"
+description = """
+The units are either a [unit definition](unitdefinition.md) of the model or one of the base units of SBML. They are usually the units of the element the uncertainty belongs to, for a mean or a standard deviation, or dimensionless, for a coefficient of variation or a sample size.
+
+The report links the unit definition where the units name one.
+"""
+
+[types.UncertParameter.attributes.definitionUrl]
+label = "definition url"
+package = "distrib"
+type = "anyURI"
+spec = { doc = "distrib", section = "3.11.4" }
+summary = "what a distribution or an external parameter means"
+description = """
+A parameter of the type `distribution` may name the distribution it stands for, and a parameter of the type `externalParameter` has to name what it is: an entry of an ontology such as ProbOnto, the `csymbol` of a distribution of this package, or another definition which says what the number means. No other type of parameter carries it, because the specification defines the others completely.
+
+The report shows the last segment of the url as a link in the table of the parameters of an uncertainty.
+"""
+
+[types.UncertParameter.attributes.math]
+label = "math"
+package = "distrib"
+type = "Math"
+spec = { doc = "distrib", section = "3.11.6" }
+summary = "the formula which defines a distribution"
+description = """
+Only a parameter of the type `distribution` or `externalParameter` carries math, and for a distribution the formula is the distribution itself, usually one of the `csymbol` distributions the package defines, such as `normal(2, 2)`.
+
+The report renders the formula and links every element it names, from the parameter which carries the math and not from the uncertainty around it, so that two parameters of one uncertainty stay apart.
+"""
+
+[types.UncertParameter.attributes.uncertParameters]
+label = "uncert parameters"
+package = "distrib"
+type = "list"
+spec = { doc = "distrib", section = "3.11.7" }
+summary = "the parameters which define a distribution or an external parameter"
+description = """
+A distribution is defined by the parameters it takes: a Beta distribution by its alpha and its beta, a zeta distribution by its shape. They are uncert parameters of the parameter which names the distribution, of any type and to any depth, and without them a report shows the name of a distribution and none of its numbers.
+
+The report shows them as a table below the parameter they belong to, in the inspector of the uncertainty and of the parameter.
+"""
+
+[types.UncertSpan]
+label = "Uncert span"
+package = "distrib"
+spec = { doc = "distrib", section = "3.12" }
+summary = "a measure of an uncertainty which is an interval"
+description = """
+Four of the sixteen measures of the package are an interval and not a number: the [range](uncertspan.md#type) of a measurement, its 95 percent confidence interval, its 95 percent credible interval and its interquartile range. A span is the [uncert parameter](uncertparameter.md) of such a measure, with the two ends of the interval in the place of the single value of a parameter.
+
+Each end is either a number, in [value lower](uncertspan.md#value-lower) and [value upper](uncertspan.md#value-upper), or an element of the model, in [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper). An end which is set by neither is not defined, so a span may be open at one end.
+
+The report shows a span as the interval it is, `1 to 4`, with a link where an end names an element.
+"""
+related = ["UncertParameter", "Uncertainty", "distrib"]
+
+[types.UncertSpan.attributes.valueLower]
+label = "value lower"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the lower end of the interval as a number"
+description = """
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var lower](uncertspan.md#var-lower) for the lower end, and where it writes neither the interval is open at the bottom.
+
+The report shows it as the left side of the interval.
+"""
+
+[types.UncertSpan.attributes.valueUpper]
+label = "value upper"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the upper end of the interval as a number"
+description = """
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var upper](uncertspan.md#var-upper) for the upper end, and where it writes neither the interval is open at the top.
+
+The report shows it as the right side of the interval.
+"""
+
+[types.UncertSpan.attributes.varLower]
+label = "var lower"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the element of the model which holds the lower end"
+description = """
+Where the lower end of the interval is a quantity of the model and not a fixed number, the span names that element, the way the [var](uncertparameter.md#var) of a parameter names one. Its units are the units of the element it names.
+
+The report links the element, and the inspector of that element shows the span under "referenced by".
+"""
+
+[types.UncertSpan.attributes.varUpper]
+label = "var upper"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the element of the model which holds the upper end"
+description = """
+Where the upper end of the interval is a quantity of the model and not a fixed number, the span names that element, the way the [var](uncertparameter.md#var) of a parameter names one. Its units are the units of the element it names.
+
+The report links the element, and the inspector of that element shows the span under "referenced by".
+"""
+
+[types.UncertSpan.attributes.type]
+label = "type"
+package = "distrib"
+type = "UncertKind"
+spec = { doc = "distrib", section = "3.11.1" }
+summary = "which interval the span is"
+description = """
+The attribute is required. A span carries one of the four measures which are an interval, `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, or `externalParameter`, the measure the package does not define, which may be an interval as well. The other eleven values are a single number and belong to an [uncert parameter](uncertparameter.md#type).
+
+The report shows the type in the first column of the parameters of an uncertainty and as the name of a span which carries no identifier.
+"""
+
+[types.UncertSpan.attributes.units]
+label = "units"
+package = "distrib"
+type = "UnitSIdRef"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the units both ends of the interval are given in"
+description = """
+The units of the two ends of the span, which have to be the same, given as a [unit definition](unitdefinition.md) of the model or as a base unit of SBML. An end which names an element carries the units of that element instead.
+
+The report links the unit definition where the units name one.
+"""
+
+[types.UncertSpan.attributes.value]
+label = "value"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the single number of a measure, which a span does not use"
+description = """
+A span carries its numbers in [value lower](uncertspan.md#value-lower) and [value upper](uncertspan.md#value-upper). The attribute belongs to the [uncert parameter](uncertparameter.md#value) a span derives from and is left unset by every interval, so the report shows the interval in its place.
+"""
+
+[types.UncertSpan.attributes.var]
+label = "var"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the element of a single number, which a span does not use"
+description = """
+A span names the elements of its two ends in [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper). The attribute belongs to the [uncert parameter](uncertparameter.md#var) a span derives from and is left unset by every interval.
+"""
+
+[types.UncertSpan.attributes.definitionUrl]
+label = "definition url"
+package = "distrib"
+type = "anyURI"
+spec = { doc = "distrib", section = "3.11.4" }
+summary = "what an external parameter which is an interval means"
+description = """
+A span of the type `externalParameter` names what its interval is, an entry of an ontology or another definition which says what the two ends mean, the way an [uncert parameter](uncertparameter.md#definition-url) does. The four intervals the specification defines carry no definition url.
+
+The report shows the last segment of the url as a link in the table of the parameters of an uncertainty.
+"""
+
+[types.UncertSpan.attributes.math]
+label = "math"
+package = "distrib"
+type = "Math"
+spec = { doc = "distrib", section = "3.11.6" }
+summary = "the formula of an external parameter which is an interval"
+description = """
+Only a span of the type `externalParameter` carries math, the way an [uncert parameter](uncertparameter.md#math) of the type `distribution` does.
+
+The report renders the formula and links every element it names from the span which carries it.
+"""
+
+[types.UncertSpan.attributes.uncertParameters]
+label = "uncert parameters"
+package = "distrib"
+type = "list"
+spec = { doc = "distrib", section = "3.11.7" }
+summary = "the parameters which define an external parameter"
+description = """
+A span of the type `externalParameter` may be defined by parameters of its own, the way a [distribution](uncertparameter.md#uncert-parameters) is. The four intervals the specification defines need none, because their two ends define them.
+
+The report shows them as a table below the span they belong to.
+"""
+
 # ----------------------------------------------------------------------------
 # qual
 # ----------------------------------------------------------------------------

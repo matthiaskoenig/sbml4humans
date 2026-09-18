@@ -28,6 +28,8 @@ export type EdgeKind =
   | "output"
   | "functionTerm"
   | "defaultTerm"
+  | "uncertParameter"
+  | "var"
   | "modelRef"
   | "port"
   | "deletion"
@@ -177,7 +179,7 @@ export interface Uncertainty {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
-  uncertParameters?: UncertParameter[];
+  uncertParameters?: (UncertSpan | UncertParameter)[];
 }
 /**
  * One entry of the controlled annotation of fbc Version 3 (fbc §3.17).
@@ -194,15 +196,38 @@ export interface KeyValuePair {
   uri?: string | null;
 }
 /**
- * A parameter of a distrib uncertainty.
+ * An uncertainty which is an interval (distrib §3.12).
+ *
+ * The four kinds of uncertainty which are a span, the range, the confidence
+ * interval, the credible interval and the interquartile range, carry their
+ * two ends here instead of the single `value` of an `UncertParameter`: each
+ * end as a number or as the element the `var` of that end names.
  */
-export interface UncertParameter {
+export interface UncertSpan {
+  pk: string;
+  sbmlType?: "UncertSpan";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  type?: string | null;
   var?: string | null;
   value?: number | null;
   units?: string | null;
-  type?: string | null;
   definitionUrl?: string | null;
   math?: Math | null;
+  uncertParameters?: (UncertSpan | UncertParameter)[];
+  valueLower?: number | null;
+  valueUpper?: number | null;
+  varLower?: string | null;
+  varUpper?: string | null;
 }
 /**
  * The math of an element as latex and as L3 formula string.
@@ -210,6 +235,36 @@ export interface UncertParameter {
 export interface Math {
   latex: string;
   formula: string;
+}
+/**
+ * One statistical measure of a distrib uncertainty (distrib §3.11).
+ *
+ * The `type` says which statistic the parameter describes, and the statistic
+ * is given either as a number in `value` or as the element `var` names. A
+ * parameter of the type `distribution` or `externalParameter` describes
+ * itself by its `definition_url`, its math and the parameters nested in it.
+ */
+export interface UncertParameter {
+  pk: string;
+  sbmlType?: "UncertParameter";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  type?: string | null;
+  var?: string | null;
+  value?: number | null;
+  units?: string | null;
+  definitionUrl?: string | null;
+  math?: Math | null;
+  uncertParameters?: (UncertSpan | UncertParameter)[];
 }
 /**
  * A link of a reference chain, which names an element of a submodel.

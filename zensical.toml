@@ -79,6 +79,8 @@ nav = [
     { "Distributions (distrib)" = [
       { "Distributions (distrib)" = "reference/distrib.md" },
       { "Uncertainty" = "reference/uncertainty.md" },
+      { "Uncert parameter" = "reference/uncertparameter.md" },
+      { "Uncert span" = "reference/uncertspan.md" },
     ] },
     { "Link kinds" = "reference/links.md" },
     { "Report concepts" = "reference/concepts.md" },

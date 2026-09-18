@@ -1417,6 +1417,8 @@
         "output",
         "functionTerm",
         "defaultTerm",
+        "uncertParameter",
+        "var",
         "modelRef",
         "port",
         "deletion",
@@ -7443,8 +7445,133 @@
       "type": "object"
     },
     "UncertParameter": {
-      "description": "A parameter of a distrib uncertainty.",
+      "description": "One statistical measure of a distrib uncertainty (distrib §3.11).\n\nThe `type` says which statistic the parameter describes, and the statistic\nis given either as a number in `value` or as the element `var` names. A\nparameter of the type `distribution` or `externalParameter` describes\nitself by its `definition_url`, its math and the parameters nested in it.",
       "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "UncertParameter",
+          "default": "UncertParameter",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "var": {
           "anyOf": [
             {
@@ -7478,7 +7605,199 @@
           ],
           "default": null
         },
+        "definitionUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "math": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Math"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertParameters": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/UncertSpan"
+              },
+              {
+                "$ref": "#/$defs/UncertParameter"
+              }
+            ]
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "pk"
+      ],
+      "title": "UncertParameter",
+      "type": "object"
+    },
+    "UncertSpan": {
+      "description": "An uncertainty which is an interval (distrib §3.12).\n\nThe four kinds of uncertainty which are a span, the range, the confidence\ninterval, the credible interval and the interquartile range, carry their\ntwo ends here instead of the single `value` of an `UncertParameter`: each\nend as a number or as the element the `var` of that end names.",
+      "properties": {
+        "pk": {
+          "type": "string"
+        },
+        "sbmlType": {
+          "const": "UncertSpan",
+          "default": "UncertSpan",
+          "type": "string"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "metaId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sbo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "cvterms": {
+          "items": {
+            "$ref": "#/$defs/CVTerm"
+          },
+          "type": "array"
+        },
+        "history": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ModelHistory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "xml": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "comp": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CompSBase"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "uncertainties": {
+          "items": {
+            "$ref": "#/$defs/Uncertainty"
+          },
+          "type": "array"
+        },
+        "keyValuePairs": {
+          "items": {
+            "$ref": "#/$defs/KeyValuePair"
+          },
+          "type": "array"
+        },
         "type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "var": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "units": {
           "anyOf": [
             {
               "type": "string"
@@ -7510,9 +7829,69 @@
             }
           ],
           "default": null
+        },
+        "uncertParameters": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/UncertSpan"
+              },
+              {
+                "$ref": "#/$defs/UncertParameter"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        "valueLower": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "valueUpper": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "varLower": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "varUpper": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
-      "title": "UncertParameter",
+      "required": [
+        "pk"
+      ],
+      "title": "UncertSpan",
       "type": "object"
     },
     "Uncertainty": {
@@ -7634,7 +8013,14 @@
         },
         "uncertParameters": {
           "items": {
-            "$ref": "#/$defs/UncertParameter"
+            "anyOf": [
+              {
+                "$ref": "#/$defs/UncertSpan"
+              },
+              {
+                "$ref": "#/$defs/UncertParameter"
+              }
+            ]
           },
           "type": "array"
         }

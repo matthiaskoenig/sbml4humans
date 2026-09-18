@@ -83,11 +83,13 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(29);
+    expect(EDGE_KINDS).toHaveLength(31);
     expect(edgeKindLabel("geneProductAssociation")).toBe("gene product association");
     expect(edgeKindLabel("fluxBound")).toBe("flux bound");
     expect(edgeKindLabel("replacedBy")).toBe("replaced by");
     expect(edgeKindLabel("functionTerm")).toBe("function term");
     expect(edgeKindLabel("defaultTerm")).toBe("default term");
+    expect(edgeKindLabel("uncertParameter")).toBe("uncert parameter");
+    expect(edgeKindLabel("var")).toBe("var");
   });
 });

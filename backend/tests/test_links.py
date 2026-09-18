@@ -39,6 +39,12 @@ def comp_deletion() -> Report:
     return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "comp_deletion.xml")
 
 
+@pytest.fixture(scope="module")
+def distrib_spans() -> Report:
+    """The report of the example of the spans and distributions of distrib."""
+    return SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "distrib_spans.xml")
+
+
 def test_every_sbase_is_a_node(repressilator: Report) -> None:
     """Document, model, elements and nested elements are nodes."""
     nodes = repressilator.link_graph.nodes
@@ -469,13 +475,86 @@ def test_submodel_conversion_factor_edges(synthetic_comp: Report) -> None:
 
 
 def test_uncertainty_math_edge() -> None:
-    """The math of an uncertainty links to the elements it references."""
+    """The math of an uncert parameter starts at the parameter which carries it.
+
+    The symbols of every parameter of one uncertainty used to be recorded under
+    the pk of that uncertainty, so the graph could not say which of two
+    parameters reads what (distrib §3.11.6).
+    """
     report = SBMLDocumentInfo.from_sbml(SYNTHETIC_DISTRIB_SBML)
     uncertainty = report.models[0].list_of_parameters[0].uncertainties[0]
+    (mean,) = uncertainty.uncert_parameters
     assert uncertainty.pk in report.link_graph.nodes
-    assert _edges(report, source=uncertainty.pk) == {
-        (uncertainty.pk, "unc/Parameter:p2", "math"),
+    assert mean.pk in report.link_graph.nodes
+    assert _edges(report, source=mean.pk) == {
+        (mean.pk, "unc/Parameter:p2", "math"),
     }
+    assert _edges(report, source=uncertainty.pk) == {
+        (uncertainty.pk, mean.pk, "uncertParameter"),
+    }
+
+
+def test_uncert_parameters_are_nodes(distrib_spans: Report) -> None:
+    """Every uncert parameter is a node, the nested ones included."""
+    nodes = distrib_spans.link_graph.nodes
+    vmax = next(p for p in distrib_spans.models[0].list_of_parameters if p.id == "Vmax")
+    distribution = vmax.uncertainties[0].uncert_parameters[1]
+    assert distribution.pk in nodes
+    assert nodes[distribution.pk].sbml_type == "UncertParameter"
+    for child in distribution.uncert_parameters:
+        assert child.pk in nodes
+        assert nodes[child.pk].model == distrib_spans.models[0].pk
+
+
+def test_uncert_parameter_containment_edges(distrib_spans: Report) -> None:
+    """An uncertainty names its parameters and a distribution its own."""
+    vmax = next(p for p in distrib_spans.models[0].list_of_parameters if p.id == "Vmax")
+    uncertainty = vmax.uncertainties[0]
+    mean, distribution = uncertainty.uncert_parameters
+    assert _edges(distrib_spans, source=uncertainty.pk) == {
+        (uncertainty.pk, mean.pk, "uncertParameter"),
+        (uncertainty.pk, distribution.pk, "uncertParameter"),
+    }
+    alpha, beta = distribution.uncert_parameters
+    assert _edges(
+        distrib_spans, source=distribution.pk, kind=EdgeKind.UNCERT_PARAMETER
+    ) == {
+        (distribution.pk, alpha.pk, "uncertParameter"),
+        (distribution.pk, beta.pk, "uncertParameter"),
+    }
+
+
+def test_uncert_parameter_var_and_units_edges(distrib_spans: Report) -> None:
+    """The var and the units of a parameter reach the elements they name."""
+    vmax = next(p for p in distrib_spans.models[0].list_of_parameters if p.id == "Vmax")
+    mean = vmax.uncertainties[0].uncert_parameters[0]
+    assert _edges(distrib_spans, source=mean.pk) == {
+        (mean.pk, "distrib_spans/Parameter:Vmax_mean", "var"),
+        (mean.pk, "distrib_spans/UnitDefinition:mmole_per_min_l", "units"),
+    }
+
+
+def test_uncert_span_var_edges(distrib_spans: Report) -> None:
+    """A span by reference names the two elements which hold its ends."""
+    km = next(p for p in distrib_spans.models[0].list_of_parameters if p.id == "Km")
+    span = km.uncertainties[1].uncert_parameters[1]
+    assert _edges(distrib_spans, source=span.pk) == {
+        (span.pk, "distrib_spans/Parameter:Km_lower", "var"),
+        (span.pk, "distrib_spans/Parameter:Km_upper", "var"),
+    }
+
+
+def test_uncert_parameter_math_edge(distrib_spans: Report) -> None:
+    """The math of a distribution links from the parameter which carries it."""
+    (rule,) = distrib_spans.models[0].list_of_rules
+    uncertainty = rule.uncertainties[0]
+    distribution = uncertainty.uncert_parameters[1]
+    assert (
+        distribution.pk,
+        "distrib_spans/Parameter:Vmax_mean",
+        "math",
+    ) in _edges(distrib_spans)
+    assert _edges(distrib_spans, source=uncertainty.pk, kind=EdgeKind.MATH) == set()
 
 
 def test_level_2_local_parameter_edges(
