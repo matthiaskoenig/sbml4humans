@@ -158,3 +158,37 @@ def test_comp_deletion_example_is_valid_sbml() -> None:
     doc.checkConsistency()
     messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
     assert messages == []
+
+
+@pytest.mark.parametrize(
+    "example_id, name, packages",
+    [
+        (
+            "fbc_bounds_v1 (fbc_bounds_v1.xml)",
+            "Flux bounds of fbc Version 1",
+            ["fbc"],
+        ),
+        (
+            "fbc_constraints_v3 (fbc_constraints_v3.xml)",
+            "Constraints of fbc Version 3",
+            ["fbc"],
+        ),
+    ],
+)
+def test_fbc_version_examples_are_served(
+    example_id: str, name: str, packages: list[str]
+) -> None:
+    """The examples of the first and of the third version of fbc are served."""
+    example = load_examples()[example_id]
+    assert example.name == name
+    assert example.description is not None
+    assert example.packages == packages
+
+
+@pytest.mark.parametrize("name", ["fbc_bounds_v1.xml", "fbc_constraints_v3.xml"])
+def test_fbc_version_examples_are_valid_sbml(name: str) -> None:
+    """The examples are valid SBML documents, without an error or a warning."""
+    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / name)
+    doc.checkConsistency()
+    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
+    assert messages == []

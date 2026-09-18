@@ -70,6 +70,8 @@ EXAMPLE_IDS: list[str] = [
     "distrib_comp_flat",
     "distrib_distributions",
     "distrib_uncertainties",
+    "fbc_bounds_v1",
+    "fbc_constraints_v3",
     "fbc_example",
     "fbc_mass_charge",
     "linear_chain",
