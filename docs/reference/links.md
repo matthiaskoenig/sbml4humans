@@ -34,6 +34,30 @@ The link is two links of one kind: from the [reaction](reaction.md) to every [mo
 
 It is shown under "References" of the reaction and under "Referenced by" of the species. A species which is a modifier of a reaction usually also appears in the math of its kinetic law, which is a link of the kind "math".
 
+## trigger
+
+The condition an event fires on.
+
+An [event](event.md) holds its condition in a [trigger](trigger.md) of its own, and the link runs from the event to it. The elements the condition reads are linked from the trigger, not from the event, so a reader sees which of the formulas of an event uses a species or a parameter.
+
+It is shown under "References" of the event and under "Referenced by" of the trigger.
+
+## priority
+
+The formula which orders an event against the events of the same moment.
+
+An [event](event.md) may hold a [priority](priority.md) of its own, and the link runs from the event to it.
+
+It is shown under "References" of the event and under "Referenced by" of the priority.
+
+## delay
+
+The formula which postpones the execution of an event.
+
+An [event](event.md) may hold a [delay](delay.md) of its own, and the link runs from the event to it.
+
+It is shown under "References" of the event and under "Referenced by" of the delay.
+
 ## variable
 
 The element whose value a rule or an event assignment sets.

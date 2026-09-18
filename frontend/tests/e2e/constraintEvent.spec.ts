@@ -73,7 +73,11 @@ test.describe("constraint_event", () => {
     const inspector = page.getByTestId("inspector");
     await expect(inspector.getByTestId("inspector-id")).toHaveText("E1");
 
-    await inspector.getByTestId("element-link").filter({ hasText: "E1_trigger" }).click();
+    // the event names its trigger, its priority and its delay in its links
+    const links = inspector.getByTestId("links-references");
+    await expect(links.getByTestId("links-priority")).toContainText("E1_priority");
+    await expect(links.getByTestId("links-delay")).toContainText("E1_delay");
+    await links.getByTestId("links-trigger").getByTestId("element-link").click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Trigger");
     await expect(inspector.getByTestId("notes")).toContainText("twenty minutes");
 

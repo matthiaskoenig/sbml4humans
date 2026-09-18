@@ -360,8 +360,16 @@ class LinkGraphBuilder:
 
         The math of an event belongs to its trigger, its priority and its
         delay (core §4.12.2 to §4.12.4), so every math edge starts at the
-        object which reads the element, not at the event around it.
+        object which reads the element, not at the event around it, and the
+        event names the three the way a reaction names its species references.
         """
+        for child, kind in (
+            (event.trigger, EdgeKind.TRIGGER),
+            (event.priority, EdgeKind.PRIORITY),
+            (event.delay, EdgeKind.DELAY),
+        ):
+            if child is not None:
+                self.edges.append(Edge(source=event.pk, target=child.pk, kind=kind))
         for child in _event_children(event):
             self._math_edges(child, index)
         for ea in event.list_of_event_assignments:

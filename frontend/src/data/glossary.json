@@ -851,6 +851,10 @@
       "label": "conversion factor",
       "summary": "the parameter which converts the values of an element"
     },
+    "delay": {
+      "label": "delay",
+      "summary": "the formula which postpones the execution of an event"
+    },
     "fluxBound": {
       "label": "flux bound",
       "summary": "the parameter which bounds the flux of a reaction"
@@ -879,6 +883,10 @@
       "label": "port",
       "summary": "the element a port names"
     },
+    "priority": {
+      "label": "priority",
+      "summary": "the formula which orders an event against the events of the same moment"
+    },
     "product": {
       "label": "product",
       "summary": "a species a reaction produces"
@@ -898,6 +906,10 @@
     "symbol": {
       "label": "symbol",
       "summary": "the element whose initial value an initial assignment computes"
+    },
+    "trigger": {
+      "label": "trigger",
+      "summary": "the condition an event fires on"
     },
     "units": {
       "label": "units",

@@ -1,5 +1,5 @@
 {
-  "uid": "ab2a5584cc8147d299834a897bab3826",
+  "uid": "291cfb7c7ef145e8972b44642a1bba05",
   "manifest": {
     "entries": [
       {
@@ -1054,6 +1054,21 @@
               "kind": "units"
             },
             {
+              "source": "constraint_event/Event:E1",
+              "target": "constraint_event/Trigger:E1_trigger",
+              "kind": "trigger"
+            },
+            {
+              "source": "constraint_event/Event:E1",
+              "target": "constraint_event/Priority:E1_priority",
+              "kind": "priority"
+            },
+            {
+              "source": "constraint_event/Event:E1",
+              "target": "constraint_event/Delay:E1_delay",
+              "kind": "delay"
+            },
+            {
               "source": "constraint_event/Trigger:E1_trigger",
               "target": "constraint_event/Parameter:t_dose",
               "kind": "math"
@@ -1087,7 +1102,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.053 [s]"
+        "jsonReportTime": "0.051 [s]"
       }
     }
   }

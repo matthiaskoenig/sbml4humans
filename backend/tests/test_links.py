@@ -516,7 +516,7 @@ def test_math_edges_start_at_the_trigger_and_the_delay() -> None:
     (event,) = report.models[0].list_of_events
     assert event.trigger is not None
     assert event.delay is not None
-    assert _edges(report, source=event.pk) == set()
+    assert _edges(report, source=event.pk, kind=EdgeKind.MATH) == set()
     assert _edges(report, source=event.trigger.pk) == {
         (event.trigger.pk, "constraint_event/Parameter:t_dose", "math")
     }
@@ -527,3 +527,23 @@ def test_math_edges_start_at_the_trigger_and_the_delay() -> None:
     assert event.priority is not None
     for pk in (event.trigger.pk, event.priority.pk, event.delay.pk):
         assert pk in nodes
+
+
+def test_an_event_names_its_trigger_its_priority_and_its_delay() -> None:
+    """The event is in the graph over the three objects which hold its math.
+
+    An event carries no reference of its own: its math belongs to its trigger,
+    its priority and its delay (core §4.12.1), so without the three links the
+    event would be a node without an edge and the links of the inspector would
+    be empty.
+    """
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "constraint_event.xml")
+    (event,) = report.models[0].list_of_events
+    assert event.trigger is not None
+    assert event.priority is not None
+    assert event.delay is not None
+    assert _edges(report, source=event.pk) == {
+        (event.pk, event.trigger.pk, "trigger"),
+        (event.pk, event.priority.pk, "priority"),
+        (event.pk, event.delay.pk, "delay"),
+    }

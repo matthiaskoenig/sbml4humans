@@ -1,5 +1,5 @@
 {
-  "uid": "313a0e1add8a40fa84ebeb9aa16ba4c4",
+  "uid": "a1046b91ef3843b780c23470e4ea8a28",
   "manifest": {
     "entries": [
       {
@@ -7394,6 +7394,16 @@
               "kind": "math"
             },
             {
+              "source": "BIOMD0000000007/Event:Start",
+              "target": "BIOMD0000000007/Trigger:_378785",
+              "kind": "trigger"
+            },
+            {
+              "source": "BIOMD0000000007/Event:Start",
+              "target": "BIOMD0000000007/Delay:_378797",
+              "kind": "delay"
+            },
+            {
               "source": "BIOMD0000000007/Trigger:_378785",
               "target": "BIOMD0000000007/Species:SPF",
               "kind": "math"
@@ -7407,6 +7417,11 @@
               "source": "BIOMD0000000007/EventAssignment:_378809",
               "target": "BIOMD0000000007/Parameter:kp",
               "kind": "math"
+            },
+            {
+              "source": "BIOMD0000000007/Event:Division",
+              "target": "BIOMD0000000007/Trigger:_378821",
+              "kind": "trigger"
             },
             {
               "source": "BIOMD0000000007/Trigger:_378821",
@@ -7437,7 +7452,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.316 [s]"
+        "jsonReportTime": "0.309 [s]"
       }
     }
   }
