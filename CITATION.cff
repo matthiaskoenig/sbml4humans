@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "SBML4Humans: interactive reports of SBML models"
+message: "If you use SBML4Humans please cite the archived software on Zenodo."
+type: software
+authors:
+  - family-names: König
+    given-names: Matthias
+    affiliation: Humboldt-Universität zu Berlin
+  - family-names: Das
+    given-names: Sankha
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22827237
+    description: the concept doi of all versions
+  - type: doi
+    value: 10.5281/zenodo.22827238
+    description: the doi of version 0.4.0
+repository-code: "https://github.com/matthiaskoenig/sbml4humans"
+url: "https://sbml4humans.de"
+license: MIT
+version: 0.4.0
+date-released: "2026-09-18"
