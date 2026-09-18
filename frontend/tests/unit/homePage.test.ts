@@ -58,6 +58,16 @@ describe("HomePage", () => {
     expect(localStorage.getItem("sbml4humans.lastUrl")).toBe("https://example.org/model.xml");
   });
 
+  it("shows the logo in the heading", async () => {
+    const wrapper = await mountHome();
+    const heading = wrapper.get("h1");
+    expect(heading.text()).toBe("SBML4Humans");
+    // the app bar carries a logo of its own, the heading's is the one inside `h1`
+    const logo = heading.get("[data-testid=app-logo]");
+    expect(logo.attributes("src")).toContain("logo");
+    expect(logo.attributes("alt")).toBeTruthy();
+  });
+
   it("shows the api error inline", async () => {
     vi.mocked(client.postContent).mockRejectedValue(new client.ApiError("no SBML", "Traceback"));
     const wrapper = await mountHome();

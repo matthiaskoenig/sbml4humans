@@ -2,7 +2,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { ref } from "vue";
 
-import type { Parameter, Reaction, SbmlElement, Species } from "@/api/types";
+import type { Event, Parameter, Reaction, SbmlElement, Species } from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
 import { vTooltip } from "@/directives/tooltip";
@@ -24,6 +24,7 @@ const ROW_HEIGHT = 36;
 const index = new ReportIndex(loadReport("repressilator"));
 const species = index.byType("BIOMD0000000012").get("Species") as Species[];
 const icgBody = new ReportIndex(loadReport("icg_body"));
+const cellCycle = new ReportIndex(loadReport("cell_cycle"));
 
 let wrapper: ReturnType<typeof mount> | null = null;
 
@@ -335,16 +336,69 @@ describe("ElementCell", () => {
   const parameter = index.byType("BIOMD0000000012").get("Parameter")![0]! as Parameter;
   const units: ColumnDef = { field: "derivedUnits", header: "derived units", kind: "units" };
 
-  function mountCell(row: SbmlElement, column: ColumnDef) {
+  function mountCell(row: SbmlElement, column: ColumnDef, reportIndex: ReportIndex = index) {
     return mount(ElementCell, {
       props: { row, column },
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: { [ReportIndexKey as symbol]: ref(reportIndex) },
       },
     });
   }
+
+  const idColumn = columnsOf("Species")[0]!;
+
+  it("renders the type mark of the row before the id", () => {
+    const wrapper = mountCell(species[0]!, idColumn);
+    const mark = wrapper.get("[data-testid=type-mark]");
+    expect(mark.attributes("aria-label")).toBe("Species");
+    // the mark carries no text of its own, the cell still reads as the identifier alone
+    expect(wrapper.text()).toBe(species[0]!.id);
+    expect(wrapper.get("span.font-mono").text()).toBe(species[0]!.id);
+  });
+
+  it("keeps the type mark on a row without an identifier", () => {
+    const wrapper = mountCell({ ...species[0]!, id: null }, idColumn);
+    expect(wrapper.get("[data-testid=type-mark]").attributes("aria-label")).toBe("Species");
+    expect(wrapper.text()).toBe("-");
+  });
+
+  it("renders every assignment of an event as its variable and its formula", () => {
+    const division = (cellCycle.byType("BIOMD0000000007").get("Event") as Event[]).find(
+      (event) => event.id === "Division",
+    )!;
+    const assignments = division.listOfEventAssignments!;
+    expect(assignments).toHaveLength(2);
+    const column = columnsOf("Event").find((c) => c.header === "assignments")!;
+    const wrapper = mountCell(division, column, cellCycle);
+
+    const links = wrapper.findAll("[data-testid=element-link]");
+    expect(links.map((link) => link.text())).toEqual(["kp", "Mass"]);
+    // the variable is resolved through the "variable" edge of the assignment, not built from
+    // its id: the assignment of "kp" points at the parameter of that id
+    expect(links.map((link) => link.attributes("data-pk"))).toEqual([
+      "BIOMD0000000007/Parameter:kp",
+      "BIOMD0000000007/Parameter:Mass",
+    ]);
+
+    // the formula of every assignment is typeset next to its variable. KaTeX lays a fraction
+    // out with the denominator first in the text flow and separates the two with a zero width
+    // space, so "Mass / 2" reads as "2Mass" here.
+    const maths = wrapper.findAll("[data-testid=math]");
+    expect(maths.map((math) => math.text().replaceAll("​", ""))).toEqual(["2⋅kp", "2Mass"]);
+
+    // one line: the assignments follow each other separated by a comma and a space
+    expect(wrapper.text()).toBe("kp = 2⋅kp, Mass = 2Mass​");
+  });
+
+  it("shows the placeholder for an event without assignments", () => {
+    const start = (cellCycle.byType("BIOMD0000000007").get("Event") as Event[])[0]!;
+    const column = columnsOf("Event").find((c) => c.header === "assignments")!;
+    const wrapper = mountCell({ ...start, listOfEventAssignments: [] }, column, cellCycle);
+    expect(wrapper.find("[data-testid=element-link]").exists()).toBe(false);
+    expect(wrapper.text()).toBe("-");
+  });
 
   it("renders the equation of the fixture verbatim", () => {
     expect(reaction.equation).toContain("\u279e");

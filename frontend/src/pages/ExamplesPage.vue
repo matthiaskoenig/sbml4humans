@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 
 import AppBar from "@/components/layout/AppBar.vue";
+import AppFooter from "@/components/layout/AppFooter.vue";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import LoadingState from "@/components/layout/LoadingState.vue";
 import { useExamplesStore } from "@/stores/examples";
@@ -73,5 +74,6 @@ const examples = computed(() => {
         </RouterLink>
       </li>
     </ul>
+    <AppFooter />
   </main>
 </template>

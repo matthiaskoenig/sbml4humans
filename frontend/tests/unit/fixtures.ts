@@ -12,6 +12,7 @@ const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "fixtur
 
 export type FixtureName =
   | "repressilator"
+  | "cell_cycle"
   | "icg_body"
   | "fbc_example"
   | "model_definitions"
