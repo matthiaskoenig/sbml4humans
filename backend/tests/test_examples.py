@@ -192,3 +192,19 @@ def test_fbc_version_examples_are_valid_sbml(name: str) -> None:
     doc.checkConsistency()
     messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
     assert messages == []
+
+
+def test_qual_example_is_served() -> None:
+    """The example of a qualitative model is served with its package."""
+    example = load_examples()["qual_example (qual_example.xml)"]
+    assert example.name == "Qualitative example model"
+    assert example.description is not None
+    assert example.packages == ["qual"]
+
+
+def test_qual_example_is_valid_sbml() -> None:
+    """The example is a valid SBML document, without an error or a warning."""
+    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / "qual_example.xml")
+    doc.checkConsistency()
+    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
+    assert messages == []

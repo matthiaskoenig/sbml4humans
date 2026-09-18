@@ -83,6 +83,7 @@ EXAMPLE_IDS: list[str] = [
     "multiple_substance_units",
     "notes",
     "parameter",
+    "qual_example",
     "random_network",
     "reaction",
     "reaction_with_units",

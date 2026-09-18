@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1" level="3" version="1" qual:required="true">
+  <model metaid="meta_qual_example" id="qual_example" name="Qualitative example model">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <p>A qualitative model of a small gene regulatory switch. A qualitative species carries a level, a whole number between zero and its maximum level, instead of a concentration, and a transition says which level it takes next.</p>
+        <p>The switch has three qualitative species: the signal is an input of the system which no transition changes, the gene is Boolean, and the protein has the three levels absent, low and high.</p>
+        <p>The transition <code>tr_G</code> is written in the logical formalism: its output assigns the gene the result level of the first function term whose condition holds, and the default term gives the level of every state the terms do not cover. The transition <code>tr_P</code> is written in the Petri net formalism of the package: its input consumes the gene and its output produces one level of protein per result level. Both formalisms are in one file so that a report shows what each of them looks like.</p>
+      </body>
+    </notes>
+    <listOfCompartments>
+      <compartment id="cell" name="cell" spatialDimensions="3" size="1" units="litre" constant="true"/>
+    </listOfCompartments>
+    <qual:listOfQualitativeSpecies>
+      <qual:qualitativeSpecies metaid="meta_S" sboTerm="SBO:0000252" qual:id="S" qual:name="signal" qual:compartment="cell" qual:constant="true" qual:maxLevel="1">
+        <notes>
+          <body xmlns="http://www.w3.org/1999/xhtml">
+            <p>The extracellular signal the switch responds to. It is constant, which makes it an input of the system: it is read by the transitions and changed by none of them, and an experiment sets its level. It carries no initial level, because the level it is held at is the condition of the experiment.</p>
+          </body>
+        </notes>
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+            <rdf:Description rdf:about="#meta_S">
+              <bqbiol:isVersionOf>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="https://identifiers.org/GO:0007165"/>
+                </rdf:Bag>
+              </bqbiol:isVersionOf>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </qual:qualitativeSpecies>
+      <qual:qualitativeSpecies qual:id="G" qual:name="gene" qual:compartment="cell" qual:constant="false" qual:initialLevel="0" qual:maxLevel="1"/>
+      <qual:qualitativeSpecies qual:id="P" qual:name="protein" qual:compartment="cell" qual:constant="false" qual:initialLevel="1" qual:maxLevel="2"/>
+    </qual:listOfQualitativeSpecies>
+    <qual:listOfTransitions>
+      <qual:transition metaid="meta_tr_G" qual:id="tr_G" qual:name="expression of the gene">
+        <notes>
+          <body xmlns="http://www.w3.org/1999/xhtml">
+            <p>The gene is switched on by the signal and stays on while it is on, which is the hysteresis of the switch, and the protein switches it off once it reaches its highest level.</p>
+            <p>The two function terms are the two states in which the gene is on. Every state they do not cover is the default term, where the gene is off.</p>
+          </body>
+        </notes>
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+            <rdf:Description rdf:about="#meta_tr_G">
+              <bqbiol:isVersionOf>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="https://identifiers.org/GO:0010468"/>
+                </rdf:Bag>
+              </bqbiol:isVersionOf>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+        <qual:listOfInputs>
+          <qual:input qual:id="theta_G_S" qual:name="threshold of the signal" qual:qualitativeSpecies="S" qual:transitionEffect="none" qual:sign="positive" qual:thresholdLevel="1"/>
+          <qual:input qual:id="theta_G_P" qual:name="threshold of the protein" qual:qualitativeSpecies="P" qual:transitionEffect="none" qual:sign="negative" qual:thresholdLevel="2"/>
+          <qual:input qual:id="theta_G_G" qual:name="threshold of the gene" qual:qualitativeSpecies="G" qual:transitionEffect="none" qual:sign="positive" qual:thresholdLevel="1"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:id="out_G" qual:qualitativeSpecies="G" qual:transitionEffect="assignmentLevel"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <apply>
+                <and/>
+                <apply>
+                  <geq/>
+                  <ci>S</ci>
+                  <ci>theta_G_S</ci>
+                </apply>
+                <apply>
+                  <lt/>
+                  <ci>P</ci>
+                  <ci>theta_G_P</ci>
+                </apply>
+              </apply>
+            </math>
+          </qual:functionTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <apply>
+                <and/>
+                <apply>
+                  <geq/>
+                  <ci>G</ci>
+                  <ci>theta_G_G</ci>
+                </apply>
+                <apply>
+                  <lt/>
+                  <ci>P</ci>
+                  <ci>theta_G_P</ci>
+                </apply>
+              </apply>
+            </math>
+          </qual:functionTerm>
+          <qual:defaultTerm qual:resultLevel="0"/>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+      <qual:transition qual:id="tr_P" qual:name="synthesis of the protein">
+        <notes>
+          <body xmlns="http://www.w3.org/1999/xhtml">
+            <p>The protein is made while the gene is on and while it has not reached its highest level yet. The input consumes the gene, the way the firing of a Petri net transition takes the tokens of its places, and the output produces one level of protein for every result level of the term which fires.</p>
+          </body>
+        </notes>
+        <qual:listOfInputs>
+          <qual:input qual:id="w_P_G" qual:name="weight of the gene" qual:qualitativeSpecies="G" qual:transitionEffect="consumption" qual:sign="positive" qual:thresholdLevel="1"/>
+          <qual:input qual:id="theta_P_P" qual:name="threshold of the protein" qual:qualitativeSpecies="P" qual:transitionEffect="none" qual:sign="negative" qual:thresholdLevel="2"/>
+        </qual:listOfInputs>
+        <qual:listOfOutputs>
+          <qual:output qual:id="out_P" qual:qualitativeSpecies="P" qual:transitionEffect="production" qual:outputLevel="1"/>
+        </qual:listOfOutputs>
+        <qual:listOfFunctionTerms>
+          <qual:functionTerm qual:resultLevel="2">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <apply>
+                <and/>
+                <apply>
+                  <geq/>
+                  <ci>G</ci>
+                  <ci>w_P_G</ci>
+                </apply>
+                <apply>
+                  <eq/>
+                  <ci>P</ci>
+                  <cn type="integer">0</cn>
+                </apply>
+              </apply>
+            </math>
+          </qual:functionTerm>
+          <qual:functionTerm qual:resultLevel="1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <apply>
+                <and/>
+                <apply>
+                  <geq/>
+                  <ci>G</ci>
+                  <ci>w_P_G</ci>
+                </apply>
+                <apply>
+                  <lt/>
+                  <ci>P</ci>
+                  <ci>theta_P_P</ci>
+                </apply>
+              </apply>
+            </math>
+          </qual:functionTerm>
+          <qual:defaultTerm qual:resultLevel="0"/>
+        </qual:listOfFunctionTerms>
+      </qual:transition>
+    </qual:listOfTransitions>
+  </model>
+</sbml>
