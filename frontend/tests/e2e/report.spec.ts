@@ -50,12 +50,25 @@ test.describe("repressilator", () => {
     const inspector = page.getByTestId("inspector");
     await expect(inspector.getByTestId("inspector-id")).toHaveText("X");
 
-    // the species is referenced by its participations, each named after its reaction
+    // the links of a species ask over its participations: the reactant group names the reaction
+    // which consumes it, not the species reference between the two
     const reactants = inspector.getByTestId("links-referenced-by").getByTestId("links-reactant");
-    const participation = reactants.getByTestId("element-link").first();
-    await expect(participation).toHaveText("Reaction1.X");
-    await participation.click();
+    const reaction = reactants.getByTestId("element-link").first();
+    await expect(reaction).toHaveText("Reaction1");
+    await reaction.click();
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1");
+
+    // the attributes of the reaction list the participation itself, named after its reaction
+    // and its species
+    await inspector
+      .getByTestId("attribute-row")
+      .filter({ hasText: "reactants" })
+      .first()
+      .getByTestId("element-link")
+      .first()
+      .click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Species reference");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1.X");
 
     // the participation names its reaction, its role and its species
     const rows = inspector.getByTestId("attribute-row");
