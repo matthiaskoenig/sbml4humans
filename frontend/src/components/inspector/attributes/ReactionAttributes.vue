@@ -4,9 +4,9 @@ import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
+import GeneAssociationView from "@/components/misc/GeneAssociationView.vue";
 import MathView from "@/components/misc/MathView.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
-import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
 
 defineProps<{ element: Reaction }>();
@@ -114,17 +114,19 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
       label="gene product association"
       :type="element.sbmlType"
       field="fbc.geneProductAssociation"
-      ><ValueText :value="element.fbc.geneProductAssociation" mono
-    /></AttributeRow>
-    <AttributeRow label="gene products" :type="element.sbmlType" field="fbc.geneProducts">
-      <span v-if="!element.fbc.geneProducts?.length" class="text-gray-400">-</span>
-      <ElementLink
-        v-for="gp in element.fbc.geneProducts"
-        :key="gp"
-        class="mr-2"
-        :pk="index?.resolve(element.pk, 'geneProduct', gp)"
-        :label="gp"
-      />
+    >
+      <template v-if="element.fbc.geneProductAssociation">
+        <ElementLink
+          :pk="element.fbc.geneProductAssociation.pk"
+          :label="element.fbc.geneProductAssociation.id ?? 'association'"
+          class="mr-2"
+        />
+        <GeneAssociationView
+          v-if="element.fbc.geneProductAssociation.association"
+          :node="element.fbc.geneProductAssociation.association"
+        />
+      </template>
+      <span v-else class="text-gray-400">-</span>
     </AttributeRow>
   </template>
 </template>

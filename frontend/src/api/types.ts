@@ -1,6 +1,7 @@
 /** The report types generated from the JSON schema plus the unions the components work with. */
 import type {
   AlgebraicRule,
+  And,
   AssignmentRule,
   Compartment,
   Constraint,
@@ -11,12 +12,15 @@ import type {
   ExternalModelDefinition,
   FunctionDefinition,
   GeneProduct,
+  GeneProductAssociation,
+  GeneProductRef,
   InitialAssignment,
   KineticLaw,
   LocalParameter,
   Model,
   ModifierSpeciesReference,
   Objective,
+  Or,
   Parameter,
   Port,
   Priority,
@@ -72,10 +76,16 @@ export type NestedElement =
   | ReplacedElement
   | ReplacedBy
   | SBaseRef
+  | GeneProductAssociation
+  | And
+  | Or
+  | GeneProductRef
   | Uncertainty;
 
 export type SBase = DocumentElement | SbmlElement | NestedElement;
 export type Rule = AssignmentRule | RateRule | AlgebraicRule;
+/** One node of the gene product association of a reaction (fbc §3.10). */
+export type Association = GeneProductRef | And | Or;
 
 export type SbmlType = NonNullable<SBase["sbmlType"]>;
 export type ElementType = NonNullable<SbmlElement["sbmlType"]>;

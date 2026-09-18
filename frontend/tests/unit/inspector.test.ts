@@ -15,7 +15,9 @@ import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
+import GeneAssociationView from "@/components/misc/GeneAssociationView.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
+import ReactionAttributes from "@/components/inspector/attributes/ReactionAttributes.vue";
 import ReplacedElementAttributes from "@/components/inspector/attributes/ReplacedElementAttributes.vue";
 import SubmodelAttributes from "@/components/inspector/attributes/SubmodelAttributes.vue";
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
@@ -23,6 +25,7 @@ import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
 import { attributeEntry, linkEntry, referenceUrl } from "@/report/glossary";
+import { LIST_LIMIT } from "@/report/limitedList";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
@@ -40,6 +43,7 @@ const indexes = fixtures.map((name) => new ReportIndex(loadReport(name)));
 const repressilator = indexes[0]!;
 const constraintEvent = new ReportIndex(loadReport("constraint_event"));
 const compDeletion = new ReportIndex(loadReport("comp_deletion"));
+const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
 
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
@@ -260,6 +264,57 @@ describe("inspector", () => {
     expect(pks).toContain("comp_deletion/Deletion:del_k");
     expect(pks).toContain("cell/Parameter:k");
     expect(pks).toContain("cell/Reaction:sink");
+  });
+
+  it("renders the gene product association of a reaction as its tree", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    const reaction = fbcConstraints.mainModel!.listOfReactions!.find((r) => r.id === "v1")!;
+    const row = mountWith(ReactionAttributes, { element: reaction }, fbcConstraints)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "gene product association")!;
+    // the structure of the tree, with the operators between the nodes of every group
+    expect(row.find("dd").text()).toContain("((g_ptsG and g_ptsH) or g_galP)");
+    const pks = row.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
+    // the association itself and one link per gene, resolved over the edge of its reference
+    expect(pks).toEqual([
+      "fbc_constraints_v3/GeneProductAssociation:gpa_v1",
+      "fbc_constraints_v3/GeneProduct:g_ptsG",
+      "fbc_constraints_v3/GeneProduct:g_ptsH",
+      "fbc_constraints_v3/GeneProduct:g_galP",
+    ]);
+  });
+
+  it("shows every node of an association tree in the inspector", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    const or = fbcConstraints.get("fbc_constraints_v3/Or:gpa_v1.association")!;
+    const wrapper = mountWith(AttributesColumn, { element: or }, fbcConstraints);
+    expect(wrapper.text()).toContain("((g_ptsG and g_ptsH) or g_galP)");
+    const ref = fbcConstraints.get("fbc_constraints_v3/GeneProductRef:ref_galP")!;
+    const row = mountWith(AttributesColumn, { element: ref }, fbcConstraints)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "gene product")!;
+    expect(row.find("[data-testid=element-link]").attributes("data-pk")).toBe(
+      "fbc_constraints_v3/GeneProduct:g_galP",
+    );
+  });
+
+  it("caps the nodes of one group of an association at the list limit", async () => {
+    await router.push("/examples/fbc_constraints_v3");
+    const wide = {
+      pk: "m/Or:wide",
+      sbmlType: "Or",
+      associations: Array.from({ length: LIST_LIMIT + 3 }, (_, k) => ({
+        pk: `m/GeneProductRef:${k}`,
+        sbmlType: "GeneProductRef",
+        geneProduct: `g${k}`,
+      })),
+    };
+    const wrapper = mountWith(GeneAssociationView, { node: wide }, fbcConstraints);
+    expect(wrapper.text()).toContain(`g${LIST_LIMIT - 1}`);
+    expect(wrapper.text()).not.toContain(`g${LIST_LIMIT}`);
+    expect(wrapper.find("[data-testid=show-all]").text()).toBe("show all (3)");
+    await wrapper.get("[data-testid=show-all]").trigger("click");
+    expect(wrapper.text()).toContain(`g${LIST_LIMIT + 2}`);
   });
 
   it("groups the links by kind in both directions", async () => {

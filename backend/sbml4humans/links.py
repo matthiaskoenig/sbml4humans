@@ -11,13 +11,18 @@ import logging
 from collections.abc import Iterator
 
 from sbml4humans.model import (
+    And,
+    Association,
     Edge,
     EdgeKind,
     Event,
+    GeneProductAssociation,
+    GeneProductRef,
     LinkGraph,
     Model,
     ModifierSpeciesReference,
     Node,
+    Or,
     Port,
     Reaction,
     ReplacedBy,
@@ -127,6 +132,7 @@ def _elements(model: Model) -> Iterator[SBase]:
         yield from reaction.list_of_reactants
         yield from reaction.list_of_products
         yield from reaction.list_of_modifiers
+        yield from _association_tree(reaction)
     for event in model.list_of_events:
         yield event
         yield from event.list_of_event_assignments
@@ -159,6 +165,29 @@ def _nested(model: Model) -> Iterator[SBase]:
     for port in model.list_of_ports:
         if port.sbase_ref is not None:
             yield from _ref_chain(port.sbase_ref)
+
+
+def _association_tree(reaction: Reaction) -> Iterator[SBase]:
+    """The gene product association of a reaction and every node of its tree.
+
+    The association, the `and` and `or` nodes below it and the references to
+    the gene products are elements of the report which carry an identifier of
+    the SId namespace of the model (fbc §3.2).
+    """
+    if reaction.fbc is None or reaction.fbc.gene_product_association is None:
+        return
+    association = reaction.fbc.gene_product_association
+    yield association
+    if association.association is not None:
+        yield from _association_nodes(association.association)
+
+
+def _association_nodes(node: Association) -> Iterator[SBase]:
+    """A node of an association tree and every node below it (fbc §3.10)."""
+    yield node
+    if isinstance(node, And | Or):
+        for child in node.associations:
+            yield from _association_nodes(child)
 
 
 def _ref_chain(ref: SBaseRefFields) -> Iterator[SBaseRefFields]:
@@ -611,13 +640,56 @@ class LinkGraphBuilder:
             self._edge(
                 reaction, reaction.fbc.upper_flux_bound, EdgeKind.FLUX_BOUND, index
             )
-            for gene_product in reaction.fbc.gene_products:
-                self._edge(reaction, gene_product, EdgeKind.GENE_PRODUCT, index)
+            association = reaction.fbc.gene_product_association
+            if association is not None:
+                self._association_edges(reaction, association, index)
         klaw = reaction.kinetic_law
         if klaw is not None:
             self._math_edges(klaw, index, kinetic_law_pk=klaw.pk)
             for lp in klaw.list_of_local_parameters:
                 self._units_edge(lp, lp.units, index)
+
+    def _association_edges(
+        self,
+        reaction: Reaction,
+        association: GeneProductAssociation,
+        index: ModelIndex,
+    ) -> None:
+        """The edges of the gene product association of a reaction.
+
+        The reaction names its association, every node of the tree names the
+        nodes below it, all of them with the kind of the association, and the
+        reference at a leaf names the gene product it stands for (fbc §3.9 to
+        §3.13). The reference is where the file writes the identifier of the
+        gene product, so that is where the `geneProduct` edge starts.
+        """
+        self.edges.append(
+            Edge(
+                source=reaction.pk,
+                target=association.pk,
+                kind=EdgeKind.GENE_PRODUCT_ASSOCIATION,
+            )
+        )
+        if association.association is None:
+            return
+        self._association_node_edges(association.pk, association.association, index)
+
+    def _association_node_edges(
+        self, parent_pk: str, node: Association, index: ModelIndex
+    ) -> None:
+        """The edge from a node of an association tree to one below it."""
+        self.edges.append(
+            Edge(
+                source=parent_pk,
+                target=node.pk,
+                kind=EdgeKind.GENE_PRODUCT_ASSOCIATION,
+            )
+        )
+        if isinstance(node, GeneProductRef):
+            self._edge(node, node.gene_product, EdgeKind.GENE_PRODUCT, index)
+            return
+        for child in node.associations:
+            self._association_node_edges(node.pk, child, index)
 
     def _event_edges(self, event: Event, index: ModelIndex) -> None:
         """The edges of an event: those of its children and of its assignments.

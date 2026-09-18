@@ -169,12 +169,50 @@ def test_fbc_edges() -> None:
     edges = _edges(report, source=reaction)
     assert (reaction, f"{m}/Parameter:cobra_0_bound", "fluxBound") in edges
     assert (reaction, f"{m}/Parameter:cobra_default_ub", "fluxBound") in edges
-    assert (reaction, f"{m}/GeneProduct:G_b3916", "geneProduct") in edges
     assert (
         f"{m}/Objective:obj",
         f"{m}/Reaction:R_BIOMASS_Ecoli_core_w_GAM",
         "fluxObjective",
     ) in _edges(report)
+
+
+def test_gene_product_edge_starts_at_the_reference() -> None:
+    """The reaction names its association, and the reference names the gene product."""
+    report = SBMLDocumentInfo.from_sbml(FBC_ECOLI_CORE_SBML)
+    m = "e_coli_core"
+    association = f"{m}/GeneProductAssociation:R_PFK.geneProductAssociation"
+    node = f"{m}/Or:R_PFK.geneProductAssociation.association"
+    first = f"{m}/GeneProductRef:R_PFK.geneProductAssociation.association.0"
+    assert _edges(
+        report,
+        source=f"{m}/Reaction:R_PFK",
+        kind=EdgeKind.GENE_PRODUCT_ASSOCIATION,
+    ) == {
+        (f"{m}/Reaction:R_PFK", association, "geneProductAssociation"),
+    }
+    assert (association, node, "geneProductAssociation") in _edges(report)
+    assert (node, first, "geneProductAssociation") in _edges(report)
+    assert _edges(report, source=first) == {
+        (first, f"{m}/GeneProduct:G_b3916", "geneProduct"),
+    }
+    # no reaction names a gene product itself any more
+    assert not [
+        edge
+        for edge in report.link_graph.edges
+        if edge.kind == EdgeKind.GENE_PRODUCT
+        and report.link_graph.nodes[edge.source].sbml_type != "GeneProductRef"
+    ]
+
+
+def test_association_nodes_are_connected() -> None:
+    """Every node of every association tree carries an edge in both directions."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    types = {"GeneProductAssociation", "And", "Or", "GeneProductRef"}
+    nodes = [n for n in report.link_graph.nodes.values() if n.sbml_type in types]
+    assert len(nodes) == 8
+    sources = {edge.source for edge in report.link_graph.edges}
+    targets = {edge.target for edge in report.link_graph.edges}
+    assert all(node.pk in sources and node.pk in targets for node in nodes)
 
 
 def test_dangling_reference_is_logged(caplog: pytest.LogCaptureFixture) -> None:

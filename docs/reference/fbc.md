@@ -11,6 +11,7 @@ The report shows the gene products and the objectives of a model as sections of 
 ## Related elements
 
 - [Gene product](geneproduct.md): a gene or one of its products which the reactions of the model depend on
+- [Gene product association](geneproductassociation.md): the genes a reaction needs, as the tree of operators over them
 - [Objective](objective.md): the function a flux balance analysis maximises or minimises
 - [Species](species.md): a pool of a chemical entity in a compartment
 - [Reaction](reaction.md): a process which changes the quantities of species

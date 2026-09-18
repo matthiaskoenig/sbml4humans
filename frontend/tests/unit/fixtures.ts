@@ -15,6 +15,8 @@ export type FixtureName =
   | "cell_cycle"
   | "icg_body"
   | "fbc_example"
+  | "fbc_bounds_v1"
+  | "fbc_constraints_v3"
   | "model_definitions"
   | "comp_deletion"
   | "comp_models"

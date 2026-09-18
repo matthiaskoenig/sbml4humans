@@ -1,5 +1,5 @@
 {
-  "uid": "4a64c19b254b46d38e0bd521ca07e9a3",
+  "uid": "27fe617120694b3788f8d184fc063d0a",
   "manifest": {
     "entries": [
       {
@@ -292,8 +292,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               }
             ],
@@ -2214,7 +2213,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.029 [s]"
+        "jsonReportTime": "0.028 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -2856,8 +2855,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -2939,8 +2937,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -3022,8 +3019,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -3105,8 +3101,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -3188,8 +3183,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -3271,8 +3265,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -3354,8 +3347,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -3437,8 +3429,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -3520,8 +3511,7 @@
                 "fbc": {
                   "lowerFluxBound": null,
                   "upperFluxBound": null,
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               }
             ],
@@ -4294,7 +4284,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.04 [s]"
+        "jsonReportTime": "0.038 [s]"
       }
     }
   }

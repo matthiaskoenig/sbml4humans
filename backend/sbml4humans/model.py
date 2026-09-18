@@ -354,16 +354,11 @@ class KineticLaw(SBase):
 
 
 class ReactionFbc(ReportModel):
-    """The fbc extension of a reaction.
-
-    `gene_products` are the ids referenced by the association, so that the
-    link graph does not parse the infix string.
-    """
+    """The fbc extension of a reaction."""
 
     lower_flux_bound: str | None = None
     upper_flux_bound: str | None = None
-    gene_product_association: str | None = None
-    gene_products: list[str] = Field(default_factory=list)
+    gene_product_association: GeneProductAssociation | None = None
 
 
 class Reaction(SBase):
@@ -467,6 +462,46 @@ class GeneProduct(SBase):
     associated_species: str | None = None
 
 
+class GeneProductRef(SBase):
+    """A leaf of a gene product association: the gene product it names."""
+
+    sbml_type: Literal["GeneProductRef"] = "GeneProductRef"
+    gene_product: str
+
+
+class And(SBase):
+    """Associations which are all needed at once: the subunits of a complex."""
+
+    sbml_type: Literal["And"] = "And"
+    associations: list[Association] = Field(default_factory=list)
+
+
+class Or(SBase):
+    """Associations of which one suffices: the isozymes of a reaction."""
+
+    sbml_type: Literal["Or"] = "Or"
+    associations: list[Association] = Field(default_factory=list)
+
+
+# an association is a gene product, a conjunction or a disjunction of
+# associations, to any depth (fbc §3.10). The union carries no discriminator:
+# it is recursive, and pydantic cannot apply one to a reference which is still
+# being built.
+Association = GeneProductRef | And | Or
+
+
+class GeneProductAssociation(SBase):
+    """The genes under which a reaction can run, as the tree of fbc §3.9."""
+
+    sbml_type: Literal["GeneProductAssociation"] = "GeneProductAssociation"
+    association: Association | None = None
+
+
+And.model_rebuild()
+Or.model_rebuild()
+ReactionFbc.model_rebuild()
+
+
 class FluxObjective(ReportModel):
     """A weighted reaction of an objective."""
 
@@ -558,6 +593,7 @@ class EdgeKind(StrEnum):
     CONVERSION_FACTOR = "conversionFactor"
     FLUX_BOUND = "fluxBound"
     GENE_PRODUCT = "geneProduct"
+    GENE_PRODUCT_ASSOCIATION = "geneProductAssociation"
     ASSOCIATED_SPECIES = "associatedSpecies"
     FLUX_OBJECTIVE = "fluxObjective"
     MODEL_REF = "modelRef"

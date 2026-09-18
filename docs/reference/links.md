@@ -100,11 +100,21 @@ The link is shown under "References" of the reaction and under "Referenced by" o
 
 ## gene product
 
-A gene product the association of a reaction names.
+The gene product a reference of an association names.
 
-The link goes from the [reaction](reaction.md) to every [gene product](geneproduct.md) of its gene product association, whatever the structure of the expression is.
+The link goes from a [gene product reference](geneproductref.md), the leaf of the gene product association of a reaction, to the [gene product](geneproduct.md) it names. It starts at the reference and not at the [reaction](reaction.md) because that is where the file writes the identifier, and because a reaction may name one gene in several branches of its association.
 
-It is shown under "References" of the reaction and under "Referenced by" of the gene product, which is how the reactions of a gene are found.
+It is shown under "References" of the reference and under "Referenced by" of the gene product; the reaction of a gene is one hop further, over the gene product association.
+
+## gene product association
+
+A node of the gene association of a reaction, from the reaction down to its genes.
+
+A [reaction](reaction.md) names the [gene product association](geneproductassociation.md) it carries, the association names the node at the root of its tree, and every [and](and.md) and [or](or.md) names the nodes below it, all of them with this kind. The tree ends at the [gene product references](geneproductref.md), which name the genes.
+
+The chain is what makes the structure of the association walkable: it says which genes belong to the same complex and which of them are alternatives, which the flat list of the genes of a reaction cannot.
+
+It is shown under "References" of the reaction and of every node, and under "Referenced by" of the node below.
 
 ## associated species
 

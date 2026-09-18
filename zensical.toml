@@ -57,6 +57,10 @@ nav = [
     { "Flux Balance Constraints (fbc)" = [
       { "Flux Balance Constraints (fbc)" = "reference/fbc.md" },
       { "Gene product" = "reference/geneproduct.md" },
+      { "Gene product association" = "reference/geneproductassociation.md" },
+      { "And" = "reference/and.md" },
+      { "Or" = "reference/or.md" },
+      { "Gene product reference" = "reference/geneproductref.md" },
       { "Objective" = "reference/objective.md" },
     ] },
     { "Distributions (distrib)" = [

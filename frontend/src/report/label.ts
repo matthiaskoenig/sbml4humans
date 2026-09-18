@@ -46,6 +46,9 @@ export function elementLabel(
     const owner = edge ? index?.get(edge.source)?.id : null;
     if (owner) return `${owner}.${element.submodelRef}`;
   }
+  // a leaf of a gene product association is named by the gene product it names, the way a link
+  // of a comp reference chain is named by what it names
+  if (element?.sbmlType === "GeneProductRef") return element.geneProduct;
   // a link of a reference chain is named by what it names, which is what the file writes and
   // what its key would otherwise spell out as the key of its parent and the word sBaseRef
   if (element?.sbmlType === "SBaseRef") {

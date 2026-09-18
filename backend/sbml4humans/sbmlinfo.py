@@ -19,7 +19,9 @@ from sbml4humans.links import build_link_graph
 from sbml4humans.mathml import math_info, math_symbols
 from sbml4humans.model import (
     AlgebraicRule,
+    And,
     AssignmentRule,
+    Association,
     Compartment,
     CompSBase,
     Constraint,
@@ -34,6 +36,8 @@ from sbml4humans.model import (
     FluxObjective,
     FunctionDefinition,
     GeneProduct,
+    GeneProductAssociation,
+    GeneProductRef,
     InitialAssignment,
     KineticLaw,
     LocalParameter,
@@ -42,6 +46,7 @@ from sbml4humans.model import (
     ModelHistory,
     ModifierSpeciesReference,
     Objective,
+    Or,
     Package,
     Parameter,
     Port,
@@ -598,7 +603,7 @@ class SBMLDocumentInfo:
             if r.isSetKineticLaw()
             else None,
             equation=self._equation(r),
-            fbc=self.reaction_fbc(r),
+            fbc=self.reaction_fbc(r, reaction_key),
         )
 
     def species_reference(
@@ -874,40 +879,82 @@ class SBMLDocumentInfo:
             for o in plugin.getListOfObjectives()
         ]
 
-    def reaction_fbc(self, r: libsbml.Reaction) -> ReactionFbc | None:
+    def reaction_fbc(
+        self, r: libsbml.Reaction, reaction_key: str
+    ) -> ReactionFbc | None:
         """The fbc extension of a reaction: bounds and gene product association."""
         plugin: libsbml.FbcReactionPlugin | None = r.getPlugin("fbc")
         if not plugin:
             return None
-        association = None
-        gene_products: list[str] = []
-        if plugin.isSetGeneProductAssociation():
-            root: libsbml.FbcAssociation = (
-                plugin.getGeneProductAssociation().getAssociation()
-            )
-            association = root.toInfix()
-            gene_products = sorted(self._gene_product_refs(root))
         return ReactionFbc(
             lower_flux_bound=_attribute(plugin, "lowerFluxBound"),
             upper_flux_bound=_attribute(plugin, "upperFluxBound"),
-            gene_product_association=association,
-            gene_products=gene_products,
+            gene_product_association=self.gene_product_association(
+                plugin, reaction_key
+            ),
         )
 
-    @staticmethod
-    def _gene_product_refs(association: libsbml.FbcAssociation) -> set[str]:
-        """The gene product ids referenced by an association tree."""
-        if isinstance(association, libsbml.GeneProductRef):
-            return {association.getGeneProduct()}
-        refs: set[str] = set()
-        # FbcAnd and FbcOr, the only other subclasses of FbcAssociation, expose
-        # getNumAssociations/getAssociation; the libsbml stubs do not declare them
-        # on the base class.
-        for k in range(association.getNumAssociations()):  # ty: ignore[unresolved-attribute]
-            refs |= SBMLDocumentInfo._gene_product_refs(
-                association.getAssociation(k)  # ty: ignore[unresolved-attribute]
+    def gene_product_association(
+        self, plugin: libsbml.FbcReactionPlugin, reaction_key: str
+    ) -> GeneProductAssociation | None:
+        """The gene product association of a reaction, as the tree of fbc §3.9.
+
+        Args:
+            plugin: the fbc extension of the reaction.
+            reaction_key: the key of the reaction, which keys the association
+                and, through it, every node of its tree.
+        """
+        if not plugin.isSetGeneProductAssociation():
+            return None
+        gpa: libsbml.GeneProductAssociation = plugin.getGeneProductAssociation()
+        key = f"{reaction_key}.geneProductAssociation"
+        association = (
+            self.association(gpa.getAssociation(), f"{self._key(gpa, key)}.association")
+            if gpa.isSetAssociation()
+            else None
+        )
+        return GeneProductAssociation(
+            **self.sbase(gpa, key=key), association=association
+        )
+
+    def association(self, a: libsbml.FbcAssociation, key: str) -> Association:
+        """One node of an association tree, with the nodes below it.
+
+        A node is a reference to a gene product, or an `and` or an `or` of two
+        or more nodes (fbc §3.10 to §3.13). `key` is the key its parent gives
+        it, used for the pk when the node carries neither an id nor a metaId.
+        """
+        if isinstance(a, libsbml.GeneProductRef):
+            return GeneProductRef(
+                **self.sbase(a, key=key), gene_product=a.getGeneProduct()
             )
-        return refs
+        # the type of the report is the name the specification gives the element,
+        # which is the name of the libsbml class without its package prefix
+        if isinstance(a, libsbml.FbcAnd):
+            return And(
+                **self.sbase(a, sbml_type="And", key=key),
+                associations=self._associations(a, key),
+            )
+        if isinstance(a, libsbml.FbcOr):
+            return Or(
+                **self.sbase(a, sbml_type="Or", key=key),
+                associations=self._associations(a, key),
+            )
+        raise TypeError(a)
+
+    def _associations(self, a: libsbml.FbcAssociation, key: str) -> list[Association]:
+        """The nodes below an `and` or an `or`, keyed by their position.
+
+        FbcAnd and FbcOr expose `getNumAssociations` and `getAssociation`; the
+        libsbml stubs declare neither of them on the base class.
+        """
+        return [
+            self.association(
+                a.getAssociation(k),  # ty: ignore[unresolved-attribute]
+                f"{self._key(a, key)}.{k}",
+            )
+            for k in range(a.getNumAssociations())  # ty: ignore[unresolved-attribute]
+        ]
 
     # ---------------------------------------------------------------------------------
     # distrib

@@ -5,7 +5,7 @@ import json
 import libsbml
 import pytest
 
-from sbml4humans.model import EdgeKind, Model, Report
+from sbml4humans.model import And, EdgeKind, GeneProductRef, Model, Or, Report
 from sbml4humans.resources import (
     COMP_ICG_BODY,
     EXAMPLES_DIR,
@@ -307,8 +307,12 @@ def test_fbc() -> None:
     assert reaction.fbc is not None
     assert reaction.fbc.lower_flux_bound == "cobra_0_bound"
     assert reaction.fbc.upper_flux_bound == "cobra_default_ub"
-    assert reaction.fbc.gene_product_association == "(b3916 or b1723)"
-    assert sorted(reaction.fbc.gene_products) == ["G_b1723", "G_b3916"]
+    association = reaction.fbc.gene_product_association
+    assert association is not None
+    root = association.association
+    assert isinstance(root, Or)
+    refs = [ref for ref in root.associations if isinstance(ref, GeneProductRef)]
+    assert [ref.gene_product for ref in refs] == ["G_b3916", "G_b1723"]
     assert len(model.list_of_gene_products) == 137
     objective = model.list_of_objectives[0]
     assert objective.id == "obj"
@@ -892,3 +896,57 @@ def test_external_model_definition_carries_its_md5(comp_deletion: Report) -> Non
     assert emd.source == "unit_definitions.xml"
     assert emd.model_ref == "unit_definitions"
     assert emd.md5 == "bde1522151d26d8fbca09893ce85ac52"
+
+
+def test_gene_product_association_is_the_tree_of_the_specification() -> None:
+    """The association of a reaction is the tree of fbc §3.9, not an infix string."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    reaction = next(r for r in report.models[0].list_of_reactions if r.id == "v1")
+    assert reaction.fbc is not None
+    association = reaction.fbc.gene_product_association
+    assert association is not None
+    assert association.sbml_type == "GeneProductAssociation"
+    assert association.id == "gpa_v1"
+    assert association.name == "association of the uptake"
+    assert association.pk == "fbc_constraints_v3/GeneProductAssociation:gpa_v1"
+
+    root = association.association
+    assert isinstance(root, Or)
+    assert root.pk == "fbc_constraints_v3/Or:gpa_v1.association"
+    complex_, single = root.associations
+    assert isinstance(complex_, And)
+    refs = [ref for ref in complex_.associations if isinstance(ref, GeneProductRef)]
+    assert [ref.gene_product for ref in refs] == ["g_ptsG", "g_ptsH"]
+    assert isinstance(single, GeneProductRef)
+    assert single.id == "ref_galP"
+    assert single.gene_product == "g_galP"
+    assert (
+        single.xml == '<fbc:geneProductRef fbc:id="ref_galP" fbc:geneProduct="g_galP"/>'
+    )
+
+
+def test_association_of_a_single_gene_product() -> None:
+    """An association which is one gene product is a reference without a node above it."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    reaction = next(r for r in report.models[0].list_of_reactions if r.id == "v2")
+    assert reaction.fbc is not None
+    association = reaction.fbc.gene_product_association
+    assert association is not None
+    assert association.id is None
+    assert association.pk == (
+        "fbc_constraints_v3/GeneProductAssociation:v2.geneProductAssociation"
+    )
+    root = association.association
+    assert isinstance(root, GeneProductRef)
+    assert root.gene_product == "g_galP"
+    assert root.pk == (
+        "fbc_constraints_v3/GeneProductRef:v2.geneProductAssociation.association"
+    )
+
+
+def test_reaction_without_gene_product_association() -> None:
+    """A reaction which names no gene product carries no association."""
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")
+    reaction = next(r for r in report.models[0].list_of_reactions if r.id == "EX_glc")
+    assert reaction.fbc is not None
+    assert reaction.fbc.gene_product_association is None

@@ -15,6 +15,8 @@ const EXAMPLES = {
   cell_cycle: "BIOMD0000000007",
   icg_body: "icg_body (icg_body.xml)",
   fbc_example: "fbc_example (fbc_example.xml)",
+  fbc_bounds_v1: "fbc_bounds_v1 (fbc_bounds_v1.xml)",
+  fbc_constraints_v3: "fbc_constraints_v3 (fbc_constraints_v3.xml)",
   model_definitions: "model_definitions (model_definitions.xml)",
   comp_deletion: "comp_deletion (comp_deletion.xml)",
   comp_models: "CompModels",

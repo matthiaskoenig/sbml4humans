@@ -16,6 +16,18 @@
         }
       }
     },
+    "And": {
+      "label": "And",
+      "summary": "the associations below it are all needed at once",
+      "package": "fbc",
+      "page": "reference/and/",
+      "attributes": {
+        "associations": {
+          "label": "associations",
+          "summary": "the nodes which are all needed, two or more of them"
+        }
+      }
+    },
     "AssignmentRule": {
       "label": "Assignment rule",
       "summary": "a formula which holds at every moment of the simulation",
@@ -233,6 +245,30 @@
         "label": {
           "label": "label",
           "summary": "the identifier under which the source of the model knows the gene"
+        }
+      }
+    },
+    "GeneProductAssociation": {
+      "label": "Gene product association",
+      "summary": "the genes a reaction needs, as the tree of operators over them",
+      "package": "fbc",
+      "page": "reference/geneproductassociation/",
+      "attributes": {
+        "association": {
+          "label": "association",
+          "summary": "the single node the association holds"
+        }
+      }
+    },
+    "GeneProductRef": {
+      "label": "Gene product reference",
+      "summary": "the leaf of an association: one gene product the reaction depends on",
+      "package": "fbc",
+      "page": "reference/geneproductref/",
+      "attributes": {
+        "geneProduct": {
+          "label": "gene product",
+          "summary": "the gene product this leaf of the association names"
         }
       }
     },
@@ -456,6 +492,18 @@
         }
       }
     },
+    "Or": {
+      "label": "Or",
+      "summary": "one of the associations below it suffices",
+      "package": "fbc",
+      "page": "reference/or/",
+      "attributes": {
+        "associations": {
+          "label": "associations",
+          "summary": "the alternative nodes, two or more of them"
+        }
+      }
+    },
     "Parameter": {
       "label": "Parameter",
       "summary": "a named value which the mathematics of the model can use",
@@ -568,11 +616,7 @@
         },
         "fbc.geneProductAssociation": {
           "label": "gene product association",
-          "summary": "the logical expression of the genes under which the reaction can run"
-        },
-        "fbc.geneProducts": {
-          "label": "gene products",
-          "summary": "the gene products named by the association of the reaction"
+          "summary": "the genes under which the reaction can run"
         },
         "fbc.lowerFluxBound": {
           "label": "lower flux bound",
@@ -1005,7 +1049,11 @@
     },
     "geneProduct": {
       "label": "gene product",
-      "summary": "a gene product the association of a reaction names"
+      "summary": "the gene product a reference of an association names"
+    },
+    "geneProductAssociation": {
+      "label": "gene product association",
+      "summary": "a node of the gene association of a reaction, from the reaction down to its genes"
     },
     "math": {
       "label": "math",

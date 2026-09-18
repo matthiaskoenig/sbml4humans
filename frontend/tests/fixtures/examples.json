@@ -201,7 +201,7 @@
   {
     "id": "comp_deletion (comp_deletion.xml)",
     "name": "Two cells and a tissue in one medium",
-    "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example of the composition machinery of the comp package: a medium holding two cells and a tissue.</p>\n    <p>The model definition <code>cell</code> is instantiated three times: twice directly, as the submodels <code>cell1</code> and <code>cell2</code>, and once through the model definition <code>tissue</code>, which holds a cell of its own. The document also declares an external model definition, which names a model of another file with its checksum; the report does not read that file.</p>\n    <p>The compartment <code>medium</code> replaces the compartment of every cell, so that the four instances share one volume, and the species <code>glc</code> replaces their glucose. The submodel <code>cell1</code> loses its own rate constant and its sink reaction through two deletions, and the parameter <code>k_total</code> of this model records that it takes the place of the deleted constant.</p>\n  </body>\n</notes>",
+    "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example of the composition machinery of the comp package: a medium holding two cells and a tissue.</p>\n    <p>The model definition <code>cell</code> is instantiated three times: twice directly, as the submodels <code>cell1</code> and <code>cell2</code>, and once through the model definition <code>tissue</code>, which holds a cell of its own. The fourth submodel instantiates an external model definition, a document of unit definitions named with its checksum; the report does not read that document, so what its deletion removes stays a name.</p>\n    <p>The compartment <code>medium</code> replaces the compartment of every cell, so that the four instances share one volume, and the species <code>glc</code> replaces their glucose. The submodel <code>cell1</code> loses its own rate constant and its sink reaction through two deletions, and the parameter <code>k_total</code> of this model records that it takes the place of the deleted constant.</p>\n  </body>\n</notes>",
     "packages": [
       "comp"
     ]
@@ -247,6 +247,22 @@
     "packages": [
       "comp",
       "distrib"
+    ]
+  },
+  {
+    "id": "fbc_bounds_v1 (fbc_bounds_v1.xml)",
+    "name": "Flux bounds of fbc Version 1",
+    "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example of the first version of the fbc package, in which the capacity of a reaction is not an attribute of the reaction but a <code>fluxBound</code> object of its own.</p>\n    <p>Every bound names the reaction it constrains, the operation which relates the flux to its value and the value itself, so that two bounds are needed to keep a flux inside an interval and a third states an equality. The reaction <code>v1</code> carries such a pair, the exchange <code>EX_glc</code> is fixed by one bound of the operation <code>equal</code>, and the upper bound of <code>v1</code> is infinite, which is how the package writes an unbounded direction.</p>\n    <p>The model defines two objectives and declares the maximisation of the biomass as the active one; the second objective minimises the glucose uptake with a negative coefficient. The species carry the chemical formula and the charge which fbc adds to them in every one of its versions.</p>\n  </body>\n</notes>",
+    "packages": [
+      "fbc"
+    ]
+  },
+  {
+    "id": "fbc_constraints_v3 (fbc_constraints_v3.xml)",
+    "name": "Constraints of fbc Version 3",
+    "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example of what the third version of the fbc package adds to a constraint based model.</p>\n    <p>A user defined constraint bounds a linear combination of fluxes which the stoichiometry of the network does not couple: <code>ratio</code> holds the flux of <code>v2</code> at twice the flux of <code>v1</code>, and <code>budget</code> weighs a reaction against a parameter which a simulation may change.</p>\n    <p>A flux objective says whether it enters the objective function linearly or quadratically, and a quadratic one may name a second reaction, so that the product of two fluxes is optimised. The charge of a species is a double here and not an integer, because a pseudoisomer carries the average charge of the species it stands for.</p>\n    <p>Key value pairs are the controlled annotation of the package: a key, its value and the address at which the key is defined, written on any element which needs metadata that no other attribute of SBML holds.</p>\n  </body>\n</notes>",
+    "packages": [
+      "fbc"
     ]
   },
   {

@@ -1,5 +1,5 @@
 {
-  "uid": "4e7ce565c83845e08658304c20c28454",
+  "uid": "0f8913f7745f482ba006d7f4b4919215",
   "manifest": {
     "entries": [
       {
@@ -575,8 +575,7 @@
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -656,8 +655,7 @@
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -754,8 +752,7 @@
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -835,8 +832,7 @@
                 "fbc": {
                   "lowerFluxBound": "zero",
                   "upperFluxBound": "ub_inf",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -889,8 +885,7 @@
                 "fbc": {
                   "lowerFluxBound": "lb_inf",
                   "upperFluxBound": "ub_inf",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -943,8 +938,7 @@
                 "fbc": {
                   "lowerFluxBound": "o2_import",
                   "upperFluxBound": "zero",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -997,8 +991,7 @@
                 "fbc": {
                   "lowerFluxBound": "glc_import",
                   "upperFluxBound": "zero",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               },
               {
@@ -1051,8 +1044,7 @@
                 "fbc": {
                   "lowerFluxBound": "lb_inf",
                   "upperFluxBound": "ub_inf",
-                  "geneProductAssociation": null,
-                  "geneProducts": []
+                  "geneProductAssociation": null
                 }
               }
             ],

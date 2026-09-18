@@ -18,6 +18,7 @@ export type EdgeKind =
   | "conversionFactor"
   | "fluxBound"
   | "geneProduct"
+  | "geneProductAssociation"
   | "associatedSpecies"
   | "fluxObjective"
   | "modelRef"
@@ -641,15 +642,83 @@ export interface LocalParameter {
 }
 /**
  * The fbc extension of a reaction.
- *
- * `gene_products` are the ids referenced by the association, so that the
- * link graph does not parse the infix string.
  */
 export interface ReactionFbc {
   lowerFluxBound?: string | null;
   upperFluxBound?: string | null;
-  geneProductAssociation?: string | null;
-  geneProducts?: string[];
+  geneProductAssociation?: GeneProductAssociation | null;
+}
+/**
+ * The genes under which a reaction can run, as the tree of fbc §3.9.
+ */
+export interface GeneProductAssociation {
+  pk: string;
+  sbmlType?: "GeneProductAssociation";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  association?: (GeneProductRef | And | Or) | null;
+}
+/**
+ * A leaf of a gene product association: the gene product it names.
+ */
+export interface GeneProductRef {
+  pk: string;
+  sbmlType?: "GeneProductRef";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  geneProduct: string;
+}
+/**
+ * Associations which are all needed at once: the subunits of a complex.
+ */
+export interface And {
+  pk: string;
+  sbmlType?: "And";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  associations?: (GeneProductRef | And | Or)[];
+}
+/**
+ * Associations of which one suffices: the isozymes of a reaction.
+ */
+export interface Or {
+  pk: string;
+  sbmlType?: "Or";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  associations?: (GeneProductRef | And | Or)[];
 }
 /**
  * An event with trigger, priority, delay and assignments.

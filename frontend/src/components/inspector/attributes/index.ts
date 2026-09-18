@@ -3,6 +3,7 @@ import type { Component } from "vue";
 import type { SbmlType } from "@/api/types";
 
 import AlgebraicRuleAttributes from "./AlgebraicRuleAttributes.vue";
+import AndAttributes from "./AndAttributes.vue";
 import AssignmentRuleAttributes from "./AssignmentRuleAttributes.vue";
 import CompartmentAttributes from "./CompartmentAttributes.vue";
 import ConstraintAttributes from "./ConstraintAttributes.vue";
@@ -12,13 +13,16 @@ import EventAssignmentAttributes from "./EventAssignmentAttributes.vue";
 import EventAttributes from "./EventAttributes.vue";
 import ExternalModelDefinitionAttributes from "./ExternalModelDefinitionAttributes.vue";
 import FunctionDefinitionAttributes from "./FunctionDefinitionAttributes.vue";
+import GeneProductAssociationAttributes from "./GeneProductAssociationAttributes.vue";
 import GeneProductAttributes from "./GeneProductAttributes.vue";
+import GeneProductRefAttributes from "./GeneProductRefAttributes.vue";
 import InitialAssignmentAttributes from "./InitialAssignmentAttributes.vue";
 import KineticLawAttributes from "./KineticLawAttributes.vue";
 import LocalParameterAttributes from "./LocalParameterAttributes.vue";
 import ModelAttributes from "./ModelAttributes.vue";
 import ModifierSpeciesReferenceAttributes from "./ModifierSpeciesReferenceAttributes.vue";
 import ObjectiveAttributes from "./ObjectiveAttributes.vue";
+import OrAttributes from "./OrAttributes.vue";
 import ParameterAttributes from "./ParameterAttributes.vue";
 import PortAttributes from "./PortAttributes.vue";
 import PriorityAttributes from "./PriorityAttributes.vue";
@@ -55,6 +59,10 @@ export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
   Submodel: SubmodelAttributes,
   Port: PortAttributes,
   GeneProduct: GeneProductAttributes,
+  GeneProductAssociation: GeneProductAssociationAttributes,
+  And: AndAttributes,
+  Or: OrAttributes,
+  GeneProductRef: GeneProductRefAttributes,
   Objective: ObjectiveAttributes,
   SpeciesReference: SpeciesReferenceAttributes,
   ModifierSpeciesReference: ModifierSpeciesReferenceAttributes,

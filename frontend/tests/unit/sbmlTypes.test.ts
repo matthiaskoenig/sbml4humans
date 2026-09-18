@@ -47,6 +47,10 @@ describe("sbml types", () => {
     expect(typeInfo("Submodel").pkg).toBe("comp");
     expect(typeInfo("Port").pkg).toBe("comp");
     expect(typeInfo("GeneProduct").pkg).toBe("fbc");
+    expect(typeInfo("GeneProductAssociation").pkg).toBe("fbc");
+    expect(typeInfo("And").pkg).toBe("fbc");
+    expect(typeInfo("Or").pkg).toBe("fbc");
+    expect(typeInfo("GeneProductRef").pkg).toBe("fbc");
     expect(typeInfo("Objective").pkg).toBe("fbc");
     expect(typeInfo("Species").pkg).toBe("core");
   });
@@ -62,7 +66,8 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(21);
+    expect(EDGE_KINDS).toHaveLength(22);
+    expect(edgeKindLabel("geneProductAssociation")).toBe("gene product association");
     expect(edgeKindLabel("fluxBound")).toBe("flux bound");
     expect(edgeKindLabel("replacedBy")).toBe("replaced by");
   });

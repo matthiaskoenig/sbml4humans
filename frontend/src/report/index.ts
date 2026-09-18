@@ -1,4 +1,5 @@
 import type {
+  Association,
   Edge,
   EdgeKind,
   SbmlElement,
@@ -150,6 +151,15 @@ export class ReportIndex {
     if (model.id) this.byModel.set(model.id, byType);
   }
 
+  /** A node of a gene product association and every node below it (fbc §3.10). */
+  private addAssociation(node: Association | null | undefined): void {
+    if (!node) return;
+    this.add(node);
+    if (node.sbmlType === "And" || node.sbmlType === "Or") {
+      for (const child of node.associations ?? []) this.addAssociation(child);
+    }
+  }
+
   private addElement(element: SbmlElement): void {
     this.add(element);
     switch (element.sbmlType) {
@@ -161,6 +171,10 @@ export class ReportIndex {
           this.add(element.kineticLaw);
           for (const parameter of element.kineticLaw.listOfLocalParameters ?? [])
             this.add(parameter);
+        }
+        if (element.fbc?.geneProductAssociation) {
+          this.add(element.fbc.geneProductAssociation);
+          this.addAssociation(element.fbc.geneProductAssociation.association);
         }
         break;
       case "Submodel":
