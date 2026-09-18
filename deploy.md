@@ -42,7 +42,7 @@ git clone https://github.com/matthiaskoenig/sbml4humans.git
 
 ### The containers
 
-`deploy.sh` is the deployment: it pulls the latest changes, removes the containers, images and volumes of the previous deployment with `docker-purge.sh`, and rebuilds and starts the backend, the frontend and the nginx container of `docker-compose-production.yml` in the background.
+`deploy.sh` is the deployment: it pulls the latest changes, removes the containers, images and volumes of the previous deployment with `docker-purge.sh`, and rebuilds and starts the backend, the frontend and the nginx container of `docker-compose-production.yml` in the background. It also exports `VITE_COMMIT`, the commit it deploys, which the frontend build takes as an argument and the footer of the application links; the build context is `./frontend` and holds no repository to read it from, so a build without that variable shows the version alone.
 
 ```bash
 ./deploy.sh
