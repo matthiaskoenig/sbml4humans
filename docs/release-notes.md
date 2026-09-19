@@ -2,6 +2,48 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.7.0
+
+Every name a report shows explains itself. A click on the label of an attribute, on the name of a type or on the heading of a group of links opens a dialog which says what the thing is and what the specification asks of it: the data type of its value, whether it is required, what holds when a file does not set it, and the validation rules it is held to, as libsbml states them. The glossary carries all of this, so the reference of the documentation states it as well, and a report which was opened from python explains itself without a network.
+
+### The explanations
+- a click on a name of the report opens its explanation in a dialog over the report ([#49](https://github.com/matthiaskoenig/sbml4humans/issues/49)): the labels of the rows of the inspector, the name of the type in its header, the headings of the groups of links and the headers of the columns of a small table. Where the name is a control already, a small help icon next to it opens the dialog: in the header of a column of an element table, where a click sorts the table, and next to the heading of a table. Hovering a name shows the one sentence it showed before
+- the dialog shows the summary, the description, the technical detail of the entry (data type, required or optional, what holds when the attribute is absent, the section of the specification), the validation rules of the specification with their number, their severity and their message, for a type its attributes and the entries which are read next to it, and it links the page of the entry in the documentation
+- it is a small reference of its own: the type an attribute belongs to, the badge of the data type, a row of the attributes, a related element and every name the text links open the entry they name, and the back button of the browser walks back through the entries which were opened. Every opener is a real link, so a ctrl-click or a middle click opens an explanation in a new tab
+- the open entry is the parameter `help` of the url, `?help=types/Species/initialAmount`, so an explanation can be linked and survives a reload
+- the explanations ship with the application: a report which `sbml4humans.show` opens needs no network for them. They are loaded with the first dialog of a session, together with the renderer of their markdown, and with no other page
+- the header of the inspector no longer links the reference page of the type: the name of the type opens its explanation, whose footer links that page
+
+### The glossary and the reference
+- every attribute which cites a specification says whether that specification requires it, 205 of them, and 80 say in plain words what holds when a file does not set them: the value which is assumed, the element the value is taken from, or that the quantity is simply unknown. The fields the report adds itself state neither of the two, no specification asks anything of them
+- an entry cites the validation rules of the specification which concern it, by the number a validator reports. Their text is never written in the glossary: the generator reads the message, the severity and the section of the specification from libsbml 5.21.1, the library which judges the file of a reader, so no rule of the documentation can drift from the validator. 458 rules are cited, at the 243 types and attributes they are about
+- [Data types](https://matthiaskoenig.github.io/sbml4humans/reference/datatypes/) is a new page of the reference: the 30 data types an attribute of the report can carry, the `SId` and its references, the numbers, the strings, the seven enumerations with their values and the kinds of value the report adds itself. The `type` of every attribute of the reference links its entry there
+- the reference pages carry the rest of it: the table of the attributes of a type has the column `required`, the entry of an attribute states its default and lists its rules, and a type lists the rules about the element as a whole
+- the values of `UncertKind` are spelt as the distrib specification spells them. Note that libsbml 5.21.1 knows the coefficient of variation under the misspelling `coeffientOfVariation` and not under `coefficientOfVariation`, so a file which a tool built on libsbml writes carries the misspelling
+
+### Corrections
+- `fbc:charge` is a `double`, as fbc Version 3 defines it, where the glossary called it an integer
+- a [port](https://matthiaskoenig.github.io/sbml4humans/reference/port/) of comp names its element in one of three ways and not four: no port may name a port of its own model, it reaches a port of one of its parts through a nested reference
+- the `listOfDeletions` of a [submodel](https://matthiaskoenig.github.io/sbml4humans/reference/submodel/) is Section 3.5.2 of the comp specification
+- an end of an [uncert span](https://matthiaskoenig.github.io/sbml4humans/reference/uncertspan/) which a file sets by neither a value nor a variable is undefined, as distrib says of it, where the glossary called the interval open at that end
+- the fbc block of a model, which holds `strict` and the active objective, is optional
+- the gene association of the example of Section 3.9 of fbc is an `or` of three complexes, and the report writes it with the identifiers of the gene product references and not with the labels the reconstruction knows the genes by
+- the data types, the references of comp and the defaults of qual and distrib say what their specifications say, in the places where the first draft of the glossary was shorter than the specification
+
+### Fixes
+- a tooltip of an element inside a modal dialog was painted behind the dialog, because the dialog is drawn in the top layer of the browser and above everything the page paints
+
+### Development
+- the glossary generator writes a third file, `frontend/src/data/glossary-details.json`, the description and the technical detail of every entry for the dialog: 54 types, 241 attributes, 49 link kinds, 10 concepts of the report and 30 data types. `glossary.json`, which every page loads for its tooltips, is unchanged
+- `sbml4humans.glossaryrules` resolves a rule number into its message, its severity and its section with libsbml: a rule of the core through `SBMLError` in the newest version which has the rule, a rule of a package through the error table of its extension
+- `python -m sbml4humans.glossary --check` demands `required` of every attribute of a specification, refuses it on an attribute the report adds, resolves every cited rule and refuses one of a foreign package, and demands that every `type` names a data type or a type of the glossary and that every data type is used
+- the api of the backend and the report it answers did not change: the whole release is the glossary, its generated files and the frontend
+- the backend has 659 tests, the frontend 431 unit tests and 87 end to end tests
+
+### Documentation
+- [reading a report](https://matthiaskoenig.github.io/sbml4humans/report/#explanations) has the section "Explanations": where an explanation is opened, what the dialog shows and how it is linked
+- [development](https://matthiaskoenig.github.io/sbml4humans/development/#documentation) describes the keys an entry of the glossary states, how the number of a validation rule is found and what the check of the documentation refuses
+
 ## 0.6.2
 
 A report names things as the specification does: a type is written as the name of its class and an attribute as the file writes it, so that a name which is read in a report is the name to look for in the specification, in the XML and in a library such as libsbml. The report page opens with the model in an inspector at the left of the tables, the `ListOf` containers of a model which state something of their own are elements of the report, and the documentation carries the release notes.
