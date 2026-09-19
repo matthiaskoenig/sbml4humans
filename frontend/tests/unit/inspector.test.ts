@@ -647,6 +647,38 @@ describe("inspector", () => {
     expect(wrapper.get("[data-testid=show-all]").text()).toBe("show all (10)");
   });
 
+  it("shows the measures of every uncertainty of an element in its inspector", () => {
+    // how well a value is known is shown where the value is, not one click away
+    const km = distribSpans.mainModel!.listOfParameters!.find((p) => p.id === "Km")!;
+    const wrapper = mountWith(AttributesColumn, { element: km }, distribSpans);
+    const blocks = wrapper.findAll("[data-testid=uncertainty]");
+    expect(blocks).toHaveLength(2);
+    const [purified, lysate] = blocks;
+    expect(purified!.get("[data-testid=element-link]").attributes("data-pk")).toBe(
+      "distrib_spans/Uncertainty:u_Km_purified",
+    );
+    expect(purified!.text()).toContain("Wilson 1997, purified enzyme");
+    expect(purified!.findAll("[data-testid=uncert-measure]")).toHaveLength(4);
+    expect(purified!.findAll("[data-testid=uncert-value]").map((v) => v.text())).toEqual([
+      "0.5",
+      "0.06",
+      "12",
+      "0.38 to 0.63",
+    ]);
+    expect(lysate!.text()).toContain("Baker 2012, cell lysate");
+    expect(lysate!.get("[data-testid=uncert-span]").text()).toBe("Km_lower to Km_upper");
+    // the count of the measures is gone, the measures are there
+    expect(wrapper.text()).not.toContain("parameters");
+  });
+
+  it("lets an uncertainty name the element whose value it describes", () => {
+    const uncertainty = "distrib_spans/Uncertainty:u_Km_lysate";
+    const links = mountWith(LinksColumn, { pk: uncertainty }, distribSpans).get(
+      "[data-testid=links-referenced-by] [data-testid=links-uncertainty]",
+    );
+    expect(links.findAll("[data-testid=element-link]").map((link) => link.text())).toEqual(["Km"]);
+  });
+
   it("never renders the uncertainty definition url as a link unless it is http(s)", () => {
     const distrib = indexes[fixtures.indexOf("distrib_uncertainties")]!;
     const uncertainty = [...distrib.elements.values()].find(

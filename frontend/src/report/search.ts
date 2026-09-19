@@ -1,4 +1,4 @@
-import type { Math, SBase, UncertMeasure } from "@/api/types";
+import type { Math, SBase, UncertMeasure, Uncertainty } from "@/api/types";
 
 const texts = new WeakMap<SBase, string>();
 
@@ -36,9 +36,25 @@ function* maths(element: SBase): Generator<Math | null | undefined> {
   }
 }
 
+/** The text of an uncertainty and of every measure below it: the id, the name, the notes and
+ * the type of a measure. An uncertainty is no row of a table but part of the inspector of the
+ * element whose value it describes, so that element is what the search finds. */
+function* uncertaintyTexts(
+  owners: (Uncertainty | UncertMeasure)[],
+): Generator<string | null | undefined> {
+  for (const owner of owners) {
+    yield owner.id;
+    yield owner.name;
+    if (owner.notes) yield stripHtml(owner.notes);
+    if ("type" in owner) yield owner.type;
+    yield* uncertaintyTexts(owner.uncertParameters ?? []);
+  }
+}
+
 /** The searchable text of an element: id, name, metaId, sbo, the element it sets, notes text,
- * formulas and equation. An initial assignment, a rule and an event assignment carry no id in
- * most models, and a reader looks for them by the symbol or the variable they set. */
+ * formulas, equation and the uncertainties it carries. An initial assignment, a rule and an
+ * event assignment carry no id in most models, and a reader looks for them by the symbol or the
+ * variable they set. */
 function searchText(element: SBase): string {
   const cached = texts.get(element);
   if (cached !== undefined) return cached;
@@ -56,6 +72,12 @@ function searchText(element: SBase): string {
   if (element.sbmlType === "Constraint" && element.message) parts.push(stripHtml(element.message));
   for (const math of maths(element)) parts.push(math?.formula);
   if (element.sbmlType === "Reaction") parts.push(element.equation);
+  // the math of the measures is among the formulas of an uncertainty, which is part of the
+  // element in the same way
+  for (const uncertainty of element.uncertainties ?? []) {
+    parts.push(...uncertaintyTexts([uncertainty]));
+    for (const math of maths(uncertainty)) parts.push(math?.formula);
+  }
   const text = parts
     .filter((part): part is string => !!part)
     .join("\n")

@@ -97,7 +97,7 @@ The report lists the pairs of an element in its inspector. libsbml does not read
 
 Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
 
-The report lists the uncertainties of an element in its inspector with the number of their parameters, and shows every [uncertainty](uncertainty.md) as an element of its own.
+The report shows the uncertainties of an element in its inspector, each of them named with a link to it and with the table of the measures it collects, so that how well a value is known is read where the value is. Every [uncertainty](uncertainty.md) is an element of its own, which names the element it describes under "Referenced by", and the search finds an element by the names, the notes and the types of the measures of its uncertainties.
 
 ## In the report
 

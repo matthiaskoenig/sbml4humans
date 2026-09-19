@@ -61,10 +61,20 @@ test.describe("distrib", () => {
     await openExample(page, SPANS);
     await row(page, "Parameter:Km").click();
     const inspector = page.getByTestId("inspector");
-    // a measurement per publication is an uncertainty of its own
-    const uncertainties = attribute(page, "uncertainties").getByTestId("element-link");
-    await expect(uncertainties).toHaveText(["u_Km_purified", "u_Km_lysate"]);
-    await uncertainties.nth(1).click();
+    // a measurement per publication is an uncertainty of its own, and the inspector of the
+    // parameter shows the measures of each of them
+    const uncertainties = attribute(page, "uncertainties").getByTestId("uncertainty");
+    await expect(uncertainties.getByTestId("uncertainty-name")).toHaveText([
+      /^u_Km_purified\s*Wilson 1997, purified enzyme$/,
+      /^u_Km_lysate\s*Baker 2012, cell lysate$/,
+    ]);
+    await expect(uncertainties.nth(0).getByTestId("uncert-value")).toHaveText([
+      "0.5",
+      "0.06",
+      "12",
+      "0.38 to 0.63",
+    ]);
+    await uncertainties.nth(1).getByTestId("uncertainty-name").getByTestId("element-link").click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Uncertainty");
     expect(await measures(page)).toEqual([
       "median 0.59",
@@ -78,6 +88,18 @@ test.describe("distrib", () => {
     await expect(
       inspector.getByTestId("links-referenced-by").getByTestId("links-varLower"),
     ).toContainText("Km_lysate_ci");
+
+    // the uncertainty leads back to the element whose value it describes, and the search finds
+    // the element by what its uncertainties say
+    await page.goBack();
+    await inspector
+      .getByTestId("links-referenced-by")
+      .getByTestId("links-uncertainty")
+      .getByTestId("element-link")
+      .click();
+    await expect(page).toHaveURL(/pk=distrib_spans\/Parameter:Km$/);
+    await page.getByTestId("search-input").fill("Baker");
+    await expect(page.getByTestId("table-Parameter").locator("tbody tr[data-pk]")).toHaveCount(1);
   });
 
   test("shows the parameters a distribution is defined by", async ({ page }) => {

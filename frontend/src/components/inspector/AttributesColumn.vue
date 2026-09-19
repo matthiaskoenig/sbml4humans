@@ -4,6 +4,7 @@ import { computed } from "vue";
 import type { ReplacedBy, ReplacedElement, SBase } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
+import UncertMeasureTable from "@/components/inspector/UncertMeasureTable.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import ValueText from "@/components/misc/ValueText.vue";
@@ -24,16 +25,6 @@ const keyValueColumns = [
   { key: "value", header: "value" },
   { key: "uri", header: "uri" },
 ];
-const uncertaintyColumns = [
-  { key: "id", header: "id" },
-  { key: "count", header: "parameters" },
-];
-const uncertainties = computed(() =>
-  (props.element.uncertainties ?? []).map((u) => ({
-    pk: u.pk,
-    count: u.uncertParameters?.length ?? 0,
-  })),
-);
 
 /** One row of a replacement: the submodel it names, and the element inside it which it replaces
  * or which replaces this element. A replacement scoped to a deletion names that deletion in the
@@ -147,16 +138,28 @@ const replacedElements = computed(() =>
         </template>
       </NestedTable>
     </AttributeRow>
+    <!-- how well a value is known belongs next to the value: every uncertainty of the element
+    is named with a link to it and shows the measures it collects, the table its own inspector
+    shows -->
     <AttributeRow
-      v-if="uncertainties.length"
+      v-if="element.uncertainties?.length"
       label="uncertainties"
       :type="element.sbmlType"
       field="uncertainties"
       wide
     >
-      <NestedTable :rows="uncertainties" :columns="uncertaintyColumns">
-        <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
-      </NestedTable>
+      <div
+        v-for="uncertainty in element.uncertainties"
+        :key="uncertainty.pk"
+        class="mb-2 last:mb-0"
+        data-testid="uncertainty"
+      >
+        <p class="mb-0.5" data-testid="uncertainty-name">
+          <ElementLink :pk="uncertainty.pk" />
+          <span v-if="uncertainty.name" class="ml-1.5 text-gray-700">{{ uncertainty.name }}</span>
+        </p>
+        <UncertMeasureTable :measures="uncertainty.uncertParameters ?? []" />
+      </div>
     </AttributeRow>
   </dl>
 </template>

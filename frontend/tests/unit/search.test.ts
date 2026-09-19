@@ -8,6 +8,7 @@ import { loadReport } from "./fixtures";
 
 const index = new ReportIndex(loadReport("repressilator"));
 const model = index.mainModel!;
+const spans = new ReportIndex(loadReport("distrib_spans")).mainModel!;
 
 describe("search", () => {
   it("normalizes the query", () => {
@@ -55,6 +56,23 @@ describe("search", () => {
     const rule = model.listOfRules!.find((r) => "variable" in r)!;
     expect(rule.id).toBeNull();
     expect(matches(rule, (rule as AssignmentRule).variable)).toBe(true);
+  });
+
+  it("matches an element by the uncertainties it carries and their measures", () => {
+    // an uncertainty is no row of a table, it is shown in the inspector of its element: the
+    // element is found by the name, the notes and the measures of its uncertainties
+    const parameter = (id: string) => spans.listOfParameters!.find((p) => p.id === id)!;
+    const substrate = spans.listOfSpecies!.find((s) => s.id === "S")!;
+    expect(matches(parameter("Km"), "Baker")).toBe(true);
+    expect(matches(parameter("Km"), "lysate")).toBe(true);
+    expect(matches(parameter("Km"), "Km_purified_mean")).toBe(true);
+    expect(matches(parameter("Km"), "confidenceInterval")).toBe(true);
+    expect(matches(substrate, "titration")).toBe(true);
+    expect(matches(substrate, "five titrations")).toBe(true);
+    // the parameters of a distribution, however deep they nest
+    expect(matches(parameter("Vmax"), "Beta")).toBe(true);
+    expect(matches(parameter("Vmax"), "Vmax_alpha")).toBe(true);
+    expect(matches(parameter("Km_lower"), "Baker")).toBe(false);
   });
 
   it("does not match a species by the compartment id", () => {

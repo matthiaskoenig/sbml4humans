@@ -6,7 +6,7 @@ An uncertainty collects the measures which belong together, for example the mean
 
 The measures do not affect a simulation. They say where a number comes from and how well it is known, which is what a reader of a published model wants to see and what a sampling of the parameters of a model needs.
 
-The report shows every uncertainty as an element of its own, with the table of its parameters, and lists the uncertainties of an element in its inspector.
+The report shows every uncertainty as an element of its own, with the table of its measures and a link to the element it describes, and it shows the same table in the inspector of that element.
 
 ## Attributes
 
