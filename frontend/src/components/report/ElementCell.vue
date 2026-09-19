@@ -22,6 +22,7 @@ import { fieldValue, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
 import { toNumber } from "@/report/number";
 import { geneAssociationText } from "@/report/geneAssociation";
+import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
 
 const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
 const index = useReportIndex();
@@ -36,6 +37,13 @@ const numberValue = computed(() =>
   toNumber(value.value) === null ? null : (value.value as string | number),
 );
 const mathValue = computed(() => (value.value as Math | null | undefined) ?? null);
+
+/** Kind "id": the name the report gives a row the file gives no id, which is what the inspector
+ * and every link call the element: the variable of a rule, the meta id of a constraint, the
+ * place of an algebraic rule. */
+const reportName = computed(() =>
+  props.column.kind === "id" && !text.value ? elementLabel(index.value, props.row.pk) : null,
+);
 
 /** Kind "link": the pk of the referenced element, resolved through the edges of the row. */
 const targetPk = computed(() =>
@@ -95,11 +103,19 @@ function signOf(influence: Input | Output): string | null | undefined {
 
 <template>
   <!-- the identifier of a row carries the mark of its type, so that the tables of the rules,
-  which look alike, and a row of an element without an id are told apart by the mark -->
+  which look alike, are told apart by the mark; a row the file gives no id is named as the
+  inspector names it, in italics, which tells that name from an id of the file -->
   <span v-if="column.kind === 'id'" class="flex items-center gap-1.5">
     <TypeMark v-if="row.sbmlType" :type="row.sbmlType" />
     <span v-if="text" class="font-mono font-medium">{{ text }}</span>
-    <ValueText v-else :value="text" mono />
+    <span
+      v-else-if="reportName"
+      v-tooltip.bottom="REPORT_NAME_HINT"
+      class="font-mono text-gray-600 italic"
+      data-testid="report-name"
+      >{{ reportName }}</span
+    >
+    <ValueText v-else :value="null" mono />
   </span>
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
   <ValueText v-else-if="column.kind === 'number' || column.kind === 'count'" :value="numberValue" />

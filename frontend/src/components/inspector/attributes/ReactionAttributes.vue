@@ -49,9 +49,7 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     :wide="!!element.listOfReactants?.length"
   >
     <NestedTable :rows="element.listOfReactants ?? []" :columns="PARTICIPANT_COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-species="{ row }"
         ><ElementLink :pk="species(row.pk, 'reactant', row.species)" :label="row.species"
       /></template>
@@ -65,9 +63,7 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     :wide="!!element.listOfProducts?.length"
   >
     <NestedTable :rows="element.listOfProducts ?? []" :columns="PARTICIPANT_COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-species="{ row }"
         ><ElementLink :pk="species(row.pk, 'product', row.species)" :label="row.species"
       /></template>
@@ -81,9 +77,7 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     :wide="!!element.listOfModifiers?.length"
   >
     <NestedTable :rows="element.listOfModifiers ?? []" :columns="MODIFIER_COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.species"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-species="{ row }"
         ><ElementLink :pk="species(row.pk, 'modifier', row.species)" :label="row.species"
       /></template>
@@ -91,7 +85,7 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
   </AttributeRow>
   <AttributeRow label="kinetic law" :type="element.sbmlType" field="kineticLaw">
     <template v-if="element.kineticLaw">
-      <ElementLink :pk="element.kineticLaw.pk" :label="element.kineticLaw.id ?? 'kinetic law'" />
+      <ElementLink :pk="element.kineticLaw.pk" />
       <MathView :math="element.kineticLaw.math" display />
       <UnitsView :latex="element.kineticLaw.derivedUnits" />
     </template>
@@ -116,11 +110,7 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
       field="fbc.geneProductAssociation"
     >
       <template v-if="element.fbc.geneProductAssociation">
-        <ElementLink
-          :pk="element.fbc.geneProductAssociation.pk"
-          :label="element.fbc.geneProductAssociation.id ?? 'association'"
-          class="mr-2"
-        />
+        <ElementLink :pk="element.fbc.geneProductAssociation.pk" class="mr-2" />
         <GeneAssociationView
           v-if="element.fbc.geneProductAssociation.association"
           :node="element.fbc.geneProductAssociation.association"

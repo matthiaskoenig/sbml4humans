@@ -231,6 +231,34 @@ describe("inspector", () => {
     expect(pks).toContain(reaction.listOfReactants![0]!.pk);
     const reactant = reaction.listOfReactants![0]!;
     expect(pks).toContain(repressilator.resolve(reactant.pk, "reactant", reactant.species));
+    // the reference carries no id: its row names it as every link does, as the name the report
+    // gives it and not as the id of its species
+    const table = wrapper
+      .findAll("[data-testid=attribute-row]")
+      .find((row) => row.find("dt").text() === "reactants")!;
+    const name = table.get("tbody tr td [data-testid=report-name]");
+    expect(name.text()).toBe(`${reaction.id}.${reactant.species}`);
+  });
+
+  it("names a nested element in its row as every link to it names it", () => {
+    // a kinetic law, a trigger and an association without an id were a generic word in their
+    // row, which repeated the label of the row and differed from the link
+    const reaction = constraintEvent.mainModel!.listOfReactions!.find((r) => r.id === "R1")!;
+    const rows = mountWith(AttributesColumn, { element: reaction }, constraintEvent)
+      .findAll("[data-testid=attribute-row]")
+      .filter((r) => r.find("dd [data-testid=element-link]").exists())
+      .map((r) => [r.find("dt").text(), r.find("dd [data-testid=element-link]").text()]);
+    expect(rows).toContainEqual(["kinetic law", "R1.kineticLaw"]);
+    const v2 = fbcConstraints.mainModel!.listOfReactions!.find((r) => r.id === "v2")!;
+    const association = mountWith(AttributesColumn, { element: v2 }, fbcConstraints)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "gene product association")!;
+    expect(association.find("[data-testid=element-link]").text()).toBe("v2.geneProductAssociation");
+    const objective = fbcBounds.mainModel!.listOfObjectives!.find((o) => o.id === "biomass_max")!;
+    const term = mountWith(AttributesColumn, { element: objective }, fbcBounds).get(
+      "[data-testid=nested-table] tbody tr td",
+    );
+    expect(term.text()).toBe("biomass_max.EX_biomass");
   });
 
   it("shows an unresolved submodel conversion factor as plain text, not a link", () => {

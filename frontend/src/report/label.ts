@@ -31,6 +31,19 @@ const INFLUENCE_KINDS: Partial<Record<SbmlType, EdgeKind>> = {
   Output: "output",
 };
 
+/** The tooltip of a name the report gives an element the file gives no id: it is set in
+ * italics wherever it stands, so that it is told apart from an id the file writes. */
+export const REPORT_NAME_HINT = "no id in the file: the name the report gives the element";
+
+/** Whether the element carries an id of the file, which is the name a link shows of it. An
+ * element without one is shown by the name the report gives it, and that name is marked. */
+export function hasFileId(
+  index: ReportIndex | null | undefined,
+  pk: string | null | undefined,
+): boolean {
+  return !!(pk && index?.get(pk)?.id);
+}
+
 /** How many elements the name of an element follows outwards. A file nests an element three
  * deep at most, a replacement of a species reference of a reaction, so the limit only keeps a
  * graph which is not a tree from recursing without end. */

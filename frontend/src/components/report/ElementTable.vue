@@ -4,8 +4,10 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from 
 
 import type { ElementType, SbmlElement } from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
-import { visibleColumns, type ColumnDef } from "@/report/columns";
+import { fieldValue, visibleColumns, type ColumnDef } from "@/report/columns";
+import { useReportIndex } from "@/report/context";
 import { attributeEntry } from "@/report/glossary";
+import { elementLabel } from "@/report/label";
 import { rowWindow } from "@/report/rowWindow";
 import { sortRows, type SortState } from "@/report/sort";
 import { useReportView } from "@/report/view";
@@ -34,10 +36,20 @@ const props = defineProps<{
   allRows?: SbmlElement[];
 }>();
 const view = useReportView();
+const index = useReportIndex();
 
 const columns = computed(() => visibleColumns(props.type, props.allRows ?? props.rows));
 const sort = ref<SortState | null>(null);
-const sorted = computed(() => sortRows(props.rows, sort.value));
+
+/** The value a row sorts by in a column: its field, and in the id column the name a row the
+ * file gives no id is shown by. */
+function sortValue(row: SbmlElement, field: string): unknown {
+  const column = columns.value.find((c) => c.field === field);
+  if (column?.kind === "id" && !row.id) return elementLabel(index.value, row.pk);
+  return fieldValue(row, field);
+}
+
+const sorted = computed(() => sortRows(props.rows, sort.value, sortValue));
 const virtual = computed(() => props.rows.length > VIRTUAL_ROWS);
 const selectedPk = computed(() => view.state.value.pk);
 

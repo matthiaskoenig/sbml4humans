@@ -213,6 +213,18 @@ describe("misc components", () => {
     const link = mountWithIndex(ElementLink, { pk: rule.pk });
     expect(link.get("[data-testid=element-link]").text()).toBe(pkKey(rule.pk));
     expect(link.text()).not.toContain("/");
+    // the name the report gives is set apart from an id the file writes
+    expect(link.get("[data-testid=report-name]").classes()).toContain("italic");
+    const species = index.mainModel!.listOfSpecies![0]!;
+    expect(
+      mountWithIndex(ElementLink, { pk: species.pk }).find("[data-testid=report-name]").exists(),
+    ).toBe(false);
+    // a label the caller passes is what the file writes, for example the variable of a rule
+    expect(
+      mountWithIndex(ElementLink, { pk: rule.pk, label: "t_ave" })
+        .find("[data-testid=report-name]")
+        .exists(),
+    ).toBe(false);
   });
 
   it("names the trigger and the delay of an event by their event", () => {

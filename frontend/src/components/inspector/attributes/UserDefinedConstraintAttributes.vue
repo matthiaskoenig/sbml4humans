@@ -37,9 +37,7 @@ const COLUMNS = [
     :wide="!!element.listOfUserDefinedConstraintComponents?.length"
   >
     <NestedTable :rows="element.listOfUserDefinedConstraintComponents ?? []" :columns="COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.variable"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-variable="{ row }">
         <ElementLink :pk="index?.resolve(row.pk, 'variable', row.variable)" :label="row.variable" />
       </template>

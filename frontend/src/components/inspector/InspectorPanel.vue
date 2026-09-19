@@ -10,7 +10,7 @@ import XmlView from "@/components/misc/XmlView.vue";
 import { typeInfo } from "@/data/sbmlTypes";
 import { useReportIndex } from "@/report/context";
 import { referenceUrl } from "@/report/glossary";
-import { elementLabel } from "@/report/label";
+import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
 import { useReportView } from "@/report/view";
 
 const props = defineProps<{ pk: string }>();
@@ -71,7 +71,13 @@ const xmlEmptyMessage = computed(() =>
         <ExternalLinkIcon class="size-3" />
       </a>
       <span v-else class="text-gray-500" data-testid="inspector-type">{{ label }}</span>
-      <span class="font-mono font-semibold" data-testid="inspector-id">{{ name }}</span>
+      <span
+        v-tooltip.bottom="element.id ? undefined : REPORT_NAME_HINT"
+        class="font-mono font-semibold"
+        :class="{ italic: !element.id }"
+        data-testid="inspector-id"
+        >{{ name }}</span
+      >
       <span v-if="element.name" class="truncate text-gray-700" data-testid="inspector-name">{{
         element.name
       }}</span>

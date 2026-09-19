@@ -41,9 +41,15 @@ export function compareValues(a: unknown, b: unknown, order: SortOrder): number 
   return order * (x < y ? -1 : x > y ? 1 : 0);
 }
 
-/** The rows sorted by `sort` (stable), a copy in the order of the report without a sort. */
-export function sortRows<T extends object>(rows: readonly T[], sort: SortState | null): T[] {
+/** The rows sorted by `sort` (stable), a copy in the order of the report without a sort. The
+ * value of a row is its field, or what `valueOf` makes of it: the id column of an element table
+ * sorts a row the file gives no id by the name the report gives it. */
+export function sortRows<T extends object>(
+  rows: readonly T[],
+  sort: SortState | null,
+  valueOf: (row: T, field: string) => unknown = fieldValue,
+): T[] {
   if (!sort) return [...rows];
-  const values = new Map(rows.map((row) => [row, fieldValue(row, sort.field)]));
+  const values = new Map(rows.map((row) => [row, valueOf(row, sort.field)]));
   return [...rows].sort((a, b) => compareValues(values.get(a), values.get(b), sort.order));
 }

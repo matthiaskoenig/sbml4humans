@@ -29,9 +29,7 @@ const COLUMNS = [
     :wide="!!element.listOfFluxObjectives?.length"
   >
     <NestedTable :rows="element.listOfFluxObjectives ?? []" :columns="COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.reaction"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-reaction="{ row }">
         <ElementLink
           :pk="index?.resolve(row.pk, 'fluxObjective', row.reaction)"

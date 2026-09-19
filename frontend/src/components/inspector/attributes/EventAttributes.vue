@@ -29,7 +29,7 @@ const ASSIGNMENT_COLUMNS = [
   reaction does -->
   <AttributeRow label="trigger" :type="element.sbmlType" field="trigger">
     <template v-if="element.trigger">
-      <ElementLink :pk="element.trigger.pk" :label="element.trigger.id ?? 'trigger'" />
+      <ElementLink :pk="element.trigger.pk" />
       <MathView class="ml-2" :math="element.trigger.math" />
     </template>
     <span v-else class="text-gray-400">-</span>
@@ -42,14 +42,14 @@ const ASSIGNMENT_COLUMNS = [
   /></AttributeRow>
   <AttributeRow label="priority" :type="element.sbmlType" field="priority">
     <template v-if="element.priority">
-      <ElementLink :pk="element.priority.pk" :label="element.priority.id ?? 'priority'" />
+      <ElementLink :pk="element.priority.pk" />
       <MathView class="ml-2" :math="element.priority.math" />
     </template>
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="delay" :type="element.sbmlType" field="delay">
     <template v-if="element.delay">
-      <ElementLink :pk="element.delay.pk" :label="element.delay.id ?? 'delay'" />
+      <ElementLink :pk="element.delay.pk" />
       <MathView class="ml-2" :math="element.delay.math" />
     </template>
     <span v-else class="text-gray-400">-</span>
@@ -61,9 +61,7 @@ const ASSIGNMENT_COLUMNS = [
     :wide="!!element.listOfEventAssignments?.length"
   >
     <NestedTable :rows="element.listOfEventAssignments ?? []" :columns="ASSIGNMENT_COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.variable"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-variable="{ row }"
         ><ElementLink :pk="index?.resolve(row.pk, 'variable', row.variable)" :label="row.variable"
       /></template>

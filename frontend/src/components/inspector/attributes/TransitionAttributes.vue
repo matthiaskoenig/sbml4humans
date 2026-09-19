@@ -73,9 +73,7 @@ const terms = computed<TermRow[]>(() => {
     :wide="!!element.listOfInputs?.length"
   >
     <NestedTable :rows="element.listOfInputs ?? []" :columns="INPUT_COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.qualitativeSpecies"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-qualitativeSpecies="{ row }">
         <ElementLink
           :pk="index?.resolve(row.pk, 'input', row.qualitativeSpecies)"
@@ -93,9 +91,7 @@ const terms = computed<TermRow[]>(() => {
     :wide="!!element.listOfOutputs?.length"
   >
     <NestedTable :rows="element.listOfOutputs ?? []" :columns="OUTPUT_COLUMNS">
-      <template #cell-id="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.id ?? row.qualitativeSpecies"
-      /></template>
+      <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-qualitativeSpecies="{ row }">
         <ElementLink
           :pk="index?.resolve(row.pk, 'output', row.qualitativeSpecies)"
@@ -112,9 +108,7 @@ const terms = computed<TermRow[]>(() => {
     :wide="!!terms.length"
   >
     <NestedTable :rows="terms" :columns="TERM_COLUMNS">
-      <template #cell-term="{ row }"
-        ><ElementLink :pk="row.pk" :label="row.isDefault ? 'default' : null"
-      /></template>
+      <template #cell-term="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-condition="{ row }">
         <span v-if="row.isDefault" class="text-gray-500 italic">otherwise</span>
         <MathView v-else :math="row.math" />

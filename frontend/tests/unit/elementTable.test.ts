@@ -10,6 +10,7 @@ import { columnsOf, type ColumnDef } from "@/report/columns";
 import { attributeEntry } from "@/report/glossary";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
+import { elementLabel } from "@/report/label";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
@@ -101,6 +102,26 @@ describe("ElementTable", () => {
     expect(header(table, "id").attributes("aria-sort")).toBe("none");
     expect(header(table, "initial amount").attributes("aria-sort")).toBe("ascending");
     expect(ids(table)).toEqual(["PX", "PY", "PZ", "X", "Z", "Y"]);
+  });
+
+  it("sorts a row without an identifier by the name the report gives it", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const rules = index.byType("BIOMD0000000012").get("AssignmentRule")!;
+    wrapper = mount(ElementTable, {
+      props: { type: "AssignmentRule", rows: rules },
+      attachTo: document.body,
+      global: {
+        plugins: [router],
+        directives: { tooltip: vTooltip },
+        provide: { [ReportIndexKey as symbol]: ref(index) },
+      },
+    });
+    const names = rules.map((rule) => elementLabel(index, rule.pk)!);
+    await header(wrapper, "id").get("[data-testid=sort-button]").trigger("click");
+    expect(ids(wrapper)).toEqual(
+      [...names].sort(new Intl.Collator(undefined, { numeric: true }).compare),
+    );
+    expect(ids(wrapper)[0]).not.toBe(ids(wrapper)[ids(wrapper).length - 1]);
   });
 
   it("sorts new rows with the current sort", async () => {
@@ -361,7 +382,21 @@ describe("ElementCell", () => {
   it("keeps the type mark on a row without an identifier", () => {
     const wrapper = mountCell({ ...species[0]!, id: null }, idColumn);
     expect(wrapper.get("[data-testid=type-mark]").attributes("aria-label")).toBe("Species");
-    expect(wrapper.text()).toBe("-");
+  });
+
+  it("names a row without an identifier by the name the report gives it, set apart from an id", () => {
+    // the rules of a Level 2 model carry no id; the report names them by the variable they set,
+    // which is what the inspector and every link call them
+    const rules = index.byType("BIOMD0000000012").get("AssignmentRule")!;
+    const rule = rules[0]!;
+    expect(rule.id).toBeNull();
+    const wrapper = mountCell(rule, columnsOf("AssignmentRule")[0]!);
+    const name = wrapper.get("[data-testid=report-name]");
+    expect(name.text()).toBe(elementLabel(index, rule.pk));
+    expect(name.text()).toBe("t_ave");
+    expect(name.classes()).toContain("italic");
+    // an id the file writes is shown as it is
+    expect(mountCell(species[0]!, idColumn).find("[data-testid=report-name]").exists()).toBe(false);
   });
 
   it("renders every assignment of an event as its variable and its formula", () => {
