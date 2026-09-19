@@ -1,5 +1,5 @@
 {
-  "uid": "bcf5c379dae1486b89b3f57f3c349bca",
+  "uid": "785879b6b4104a62a422826d43a98ea7",
   "manifest": {
     "entries": [
       {
@@ -248,7 +248,7 @@
             "notes": null,
             "cvterms": [],
             "history": null,
-            "xml": "<comp:modelDefinition id=\"m1\" name=\"Model Definition 1\">\n  <listOfCompartments>\n    <compartment id=\"d\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <listOfSpecies>\n    <species id=\"A\" compartment=\"d\" initialAmount=\"1\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"false\" constant=\"false\"/>\n  </listOfSpecies>\n</comp:modelDefinition>",
+            "xml": null,
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
@@ -467,7 +467,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.004 [s]"
+        "jsonReportTime": "0.003 [s]"
       }
     }
   }
