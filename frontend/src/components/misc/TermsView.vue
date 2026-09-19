@@ -8,7 +8,7 @@ import { useReportIndex } from "@/report/context";
  * the objective maximises or minimises, and the components of a user defined constraint, which
  * its bounds keep between them. A term is its coefficient times a variable, `C × J`, and a
  * quadratic term is the square of the variable, `C × J²`, or the product with a second one,
- * `C × J × J2` (fbc Version 3 §3.7 and §3.8). */
+ * `C × J × J2` (fbc Version 3 §3.7 and §3.15). */
 defineProps<{ terms: (FluxObjective | UserDefinedConstraintComponent)[] }>();
 const index = useReportIndex();
 
