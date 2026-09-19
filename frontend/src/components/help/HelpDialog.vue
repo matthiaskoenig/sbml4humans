@@ -225,7 +225,11 @@ function onMouseDown(event: MouseEvent): void {
  * is in the box the header, the body and the footer fill. Only a press which began there too
  * closes the dialog. */
 function onClick(event: MouseEvent): void {
-  if (event.target === dialog.value && pressedOn === dialog.value) void view.closeHelp();
+  const onBackdrop = event.target === dialog.value && pressedOn === dialog.value;
+  // every click has had its press, so nothing is remembered beyond it: a click which arrives
+  // without one, one a script dispatches, then finds nothing of an earlier press to pair with
+  pressedOn = null;
+  if (onBackdrop) void view.closeHelp();
 }
 </script>
 
@@ -244,8 +248,13 @@ function onClick(event: MouseEvent): void {
       for everything, on a telephone, the name of the type an attribute belongs to gives way to the
       name of the attribute and leaves its mark, which links it, the way the header of the
       inspector drops the name of an element before its type -->
+      <!-- `relative`, because the name of the owner is hidden the way a screen reader still reads
+      it where the header is narrow, which takes it out of the flow: a `<dialog>` is positioned by
+      the browser, so without a containing block of its own every such element would be laid out
+      against the dialog and add to what the dialog itself can scroll, and a dialog which scrolls
+      carries this header out of sight -->
       <header
-        class="@container flex h-12 shrink-0 items-center gap-2 border-b border-gray-200 px-4"
+        class="@container relative flex h-12 shrink-0 items-center gap-2 border-b border-gray-200 px-4"
         data-testid="help-header"
       >
         <nav class="flex min-w-0 flex-1 items-center gap-1.5" data-testid="help-breadcrumb">

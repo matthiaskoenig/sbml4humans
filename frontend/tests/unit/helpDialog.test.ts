@@ -316,6 +316,27 @@ describe("HelpDialog", () => {
     expect(dialog().get("[data-testid=help-attribute-row]").element.tagName).toBe("TR");
   });
 
+  // the narrow layout lays the rows and the cells out as blocks, and a browser drops the role a
+  // table element carries by itself as soon as its display is none of the table values: the roles
+  // are written out, so that the cells keep the column names of the head at every width
+  it("states the role of every part of the attributes table", async () => {
+    await mountDialog({ help: "types/Species" });
+    const table = dialog().get("[data-testid=help-attributes] table");
+    expect(table.attributes("role")).toBe("table");
+    expect(table.findAll("thead, tbody").map((group) => group.attributes("role"))).toEqual([
+      "rowgroup",
+      "rowgroup",
+    ]);
+    expect(table.findAll("th").map((header) => header.attributes("role"))).toEqual(
+      Array<string>(4).fill("columnheader"),
+    );
+    const row = dialog().get("[data-testid=help-attribute-row]");
+    expect(row.attributes("role")).toBe("row");
+    expect(row.findAll("td").map((cell) => cell.attributes("role"))).toEqual(
+      Array<string>(4).fill("cell"),
+    );
+  });
+
   it("shows no row of common attributes on the entry of SBase itself", async () => {
     await mountDialog({ help: "types/SBase" });
     const rows = dialog().findAll("[data-testid=help-attribute-row]");
@@ -431,6 +452,18 @@ describe("HelpDialog", () => {
     await mountDialog({ help: "types/Species" });
     await dialog().get("[data-testid=help-summary]").trigger("mousedown");
     await dialog().get("[data-testid=help-dialog]").trigger("click");
+    await settle();
+    expect(router.currentRoute.value.query.help).toBe("types/Species");
+  });
+
+  it("stays open on a click on the backdrop which no press of its own preceded", async () => {
+    await mountDialog({ help: "types/Species" });
+    const backdrop = dialog().get("[data-testid=help-dialog]");
+    // a press on the backdrop which comes up inside the dialog: the click of that pair is the
+    // one of the body, and the press is spent with it
+    await backdrop.trigger("mousedown");
+    await dialog().get("[data-testid=help-body]").trigger("click");
+    await backdrop.trigger("click");
     await settle();
     expect(router.currentRoute.value.query.help).toBe("types/Species");
   });
