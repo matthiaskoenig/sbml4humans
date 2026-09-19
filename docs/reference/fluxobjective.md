@@ -10,10 +10,10 @@ It is an element of the report and not a row of its objective, because the speci
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [reaction](#reaction) | `SIdRef` | the reaction whose flux this term of the objective weighs | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [reaction2](#reaction2) | `SIdRef` | the second reaction of a mixed quadratic term, from Version 3 on | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [coefficient](#coefficient) | `double` | the number the flux of the reaction is multiplied with | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [variableType](#variabletype) | `FbcVariableType` | whether the flux enters the objective linearly or quadratically | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [reaction](#reaction) | `SIdRef` | the reaction whose flux this term of the objective weighs | [fbc v3 3.7](https://doi.org/10.1515/jib-2026-0006) |
+| [reaction2](#reaction2) | `SIdRef` | the second reaction of a mixed quadratic term, from Version 3 on | [fbc v3 3.7](https://doi.org/10.1515/jib-2026-0006) |
+| [coefficient](#coefficient) | `double` | the number the flux of the reaction is multiplied with | [fbc v3 3.7](https://doi.org/10.1515/jib-2026-0006) |
+| [variableType](#variabletype) | `FbcVariableType` | whether the flux enters the objective linearly or quadratically | [fbc v3 3.7](https://doi.org/10.1515/jib-2026-0006) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -47,4 +47,4 @@ The attribute is required from Version 3 of the package on and does not exist be
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.7 (Olivier and Bergmann, COMBINE specification).
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://doi.org/10.1515/jib-2026-0006), Section 3.7 (Olivier and Bergmann, COMBINE specification).
