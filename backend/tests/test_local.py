@@ -226,9 +226,10 @@ def test_the_watcher_says_where_the_server_is_and_ends_an_idle_one(
     monkeypatch.setattr(local_module, "WATCH_INTERVAL", 0.01)
     server = _Server()
     state = tmp_path / "state" / "server.json"
-    started = time.monotonic()
+    # the idle time counts from the last request, not from the start of the watcher
+    app.last_request = time.monotonic()
     asyncio.run(local_module._watch(server, app, 0.2, state))  # ty: ignore[invalid-argument-type]
-    assert time.monotonic() - started >= 0.2
+    assert app.idle_seconds() >= 0.2
     assert server.should_exit is True
     written = read_state(state)
     assert written is not None
