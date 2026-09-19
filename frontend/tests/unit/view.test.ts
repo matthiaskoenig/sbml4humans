@@ -88,6 +88,21 @@ describe("useReportView", () => {
     wrapper.unmount();
   });
 
+  it("closes help by replacing the route where the key is no entry of the glossary", async () => {
+    await router.push({ path: "/report", query: { help: "types/Nope", pk: "m/Species:a" } });
+    const wrapper = mount(Probe, { global: { plugins: [router] } });
+    const push = vi.spyOn(router, "push");
+    const replace = vi.spyOn(router, "replace");
+
+    await view.closeHelp("replace");
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(push).not.toHaveBeenCalled();
+    expect(router.currentRoute.value.query.help).toBeUndefined();
+    // the rest of the view state is no business of the dialog and survives
+    expect(router.currentRoute.value.query.pk).toBe("m/Species:a");
+    wrapper.unmount();
+  });
+
   it("builds the href of a help link, keeping the rest of the route including the source of a local report", async () => {
     await router.push({
       path: "/report",

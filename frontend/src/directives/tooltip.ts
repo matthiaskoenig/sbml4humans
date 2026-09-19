@@ -39,6 +39,17 @@ function tooltipElement(): HTMLDivElement {
   return tooltip;
 }
 
+/** The one tooltip element, moved to where it is painted above the element it belongs to. A modal
+ * dialog, the help dialog of the report, is painted in the top layer, above everything the page
+ * itself paints, whatever its z-index: a tooltip for an element inside it has to live in that
+ * dialog, or the backdrop of the dialog covers it. Everything else keeps it in the body. */
+function hostedTooltip(el: HTMLElement): HTMLDivElement {
+  const tip = tooltipElement();
+  const host = el.closest("dialog[open]") ?? document.body;
+  if (tip.parentElement !== host) host.appendChild(tip);
+  return tip;
+}
+
 function placementOf(binding: DirectiveBinding<TooltipValue>): Placement {
   return PLACEMENTS.find((placement) => binding.modifiers[placement]) ?? "top";
 }
@@ -68,7 +79,7 @@ function show(el: HTMLElement): void {
   if (!target?.text) return;
   if (owner && owner !== el) owner.removeAttribute("aria-describedby");
   owner = el;
-  const tip = tooltipElement();
+  const tip = hostedTooltip(el);
   tip.textContent = target.text;
   tip.className = target.mono ? MONO_CLASS : CLASS;
   tip.hidden = false;

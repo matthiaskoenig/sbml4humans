@@ -20,7 +20,7 @@ export function useReportView(): {
   setModel(model: string | null): Promise<unknown>;
   routeFor(pk: string, across?: { entry: string; model: string | null }): RouteLocationRaw;
   openHelp(key: string): Promise<unknown>;
-  closeHelp(): Promise<unknown>;
+  closeHelp(mode?: Mode): Promise<unknown>;
   helpRoute(key: string): RouteLocationRaw;
 } {
   const route = useRoute();
@@ -58,7 +58,10 @@ export function useReportView(): {
       return { path: route.path, query: queryOf(next) };
     },
     openHelp: (key) => update({ help: key }),
-    closeHelp: () => update({ help: null }),
+    // a reader closes the dialog by pushing a route without it, so that the back button returns
+    // to what they read; a key which is no entry of the glossary is closed with `replace`
+    // instead, which leaves no history entry behind which would reopen nothing
+    closeHelp: (mode = "push") => update({ help: null }, mode),
     // the href of a link inside the dialog itself, which points at another entry without
     // touching anything else of the route: the selection, the search and the open report survive
     helpRoute: (key) => ({ path: route.path, query: queryOf({ ...state.value, help: key }) }),

@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 
+import { isPlainClick } from "@/components/help/plainClick";
 import { renderHelpMarkdown } from "@/report/helpMarkdown";
 import { useReportView } from "@/report/view";
 
@@ -21,13 +22,11 @@ const html = computed(() =>
 );
 
 /** A plain left click on a `glossary:` link: `preventDefault()` keeps the browser on the dialog
- * and `navigate` shows the entry in place. Any other click, a right click, a middle click or one
- * held with a modifier key, is left alone, so ctrl-click, shift-click and middle-click open the
- * href in a new tab or window the way a reader expects of a real link. */
+ * and `navigate` shows the entry in place. Any other click is left alone, so ctrl-click,
+ * shift-click and middle-click open the href in a new tab or window the way a reader expects of a
+ * real link; `HelpLink.vue`, the links the dialog builds itself, judges a click the same way. */
 function onClick(event: MouseEvent): void {
-  if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
-    return;
-  }
+  if (!isPlainClick(event)) return;
   const link = (event.target as Element | null)?.closest("a[data-help-key]");
   const key = link?.getAttribute("data-help-key");
   if (!key) return;

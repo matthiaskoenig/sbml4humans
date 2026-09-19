@@ -101,6 +101,24 @@ describe("v-tooltip", () => {
     expect(tooltip()?.hidden).toBe(true);
   });
 
+  // a modal dialog, the help dialog of the report, is painted in the top layer, above everything
+  // the page itself paints: a tooltip which stayed in the body would be covered by its backdrop
+  it("puts the tooltip into an open dialog and back into the body after it", async () => {
+    const dialog = document.createElement("dialog");
+    dialog.setAttribute("open", "");
+    document.body.appendChild(dialog);
+    const inside = mount(Host, { props: { text: "in the dialog" }, attachTo: dialog });
+    await inside.get("[data-testid=host]").trigger("mouseenter");
+    expect(tooltip()?.parentElement).toBe(dialog);
+    expect(tooltip()?.textContent).toBe("in the dialog");
+    inside.unmount();
+    dialog.remove();
+
+    const host = mountHost("on the page").get("[data-testid=host]");
+    await host.trigger("mouseenter");
+    expect(tooltip()?.parentElement).toBe(document.body);
+  });
+
   it("hides on a scroll and when the element is unmounted", async () => {
     const host = mountHost("value");
     await host.get("[data-testid=host]").trigger("mouseenter");
