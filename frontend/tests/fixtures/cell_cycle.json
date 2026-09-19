@@ -1,5 +1,5 @@
 {
-  "uid": "a21679779fb14492b0a9d33e8559322f",
+  "uid": "00c9768989124ef681dc1bbe97fa0b84",
   "manifest": {
     "entries": [
       {
@@ -2299,7 +2299,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2362,7 +2362,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G1K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2449,7 +2449,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2469,7 +2469,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2572,7 +2572,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   },
                   {
@@ -2590,7 +2590,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2610,7 +2610,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2680,7 +2680,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   },
                   {
@@ -2698,7 +2698,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2718,7 +2718,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2788,7 +2788,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2808,7 +2808,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2878,7 +2878,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2949,7 +2949,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2969,7 +2969,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3039,7 +3039,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G1R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3059,7 +3059,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G1K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3129,7 +3129,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3217,7 +3217,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3305,7 +3305,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G1K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3393,7 +3393,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3413,7 +3413,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3483,7 +3483,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3503,7 +3503,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3573,7 +3573,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G1R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3593,7 +3593,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3663,7 +3663,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G1K",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   },
                   {
@@ -3681,7 +3681,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3701,7 +3701,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G1R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3772,7 +3772,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "G2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3792,7 +3792,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3880,7 +3880,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PG2R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3900,7 +3900,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3980,7 +3980,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4050,7 +4050,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "R",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4130,7 +4130,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "IEB",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4150,7 +4150,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "IE",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4229,7 +4229,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "UbEB",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4249,7 +4249,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "UbE",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4328,7 +4328,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "UbE2B",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4348,7 +4348,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "UbE2",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4427,7 +4427,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Wee1B",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4447,7 +4447,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Wee1",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4526,7 +4526,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Cdc25B",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -4546,7 +4546,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Cdc25",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -7813,7 +7813,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.321 [s]"
+        "jsonReportTime": "0.329 [s]"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "uid": "d2a742d6f0c64bb8a54bc1cba9873867",
+  "uid": "b32734a6599d44849f5b12ec74bb317b",
   "manifest": {
     "entries": [
       {
@@ -1221,7 +1221,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "X",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1307,7 +1307,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Y",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1393,7 +1393,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Z",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1480,7 +1480,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PX",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1591,7 +1591,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PY",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1702,7 +1702,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PZ",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1812,7 +1812,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PX",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1898,7 +1898,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PY",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -1984,7 +1984,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "PZ",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2071,7 +2071,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "X",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2174,7 +2174,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Y",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -2277,7 +2277,7 @@
                     "uncertainties": [],
                     "keyValuePairs": [],
                     "species": "Z",
-                    "stoichiometry": null,
+                    "stoichiometry": 1,
                     "constant": null
                   }
                 ],
@@ -3496,7 +3496,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.151 [s]"
+        "jsonReportTime": "0.162 [s]"
       }
     }
   }

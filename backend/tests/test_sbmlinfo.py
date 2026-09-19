@@ -148,6 +148,41 @@ def test_variable_stoichiometry() -> None:
     assert equations["v4"] == "v4_x x ➞ v4_y y"
 
 
+def test_stoichiometry_of_a_level_2_reference_is_its_default() -> None:
+    """A Level 2 reference without a stoichiometry has the stoichiometry one.
+
+    Level 1 and 2 define the default 1 (L2V4 §4.13.2), which libsbml answers
+    without calling the attribute set, so every reference of a curated
+    BioModel read as a dash. A reference whose stoichiometry is a formula has
+    no number, and a Level 3 reference has no default.
+    """
+    level_2 = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level2/version4" level="2" '
+        'version="4"><model id="m"><listOfCompartments><compartment id="c"/>'
+        '</listOfCompartments><listOfSpecies><species id="s" compartment="c"/>'
+        '</listOfSpecies><listOfReactions><reaction id="r"><listOfReactants>'
+        '<speciesReference species="s"/><speciesReference species="s">'
+        '<stoichiometryMath><math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<cn> 2 </cn></math></stoichiometryMath></speciesReference>"
+        '<speciesReference species="s" stoichiometry="3"/>'
+        "</listOfReactants></reaction></listOfReactions></model></sbml>"
+    )
+    (reaction,) = level_2.models[0].list_of_reactions
+    assert [sr.stoichiometry for sr in reaction.list_of_reactants] == [1.0, None, 3.0]
+    level_3 = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments><listOfSpecies>'
+        '<species id="s" compartment="c" hasOnlySubstanceUnits="false" '
+        'boundaryCondition="false" constant="false"/></listOfSpecies>'
+        '<listOfReactions><reaction id="r" reversible="false"><listOfReactants>'
+        '<speciesReference species="s" constant="true"/></listOfReactants>'
+        "</reaction></listOfReactions></model></sbml>"
+    )
+    (reaction,) = level_3.models[0].list_of_reactions
+    assert reaction.list_of_reactants[0].stoichiometry is None
+
+
 def test_nan_values_become_none() -> None:
     """NaN attributes are not JSON and are reported as unset."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "reaction.xml")

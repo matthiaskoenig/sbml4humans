@@ -769,9 +769,24 @@ class SBMLDocumentInfo:
         return SpeciesReference(
             **self.sbase(sr, key=key),
             species=sr.getSpecies(),
-            stoichiometry=_attribute(sr, "stoichiometry"),
+            stoichiometry=self._stoichiometry(sr),
             constant=_attribute(sr, "constant"),
         )
+
+    @staticmethod
+    def _stoichiometry(sr: libsbml.SpeciesReference) -> float | None:
+        """The stoichiometry of a reference, with the default of Level 1 and 2.
+
+        Level 1 and 2 define the default 1 for a reference which neither
+        writes a number nor a `stoichiometryMath` (L2V4 §4.13.2), and libsbml
+        answers it without calling the attribute set. Level 3 has no default:
+        an unset stoichiometry is set by a rule or an assignment, or unknown.
+        """
+        if sr.isSetStoichiometry():
+            return sr.getStoichiometry()
+        if sr.getLevel() < 3 and not sr.isSetStoichiometryMath():
+            return sr.getStoichiometry()
+        return None
 
     def kinetic_law(
         self, klaw: libsbml.KineticLaw, model: libsbml.Model, reaction_key: str
