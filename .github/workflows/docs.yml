@@ -37,6 +37,8 @@ jobs:
         run: uv sync
       - name: Check that the generated reference is current
         run: uv run --project backend python -m sbml4humans.glossary --check
+      - name: Check that the release notes page is current
+        run: uv run --project backend python -m sbml4humans.releasenotes --check
       - name: Build the documentation
         # --strict turns a broken link or a broken anchor of a page into a failure
         run: uv run --project backend zensical build --clean --strict

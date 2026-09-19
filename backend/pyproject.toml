@@ -74,6 +74,12 @@ tag = false
 tag_name = "{new_version}"
 tag_message = "Bump version: {current_version} → {new_version}"
 message = "Bump version: {current_version} → {new_version}"
+# the release notes page of the documentation is generated from release-notes/, the bump
+# writes it again so that the release carries the notes of its version
+pre_commit_hooks = [
+    "uv run python -m sbml4humans.releasenotes",
+    "git add ../docs/release-notes.md",
+]
 
 [[tool.bumpversion.files]]
 filename = "sbml4humans/__init__.py"

@@ -15,7 +15,7 @@ cd sbml4humans
 | `backend/` | the `sbml4humans` Python package: the report of a document (`sbmlinfo`, `mathml`, `units`) and the FastAPI api which serves it |
 | `glossary/` | the glossary the reference pages of the documentation and the explanations of the application are generated from |
 | `docs/`, `zensical.toml` | the pages and the configuration of the documentation site |
-| `release-notes/` | one file per version, the body of its GitHub release |
+| `release-notes/` | one file per version, the body of its GitHub release and a section of the generated [release notes](release-notes.md) page |
 | `nginx/` | the proxy configuration of sbml4humans.de |
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
 | `deploy.sh`, `docker-purge.sh`, `deploy.md` | the deployment of sbml4humans.de on its server |
@@ -97,6 +97,16 @@ uv run python -m sbml4humans.glossary --check   # the check of the documentation
 
 `--check` regenerates into a temporary directory and fails when a committed file is not current, when a type or a field of the report model has no entry, when a type or an attribute entry explains something the report does not have, when a link of a description does not resolve to a page or to an anchor of one, when a page references a missing image, or when the navigation in `zensical.toml` does not list a generated page.
 
+The [release notes](release-notes.md) page is generated as well, from the files of `release-notes/`, the versions newest first:
+
+```bash
+cd backend
+uv run python -m sbml4humans.releasenotes           # regenerate docs/release-notes.md, commit the result
+uv run python -m sbml4humans.releasenotes --check   # the check of the documentation workflow
+```
+
+`--check` fails when the committed page is not current, when the version of the package has no file in `release-notes/` and when a file there is not named after a version. The version bump of a release runs the generator, so a release which follows the steps below needs no extra step.
+
 The screenshots of `docs/images/` are taken by `frontend/scripts/screenshots.mjs` against a running backend and a running dev server:
 
 ```bash
@@ -156,8 +166,8 @@ The script is idempotent: it updates the rulesets which exist and creates the mi
 The version of SBML4Humans is the version of the backend package in `backend/sbml4humans/__init__.py`, the frontend `package.json` follows it. A release is made from `develop`. Since `develop` only accepts pull requests, the release is prepared on a branch and tagged once that pull request is merged:
 
 1. branch off `develop`: `git switch -c release/x.y.z origin/develop`
-2. write the release notes for the version in `release-notes/x.y.z.md`
-3. bump the version from the `backend` directory: `uv run bump-my-version bump [major|minor|patch]`, which updates `backend/pyproject.toml`, `backend/sbml4humans/__init__.py`, `frontend/package.json` and the version of the package in `frontend/package-lock.json` and commits. It does not create the tag; a squash or rebase merge would rewrite the commit and leave the tag behind on a commit which is not part of `develop`
+2. write the release notes for the version in `release-notes/x.y.z.md` and commit them, the bump needs a clean working tree
+3. bump the version from the `backend` directory: `uv run bump-my-version bump [major|minor|patch]`, which updates `backend/pyproject.toml`, `backend/sbml4humans/__init__.py`, `frontend/package.json` and the version of the package in `frontend/package-lock.json`, writes the [release notes](release-notes.md) page of the documentation from `release-notes/` and commits. It does not create the tag; a squash or rebase merge would rewrite the commit and leave the tag behind on a commit which is not part of `develop`
 4. push the branch, open the pull request against `develop` and merge it once the checks are green
 5. tag the merged commit on `develop` and push the tag:
 
