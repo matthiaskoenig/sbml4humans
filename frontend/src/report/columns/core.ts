@@ -90,7 +90,7 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
   Reaction: [
     ...ID_COLUMNS,
     { field: "reversible", header: "reversible", kind: "boolean" },
-    { field: "fast", header: "fast", kind: "boolean", optional: true },
+    { field: "fast", header: "fast", kind: "boolean", onlyWhenTrue: true },
     {
       field: "compartment",
       header: "compartment",

@@ -32,6 +32,11 @@ export interface ColumnDef {
   /** A column which is left out of a table no row of which fills it: the fbc columns of a
    * species or a reaction of a model which does not use the package. */
   optional?: boolean;
+  /** A boolean column which is left out of a table no row of which sets it to true. `fast` is
+   * the one: a Level 2 file gives every reaction the default false of its specification, Level 3
+   * Version 2 dropped the attribute, and a column of that default says nothing, while a single
+   * fast reaction is exactly what a reader has to see. */
+  onlyWhenTrue?: boolean;
 }
 
 export const ID_COLUMNS: readonly ColumnDef[] = [

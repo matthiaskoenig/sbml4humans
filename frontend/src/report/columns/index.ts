@@ -23,15 +23,15 @@ export function columnsOf(type: ElementType): readonly ColumnDef[] {
  * reader types. */
 export function visibleColumns(type: ElementType, rows: readonly object[]): readonly ColumnDef[] {
   const columns = columnsOf(type);
-  if (!columns.some((column) => column.optional)) return columns;
-  return columns.filter(
-    (column) =>
-      !column.optional ||
-      rows.some((row) => {
-        const value = fieldValue(row, column.field);
-        return value !== null && value !== undefined && value !== "";
-      }),
-  );
+  if (!columns.some((column) => column.optional || column.onlyWhenTrue)) return columns;
+  return columns.filter((column) => {
+    if (column.onlyWhenTrue) return rows.some((row) => fieldValue(row, column.field) === true);
+    if (!column.optional) return true;
+    return rows.some((row) => {
+      const value = fieldValue(row, column.field);
+      return value !== null && value !== undefined && value !== "";
+    });
+  });
 }
 
 /** The value of a dotted path, undefined when a step is missing. */

@@ -88,6 +88,18 @@ describe("columns", () => {
     expect(headers("Species", repressilator, "BIOMD0000000012")).toContain("initial amount");
   });
 
+  it("shows the fast column only in a table which has a fast reaction", () => {
+    const reactions = repressilator.byType("BIOMD0000000012").get("Reaction") ?? [];
+    // a Level 2 file gives every reaction the default false of its specification, and a column
+    // of that default says nothing a reader looks for
+    expect(reactions.every((r) => (r as { fast?: unknown }).fast === false)).toBe(true);
+    const headers = (rows: readonly object[]) =>
+      visibleColumns("Reaction", rows).map((c) => c.header);
+    expect(headers(reactions)).not.toContain("fast");
+    const fast = reactions.map((r, k) => (k === 0 ? { ...r, fast: true } : r));
+    expect(headers(fast)).toContain("fast");
+  });
+
   it("writes a gene association as the expression it stands for", () => {
     const reaction = fbcConstraints.byType("fbc_constraints_v3").get("Reaction")![0]!;
     const association = (reaction as { fbc?: { geneProductAssociation?: unknown } }).fbc
