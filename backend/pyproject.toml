@@ -64,6 +64,19 @@ filename = "../frontend/package.json"
 search = "\"version\": \"{current_version}\""
 replace = "\"version\": \"{new_version}\""
 
+# the lock carries the version of the package twice, at its root and as the entry of the
+# package itself; the search names the package, so that a dependency which shares the number
+# of a version is left alone
+[[tool.bumpversion.files]]
+filename = "../frontend/package-lock.json"
+search = "\"name\": \"sbml4humans\",\n  \"version\": \"{current_version}\""
+replace = "\"name\": \"sbml4humans\",\n  \"version\": \"{new_version}\""
+
+[[tool.bumpversion.files]]
+filename = "../frontend/package-lock.json"
+search = "\"name\": \"sbml4humans\",\n      \"version\": \"{current_version}\""
+replace = "\"name\": \"sbml4humans\",\n      \"version\": \"{new_version}\""
+
 [tool.hatch.build.targets.wheel]
 packages = ["sbml4humans"]
 
