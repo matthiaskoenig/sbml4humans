@@ -28,13 +28,13 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 The flag says whether the process can proceed in both directions. It does not change the equations of a simulation, it is an assertion which structural analyses such as elementary mode analysis rely on, and which says that the rate of an irreversible reaction never becomes negative.
 
-The report shows the flag as a mark in the column "reversible" and writes the equation with a double arrow when it is set.
+The report shows the flag as a mark in the column "reversible", a check for a reversible reaction and a cross for an irreversible one, and writes the equation with a double arrow for a reversible reaction. Level 1 and Level 2 make a reaction reversible unless the file says otherwise, so a reaction of those levels which does not write the flag is shown as reversible; Level 3 has no default.
 
 <span id="fast"></span>**fast**
 
 In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a quasi steady state immediately. The attribute was removed in Level 3 Version 2, where the speed of every reaction is given by its kinetic law alone.
 
-The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written.
+The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written. Level 1 and Level 2 from Version 2 on make a reaction slow unless the file says otherwise, so a reaction of those levels which does not write the flag is shown with the cross of `false`; Level 2 Version 1 gave the flag no default, and a reaction of that version which does not write it is shown with the dash of an attribute which is not set.
 
 <span id="compartment"></span>**compartment**
 

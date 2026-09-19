@@ -12,6 +12,7 @@ from sbml4humans.model import (
     Model,
     Or,
     Parameter,
+    Reaction,
     Report,
     UncertSpan,
 )
@@ -181,6 +182,62 @@ def test_stoichiometry_of_a_level_2_reference_is_its_default() -> None:
     )
     (reaction,) = level_3.models[0].list_of_reactions
     assert reaction.list_of_reactants[0].stoichiometry is None
+
+
+def _reaction_of_level(level: int, version: int, attributes: str = "") -> Reaction:
+    """The one reaction of a document of that level and version."""
+    namespace = (
+        "http://www.sbml.org/sbml/level1"
+        if level == 1
+        else f"http://www.sbml.org/sbml/level{level}/version{version}"
+        + ("/core" if level == 3 else "")
+    )
+    info = SBMLDocumentInfo.from_sbml(
+        f'<sbml xmlns="{namespace}" level="{level}" version="{version}">'
+        '<model id="m"><listOfCompartments><compartment id="c"/>'
+        '</listOfCompartments><listOfSpecies><species id="s" compartment="c"/>'
+        f'</listOfSpecies><listOfReactions><reaction id="r" {attributes}>'
+        '<listOfReactants><speciesReference species="s"/></listOfReactants>'
+        "</reaction></listOfReactions></model></sbml>"
+    )
+    (reaction,) = info.models[0].list_of_reactions
+    return reaction
+
+
+@pytest.mark.parametrize(
+    ("level", "version", "reversible", "fast"),
+    [
+        (1, 2, True, False),
+        (2, 1, True, None),
+        (2, 2, True, False),
+        (2, 4, True, False),
+        (2, 5, True, False),
+        (3, 1, None, None),
+        (3, 2, None, None),
+    ],
+)
+def test_flags_of_a_reaction_without_them_are_their_defaults(
+    level: int, version: int, reversible: bool | None, fast: bool | None
+) -> None:
+    """A reaction which does not write its flags has the defaults of its level.
+
+    Level 1 and 2 make a reaction reversible unless it says otherwise, and
+    from Level 2 Version 2 on, as in Level 1, a reaction is not fast unless it
+    says so (L2V4 §4.13.1, appendix of the changes: Version 1 of Level 2 gave
+    `fast` no default). libsbml answers the defaults without calling them set,
+    and in Level 2 Version 1 not even the one of `reversible`, so a curated
+    BioModel showed an unset fast flag where its level says false. Level 3
+    has no defaults: Version 1 requires both flags and Version 2 has no fast
+    flag at all.
+    """
+    reaction = _reaction_of_level(level, version)
+    assert (reaction.reversible, reaction.fast) == (reversible, fast)
+
+
+def test_flags_a_reaction_writes_are_kept() -> None:
+    """A flag the file writes is reported as the file writes it."""
+    reaction = _reaction_of_level(2, 4, 'reversible="false" fast="true"')
+    assert (reaction.reversible, reaction.fast) == (False, True)
 
 
 def test_nan_values_become_none() -> None:

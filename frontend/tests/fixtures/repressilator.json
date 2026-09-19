@@ -1,5 +1,5 @@
 {
-  "uid": "de40bc4e359140e2a051f32430dfb2bb",
+  "uid": "39dd3ba67709423f89ee62c3f721ccec",
   "manifest": {
     "entries": [
       {
@@ -1203,7 +1203,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [
                   {
@@ -1289,7 +1289,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [
                   {
@@ -1375,7 +1375,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [
                   {
@@ -1461,7 +1461,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [],
                 "listOfProducts": [
@@ -1572,7 +1572,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [],
                 "listOfProducts": [
@@ -1683,7 +1683,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [],
                 "listOfProducts": [
@@ -1794,7 +1794,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [
                   {
@@ -1880,7 +1880,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [
                   {
@@ -1966,7 +1966,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [
                   {
@@ -2052,7 +2052,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [],
                 "listOfProducts": [
@@ -2155,7 +2155,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [],
                 "listOfProducts": [
@@ -2258,7 +2258,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "reversible": false,
-                "fast": null,
+                "fast": false,
                 "compartment": null,
                 "listOfReactants": [],
                 "listOfProducts": [
@@ -3496,7 +3496,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.153 [s]"
+        "jsonReportTime": "0.015 [s]"
       }
     }
   }

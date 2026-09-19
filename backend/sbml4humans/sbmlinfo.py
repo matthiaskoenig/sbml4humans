@@ -729,8 +729,8 @@ class SBMLDocumentInfo:
         reaction_key = self._key(r)
         return Reaction(
             **fields,
-            reversible=_attribute(r, "reversible"),
-            fast=_attribute(r, "fast"),
+            reversible=self._reversible(r),
+            fast=self._fast(r),
             compartment=_attribute(r, "compartment"),
             list_of_reactants=[
                 self.species_reference(sr, key)
@@ -772,6 +772,34 @@ class SBMLDocumentInfo:
             stoichiometry=self._stoichiometry(sr),
             constant=_attribute(sr, "constant"),
         )
+
+    @staticmethod
+    def _reversible(r: libsbml.Reaction) -> bool | None:
+        """Whether a reaction is reversible, with the default of Level 1 and 2.
+
+        Level 1 and every version of Level 2 make a reaction reversible
+        unless it says otherwise (L2V4 §4.13.1), and libsbml answers that
+        default without calling the attribute set in Level 2 Version 1. Level 3
+        requires the attribute and has no default.
+        """
+        if r.isSetReversible():
+            return r.getReversible()
+        return True if r.getLevel() < 3 else None
+
+    @staticmethod
+    def _fast(r: libsbml.Reaction) -> bool | None:
+        """Whether a reaction is fast, with the default of its level and version.
+
+        Level 1 and Level 2 from Version 2 on make a reaction slow unless it
+        says otherwise (L2V4 §4.13.1), which libsbml answers without calling
+        the attribute set. Level 2 Version 1 defined no default (the changes
+        of L2V2 in its appendix), Level 3 Version 1 requires the attribute and
+        Level 3 Version 2 has none.
+        """
+        if r.isSetFast():
+            return r.getFast()
+        level, version = r.getLevel(), r.getVersion()
+        return False if level == 1 or (level == 2 and version >= 2) else None
 
     @staticmethod
     def _stoichiometry(sr: libsbml.SpeciesReference) -> float | None:
