@@ -57,7 +57,14 @@ const xmlEmptyMessage = computed(() =>
 
 <template>
   <aside v-if="element" class="flex h-full flex-col bg-white" data-testid="inspector">
-    <header class="flex h-10 shrink-0 items-center gap-2 border-b border-gray-200 px-3 text-sm">
+    <!-- the header is one line: the type keeps its words on it, and where the pane is too narrow
+    for everything the name of the element gives way first and the name of the type after it,
+    whose mark stays and names it on hover; the id of the element keeps its width up to half of
+    the header -->
+    <header
+      class="flex h-10 shrink-0 items-center gap-2 border-b border-gray-200 px-3 text-sm"
+      data-testid="inspector-header"
+    >
       <TypeMark v-if="element.sbmlType" :type="element.sbmlType" size="md" />
       <a
         v-if="element.sbmlType"
@@ -65,26 +72,34 @@ const xmlEmptyMessage = computed(() =>
         target="_blank"
         rel="noopener"
         data-testid="inspector-type-link"
-        class="flex items-center gap-1 text-link hover:underline"
+        class="flex min-w-0 items-center gap-1 whitespace-nowrap text-link hover:underline"
       >
-        <span data-testid="inspector-type">{{ label }}</span>
-        <ExternalLinkIcon class="size-3" />
+        <span class="truncate" data-testid="inspector-type">{{ label }}</span>
+        <ExternalLinkIcon class="size-3 shrink-0" />
       </a>
-      <span v-else class="text-gray-500" data-testid="inspector-type">{{ label }}</span>
+      <span v-else class="shrink-0 whitespace-nowrap text-gray-500" data-testid="inspector-type">{{
+        label
+      }}</span>
       <span
         v-tooltip.bottom="element.id ? undefined : REPORT_NAME_HINT"
-        class="font-mono font-semibold"
+        class="max-w-1/2 shrink-0 truncate font-mono font-semibold"
         :class="{ italic: !element.id }"
         data-testid="inspector-id"
         >{{ name }}</span
       >
-      <span v-if="element.name" class="truncate text-gray-700" data-testid="inspector-name">{{
-        element.name
-      }}</span>
-      <span class="flex-1" />
+      <!-- the name has the space the rest of the header leaves: its box contributes no width of
+      its own, and a name with less than 4rem of it is left out rather than cut to a letter -->
+      <span class="@container min-w-0 flex-1">
+        <span
+          v-if="element.name"
+          class="hidden truncate text-gray-700 @[4rem]:block"
+          data-testid="inspector-name"
+          >{{ element.name }}</span
+        >
+      </span>
       <button
         type="button"
-        class="rounded px-2 py-0.5 text-xs"
+        class="shrink-0 rounded px-2 py-0.5 text-xs"
         :class="
           showXml
             ? 'bg-gray-900 text-white'
@@ -97,7 +112,7 @@ const xmlEmptyMessage = computed(() =>
       </button>
       <button
         type="button"
-        class="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+        class="shrink-0 rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
         aria-label="close"
         data-testid="inspector-close"
         @click="view.select(null)"

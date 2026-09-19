@@ -190,3 +190,45 @@ test("the type bar lists the types the model uses and the tables are left of the
   await page.getByTestId("tables").evaluate((element) => (element.scrollTop = 400));
   expect((await page.getByTestId("app-footer").boundingBox())!.y).toBe(footer.y);
 });
+
+test("the header of the inspector keeps a long type on one line at a laptop width", async ({
+  page,
+}) => {
+  // "User defined constraint component" wrapped onto three lines of the 40 px header at 1280 px
+  // and lost its first and last line; the name of the element gives way instead, and in the
+  // third of a 1280 px window the end of the type after it, never the id
+  const layout = async (width: number) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto(
+      "/examples/fbc_constraints_v3%20(fbc_constraints_v3.xml)?pk=fbc_constraints_v3/UserDefinedConstraintComponent:ratio_v1",
+    );
+    const header = page.getByTestId("inspector-header");
+    await expect(header.getByTestId("inspector-type")).toHaveText(
+      "User defined constraint component",
+    );
+    return header.evaluate((element) => {
+      const box = (id: string) => {
+        const target = element.querySelector(`[data-testid="${id}"]`)!;
+        return {
+          height: target.getBoundingClientRect().height,
+          clipped: target.scrollWidth > target.clientWidth,
+        };
+      };
+      return {
+        header: element.getBoundingClientRect().height,
+        type: box("inspector-type"),
+        id: box("inspector-id"),
+        overflows: element.scrollWidth > element.clientWidth,
+      };
+    });
+  };
+  for (const width of [1280, 1440]) {
+    const boxes = await layout(width);
+    expect(boxes.header).toBe(40);
+    expect(boxes.type.height).toBeLessThanOrEqual(20);
+    expect(boxes.id.clipped).toBe(false);
+    expect(boxes.overflows).toBe(false);
+    // from 1440 px on the type is whole
+    if (width >= 1440) expect(boxes.type.clipped).toBe(false);
+  }
+});
