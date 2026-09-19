@@ -109,21 +109,21 @@ The images are committed like any other source file. Nothing compares them with 
 ## Branches and pull requests
 
 - **`develop`** is the branch everything is integrated into.
-- **`main`** tracks the latest release. It is fast-forwarded to the released commit by the `sync-main` job of `ci.yml` after the GitHub release was created, so `main` and the newest release always agree. Nothing is developed on `main` and nothing is merged into it by hand.
+- **`main`** tracks the latest release. It is fast-forwarded to the released commit by the `sync-main` job of `ci-cd.yml` after the GitHub release was created, so `main` and the newest release always agree. Nothing is developed on `main` and nothing is merged into it by hand.
 
 Work happens on short lived branches off `develop`, which GitHub deletes after the merge. `develop` does not accept a direct push, every change goes through a pull request against `develop`. This includes the maintainer, there is no bypass.
 
 A pull request can only be merged once the required checks are green:
 
-| check      | workflow   | content                                                                                    |
-| ---------- | ---------- | ------------------------------------------------------------------------------------------- |
-| `test`     | `ci.yml`   | `pytest` of the backend                                                                     |
-| `schema`   | `ci.yml`   | the committed JSON schema of the report is current                                         |
-| `frontend` | `ci.yml`   | the generated types are current, lint, type check, unit tests and the build of the frontend |
-| `e2e`      | `ci.yml`   | the Playwright end to end tests against the backend                                        |
-| `ruff`     | `ruff.yml` | `ruff check` and `ruff format --check` of the backend                                      |
-| `ty`       | `ty.yml`   | `ty check` of the backend                                                                  |
-| `docs`     | `docs.yml` | the documentation site builds                                                              |
+| check      | workflow    | content                                                                                     |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------- |
+| `test`     | `ci-cd.yml` | `pytest` of the backend                                                                     |
+| `schema`   | `ci-cd.yml` | the committed JSON schema of the report is current                                          |
+| `frontend` | `ci-cd.yml` | the generated types are current, lint, type check, unit tests and the build of the frontend |
+| `e2e`      | `ci-cd.yml` | the Playwright end to end tests against the backend                                         |
+| `ruff`     | `ruff.yml`  | `ruff check` and `ruff format --check` of the backend                                       |
+| `ty`       | `ty.yml`    | `ty check` of the backend                                                                   |
+| `docs`     | `docs.yml`  | the documentation site builds                                                               |
 
 Further rules of a pull request:
 
@@ -167,8 +167,8 @@ The version of SBML4Humans is the version of the backend package in `backend/sbm
     git push origin x.y.z
     ```
 
-    This starts the `CI` workflow, which runs the checks, creates the [GitHub release](https://github.com/matthiaskoenig/sbml4humans/releases) from `release-notes/x.y.z.md`, fast-forwards `main` to the tagged commit and publishes the package to [PyPI](https://pypi.org/project/sbml4humans/). Check the version before pushing, a tag cannot be moved or deleted afterwards.
+    This starts the `CI/CD` workflow, which runs the checks, creates the [GitHub release](https://github.com/matthiaskoenig/sbml4humans/releases) from `release-notes/x.y.z.md`, fast-forwards `main` to the tagged commit and publishes the package to [PyPI](https://pypi.org/project/sbml4humans/). Check the version before pushing, a tag cannot be moved or deleted afterwards.
 
-The package on PyPI is the wheel and the sdist which the `package` job builds on every pull request, with the frontend built into them, and which it installs into a fresh environment to open a report with. The `publish` job uploads them by [trusted publishing](https://docs.pypi.org/trusted-publishers/), which needs no token and is set up once: the project `sbml4humans` on PyPI names the repository `matthiaskoenig/sbml4humans`, the workflow `ci.yml` and the environment `pypi` as its publisher (for the first release as a [pending publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/)), and the repository has an environment `pypi`. The job runs next to the GitHub release, so a failed upload leaves the release and `main` as they are and can be run again.
+The package on PyPI is the wheel and the sdist which the `package` job builds on every pull request, with the frontend built into them, and which it installs into a fresh environment to open a report with. The `publish` job uploads them by [trusted publishing](https://docs.pypi.org/trusted-publishers/), which needs no token and is set up once: the project `sbml4humans` on PyPI names the repository `matthiaskoenig/sbml4humans`, the workflow `ci-cd.yml` and the environment `pypi` as its publisher (for the first release as a [pending publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/)), and the repository has an environment `pypi`. The job runs next to the GitHub release, so a failed upload leaves the release and `main` as they are and can be run again.
 
 The release is archived on [Zenodo](https://zenodo.org/), which mints a DOI for it. Update the citation afterwards: the version and the DOI of the release in the "How to cite" section of `README.md` and of `docs/index.md` and in `CITATION.cff`. The badge and the "archived software" link carry the concept DOI `10.5281/zenodo.22827237`, which always resolves to the newest version and does not change; the citation itself names the DOI of the version.
