@@ -10,7 +10,7 @@ The report shows the delay as an element of its own and its rendered formula in 
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [math](#math) | [`Math`](datatypes.md#math) | - | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | [`Math`](datatypes.md#math) | optional | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -19,6 +19,15 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 The math is evaluated at the moment the event triggers and has to give a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
 
 The report renders the formula in the column "delay" of the events and in the inspector, and links the elements it reads.
+
+Default: the event is executed as one without a delay.
+
+- `21210` (error): A Delay object must contain exactly one MathML &lt;math&gt; element. The &lt;math&gt; element is optional in L3V2 and beyond.
+
+## Validation rules
+
+- `10717` (warning): The value of the 'sboTerm' attribute on a &lt;delay&gt; is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, "mathematical expression").
+- `21227` (error): A Delay object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Delay object.
 
 ## Related elements
 

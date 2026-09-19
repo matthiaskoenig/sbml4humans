@@ -692,6 +692,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.2"
       },
+      "rules": [
+        {
+          "id": 10601,
+          "severity": "error",
+          "message": "The system of equations created from an SBML model must not be overdetermined.",
+          "section": "L3V2 Section 4.9.5"
+        },
+        {
+          "id": 10705,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a rule is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\"). Note: This applies to Algebraic Rules in addition to Rate and Assignment Rules.",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20910,
+          "severity": "error",
+          "message": "An AlgebraicRule object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an AlgebraicRule object.",
+          "section": "L3V2 Section 4.9"
+        }
+      ],
       "attributes": [
         "types/AlgebraicRule/math",
         "types/AlgebraicRule/derivedUnits"
@@ -730,7 +750,17 @@
         "label": "core 4.9.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.1"
-      }
+      },
+      "required": false,
+      "default": "how the rule behaves mathematically stays undefined",
+      "rules": [
+        {
+          "id": 20907,
+          "severity": "error",
+          "message": "Every AssignmentRule, RateRule and AlgebraicRule object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.9"
+        }
+      ]
     },
     "types/And": {
       "kind": "type",
@@ -783,6 +813,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.3"
       },
+      "rules": [
+        {
+          "id": 10705,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a rule is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\"). Note: This applies to Algebraic Rules in addition to Rate and Assignment Rules.",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20906,
+          "severity": "error",
+          "message": "There must not be circular dependencies in the combined set of <initialAssignment>, <assignmentRule> and <kineticLaw> definitions in a model. Each of these constructs has the effect of assigning a value to an identifier (i.e. the identifier given in the field 'symbol' in <initialAssignment>, the field 'variable' in <assignmentRule>, and the field 'id' on the <kineticLaw>'s enclosing <reaction>). Each of these constructs computes the value using a mathematical formula. The formula for a given identifier cannot make reference to a second identifier whose own definition depends directly or indirectly on the first identifier.",
+          "section": "L3V2 Section 4.9.5"
+        },
+        {
+          "id": 20908,
+          "severity": "error",
+          "message": "An AssignmentRule object must have the required attribute 'variable' and may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an AssignmentRule object.",
+          "section": "L3V2 Section 4.9"
+        }
+      ],
       "attributes": [
         "types/AssignmentRule/variable",
         "types/AssignmentRule/math",
@@ -823,7 +873,17 @@
         "label": "core 4.9.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.1"
-      }
+      },
+      "required": false,
+      "default": "how the rule behaves mathematically stays undefined",
+      "rules": [
+        {
+          "id": 20907,
+          "severity": "error",
+          "message": "Every AssignmentRule, RateRule and AlgebraicRule object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.9"
+        }
+      ]
     },
     "types/AssignmentRule/variable": {
       "kind": "attribute",
@@ -841,7 +901,34 @@
         "label": "core 4.9.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.3"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 10304,
+          "severity": "error",
+          "message": "The value of the 'variable' field in all <assignmentRule> and <rateRule> definitions must be unique across the set of all such rule definitions in a model.",
+          "section": "L3V2 Section 4.9.3"
+        },
+        {
+          "id": 20901,
+          "severity": "error",
+          "message": "The value of an <assignmentRule>'s 'variable' must be the identifier of an existing <compartment>, <species>, globally-defined <parameter>, or (in Level 3) <speciesReference>, or (in Level 3 Version 2), any identifier in the SId namespace of the model belonging to an element defined by an SBML Level 3 package as having with mathematical meaning.",
+          "section": "L3V2 Section 4.9.3"
+        },
+        {
+          "id": 20903,
+          "severity": "error",
+          "message": "Any <compartment>, <species>, <parameter>, or (in Level 3) <speciesReference> whose identifier is the value of a 'variable' attribute in an <assignmentRule>, must have a value of 'false' for 'constant'.",
+          "section": "L3V2 Section 4.9.3"
+        },
+        {
+          "id": 20911,
+          "severity": "error",
+          "message": "The value of a <rateRule> or <assignmentRule>'s 'variable' attribute must not be the identifier of a <compartment> with a 'spatialDimensions' value of 0.",
+          "section": "L2V5 Section 4.11.5"
+        }
+      ]
     },
     "types/Compartment": {
       "kind": "type",
@@ -855,6 +942,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.5"
       },
+      "rules": [
+        {
+          "id": 10712,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <compartment> is expected to be an SBO identifier (http://www.biomodels.net/SBO/). In SBML Level 2 prior to Version 4 it is expected to refer to a participant physical type (i.e., terms derived from SBO:0000236, \"participant physical type\"); in Versions 4 and above it is expected to refer to a material entity (i.e., terms derived from SBO:0000240, \"material entity\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20517,
+          "severity": "error",
+          "message": "A Compartment object must have the required attributes 'id' and 'constant', and may have the optional attributes 'metaid', 'sboTerm', 'name', 'spatialDimensions', 'size' and 'units'. No other attributes from the SBML Level 3 Core namespace are permitted on a Compartment object.",
+          "section": "L3V2 Section 4.5"
+        }
+      ],
       "attributes": [
         "types/Compartment/spatialDimensions",
         "types/Compartment/size",
@@ -885,7 +986,16 @@
         "label": "core 4.5.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.5.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20503,
+          "severity": "error",
+          "message": "If a <compartment> definition has a 'spatialDimensions' value of '0', then its 'constant' attribute value must either default to or be set to 'true'. If the compartment has no dimensions, then its size can never change.",
+          "section": "L2V5 Section 4.7.6"
+        }
+      ]
     },
     "types/Compartment/derivedUnits": {
       "kind": "attribute",
@@ -916,7 +1026,22 @@
         "label": "core 4.5.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.5.3"
-      }
+      },
+      "required": false,
+      "default": "the size is unknown or set by an initial assignment or a rule",
+      "rules": [
+        {
+          "id": 20501,
+          "severity": "error",
+          "message": "The size of a <compartment> must not be set if the compartment's 'spatialDimensions' attribute has value '0'.",
+          "section": "L2V5 Section 4.7.5"
+        },
+        {
+          "id": 80501,
+          "severity": "warning",
+          "message": "As a principle of best modeling practice, the size of a <compartment> should be set to a value rather than be left undefined. Doing so improves the portability of models between different simulation and analysis systems, and helps make it easier to detect potential errors in models."
+        }
+      ]
     },
     "types/Compartment/spatialDimensions": {
       "kind": "attribute",
@@ -934,7 +1059,17 @@
         "label": "core 4.5.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.5.2"
-      }
+      },
+      "required": false,
+      "default": "no units are inherited from the model, because there is no basis to choose between volume, area and length",
+      "rules": [
+        {
+          "id": 20518,
+          "severity": "warning",
+          "message": "If neither the attribute 'units' nor the attribute 'spatialDimensions' on a Compartment object is set, the unit associated with that compartment's size is undefined.",
+          "section": "L3V2 Section 4.5.4"
+        }
+      ]
     },
     "types/Compartment/units": {
       "kind": "attribute",
@@ -952,7 +1087,35 @@
         "label": "core 4.5.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.5.4"
-      }
+      },
+      "required": false,
+      "default": "the volume, area or length units of the model, according to the dimensions of the compartment",
+      "rules": [
+        {
+          "id": 10311,
+          "severity": "error",
+          "message": "The syntax of unit identifiers (i.e., the values of the 'id' attribute on UnitDefinition, the 'units' attribute on Compartment, the 'units' attribute on Parameter, and the 'substanceUnits' attribute on Species) must conform to the syntax of the SBML type UnitSId.",
+          "section": "L3V2 Section 3.1.9"
+        },
+        {
+          "id": 10313,
+          "severity": "error",
+          "message": "Unit identifier references (i.e the 'units' attribute on <Compartment>, the 'units' attribute on <Parameter>, and the 'substanceUnits' attribute on <Species>) must be the identifier of a <UnitDefinition> in the <Model>, or the identifier of a predefined unit in SBML.",
+          "section": "L3V2 Section 4.4.2"
+        },
+        {
+          "id": 20502,
+          "severity": "error",
+          "message": "If a <compartment> definition has a 'spatialDimensions' value of '0', then its 'units' attribute must not be set. If the compartment has no dimensions, then no units can be associated with a non-existent size.",
+          "section": "L2V5 Section 4.7.5"
+        },
+        {
+          "id": 20518,
+          "severity": "warning",
+          "message": "If neither the attribute 'units' nor the attribute 'spatialDimensions' on a Compartment object is set, the unit associated with that compartment's size is undefined.",
+          "section": "L3V2 Section 4.5.4"
+        }
+      ]
     },
     "types/Compartment/unitsLatex": {
       "kind": "attribute",
@@ -979,6 +1142,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.10"
       },
+      "rules": [
+        {
+          "id": 10706,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <constraint> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21002,
+          "severity": "error",
+          "message": "The order of subelements within <constraint> must be the following: <math>, <message>. The <message> element is optional, but if present, must follow the <math> element.",
+          "section": "L2V5 Section 4.12"
+        },
+        {
+          "id": 21009,
+          "severity": "error",
+          "message": "A <constraint> object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Constraint object.",
+          "section": "L3V2 Section 4.10"
+        }
+      ],
       "attributes": [
         "types/Constraint/math",
         "types/Constraint/message"
@@ -1004,7 +1187,23 @@
         "label": "core 4.10.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.10.1"
-      }
+      },
+      "required": false,
+      "default": "the constraint puts no restriction on the model",
+      "rules": [
+        {
+          "id": 21001,
+          "severity": "error",
+          "message": "A <constraint>'s <math> expression must evaluate to a value of type Boolean.",
+          "section": "L3V1 Section 4.10"
+        },
+        {
+          "id": 21007,
+          "severity": "error",
+          "message": "A <constraint> object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.10"
+        }
+      ]
     },
     "types/Constraint/message": {
       "kind": "attribute",
@@ -1022,7 +1221,41 @@
         "label": "core 4.10.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.10.2"
-      }
+      },
+      "required": false,
+      "default": "nothing is shown to the user when the condition is violated",
+      "rules": [
+        {
+          "id": 21003,
+          "severity": "error",
+          "message": "The contents of the <message> element in a <constraint> must be explicitly placed in the XHTML XML namespace.",
+          "section": "L2V5 Section 4.12.2"
+        },
+        {
+          "id": 21004,
+          "severity": "error",
+          "message": "The contents of the <message> element must not contain an XML declaration (i.e., a string of the form \"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\" or similar).",
+          "section": "L3V2 Section 4.10.2"
+        },
+        {
+          "id": 21005,
+          "severity": "error",
+          "message": "The contents of the <message> element must not contain an XML DOCTYPE declaration (i.e., a string beginning with the characters \"<!DOCTYPE\".",
+          "section": "L3V2 Section 4.10.2"
+        },
+        {
+          "id": 21006,
+          "severity": "error",
+          "message": "The XHTML content inside a <constraint>'s <message> element can only take one of the following general forms: (1) a complete XHTML document beginning with the element <html> and ending with </html>; (2) the \"body\" portion of a document beginning with the element <body> and ending with </body>; or (3) XHTML content that is permitted within a <body> ... </body> elements.",
+          "section": "L2V5 Section 4.12.2"
+        },
+        {
+          "id": 21008,
+          "severity": "error",
+          "message": "A <constraint> object may contain at most one <message> subobject.",
+          "section": "L3V2 Section 4.10"
+        }
+      ]
     },
     "types/DefaultTerm": {
       "kind": "type",
@@ -1075,6 +1308,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.4"
       },
+      "rules": [
+        {
+          "id": 10717,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <delay> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21227,
+          "severity": "error",
+          "message": "A Delay object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Delay object.",
+          "section": "L3V2 Section 4.12"
+        }
+      ],
       "attributes": [
         "types/Delay/math"
       ],
@@ -1100,7 +1347,17 @@
         "label": "core 4.12.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.4"
-      }
+      },
+      "required": false,
+      "default": "the event is executed as one without a delay",
+      "rules": [
+        {
+          "id": 21210,
+          "severity": "error",
+          "message": "A Delay object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/Deletion": {
       "kind": "type",
@@ -1228,6 +1485,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12"
       },
+      "rules": [
+        {
+          "id": 10710,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on an <event> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to an occurring entity representation defined in SBO (i.e., terms derived from SBO:0000231, \"occurring entity representation\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21205,
+          "severity": "error",
+          "message": "The order of subelements within <event> must be the following: <trigger>, <delay>, <listOfEventAssignments>. The <delay> element is optional, but if present, must follow <trigger>.",
+          "section": "L2V5 Section 4.14"
+        },
+        {
+          "id": 21225,
+          "severity": "error",
+          "message": "An Event object must have the required attribute 'useValuesFromTriggerTime' and in addition may have the optional attributes 'metaid', 'sboTerm', 'id', and 'name'. No other attributes from the SBML Level 3 Core namespace are permitted on an Event object.",
+          "section": "L3V2 Section 4.12"
+        }
+      ],
       "attributes": [
         "types/Event/useValuesFromTriggerTime",
         "types/Event/trigger",
@@ -1263,7 +1540,17 @@
         "label": "core 4.12.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.4"
-      }
+      },
+      "required": false,
+      "default": "the event is executed at the moment it triggers",
+      "rules": [
+        {
+          "id": 21221,
+          "severity": "error",
+          "message": "An Event object may contain at most one Delay object.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/Event/delay.math": {
       "kind": "attribute",
@@ -1281,7 +1568,17 @@
         "label": "core 4.12.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.4"
-      }
+      },
+      "required": false,
+      "default": "the event is executed as one without a delay",
+      "rules": [
+        {
+          "id": 21210,
+          "severity": "error",
+          "message": "A Delay object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/Event/listOfEventAssignments": {
       "kind": "attribute",
@@ -1299,7 +1596,29 @@
         "label": "core 4.12.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.5"
-      }
+      },
+      "required": false,
+      "default": "the event changes nothing when it is executed",
+      "rules": [
+        {
+          "id": 21203,
+          "severity": "error",
+          "message": "An <event> object must have at least one <eventAssignment> object in its <listOfEventAssignments>.",
+          "section": "L3V1 Section 4.12"
+        },
+        {
+          "id": 21222,
+          "severity": "error",
+          "message": "An Event object may contain at most one ListOfEventAssignments object.",
+          "section": "L3V2 Section 4.12"
+        },
+        {
+          "id": 21223,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfEventAssignments container object may only contain EventAssignment objects.",
+          "section": "L3V2 Section 4.12.5"
+        }
+      ]
     },
     "types/Event/priority": {
       "kind": "attribute",
@@ -1317,7 +1636,17 @@
         "label": "core 4.12.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.3"
-      }
+      },
+      "required": false,
+      "default": "the order of the event among simultaneous events is not fixed",
+      "rules": [
+        {
+          "id": 21230,
+          "severity": "error",
+          "message": "An Event object may contain at most one Priority object.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/Event/priority.math": {
       "kind": "attribute",
@@ -1335,7 +1664,17 @@
         "label": "core 4.12.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.3"
-      }
+      },
+      "required": false,
+      "default": "the event behaves as one without a priority",
+      "rules": [
+        {
+          "id": 21231,
+          "severity": "error",
+          "message": "An Priority object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/Event/trigger": {
       "kind": "attribute",
@@ -1353,7 +1692,17 @@
         "label": "core 4.12.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
-      }
+      },
+      "required": false,
+      "default": "the event can never be triggered",
+      "rules": [
+        {
+          "id": 21201,
+          "severity": "error",
+          "message": "An <event> object must have a 'trigger'. In SBML Level 3 Version 2 this rule was relaxed to stating that an <event> object must have at most one 'trigger' element.",
+          "section": "L3V2 Section 4.12.2"
+        }
+      ]
     },
     "types/Event/trigger.initialValue": {
       "kind": "attribute",
@@ -1371,7 +1720,16 @@
         "label": "core 4.12.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 21229,
+          "severity": "error",
+          "message": "The attribute 'initialValue' on a Trigger object must have a value of type Boolean.",
+          "section": "L3V2 Section 3.1.2"
+        }
+      ]
     },
     "types/Event/trigger.math": {
       "kind": "attribute",
@@ -1389,7 +1747,23 @@
         "label": "core 4.12.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
-      }
+      },
+      "required": false,
+      "default": "the event is never triggered",
+      "rules": [
+        {
+          "id": 21202,
+          "severity": "error",
+          "message": "An <event>'s <trigger> expression must evaluate to a value of type Boolean.",
+          "section": "L3V1 Section 4.12.2"
+        },
+        {
+          "id": 21209,
+          "severity": "error",
+          "message": "A Trigger object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/Event/trigger.persistent": {
       "kind": "attribute",
@@ -1407,7 +1781,16 @@
         "label": "core 4.12.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 21228,
+          "severity": "error",
+          "message": "The attribute 'persistent' on a Trigger object must have a value of type Boolean.",
+          "section": "L3V2 Section 3.1.2"
+        }
+      ]
     },
     "types/Event/useValuesFromTriggerTime": {
       "kind": "attribute",
@@ -1425,7 +1808,16 @@
         "label": "core 4.12.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 21206,
+          "severity": "error",
+          "message": "If an <event>'s 'useValuesFromTriggerTime' attribute has the value 'false', then the <event> must contain a <delay> element. The implication of 'useValuesFromTriggerTime=false' is that there is a delay between the time of trigger and the time of value assignments performed by the <event>.",
+          "section": "L2V5 Section 4.14"
+        }
+      ]
     },
     "types/EventAssignment": {
       "kind": "type",
@@ -1439,6 +1831,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.5"
       },
+      "rules": [
+        {
+          "id": 10711,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on an <eventAssignment> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21214,
+          "severity": "error",
+          "message": "An EventAssignment object must have the required attribute 'variable' and may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an EventAssignment object.",
+          "section": "L3V2 Section 4.12"
+        }
+      ],
       "attributes": [
         "types/EventAssignment/variable",
         "types/EventAssignment/math"
@@ -1464,7 +1870,17 @@
         "label": "core 4.12.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.5"
-      }
+      },
+      "required": false,
+      "default": "nothing is assigned when the event is executed",
+      "rules": [
+        {
+          "id": 21213,
+          "severity": "error",
+          "message": "An EventAssignment object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/EventAssignment/variable": {
       "kind": "attribute",
@@ -1482,7 +1898,34 @@
         "label": "core 4.12.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 10305,
+          "severity": "error",
+          "message": "In each <event>, the value of the 'variable' field within every <eventAssignment> definition must be unique across the set of all <eventAssignment>s within that <event>.",
+          "section": "L3V2 Section 4.12.5"
+        },
+        {
+          "id": 10306,
+          "severity": "error",
+          "message": "An identifier used as the value of 'variable' in an <eventAssignment> cannot also appear as the value of 'variable' in an <assignmentRule>.",
+          "section": "L3V2 Section 4.12.5"
+        },
+        {
+          "id": 21211,
+          "severity": "error",
+          "message": "The value of the attribute 'variable' in an <eventAssignment> can only be the identifier of a <compartment>, <species>, model-wide <parameter> definition, or (in Level 3) <speciesReference>, or (in Level 3 Version 2), any identifier in the SId namespace of the model belonging to an element defined by an SBML Level 3 package as having with mathematical meaning.",
+          "section": "L3V2 Section 4.12.5"
+        },
+        {
+          "id": 21212,
+          "severity": "error",
+          "message": "Any <compartment>, <species>, <parameter>, or (in Level 3) <speciesReference> definition whose identifier is used as the value of 'variable' in an <eventAssignment> must have a value of 'false' for its 'constant' attribute.",
+          "section": "L3V2 Section 4.12.5"
+        }
+      ]
     },
     "types/ExternalModelDefinition": {
       "kind": "type",
@@ -1799,6 +2242,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.3"
       },
+      "rules": [
+        {
+          "id": 10702,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <functionDefinition> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20307,
+          "severity": "error",
+          "message": "FunctionDefinition object must have the required attribute 'id', and may have the optional attributes 'metaid', 'sboTerm' and 'name'. No other attributes from the SBML Level 3 Core namespace are permitted on a FunctionDefinition object.",
+          "section": "L3V2 Section 4.3"
+        }
+      ],
       "attributes": [
         "types/FunctionDefinition/math"
       ],
@@ -1822,7 +2279,41 @@
         "label": "core 4.3.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.3.2"
-      }
+      },
+      "required": false,
+      "default": "the function has no mathematical meaning in SBML core",
+      "rules": [
+        {
+          "id": 20301,
+          "severity": "error",
+          "message": "The top-level element within <math> in a <functionDefinition> is restricted.",
+          "section": "L3V2 Section 4.3.2"
+        },
+        {
+          "id": 20303,
+          "severity": "error",
+          "message": "Inside the <lambda> of a <functionDefinition>, the identifier of that <functionDefinition> cannot appear as the value of a <ci> element. SBML functions are not permitted to be recursive.",
+          "section": "L3V2 Sections 3.4.3 and 4.3.2"
+        },
+        {
+          "id": 20304,
+          "severity": "error",
+          "message": "Inside the <lambda> of a <functionDefinition>, if a <ci> element is not the first element within a MathML <apply>, then the <ci>'s value can only be the value of a <bvar> element declared in that <lambda>. In other words, all model entities referenced inside a function definition must be passed arguments to that function.",
+          "section": "L3V2 Sections 3.4.3 and 4.3.2"
+        },
+        {
+          "id": 20305,
+          "severity": "error",
+          "message": "The value type returned by a <functionDefinition>'s <lambda> must be either Boolean or numeric.",
+          "section": "L3V2 Section 3.4.11"
+        },
+        {
+          "id": 20306,
+          "severity": "error",
+          "message": "A FunctionDefinition object must contain exactly one MathML math element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.3"
+        }
+      ]
     },
     "types/FunctionTerm": {
       "kind": "type",
@@ -2033,6 +2524,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.8"
       },
+      "rules": [
+        {
+          "id": 10704,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on an <initialAssignment> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20805,
+          "severity": "error",
+          "message": "An InitialAssignment object must have the required attribute 'symbol' and may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an InitialAssignment object.",
+          "section": "L3V2 Section 4.8"
+        },
+        {
+          "id": 20906,
+          "severity": "error",
+          "message": "There must not be circular dependencies in the combined set of <initialAssignment>, <assignmentRule> and <kineticLaw> definitions in a model. Each of these constructs has the effect of assigning a value to an identifier (i.e. the identifier given in the field 'symbol' in <initialAssignment>, the field 'variable' in <assignmentRule>, and the field 'id' on the <kineticLaw>'s enclosing <reaction>). Each of these constructs computes the value using a mathematical formula. The formula for a given identifier cannot make reference to a second identifier whose own definition depends directly or indirectly on the first identifier.",
+          "section": "L3V2 Section 4.9.5"
+        }
+      ],
       "attributes": [
         "types/InitialAssignment/symbol",
         "types/InitialAssignment/math",
@@ -2074,7 +2585,17 @@
         "label": "core 4.8.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.8.3"
-      }
+      },
+      "required": false,
+      "default": "what is assigned to the symbol stays undefined",
+      "rules": [
+        {
+          "id": 20804,
+          "severity": "error",
+          "message": "An InitialAssignment object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.8"
+        }
+      ]
     },
     "types/InitialAssignment/symbol": {
       "kind": "attribute",
@@ -2092,7 +2613,34 @@
         "label": "core 4.8.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.8.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20801,
+          "severity": "error",
+          "message": "The value of 'symbol' in an <initialAssignment> definition must be the identifier of an existing <compartment>, <species>, or <parameter> defined in the model or <speciesReference> in Level 3, or in Level 3 Version 2, any identifier in the SId namespace of the model belonging to an element defined by an SBML Level 3 package as having with mathematical meaning.",
+          "section": "L3V2 Section 4.8"
+        },
+        {
+          "id": 20802,
+          "severity": "error",
+          "message": "A given identifier cannot appear as the value of more than one 'symbol' field across the set of <initialAssignment>s in a model.",
+          "section": "L3V2 Section 4.8"
+        },
+        {
+          "id": 20803,
+          "severity": "error",
+          "message": "The value of a 'symbol' field in any <initialAssignment> definition cannot also appear as the value of a 'variable' field in an <assignmentRule>.",
+          "section": "L3V2 Section 4.8"
+        },
+        {
+          "id": 20806,
+          "severity": "error",
+          "message": "The identifier given as the value of a 'symbol' attribute in any <initialAssignment> definition cannot be the identifier of a <compartment> with a 'spatialDimensions' value of 0.",
+          "section": "L2V5 Section 4.7"
+        }
+      ]
     },
     "types/Input": {
       "kind": "type",
@@ -2201,6 +2749,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.5"
       },
+      "rules": [
+        {
+          "id": 10709,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <kineticLaw> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring rate law defined in SBO (i.e., terms derived from SBO:0000001, \"rate law\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20906,
+          "severity": "error",
+          "message": "There must not be circular dependencies in the combined set of <initialAssignment>, <assignmentRule> and <kineticLaw> definitions in a model. Each of these constructs has the effect of assigning a value to an identifier (i.e. the identifier given in the field 'symbol' in <initialAssignment>, the field 'variable' in <assignmentRule>, and the field 'id' on the <kineticLaw>'s enclosing <reaction>). Each of these constructs computes the value using a mathematical formula. The formula for a given identifier cannot make reference to a second identifier whose own definition depends directly or indirectly on the first identifier.",
+          "section": "L3V2 Section 4.9.5"
+        },
+        {
+          "id": 21122,
+          "severity": "error",
+          "message": "The order of subelements within <kineticLaw> must be the following: <math>, <listOfParameters>. The <listOfParameters> is optional, but if present, must follow <math>.",
+          "section": "L2V5 Section 4.13.5"
+        },
+        {
+          "id": 21132,
+          "severity": "error",
+          "message": "A KineticLaw object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a KineticLaw object.",
+          "section": "L3V2 Section 4.11"
+        }
+      ],
       "attributes": [
         "types/KineticLaw/math",
         "types/KineticLaw/derivedUnits",
@@ -2241,7 +2815,35 @@
         "label": "core 4.11.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.6"
-      }
+      },
+      "required": false,
+      "default": "the formula uses the global elements of the model alone",
+      "rules": [
+        {
+          "id": 10216,
+          "severity": "error",
+          "message": "The 'id' value of a <parameter> or <localParameter> defined within a <kineticLaw> can only be used in <ci> elements within the MathML content of that same <kineticLaw>; the identifier is not visible to other parts of the model.",
+          "section": "L3V2 Sections 3.3.1, 3.4.3 and 4.11.5"
+        },
+        {
+          "id": 21123,
+          "severity": "error",
+          "message": "If present, the <listOfParameters> in a <kineticLaw> must not be an empty list.",
+          "section": "L3V1 Section 4.11"
+        },
+        {
+          "id": 21127,
+          "severity": "error",
+          "message": "A KineticLaw object may contain at most one ListOfLocalParameters container object.",
+          "section": "L3V2 Section 4.11"
+        },
+        {
+          "id": 21128,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfLocalParameters container object may only contain LocalParameter objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/KineticLaw/math": {
       "kind": "attribute",
@@ -2259,7 +2861,23 @@
         "label": "core 4.11.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.5"
-      }
+      },
+      "required": false,
+      "default": "the speed of the reaction stays undefined",
+      "rules": [
+        {
+          "id": 21121,
+          "severity": "error",
+          "message": "All species referenced in the <kineticLaw> formula of a given reaction must first be declared using <speciesReference> or <modifierSpeciesReference>. More formally, if a <species> identifier appears in a <ci> element of a <reaction>'s <kineticLaw> formula, that same identifier must also appear in at least one <speciesReference> or <modifierSpeciesReference> in the <reaction> definition.",
+          "section": "L3V2 Section 4.11.5"
+        },
+        {
+          "id": 21130,
+          "severity": "error",
+          "message": "A KineticLaw object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.11"
+        }
+      ]
     },
     "types/ListOf": {
       "kind": "type",
@@ -2322,6 +2940,38 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.6"
       },
+      "rules": [
+        {
+          "id": 10303,
+          "severity": "error",
+          "message": "The value of the 'id' field of each parameter defined locally within a <kineticLaw> must be unique across the set of all such parameter definitions in that <kineticLaw>.",
+          "section": "L3V2 Sections 3.3.1 and 4.11.5"
+        },
+        {
+          "id": 10718,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <localParameter> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a quantitative parameter (i.e., terms derived from SBO:0000002, \"quantitive systems description parameter\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21124,
+          "severity": "error",
+          "message": "The 'constant' attribute on a <parameter> local to a <kineticLaw> cannot have a value other than 'true'. The values of parameters local to <kineticLaw> definitions cannot be changed, and therefore they are always constant.",
+          "section": "L2V5 Section 4.9.4"
+        },
+        {
+          "id": 21172,
+          "severity": "error",
+          "message": "A LocalParameter object must have the required attribute 'id' and may have the optional attributes 'metaid', 'sboTerm', 'name', 'value' and 'units'. No other attributes from the SBML Level 3 Core namespace are permitted on a LocalParameter object.",
+          "section": "L3V2 Section 4.11"
+        },
+        {
+          "id": 21173,
+          "severity": "error",
+          "message": "The 'id' attribute of a <localParameter> object must not be the same as the 'species' attribute of any <speciesReference> in the same <reaction>.",
+          "section": "L3V2 Section 4.11.6"
+        }
+      ],
       "attributes": [
         "types/LocalParameter/value",
         "types/LocalParameter/units",
@@ -2363,7 +3013,23 @@
         "label": "core 4.11.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.6"
-      }
+      },
+      "required": false,
+      "default": "the value has no declared units, a local parameter inherits none from the model",
+      "rules": [
+        {
+          "id": 10311,
+          "severity": "error",
+          "message": "The syntax of unit identifiers (i.e., the values of the 'id' attribute on UnitDefinition, the 'units' attribute on Compartment, the 'units' attribute on Parameter, and the 'substanceUnits' attribute on Species) must conform to the syntax of the SBML type UnitSId.",
+          "section": "L3V2 Section 3.1.9"
+        },
+        {
+          "id": 10313,
+          "severity": "error",
+          "message": "Unit identifier references (i.e the 'units' attribute on <Compartment>, the 'units' attribute on <Parameter>, and the 'substanceUnits' attribute on <Species>) must be the identifier of a <UnitDefinition> in the <Model>, or the identifier of a predefined unit in SBML.",
+          "section": "L3V2 Section 4.4.2"
+        }
+      ]
     },
     "types/LocalParameter/unitsLatex": {
       "kind": "attribute",
@@ -2394,7 +3060,9 @@
         "label": "core 4.11.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.6"
-      }
+      },
+      "required": false,
+      "default": "the value is unknown, and no construct of the model can set it"
     },
     "types/Model": {
       "kind": "type",
@@ -2408,6 +3076,38 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2"
       },
+      "rules": [
+        {
+          "id": 10701,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <model> is expected to be an SBO identifier (http://www.biomodels.net/SBO/). In SBML Level 2 prior to Version 4 the value is expected to be a term derived from SBO:0000004, \"modeling framework\"; in Version 4 and above it is expected to be a term derived from SBO:0000231 \"occurring entity representation\"",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20202,
+          "severity": "error",
+          "message": "The order of subelements within a <model> element must be the following (where any one may be optional, but the ordering must be maintained): <listOfFunctionDefinitions>, <listOfUnitDefinitions>, <listOfCompartmentTypes>, <listOfSpeciesTypes>, <listOfCompartments>, <listOfSpecies>, <listOfParameters>, <listOfInitialAssignments>, <listOfRules>, <listOfConstraints>, <listOfReactions> and <listOfEvents>.",
+          "section": "L2V5 Section 4.2"
+        },
+        {
+          "id": 20203,
+          "severity": "error",
+          "message": "The <listOf___> containers in a <model> are optional, but if present, the lists cannot be empty. Specifically, if any of the following are present in a <model>, they must not be empty: <listOfFunctionDefinitions>, <listOfUnitDefinitions>, <listOfCompartmentTypes>, <listOfSpeciesTypes>, <listOfCompartments>, <listOfSpecies>, <listOfParameters>, <listOfInitialAssignments>, <listOfRules>, <listOfConstraints>, <listOfReactions> and <listOfEvents>.",
+          "section": "L3V1 Section 4.2"
+        },
+        {
+          "id": 20205,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kind of element in a <model> object: ListOfFunctionDefinitions, ListOfUnitDefinitions, ListOfCompartments, ListOfSpecies, ListOfParameters, ListOfInitialAssignments, ListOfRules, ListOfConstraints, ListOfReactions and ListOfEvents.",
+          "section": "L3V2 Section 4.2"
+        },
+        {
+          "id": 20222,
+          "severity": "error",
+          "message": "A Model object may only have the following attributes, all of which are optional: 'metaid', 'sboTerm', 'id', 'name', 'substanceUnits', 'timeUnits', 'volumeUnits', 'areaUnits', 'lengthUnits', 'extentUnits' and 'conversionFactor'. No other attributes from the SBML Level 3 Core namespace are permitted on a Model object.",
+          "section": "L3V2 Section 4.2"
+        }
+      ],
       "attributes": [
         "types/Model/kind",
         "types/Model/annotationXml",
@@ -2470,7 +3170,34 @@
         "label": "core 3.2.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.6"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 10401,
+          "severity": "error",
+          "message": "Every top-level element within an annotation element must have a namespace declared.",
+          "section": "L3V2 Section 3.2.6"
+        },
+        {
+          "id": 10402,
+          "severity": "error",
+          "message": "There cannot be more than one top-level element using a given namespace inside a given annotation element.",
+          "section": "L3V2 Section 3.2.6"
+        },
+        {
+          "id": 10403,
+          "severity": "error",
+          "message": "Top-level elements within an annotation element cannot use any SBML namespace, whether explicitly (by declaring the namespace to be one of the URIs \"http://www.sbml.org/sbml/level1\", \"http://www.sbml.org/sbml/level2\", \"http://www.sbml.org/sbml/level2/version2\", or \"http://www.sbml.org/sbml/level2/version3\", or \"http://www.sbml.org/sbml/level2/version4\", or \"http://www.sbml.org/sbml/level2/version5\" or \"http://www.sbml.org/sbml/level3/version1/core\"), or implicitly (by failing to declare any namespace).",
+          "section": "L2V5 Section 3.2.4"
+        },
+        {
+          "id": 10404,
+          "severity": "error",
+          "message": "A given SBML object may contain at most one <annotation> element.",
+          "section": "L3V2 Section 3.2"
+        }
+      ]
     },
     "types/Model/areaUnits": {
       "kind": "attribute",
@@ -2488,7 +3215,17 @@
         "label": "core 4.2.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.4"
-      }
+      },
+      "required": false,
+      "default": "a two dimensional compartment which declares none has no declared units",
+      "rules": [
+        {
+          "id": 20219,
+          "severity": "warning",
+          "message": "The value of the attribute 'areaUnits' on a Model object should be either 'dimensionless' or the identifier of a UnitDefinition object based on 'dimensionless' or a unit derived from 'metre'.",
+          "section": "L3V2 Section 4.2.4"
+        }
+      ]
     },
     "types/Model/areaUnitsLatex": {
       "kind": "attribute",
@@ -2519,7 +3256,17 @@
         "label": "core 4.2.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.6"
-      }
+      },
+      "required": false,
+      "default": "a species which names none has no conversion factor",
+      "rules": [
+        {
+          "id": 20216,
+          "severity": "error",
+          "message": "The value of the attribute 'conversionFactor' on a Model object must be the identifier of an existing Parameter object defined in the Model object's ListOfParameters.",
+          "section": "L3V2 Section 4.2"
+        }
+      ]
     },
     "types/Model/extentUnits": {
       "kind": "attribute",
@@ -2537,7 +3284,17 @@
         "label": "core 4.2.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.5"
-      }
+      },
+      "required": false,
+      "default": "the units of the kinetic laws of the model stay undefined",
+      "rules": [
+        {
+          "id": 20221,
+          "severity": "warning",
+          "message": "The value of the attribute extentUnits on a Model object should be either the units 'mole', 'item', 'avogadro', 'dimensionless', 'kilogram', 'gram', or the identifier of a UnitDefinition object based on these units.",
+          "section": "L3V2 Section 4.2.5"
+        }
+      ]
     },
     "types/Model/extentUnitsLatex": {
       "kind": "attribute",
@@ -2634,7 +3391,17 @@
         "label": "core 4.2.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.4"
-      }
+      },
+      "required": false,
+      "default": "a one dimensional compartment which declares none has no declared units",
+      "rules": [
+        {
+          "id": 20220,
+          "severity": "warning",
+          "message": "The value of the attribute 'lengthUnits' on a Model object should be either the units 'metre', 'dimensionless', or the identifier of a UnitDefinition object based on these units.",
+          "section": "L3V2 Section 4.2.4"
+        }
+      ]
     },
     "types/Model/lengthUnitsLatex": {
       "kind": "attribute",
@@ -2665,7 +3432,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20208,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfCompartments container object may only contain Compartment objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfConstraints": {
       "kind": "attribute",
@@ -2683,7 +3459,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20213,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfConstraints container object may only contain Constraint objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfEvents": {
       "kind": "attribute",
@@ -2701,7 +3486,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20215,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfEvents container object may only contain Event objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfFluxBounds": {
       "kind": "attribute",
@@ -2737,7 +3531,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20206,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfFunctionDefinitions container object may only contain FunctionDefinition objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfGeneProducts": {
       "kind": "attribute",
@@ -2773,7 +3576,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20211,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfInitialAssignments container object may only contain InitialAssignment objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfObjectives": {
       "kind": "attribute",
@@ -2809,7 +3621,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20210,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfParameters container object may only contain Parameter objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfPorts": {
       "kind": "attribute",
@@ -2863,7 +3684,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20214,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfReactions container object may only contain Reaction objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfRules": {
       "kind": "attribute",
@@ -2881,7 +3711,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20212,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfRules container object may only contain Rule objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfSpecies": {
       "kind": "attribute",
@@ -2899,7 +3738,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20209,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfSpecies container object may only contain Species objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfSubmodels": {
       "kind": "attribute",
@@ -2953,7 +3801,16 @@
         "label": "core 4.2.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 20207,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfUnitDefinitions container object may only contain UnitDefinition objects.",
+          "section": "L3V2 Section 4.2.7"
+        }
+      ]
     },
     "types/Model/listOfUserDefinedConstraints": {
       "kind": "attribute",
@@ -2989,7 +3846,17 @@
         "label": "core 4.2.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.2"
-      }
+      },
+      "required": false,
+      "default": "a species which declares none has no declared substance units",
+      "rules": [
+        {
+          "id": 20233,
+          "severity": "warning",
+          "message": "The value of the attribute substanceUnits on a Model object should be either the units 'mole', 'item', 'avogadro', 'dimensionless', 'kilogram', 'gram', or the identifier of a UnitDefinition object based on these units.",
+          "section": "L3V2 Section 4.2.2"
+        }
+      ]
     },
     "types/Model/substanceUnitsLatex": {
       "kind": "attribute",
@@ -3020,7 +3887,17 @@
         "label": "core 4.2.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.3"
-      }
+      },
+      "required": false,
+      "default": "time has no declared unit anywhere in the model",
+      "rules": [
+        {
+          "id": 20217,
+          "severity": "warning",
+          "message": "The value of the attribute 'timeUnits' on a Model object should be either the units 'second', 'dimensionless', or the identifier of a UnitDefinition object based on these units.",
+          "section": "L3V2 Section 4.2.3"
+        }
+      ]
     },
     "types/Model/timeUnitsLatex": {
       "kind": "attribute",
@@ -3051,7 +3928,17 @@
         "label": "core 4.2.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.2.4"
-      }
+      },
+      "required": false,
+      "default": "a three dimensional compartment which declares none has no declared units",
+      "rules": [
+        {
+          "id": 20218,
+          "severity": "warning",
+          "message": "The value of the attribute 'volumeUnits' on a Model object should be either the units 'litre', 'dimensionless', or the identifier of a UnitDefinition object based on these units or a unit derived from 'metre'.",
+          "section": "L3V2 Section 4.2.4"
+        }
+      ]
     },
     "types/Model/volumeUnitsLatex": {
       "kind": "attribute",
@@ -3078,6 +3965,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.4"
       },
+      "rules": [
+        {
+          "id": 10708,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <speciesReference> or <modifierSpeciesReference> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a participant role. The appropriate term depends on whether the object is a reactant, product or modifier. If a reactant, then it should be a term in the SBO:0000010, \"reactant\" hierarchy; if a product, then it should be a term in the SBO:0000011, \"product\" hierarchy; and if a modifier, then it should be a term in the SBO:0000019, \"modifier\" hierarchy.",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21117,
+          "severity": "error",
+          "message": "A <modifierSpeciesReference> object must have the required attribute 'species' and may have the optional attributes 'metaid', 'sboTerm', 'id' and 'name'. No other attributes from the SBML Level 3 Core namespace are permitted on a <modifierSpeciesReference> object.",
+          "section": "L3V2 Section 4.11"
+        }
+      ],
       "attributes": [
         "types/ModifierSpeciesReference/species",
         "types/ModifierSpeciesReference/reaction"
@@ -3117,7 +4018,16 @@
         "label": "core 4.11.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 21111,
+          "severity": "error",
+          "message": "The value of a <speciesReference> 'species' attribute must be the identifier of an existing <species> in the model.",
+          "section": "L3V2 Section 4.11.3"
+        }
+      ]
     },
     "types/Objective": {
       "kind": "type",
@@ -3304,6 +4214,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.7"
       },
+      "rules": [
+        {
+          "id": 10703,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <parameter> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a quantitative parameter defined in SBO (i.e., terms derived from SBO:0000002, \"quantitative systems description parameter\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20706,
+          "severity": "error",
+          "message": "A Parameter object must have the required attributes 'id' and 'constant', and may have the optional attributes 'metaid', 'sboTerm', 'name', 'value' and 'units'. No other attributes from the SBML Level 3 Core namespace are permitted on a Parameter object.",
+          "section": "L3V2 Section 4.7"
+        }
+      ],
       "attributes": [
         "types/Parameter/value",
         "types/Parameter/units",
@@ -3333,7 +4257,16 @@
         "label": "core 4.7.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.7.4"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20705,
+          "severity": "error",
+          "message": "A Parameter object referenced by the attribute 'conversionFactor' on a Species or Model object must have a value of 'true' for its attribute 'constant'.",
+          "section": "L3V2 Section 4.6.7"
+        }
+      ]
     },
     "types/Parameter/derivedUnits": {
       "kind": "attribute",
@@ -3364,7 +4297,34 @@
         "label": "core 4.7.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.7.3"
-      }
+      },
+      "required": false,
+      "default": "the value has no declared units, a parameter inherits none from the model",
+      "rules": [
+        {
+          "id": 10311,
+          "severity": "error",
+          "message": "The syntax of unit identifiers (i.e., the values of the 'id' attribute on UnitDefinition, the 'units' attribute on Compartment, the 'units' attribute on Parameter, and the 'substanceUnits' attribute on Species) must conform to the syntax of the SBML type UnitSId.",
+          "section": "L3V2 Section 3.1.9"
+        },
+        {
+          "id": 10313,
+          "severity": "error",
+          "message": "Unit identifier references (i.e the 'units' attribute on <Compartment>, the 'units' attribute on <Parameter>, and the 'substanceUnits' attribute on <Species>) must be the identifier of a <UnitDefinition> in the <Model>, or the identifier of a predefined unit in SBML.",
+          "section": "L3V2 Section 4.4.2"
+        },
+        {
+          "id": 20702,
+          "severity": "warning",
+          "message": "If the attribute 'units' on a given Parameter object has not been set, then the unit of measurement associated with that parameter's value is undefined.",
+          "section": "L3V2 Section 4.7.3"
+        },
+        {
+          "id": 80701,
+          "severity": "warning",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models."
+        }
+      ]
     },
     "types/Parameter/unitsLatex": {
       "kind": "attribute",
@@ -3395,7 +4355,16 @@
         "label": "core 4.7.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.7.2"
-      }
+      },
+      "required": false,
+      "default": "the value is unknown or set by an initial assignment or a rule",
+      "rules": [
+        {
+          "id": 80702,
+          "severity": "warning",
+          "message": "As a principle of best modeling practice, the <parameter> should set an initial value rather than be left undefined. Doing so improves the portability of models between different simulation and analysis systems, and helps make it easier to detect potential errors in models."
+        }
+      ]
     },
     "types/Port": {
       "kind": "type",
@@ -3522,6 +4491,14 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.3"
       },
+      "rules": [
+        {
+          "id": 21232,
+          "severity": "error",
+          "message": "A Priority object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Priority object.",
+          "section": "L3V2 Section 4.12"
+        }
+      ],
       "attributes": [
         "types/Priority/math"
       ],
@@ -3547,7 +4524,17 @@
         "label": "core 4.12.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.3"
-      }
+      },
+      "required": false,
+      "default": "the event behaves as one without a priority",
+      "rules": [
+        {
+          "id": 21231,
+          "severity": "error",
+          "message": "An Priority object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/QualitativeSpecies": {
       "kind": "type",
@@ -3659,6 +4646,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.4"
       },
+      "rules": [
+        {
+          "id": 10705,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a rule is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\"). Note: This applies to Algebraic Rules in addition to Rate and Assignment Rules.",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20909,
+          "severity": "error",
+          "message": "A RateRule object must have the required attribute 'variable' and may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a RateRule object.",
+          "section": "L3V2 Section 4.9"
+        },
+        {
+          "id": 20912,
+          "severity": "error",
+          "message": "There must not be circular dependencies in the combined set of <rateRule> and <kineticLaw> objects in the model. Each of these constructs has the effect of assigning a value to the time derivative of one or more identifiers (i.e., the identifier given in the attribute 'variable' in the <rateRule>, and the identifier of any <species> referenced by a <speciesReference> in the same <reaction> as the <kineticLaw>). Each of these constructs computes the value using a mathematical formula. The formula used to calculate the time derivative of a given identifier cannot make reference to a second identifier whose own definition depends directly or indirectly on a 'rateOf' 'csymbol' for the first identifier.",
+          "section": "L3V2 Section 4.9.5"
+        }
+      ],
       "attributes": [
         "types/RateRule/variable",
         "types/RateRule/math",
@@ -3699,7 +4706,17 @@
         "label": "core 4.9.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.1"
-      }
+      },
+      "required": false,
+      "default": "how the rule behaves mathematically stays undefined",
+      "rules": [
+        {
+          "id": 20907,
+          "severity": "error",
+          "message": "Every AssignmentRule, RateRule and AlgebraicRule object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.9"
+        }
+      ]
     },
     "types/RateRule/variable": {
       "kind": "attribute",
@@ -3717,7 +4734,34 @@
         "label": "core 4.9.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.9.4"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 10304,
+          "severity": "error",
+          "message": "The value of the 'variable' field in all <assignmentRule> and <rateRule> definitions must be unique across the set of all such rule definitions in a model.",
+          "section": "L3V2 Section 4.9.3"
+        },
+        {
+          "id": 20902,
+          "severity": "error",
+          "message": "The value of a <rateRule>'s 'variable' must be the identifier of an existing <compartment>, <species>, globally-defined <parameter>, or (in Level 3) <speciesReference>, or (in Level 3 Version 2), any identifier in the SId namespace of the model belonging to an element defined by an SBML Level 3 package as having with mathematical meaning.",
+          "section": "L3V2 Section 4.9.4"
+        },
+        {
+          "id": 20904,
+          "severity": "error",
+          "message": "Any <compartment>, <species>, <parameter>, or (in Level 3) <speciesReference> whose identifier is the value of a 'variable' attribute in an <rateRule>, must have a value of 'false' for 'constant'.",
+          "section": "L3V2 Section 4.9.4"
+        },
+        {
+          "id": 20911,
+          "severity": "error",
+          "message": "The value of a <rateRule> or <assignmentRule>'s 'variable' attribute must not be the identifier of a <compartment> with a 'spatialDimensions' value of 0.",
+          "section": "L2V5 Section 4.11.5"
+        }
+      ]
     },
     "types/Reaction": {
       "kind": "type",
@@ -3731,6 +4775,38 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11"
       },
+      "rules": [
+        {
+          "id": 10707,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <reaction> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to an occurring entity representation defined in SBO (i.e., terms derived from SBO:0000231, \"occurring entity representation\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21102,
+          "severity": "error",
+          "message": "The order of subelements within <reaction> must be the following: <listOfReactants> (optional), <listOfProducts> (optional), <listOfModifiers> (optional), <kineticLaw>.",
+          "section": "L2V5 Section 4.13"
+        },
+        {
+          "id": 21103,
+          "severity": "error",
+          "message": "The following containers are all optional in a <reaction>, but if any is present, it must not be empty: <listOfReactants>, <listOfProducts>, <listOfModifiers>, <kineticLaw>.",
+          "section": "L3V1 Section 4.11"
+        },
+        {
+          "id": 21106,
+          "severity": "error",
+          "message": "A <reaction> object may contain at most one of each of the following elements: <listOfReactants>, <listOfProducts>, <listOfModifiers>, and <kineticLaw>.",
+          "section": "L3V2 Section 4.11"
+        },
+        {
+          "id": 21110,
+          "severity": "error",
+          "message": "A <reaction> object must have the required attributes 'id' and 'reversible', and may have the optional attributes 'metaid', 'sboTerm', 'name' and 'compartment'. For SBML Level 3 Version 1 documents only, 'fast' is additionally required. No other attributes from the SBML Level 3 Core namespace are permitted on a Reaction object.",
+          "section": "L3V2 Section 4.11"
+        }
+      ],
       "attributes": [
         "types/Reaction/reversible",
         "types/Reaction/fast",
@@ -3771,7 +4847,16 @@
         "label": "core 4.11.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 21107,
+          "severity": "error",
+          "message": "The value of the attribute 'compartment' in a <reaction> object is optional, but if present, must be the identifier of an existing Compartment object defined in the model.",
+          "section": "L3V2 Section 4.11.1"
+        }
+      ]
     },
     "types/Reaction/equation": {
       "kind": "attribute",
@@ -3802,7 +4887,17 @@
         "label": "core 4.11.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.1"
-      }
+      },
+      "required": false,
+      "default": "in Level 3 Version 2 the attribute is removed, and every reaction is equivalent to one with false",
+      "rules": [
+        {
+          "id": 21152,
+          "severity": "warning",
+          "message": "The value of the 'fast' attribute should be 'false', as the attribute has been deprecated.",
+          "section": "L3V2 Section 4.11.1"
+        }
+      ]
     },
     "types/Reaction/fbc": {
       "kind": "attribute",
@@ -3891,7 +4986,9 @@
         "label": "core 4.11.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.5"
-      }
+      },
+      "required": false,
+      "default": "the speed of the reaction is undefined"
     },
     "types/Reaction/kineticLaw.derivedUnits": {
       "kind": "attribute",
@@ -3935,7 +5032,16 @@
         "label": "core 4.11.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 21105,
+          "severity": "error",
+          "message": "The list of modifiers (<listOfModifiers>) in a <reaction> can only contain <modifierSpeciesReference> elements.",
+          "section": "L3V2 Section 4.11"
+        }
+      ]
     },
     "types/Reaction/listOfProducts": {
       "kind": "attribute",
@@ -3953,7 +5059,23 @@
         "label": "core 4.11.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.1"
-      }
+      },
+      "required": false,
+      "default": "the reaction produces nothing and must then have a reactant",
+      "rules": [
+        {
+          "id": 21101,
+          "severity": "error",
+          "message": "A <reaction> definition must contain at least one <speciesReference>, either in its <listOfReactants> or its <listOfProducts>. A reaction without any reactant or product species is not permitted, regardless of whether the reaction has any modifier species.",
+          "section": "L3V1 Section 4.11.3"
+        },
+        {
+          "id": 21104,
+          "severity": "error",
+          "message": "The list of reactants (<listOfReactants>) and list of products (<listOfProducts>) in a <reaction> can only contain <speciesReference> elements.",
+          "section": "L3V2 Section 4.11"
+        }
+      ]
     },
     "types/Reaction/listOfReactants": {
       "kind": "attribute",
@@ -3971,7 +5093,23 @@
         "label": "core 4.11.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.1"
-      }
+      },
+      "required": false,
+      "default": "the reaction consumes nothing and must then have a product",
+      "rules": [
+        {
+          "id": 21101,
+          "severity": "error",
+          "message": "A <reaction> definition must contain at least one <speciesReference>, either in its <listOfReactants> or its <listOfProducts>. A reaction without any reactant or product species is not permitted, regardless of whether the reaction has any modifier species.",
+          "section": "L3V1 Section 4.11.3"
+        },
+        {
+          "id": 21104,
+          "severity": "error",
+          "message": "The list of reactants (<listOfReactants>) and list of products (<listOfProducts>) in a <reaction> can only contain <speciesReference> elements.",
+          "section": "L3V2 Section 4.11"
+        }
+      ]
     },
     "types/Reaction/reversible": {
       "kind": "attribute",
@@ -3989,7 +5127,8 @@
         "label": "core 4.11.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.1"
-      }
+      },
+      "required": true
     },
     "types/ReplacedBy": {
       "kind": "type",
@@ -4306,6 +5445,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.1"
       },
+      "rules": [
+        {
+          "id": 10719,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on the <sbml> object is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a modeling framework (i.e., terms derived from SBO:0000004, \"modelling framework\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20101,
+          "severity": "error",
+          "message": "The <sbml> container element must declare the XML Namespace for SBML, and this declaration must be consistent with the values of the 'level' and 'version' attributes on the <sbml> element.",
+          "section": "L3V2 Section 4.1"
+        },
+        {
+          "id": 20108,
+          "severity": "error",
+          "message": "The <sbml> object may only have the optional attributes 'metaid' and 'sboTerm'.",
+          "section": "L3V2 Section 4.2.7"
+        },
+        {
+          "id": 20201,
+          "severity": "error",
+          "message": "An SBML document must contain a <model> element. The <model> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.1"
+        }
+      ],
       "attributes": [
         "types/SBMLDocument/level",
         "types/SBMLDocument/version",
@@ -4332,7 +5497,34 @@
         "label": "core 3.2.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.6"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 10401,
+          "severity": "error",
+          "message": "Every top-level element within an annotation element must have a namespace declared.",
+          "section": "L3V2 Section 3.2.6"
+        },
+        {
+          "id": 10402,
+          "severity": "error",
+          "message": "There cannot be more than one top-level element using a given namespace inside a given annotation element.",
+          "section": "L3V2 Section 3.2.6"
+        },
+        {
+          "id": 10403,
+          "severity": "error",
+          "message": "Top-level elements within an annotation element cannot use any SBML namespace, whether explicitly (by declaring the namespace to be one of the URIs \"http://www.sbml.org/sbml/level1\", \"http://www.sbml.org/sbml/level2\", \"http://www.sbml.org/sbml/level2/version2\", or \"http://www.sbml.org/sbml/level2/version3\", or \"http://www.sbml.org/sbml/level2/version4\", or \"http://www.sbml.org/sbml/level2/version5\" or \"http://www.sbml.org/sbml/level3/version1/core\"), or implicitly (by failing to declare any namespace).",
+          "section": "L2V5 Section 3.2.4"
+        },
+        {
+          "id": 10404,
+          "severity": "error",
+          "message": "A given SBML object may contain at most one <annotation> element.",
+          "section": "L3V2 Section 3.2"
+        }
+      ]
     },
     "types/SBMLDocument/level": {
       "kind": "attribute",
@@ -4350,7 +5542,22 @@
         "label": "core 4.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20102,
+          "severity": "error",
+          "message": "The <sbml> container element must declare the SBML Level using the attribute 'level', and this declaration must be consistent with the XML Namespace declared for the <sbml> element.",
+          "section": "L3V2 Section 4.1"
+        },
+        {
+          "id": 20105,
+          "severity": "error",
+          "message": "The attribute 'level' on the <sbml> container element must have a value of type 'positiveInteger'.",
+          "section": "L3V2 Section 3.1.4"
+        }
+      ]
     },
     "types/SBMLDocument/packages": {
       "kind": "attribute",
@@ -4368,7 +5575,17 @@
         "label": "core 4.1.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.1.3"
-      }
+      },
+      "required": false,
+      "default": "the file uses the core alone",
+      "rules": [
+        {
+          "id": 20104,
+          "severity": "error",
+          "message": "The <sbml> container element must declare the XML Namespace for any SBML Level 3 packages used within the SBML document. This declaration must be consistent with the values of the 'level' and 'version' attributes on the <sbml> element.",
+          "section": "L3V2 Section 4.1.3"
+        }
+      ]
     },
     "types/SBMLDocument/version": {
       "kind": "attribute",
@@ -4386,7 +5603,22 @@
         "label": "core 4.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20103,
+          "severity": "error",
+          "message": "The <sbml> container element must declare the SBML Version using the attribute 'version', and this declaration must be consistent with the XML Namespace declared for the <sbml> element.",
+          "section": "L3V2 Section 4.1"
+        },
+        {
+          "id": 20106,
+          "severity": "error",
+          "message": "The attribute 'version' on the <sbml> container element must have a value of type 'positiveInteger'.",
+          "section": "L3V2 Section 3.1.4"
+        }
+      ]
     },
     "types/SBase": {
       "kind": "type",
@@ -4486,7 +5718,28 @@
         "label": "core 6.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "6.5"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 99401,
+          "severity": "warning",
+          "message": "In order to follow the general syntax for a standard SBML RDF annotation the first element of RDF element must be a Description element with an 'about' attribute.",
+          "section": "L3V2 Section 6.3"
+        },
+        {
+          "id": 99402,
+          "severity": "warning",
+          "message": "In order to follow the general syntax for a standard SBML RDF annotation, the 'about' attribute of the Description element must be of the form #string.",
+          "section": "L3V2 Section 6.3"
+        },
+        {
+          "id": 99403,
+          "severity": "warning",
+          "message": "In order to follow the general syntax for a standard SBML RDF annotation, the 'about' attribute of the Description element must be of the form #string, where the string component is equal to the value of the metaid attribute of the containing SBML element.",
+          "section": "L3V2 Section 6.3"
+        }
+      ]
     },
     "types/SBase/history": {
       "kind": "attribute",
@@ -4504,7 +5757,8 @@
         "label": "core 6.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "6.6"
-      }
+      },
+      "required": false
     },
     "types/SBase/id": {
       "kind": "attribute",
@@ -4522,7 +5776,22 @@
         "label": "core 3.2.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 10301,
+          "severity": "error",
+          "message": "The value of the 'id' field on every instance of the following type of object in a model must be unique: <model>, <functionDefinition>, <compartmentType>, <compartment>, <speciesType>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and model-wide <parameter>s. Note that <unitDefinition> and parameters defined inside a reaction are treated separately.",
+          "section": "L3V2 Section 3.3"
+        },
+        {
+          "id": 10310,
+          "severity": "error",
+          "message": "The syntax of 'id' attribute values must conform to the syntax of the SBML type 'SId'.",
+          "section": "L3V2 Section 3.1.7"
+        }
+      ]
     },
     "types/SBase/keyValuePairs": {
       "kind": "attribute",
@@ -4571,7 +5840,22 @@
         "label": "core 3.2.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.3"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 10307,
+          "severity": "error",
+          "message": "Every 'metaid' attribute value must be unique across the set of all 'metaid' values in a model.",
+          "section": "L3V2 Sections 3.1.6 and 3.2.3"
+        },
+        {
+          "id": 10309,
+          "severity": "error",
+          "message": "The syntax of 'metaid' attribute values must conform to the syntax of the XML type 'ID'.",
+          "section": "L3V2 Sections 3.2.3 and 3.1.6"
+        }
+      ]
     },
     "types/SBase/name": {
       "kind": "attribute",
@@ -4589,7 +5873,8 @@
         "label": "core 3.2.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.2"
-      }
+      },
+      "required": false
     },
     "types/SBase/notes": {
       "kind": "attribute",
@@ -4607,7 +5892,40 @@
         "label": "core 3.2.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.5"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 10801,
+          "severity": "error",
+          "message": "The contents of the <notes> element must be explicitly placed in the XHTML XML namespace.",
+          "section": "L3V2 Section 3.2.5"
+        },
+        {
+          "id": 10802,
+          "severity": "error",
+          "message": "The contents of the <notes> element must not contain an XML declaration (i.e., a string of the form \"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\" or similar).",
+          "section": "L3V2 Section 3.2.5"
+        },
+        {
+          "id": 10803,
+          "severity": "error",
+          "message": "The contents of the <notes> element must not contain an XML DOCTYPE declaration (i.e., a string beginning with the characters \"<!DOCTYPE\".",
+          "section": "L3V2 Section 3.2.5"
+        },
+        {
+          "id": 10804,
+          "severity": "error",
+          "message": "The XHTML content inside a <notes> element can only take one of the following general forms: (1) a complete XHTML document beginning with the element <html> and ending with </html>; (2) the \"body\" portion of a document beginning with the element <body> and ending with </body>; or (3) XHTML content that is permitted within a <body> ... </body> elements.",
+          "section": "L2V5 Section 3.2.3"
+        },
+        {
+          "id": 10805,
+          "severity": "error",
+          "message": "A given SBML object may contain at most one <notes> element.",
+          "section": "L3V2 Section 3.2"
+        }
+      ]
     },
     "types/SBase/sbo": {
       "kind": "attribute",
@@ -4625,7 +5943,16 @@
         "label": "core 3.2.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.4"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 10308,
+          "severity": "error",
+          "message": "The value of an 'sboTerm' attribute must have the data type 'SBOTerm', which is a string consisting of the characters 'S', 'B', 'O', ':' followed by exactly seven digits.",
+          "section": "L3V2 Section 3.1.12"
+        }
+      ]
     },
     "types/SBase/uncertainties": {
       "kind": "attribute",
@@ -4785,6 +6112,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6"
       },
+      "rules": [
+        {
+          "id": 10713,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <species> is expected to be an SBO identifier (http://www.biomodels.net/SBO/). In SBML Level 2 prior to Version 4 it is expected to refer to a participant physical type (i.e., terms derived from SBO:0000236, \"participant physical type\"); in Versions 4 and above it is expected to refer to a material entity (i.e., terms derived from SBO:0000240, \"material entity\").",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 20623,
+          "severity": "error",
+          "message": "A Species object must have the required attributes 'id', 'compartment', 'hasOnlySubstanceUnits', 'boundaryCondition' and 'constant', and may have the optional attributes 'metaid', 'sboTerm', 'name', 'initialAmount', 'initialConcentration', 'substanceUnits' and 'conversionFactor'. No other attributes from the SBML Level 3 Core namespace are permitted on a Species object.",
+          "section": "L3V2 Section 4.6"
+        }
+      ],
       "attributes": [
         "types/Species/compartment",
         "types/Species/initialAmount",
@@ -4823,7 +6164,22 @@
         "label": "core 4.6.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.6"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20610,
+          "severity": "error",
+          "message": "A <species>'s quantity cannot be determined simultaneously by both reactions and rules. More formally, if the identifier of a <species> definition having 'boundaryCondition'='false' and 'constant'='false' is referenced by a <speciesReference> anywhere in a model, then this identifier cannot also appear as the value of a 'variable' in an <assignmentRule> or a <rateRule>.",
+          "section": "L3V2 Section 4.6.6"
+        },
+        {
+          "id": 20611,
+          "severity": "error",
+          "message": "A <species> having boundaryCondition='false' cannot appear as a reactant or product in any reaction if that Species also has constant='true'.",
+          "section": "L3V2 Section 4.6.6"
+        }
+      ]
     },
     "types/Species/compartment": {
       "kind": "attribute",
@@ -4841,7 +6197,28 @@
         "label": "core 4.6.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.3"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20204,
+          "severity": "error",
+          "message": "If a model defines any species, then the model must also define at least one compartment. This is an implication of the fact that the 'compartment' attribute on the <species> element is not optional.",
+          "section": "L3V2 Section 4.6.3"
+        },
+        {
+          "id": 20601,
+          "severity": "error",
+          "message": "The value of 'compartment' in a <species> definition must be the identifier of an existing <compartment> defined in the model.",
+          "section": "L3V2 Section 4.6.3"
+        },
+        {
+          "id": 20614,
+          "severity": "error",
+          "message": "The 'compartment' attribute in a <species> is mandatory. A <species> definition in a model must include a value for this attribute.",
+          "section": "L3V2 Section 4.6.3"
+        }
+      ]
     },
     "types/Species/constant": {
       "kind": "attribute",
@@ -4859,7 +6236,22 @@
         "label": "core 4.6.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.6"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 20610,
+          "severity": "error",
+          "message": "A <species>'s quantity cannot be determined simultaneously by both reactions and rules. More formally, if the identifier of a <species> definition having 'boundaryCondition'='false' and 'constant'='false' is referenced by a <speciesReference> anywhere in a model, then this identifier cannot also appear as the value of a 'variable' in an <assignmentRule> or a <rateRule>.",
+          "section": "L3V2 Section 4.6.6"
+        },
+        {
+          "id": 20611,
+          "severity": "error",
+          "message": "A <species> having boundaryCondition='false' cannot appear as a reactant or product in any reaction if that Species also has constant='true'.",
+          "section": "L3V2 Section 4.6.6"
+        }
+      ]
     },
     "types/Species/conversionFactor": {
       "kind": "attribute",
@@ -4877,7 +6269,23 @@
         "label": "core 4.6.7",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.7"
-      }
+      },
+      "required": false,
+      "default": "the conversion factor of the model",
+      "rules": [
+        {
+          "id": 20617,
+          "severity": "error",
+          "message": "The value of the attribute 'conversionFactor' on a Species object must be the identifier of an existing Parameter object defined in the enclosing Model object.",
+          "section": "L3V2 Section 4.6.7"
+        },
+        {
+          "id": 20705,
+          "severity": "error",
+          "message": "A Parameter object referenced by the attribute 'conversionFactor' on a Species or Model object must have a value of 'true' for its attribute 'constant'.",
+          "section": "L3V2 Section 4.6.7"
+        }
+      ]
     },
     "types/Species/derivedUnits": {
       "kind": "attribute",
@@ -4961,7 +6369,8 @@
         "label": "core 4.6.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.5"
-      }
+      },
+      "required": true
     },
     "types/Species/initialAmount": {
       "kind": "attribute",
@@ -4979,7 +6388,22 @@
         "label": "core 4.6.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.4"
-      }
+      },
+      "required": false,
+      "default": "the quantity is unknown or set by an initial assignment or a rule",
+      "rules": [
+        {
+          "id": 20609,
+          "severity": "error",
+          "message": "A <species> cannot set values for both 'initialConcentration' and 'initialAmount' because they are mutually exclusive.",
+          "section": "L3V2 Section 4.6.4"
+        },
+        {
+          "id": 80601,
+          "severity": "warning",
+          "message": "As a principle of best modeling practice, the <species> should set an initial value (amount or concentration) rather than be left undefined. Doing so improves the portability of models between different simulation and analysis systems, and helps make it easier to detect potential errors in models."
+        }
+      ]
     },
     "types/Species/initialConcentration": {
       "kind": "attribute",
@@ -4997,7 +6421,28 @@
         "label": "core 4.6.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.4"
-      }
+      },
+      "required": false,
+      "default": "the quantity is unknown or set by an initial assignment or a rule",
+      "rules": [
+        {
+          "id": 20604,
+          "severity": "error",
+          "message": "If a <species> located in a <compartment> whose 'spatialDimensions' is set to '0', then that <species> definition cannot set 'initialConcentration'.",
+          "section": "L2V5 Section 4.8.4"
+        },
+        {
+          "id": 20609,
+          "severity": "error",
+          "message": "A <species> cannot set values for both 'initialConcentration' and 'initialAmount' because they are mutually exclusive.",
+          "section": "L3V2 Section 4.6.4"
+        },
+        {
+          "id": 80601,
+          "severity": "warning",
+          "message": "As a principle of best modeling practice, the <species> should set an initial value (amount or concentration) rather than be left undefined. Doing so improves the portability of models between different simulation and analysis systems, and helps make it easier to detect potential errors in models."
+        }
+      ]
     },
     "types/Species/substanceUnits": {
       "kind": "attribute",
@@ -5015,7 +6460,29 @@
         "label": "core 4.6.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.6.4"
-      }
+      },
+      "required": false,
+      "default": "the substance units of the model",
+      "rules": [
+        {
+          "id": 10311,
+          "severity": "error",
+          "message": "The syntax of unit identifiers (i.e., the values of the 'id' attribute on UnitDefinition, the 'units' attribute on Compartment, the 'units' attribute on Parameter, and the 'substanceUnits' attribute on Species) must conform to the syntax of the SBML type UnitSId.",
+          "section": "L3V2 Section 3.1.9"
+        },
+        {
+          "id": 10313,
+          "severity": "error",
+          "message": "Unit identifier references (i.e the 'units' attribute on <Compartment>, the 'units' attribute on <Parameter>, and the 'substanceUnits' attribute on <Species>) must be the identifier of a <UnitDefinition> in the <Model>, or the identifier of a predefined unit in SBML.",
+          "section": "L3V2 Section 4.4.2"
+        },
+        {
+          "id": 20616,
+          "severity": "warning",
+          "message": "If the attribute 'substanceUnits' in a Species object has not been set, then the unit of measurement associated with the species' quantity is determined by the value of the enclosing Model object's 'substanceUnits' attribute. If neither the Species object's 'substanceUnits' attribute nor the enclosing Model object's 'substanceUnits' attribute are set, then the unit of that species' quantity is undefined.",
+          "section": "L3V2 Section 4.6.5"
+        }
+      ]
     },
     "types/Species/unitsLatex": {
       "kind": "attribute",
@@ -5042,6 +6509,20 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.3"
       },
+      "rules": [
+        {
+          "id": 10708,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <speciesReference> or <modifierSpeciesReference> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a participant role. The appropriate term depends on whether the object is a reactant, product or modifier. If a reactant, then it should be a term in the SBO:0000010, \"reactant\" hierarchy; if a product, then it should be a term in the SBO:0000011, \"product\" hierarchy; and if a modifier, then it should be a term in the SBO:0000019, \"modifier\" hierarchy.",
+          "section": "L3V2 Section 5"
+        },
+        {
+          "id": 21116,
+          "severity": "error",
+          "message": "A <speciesReference> object must have the required attributes 'species' and 'constant', and may have the optional attributes 'metaid', 'sboTerm', 'name' 'id' and 'stoichiometry'. No other attributes from the SBML Level 3 Core namespace are permitted on a <speciesReference> object.",
+          "section": "L3V2 Section 4.11"
+        }
+      ],
       "attributes": [
         "types/SpeciesReference/species",
         "types/SpeciesReference/stoichiometry",
@@ -5071,7 +6552,8 @@
         "label": "core 4.11.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.3"
-      }
+      },
+      "required": true
     },
     "types/SpeciesReference/reaction": {
       "kind": "attribute",
@@ -5115,7 +6597,16 @@
         "label": "core 4.11.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 21111,
+          "severity": "error",
+          "message": "The value of a <speciesReference> 'species' attribute must be the identifier of an existing <species> in the model.",
+          "section": "L3V2 Section 4.11.3"
+        }
+      ]
     },
     "types/SpeciesReference/stoichiometry": {
       "kind": "attribute",
@@ -5133,7 +6624,9 @@
         "label": "core 4.11.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.11.3"
-      }
+      },
+      "required": false,
+      "default": "the stoichiometry is unknown or set by an initial assignment or a rule"
     },
     "types/Submodel": {
       "kind": "type",
@@ -5343,6 +6836,19 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
       },
+      "rules": [
+        {
+          "id": 10716,
+          "severity": "warning",
+          "message": "The value of the 'sboTerm' attribute on a <trigger> is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, \"mathematical expression\")."
+        },
+        {
+          "id": 21226,
+          "severity": "error",
+          "message": "A Trigger object must have the required attributes 'persistent' and 'initialValue', and in addition, may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Trigger object.",
+          "section": "L3V2 Section 4.12"
+        }
+      ],
       "attributes": [
         "types/Trigger/math",
         "types/Trigger/initialValue",
@@ -5371,7 +6877,16 @@
         "label": "core 4.12.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 21229,
+          "severity": "error",
+          "message": "The attribute 'initialValue' on a Trigger object must have a value of type Boolean.",
+          "section": "L3V2 Section 3.1.2"
+        }
+      ]
     },
     "types/Trigger/math": {
       "kind": "attribute",
@@ -5389,7 +6904,23 @@
         "label": "core 4.12.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
-      }
+      },
+      "required": false,
+      "default": "the event is never triggered",
+      "rules": [
+        {
+          "id": 21202,
+          "severity": "error",
+          "message": "An <event>'s <trigger> expression must evaluate to a value of type Boolean.",
+          "section": "L3V1 Section 4.12.2"
+        },
+        {
+          "id": 21209,
+          "severity": "error",
+          "message": "A Trigger object must contain exactly one MathML <math> element. The <math> element is optional in L3V2 and beyond.",
+          "section": "L3V2 Section 4.12"
+        }
+      ]
     },
     "types/Trigger/persistent": {
       "kind": "attribute",
@@ -5407,7 +6938,16 @@
         "label": "core 4.12.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.12.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 21228,
+          "severity": "error",
+          "message": "The attribute 'persistent' on a Trigger object must have a value of type Boolean.",
+          "section": "L3V2 Section 3.1.2"
+        }
+      ]
     },
     "types/UncertParameter": {
       "kind": "type",
@@ -5854,6 +7394,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.4"
       },
+      "rules": [
+        {
+          "id": 10302,
+          "severity": "error",
+          "message": "The value of the 'id' field of every <unitDefinition> must be unique across the set of all <unitDefinition>s in the entire model.",
+          "section": "L3V2 Sections 3.3 and 4.4"
+        },
+        {
+          "id": 20401,
+          "severity": "error",
+          "message": "The value of the 'id' attribute in a <unitDefinition> must be of type 'UnitSId' and not be identical to any unit predefined in SBML.",
+          "section": "L3V2 Section 4.4.2"
+        },
+        {
+          "id": 20419,
+          "severity": "error",
+          "message": "A UnitDefinition object must have the required attribute 'id' and may have the optional attributes 'metaid', 'sboTerm' and 'name'. No other attributes from the SBML Level 3 Core namespace are permitted on a UnitDefinition object.",
+          "section": "L3V2 Section 4.4"
+        }
+      ],
       "attributes": [
         "types/UnitDefinition/listOfUnits",
         "types/UnitDefinition/unitsLatex"
@@ -5881,7 +7441,41 @@
         "label": "core 4.4.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "4.4.2"
-      }
+      },
+      "required": false,
+      "default": "the unit definition is an undefined unit",
+      "rules": [
+        {
+          "id": 20410,
+          "severity": "error",
+          "message": "The value of the 'kind' attribute of a <unit> can only be one of the base units enumerated by 'UnitKind'; that is, the SBML unit system is not hierarchical and user-defined units cannot be defined using other user-defined units.",
+          "section": "L3V2 Section 4.4.2"
+        },
+        {
+          "id": 20413,
+          "severity": "error",
+          "message": "The ListOfUnits container object in a UnitDefinition object is optional, but if present, it must not be empty.",
+          "section": "L3V1 Section 4.4"
+        },
+        {
+          "id": 20414,
+          "severity": "error",
+          "message": "There may be at most one ListOfUnits container objects in a UnitDefinition object.",
+          "section": "L3V2 Section 4.4"
+        },
+        {
+          "id": 20415,
+          "severity": "error",
+          "message": "Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfUnits container object may only contain Unit objects.",
+          "section": "L3V2 Section 4.2.7"
+        },
+        {
+          "id": 20421,
+          "severity": "error",
+          "message": "A Unit object must have the required attributes 'kind', 'exponent', 'scale' and 'multiplier', and may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Unit object.",
+          "section": "L3V2 Section 4.4"
+        }
+      ]
     },
     "types/UnitDefinition/unitsLatex": {
       "kind": "attribute",

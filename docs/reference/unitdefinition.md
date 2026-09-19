@@ -10,7 +10,7 @@ The report renders every unit definition as a formula, in the table and in the i
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [listOfUnits](#listofunits) | [`list`](datatypes.md#list) | - | the units the definition multiplies, each with its exponent, scale and multiplier | [core 4.4.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfUnits](#listofunits) | [`list`](datatypes.md#list) | optional | the units the definition multiplies, each with its exponent, scale and multiplier | [core 4.4.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -19,6 +19,14 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 Every unit of the list is one factor of the definition: a base unit of SBML named by its kind, raised to the exponent, scaled by ten to the power of the scale and multiplied by the multiplier. "millimole per litre" is the mole with scale -3 times the litre with exponent -1, and "minute" is the second with multiplier 60. A definition with an empty list of units is an undefined unit, which is not the same as a dimensionless one.
 
 The inspector of a unit definition shows the units as a table of kind, exponent, scale and multiplier next to the formula the report renders from them, so a reader sees what the file says as well as what it means.
+
+Default: the unit definition is an undefined unit.
+
+- `20410` (error): The value of the 'kind' attribute of a &lt;unit&gt; can only be one of the base units enumerated by 'UnitKind'; that is, the SBML unit system is not hierarchical and user-defined units cannot be defined using other user-defined units.
+- `20413` (error): The ListOfUnits container object in a UnitDefinition object is optional, but if present, it must not be empty.
+- `20414` (error): There may be at most one ListOfUnits container objects in a UnitDefinition object.
+- `20415` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfUnits container object may only contain Unit objects.
+- `20421` (error): A Unit object must have the required attributes 'kind', 'exponent', 'scale' and 'multiplier', and may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Unit object.
 
 ## In the report
 
@@ -31,6 +39,12 @@ The inspector of a unit definition shows the units as a table of kind, exponent,
 The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example millimole per litre per second as a fraction.
 
 The rendered unit is the column "units" of the table of unit definitions and the row "formula" of the inspector, above the units it is built from.
+
+## Validation rules
+
+- `10302` (error): The value of the 'id' field of every &lt;unitDefinition&gt; must be unique across the set of all &lt;unitDefinition&gt;s in the entire model.
+- `20401` (error): The value of the 'id' attribute in a &lt;unitDefinition&gt; must be of type 'UnitSId' and not be identical to any unit predefined in SBML.
+- `20419` (error): A UnitDefinition object must have the required attribute 'id' and may have the optional attributes 'metaid', 'sboTerm' and 'name'. No other attributes from the SBML Level 3 Core namespace are permitted on a UnitDefinition object.
 
 ## Related elements
 

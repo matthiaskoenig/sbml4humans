@@ -10,13 +10,13 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [reversible](#reversible) | [`boolean`](datatypes.md#boolean) | - | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fast](#fast) | [`boolean`](datatypes.md#boolean) | - | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [compartment](#compartment) | [`SIdRef`](datatypes.md#sidref) | - | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfReactants](#listofreactants) | [`list`](datatypes.md#list) | - | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfProducts](#listofproducts) | [`list`](datatypes.md#list) | - | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfModifiers](#listofmodifiers) | [`list`](datatypes.md#list) | - | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [kineticLaw](#kineticlaw) | [`KineticLaw`](kineticlaw.md) | - | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [reversible](#reversible) | [`boolean`](datatypes.md#boolean) | required | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [fast](#fast) | [`boolean`](datatypes.md#boolean) | optional | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [compartment](#compartment) | [`SIdRef`](datatypes.md#sidref) | optional | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfReactants](#listofreactants) | [`list`](datatypes.md#list) | optional | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfProducts](#listofproducts) | [`list`](datatypes.md#list) | optional | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfModifiers](#listofmodifiers) | [`list`](datatypes.md#list) | optional | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [kineticLaw](#kineticlaw) | [`KineticLaw`](kineticlaw.md) | optional | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [fbc](#fbc) | `ReactionFbc` | - | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [fbc:lowerFluxBound](#fbc-lowerfluxbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [fbc:upperFluxBound](#fbc-upperfluxbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
@@ -36,11 +36,17 @@ In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a
 
 The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written. Level 1 and Level 2 from Version 2 on make a reaction slow unless the file says otherwise, so a reaction of those levels which does not write the flag is shown with the cross of `false`; Level 2 Version 1 gave the flag no default, and a reaction of that version which does not write it is shown with the dash of an attribute which is not set.
 
+Default: in Level 3 Version 2 the attribute is removed, and every reaction is equivalent to one with false.
+
+- `21152` (warning): The value of the 'fast' attribute should be 'false', as the attribute has been deprecated.
+
 <span id="compartment"></span>**compartment**
 
 The compartment is optional and has no effect on the equations of the model; it helps a reader, a visualisation or a tool which checks a rate law to know where the process happens.
 
 The report links the compartment in the column "compartment" and in the inspector.
+
+- `21107` (error): The value of the attribute 'compartment' in a &lt;reaction&gt; object is optional, but if present, must be the identifier of an existing Compartment object defined in the model.
 
 <span id="listofreactants"></span>**listOfReactants**
 
@@ -48,11 +54,21 @@ Every reactant is a [species reference](speciesreference.md) which names a speci
 
 The report lists the reactants in the inspector of the reaction, with a link to every species, and writes them on the left of the equation.
 
+Default: the reaction consumes nothing and must then have a product.
+
+- `21101` (error): A &lt;reaction&gt; definition must contain at least one &lt;speciesReference&gt;, either in its &lt;listOfReactants&gt; or its &lt;listOfProducts&gt;. A reaction without any reactant or product species is not permitted, regardless of whether the reaction has any modifier species.
+- `21104` (error): The list of reactants (&lt;listOfReactants&gt;) and list of products (&lt;listOfProducts&gt;) in a &lt;reaction&gt; can only contain &lt;speciesReference&gt; elements.
+
 <span id="listofproducts"></span>**listOfProducts**
 
 Every product is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event produces.
 
 The report lists the products in the inspector of the reaction and writes them on the right of the equation.
+
+Default: the reaction produces nothing and must then have a reactant.
+
+- `21101` (error): A &lt;reaction&gt; definition must contain at least one &lt;speciesReference&gt;, either in its &lt;listOfReactants&gt; or its &lt;listOfProducts&gt;. A reaction without any reactant or product species is not permitted, regardless of whether the reaction has any modifier species.
+- `21104` (error): The list of reactants (&lt;listOfReactants&gt;) and list of products (&lt;listOfProducts&gt;) in a &lt;reaction&gt; can only contain &lt;speciesReference&gt; elements.
 
 <span id="listofmodifiers"></span>**listOfModifiers**
 
@@ -60,11 +76,15 @@ A modifier is a [modifier species reference](modifierspeciesreference.md): a cat
 
 The report lists the modifiers in the inspector of the reaction, with a link to every species; they are not part of the equation, which shows what a reaction consumes and produces.
 
+- `21105` (error): The list of modifiers (&lt;listOfModifiers&gt;) in a &lt;reaction&gt; can only contain &lt;modifierSpeciesReference&gt; elements.
+
 <span id="kineticlaw"></span>**kineticLaw**
 
 The [kinetic law](kineticlaw.md) holds the rate formula of the reaction and the local parameters it uses. It is optional, and a reaction without one has no defined speed, which different simulators treat differently.
 
 The report shows the rendered formula in the column "kinetic law" and the whole kinetic law in the inspector of the reaction.
+
+Default: the speed of the reaction is undefined.
 
 <span id="fbc"></span>**fbc**
 
@@ -111,6 +131,14 @@ The report derives the units of the [kinetic law](kineticlaw.md)'s formula from 
 The report builds the equation from the reactants and the products of the reaction, with a single or a double arrow according to the flag "reversible". A stoichiometry of one is left out, a stoichiometry of minus one becomes a minus in front of the species, and a stoichiometry which is no number, because a rule or an initial assignment sets it, is replaced by the identifier of the species reference, or by a question mark when it has none. The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
 
 The equation is a column of the table of reactions and a row of the inspector.
+
+## Validation rules
+
+- `10707` (warning): The value of the 'sboTerm' attribute on a &lt;reaction&gt; is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to an occurring entity representation defined in SBO (i.e., terms derived from SBO:0000231, "occurring entity representation").
+- `21102` (error): The order of subelements within &lt;reaction&gt; must be the following: &lt;listOfReactants&gt; (optional), &lt;listOfProducts&gt; (optional), &lt;listOfModifiers&gt; (optional), &lt;kineticLaw&gt;.
+- `21103` (error): The following containers are all optional in a &lt;reaction&gt;, but if any is present, it must not be empty: &lt;listOfReactants&gt;, &lt;listOfProducts&gt;, &lt;listOfModifiers&gt;, &lt;kineticLaw&gt;.
+- `21106` (error): A &lt;reaction&gt; object may contain at most one of each of the following elements: &lt;listOfReactants&gt;, &lt;listOfProducts&gt;, &lt;listOfModifiers&gt;, and &lt;kineticLaw&gt;.
+- `21110` (error): A &lt;reaction&gt; object must have the required attributes 'id' and 'reversible', and may have the optional attributes 'metaid', 'sboTerm', 'name' and 'compartment'. For SBML Level 3 Version 1 documents only, 'fast' is additionally required. No other attributes from the SBML Level 3 Core namespace are permitted on a Reaction object.
 
 ## Related elements
 

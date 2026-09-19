@@ -10,23 +10,23 @@ The report shows the model as the root of the report, its lists as the sections 
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [substanceUnits](#substanceunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the amounts of the species which do not declare their own | [core 4.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [timeUnits](#timeunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the unit in which time is measured in the model | [core 4.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [volumeUnits](#volumeunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the size of the compartments with three dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [areaUnits](#areaunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the size of the compartments with two dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [lengthUnits](#lengthunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the size of the compartments with one dimension | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [extentUnits](#extentunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units in which the extent of a reaction is measured | [core 4.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [conversionFactor](#conversionfactor) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which converts between the units of a species and the extent of a reaction | [core 4.2.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfFunctionDefinitions](#listoffunctiondefinitions) | [`list`](datatypes.md#list) | - | the user defined functions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfUnitDefinitions](#listofunitdefinitions) | [`list`](datatypes.md#list) | - | the units the model defines | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfCompartments](#listofcompartments) | [`list`](datatypes.md#list) | - | the compartments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfSpecies](#listofspecies) | [`list`](datatypes.md#list) | - | the species of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfParameters](#listofparameters) | [`list`](datatypes.md#list) | - | the global parameters of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfInitialAssignments](#listofinitialassignments) | [`list`](datatypes.md#list) | - | the initial assignments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfRules](#listofrules) | [`list`](datatypes.md#list) | - | the assignment, rate and algebraic rules of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfConstraints](#listofconstraints) | [`list`](datatypes.md#list) | - | the constraints of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfReactions](#listofreactions) | [`list`](datatypes.md#list) | - | the reactions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfEvents](#listofevents) | [`list`](datatypes.md#list) | - | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [substanceUnits](#substanceunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | optional | the units of the amounts of the species which do not declare their own | [core 4.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [timeUnits](#timeunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | optional | the unit in which time is measured in the model | [core 4.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [volumeUnits](#volumeunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | optional | the units of the size of the compartments with three dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [areaUnits](#areaunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | optional | the units of the size of the compartments with two dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [lengthUnits](#lengthunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | optional | the units of the size of the compartments with one dimension | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [extentUnits](#extentunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | optional | the units in which the extent of a reaction is measured | [core 4.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [conversionFactor](#conversionfactor) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which converts between the units of a species and the extent of a reaction | [core 4.2.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfFunctionDefinitions](#listoffunctiondefinitions) | [`list`](datatypes.md#list) | optional | the user defined functions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfUnitDefinitions](#listofunitdefinitions) | [`list`](datatypes.md#list) | optional | the units the model defines | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfCompartments](#listofcompartments) | [`list`](datatypes.md#list) | optional | the compartments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfSpecies](#listofspecies) | [`list`](datatypes.md#list) | optional | the species of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfParameters](#listofparameters) | [`list`](datatypes.md#list) | optional | the global parameters of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfInitialAssignments](#listofinitialassignments) | [`list`](datatypes.md#list) | optional | the initial assignments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfRules](#listofrules) | [`list`](datatypes.md#list) | optional | the assignment, rate and algebraic rules of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfConstraints](#listofconstraints) | [`list`](datatypes.md#list) | optional | the constraints of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfReactions](#listofreactions) | [`list`](datatypes.md#list) | optional | the reactions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfEvents](#listofevents) | [`list`](datatypes.md#list) | optional | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [comp:listOfSubmodels](#comp-listofsubmodels) | [`list`](datatypes.md#list) | - | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [comp:listOfPorts](#comp-listofports) | [`list`](datatypes.md#list) | - | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [fbc:listOfGeneProducts](#fbc-listofgeneproducts) | [`list`](datatypes.md#list) | - | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
@@ -47,11 +47,19 @@ A species which does not set its substance units inherits this unit of the model
 
 The report shows the units of the model in the attributes of the inspector and renders them as a formula.
 
+Default: a species which declares none has no declared substance units.
+
+- `20233` (warning): The value of the attribute substanceUnits on a Model object should be either the units 'mole', 'item', 'avogadro', 'dimensionless', 'kilogram', 'gram', or the identifier of a UnitDefinition object based on these units.
+
 <span id="timeunits"></span>**timeUnits**
 
 This is the only place where the unit of time of a model is declared. It applies everywhere, in particular to the rate of every reaction and of every rate rule, which are per time.
 
 The report shows the time units in the attributes of the model.
+
+Default: time has no declared unit anywhere in the model.
+
+- `20217` (warning): The value of the attribute 'timeUnits' on a Model object should be either the units 'second', 'dimensionless', or the identifier of a UnitDefinition object based on these units.
 
 <span id="volumeunits"></span>**volumeUnits**
 
@@ -59,11 +67,19 @@ A compartment which does not declare its own units inherits its units from the m
 
 The report shows the volume units in the attributes of the model.
 
+Default: a three dimensional compartment which declares none has no declared units.
+
+- `20218` (warning): The value of the attribute 'volumeUnits' on a Model object should be either the units 'litre', 'dimensionless', or the identifier of a UnitDefinition object based on these units or a unit derived from 'metre'.
+
 <span id="areaunits"></span>**areaUnits**
 
 A two dimensional compartment, a membrane for example, which does not declare its own units inherits them from this attribute of the model.
 
 The report shows the area units in the attributes of the model.
+
+Default: a two dimensional compartment which declares none has no declared units.
+
+- `20219` (warning): The value of the attribute 'areaUnits' on a Model object should be either 'dimensionless' or the identifier of a UnitDefinition object based on 'dimensionless' or a unit derived from 'metre'.
 
 <span id="lengthunits"></span>**lengthUnits**
 
@@ -71,11 +87,19 @@ A one dimensional compartment which does not declare its own units inherits them
 
 The report shows the length units in the attributes of the model.
 
+Default: a one dimensional compartment which declares none has no declared units.
+
+- `20220` (warning): The value of the attribute 'lengthUnits' on a Model object should be either the units 'metre', 'dimensionless', or the identifier of a UnitDefinition object based on these units.
+
 <span id="extentunits"></span>**extentUnits**
 
 The extent of a reaction counts how often it has occurred, and its rate of change is what a kinetic law computes. The units of every kinetic law of the model are therefore the extent units divided by the time units, which also means that every reaction of a model has the same units.
 
 The report shows the extent units in the attributes of the model and uses them when it derives the units of a kinetic law.
+
+Default: the units of the kinetic laws of the model stay undefined.
+
+- `20221` (warning): The value of the attribute extentUnits on a Model object should be either the units 'mole', 'item', 'avogadro', 'dimensionless', 'kilogram', 'gram', or the identifier of a UnitDefinition object based on these units.
 
 <span id="conversionfactor"></span>**conversionFactor**
 
@@ -83,11 +107,17 @@ A species whose amount is not measured in the extent units of the reactions need
 
 The report shows the referenced parameter with its value and its units in the attributes of the model.
 
+Default: a species which names none has no conversion factor.
+
+- `20216` (error): The value of the attribute 'conversionFactor' on a Model object must be the identifier of an existing Parameter object defined in the Model object's ListOfParameters.
+
 <span id="listoffunctiondefinitions"></span>**listOfFunctionDefinitions**
 
 The lists of the model group its elements by type. This one holds the [function definitions](functiondefinition.md).
 
 The report shows the list as the section "Function definitions" of the report and counts its entries in the type bar.
+
+- `20206` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfFunctionDefinitions container object may only contain FunctionDefinition objects.
 
 <span id="listofunitdefinitions"></span>**listOfUnitDefinitions**
 
@@ -95,11 +125,15 @@ This list holds the [unit definitions](unitdefinition.md) which the elements of 
 
 The report shows the list as the section "Unit definitions" of the report.
 
+- `20207` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfUnitDefinitions container object may only contain UnitDefinition objects.
+
 <span id="listofcompartments"></span>**listOfCompartments**
 
 This list holds the [compartments](compartment.md) the species of the model live in.
 
 The report shows the list as the section "Compartments" of the report.
+
+- `20208` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfCompartments container object may only contain Compartment objects.
 
 <span id="listofspecies"></span>**listOfSpecies**
 
@@ -107,11 +141,15 @@ This list holds the [species](species.md), the pools whose quantities the model 
 
 The report shows the list as the section "Species" of the report.
 
+- `20209` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfSpecies container object may only contain Species objects.
+
 <span id="listofparameters"></span>**listOfParameters**
 
 This list holds the [parameters](parameter.md) which every mathematical expression of the model may use.
 
 The report shows the list as the section "Parameters" of the report.
+
+- `20210` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfParameters container object may only contain Parameter objects.
 
 <span id="listofinitialassignments"></span>**listOfInitialAssignments**
 
@@ -119,11 +157,15 @@ This list holds the [initial assignments](initialassignment.md) which compute va
 
 The report shows the list as the section "Initial assignments" of the report.
 
+- `20211` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfInitialAssignments container object may only contain InitialAssignment objects.
+
 <span id="listofrules"></span>**listOfRules**
 
 This list holds the three kinds of rule together: [assignment rules](assignmentrule.md), [rate rules](raterule.md) and [algebraic rules](algebraicrule.md).
 
 The report separates them into three sections, because the three say very different things about a model.
+
+- `20212` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfRules container object may only contain Rule objects.
 
 <span id="listofconstraints"></span>**listOfConstraints**
 
@@ -131,17 +173,23 @@ This list holds the [constraints](constraint.md), the conditions a simulation of
 
 The report shows the list as the section "Constraints" of the report.
 
+- `20213` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfConstraints container object may only contain Constraint objects.
+
 <span id="listofreactions"></span>**listOfReactions**
 
 This list holds the [reactions](reaction.md), the processes which change the quantities of the species.
 
 The report shows the list as the section "Reactions" of the report.
 
+- `20214` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfReactions container object may only contain Reaction objects.
+
 <span id="listofevents"></span>**listOfEvents**
 
 This list holds the [events](event.md), the discontinuous changes of the state of the model.
 
 The report shows the list as the section "Events" of the report.
+
+- `20215` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfEvents container object may only contain Event objects.
 
 <span id="comp-listofsubmodels"></span>**comp:listOfSubmodels**
 
@@ -236,6 +284,11 @@ The annotation of the model is where a tool writes what it knows about the model
 
 The "XML" button in the header of the inspector shows it.
 
+- `10401` (error): Every top-level element within an annotation element must have a namespace declared.
+- `10402` (error): There cannot be more than one top-level element using a given namespace inside a given annotation element.
+- `10403` (error): Top-level elements within an annotation element cannot use any SBML namespace, whether explicitly (by declaring the namespace to be one of the URIs "http://www.sbml.org/sbml/level1", "http://www.sbml.org/sbml/level2", "http://www.sbml.org/sbml/level2/version2", or "http://www.sbml.org/sbml/level2/version3", or "http://www.sbml.org/sbml/level2/version4", or "http://www.sbml.org/sbml/level2/version5" or "http://www.sbml.org/sbml/level3/version1/core"), or implicitly (by failing to declare any namespace).
+- `10404` (error): A given SBML object may contain at most one &lt;annotation&gt; element.
+
 <span id="rendered-substance-units"></span>**rendered substance units**
 
 The report resolves the unit definition which the model declares for the amounts of its species and renders it as a formula, so that `mmol` is shown as the unit itself instead of as an identifier.
@@ -271,6 +324,14 @@ It is shown next to the length units in the attributes of the model.
 The report resolves the unit definition which the model declares for the extent of its reactions and renders it as a formula. Together with the time units it says what the rate of every kinetic law is measured in.
 
 It is shown next to the extent units in the attributes of the model.
+
+## Validation rules
+
+- `10701` (warning): The value of the 'sboTerm' attribute on a &lt;model&gt; is expected to be an SBO identifier (http://www.biomodels.net/SBO/). In SBML Level 2 prior to Version 4 the value is expected to be a term derived from SBO:0000004, "modeling framework"; in Version 4 and above it is expected to be a term derived from SBO:0000231 "occurring entity representation"
+- `20202` (error): The order of subelements within a &lt;model&gt; element must be the following (where any one may be optional, but the ordering must be maintained): &lt;listOfFunctionDefinitions&gt;, &lt;listOfUnitDefinitions&gt;, &lt;listOfCompartmentTypes&gt;, &lt;listOfSpeciesTypes&gt;, &lt;listOfCompartments&gt;, &lt;listOfSpecies&gt;, &lt;listOfParameters&gt;, &lt;listOfInitialAssignments&gt;, &lt;listOfRules&gt;, &lt;listOfConstraints&gt;, &lt;listOfReactions&gt; and &lt;listOfEvents&gt;.
+- `20203` (error): The &lt;listOf___&gt; containers in a &lt;model&gt; are optional, but if present, the lists cannot be empty. Specifically, if any of the following are present in a &lt;model&gt;, they must not be empty: &lt;listOfFunctionDefinitions&gt;, &lt;listOfUnitDefinitions&gt;, &lt;listOfCompartmentTypes&gt;, &lt;listOfSpeciesTypes&gt;, &lt;listOfCompartments&gt;, &lt;listOfSpecies&gt;, &lt;listOfParameters&gt;, &lt;listOfInitialAssignments&gt;, &lt;listOfRules&gt;, &lt;listOfConstraints&gt;, &lt;listOfReactions&gt; and &lt;listOfEvents&gt;.
+- `20205` (error): There may be at most one instance of each of the following kind of element in a &lt;model&gt; object: ListOfFunctionDefinitions, ListOfUnitDefinitions, ListOfCompartments, ListOfSpecies, ListOfParameters, ListOfInitialAssignments, ListOfRules, ListOfConstraints, ListOfReactions and ListOfEvents.
+- `20222` (error): A Model object may only have the following attributes, all of which are optional: 'metaid', 'sboTerm', 'id', 'name', 'substanceUnits', 'timeUnits', 'volumeUnits', 'areaUnits', 'lengthUnits', 'extentUnits' and 'conversionFactor'. No other attributes from the SBML Level 3 Core namespace are permitted on a Model object.
 
 ## Related elements
 
