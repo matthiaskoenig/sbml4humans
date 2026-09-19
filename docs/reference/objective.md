@@ -10,10 +10,10 @@ The report shows the objectives of a model in a section of their own and lists t
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [type](#type) | `FbcType` | whether the objective is maximised or minimised | [fbc v3 3.6](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [listOfFluxObjectives](#listoffluxobjectives) | `list` | the reactions of the objective with their coefficient | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [type](#type) | `FbcType` | - | whether the objective is maximised or minimised | [fbc v3 3.6](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [listOfFluxObjectives](#listoffluxobjectives) | `list` | - | the reactions of the objective with their coefficient | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

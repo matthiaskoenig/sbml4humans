@@ -17,6 +17,7 @@ from sbml4humans.glossary import (
     GlossaryError,
     check,
     main,
+    render_datatypes_page,
     render_details,
     render_json,
     render_type_page,
@@ -354,7 +355,10 @@ def test_two_attributes_with_the_same_label_get_their_own_anchor(
     assert '<span id="kinetic-law"></span>' in page
     assert '<span id="kinetic-law-2"></span>' in page
     # the row of the attribute links its own block, not the block of the other
-    assert "| [kinetic law](#kinetic-law) | - | the law which gives the speed |" in page
+    assert (
+        "| [kinetic law](#kinetic-law) | - | - | the law which gives the speed |"
+        in page
+    )
     assert (
         "| [kinetic law](#kinetic-law-2) | - | the formula the report renders |" in page
     )
@@ -370,6 +374,23 @@ def test_every_generated_page_has_unique_anchors() -> None:
         anchors = glossary_module._anchors_of(page)
         duplicates = sorted({a for a in anchors if anchors.count(a) > 1})
         assert not duplicates, f"{name}: {', '.join(duplicates)}"
+
+
+def test_the_docs_anchor_of_a_data_type_is_an_anchor_of_its_page() -> None:
+    """The `docs` url of a data type points at an anchor `datatypes.md` really has.
+
+    The details and `render_datatypes_page` compute the anchor of a data type
+    through the same helper, so a `docs` url can never point at an anchor the
+    rendered page does not offer.
+    """
+    glossary = Glossary.from_directory(FIXTURE)
+    page = render_datatypes_page(glossary)
+    anchors = set(glossary_module._anchors_of(page))
+    entries = render_details(glossary)["entries"]
+    for key in glossary.datatypes:
+        docs = entries[f"datatypes/{key}"]["docs"]
+        _, _, fragment = docs.partition("#")
+        assert fragment in anchors, f"{key}: '{fragment}' is not an anchor of the page"
 
 
 def test_a_fragment_link_resolves_to_an_anchor_of_the_page(tmp_path: Path) -> None:
@@ -642,6 +663,16 @@ def test_check_reports_a_generated_page_the_navigation_does_not_list(
     )
     with pytest.raises(GlossaryError, match=r"reference/species\.md"):
         glossary.validate_navigation(root)
+    _write_navigation(
+        root,
+        [
+            f"reference/{name}"
+            for name in sorted(glossary.pages())
+            if name != "datatypes.md"
+        ],
+    )
+    with pytest.raises(GlossaryError, match=r"reference/datatypes\.md"):
+        glossary.validate_navigation(root)
 
 
 def test_reads_the_technical_details() -> None:
@@ -664,6 +695,85 @@ def test_reads_the_technical_details() -> None:
     assert [rule.id for rule in glossary.resolved_rules(initial_amount)] == [20609]
     # the fixture states nothing which validate_technical rejects
     glossary.validate_technical()
+
+
+def test_the_attribute_table_states_required() -> None:
+    """The table of the attributes states whether each one is required."""
+    glossary = Glossary.from_directory(FIXTURE)
+    species_page = render_type_page(glossary, glossary.types["Species"])
+    assert "| attribute | type | required | meaning | specification |" in species_page
+    assert (
+        "| [initialAmount](#initialamount) | [`double`](datatypes.md#double) | "
+        "optional | the amount of the species when the simulation starts |"
+    ) in species_page
+    # an attribute which states nothing shows a dash, not an empty cell
+    sbase_page = render_type_page(glossary, glossary.types["SBase"])
+    assert (
+        "| [id](#id) | [`SId`](datatypes.md#sid) | - | the identifier of the element |"
+        in sbase_page
+    )
+
+
+def test_an_attribute_states_its_default_and_its_rules() -> None:
+    """The block of an attribute states its default and lists the rules it cites."""
+    glossary = Glossary.from_directory(FIXTURE)
+    page = render_type_page(glossary, glossary.types["Species"])
+    assert "Default: set by an initial assignment or a rule." in page
+    rule = resolve_rule(20609)
+    assert f"- `{rule.id}` ({rule.severity}): " in page
+    # the angle brackets of the message show up literally, not as an html tag
+    assert "&lt;species&gt;" in page
+    assert "<species>" not in page
+
+
+def test_a_type_page_lists_its_rules() -> None:
+    """A type which cites a validation rule lists it under its own heading."""
+    glossary = Glossary.from_directory(FIXTURE)
+    page = render_type_page(glossary, glossary.types["Species"])
+    rule = resolve_rule(20601)
+    assert "## Validation rules" in page
+    assert f"- `{rule.id}` ({rule.severity}): " in page
+    assert "&lt;compartment&gt;" in page
+    # the section comes before "Related elements", which the fixture also has
+    assert page.index("## Validation rules") < page.index("## Related elements")
+
+
+def test_the_type_of_an_attribute_links_its_data_type(tmp_path: Path) -> None:
+    """The `type` column links its data type, or the page of a type it names."""
+    root = _repository(
+        tmp_path,
+        extra_glossary=(
+            '[types.Species.attributes.extra]\nlabel = "extra"\n'
+            'type = "Compartment"\nsummary = "for the test only"\n'
+            'description = "An attribute added only to exercise the type link."\n'
+        ),
+    )
+    glossary = Glossary.from_directory(root / "glossary")
+    page = render_type_page(glossary, glossary.types["Species"])
+    # the data type of another attribute links datatypes.md
+    assert "[`double`](datatypes.md#double)" in page
+    # a `type` which names a type of the glossary links its own page
+    assert "[`Compartment`](compartment.md)" in page
+
+
+def test_renders_the_page_of_the_data_types() -> None:
+    """`datatypes.md` has one section per data type, with its values and its source."""
+    glossary = Glossary.from_directory(FIXTURE)
+    page = render_datatypes_page(glossary)
+    assert page.startswith("# Data types\n")
+    assert "## `double`" in page
+    assert "A double is a number written in decimal notation" in page
+    assert "- `entity`" in page
+    assert "- `participant role`" in page
+    assert "- `modeling framework`" in page
+
+
+def test_the_data_types_page_renders_without_a_data_type(tmp_path: Path) -> None:
+    """The page is rendered even when the glossary has no data type yet."""
+    glossary = _glossary_file(tmp_path, "")
+    page = render_datatypes_page(glossary)
+    assert page.startswith("# Data types\n")
+    assert "##" not in page
 
 
 def test_required_is_a_boolean(tmp_path: Path) -> None:
@@ -855,6 +965,22 @@ def test_a_type_lists_its_attributes_and_related_types() -> None:
         "types/Species/derivedUnits",
     ]
     assert entry["related"] == ["types/Compartment"]
+
+
+def test_the_details_of_a_data_type() -> None:
+    """A data type entry of the details states its kind and its technical fields."""
+    glossary = Glossary.from_directory(FIXTURE)
+    datatype = glossary.datatypes["SBOTerm"]
+    entry = render_details(glossary)["entries"]["datatypes/SBOTerm"]
+    assert entry["kind"] == "datatype"
+    assert entry["label"] == "SBOTerm"
+    assert entry["summary"] == datatype.summary
+    assert entry["description"] == datatype.description
+    assert entry["package"] == "core"
+    assert entry["docs"] == "reference/datatypes/#sboterm"
+    assert entry["values"] == ["entity", "participant role", "modeling framework"]
+    # the fixture's SBOTerm cites no specification
+    assert "spec" not in entry
 
 
 def test_the_details_leave_out_what_an_entry_does_not_state() -> None:

@@ -8,12 +8,12 @@ It is an element of the report and not a row of its objective, because the speci
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [reaction](#reaction) | `SIdRef` | the reaction whose flux this term of the objective weighs | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [reaction2](#reaction2) | `SIdRef` | the second reaction of a mixed quadratic term, from Version 3 on | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [coefficient](#coefficient) | `double` | the number the flux of the reaction is multiplied with | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [variableType](#variabletype) | `FbcVariableType` | whether the flux enters the objective linearly or quadratically | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [reaction](#reaction) | `SIdRef` | - | the reaction whose flux this term of the objective weighs | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [reaction2](#reaction2) | `SIdRef` | - | the second reaction of a mixed quadratic term, from Version 3 on | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [coefficient](#coefficient) | `double` | - | the number the flux of the reaction is multiplied with | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [variableType](#variabletype) | `FbcVariableType` | - | whether the flux enters the objective linearly or quadratically | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

@@ -8,36 +8,36 @@ The report shows the model as the root of the report, its lists as the sections 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [substanceUnits](#substanceunits) | `UnitSIdRef` | the units of the amounts of the species which do not declare their own | [core 4.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [timeUnits](#timeunits) | `UnitSIdRef` | the unit in which time is measured in the model | [core 4.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [volumeUnits](#volumeunits) | `UnitSIdRef` | the units of the size of the compartments with three dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [areaUnits](#areaunits) | `UnitSIdRef` | the units of the size of the compartments with two dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [lengthUnits](#lengthunits) | `UnitSIdRef` | the units of the size of the compartments with one dimension | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [extentUnits](#extentunits) | `UnitSIdRef` | the units in which the extent of a reaction is measured | [core 4.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [conversionFactor](#conversionfactor) | `SIdRef` | the parameter which converts between the units of a species and the extent of a reaction | [core 4.2.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfFunctionDefinitions](#listoffunctiondefinitions) | `list` | the user defined functions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfUnitDefinitions](#listofunitdefinitions) | `list` | the units the model defines | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfCompartments](#listofcompartments) | `list` | the compartments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfSpecies](#listofspecies) | `list` | the species of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfParameters](#listofparameters) | `list` | the global parameters of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfInitialAssignments](#listofinitialassignments) | `list` | the initial assignments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfRules](#listofrules) | `list` | the assignment, rate and algebraic rules of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfConstraints](#listofconstraints) | `list` | the constraints of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfReactions](#listofreactions) | `list` | the reactions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfEvents](#listofevents) | `list` | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [comp:listOfSubmodels](#comp-listofsubmodels) | `list` | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:listOfPorts](#comp-listofports) | `list` | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [fbc:listOfGeneProducts](#fbc-listofgeneproducts) | `list` | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc](#fbc) | `ModelFbc` | what the model says about the constraint based problem it describes | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:strict](#fbc-strict) | `boolean` | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:activeObjective](#fbc-activeobjective) | `SIdRef` | the objective which is optimised unless an analysis says otherwise | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:listOfFluxBounds](#fbc-listoffluxbounds) | `list` | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
-| [fbc:listOfUserDefinedConstraints](#fbc-listofuserdefinedconstraints) | `list` | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:listOfObjectives](#fbc-listofobjectives) | `list` | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [qual:listOfQualitativeSpecies](#qual-listofqualitativespecies) | `list` | the entities of a qualitative model, which carry a level | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [qual:listOfTransitions](#qual-listoftransitions) | `list` | the rules which decide the level of the qualitative species | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [substanceUnits](#substanceunits) | `UnitSIdRef` | - | the units of the amounts of the species which do not declare their own | [core 4.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [timeUnits](#timeunits) | `UnitSIdRef` | - | the unit in which time is measured in the model | [core 4.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [volumeUnits](#volumeunits) | `UnitSIdRef` | - | the units of the size of the compartments with three dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [areaUnits](#areaunits) | `UnitSIdRef` | - | the units of the size of the compartments with two dimensions | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [lengthUnits](#lengthunits) | `UnitSIdRef` | - | the units of the size of the compartments with one dimension | [core 4.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [extentUnits](#extentunits) | `UnitSIdRef` | - | the units in which the extent of a reaction is measured | [core 4.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [conversionFactor](#conversionfactor) | `SIdRef` | - | the parameter which converts between the units of a species and the extent of a reaction | [core 4.2.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfFunctionDefinitions](#listoffunctiondefinitions) | `list` | - | the user defined functions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfUnitDefinitions](#listofunitdefinitions) | `list` | - | the units the model defines | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfCompartments](#listofcompartments) | `list` | - | the compartments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfSpecies](#listofspecies) | `list` | - | the species of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfParameters](#listofparameters) | `list` | - | the global parameters of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfInitialAssignments](#listofinitialassignments) | `list` | - | the initial assignments of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfRules](#listofrules) | `list` | - | the assignment, rate and algebraic rules of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfConstraints](#listofconstraints) | `list` | - | the constraints of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfReactions](#listofreactions) | `list` | - | the reactions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfEvents](#listofevents) | `list` | - | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [comp:listOfSubmodels](#comp-listofsubmodels) | `list` | - | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:listOfPorts](#comp-listofports) | `list` | - | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [fbc:listOfGeneProducts](#fbc-listofgeneproducts) | `list` | - | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc](#fbc) | `ModelFbc` | - | what the model says about the constraint based problem it describes | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:strict](#fbc-strict) | `boolean` | - | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:activeObjective](#fbc-activeobjective) | `SIdRef` | - | the objective which is optimised unless an analysis says otherwise | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:listOfFluxBounds](#fbc-listoffluxbounds) | `list` | - | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
+| [fbc:listOfUserDefinedConstraints](#fbc-listofuserdefinedconstraints) | `list` | - | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:listOfObjectives](#fbc-listofobjectives) | `list` | - | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [qual:listOfQualitativeSpecies](#qual-listofqualitativespecies) | `list` | - | the entities of a qualitative model, which carry a level | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [qual:listOfTransitions](#qual-listoftransitions) | `list` | - | the rules which decide the level of the qualitative species | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

@@ -60,7 +60,13 @@ DATATYPES_PAGE = "datatypes.md"
 
 # the headings of a generated type page below its title; their anchors are
 # taken before the attributes of the page get theirs
-PAGE_HEADINGS = ("Attributes", "In the report", "Related elements", "Specification")
+PAGE_HEADINGS = (
+    "Attributes",
+    "In the report",
+    "Validation rules",
+    "Related elements",
+    "Specification",
+)
 
 # the packages of the report in the order of the reference index
 PACKAGES: Mapping[str, str] = {
@@ -339,7 +345,7 @@ class Glossary:
 
     def pages(self) -> set[str]:
         """The file names of the generated reference pages."""
-        return {INDEX_PAGE, LINKS_PAGE, CONCEPTS_PAGE} | {
+        return {INDEX_PAGE, LINKS_PAGE, CONCEPTS_PAGE, DATATYPES_PAGE} | {
             f"{entry.slug}.md" for entry in self.types.values()
         }
 
@@ -1131,6 +1137,55 @@ def _spec_link(glossary: Glossary, spec: SpecRef | None) -> str:
     return f"[{_spec_label(document, spec)}]({document.url})"
 
 
+def _required_cell(required: bool | None) -> str:
+    """The `required` column of an attribute row: `required`, `optional` or `-`."""
+    if required is None:
+        return "-"
+    return "required" if required else "optional"
+
+
+def _escape_rule_message(message: str) -> str:
+    """A rule message with its angle brackets escaped so markdown shows them literally.
+
+    A message of libsbml names an element with an angle bracket, `<species>`,
+    which markdown would otherwise read as an (unknown) html tag.
+    """
+    return message.replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _rule_lines(rules: Iterable[Rule]) -> list[str]:
+    """One list item per validation rule: its number, its severity and its message."""
+    return [
+        f"- `{rule.id}` ({rule.severity}): {_escape_rule_message(rule.message)}"
+        for rule in rules
+    ]
+
+
+def _type_cell(
+    glossary: Glossary, type_name: str | None, datatype_anchors: Mapping[str, str]
+) -> str:
+    """The `type` column of an attribute row, linking its data type or its type page.
+
+    Args:
+        glossary: the glossary to resolve the type against.
+        type_name: the `type` of the attribute, as written.
+        datatype_anchors: the anchor of every data type on `datatypes.md`, from
+            `_datatype_anchors`.
+    """
+    if not type_name:
+        return "-"
+    key = glossary.type_key(type_name)
+    if key is None:
+        return f"`{type_name}`"
+    section, _, name = key.partition("/")
+    href = (
+        f"{DATATYPES_PAGE}#{datatype_anchors[name]}"
+        if section == "datatypes"
+        else f"{glossary.types[name].slug}.md"
+    )
+    return f"[`{type_name}`]({href})"
+
+
 def _table_rows(header: Iterable[str], rows: Iterable[Iterable[str]]) -> list[str]:
     """A markdown table, empty when it has no row."""
     columns = list(header)
@@ -1148,17 +1203,25 @@ def _attribute_rows(
     glossary: Glossary,
     attributes: Iterable[Entry],
     anchors: Mapping[str, str],
+    datatype_anchors: Mapping[str, str],
     *,
     with_spec: bool,
 ) -> list[list[str]]:
-    """One row per attribute, its label linking the block which describes it."""
+    """One row per attribute, its label linking the block which describes it.
+
+    `with_spec` also decides whether the row states `required`: a field the
+    report adds cites no specification and is therefore never required, so
+    the table of the report fields carries no such column.
+    """
     rows = []
     for attribute in attributes:
         row = [
             f"[{_cell(attribute.label)}](#{anchors[attribute.key]})",
-            f"`{attribute.type}`" if attribute.type else "-",
-            _cell(attribute.summary),
+            _type_cell(glossary, attribute.type, datatype_anchors),
         ]
+        if with_spec:
+            row.append(_required_cell(attribute.required))
+        row.append(_cell(attribute.summary))
         if with_spec:
             row.append(_spec_link(glossary, attribute.spec))
         rows.append(row)
@@ -1166,13 +1229,15 @@ def _attribute_rows(
 
 
 def _attribute_details(
-    attributes: Iterable[Entry], anchors: Mapping[str, str]
+    glossary: Glossary, attributes: Iterable[Entry], anchors: Mapping[str, str]
 ) -> list[str]:
     """One block per attribute: its anchor and its label, then its description.
 
     The table above is the index, the blocks are what a reader of a single
     attribute wants, and the anchor of the block is what the row of the table
-    and every link of the site point at.
+    and every link of the site point at. A default is stated as a paragraph of
+    its own below the description, and the rules the attribute cites follow as
+    a list.
     """
     lines: list[str] = []
     for attribute in attributes:
@@ -1182,6 +1247,11 @@ def _attribute_details(
             attribute.description,
             "",
         ]
+        if attribute.default is not None:
+            lines += [f"Default: {attribute.default}.", ""]
+        rules = glossary.resolved_rules(attribute)
+        if rules:
+            lines += [*_rule_lines(rules), ""]
     return lines
 
 
@@ -1202,6 +1272,19 @@ def _type_page_anchors(entry: Entry) -> dict[str, str]:
         [*attributes, *report_fields],
         [anchor(entry.label), *(anchor(heading) for heading in PAGE_HEADINGS)],
     )
+
+
+def _datatype_anchors(glossary: Glossary) -> dict[str, str]:
+    """The anchor of every data type on `datatypes.md`, by its key.
+
+    `render_datatypes_page`, `_link_keys` and the `docs` field of the details
+    share this one computation, so that a `docs` url and a `glossary:datatypes/...`
+    link can never point at an anchor the rendered page does not have.
+
+    Args:
+        glossary: the glossary to build the map from.
+    """
+    return _entry_anchors(glossary.datatypes.values(), ())
 
 
 def render_type_page(glossary: Glossary, entry: Entry) -> str:
@@ -1226,11 +1309,16 @@ def render_type_page(glossary: Glossary, entry: Entry) -> str:
     attributes = [a for a in entry.attributes.values() if a.package != "report"]
     report_fields = [a for a in entry.attributes.values() if a.package == "report"]
     anchors = _type_page_anchors(entry)
+    datatype_anchors = _datatype_anchors(glossary)
 
-    rows = _attribute_rows(glossary, attributes, anchors, with_spec=True)
+    rows = _attribute_rows(
+        glossary, attributes, anchors, datatype_anchors, with_spec=True
+    )
     if rows:
         lines += ["## Attributes", ""]
-        lines += _table_rows(["attribute", "type", "meaning", "specification"], rows)
+        lines += _table_rows(
+            ["attribute", "type", "required", "meaning", "specification"], rows
+        )
         lines += [""]
     if entry.key not in NON_ELEMENT_TYPES and "SBase" in glossary.types:
         lines += [
@@ -1238,14 +1326,24 @@ def render_type_page(glossary: Glossary, entry: Entry) -> str:
             "[common attributes](sbase.md) of `SBase`.",
             "",
         ]
-    lines += _attribute_details(attributes, anchors)
+    lines += _attribute_details(glossary, attributes, anchors)
 
-    rows = _attribute_rows(glossary, report_fields, anchors, with_spec=False)
+    rows = _attribute_rows(
+        glossary, report_fields, anchors, datatype_anchors, with_spec=False
+    )
     if rows:
         lines += ["## In the report", ""]
         lines += _table_rows(["field", "type", "meaning"], rows)
         lines += [""]
-        lines += _attribute_details(report_fields, anchors)
+        lines += _attribute_details(glossary, report_fields, anchors)
+
+    if entry.rules:
+        lines += [
+            "## Validation rules",
+            "",
+            *_rule_lines(glossary.resolved_rules(entry)),
+            "",
+        ]
 
     if entry.related:
         lines += ["## Related elements", ""]
@@ -1277,7 +1375,8 @@ def render_index_page(glossary: Glossary) -> str:
         "",
         f"The [link kinds]({LINKS_PAGE}) explain how the elements of a report "
         f"reference each other, the [report concepts]({CONCEPTS_PAGE}) explain what "
-        f"the report computes on top of the model.",
+        f"the report computes on top of the model, and the [data types]"
+        f"({DATATYPES_PAGE}) explain the values its attributes and its fields carry.",
         "",
     ]
     for package, heading in PACKAGES.items():
@@ -1339,6 +1438,47 @@ def render_concepts_page(glossary: Glossary) -> str:
         glossary.concepts.values(),
         glossary,
     )
+
+
+def render_datatypes_page(glossary: Glossary) -> str:
+    """The page of the data types an attribute or a field of the report may carry.
+
+    Rendered even when the glossary has no data type yet, so that the page,
+    its entry of the navigation and every link into it stay stable from the
+    moment this module ships.
+
+    Args:
+        glossary: the glossary to render.
+
+    Returns:
+        The markdown of `docs/reference/datatypes.md`, one `##` section per
+        data type.
+    """
+    anchors = _datatype_anchors(glossary)
+    lines = [
+        "# Data types",
+        "",
+        "A data type is the kind of value an attribute or a field the report adds "
+        "carries, for example a number, an identifier or a fragment of markup. The "
+        "`type` column of every other page of the reference links here.",
+        "",
+    ]
+    for entry in glossary.datatypes.values():
+        lines += [
+            f"## `{entry.label}` {{#{anchors[entry.key]}}}",
+            "",
+            _sentence(entry.summary),
+            "",
+            entry.description,
+        ]
+        if entry.values:
+            lines += ["", *[f"- `{value}`" for value in entry.values]]
+        if entry.spec is not None:
+            document = glossary.specs[entry.spec.doc]
+            section = f", Section {entry.spec.section}" if entry.spec.section else ""
+            lines += ["", f"[{document.label}]({document.url}){section}."]
+        lines += [""]
+    return "\n".join(lines).rstrip("\n") + "\n"
 
 
 def render_json(glossary: Glossary) -> dict[str, Any]:
@@ -1437,8 +1577,9 @@ def _link_keys(glossary: Glossary) -> dict[str, dict[str, str]]:
         anchor(entry.label): f"concepts/{entry.key}"
         for entry in glossary.concepts.values()
     }
+    datatype_anchors = _datatype_anchors(glossary)
     keys[DATATYPES_PAGE] = {
-        anchor(entry.label): f"datatypes/{entry.key}"
+        datatype_anchors[entry.key]: f"datatypes/{entry.key}"
         for entry in glossary.datatypes.values()
     }
     return keys
@@ -1534,6 +1675,7 @@ def _render_detail(
     entry: Entry,
     glossary: Glossary,
     keys: Mapping[str, Mapping[str, str]],
+    datatype_anchors: Mapping[str, str],
 ) -> dict[str, Any]:
     """One entry of `frontend/src/data/glossary-details.json`.
 
@@ -1544,6 +1686,9 @@ def _render_detail(
             its `type` and the links of its description.
         keys: the key of every anchor of every reference page, from
             `_link_keys`.
+        datatype_anchors: the anchor of every data type on `datatypes.md`,
+            from `_datatype_anchors`, so that `docs` of a data type is the
+            anchor `render_datatypes_page` gives it.
 
     Returns:
         The entry of the `entries` map of the details, a field left out when
@@ -1571,6 +1716,9 @@ def _render_detail(
     elif section == "types":
         kind = "type"
         docs = f"{REFERENCE_DIR.name}/{entry.slug}/"
+    elif section == "datatypes":
+        kind = _KIND_OF_SECTION[section]
+        docs = f"{REFERENCE_DIR.name}/{section}/#{datatype_anchors[entry.key]}"
     else:
         kind = _KIND_OF_SECTION[section]
         docs = f"{REFERENCE_DIR.name}/{section}/#{anchor(entry.label)}"
@@ -1632,8 +1780,11 @@ def render_details(glossary: Glossary) -> dict[str, Any]:
             `glossary:` key or to a page of the site outside the reference.
     """
     keys = _link_keys(glossary)
+    datatype_anchors = _datatype_anchors(glossary)
     entries = {
-        entry_key(dotted): _render_detail(dotted, entry, glossary, keys)
+        entry_key(dotted): _render_detail(
+            dotted, entry, glossary, keys, datatype_anchors
+        )
         for dotted, entry in glossary.entries()
     }
     return {"entries": dict(sorted(entries.items()))}
@@ -1645,6 +1796,7 @@ def _reference_pages(glossary: Glossary) -> dict[str, str]:
         INDEX_PAGE: render_index_page(glossary),
         LINKS_PAGE: render_links_page(glossary),
         CONCEPTS_PAGE: render_concepts_page(glossary),
+        DATATYPES_PAGE: render_datatypes_page(glossary),
     }
     for entry in glossary.types.values():
         pages[f"{entry.slug}.md"] = render_type_page(glossary, entry)

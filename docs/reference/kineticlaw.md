@@ -8,10 +8,10 @@ The report shows the rendered formula, the units it derives for it and the table
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [math](#math) | `Math` | the rate formula of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfLocalParameters](#listoflocalparameters) | `list` | the parameters which only this kinetic law uses | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [math](#math) | `Math` | - | the rate formula of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfLocalParameters](#listoflocalparameters) | `list` | - | the parameters which only this kinetic law uses | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

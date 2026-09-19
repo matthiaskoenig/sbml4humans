@@ -8,9 +8,9 @@ The specification notes that the class is not derived from `SBase` while libsbml
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [resultLevel](#resultlevel) | `integer` | the level the outputs take where no function term holds | [qual 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [resultLevel](#resultlevel) | `integer` | - | the level the outputs take where no function term holds | [qual 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

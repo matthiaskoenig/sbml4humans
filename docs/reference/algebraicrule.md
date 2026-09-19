@@ -8,9 +8,9 @@ The report shows the rendered equation and the units it produces; which element 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [math](#math) | `Math` | the expression which has to be zero | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [math](#math) | `Math` | - | the expression which has to be zero | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

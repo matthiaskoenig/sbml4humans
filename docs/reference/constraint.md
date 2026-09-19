@@ -8,10 +8,10 @@ The report shows the rendered condition and the message which explains a violati
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [math](#math) | `Math` | the condition which has to stay true | [core 4.10.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [message](#message) | `XHTML` | the text which is shown when the condition is violated | [core 4.10.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [math](#math) | `Math` | - | the condition which has to stay true | [core 4.10.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [message](#message) | `XHTML` | - | the text which is shown when the condition is violated | [core 4.10.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

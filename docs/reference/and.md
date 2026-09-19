@@ -8,9 +8,9 @@ The report shows it as the branches of the tree in the inspector of a reaction a
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [associations](#associations) | `list` | the nodes which are all needed, two or more of them | [fbc v3 3.12](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [associations](#associations) | `list` | - | the nodes which are all needed, two or more of them | [fbc v3 3.12](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

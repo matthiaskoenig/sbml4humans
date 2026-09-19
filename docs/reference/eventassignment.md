@@ -8,10 +8,10 @@ The report shows an event assignment as an element of its own, with a link to th
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [variable](#variable) | `SIdRef` | the element the assignment changes | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [math](#math) | `Math` | the formula which computes the new value | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [variable](#variable) | `SIdRef` | - | the element the assignment changes | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | - | the formula which computes the new value | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

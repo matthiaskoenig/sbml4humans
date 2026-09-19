@@ -8,12 +8,12 @@ The report shows the size of a compartment, the units of that size and the units
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [spatialDimensions](#spatialdimensions) | `double` | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [size](#size) | `double` | the size of the compartment at the start of the simulation | [core 4.5.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [units](#units) | `UnitSIdRef` | the units of the size of the compartment | [core 4.5.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [constant](#constant) | `boolean` | whether the size of the compartment stays fixed during a simulation | [core 4.5.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [spatialDimensions](#spatialdimensions) | `double` | - | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [size](#size) | `double` | - | the size of the compartment at the start of the simulation | [core 4.5.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [units](#units) | `UnitSIdRef` | - | the units of the size of the compartment | [core 4.5.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [constant](#constant) | `boolean` | - | whether the size of the compartment stays fixed during a simulation | [core 4.5.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

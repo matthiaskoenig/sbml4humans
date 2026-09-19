@@ -10,19 +10,19 @@ The report shows a span as the interval it is, `1 to 4`, with a link where an en
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [valueLower](#valuelower) | `double` | the lower end of the interval as a number | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [valueUpper](#valueupper) | `double` | the upper end of the interval as a number | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [varLower](#varlower) | `SIdRef` | the element of the model which holds the lower end | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [varUpper](#varupper) | `SIdRef` | the element of the model which holds the upper end | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [type](#type) | `UncertKind` | which interval the span is | [distrib 3.11.1](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [units](#units) | `UnitSIdRef` | the units both ends of the interval are given in | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [value](#value) | `double` | the single number of a measure, which a span does not use | [distrib 3.11.2](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [var](#var) | `SIdRef` | the element of a single number, which a span does not use | [distrib 3.11.2](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [definitionURL](#definitionurl) | `anyURI` | what an external parameter which is an interval means | [distrib 3.11.4](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [math](#math) | `Math` | the formula of an external parameter which is an interval | [distrib 3.11.6](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [uncertParameters](#uncertparameters) | `list` | the parameters which define an external parameter | [distrib 3.11.7](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [valueLower](#valuelower) | `double` | - | the lower end of the interval as a number | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [valueUpper](#valueupper) | `double` | - | the upper end of the interval as a number | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [varLower](#varlower) | `SIdRef` | - | the element of the model which holds the lower end | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [varUpper](#varupper) | `SIdRef` | - | the element of the model which holds the upper end | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [type](#type) | `UncertKind` | - | which interval the span is | [distrib 3.11.1](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [units](#units) | `UnitSIdRef` | - | the units both ends of the interval are given in | [distrib 3.12](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [value](#value) | `double` | - | the single number of a measure, which a span does not use | [distrib 3.11.2](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [var](#var) | `SIdRef` | - | the element of a single number, which a span does not use | [distrib 3.11.2](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [definitionURL](#definitionurl) | `anyURI` | - | what an external parameter which is an interval means | [distrib 3.11.4](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [math](#math) | `Math` | - | the formula of an external parameter which is an interval | [distrib 3.11.6](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [uncertParameters](#uncertparameters) | `list` | - | the parameters which define an external parameter | [distrib 3.11.7](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

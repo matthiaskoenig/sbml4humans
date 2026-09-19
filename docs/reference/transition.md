@@ -10,12 +10,12 @@ The report shows the transitions of a model in a section of their own, with the 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [listOfInputs](#listofinputs) | `list` | the qualitative species the transition reads | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [listOfOutputs](#listofoutputs) | `list` | the qualitative species the transition changes | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [listOfFunctionTerms](#listoffunctionterms) | `list` | the terms which decide the level, in the order in which they are read | [qual 3.6.3](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [defaultTerm](#defaultterm) | `DefaultTerm` | the term which holds in every state no function term covers | [qual 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [listOfInputs](#listofinputs) | `list` | - | the qualitative species the transition reads | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [listOfOutputs](#listofoutputs) | `list` | - | the qualitative species the transition changes | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [listOfFunctionTerms](#listoffunctionterms) | `list` | - | the terms which decide the level, in the order in which they are read | [qual 3.6.3](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [defaultTerm](#defaultterm) | [`DefaultTerm`](defaultterm.md) | - | the term which holds in every state no function term covers | [qual 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

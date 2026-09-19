@@ -8,20 +8,20 @@ The report shows these attributes for every element: the id and the name in the 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [id](#id) | `SId` | the identifier other elements of the model use to reference the element | [core 3.2.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [name](#name) | `string` | the readable name of the element | [core 3.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [metaid](#metaid) | `ID` | the identifier the annotations of the element point at | [core 3.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [sboTerm](#sboterm) | `SBOTerm` | the term of the Systems Biology Ontology which classifies the element | [core 3.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [notes](#notes) | `XHTML` | the free text the model author wrote about the element | [core 3.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [annotations](#annotations) | `list` | the controlled vocabulary terms which link the element to database entries | [core 6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [history](#history) | `ModelHistory` | who created the element and when it was modified | [core 6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [replacements](#replacements) | `CompSBase` | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:replacedBy](#comp-replacedby) | `ReplacedBy` | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:listOfReplacedElements](#comp-listofreplacedelements) | `list` | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | `list` | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [distrib:listOfUncertainties](#distrib-listofuncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [id](#id) | `SId` | - | the identifier other elements of the model use to reference the element | [core 3.2.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [name](#name) | `string` | - | the readable name of the element | [core 3.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [metaid](#metaid) | `ID` | - | the identifier the annotations of the element point at | [core 3.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [sboTerm](#sboterm) | `SBOTerm` | - | the term of the Systems Biology Ontology which classifies the element | [core 3.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [notes](#notes) | `XHTML` | - | the free text the model author wrote about the element | [core 3.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [annotations](#annotations) | `list` | - | the controlled vocabulary terms which link the element to database entries | [core 6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [history](#history) | `ModelHistory` | - | who created the element and when it was modified | [core 6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [replacements](#replacements) | `CompSBase` | - | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:replacedBy](#comp-replacedby) | [`ReplacedBy`](replacedby.md) | - | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:listOfReplacedElements](#comp-listofreplacedelements) | `list` | - | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | `list` | - | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [distrib:listOfUncertainties](#distrib-listofuncertainties) | `list` | - | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
 

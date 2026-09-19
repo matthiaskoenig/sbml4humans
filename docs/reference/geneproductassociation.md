@@ -10,9 +10,9 @@ The report shows the association in the inspector of its reaction and gives ever
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [association](#association) | `Association` | the single node the association holds | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [association](#association) | `Association` | - | the single node the association holds | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

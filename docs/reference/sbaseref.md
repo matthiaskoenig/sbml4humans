@@ -10,13 +10,13 @@ The report shows the chain in the inspector of the element which starts it and r
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [portRef](#portref) | `PortSIdRef` | the port of the model which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [idRef](#idref) | `SIdRef` | the element which this link of the chain names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [unitRef](#unitref) | `UnitSIdRef` | the unit definition which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [metaIdRef](#metaidref) | `IDREF` | the element which this link of the chain names, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [sBaseRef](#sbaseref-2) | `SBaseRef` | the next link of the chain, one submodel deeper | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [portRef](#portref) | `PortSIdRef` | - | the port of the model which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [idRef](#idref) | `SIdRef` | - | the element which this link of the chain names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unitRef](#unitref) | `UnitSIdRef` | - | the unit definition which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [metaIdRef](#metaidref) | `IDREF` | - | the element which this link of the chain names, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [sBaseRef](#sbaseref-2) | [`SBaseRef`](sbaseref.md) | - | the next link of the chain, one submodel deeper | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

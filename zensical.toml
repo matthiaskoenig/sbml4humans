@@ -20,6 +20,7 @@ nav = [
   ] },
   { "Reference" = [
     { "Overview" = "reference/index.md" },
+    { "Data types" = "reference/datatypes.md" },
     { "Core" = [
       { "SBase" = "reference/sbase.md" },
       { "SBMLDocument" = "reference/sbmldocument.md" },

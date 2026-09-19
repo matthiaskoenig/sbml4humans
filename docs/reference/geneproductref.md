@@ -8,9 +8,9 @@ The report makes it an element of its own because the reference is where the fil
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [geneProduct](#geneproduct) | `SIdRef` | the gene product this leaf of the association names | [fbc v3 3.11](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [geneProduct](#geneproduct) | `SIdRef` | - | the gene product this leaf of the association names | [fbc v3 3.11](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

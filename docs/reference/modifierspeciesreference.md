@@ -8,9 +8,9 @@ The report shows a modifier species reference with a link to its reaction and to
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [species](#species) | `SIdRef` | the species which modifies the reaction | [core 4.11.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [species](#species) | `SIdRef` | - | the species which modifies the reaction | [core 4.11.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -24,7 +24,7 @@ The report links the species in the list of modifiers of the reaction and in the
 
 | field | type | meaning |
 | --- | --- | --- |
-| [reaction](#reaction) | `Reaction` | the reaction which lists this modifier |
+| [reaction](#reaction) | [`Reaction`](reaction.md) | the reaction which lists this modifier |
 
 <span id="reaction"></span>**reaction**
 

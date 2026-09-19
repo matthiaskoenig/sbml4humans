@@ -8,9 +8,9 @@ The report shows the body of the function as rendered mathematics, in the table 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [math](#math) | `Math` | the formula of the function, with its arguments | [core 4.3.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [math](#math) | `Math` | - | the formula of the function, with its arguments | [core 4.3.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

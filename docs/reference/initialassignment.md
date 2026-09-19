@@ -8,10 +8,10 @@ The report shows the element which is assigned, the rendered formula and the uni
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [symbol](#symbol) | `SIdRef` | the element whose initial value the assignment computes | [core 4.8.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [math](#math) | `Math` | the formula which computes the initial value | [core 4.8.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [symbol](#symbol) | `SIdRef` | - | the element whose initial value the assignment computes | [core 4.8.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | - | the formula which computes the initial value | [core 4.8.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

@@ -8,11 +8,11 @@ The report shows the value of a parameter, its units and the units it derives, a
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [value](#value) | `double` | the value of the parameter at the start of the simulation | [core 4.7.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [units](#units) | `UnitSIdRef` | the units of the value of the parameter | [core 4.7.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [constant](#constant) | `boolean` | whether the value of the parameter stays fixed during a simulation | [core 4.7.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [value](#value) | `double` | - | the value of the parameter at the start of the simulation | [core 4.7.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [units](#units) | `UnitSIdRef` | - | the units of the value of the parameter | [core 4.7.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [constant](#constant) | `boolean` | - | whether the value of the parameter stays fixed during a simulation | [core 4.7.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

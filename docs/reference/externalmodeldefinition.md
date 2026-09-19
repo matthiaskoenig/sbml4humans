@@ -8,11 +8,11 @@ The report shows the external model definitions of a document next to its models
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [source](#source) | `anyURI` | the location of the SBML file which holds the model | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [modelRef](#modelref) | `SIdRef` | the identifier of the model inside the referenced file | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [md5](#md5) | `string` | the checksum of the document at the source | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [source](#source) | `anyURI` | - | the location of the SBML file which holds the model | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [modelRef](#modelref) | `SIdRef` | - | the identifier of the model inside the referenced file | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [md5](#md5) | `string` | - | the checksum of the document at the source | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

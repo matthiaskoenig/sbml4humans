@@ -8,10 +8,10 @@ The report shows a local parameter as an element of its own, with its value, its
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [value](#value) | `double` | the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [units](#units) | `UnitSIdRef` | the units of the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [value](#value) | `double` | - | the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [units](#units) | `UnitSIdRef` | - | the units of the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

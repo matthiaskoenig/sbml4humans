@@ -8,10 +8,10 @@ The report shows the variable, the rendered formula and the units the formula pr
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [variable](#variable) | `SIdRef` | the element the rule assigns to | [core 4.9.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [math](#math) | `Math` | the formula which computes the value of the variable | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [variable](#variable) | `SIdRef` | - | the element the rule assigns to | [core 4.9.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | `Math` | - | the formula which computes the value of the variable | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
