@@ -78,7 +78,7 @@ const sections = computed(() => {
   const { q, types } = view.state.value;
   return ELEMENT_TYPES.map((info) => {
     const all = byType.get(info.type) ?? [];
-    const rows = q.trim() ? all.filter((element) => matches(element, q)) : all;
+    const rows = q.trim() ? all.filter((element) => matches(element, q, current)) : all;
     return {
       type: info.type,
       rows,

@@ -75,6 +75,34 @@ describe("search", () => {
     expect(matches(parameter("Km_lower"), "Baker")).toBe(false);
   });
 
+  it("matches a rule by the name of the element it sets", () => {
+    // the promise of the documentation: a rule without an id is found by the name of what it sets
+    const rule = model.listOfRules!.find((r) => "variable" in r && r.variable === "t_ave")!;
+    const parameter = model.listOfParameters!.find((p) => p.id === "t_ave")!;
+    expect(parameter.name).toBeTruthy();
+    expect(matches(rule, parameter.name!, index)).toBe(true);
+    expect(matches(rule, parameter.name!)).toBe(false);
+  });
+
+  it("matches an element by the elements it nests and a gene product by its label", () => {
+    const qual = new ReportIndex(loadReport("qual_example"));
+    const transition = qual.mainModel!.listOfTransitions!.find((t) => t.id === "tr_G")!;
+    expect(matches(transition, "threshold of the signal", qual)).toBe(true);
+    expect(matches(transition, "theta_G_S", qual)).toBe(true);
+
+    const deletion = new ReportIndex(loadReport("comp_deletion"));
+    const submodel = deletion.mainModel!.listOfSubmodels!.find((s) => s.id === "cell1")!;
+    expect(matches(submodel, "del_k", deletion)).toBe(true);
+    expect(matches(submodel, "deletion of the sink", deletion)).toBe(true);
+    // an element is found by the port its replacement names in a submodel
+    const medium = deletion.mainModel!.listOfCompartments!.find((c) => c.id === "medium")!;
+    expect(matches(medium, "cell_port", deletion)).toBe(true);
+
+    const fbc = new ReportIndex(loadReport("fbc_constraints_v3"));
+    const gene = fbc.mainModel!.listOfGeneProducts!.find((g) => g.id === "g_ptsG")!;
+    expect(matches(gene, "b1101", fbc)).toBe(true);
+  });
+
   it("does not match a species by the compartment id", () => {
     const species = model.listOfSpecies![0] as Species;
     if (!species.id!.includes(species.compartment)) {
