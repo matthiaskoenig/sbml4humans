@@ -188,13 +188,6 @@ description = """
 An SId is a name which starts with a letter or an underscore and holds only letters, digits and underscores after that.
 """
 
-[datatypes.SIdRef]
-label = "SIdRef"
-summary = "a reference to the identifier of an element of a model"
-description = """
-An SIdRef holds the value of an SId defined somewhere in the same model, the reference it makes is resolved by that value.
-"""
-
 [datatypes.string]
 label = "string"
 summary = "an arbitrary sequence of characters"
@@ -236,4 +229,28 @@ label = "units"
 summary = "a formula of units the report renders"
 description = """
 The report derives units as a formula of the base units of SBML, rendered the same way as a mathematical formula.
+"""
+
+[datatypes.ModelHistory]
+label = "ModelHistory"
+package = "report"
+summary = "who created an element and when it was modified"
+description = """
+A history block added only so the fixture's type reference resolves.
+"""
+
+[datatypes.CompSBase]
+label = "CompSBase"
+package = "report"
+summary = "what the comp package adds to an element"
+description = """
+A block added only so the fixture's type reference resolves.
+"""
+
+[datatypes.ReplacedBy]
+label = "ReplacedBy"
+package = "comp"
+summary = "the element of a submodel which takes the place of this element"
+description = """
+A block added only so the fixture's type reference resolves.
 """

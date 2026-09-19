@@ -298,6 +298,30 @@ def test_main_writes_the_files_and_checks_them(
     assert main(["glossary", "--check"]) == 0
 
 
+def test_check_fails_on_an_attribute_which_does_not_state_required(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`--check` fails and names the entry when `required` is missing.
+
+    The extra field is added to the schema as well, so the report model
+    covers it and the only problem `--check` can report is the missing
+    `required`.
+    """
+    root = _repository(
+        tmp_path,
+        schema=_report_schema(species={"extra": {"type": "string"}}),
+        extra_glossary=(
+            '[types.Species.attributes.extra]\nlabel = "extra"\n'
+            'spec = { doc = "l3v2", section = "4.6" }\n'
+            'summary = "a technical detail for the tests"\n'
+            'description = "An attribute added only to exercise the technical checks."\n'
+        ),
+    )
+    monkeypatch.setattr(glossary_module, "REPO_ROOT", root)
+    assert main(["glossary", "--check"]) == 1
+    assert "types.Species.attributes.extra" in capsys.readouterr().err
+
+
 def _glossary_file(tmp_path: Path, content: str) -> Glossary:
     """A glossary of one file, for the tests of a single rule."""
     (tmp_path / "core.toml").write_text(content, encoding="utf-8")
@@ -504,6 +528,18 @@ def test_coverage_accepts_the_glossary_of_the_repository() -> None:
     Glossary.from_directory(root / glossary_module.GLOSSARY_DIR).validate_coverage(root)
 
 
+def test_the_repository_states_required_everywhere() -> None:
+    """Every attribute of the repository which cites a specification states `required`."""
+    root = glossary_module.REPO_ROOT
+    Glossary.from_directory(root / glossary_module.GLOSSARY_DIR).validate_required()
+
+
+def test_every_type_of_the_repository_resolves() -> None:
+    """Every `type` of the repository is a data type or a type of the glossary."""
+    root = glossary_module.REPO_ROOT
+    Glossary.from_directory(root / glossary_module.GLOSSARY_DIR).validate_types()
+
+
 def _classes(annotation: Any) -> list[Any]:
     """The classes an annotation names, through a list, a union and a metadata."""
     origin = get_origin(annotation)
@@ -611,6 +647,19 @@ def test_an_unknown_related_type_is_an_error(tmp_path: Path) -> None:
             '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
             'description = "A pool of a chemical entity."\n'
             'related = ["Compartment"]\n',
+        )
+
+
+def test_a_related_type_of_a_data_type_must_be_a_data_type(tmp_path: Path) -> None:
+    """A data type is rendered on `datatypes.md`, so its `related` names data types."""
+    with pytest.raises(GlossaryError, match=r"the related type 'Species' has no entry"):
+        _glossary_file(
+            tmp_path,
+            '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+            'description = "A pool of a chemical entity."\n'
+            '[datatypes.double]\nlabel = "double"\nsummary = "a number"\n'
+            'description = "A floating point number."\n'
+            'related = ["Species"]\n',
         )
 
 
@@ -793,7 +842,7 @@ def test_required_is_a_boolean(tmp_path: Path) -> None:
 def test_a_default_of_a_required_attribute_is_an_error(tmp_path: Path) -> None:
     """A required attribute is always present, so a default makes no sense."""
     with pytest.raises(
-        GlossaryError, match="'default' is given for a required attribute"
+        GlossaryError, match=r"'default' is given without 'required = false'"
     ):
         _glossary_file(
             tmp_path,
@@ -803,6 +852,38 @@ def test_a_default_of_a_required_attribute_is_an_error(tmp_path: Path) -> None:
             'label = "initialAmount"\nsummary = "the amount at the start"\n'
             'description = "The amount of the species when the simulation starts."\n'
             'required = true\ndefault = "0"\n',
+        )
+
+
+def test_a_default_without_required_is_an_error(tmp_path: Path) -> None:
+    """`default` names what happens when the attribute is absent, `required` says whether it can be."""
+    with pytest.raises(
+        GlossaryError, match=r"'default' is given without 'required = false'"
+    ):
+        _glossary_file(
+            tmp_path,
+            '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+            'description = "A pool of a chemical entity."\n'
+            "[types.Species.attributes.initialAmount]\n"
+            'label = "initialAmount"\nsummary = "the amount at the start"\n'
+            'description = "The amount of the species when the simulation starts."\n'
+            'default = "0"\n',
+        )
+
+
+def test_a_default_which_ends_with_a_period_is_an_error(tmp_path: Path) -> None:
+    """The reference page renders `Default: {default}.`, a final period would double."""
+    with pytest.raises(
+        GlossaryError, match="the default ends with a period, it is one clause"
+    ):
+        _glossary_file(
+            tmp_path,
+            '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+            'description = "A pool of a chemical entity."\n'
+            "[types.Species.attributes.initialAmount]\n"
+            'label = "initialAmount"\nsummary = "the amount at the start"\n'
+            'description = "The amount of the species when the simulation starts."\n'
+            'required = false\ndefault = "zero."\n',
         )
 
 
@@ -871,6 +952,14 @@ def test_an_attribute_of_the_report_cannot_be_required(tmp_path: Path) -> None:
         glossary.validate_technical()
 
 
+def test_the_fixture_glossary_is_valid() -> None:
+    """The fixture glossary raises nothing on every validation, so a test error is real."""
+    glossary = Glossary.from_directory(FIXTURE)
+    glossary.validate_types()
+    glossary.validate_required()
+    glossary.validate_technical()
+
+
 def test_a_type_which_names_nothing_is_an_error(tmp_path: Path) -> None:
     """The `type` of an entry has to be a data type or a type of the glossary."""
     root = _repository(
@@ -882,21 +971,31 @@ def test_a_type_which_names_nothing_is_an_error(tmp_path: Path) -> None:
         ),
     )
     glossary = Glossary.from_directory(root / "glossary")
-    with pytest.raises(
-        GlossaryError,
-        match=r"the type 'Foo' is neither a data type nor a type of the glossary",
-    ):
+    with pytest.raises(GlossaryError) as excinfo:
         glossary.validate_types()
+    assert str(excinfo.value) == (
+        "data types:\n"
+        "extra.toml: types.Species.attributes.extra: the type 'Foo' is neither "
+        "a data type nor a type of the glossary"
+    )
 
 
 def test_an_unused_data_type_is_an_error(tmp_path: Path) -> None:
     """A data type no attribute names and no data type relates to is unused."""
-    root = _repository(tmp_path)
+    root = _repository(
+        tmp_path,
+        extra_glossary=(
+            '[datatypes.Extra]\nlabel = "Extra"\n'
+            'summary = "a technical detail for the tests"\n'
+            'description = "A data type added only to exercise the technical checks."\n'
+        ),
+    )
     glossary = Glossary.from_directory(root / "glossary")
-    with pytest.raises(
-        GlossaryError, match=r"datatypes\.SIdRef: the data type is not used"
-    ):
+    with pytest.raises(GlossaryError) as excinfo:
         glossary.validate_types()
+    assert str(excinfo.value) == (
+        "data types:\nextra.toml: datatypes.Extra: the data type is not used"
+    )
 
 
 def test_required_is_demanded_for_an_attribute_of_a_specification(
@@ -952,6 +1051,34 @@ def test_the_details_carry_the_technical_details() -> None:
     if rule.section:
         expected_rule["section"] = rule.section
     assert entry["rules"] == [expected_rule]
+
+
+def test_a_type_which_resolves_to_nothing_is_an_error_in_the_details(
+    tmp_path: Path,
+) -> None:
+    """The details cannot link a `type` which is neither a data type nor a type."""
+    glossary = _glossary_file(
+        tmp_path,
+        '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+        'description = "A pool of a chemical entity."\n'
+        "[types.Species.attributes.extra]\n"
+        'label = "extra"\ntype = "Foo"\n'
+        'summary = "a technical detail for the tests"\n'
+        'description = "An attribute added only to exercise the technical checks."\n',
+    )
+    with pytest.raises(GlossaryError, match=r"the type 'Foo' resolves to nothing"):
+        render_details(glossary)
+
+
+def test_every_type_of_the_details_has_a_key() -> None:
+    """Every `type` the details of the repository glossary render carries a `key`."""
+    root = glossary_module.REPO_ROOT
+    glossary = Glossary.from_directory(root / glossary_module.GLOSSARY_DIR)
+    entries = render_details(glossary)["entries"]
+    for key, entry in entries.items():
+        type_detail = entry.get("type")
+        if type_detail is not None:
+            assert "key" in type_detail, key
 
 
 def test_a_type_lists_its_attributes_and_related_types() -> None:

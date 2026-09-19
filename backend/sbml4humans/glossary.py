@@ -16,9 +16,14 @@ the glossary or of the report model and commit both outputs.
 directory and fails when a committed file is stale, when a type or a field of
 the report model has no entry, when a type or an attribute entry of the
 glossary is not a type or a field of the report, when a type or an attribute
-of a specification is not labelled by its name there, when a link of a description
-does not resolve to a page or to an anchor of one, when a page references a
-missing image or when the navigation of the site does not list a generated page.
+of a specification is not labelled by its name there, when an attribute the
+report adds states `required` or cites a validation rule which does not
+exist or belongs to a foreign package, when a `type` resolves to neither a
+data type nor a type of the glossary or a data type nothing uses, when an
+attribute of a specification does not state whether it is required, when a
+link of a description does not resolve to a page or to an anchor of one,
+when a page references a missing image or when the navigation of the site
+does not list a generated page.
 """
 
 import json
@@ -949,9 +954,13 @@ def _entry(
     default = (
         _optional_string(path, table, "default", owners) if kind == "nested" else None
     )
-    if required and default is not None:
+    if default is not None and default.endswith("."):
         raise GlossaryError(
-            f"{_where(path, owners)}: 'default' is given for a required attribute"
+            f"{_where(path, owners)}: the default ends with a period, it is one clause"
+        )
+    if default is not None and required is not False:
+        raise GlossaryError(
+            f"{_where(path, owners)}: 'default' is given without 'required = false'"
         )
     return Entry(
         key=key,
@@ -1695,7 +1704,9 @@ def _render_detail(
         the entry does not state it.
 
     Raises:
-        GlossaryError: a link of the description does not resolve.
+        GlossaryError: a link of the description does not resolve, or a `type`
+            of the entry resolves to neither a data type nor a type of the
+            glossary.
     """
     section, _, rest = dotted.partition(".")
     type_name, separator, attribute_name = rest.partition(".attributes.")
@@ -1734,11 +1745,13 @@ def _render_detail(
     if is_attribute:
         detail["owner"] = f"types/{type_name}"
     if entry.type is not None:
-        type_detail: dict[str, str] = {"label": entry.type}
         type_key = glossary.type_key(entry.type)
-        if type_key is not None:
-            type_detail["key"] = type_key
-        detail["type"] = type_detail
+        if type_key is None:
+            raise GlossaryError(
+                f"{_where(dotted, glossary.owners)}: the type '{entry.type}' "
+                f"resolves to nothing"
+            )
+        detail["type"] = {"label": entry.type, "key": type_key}
     if entry.spec is not None:
         detail["spec"] = _spec_detail(glossary, entry.spec)
     if entry.required is not None:
@@ -1777,7 +1790,9 @@ def render_details(glossary: Glossary) -> dict[str, Any]:
 
     Raises:
         GlossaryError: a link of a description does not resolve to a
-            `glossary:` key or to a page of the site outside the reference.
+            `glossary:` key or to a page of the site outside the reference, or
+            a `type` of an entry resolves to neither a data type nor a type of
+            the glossary.
     """
     keys = _link_keys(glossary)
     datatype_anchors = _datatype_anchors(glossary)
@@ -1895,6 +1910,8 @@ def main(argv: list[str]) -> int:
             lambda: glossary.validate_coverage(root),
             lambda: glossary.validate_labels(),
             lambda: glossary.validate_technical(),
+            lambda: glossary.validate_types(),
+            lambda: glossary.validate_required(),
             lambda: glossary.validate_links(root),
             lambda: glossary.validate_navigation(root),
         )

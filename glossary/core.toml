@@ -16,6 +16,39 @@
 # The prose is written from the specification named in the `spec` of the entry,
 # it does not repeat it. `summary` is one sentence without a final period,
 # `description` is markdown without hard line wraps.
+#
+# An attribute which cites a `spec` also states `required`, whether that
+# specification demands it; an attribute the report adds never does, because no
+# specification asks anything of it. An attribute which is required on an element
+# which is itself optional is itself required. `default` puts in plain words what
+# holds when the attribute is absent: one clause, starting lower case, no final
+# period, only next to `required = false`, only where the absence teaches the
+# reader something, and no stronger than the specification says, "may" where it
+# says may. Level 3 defines no default values, so this states what holds instead.
+#
+# `rules` lists the numbers of the validation rules of libsbml which concern the
+# entry, ascending; the generator reads their text from libsbml, so none is
+# written here. A rule is cited at the attribute its message names, constrains or
+# makes conditional, at every one of them when it names several, and at the type
+# when it concerns the element as a whole, plus at an attribute besides when it
+# is the one rule which says something specific about it. Left out: a rule about
+# MathML, about units consistency or about modelling practice in general, a rule
+# about what libsbml cannot check or about its converters, and a rule whose
+# operative sentence is false for the reader of the page, as the rule that a
+# ListOfX object carries no attribute beyond metaid and sboTerm is for a list of
+# Level 3 Version 2, which also carries id and name, and as distrib 1520303 and
+# 1520503 are. A message with a small defect beside the sentence a reader needs
+# is still cited. Find a rule with `resolve_rule` of `sbml4humans.glossaryrules`:
+#
+#     from sbml4humans.glossaryrules import resolve_rule
+#     for code in range(20608, 20612):
+#         print(code, resolve_rule(code).message)
+#
+# `[datatypes.*]` holds one entry per `type` value which is no type of the
+# glossary: an entry which cites a `spec` is a data type of that specification,
+# one without a `spec` and with `package = "report"` a value type the report
+# adds. `values` lists the literals of an enumeration in the order and the
+# spelling of the specification, `related` names other data types.
 
 [specs.l3v2]
 label = "SBML Level 3 Version 2 Core"
