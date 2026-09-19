@@ -10,7 +10,7 @@ The report shows it as the branches of the tree in the inspector of a reaction a
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [associations](#associations) | `list` | the nodes which are all needed, two or more of them | [fbc v3 3.12](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [associations](#associations) | `list` | the nodes which are all needed, two or more of them | [fbc v3 3.12](https://doi.org/10.1515/jib-2026-0006) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -26,4 +26,4 @@ The order of the nodes carries no meaning: an `and` is a set of conditions which
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.12 (Olivier and Bergmann, COMBINE specification).
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://doi.org/10.1515/jib-2026-0006), Section 3.12 (Olivier and Bergmann, COMBINE specification).
