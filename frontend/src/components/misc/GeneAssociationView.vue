@@ -5,7 +5,11 @@ import type { Association } from "@/api/types";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import ShowAllButton from "@/components/misc/ShowAllButton.vue";
 import { useReportIndex } from "@/report/context";
-import { ASSOCIATION_DEPTH, ASSOCIATION_LIMIT } from "@/report/geneAssociation";
+import {
+  ASSOCIATION_DEPTH,
+  ASSOCIATION_FEW_GENES,
+  ASSOCIATION_LIMIT,
+} from "@/report/geneAssociation";
 import { useLimitedList } from "@/report/limitedList";
 
 /** One node of the gene product association of a reaction, with the nodes below it.
@@ -40,8 +44,19 @@ watch(
     opened.value = false;
   },
 );
+/** A group of a few genes and nothing else is written out at any depth: the button would be
+ * about as wide as the genes it hides, and it adds at most that many links to the row. */
+const fewGenes = computed(
+  () =>
+    children.value.length <= ASSOCIATION_FEW_GENES &&
+    children.value.every((child) => child.sbmlType === "GeneProductRef"),
+);
 const collapsed = computed(
-  () => children.value.length > 0 && props.depth > ASSOCIATION_DEPTH && !opened.value,
+  () =>
+    children.value.length > 0 &&
+    props.depth > ASSOCIATION_DEPTH &&
+    !fewGenes.value &&
+    !opened.value,
 );
 
 /** Kind "GeneProductRef": the gene product the leaf names, over its own edge. */
@@ -66,9 +81,8 @@ const geneProduct = computed(() =>
     class="cursor-pointer font-mono text-link hover:underline"
     data-testid="gene-association-open"
     @click="opened = true"
-  >
-    ({{ operator.trim() }} of {{ children.length }})
-  </button>
+    v-text="`(${operator.trim()} of ${children.length})`"
+  />
   <span v-else class="font-mono" data-testid="gene-association-group"
     >(<template v-for="(child, i) in shown" :key="child.pk"
       ><span v-if="i > 0" class="text-gray-500">{{ operator }}</span

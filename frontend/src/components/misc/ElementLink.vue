@@ -29,7 +29,8 @@ const reportName = computed(
   <RouterLink
     v-if="target"
     :to="view.routeFor(target.pk)"
-    class="inline-flex items-center gap-1 font-mono text-link hover:underline"
+    class="font-mono text-link hover:underline"
+    :class="{ 'inline-flex items-center gap-1': mark }"
     :data-pk="target.pk"
     data-testid="element-link"
     @click.stop

@@ -464,14 +464,44 @@ describe("inspector", () => {
     expect(wrapper.text()).not.toContain("g2");
     expect(open().map((button) => button.text())).toEqual(["(or of 2)"]);
 
+    // the level below it holds genes only, two of them, which are written out: the button would
+    // take the width of the two genes and hide them
     await open()[0]!.trigger("click");
     expect(wrapper.text()).toContain("g3");
-    expect(wrapper.text()).not.toContain("g4");
-    expect(open().map((button) => button.text())).toEqual(["(or of 2)"]);
-
-    await open()[0]!.trigger("click");
-    expect(wrapper.text()).toContain("leaf");
+    expect(wrapper.text()).toContain("(leaf or g4)");
     expect(open()).toHaveLength(0);
+  });
+
+  it("writes out a deep group of a few genes and opens a deep group of more on a click", () => {
+    const gene = (name: string) => ({
+      pk: `m/GeneProductRef:${name}`,
+      sbmlType: "GeneProductRef",
+      geneProduct: name,
+    });
+    const group = (name: string, genes: string[]) => ({
+      pk: `m/And:${name}`,
+      sbmlType: "And",
+      associations: genes.map(gene),
+    });
+    const tree = {
+      pk: "m/Or:root",
+      sbmlType: "Or",
+      associations: [
+        {
+          pk: "m/And:middle",
+          sbmlType: "And",
+          associations: [group("few", ["a", "b"]), group("many", ["c", "d", "e", "f"])],
+        },
+      ],
+    };
+    const wrapper = mountWith(GeneAssociationView, { node: tree }, fbcConstraints);
+    expect(wrapper.text()).toContain("(a and b)");
+    // the button is its text, without the spaces a template would leave around it
+    expect(
+      wrapper
+        .findAll("[data-testid=gene-association-open]")
+        .map((button) => button.element.textContent),
+    ).toEqual(["(and of 4)"]);
   });
 
   it("groups the links by kind in both directions", async () => {

@@ -184,7 +184,7 @@ function signOf(influence: Input | Output): string | null | undefined {
   the whole tree is read -->
   <span
     v-else-if="column.kind === 'geneAssociation'"
-    class="block max-w-64 truncate font-mono"
+    class="block max-w-96 truncate font-mono"
     :class="{ 'text-gray-400': !geneAssociation }"
     data-testid="gene-cell"
     >{{ geneAssociation || "-" }}</span

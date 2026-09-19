@@ -219,6 +219,18 @@ describe("misc components", () => {
     expect(text.text()).toBe("litre");
   });
 
+  it("lets a link without a mark flow with the text around it", () => {
+    // a link which is an inline flex box is a box of its own, and a line broke between the
+    // opening parenthesis of a gene association and the gene behind it
+    const species = index.mainModel!.listOfSpecies![0]!;
+    const plain = mountWithIndex(ElementLink, { pk: species.pk }).get("[data-testid=element-link]");
+    expect(plain.classes()).not.toContain("inline-flex");
+    const marked = mountWithIndex(ElementLink, { pk: species.pk, mark: true }).get(
+      "[data-testid=element-link]",
+    );
+    expect(marked.classes()).toContain("inline-flex");
+  });
+
   it("names an element without an id by the key of its primary key", () => {
     // the rules of a Level 2 model carry no id, their key is the variable they set
     const rule = index.mainModel!.listOfRules![0]!;

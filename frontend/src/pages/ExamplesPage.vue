@@ -58,7 +58,11 @@ const examples = computed(() => {
           class="flex h-full flex-col gap-1 rounded-lg border border-gray-200 p-3 hover:border-gray-400 hover:bg-gray-50"
           data-testid="example-card"
         >
-          <span class="truncate font-mono text-sm font-medium">{{ example.id }}</span>
+          <!-- the id of a written example names its file behind it, and it wraps at the space
+          between the two instead of being cut off -->
+          <span class="font-mono text-sm font-medium break-words" data-testid="example-id">{{
+            example.id
+          }}</span>
           <span v-if="example.name" class="truncate text-sm text-gray-800">{{ example.name }}</span>
           <span v-if="example.text" class="line-clamp-2 text-xs break-words text-gray-500">{{
             example.text

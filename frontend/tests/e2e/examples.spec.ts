@@ -20,3 +20,18 @@ test("an unknown example shows the api error", async ({ page }) => {
   await page.getByTestId("error-traceback-toggle").click();
   await expect(page.getByTestId("error-traceback")).toContainText("Traceback");
 });
+
+test("every card of the examples page shows the whole id of its example", async ({ page }) => {
+  // the id of a written example names its file behind it and was cut off at 1440 px
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/examples");
+  await expect(page.getByTestId("example-card").first()).toBeVisible();
+  const clipped = await page
+    .getByTestId("examples-grid")
+    .evaluate((grid) =>
+      [...grid.querySelectorAll('[data-testid="example-id"]')]
+        .filter((id) => id.scrollWidth > id.clientWidth)
+        .map((id) => id.textContent),
+    );
+  expect(clipped).toEqual([]);
+});

@@ -10,6 +10,10 @@ export const ASSOCIATION_LIMIT = 5;
  * bound the links of one attribute row at the limit of a group squared. */
 export const ASSOCIATION_DEPTH = 1;
 
+/** The genes of a group of genes alone which the inspector writes out below
+ * `ASSOCIATION_DEPTH` instead of a button: `(a and b)` reads in the width of `(and of 2)`. */
+export const ASSOCIATION_FEW_GENES = 3;
+
 /** The genes a table cell writes out before it ends the expression with an ellipsis. One
  * reaction of Recon3D names five thousand gene products in one `or`, and the cell of a table
  * is one line. */

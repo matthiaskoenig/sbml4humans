@@ -159,11 +159,12 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
       field="fbc.geneProductAssociation"
     >
       <template v-if="element.fbc.geneProductAssociation">
-        <ElementLink :pk="element.fbc.geneProductAssociation.pk" class="mr-2" />
-        <GeneAssociationView
-          v-if="element.fbc.geneProductAssociation.association"
-          :node="element.fbc.geneProductAssociation.association"
-        />
+        <!-- the association is named on a line of its own and its expression below it, the
+        way the kinetic law is named above its formula -->
+        <p><ElementLink :pk="element.fbc.geneProductAssociation.pk" /></p>
+        <p v-if="element.fbc.geneProductAssociation.association" data-testid="gene-association">
+          <GeneAssociationView :node="element.fbc.geneProductAssociation.association" />
+        </p>
       </template>
       <span v-else class="text-gray-400">-</span>
     </AttributeRow>

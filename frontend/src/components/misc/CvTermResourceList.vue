@@ -80,7 +80,7 @@ function href(resource: string): string {
         :href="href(resource)"
         target="_blank"
         rel="noopener"
-        class="break-all text-link hover:underline"
+        class="break-words text-link hover:underline"
       >
         <template v-if="resolved.get(resource)?.label">{{
           resolved.get(resource)!.label
