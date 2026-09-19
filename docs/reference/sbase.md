@@ -17,9 +17,9 @@ The report shows these attributes for every element: the id and the name in the 
 | [notes](#notes) | [`XHTML`](datatypes.md#xhtml) | optional | the free text the model author wrote about the element | [core 3.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [annotations](#annotations) | [`list`](datatypes.md#list) | optional | the controlled vocabulary terms which link the element to database entries | [core 6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [history](#history) | [`ModelHistory`](datatypes.md#modelhistory) | optional | who created the element and when it was modified | [core 6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [replacements](#replacements) | `CompSBase` | - | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:replacedBy](#comp-replacedby) | [`ReplacedBy`](replacedby.md) | - | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:listOfReplacedElements](#comp-listofreplacedelements) | [`list`](datatypes.md#list) | - | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [replacements](#replacements) | [`CompSBase`](datatypes.md#compsbase) | optional | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:replacedBy](#comp-replacedby) | [`ReplacedBy`](replacedby.md) | optional | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:listOfReplacedElements](#comp-listofreplacedelements) | [`list`](datatypes.md#list) | optional | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | [`list`](datatypes.md#list) | - | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [distrib:listOfUncertainties](#distrib-listofuncertainties) | [`list`](datatypes.md#list) | - | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
@@ -99,11 +99,17 @@ An element which is replaced disappears from the composed model: every reference
 
 The report links the submodel and shows the named element next to it.
 
+- `1020105` (error): Any object derived from the extended SBase class (defined in the Hierarchical Model Composition package) may contain at most one instance of a &lt;replacedBy&gt; subobject.
+
 <span id="comp-listofreplacedelements"></span>**comp:listOfReplacedElements**
 
 Every entry names a submodel and one element inside it which this element replaces. It is how a species of the containing model is connected to the species of two submodels: the containing species replaces both, and the three become one pool.
 
 The report lists the submodel and the named element of every replacement in the inspector.
+
+- `1020101` (error): Any object derived from the extended SBase class (defined in the Hierarchical Model Composition package) may contain at most one instance of a &lt;listOfReplacedElements&gt; subobject.
+- `1020102` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfReplacedElements&gt; container object may only contain &lt;replacedElement&gt; objects.
+- `1020104` (error): The &lt;listOfReplacedElements&gt; in an SBase object is optional, but if present, must not be empty.
 
 <span id="fbc-listofkeyvaluepairs"></span>**fbc:listOfKeyValuePairs**
 

@@ -80,6 +80,14 @@
       "package": "core",
       "docs": "reference/concepts/#rendered-units"
     },
+    "datatypes/CompSBase": {
+      "kind": "datatype",
+      "label": "CompSBase",
+      "summary": "what the comp package adds to an element, the replacements it takes part in",
+      "description": "The report keeps the two subcomponents the comp package adds to every element in one block: the [replaced elements](glossary:types/ReplacedElement), the elements of submodels which this element takes the place of, and the [replaced by](glossary:types/ReplacedBy), the element of a submodel which takes the place of this one. An element may carry both, and an element which takes part in no replacement carries neither.\n\nThe inspector shows the block as the row [replacements](glossary:types/SBase/comp) of the element, with a link to the submodel and to the named element for each of the replacements.",
+      "package": "report",
+      "docs": "reference/datatypes/#compsbase"
+    },
     "datatypes/ID": {
       "kind": "datatype",
       "label": "ID",
@@ -94,6 +102,22 @@
       },
       "related": [
         "datatypes/SId"
+      ]
+    },
+    "datatypes/IDREF": {
+      "kind": "datatype",
+      "label": "IDREF",
+      "summary": "a reference to an element of the document by its meta id",
+      "description": "`IDREF` is the companion the XML Schema 1.0 specification gives to the type [ID](glossary:datatypes/ID): its value has the syntax of an `ID` and has to be the `ID` of an element of the document it is read in. A meta id is unique in the whole file and not, like an identifier, in one model, so a value of this type names one element of the file without saying which model it sits in. That is why the comp package has to state per reference which model instantiation is meant: the same element may be instantiated in many submodels.\n\nThe [metaIdRef](glossary:types/SBaseRef/metaIdRef) of a port, a deletion or a replacement is the attribute of this type, and it is how an element which carries no identifier of its own is named, a rule or a reaction written without one. The report searches the element with that meta id in the model the reference reaches into and links it.",
+      "package": "comp",
+      "docs": "reference/datatypes/#idref",
+      "spec": {
+        "label": "comp 3.2.1",
+        "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
+        "section": "3.2.1"
+      },
+      "related": [
+        "datatypes/ID"
       ]
     },
     "datatypes/Math": {
@@ -114,6 +138,23 @@
       "description": "The standard annotation of an element may carry its history, written in RDF: the terms of Dublin Core name the creators of the element, the date it was created and one date for every time it was changed, and inside a creator the name, the organisation and the electronic mail address are written with the terms of vCard. The report reads that block out of the annotation and keeps it as one value of the element, instead of leaving it in the XML for a reader to decipher.\n\nMost files carry a history on the model alone, where it is the closest thing a model has to an author line. The report shows the creators with their organisation and their address, the date of creation and every date of modification, below the annotations in the inspector of the element.",
       "package": "report",
       "docs": "reference/datatypes/#modelhistory"
+    },
+    "datatypes/PortSIdRef": {
+      "kind": "datatype",
+      "label": "PortSIdRef",
+      "summary": "a reference to a port of a model by its identifier",
+      "description": "The identifier of a [port](glossary:types/Port) is of the type `PortSId`, which the comp package derives from [SId](glossary:datatypes/SId): the syntax is that of an identifier, and the values live in a space of their own which spans the ports of one model. A port may therefore carry the identifier a species of the same model carries, without the two colliding and without one naming the other. An attribute of type `PortSIdRef` holds such a value, and it has to be the identifier of a port of the model the reference reaches into, not of the model which writes the reference.\n\nThe four references of the comp package, on a [port](glossary:types/Port), a [deletion](glossary:types/Deletion), a [replaced element](glossary:types/ReplacedElement), a [replaced by](glossary:types/ReplacedBy) and on every link of a nested [reference](glossary:types/SBaseRef), name an element in exactly one of four ways, and a port reference is the one of the four which goes through the interface the other model offers instead of reaching past it. The report resolves it against the ports of the model the reference reaches into and links the port; where that model is not part of the report, it stays the text the file writes.",
+      "package": "comp",
+      "docs": "reference/datatypes/#portsidref",
+      "spec": {
+        "label": "comp 3.2.4",
+        "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
+        "section": "3.2.4"
+      },
+      "related": [
+        "datatypes/SIdRef",
+        "datatypes/SId"
+      ]
     },
     "datatypes/SBOTerm": {
       "kind": "datatype",
@@ -189,6 +230,22 @@
         "label": "core 3.2.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.2.5"
+      },
+      "related": [
+        "datatypes/string"
+      ]
+    },
+    "datatypes/anyURI": {
+      "kind": "datatype",
+      "label": "anyURI",
+      "summary": "a character string which is read as a URI",
+      "description": "The XML Schema type `anyURI` holds a Uniform Resource Identifier as RFC 3986 defines it. That is an address of any of the three shapes such an identifier takes: a URL, `http://example.org/firefly.xml`, a URN, `urn:miriam:biomodels.db:BIOMD0000000002`, or a location relative to the document which writes it, `firefly.xml`. Only the syntax is asked of the value. Whether anything answers at that address, and whether what answers is what was meant, is nothing the file can settle.\n\nTwo attributes the report reads carry the type. The [source](glossary:types/ExternalModelDefinition/source) of an external model definition is the document which holds the model, and the [definitionURL](glossary:types/UncertParameter/definitionUrl) of an uncertainty parameter names the mathematical term its value stands for. The report never fetches an address: a relative source is looked for among the entries of the COMBINE archive or among the files next to the document, and every other value is shown as the text the file writes.",
+      "package": "comp",
+      "docs": "reference/datatypes/#anyuri",
+      "spec": {
+        "label": "comp 3.2.2",
+        "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
+        "section": "3.2.2"
       },
       "related": [
         "datatypes/string"
@@ -1389,6 +1446,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.5.3"
       },
+      "rules": [
+        {
+          "id": 1010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> or <modelDefinition> object, the values of the attributes id and comp:id on every instance of the following classes of objects must be unique across the set of all id and comp:id attribute values of all such objects in a model: the model itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <submodel> and <deletion> objects defined by the Hierarchical Model Composition package, plus any objects defined by any other package with 'package:id' attributes defined as falling in the 'SId' namespace.",
+          "section": "L3V1 Comp V1 Section 3.9"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020714,
+          "severity": "error",
+          "message": "Any one SBML object may only be referenced in one of the following ways: referenced by a single <port> object; referenced by a single <deletion> object; referenced by a single <replacedElement>; be the parent of a single <replacedBy> child; be referenced by one or more <replacedBy> objects; or be referenced by one or more <replacedElement> objects all using the 'deletion' attribute. Essentially, once an object has been referenced in one of these ways it cannot be referenced again.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020903,
+          "severity": "error",
+          "message": "A <deletion> object must have a value for one, and only one, of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', and 'comp:metaIdRef'. It may also have the optional attributes 'comp:id' and 'comp:name'. No other attributes from the Hierarchical Model Composition namespace are permitted on a <deletion> object.",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        }
+      ],
       "attributes": [
         "types/Deletion/portRef",
         "types/Deletion/idRef",
@@ -1419,7 +1502,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020702,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an <sBaseRef> object must be the identifier of an object contained in (that is, within the SId namespace of) the <model> referenced by that <sBaseRef>. This includes objects with 'id' attributes defined in packages other than SBML Level 3 Core or the Hierarchical Model Composition package.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020707,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020901,
+          "severity": "error",
+          "message": "A <deletion> object must point to another object; that is, a <deletion> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        },
+        {
+          "id": 1020902,
+          "severity": "error",
+          "message": "A <deletion> object can only point to one other object; that is, a given <deletion> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        }
+      ]
     },
     "types/Deletion/metaIdRef": {
       "kind": "attribute",
@@ -1430,13 +1540,41 @@
       "docs": "reference/deletion/#metaidref",
       "owner": "types/Deletion",
       "type": {
-        "label": "IDREF"
+        "label": "IDREF",
+        "key": "datatypes/IDREF"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020704,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an <sBaseRef> object must be the value of a 'comp:metaid' attribute on an element contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020709,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an SBaseRef object must always conform to the syntax of the XML data type ID.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020901,
+          "severity": "error",
+          "message": "A <deletion> object must point to another object; that is, a <deletion> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        },
+        {
+          "id": 1020902,
+          "severity": "error",
+          "message": "A <deletion> object can only point to one other object; that is, a given <deletion> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        }
+      ]
     },
     "types/Deletion/portRef": {
       "kind": "attribute",
@@ -1447,13 +1585,41 @@
       "docs": "reference/deletion/#portref",
       "owner": "types/Deletion",
       "type": {
-        "label": "PortSIdRef"
+        "label": "PortSIdRef",
+        "key": "datatypes/PortSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020701,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an <sBaseRef> object must be the identifier of a <port> object in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020706,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020901,
+          "severity": "error",
+          "message": "A <deletion> object must point to another object; that is, a <deletion> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        },
+        {
+          "id": 1020902,
+          "severity": "error",
+          "message": "A <deletion> object can only point to one other object; that is, a given <deletion> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        }
+      ]
     },
     "types/Deletion/sbaseRef": {
       "kind": "attribute",
@@ -1471,7 +1637,22 @@
         "label": "comp 3.7.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020705,
+          "severity": "error",
+          "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020711,
+          "severity": "warning",
+          "message": "The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        }
+      ]
     },
     "types/Deletion/unitRef": {
       "kind": "attribute",
@@ -1489,7 +1670,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020703,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an <sBaseRef> object must be the identifier of a <unitDefinition< object contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020708,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020901,
+          "severity": "error",
+          "message": "A <deletion> object must point to another object; that is, a <deletion> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        },
+        {
+          "id": 1020902,
+          "severity": "error",
+          "message": "A <deletion> object can only point to one other object; that is, a given <deletion> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'",
+          "section": "L3V1 Comp V1 Section 3.5.3"
+        }
+      ]
     },
     "types/Event": {
       "kind": "type",
@@ -1963,6 +2171,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.3.2"
       },
+      "rules": [
+        {
+          "id": 1010302,
+          "severity": "error",
+          "message": "The values of the attributes 'id' and 'comp:id' on every instance of all <model>, <modelDefinition>, and <externalModelDefinition> objects must be unique across the set of all 'id' and 'comp:id' attribute values of such objects in the SBML document to which they belong.",
+          "section": "L3V1 Comp V1 Section 3.9"
+        },
+        {
+          "id": 1020301,
+          "severity": "error",
+          "message": "An <externalModelDefinition> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an <externalModelDefinition> object.",
+          "section": "L3V1 Comp V1 Section 3.2"
+        },
+        {
+          "id": 1020302,
+          "severity": "error",
+          "message": "An <externalModelDefinition> object may have the optional SBML Level 3 Core subobjects for notes and annotation. No other subobjects from the SBML Level 3 Core namespace or the Hierarchical Model Composition namespace are permitted on an <externalModelDefinition> object.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        },
+        {
+          "id": 1020303,
+          "severity": "error",
+          "message": "An <externalModelDefinition> object must have the attributes 'comp:id' and 'comp:source', and may have the optional attributes 'comp:name', 'comp:modelRef', and 'comp:md5'. No other attributes from the Hierarchical Model Composition namespace are permitted on an <externalModelDefinition> object.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        }
+      ],
       "attributes": [
         "types/ExternalModelDefinition/source",
         "types/ExternalModelDefinition/modelRef",
@@ -1994,7 +2228,23 @@
         "label": "comp 3.3.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.3.2"
-      }
+      },
+      "required": false,
+      "default": "nothing checks that the document at the source is the one the definition was written against",
+      "rules": [
+        {
+          "id": 1020306,
+          "severity": "warning",
+          "message": "The value of the 'comp:md5' attribute, if present on an <externalModelDefinition> object, should match the calculated MD5 checksum of the SBML document referenced by the 'comp:source' attribute.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        },
+        {
+          "id": 1020309,
+          "severity": "error",
+          "message": "The value of a comp:md5 attribute on an <externalModelDefinition> object must always conform to the syntax of type string.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        }
+      ]
     },
     "types/ExternalModelDefinition/modelRef": {
       "kind": "attribute",
@@ -2012,7 +2262,29 @@
         "label": "comp 3.3.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.3.2"
-      }
+      },
+      "required": false,
+      "default": "the main model of the document at the source",
+      "rules": [
+        {
+          "id": 1020305,
+          "severity": "error",
+          "message": "The value of the 'comp:modelRef' attribute on an <externalModelDefinition> object must be the value of an id attribute on a <model>, <modelDefinition>, or <externalModelDefinition> object in the SBML document referenced by the 'comp:source' attribute.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        },
+        {
+          "id": 1020308,
+          "severity": "error",
+          "message": "The value of a comp:modelRef attribute on an <externalModelDefinition> object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        },
+        {
+          "id": 1020310,
+          "severity": "error",
+          "message": "An <externalModelDefinition> object must not reference an <externalModelDefinition> in a different SBML document that, in turn, refers back to the original <externalModelDefinition object, whether directly or indirectly through a chain of <externalModelDefinition> objects.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        }
+      ]
     },
     "types/ExternalModelDefinition/resolution.entry": {
       "kind": "attribute",
@@ -2075,13 +2347,29 @@
       "docs": "reference/externalmodeldefinition/#source",
       "owner": "types/ExternalModelDefinition",
       "type": {
-        "label": "anyURI"
+        "label": "anyURI",
+        "key": "datatypes/anyURI"
       },
       "spec": {
         "label": "comp 3.3.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.3.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 1020304,
+          "severity": "error",
+          "message": "The value of the 'comp:source' attribute on an <externalModelDefinition> object must reference an SBML Level 3 document.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        },
+        {
+          "id": 1020307,
+          "severity": "error",
+          "message": "The value of a 'comp:source' attribute on an <externalModelDefinition> object must always conform to the syntax of the XML Schema 1.0 data type 'anyURI'.",
+          "section": "L3V1 Comp V1 Section 3.3.2"
+        }
+      ]
     },
     "types/FluxBound": {
       "kind": "type",
@@ -3690,7 +3978,29 @@
         "label": "comp 3.4.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.4.2"
-      }
+      },
+      "required": false,
+      "default": "nothing of the model is declared as an interface, and a model which includes it names its elements directly",
+      "rules": [
+        {
+          "id": 1020501,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> or <modelDefinition> object using Hierarchical Model Composition: <listOfSubmodels> and <listOfPorts>.",
+          "section": "L3V1 Comp V1 Section 3.4"
+        },
+        {
+          "id": 1020502,
+          "severity": "error",
+          "message": "The various ListOf subobjects with a <model> object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the <model>, it must not be empty: <listOfSubmodels> and <listOfPorts>.",
+          "section": "L3V1 Comp V1 Section 3.4"
+        },
+        {
+          "id": 1020504,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfPorts> container object may only contain <port> objects.",
+          "section": "L3V1 Comp V1 Section 3.4"
+        }
+      ]
     },
     "types/Model/listOfQualitativeSpecies": {
       "kind": "attribute",
@@ -3807,7 +4117,28 @@
         "label": "comp 3.4.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.4.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020501,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> or <modelDefinition> object using Hierarchical Model Composition: <listOfSubmodels> and <listOfPorts>.",
+          "section": "L3V1 Comp V1 Section 3.4"
+        },
+        {
+          "id": 1020502,
+          "severity": "error",
+          "message": "The various ListOf subobjects with a <model> object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the <model>, it must not be empty: <listOfSubmodels> and <listOfPorts>.",
+          "section": "L3V1 Comp V1 Section 3.4"
+        },
+        {
+          "id": 1020503,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfSubmodels> container object may only contain <submodel> objects.",
+          "section": "L3V1 Comp V1 Section 3.4"
+        }
+      ]
     },
     "types/Model/listOfTransitions": {
       "kind": "attribute",
@@ -4426,6 +4757,38 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.4.3"
       },
+      "rules": [
+        {
+          "id": 1010303,
+          "severity": "error",
+          "message": "Within <model> and <modelDefinition> objects inside an SBML document, the value of the attribute 'comp:id' on every instance of a <port> object must be unique across the set of all 'comp:id' attribute values of all such objects in the model.",
+          "section": "L3V1 Comp V1 Section 3.9"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020714,
+          "severity": "error",
+          "message": "Any one SBML object may only be referenced in one of the following ways: referenced by a single <port> object; referenced by a single <deletion> object; referenced by a single <replacedElement>; be the parent of a single <replacedBy> child; be referenced by one or more <replacedBy> objects; or be referenced by one or more <replacedElement> objects all using the 'deletion' attribute. Essentially, once an object has been referenced in one of these ways it cannot be referenced again.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020803,
+          "severity": "error",
+          "message": "A <port> object must have a value for the required attribute 'comp:id', and one, and only one, of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'. No other attributes from the Hierarchical Model Composition namespace are permitted on a <port> object.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        },
+        {
+          "id": 1020804,
+          "severity": "error",
+          "message": "Port definitions must be unique; that is, no two <port> objects in a given Model may reference the same object in that Model.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        }
+      ],
       "attributes": [
         "types/Port/portRef",
         "types/Port/idRef",
@@ -4455,7 +4818,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020702,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an <sBaseRef> object must be the identifier of an object contained in (that is, within the SId namespace of) the <model> referenced by that <sBaseRef>. This includes objects with 'id' attributes defined in packages other than SBML Level 3 Core or the Hierarchical Model Composition package.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020707,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020801,
+          "severity": "error",
+          "message": "A <port> object must point to another object; that is, a <port> object must always have a value for one of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        },
+        {
+          "id": 1020802,
+          "severity": "error",
+          "message": "A <port> object can only point to one other object; that is, a given <port> object can only have a value for one of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        }
+      ]
     },
     "types/Port/metaIdRef": {
       "kind": "attribute",
@@ -4466,13 +4856,41 @@
       "docs": "reference/port/#metaidref",
       "owner": "types/Port",
       "type": {
-        "label": "IDREF"
+        "label": "IDREF",
+        "key": "datatypes/IDREF"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020704,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an <sBaseRef> object must be the value of a 'comp:metaid' attribute on an element contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020709,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an SBaseRef object must always conform to the syntax of the XML data type ID.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020801,
+          "severity": "error",
+          "message": "A <port> object must point to another object; that is, a <port> object must always have a value for one of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        },
+        {
+          "id": 1020802,
+          "severity": "error",
+          "message": "A <port> object can only point to one other object; that is, a given <port> object can only have a value for one of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        }
+      ]
     },
     "types/Port/portRef": {
       "kind": "attribute",
@@ -4483,13 +4901,29 @@
       "docs": "reference/port/#portref",
       "owner": "types/Port",
       "type": {
-        "label": "PortSIdRef"
+        "label": "PortSIdRef",
+        "key": "datatypes/PortSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020701,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an <sBaseRef> object must be the identifier of a <port> object in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020706,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        }
+      ]
     },
     "types/Port/sbaseRef": {
       "kind": "attribute",
@@ -4507,7 +4941,22 @@
         "label": "comp 3.7.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020705,
+          "severity": "error",
+          "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020711,
+          "severity": "warning",
+          "message": "The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        }
+      ]
     },
     "types/Port/unitRef": {
       "kind": "attribute",
@@ -4525,7 +4974,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020703,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an <sBaseRef> object must be the identifier of a <unitDefinition< object contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020708,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020801,
+          "severity": "error",
+          "message": "A <port> object must point to another object; that is, a <port> object must always have a value for one of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        },
+        {
+          "id": 1020802,
+          "severity": "error",
+          "message": "A <port> object can only point to one other object; that is, a given <port> object can only have a value for one of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
+        }
+      ]
     },
     "types/Priority": {
       "kind": "type",
@@ -5190,6 +5666,56 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.4"
       },
+      "rules": [
+        {
+          "id": 1010501,
+          "severity": "warning",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, the units of the replaced element, multiplied by the units of any applicable conversion factor, should equal the units of the replacement element.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020714,
+          "severity": "error",
+          "message": "Any one SBML object may only be referenced in one of the following ways: referenced by a single <port> object; referenced by a single <deletion> object; referenced by a single <replacedElement>; be the parent of a single <replacedBy> child; be referenced by one or more <replacedBy> objects; or be referenced by one or more <replacedElement> objects all using the 'deletion' attribute. Essentially, once an object has been referenced in one of these ways it cannot be referenced again.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021103,
+          "severity": "error",
+          "message": "A <replacedBy> object must have a value for the required attribute 'comp:submodelRef', and a value for one, and only one, of the following attributes: 'comp:portRef', 'comp:idRef', 'comp:unitRef' or 'comp:metaIdRef'. No other attributes from the HierarchicalModel Composition namespace are permitted on a <replacedBy> object.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        },
+        {
+          "id": 1021201,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, the SBML class of the replacement element must match the SBML class of the replaced element, with two exceptions: an element of a derived class may replace an object of its base class (for base classes other than SBase), and any SBML class with mathematical meaning may replace a <parameter>. A base class may not replace a derived class, however, nor may a <parameter> replace some other SBML element with mathematical meaning.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1021202,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, if the replaced element has the 'id' attribute set, the replacement !element must also have the 'id' attribute set.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1021203,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, if the replaced element has the 'metaid' attribute set, the replacement element must also have the 'metaid' attribute set.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1021204,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, if the replaced element has an identifier attribute from some other SBML package set, the replacement element must also have that same identifier attribute set.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        }
+      ],
       "attributes": [
         "types/ReplacedBy/submodelRef",
         "types/ReplacedBy/portRef",
@@ -5220,7 +5746,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020702,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an <sBaseRef> object must be the identifier of an object contained in (that is, within the SId namespace of) the <model> referenced by that <sBaseRef>. This includes objects with 'id' attributes defined in packages other than SBML Level 3 Core or the Hierarchical Model Composition package.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020707,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021101,
+          "severity": "error",
+          "message": "A <replacedBy> object must point to another object; that is, a <replacedBy> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef' or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        },
+        {
+          "id": 1021102,
+          "severity": "error",
+          "message": "A <replacedBy> object can only point to one other object; that is, a given <replacedBy> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        }
+      ]
     },
     "types/ReplacedBy/metaIdRef": {
       "kind": "attribute",
@@ -5231,13 +5784,41 @@
       "docs": "reference/replacedby/#metaidref",
       "owner": "types/ReplacedBy",
       "type": {
-        "label": "IDREF"
+        "label": "IDREF",
+        "key": "datatypes/IDREF"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020704,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an <sBaseRef> object must be the value of a 'comp:metaid' attribute on an element contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020709,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an SBaseRef object must always conform to the syntax of the XML data type ID.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021101,
+          "severity": "error",
+          "message": "A <replacedBy> object must point to another object; that is, a <replacedBy> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef' or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        },
+        {
+          "id": 1021102,
+          "severity": "error",
+          "message": "A <replacedBy> object can only point to one other object; that is, a given <replacedBy> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        }
+      ]
     },
     "types/ReplacedBy/portRef": {
       "kind": "attribute",
@@ -5248,13 +5829,41 @@
       "docs": "reference/replacedby/#portref",
       "owner": "types/ReplacedBy",
       "type": {
-        "label": "PortSIdRef"
+        "label": "PortSIdRef",
+        "key": "datatypes/PortSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020701,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an <sBaseRef> object must be the identifier of a <port> object in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020706,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021101,
+          "severity": "error",
+          "message": "A <replacedBy> object must point to another object; that is, a <replacedBy> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef' or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        },
+        {
+          "id": 1021102,
+          "severity": "error",
+          "message": "A <replacedBy> object can only point to one other object; that is, a given <replacedBy> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        }
+      ]
     },
     "types/ReplacedBy/sbaseRef": {
       "kind": "attribute",
@@ -5272,7 +5881,22 @@
         "label": "comp 3.7.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020705,
+          "severity": "error",
+          "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020711,
+          "severity": "warning",
+          "message": "The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        }
+      ]
     },
     "types/ReplacedBy/submodelRef": {
       "kind": "attribute",
@@ -5290,7 +5914,22 @@
         "label": "comp 3.6.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.4"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 1010308,
+          "severity": "error",
+          "message": "The value of a 'comp:submodelRef' attribute on <replacedElement> and <replacedBy> objects must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021104,
+          "severity": "error",
+          "message": "The value of a 'comp:submodelRef' attribute on a <replacedBy> object must be the identifier of a <submodel> present in the <replacedBy> object's parent Model.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        }
+      ]
     },
     "types/ReplacedBy/unitRef": {
       "kind": "attribute",
@@ -5308,7 +5947,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020703,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an <sBaseRef> object must be the identifier of a <unitDefinition< object contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020708,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021101,
+          "severity": "error",
+          "message": "A <replacedBy> object must point to another object; that is, a <replacedBy> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef' or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        },
+        {
+          "id": 1021102,
+          "severity": "error",
+          "message": "A <replacedBy> object can only point to one other object; that is, a given <replacedBy> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.6.4"
+        }
+      ]
     },
     "types/ReplacedElement": {
       "kind": "type",
@@ -5322,6 +5988,62 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.2"
       },
+      "rules": [
+        {
+          "id": 1010501,
+          "severity": "warning",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, the units of the replaced element, multiplied by the units of any applicable conversion factor, should equal the units of the replacement element.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020714,
+          "severity": "error",
+          "message": "Any one SBML object may only be referenced in one of the following ways: referenced by a single <port> object; referenced by a single <deletion> object; referenced by a single <replacedElement>; be the parent of a single <replacedBy> child; be referenced by one or more <replacedBy> objects; or be referenced by one or more <replacedElement> objects all using the 'deletion' attribute. Essentially, once an object has been referenced in one of these ways it cannot be referenced again.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021003,
+          "severity": "error",
+          "message": "A <replacedElement> object must have a value for the required attribute 'comp:submodelRef', and a value for one, and only one, of the following attributes: 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef', or 'comp:deletion'. It may also have a value for the optional attribute 'comp:conversionFactor'. No other attributes from the HierarchicalModel Composition namespace are permitted on a <replacedElement> object.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021010,
+          "severity": "error",
+          "message": "No two <replacedElement> objects in the same Model may reference the same object unless that object is a <deletion>",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021201,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, the SBML class of the replacement element must match the SBML class of the replaced element, with two exceptions: an element of a derived class may replace an object of its base class (for base classes other than SBase), and any SBML class with mathematical meaning may replace a <parameter>. A base class may not replace a derived class, however, nor may a <parameter> replace some other SBML element with mathematical meaning.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1021202,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, if the replaced element has the 'id' attribute set, the replacement !element must also have the 'id' attribute set.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1021203,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, if the replaced element has the 'metaid' attribute set, the replacement element must also have the 'metaid' attribute set.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        },
+        {
+          "id": 1021204,
+          "severity": "error",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, if the replaced element has an identifier attribute from some other SBML package set, the replacement element must also have that same identifier attribute set.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
+        }
+      ],
       "attributes": [
         "types/ReplacedElement/submodelRef",
         "types/ReplacedElement/deletion",
@@ -5355,7 +6077,29 @@
         "label": "comp 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.2"
-      }
+      },
+      "required": false,
+      "default": "the value of the replaced element is taken over unchanged, apart from the conversion factors of the submodel",
+      "rules": [
+        {
+          "id": 1010310,
+          "severity": "error",
+          "message": "The value of a 'comp:conversionFactor' attribute on <replacedElement> objects must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021006,
+          "severity": "error",
+          "message": "The value of a 'comp:conversionFactor' attribute on a <replacedElement> object must be the identifier of a <parameter> present in the <replacedElement> object's parent Model",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021011,
+          "severity": "error",
+          "message": "If a <replacedElement> uses the 'comp:deletion' attribute, then it should not also use the 'comp:conversionFactor' attribute.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        }
+      ]
     },
     "types/ReplacedElement/deletion": {
       "kind": "attribute",
@@ -5373,7 +6117,40 @@
         "label": "comp 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1010309,
+          "severity": "error",
+          "message": "The value of a 'comp:deletion' attribute on <replacedElement> objects must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021001,
+          "severity": "error",
+          "message": "A <replacedElement> object must point to another object; that is, a <replacedElement> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021002,
+          "severity": "error",
+          "message": "A <replacedElement> object can only point to one other object; that is, a given <replacedElement> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021005,
+          "severity": "error",
+          "message": "The value of a 'comp:deletion' attribute on a <replacedElement> object must be the identifier of a <deletion> present in the <replacedElement> object's parent Model.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021011,
+          "severity": "error",
+          "message": "If a <replacedElement> uses the 'comp:deletion' attribute, then it should not also use the 'comp:conversionFactor' attribute.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        }
+      ]
     },
     "types/ReplacedElement/idRef": {
       "kind": "attribute",
@@ -5391,7 +6168,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020702,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an <sBaseRef> object must be the identifier of an object contained in (that is, within the SId namespace of) the <model> referenced by that <sBaseRef>. This includes objects with 'id' attributes defined in packages other than SBML Level 3 Core or the Hierarchical Model Composition package.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020707,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021001,
+          "severity": "error",
+          "message": "A <replacedElement> object must point to another object; that is, a <replacedElement> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021002,
+          "severity": "error",
+          "message": "A <replacedElement> object can only point to one other object; that is, a given <replacedElement> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        }
+      ]
     },
     "types/ReplacedElement/metaIdRef": {
       "kind": "attribute",
@@ -5402,13 +6206,41 @@
       "docs": "reference/replacedelement/#metaidref",
       "owner": "types/ReplacedElement",
       "type": {
-        "label": "IDREF"
+        "label": "IDREF",
+        "key": "datatypes/IDREF"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020704,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an <sBaseRef> object must be the value of a 'comp:metaid' attribute on an element contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020709,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an SBaseRef object must always conform to the syntax of the XML data type ID.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021001,
+          "severity": "error",
+          "message": "A <replacedElement> object must point to another object; that is, a <replacedElement> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021002,
+          "severity": "error",
+          "message": "A <replacedElement> object can only point to one other object; that is, a given <replacedElement> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        }
+      ]
     },
     "types/ReplacedElement/portRef": {
       "kind": "attribute",
@@ -5419,13 +6251,41 @@
       "docs": "reference/replacedelement/#portref",
       "owner": "types/ReplacedElement",
       "type": {
-        "label": "PortSIdRef"
+        "label": "PortSIdRef",
+        "key": "datatypes/PortSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020701,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an <sBaseRef> object must be the identifier of a <port> object in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020706,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021001,
+          "severity": "error",
+          "message": "A <replacedElement> object must point to another object; that is, a <replacedElement> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021002,
+          "severity": "error",
+          "message": "A <replacedElement> object can only point to one other object; that is, a given <replacedElement> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        }
+      ]
     },
     "types/ReplacedElement/sbaseRef": {
       "kind": "attribute",
@@ -5443,7 +6303,22 @@
         "label": "comp 3.7.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020705,
+          "severity": "error",
+          "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020711,
+          "severity": "warning",
+          "message": "The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        }
+      ]
     },
     "types/ReplacedElement/submodelRef": {
       "kind": "attribute",
@@ -5461,7 +6336,22 @@
         "label": "comp 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 1010308,
+          "severity": "error",
+          "message": "The value of a 'comp:submodelRef' attribute on <replacedElement> and <replacedBy> objects must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021004,
+          "severity": "error",
+          "message": "The value of a 'comp:submodelRef' attribute on a <replacedElement> object must be the identifier of a <submodel> present in the <replacedElement> object's parent Model.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        }
+      ]
     },
     "types/ReplacedElement/unitRef": {
       "kind": "attribute",
@@ -5479,7 +6369,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020703,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an <sBaseRef> object must be the identifier of a <unitDefinition< object contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020708,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1021001,
+          "severity": "error",
+          "message": "A <replacedElement> object must point to another object; that is, a <replacedElement> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1021002,
+          "severity": "error",
+          "message": "A <replacedElement> object can only point to one other object; that is, a given <replacedElement> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', 'comp:metaIdRef' or 'comp:deletion'.",
+          "section": "L3V1 Comp V1 Section 3.6.2"
+        }
+      ]
     },
     "types/SBMLDocument": {
       "kind": "type",
@@ -5706,13 +6623,15 @@
       "docs": "reference/sbase/#replacements",
       "owner": "types/SBase",
       "type": {
-        "label": "CompSBase"
+        "label": "CompSBase",
+        "key": "datatypes/CompSBase"
       },
       "spec": {
         "label": "comp 3.6",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6"
-      }
+      },
+      "required": false
     },
     "types/SBase/comp.replacedBy": {
       "kind": "attribute",
@@ -5730,7 +6649,16 @@
         "label": "comp 3.6.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.4"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020105,
+          "severity": "error",
+          "message": "Any object derived from the extended SBase class (defined in the Hierarchical Model Composition package) may contain at most one instance of a <replacedBy> subobject.",
+          "section": "L3V1 Comp V1 Section 3.6"
+        }
+      ]
     },
     "types/SBase/comp.replacedElements": {
       "kind": "attribute",
@@ -5748,7 +6676,28 @@
         "label": "comp 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.6.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020101,
+          "severity": "error",
+          "message": "Any object derived from the extended SBase class (defined in the Hierarchical Model Composition package) may contain at most one instance of a <listOfReplacedElements> subobject.",
+          "section": "L3V1 Comp V1 Section 3.6"
+        },
+        {
+          "id": 1020102,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfReplacedElements> container object may only contain <replacedElement> objects.",
+          "section": "L3V1 Comp V1 Section 3.6"
+        },
+        {
+          "id": 1020104,
+          "severity": "error",
+          "message": "The <listOfReplacedElements> in an SBase object is optional, but if present, must not be empty.",
+          "section": "L3V1 Comp V1 Section 3.6"
+        }
+      ]
     },
     "types/SBase/cvterms": {
       "kind": "attribute",
@@ -6046,6 +6995,14 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7"
       },
+      "rules": [
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        }
+      ],
       "attributes": [
         "types/SBaseRef/portRef",
         "types/SBaseRef/idRef",
@@ -6077,7 +7034,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020702,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an <sBaseRef> object must be the identifier of an object contained in (that is, within the SId namespace of) the <model> referenced by that <sBaseRef>. This includes objects with 'id' attributes defined in packages other than SBML Level 3 Core or the Hierarchical Model Composition package.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020707,
+          "severity": "error",
+          "message": "The value of a 'comp:idRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020712,
+          "severity": "error",
+          "message": "An <sBaseRef> object must point to another object; that is, a <sBaseRef> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020713,
+          "severity": "error",
+          "message": "An <sBaseRef> object can only point to one other object; that is, a given <sBaseRef> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        }
+      ]
     },
     "types/SBaseRef/metaIdRef": {
       "kind": "attribute",
@@ -6088,13 +7072,41 @@
       "docs": "reference/sbaseref/#metaidref",
       "owner": "types/SBaseRef",
       "type": {
-        "label": "IDREF"
+        "label": "IDREF",
+        "key": "datatypes/IDREF"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020704,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an <sBaseRef> object must be the value of a 'comp:metaid' attribute on an element contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020709,
+          "severity": "error",
+          "message": "The value of a 'comp:metaIdRef' attribute on an SBaseRef object must always conform to the syntax of the XML data type ID.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020712,
+          "severity": "error",
+          "message": "An <sBaseRef> object must point to another object; that is, a <sBaseRef> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020713,
+          "severity": "error",
+          "message": "An <sBaseRef> object can only point to one other object; that is, a given <sBaseRef> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        }
+      ]
     },
     "types/SBaseRef/portRef": {
       "kind": "attribute",
@@ -6105,13 +7117,41 @@
       "docs": "reference/sbaseref/#portref",
       "owner": "types/SBaseRef",
       "type": {
-        "label": "PortSIdRef"
+        "label": "PortSIdRef",
+        "key": "datatypes/PortSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020701,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an <sBaseRef> object must be the identifier of a <port> object in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020706,
+          "severity": "error",
+          "message": "The value of a 'comp:portRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020712,
+          "severity": "error",
+          "message": "An <sBaseRef> object must point to another object; that is, a <sBaseRef> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020713,
+          "severity": "error",
+          "message": "An <sBaseRef> object can only point to one other object; that is, a given <sBaseRef> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        }
+      ]
     },
     "types/SBaseRef/sbaseRef": {
       "kind": "attribute",
@@ -6129,7 +7169,22 @@
         "label": "comp 3.7.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020705,
+          "severity": "error",
+          "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020711,
+          "severity": "warning",
+          "message": "The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        }
+      ]
     },
     "types/SBaseRef/unitRef": {
       "kind": "attribute",
@@ -6147,7 +7202,34 @@
         "label": "comp 3.7.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.7.1"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1020703,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an <sBaseRef> object must be the identifier of a <unitDefinition< object contained in the <model> referenced by that <sBaseRef>.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020708,
+          "severity": "error",
+          "message": "The value of a 'comp:unitRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020712,
+          "severity": "error",
+          "message": "An <sBaseRef> object must point to another object; that is, a <sBaseRef> object must always have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020713,
+          "severity": "error",
+          "message": "An <sBaseRef> object can only point to one other object; that is, a given <sBaseRef> object can only have a value for one of the attributes 'comp:portRef', 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'.",
+          "section": "L3V1 Comp V1 Section 3.7.1"
+        }
+      ]
     },
     "types/Species": {
       "kind": "type",
@@ -6689,6 +7771,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.5"
       },
+      "rules": [
+        {
+          "id": 1010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> or <modelDefinition> object, the values of the attributes id and comp:id on every instance of the following classes of objects must be unique across the set of all id and comp:id attribute values of all such objects in a model: the model itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <submodel> and <deletion> objects defined by the Hierarchical Model Composition package, plus any objects defined by any other package with 'package:id' attributes defined as falling in the 'SId' namespace.",
+          "section": "L3V1 Comp V1 Section 3.9"
+        },
+        {
+          "id": 1020601,
+          "severity": "error",
+          "message": "A <submodel> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a <submodel> object.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 1020602,
+          "severity": "error",
+          "message": "A <submodel> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on a <submodel> object.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 1020607,
+          "severity": "error",
+          "message": "A <submodel> object must have the attributes 'comp:id' and 'comp:modelRef' because they are required, and may also have the optional attributes 'comp:name', 'comp:timeConversionFactor, and/or 'comp:extentConversionFactor'. No other attributes from the Hierarchical Model Composition namespace are permitted on a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.5"
+        }
+      ],
       "attributes": [
         "types/Submodel/modelRef",
         "types/Submodel/timeConversionFactor",
@@ -6718,7 +7826,23 @@
         "label": "comp 3.5.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.5.1"
-      }
+      },
+      "required": false,
+      "default": "one unit of reaction extent in the submodel is one unit of extent in this model",
+      "rules": [
+        {
+          "id": 1020614,
+          "severity": "error",
+          "message": "The value of a 'comp:extentConversionFactor' attribute on a <submodel> object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        },
+        {
+          "id": 1020623,
+          "severity": "error",
+          "message": "The value of a 'comp:extentConversionFactor' attribute on a given <submodel> object must be the identifier of a <parameter> object defined in the same Model containing the <submodel>.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        }
+      ]
     },
     "types/Submodel/listOfDeletions": {
       "kind": "attribute",
@@ -6736,7 +7860,29 @@
         "label": "comp 3.5.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.5.3"
-      }
+      },
+      "required": false,
+      "default": "the referenced model is instantiated whole",
+      "rules": [
+        {
+          "id": 1020603,
+          "severity": "error",
+          "message": "There may be at most one <listOfDeletions> container object within a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.5"
+        },
+        {
+          "id": 1020604,
+          "severity": "error",
+          "message": "A <listOfDeletions> container object within a <submodel> object is optional, but if present, must not be empty.",
+          "section": "L3V1 Comp V1 Section 3.5"
+        },
+        {
+          "id": 1020605,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfDeletions> container object may only contain <deletion> objects.",
+          "section": "L3V1 Comp V1 Section 3.5"
+        }
+      ]
     },
     "types/Submodel/modelRef": {
       "kind": "attribute",
@@ -6754,7 +7900,34 @@
         "label": "comp 3.5.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.5.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 1020608,
+          "severity": "error",
+          "message": "The value of a 'comp:modelRef' attribute on a <submodel> object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        },
+        {
+          "id": 1020615,
+          "severity": "error",
+          "message": "The value of a 'comp:modelRef' attribute on a <submodel> must be the identifier of a <model>, <modelDefinition>, or <externalModelDefinition> object in the same SBML object as the <submodel>.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        },
+        {
+          "id": 1020616,
+          "severity": "error",
+          "message": "A <model> or <modelDefinition> object must not contain a <submodel> which references that model object itself. That is, the value of a 'comp:modelRef' attribute on a <submodel> must not be the value of the parent <model> or <modelDefinition>'s 'id' attribute.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        },
+        {
+          "id": 1020617,
+          "severity": "error",
+          "message": "A <model> object must not contain a <submodel> which references that <model> indirectly. That is, the 'comp:modelRef' attribute of a <submodel> may not point to the 'id' of a <model> containing a <submodel> object that references the original <model> directly or indirectly through a chain of <model>/<submodel> pairs.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        }
+      ]
     },
     "types/Submodel/timeConversionFactor": {
       "kind": "attribute",
@@ -6772,7 +7945,23 @@
         "label": "comp 3.5.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
         "section": "3.5.1"
-      }
+      },
+      "required": false,
+      "default": "one unit of time in the submodel is one unit of time in this model",
+      "rules": [
+        {
+          "id": 1020613,
+          "severity": "error",
+          "message": "The value of a 'comp:timeConversionFactor' attribute on a <submodel> object must always conform to the syntax of the SBML data type SId.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        },
+        {
+          "id": 1020622,
+          "severity": "error",
+          "message": "The value of a 'comp:timeConversionFactor' attribute on a given <submodel> object must be the identifier of a <parameter> object defined in the same Model containing the <submodel>.",
+          "section": "L3V1 Comp V1 Section 3.5.1"
+        }
+      ]
     },
     "types/Transition": {
       "kind": "type",
@@ -7035,7 +8224,8 @@
       "docs": "reference/uncertparameter/#definitionurl",
       "owner": "types/UncertParameter",
       "type": {
-        "label": "anyURI"
+        "label": "anyURI",
+        "key": "datatypes/anyURI"
       },
       "spec": {
         "label": "distrib 3.11.4",
@@ -7191,7 +8381,8 @@
       "docs": "reference/uncertspan/#definitionurl",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "anyURI"
+        "label": "anyURI",
+        "key": "datatypes/anyURI"
       },
       "spec": {
         "label": "distrib 3.11.4",
@@ -7724,6 +8915,68 @@
         "label": "comp",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/"
       },
+      "rules": [
+        {
+          "id": 1010101,
+          "severity": "error",
+          "message": "To conform to Version 1 of the Hierarchical Model Composition package specification for SBML Level 3, an SBML document must declare the use of the following XML Namespace: 'http://www.sbml.org/sbml/level3/version1/comp/version1'",
+          "section": "L3V1 Comp V1 Section 3.1"
+        },
+        {
+          "id": 1010102,
+          "severity": "error",
+          "message": "Wherever they appear in an SBML document, elements and attributes from the Hierarchical Model Composition package must be declared either implicitly or explicitly to be in the XML namespace 'http://www.sbml.org/sbml/level3/version1/comp/version1'",
+          "section": "L3V1 Comp V1 Section 3.1"
+        },
+        {
+          "id": 1020201,
+          "severity": "error",
+          "message": "In all SBML documents using the HierarchicalModel Composition package, the SBML object must include a value for the attribute 'comp:required' attribute.",
+          "section": "L3V1 Core Section 4.1.2"
+        },
+        {
+          "id": 1020202,
+          "severity": "error",
+          "message": "The value of attribute 'comp:required' on the SBML object must be of the data type Boolean.",
+          "section": "L3V1 Core Section 4.1.2"
+        },
+        {
+          "id": 1020205,
+          "severity": "error",
+          "message": "There may be at most one instance of the <listOfModelDefinitions> within an SBML object that uses the SBML Level 3 Hierarchical Model Composition package.",
+          "section": "L3V1 Comp V1 Section 3.3"
+        },
+        {
+          "id": 1020206,
+          "severity": "error",
+          "message": "The various 'ListOf' subobjects within an SBML object are optional, but if present, these container objects must not be empty. Specifically, if any of the following classes of objects is present within the SBML object, it must not be empty: <listOfModelDefinitions> and <listOfExternalModelDefinitions>.",
+          "section": "L3V1 Comp V1 Section 3.3"
+        },
+        {
+          "id": 1020207,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfModelDefinitions> container may only contain <modelDefinition> objects.",
+          "section": "L3V1 Comp V1 Section 3.3"
+        },
+        {
+          "id": 1020208,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfExternalModelDefinitions> container may only contain <externalModelDefinition> objects.",
+          "section": "L3V1 Comp V1 Section 3.3"
+        },
+        {
+          "id": 1020211,
+          "severity": "error",
+          "message": "There may be at most one instance of the <listOfExternalModelDefinitions> within an SBML object that uses the SBML Level 3 Hierarchical Model Composition package.",
+          "section": "L3V1 Comp V1 Section 3.3"
+        },
+        {
+          "id": 1020212,
+          "severity": "error",
+          "message": "The value of attribute 'comp:required' on the SBML object must be set to 'true'.",
+          "section": "L3V1 Comp V1 Section 3.1"
+        }
+      ],
       "related": [
         "types/ExternalModelDefinition",
         "types/Submodel",

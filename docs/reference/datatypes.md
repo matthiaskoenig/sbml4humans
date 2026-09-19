@@ -145,3 +145,41 @@ A field which holds as many values as the element has.
 A field of this kind holds every value of an attribute which is not a single one, in the order the file writes them: the species of a model, the reactants of a reaction, the units of a unit definition, the annotations of any element. What the entries are is what the entry of the field says.
 
 Where they are shown depends on the field: the elements of a list of the model are the rows of the table of their type, the elements a list of an element holds are a table in the inspector of that element, and a list without entries is the dash of an empty value. The `listOf` element of the file is not part of what such a field holds: where it states something of its own, a meta id, an SBO term, notes, an annotation, an id or a name, the report keeps it as a [ListOf](listof.md) element of its own, which the element owning the list points at.
+
+## `anyURI` {#anyuri}
+
+A character string which is read as a URI.
+
+The XML Schema type `anyURI` holds a Uniform Resource Identifier as RFC 3986 defines it. That is an address of any of the three shapes such an identifier takes: a URL, `http://example.org/firefly.xml`, a URN, `urn:miriam:biomodels.db:BIOMD0000000002`, or a location relative to the document which writes it, `firefly.xml`. Only the syntax is asked of the value. Whether anything answers at that address, and whether what answers is what was meant, is nothing the file can settle.
+
+Two attributes the report reads carry the type. The [source](externalmodeldefinition.md#source) of an external model definition is the document which holds the model, and the [definitionURL](uncertparameter.md#definitionurl) of an uncertainty parameter names the mathematical term its value stands for. The report never fetches an address: a relative source is looked for among the entries of the COMBINE archive or among the files next to the document, and every other value is shown as the text the file writes.
+
+[SBML Level 3 Package: Hierarchical Model Composition, Version 1 Release 3](https://sbml.org/documents/specifications/level-3/version-1/comp/), Section 3.2.2.
+
+## `IDREF` {#idref}
+
+A reference to an element of the document by its meta id.
+
+`IDREF` is the companion the XML Schema 1.0 specification gives to the type [ID](#id): its value has the syntax of an `ID` and has to be the `ID` of an element of the document it is read in. A meta id is unique in the whole file and not, like an identifier, in one model, so a value of this type names one element of the file without saying which model it sits in. That is why the comp package has to state per reference which model instantiation is meant: the same element may be instantiated in many submodels.
+
+The [metaIdRef](sbaseref.md#metaidref) of a port, a deletion or a replacement is the attribute of this type, and it is how an element which carries no identifier of its own is named, a rule or a reaction written without one. The report searches the element with that meta id in the model the reference reaches into and links it.
+
+[SBML Level 3 Package: Hierarchical Model Composition, Version 1 Release 3](https://sbml.org/documents/specifications/level-3/version-1/comp/), Section 3.2.1.
+
+## `PortSIdRef` {#portsidref}
+
+A reference to a port of a model by its identifier.
+
+The identifier of a [port](port.md) is of the type `PortSId`, which the comp package derives from [SId](#sid): the syntax is that of an identifier, and the values live in a space of their own which spans the ports of one model. A port may therefore carry the identifier a species of the same model carries, without the two colliding and without one naming the other. An attribute of type `PortSIdRef` holds such a value, and it has to be the identifier of a port of the model the reference reaches into, not of the model which writes the reference.
+
+The four references of the comp package, on a [port](port.md), a [deletion](deletion.md), a [replaced element](replacedelement.md), a [replaced by](replacedby.md) and on every link of a nested [reference](sbaseref.md), name an element in exactly one of four ways, and a port reference is the one of the four which goes through the interface the other model offers instead of reaching past it. The report resolves it against the ports of the model the reference reaches into and links the port; where that model is not part of the report, it stays the text the file writes.
+
+[SBML Level 3 Package: Hierarchical Model Composition, Version 1 Release 3](https://sbml.org/documents/specifications/level-3/version-1/comp/), Section 3.2.4.
+
+## `CompSBase` {#compsbase}
+
+What the comp package adds to an element, the replacements it takes part in.
+
+The report keeps the two subcomponents the comp package adds to every element in one block: the [replaced elements](replacedelement.md), the elements of submodels which this element takes the place of, and the [replaced by](replacedby.md), the element of a submodel which takes the place of this one. An element may carry both, and an element which takes part in no replacement carries neither.
+
+The inspector shows the block as the row [replacements](sbase.md#replacements) of the element, with a link to the submodel and to the named element for each of the replacements.

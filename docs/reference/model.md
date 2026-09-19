@@ -27,8 +27,8 @@ The report shows the model as the root of the report, its lists as the sections 
 | [listOfConstraints](#listofconstraints) | [`list`](datatypes.md#list) | optional | the constraints of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [listOfReactions](#listofreactions) | [`list`](datatypes.md#list) | optional | the reactions of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [listOfEvents](#listofevents) | [`list`](datatypes.md#list) | optional | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [comp:listOfSubmodels](#comp-listofsubmodels) | [`list`](datatypes.md#list) | - | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:listOfPorts](#comp-listofports) | [`list`](datatypes.md#list) | - | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:listOfSubmodels](#comp-listofsubmodels) | [`list`](datatypes.md#list) | optional | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:listOfPorts](#comp-listofports) | [`list`](datatypes.md#list) | optional | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [fbc:listOfGeneProducts](#fbc-listofgeneproducts) | [`list`](datatypes.md#list) | - | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [fbc](#fbc) | `ModelFbc` | - | what the model says about the constraint based problem it describes | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [fbc:strict](#fbc-strict) | [`boolean`](datatypes.md#boolean) | - | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
@@ -201,11 +201,21 @@ Every [submodel](submodel.md) instantiates a model definition of the document or
 
 The report shows the submodels of a model as a section of the report.
 
+- `1020501` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; or &lt;modelDefinition&gt; object using Hierarchical Model Composition: &lt;listOfSubmodels&gt; and &lt;listOfPorts&gt;.
+- `1020502` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfSubmodels&gt; and &lt;listOfPorts&gt;.
+- `1020503` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfSubmodels&gt; container object may only contain &lt;submodel&gt; objects.
+
 <span id="comp-listofports"></span>**comp:listOfPorts**
 
 A [port](port.md) declares one element of the model as an intended point of interaction, the way a socket declares the interface of a device. Ports are advisory: nothing prevents a containing model from reaching into the model directly, but a modeller is asked to respect the interface.
 
 The report shows the ports of a model as a section of the report.
+
+Default: nothing of the model is declared as an interface, and a model which includes it names its elements directly.
+
+- `1020501` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; or &lt;modelDefinition&gt; object using Hierarchical Model Composition: &lt;listOfSubmodels&gt; and &lt;listOfPorts&gt;.
+- `1020502` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfSubmodels&gt; and &lt;listOfPorts&gt;.
+- `1020504` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfPorts&gt; container object may only contain &lt;port&gt; objects.
 
 <span id="fbc-listofgeneproducts"></span>**fbc:listOfGeneProducts**
 

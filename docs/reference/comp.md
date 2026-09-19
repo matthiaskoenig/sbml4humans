@@ -8,6 +8,19 @@ The comp package adds composition. A [submodel](submodel.md) instantiates anothe
 
 The report shows the model definitions of a document next to its main model, the submodels and the ports of a model as sections of their own, and the replacements of an element in its inspector.
 
+## Validation rules
+
+- `1010101` (error): To conform to Version 1 of the Hierarchical Model Composition package specification for SBML Level 3, an SBML document must declare the use of the following XML Namespace: 'http://www.sbml.org/sbml/level3/version1/comp/version1'
+- `1010102` (error): Wherever they appear in an SBML document, elements and attributes from the Hierarchical Model Composition package must be declared either implicitly or explicitly to be in the XML namespace 'http://www.sbml.org/sbml/level3/version1/comp/version1'
+- `1020201` (error): In all SBML documents using the HierarchicalModel Composition package, the SBML object must include a value for the attribute 'comp:required' attribute.
+- `1020202` (error): The value of attribute 'comp:required' on the SBML object must be of the data type Boolean.
+- `1020205` (error): There may be at most one instance of the &lt;listOfModelDefinitions&gt; within an SBML object that uses the SBML Level 3 Hierarchical Model Composition package.
+- `1020206` (error): The various 'ListOf' subobjects within an SBML object are optional, but if present, these container objects must not be empty. Specifically, if any of the following classes of objects is present within the SBML object, it must not be empty: &lt;listOfModelDefinitions&gt; and &lt;listOfExternalModelDefinitions&gt;.
+- `1020207` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfModelDefinitions&gt; container may only contain &lt;modelDefinition&gt; objects.
+- `1020208` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfExternalModelDefinitions&gt; container may only contain &lt;externalModelDefinition&gt; objects.
+- `1020211` (error): There may be at most one instance of the &lt;listOfExternalModelDefinitions&gt; within an SBML object that uses the SBML Level 3 Hierarchical Model Composition package.
+- `1020212` (error): The value of attribute 'comp:required' on the SBML object must be set to 'true'.
+
 ## Related elements
 
 - [ExternalModelDefinition](externalmodeldefinition.md): a model of another SBML file which this document can instantiate
