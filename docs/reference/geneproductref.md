@@ -10,7 +10,7 @@ The report makes it an element of its own because the reference is where the fil
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [geneProduct](#geneproduct) | `SIdRef` | the gene product this leaf of the association names | [fbc v3 3.11](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [geneProduct](#geneproduct) | `SIdRef` | the gene product this leaf of the association names | [fbc v3 3.11](https://doi.org/10.1515/jib-2026-0006) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -27,4 +27,4 @@ The attribute is required and names a [gene product](geneproduct.md) of the same
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.11 (Olivier and Bergmann, COMBINE specification).
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://doi.org/10.1515/jib-2026-0006), Section 3.11 (Olivier and Bergmann, COMBINE specification).
