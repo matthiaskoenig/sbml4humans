@@ -223,13 +223,15 @@ test("the header of the inspector keeps a long type on one line at a laptop widt
       };
     });
   };
-  for (const width of [1280, 1440]) {
+  for (const width of [1280, 1440, 1600]) {
     const boxes = await layout(width);
     expect(boxes.header).toBe(40);
     expect(boxes.type.height).toBeLessThanOrEqual(20);
     expect(boxes.id.clipped).toBe(false);
     expect(boxes.overflows).toBe(false);
-    // from 1440 px on the type is whole
+    // from 1440 px on the type is whole. The application ships no font of its own, so this holds
+    // for the sans font of the system: DejaVu Sans, the default of many Linux systems and of the
+    // GitHub runner, is the widest of the common ones and needs the tighter gaps of the header
     if (width >= 1440) expect(boxes.type.clipped).toBe(false);
   }
 });

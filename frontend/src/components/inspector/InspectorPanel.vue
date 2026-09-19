@@ -62,7 +62,7 @@ const xmlEmptyMessage = computed(() =>
     whose mark stays and names it on hover; the id of the element keeps its width up to half of
     the header -->
     <header
-      class="flex h-10 shrink-0 items-center gap-2 border-b border-gray-200 px-3 text-sm"
+      class="flex h-10 shrink-0 items-center gap-1.5 border-b border-gray-200 px-3 text-sm"
       data-testid="inspector-header"
     >
       <TypeMark v-if="element.sbmlType" :type="element.sbmlType" size="md" />
