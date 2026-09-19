@@ -66,7 +66,7 @@ summary = "a character string which is read as a URI"
 description = """
 The XML Schema type `anyURI` holds a Uniform Resource Identifier as RFC 3986 defines it. That is an address of any of the three shapes such an identifier takes: a URL, `http://example.org/firefly.xml`, a URN, `urn:miriam:biomodels.db:BIOMD0000000002`, or a location relative to the document which writes it, `firefly.xml`. Only the syntax is asked of the value. Whether anything answers at that address, and whether what answers is what was meant, is nothing the file can settle.
 
-Two attributes the report reads carry the type. The [source](externalmodeldefinition.md#source) of an external model definition is the document which holds the model, and the [definitionURL](uncertparameter.md#definitionurl) of an uncertainty parameter names the mathematical term its value stands for. The report never fetches an address: a relative source is looked for among the entries of the COMBINE archive or among the files next to the document, and every other value is shown as the text the file writes.
+The [source](externalmodeldefinition.md#source) of an external model definition is of this type, the document which holds the model. The distrib package asks the same of the [definitionURL](uncertparameter.md#definitionurl) of an uncertainty parameter and of an [uncert span](uncertspan.md#definitionurl), which names the term an external measure stands for, under the name `ExternalRef`: a string which has to be a valid URI. The report never fetches an address: a relative source is looked for among the entries of the COMBINE archive or among the files next to the document, and every other value is shown as the text the file writes.
 """
 related = ["string"]
 
@@ -76,7 +76,7 @@ package = "comp"
 spec = { doc = "comp", section = "3.2.1" }
 summary = "a reference to an element of the document by its meta id"
 description = """
-`IDREF` is the companion the XML Schema 1.0 specification gives to the type [ID](#id): its value has the syntax of an `ID` and has to be the `ID` of an element of the document it is read in. A meta id is unique in the whole file and not, like an identifier, in one model, so a value of this type names one element of the file without saying which model it sits in. That is why the comp package has to state per reference which model instantiation is meant: the same element may be instantiated in many submodels.
+`IDREF` is the companion the XML Schema 1.0 specification gives to the type [ID](#id): its value has the syntax of an `ID` and has to be the `ID` of an element defined elsewhere in a referenced document. Which document that is follows from the reference: it is the document the referenced model resides in, this file for a model definition of it and another file for an external model definition, and the value has to name an element inside that model. A meta id is unique in the whole file and not, like an identifier, in one model, so a value of this type names one element of a document without saying which instantiation of it is meant, which is what the comp package states per reference: the same element may be instantiated in many submodels.
 
 The [metaIdRef](sbaseref.md#metaidref) of a port, a deletion or a replacement is the attribute of this type, and it is how an element which carries no identifier of its own is named, a rule or a reaction written without one. The report searches the element with that meta id in the model the reference reaches into and links it.
 """
@@ -90,7 +90,7 @@ summary = "a reference to a port of a model by its identifier"
 description = """
 The identifier of a [port](port.md) is of the type `PortSId`, which the comp package derives from [SId](#sid): the syntax is that of an identifier, and the values live in a space of their own which spans the ports of one model. A port may therefore carry the identifier a species of the same model carries, without the two colliding and without one naming the other. An attribute of type `PortSIdRef` holds such a value, and it has to be the identifier of a port of the model the reference reaches into, not of the model which writes the reference.
 
-The four references of the comp package, on a [port](port.md), a [deletion](deletion.md), a [replaced element](replacedelement.md), a [replaced by](replacedby.md) and on every link of a nested [reference](sbaseref.md), name an element in exactly one of four ways, and a port reference is the one of the four which goes through the interface the other model offers instead of reaching past it. The report resolves it against the ports of the model the reference reaches into and links the port; where that model is not part of the report, it stays the text the file writes.
+A [deletion](deletion.md), a [replaced element](replacedelement.md), a [replaced by](replacedby.md) and every link of a nested [reference](sbaseref.md) name their element in exactly one of four ways, by port, by identifier, by unit identifier or by meta id, and a replaced element by a deletion as well; the port reference is the way which goes through the interface the other model offers instead of reaching past it. A [port](port.md) itself has only the other three, because no port may name a port of its own model; it reaches a port of one of its parts through a nested reference. The report resolves a port reference against the ports of the model the reference reaches into and links the port; where that model is not part of the report, it stays the text the file writes.
 """
 related = ["SIdRef", "SId"]
 
@@ -101,7 +101,7 @@ summary = "what the comp package adds to an element, the replacements it takes p
 description = """
 The report keeps the two subcomponents the comp package adds to every element in one block: the [replaced elements](replacedelement.md), the elements of submodels which this element takes the place of, and the [replaced by](replacedby.md), the element of a submodel which takes the place of this one. An element may carry both, and an element which takes part in no replacement carries neither.
 
-The inspector shows the block as the row [replacements](sbase.md#replacements) of the element, with a link to the submodel and to the named element for each of the replacements.
+The inspector shows the block as two rows of the element: [comp:replacedBy](sbase.md#comp-replacedby), the submodel and the element inside it which takes the place of this one, and [comp:listOfReplacedElements](sbase.md#comp-listofreplacedelements), a table with one row per replacement, each naming its submodel and the element it replaces. Every one of these names is a link to the element it stands for.
 """
 
 
@@ -191,7 +191,7 @@ required = false
 rules = [1020105]
 summary = "the element of a submodel which takes the place of this element"
 description = """
-An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the same four ways a [port](port.md) names an element.
+An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the four ways a [reference](sbaseref.md) of the package names an element.
 
 The report links the submodel and shows the named element next to it.
 """
@@ -260,7 +260,7 @@ package = "comp"
 type = "list"
 spec = { doc = "comp", section = "3.4.2" }
 required = false
-default = "nothing of the model is declared as an interface, and a model which includes it names its elements directly"
+default = "nothing of the model is declared as an interface"
 rules = [1020501, 1020502, 1020504]
 summary = "the elements of the model which are meant to be used from outside"
 description = """
@@ -576,13 +576,13 @@ The report links the parameter in the column "extent conversion factor" and in t
 label = "listOfDeletions"
 package = "comp"
 type = "list"
-spec = { doc = "comp", section = "3.5.3" }
+spec = { doc = "comp", section = "3.5.2" }
 required = false
 default = "the referenced model is instantiated whole"
 rules = [1020603, 1020604, 1020605]
 summary = "the elements which are removed from the model before it is instantiated"
 description = """
-A deletion names one element of the referenced model which is not wanted in this context. The removal is conceptual: the submodel is everything of the referenced model minus the deleted elements, and minus what depends on them. Every deletion names its element the same four ways a [port](port.md) does, by port, identifier, unit identifier or meta id.
+A deletion names one element of the referenced model which is not wanted in this context. The removal is conceptual: the submodel is everything of the referenced model minus the deleted elements, and minus what depends on them. Every deletion names its element the same four ways a [reference](sbaseref.md) of the package does, by port, identifier, unit identifier or meta id.
 
 The report shows the number of deletions in the column "deletions" and the four references of every deletion in the inspector.
 """
@@ -596,7 +596,7 @@ summary = "an element of the model which other models are meant to connect to"
 description = """
 A port gives a name to one element of the model and declares it as an intended point of interaction, so that a model which includes this one connects to the port instead of reaching into the model. Port identifiers live in a namespace of their own, which is why a port may carry the same identifier as an element of the model.
 
-Exactly one of the four references of a port is set, and each of them names the element in a different way. The use of ports is advisory in this version of the package, nothing enforces it.
+Exactly one of the three references of a port is set, by identifier, by unit identifier or by meta id, and each of them names the element in a different way. A port may not name a port of its own model, which is why the fourth way every other reference of the package offers is not open to it. The use of ports is advisory in this version of the package, nothing enforces it.
 
 The report shows which element a port names, links it, and lists the ports of a model in a section of their own.
 """
@@ -608,7 +608,7 @@ package = "comp"
 type = "PortSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
 required = false
-rules = [1020701, 1020706]
+rules = [1020701, 1020706, 1020803]
 summary = "the port which this reference names"
 description = """
 A port reference names a port instead of an element. A port may not name another port of its own model, so a model which passes on the interface of one of its parts names the submodel and reaches into it with the nested reference of the package, whose port reference then names the port inside that submodel. Port identifiers are a namespace of their own, and the reference is resolved among the ports of the model it reaches into.
@@ -664,7 +664,7 @@ package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
 required = false
-rules = [1020705, 1020711]
+rules = [1020705, 1020710, 1020711]
 summary = "the reference which reaches from the named submodel into the model it instantiates"
 description = """
 A port which names a submodel of its model can reach through it with a [nested reference](sbaseref.md), so that the port stands for an element buried inside that submodel. The chain may be of any length, one link per submodel it passes.
@@ -811,7 +811,7 @@ package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
 required = false
-rules = [1020705, 1020711]
+rules = [1020705, 1020710, 1020711]
 summary = "the next link of the chain, one submodel deeper"
 description = """
 A reference which names a [submodel](submodel.md) carries the reference which names the element inside it. There is no limit to the depth of the chain.
@@ -888,7 +888,7 @@ package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
 required = false
-rules = [1020705, 1020711]
+rules = [1020705, 1020710, 1020711]
 summary = "the reference which reaches into a submodel of the submodel"
 description = """
 A deletion which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be removed.
@@ -940,7 +940,7 @@ type = "SIdRef"
 spec = { doc = "comp", section = "3.6.2" }
 required = false
 default = "the value of the replaced element is taken over unchanged, apart from the conversion factors of the submodel"
-rules = [1010310, 1021006, 1021011]
+rules = [1010310, 1010501, 1021006, 1021011]
 summary = "the parameter which rescales the replaced value to the scale of this element"
 description = """
 The reference names a [parameter](parameter.md) of the model which carries the replacement. One unit of the replaced element multiplied by the factor is one unit of the replacing element, which is how a submodel written in millimole is used by a model written in mole. The factor applies to every reference to the replaced element, and the factors of nested replacements multiply.
@@ -1002,7 +1002,7 @@ package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
 required = false
-rules = [1020705, 1020711]
+rules = [1020705, 1020710, 1020711]
 summary = "the reference which reaches into a submodel of the named submodel"
 description = """
 A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be replaced.
@@ -1017,7 +1017,7 @@ summary = "the element of a submodel which takes the place of the element carryi
 description = """
 A replaced by turns a replacement around: the element which carries it disappears and the element of the [submodel](submodel.md) it names stays, so that every reference to the element of the containing model points into the submodel afterwards. It is how a model declares a placeholder which one of its parts fills in.
 
-An element carries at most one replaced by, and it names the element which replaces it the same four ways a [replaced element](replacedelement.md) does, with a [nested reference](sbaseref.md) for an element which sits deeper.
+An element carries at most one replaced by, and it names the element which replaces it the same four ways a [deletion](deletion.md) does, by port, identifier, unit identifier or meta id, with a [nested reference](sbaseref.md) for an element which sits deeper.
 
 The report shows the replacement in the inspector of the element, links the submodel and the element inside it, and shows the replacement as an element of its own.
 """
@@ -1089,7 +1089,7 @@ package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
 required = false
-rules = [1020705, 1020711]
+rules = [1020705, 1020710, 1020711]
 summary = "the reference which reaches into a submodel of the named submodel"
 description = """
 A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel takes the place of this element.

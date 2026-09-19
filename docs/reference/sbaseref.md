@@ -61,6 +61,7 @@ Every element of a file may carry a meta id, and this is the way to name an elem
 A reference which names a [submodel](submodel.md) carries the reference which names the element inside it. There is no limit to the depth of the chain.
 
 - `1020705` (error): If an &lt;sBaseRef&gt; object contains an &lt;sBaseRef&gt; child, the parent &lt;sBaseRef&gt; must point to a &lt;submodel&gt; object, or a &lt;port&gt; that itself points to a &lt;submodel&gt; object.
+- `1020710` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single &lt;sBaseRef&gt; child.
 - `1020711` (warning): The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.
 
 ## Validation rules

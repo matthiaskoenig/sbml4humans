@@ -95,7 +95,7 @@ The report shows the rows "replaced by" and "replaced elements" in the inspector
 
 <span id="comp-replacedby"></span>**comp:replacedBy**
 
-An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the same four ways a [port](port.md) names an element.
+An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the four ways a [reference](sbaseref.md) of the package names an element.
 
 The report links the submodel and shows the named element next to it.
 

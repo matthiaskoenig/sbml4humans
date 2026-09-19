@@ -84,7 +84,7 @@
       "kind": "datatype",
       "label": "CompSBase",
       "summary": "what the comp package adds to an element, the replacements it takes part in",
-      "description": "The report keeps the two subcomponents the comp package adds to every element in one block: the [replaced elements](glossary:types/ReplacedElement), the elements of submodels which this element takes the place of, and the [replaced by](glossary:types/ReplacedBy), the element of a submodel which takes the place of this one. An element may carry both, and an element which takes part in no replacement carries neither.\n\nThe inspector shows the block as the row [replacements](glossary:types/SBase/comp) of the element, with a link to the submodel and to the named element for each of the replacements.",
+      "description": "The report keeps the two subcomponents the comp package adds to every element in one block: the [replaced elements](glossary:types/ReplacedElement), the elements of submodels which this element takes the place of, and the [replaced by](glossary:types/ReplacedBy), the element of a submodel which takes the place of this one. An element may carry both, and an element which takes part in no replacement carries neither.\n\nThe inspector shows the block as two rows of the element: [comp:replacedBy](glossary:types/SBase/comp.replacedBy), the submodel and the element inside it which takes the place of this one, and [comp:listOfReplacedElements](glossary:types/SBase/comp.replacedElements), a table with one row per replacement, each naming its submodel and the element it replaces. Every one of these names is a link to the element it stands for.",
       "package": "report",
       "docs": "reference/datatypes/#compsbase"
     },
@@ -108,7 +108,7 @@
       "kind": "datatype",
       "label": "IDREF",
       "summary": "a reference to an element of the document by its meta id",
-      "description": "`IDREF` is the companion the XML Schema 1.0 specification gives to the type [ID](glossary:datatypes/ID): its value has the syntax of an `ID` and has to be the `ID` of an element of the document it is read in. A meta id is unique in the whole file and not, like an identifier, in one model, so a value of this type names one element of the file without saying which model it sits in. That is why the comp package has to state per reference which model instantiation is meant: the same element may be instantiated in many submodels.\n\nThe [metaIdRef](glossary:types/SBaseRef/metaIdRef) of a port, a deletion or a replacement is the attribute of this type, and it is how an element which carries no identifier of its own is named, a rule or a reaction written without one. The report searches the element with that meta id in the model the reference reaches into and links it.",
+      "description": "`IDREF` is the companion the XML Schema 1.0 specification gives to the type [ID](glossary:datatypes/ID): its value has the syntax of an `ID` and has to be the `ID` of an element defined elsewhere in a referenced document. Which document that is follows from the reference: it is the document the referenced model resides in, this file for a model definition of it and another file for an external model definition, and the value has to name an element inside that model. A meta id is unique in the whole file and not, like an identifier, in one model, so a value of this type names one element of a document without saying which instantiation of it is meant, which is what the comp package states per reference: the same element may be instantiated in many submodels.\n\nThe [metaIdRef](glossary:types/SBaseRef/metaIdRef) of a port, a deletion or a replacement is the attribute of this type, and it is how an element which carries no identifier of its own is named, a rule or a reaction written without one. The report searches the element with that meta id in the model the reference reaches into and links it.",
       "package": "comp",
       "docs": "reference/datatypes/#idref",
       "spec": {
@@ -143,7 +143,7 @@
       "kind": "datatype",
       "label": "PortSIdRef",
       "summary": "a reference to a port of a model by its identifier",
-      "description": "The identifier of a [port](glossary:types/Port) is of the type `PortSId`, which the comp package derives from [SId](glossary:datatypes/SId): the syntax is that of an identifier, and the values live in a space of their own which spans the ports of one model. A port may therefore carry the identifier a species of the same model carries, without the two colliding and without one naming the other. An attribute of type `PortSIdRef` holds such a value, and it has to be the identifier of a port of the model the reference reaches into, not of the model which writes the reference.\n\nThe four references of the comp package, on a [port](glossary:types/Port), a [deletion](glossary:types/Deletion), a [replaced element](glossary:types/ReplacedElement), a [replaced by](glossary:types/ReplacedBy) and on every link of a nested [reference](glossary:types/SBaseRef), name an element in exactly one of four ways, and a port reference is the one of the four which goes through the interface the other model offers instead of reaching past it. The report resolves it against the ports of the model the reference reaches into and links the port; where that model is not part of the report, it stays the text the file writes.",
+      "description": "The identifier of a [port](glossary:types/Port) is of the type `PortSId`, which the comp package derives from [SId](glossary:datatypes/SId): the syntax is that of an identifier, and the values live in a space of their own which spans the ports of one model. A port may therefore carry the identifier a species of the same model carries, without the two colliding and without one naming the other. An attribute of type `PortSIdRef` holds such a value, and it has to be the identifier of a port of the model the reference reaches into, not of the model which writes the reference.\n\nA [deletion](glossary:types/Deletion), a [replaced element](glossary:types/ReplacedElement), a [replaced by](glossary:types/ReplacedBy) and every link of a nested [reference](glossary:types/SBaseRef) name their element in exactly one of four ways, by port, by identifier, by unit identifier or by meta id, and a replaced element by a deletion as well; the port reference is the way which goes through the interface the other model offers instead of reaching past it. A [port](glossary:types/Port) itself has only the other three, because no port may name a port of its own model; it reaches a port of one of its parts through a nested reference. The report resolves a port reference against the ports of the model the reference reaches into and links the port; where that model is not part of the report, it stays the text the file writes.",
       "package": "comp",
       "docs": "reference/datatypes/#portsidref",
       "spec": {
@@ -239,7 +239,7 @@
       "kind": "datatype",
       "label": "anyURI",
       "summary": "a character string which is read as a URI",
-      "description": "The XML Schema type `anyURI` holds a Uniform Resource Identifier as RFC 3986 defines it. That is an address of any of the three shapes such an identifier takes: a URL, `http://example.org/firefly.xml`, a URN, `urn:miriam:biomodels.db:BIOMD0000000002`, or a location relative to the document which writes it, `firefly.xml`. Only the syntax is asked of the value. Whether anything answers at that address, and whether what answers is what was meant, is nothing the file can settle.\n\nTwo attributes the report reads carry the type. The [source](glossary:types/ExternalModelDefinition/source) of an external model definition is the document which holds the model, and the [definitionURL](glossary:types/UncertParameter/definitionUrl) of an uncertainty parameter names the mathematical term its value stands for. The report never fetches an address: a relative source is looked for among the entries of the COMBINE archive or among the files next to the document, and every other value is shown as the text the file writes.",
+      "description": "The XML Schema type `anyURI` holds a Uniform Resource Identifier as RFC 3986 defines it. That is an address of any of the three shapes such an identifier takes: a URL, `http://example.org/firefly.xml`, a URN, `urn:miriam:biomodels.db:BIOMD0000000002`, or a location relative to the document which writes it, `firefly.xml`. Only the syntax is asked of the value. Whether anything answers at that address, and whether what answers is what was meant, is nothing the file can settle.\n\nThe [source](glossary:types/ExternalModelDefinition/source) of an external model definition is of this type, the document which holds the model. The distrib package asks the same of the [definitionURL](glossary:types/UncertParameter/definitionUrl) of an uncertainty parameter and of an [uncert span](glossary:types/UncertSpan/definitionUrl), which names the term an external measure stands for, under the name `ExternalRef`: a string which has to be a valid URI. The report never fetches an address: a relative source is looked for among the entries of the COMBINE archive or among the files next to the document, and every other value is shown as the text the file writes.",
       "package": "comp",
       "docs": "reference/datatypes/#anyuri",
       "spec": {
@@ -1644,6 +1644,12 @@
           "id": 1020705,
           "severity": "error",
           "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
           "section": "L3V1 Comp V1 Section 3.7.2"
         },
         {
@@ -3980,7 +3986,7 @@
         "section": "3.4.2"
       },
       "required": false,
-      "default": "nothing of the model is declared as an interface, and a model which includes it names its elements directly",
+      "default": "nothing of the model is declared as an interface",
       "rules": [
         {
           "id": 1020501,
@@ -4749,7 +4755,7 @@
       "kind": "type",
       "label": "Port",
       "summary": "an element of the model which other models are meant to connect to",
-      "description": "A port gives a name to one element of the model and declares it as an intended point of interaction, so that a model which includes this one connects to the port instead of reaching into the model. Port identifiers live in a namespace of their own, which is why a port may carry the same identifier as an element of the model.\n\nExactly one of the four references of a port is set, and each of them names the element in a different way. The use of ports is advisory in this version of the package, nothing enforces it.\n\nThe report shows which element a port names, links it, and lists the ports of a model in a section of their own.",
+      "description": "A port gives a name to one element of the model and declares it as an intended point of interaction, so that a model which includes this one connects to the port instead of reaching into the model. Port identifiers live in a namespace of their own, which is why a port may carry the same identifier as an element of the model.\n\nExactly one of the three references of a port is set, by identifier, by unit identifier or by meta id, and each of them names the element in a different way. A port may not name a port of its own model, which is why the fourth way every other reference of the package offers is not open to it. The use of ports is advisory in this version of the package, nothing enforces it.\n\nThe report shows which element a port names, links it, and lists the ports of a model in a section of their own.",
       "package": "comp",
       "docs": "reference/port/",
       "spec": {
@@ -4922,6 +4928,12 @@
           "severity": "error",
           "message": "The value of a 'comp:portRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.",
           "section": "L3V1 Comp V1 Section 3.7.1"
+        },
+        {
+          "id": 1020803,
+          "severity": "error",
+          "message": "A <port> object must have a value for the required attribute 'comp:id', and one, and only one, of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'. No other attributes from the Hierarchical Model Composition namespace are permitted on a <port> object.",
+          "section": "L3V1 Comp V1 Section 3.4.3"
         }
       ]
     },
@@ -4948,6 +4960,12 @@
           "id": 1020705,
           "severity": "error",
           "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
           "section": "L3V1 Comp V1 Section 3.7.2"
         },
         {
@@ -5658,7 +5676,7 @@
       "kind": "type",
       "label": "ReplacedBy",
       "summary": "the element of a submodel which takes the place of the element carrying it",
-      "description": "A replaced by turns a replacement around: the element which carries it disappears and the element of the [submodel](glossary:types/Submodel) it names stays, so that every reference to the element of the containing model points into the submodel afterwards. It is how a model declares a placeholder which one of its parts fills in.\n\nAn element carries at most one replaced by, and it names the element which replaces it the same four ways a [replaced element](glossary:types/ReplacedElement) does, with a [nested reference](glossary:types/SBaseRef) for an element which sits deeper.\n\nThe report shows the replacement in the inspector of the element, links the submodel and the element inside it, and shows the replacement as an element of its own.",
+      "description": "A replaced by turns a replacement around: the element which carries it disappears and the element of the [submodel](glossary:types/Submodel) it names stays, so that every reference to the element of the containing model points into the submodel afterwards. It is how a model declares a placeholder which one of its parts fills in.\n\nAn element carries at most one replaced by, and it names the element which replaces it the same four ways a [deletion](glossary:types/Deletion) does, by port, identifier, unit identifier or meta id, with a [nested reference](glossary:types/SBaseRef) for an element which sits deeper.\n\nThe report shows the replacement in the inspector of the element, links the submodel and the element inside it, and shows the replacement as an element of its own.",
       "package": "comp",
       "docs": "reference/replacedby/",
       "spec": {
@@ -5891,6 +5909,12 @@
           "section": "L3V1 Comp V1 Section 3.7.2"
         },
         {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
           "id": 1020711,
           "severity": "warning",
           "message": "The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.",
@@ -6086,6 +6110,12 @@
           "severity": "error",
           "message": "The value of a 'comp:conversionFactor' attribute on <replacedElement> objects must always conform to the syntax of the SBML data type SId.",
           "section": "L3V1 Comp V1 Section 3.6.2"
+        },
+        {
+          "id": 1010501,
+          "severity": "warning",
+          "message": "If one element replaces another, whether it is the target of a <replacedBy> element, or whether it has a child <replacedElement>, the units of the replaced element, multiplied by the units of any applicable conversion factor, should equal the units of the replacement element.",
+          "section": "L3V1 Comp V1 Section 3.6.5"
         },
         {
           "id": 1021006,
@@ -6310,6 +6340,12 @@
           "id": 1020705,
           "severity": "error",
           "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
           "section": "L3V1 Comp V1 Section 3.7.2"
         },
         {
@@ -6637,7 +6673,7 @@
       "kind": "attribute",
       "label": "comp:replacedBy",
       "summary": "the element of a submodel which takes the place of this element",
-      "description": "An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the same four ways a [port](glossary:types/Port) names an element.\n\nThe report links the submodel and shows the named element next to it.",
+      "description": "An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the four ways a [reference](glossary:types/SBaseRef) of the package names an element.\n\nThe report links the submodel and shows the named element next to it.",
       "package": "comp",
       "docs": "reference/sbase/#comp-replacedby",
       "owner": "types/SBase",
@@ -7176,6 +7212,12 @@
           "id": 1020705,
           "severity": "error",
           "message": "If an <sBaseRef> object contains an <sBaseRef> child, the parent <sBaseRef> must point to a <submodel> object, or a <port> that itself points to a <submodel> object.",
+          "section": "L3V1 Comp V1 Section 3.7.2"
+        },
+        {
+          "id": 1020710,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single <sBaseRef> child.",
           "section": "L3V1 Comp V1 Section 3.7.2"
         },
         {
@@ -7848,7 +7890,7 @@
       "kind": "attribute",
       "label": "listOfDeletions",
       "summary": "the elements which are removed from the model before it is instantiated",
-      "description": "A deletion names one element of the referenced model which is not wanted in this context. The removal is conceptual: the submodel is everything of the referenced model minus the deleted elements, and minus what depends on them. Every deletion names its element the same four ways a [port](glossary:types/Port) does, by port, identifier, unit identifier or meta id.\n\nThe report shows the number of deletions in the column \"deletions\" and the four references of every deletion in the inspector.",
+      "description": "A deletion names one element of the referenced model which is not wanted in this context. The removal is conceptual: the submodel is everything of the referenced model minus the deleted elements, and minus what depends on them. Every deletion names its element the same four ways a [reference](glossary:types/SBaseRef) of the package does, by port, identifier, unit identifier or meta id.\n\nThe report shows the number of deletions in the column \"deletions\" and the four references of every deletion in the inspector.",
       "package": "comp",
       "docs": "reference/submodel/#listofdeletions",
       "owner": "types/Submodel",
@@ -7857,9 +7899,9 @@
         "key": "datatypes/list"
       },
       "spec": {
-        "label": "comp 3.5.3",
+        "label": "comp 3.5.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/comp/",
-        "section": "3.5.3"
+        "section": "3.5.2"
       },
       "required": false,
       "default": "the referenced model is instantiated whole",

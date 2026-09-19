@@ -49,6 +49,7 @@ A replacement cannot carry a conversion factor and a deletion at the same time: 
 Default: the value of the replaced element is taken over unchanged, apart from the conversion factors of the submodel.
 
 - `1010310` (error): The value of a 'comp:conversionFactor' attribute on &lt;replacedElement&gt; objects must always conform to the syntax of the SBML data type SId.
+- `1010501` (warning): If one element replaces another, whether it is the target of a &lt;replacedBy&gt; element, or whether it has a child &lt;replacedElement&gt;, the units of the replaced element, multiplied by the units of any applicable conversion factor, should equal the units of the replacement element.
 - `1021006` (error): The value of a 'comp:conversionFactor' attribute on a &lt;replacedElement&gt; object must be the identifier of a &lt;parameter&gt; present in the &lt;replacedElement&gt; object's parent Model
 - `1021011` (error): If a &lt;replacedElement&gt; uses the 'comp:deletion' attribute, then it should not also use the 'comp:conversionFactor' attribute.
 
@@ -93,6 +94,7 @@ This is the way to replace an element which carries no identifier of its own.
 A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be replaced.
 
 - `1020705` (error): If an &lt;sBaseRef&gt; object contains an &lt;sBaseRef&gt; child, the parent &lt;sBaseRef&gt; must point to a &lt;submodel&gt; object, or a &lt;port&gt; that itself points to a &lt;submodel&gt; object.
+- `1020710` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single &lt;sBaseRef&gt; child.
 - `1020711` (warning): The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.
 
 ## Validation rules

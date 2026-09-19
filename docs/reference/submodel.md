@@ -15,7 +15,7 @@ The report links the model a submodel instantiates, shows its two conversion fac
 | [modelRef](#modelref) | [`SIdRef`](datatypes.md#sidref) | required | the model which this submodel instantiates | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [timeConversionFactor](#timeconversionfactor) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which converts the time of the submodel into the time of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [extentConversionFactor](#extentconversionfactor) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which converts the reaction extent of the submodel into the extent of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [listOfDeletions](#listofdeletions) | [`list`](datatypes.md#list) | optional | the elements which are removed from the model before it is instantiated | [comp 3.5.3](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [listOfDeletions](#listofdeletions) | [`list`](datatypes.md#list) | optional | the elements which are removed from the model before it is instantiated | [comp 3.5.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -54,7 +54,7 @@ Default: one unit of reaction extent in the submodel is one unit of extent in th
 
 <span id="listofdeletions"></span>**listOfDeletions**
 
-A deletion names one element of the referenced model which is not wanted in this context. The removal is conceptual: the submodel is everything of the referenced model minus the deleted elements, and minus what depends on them. Every deletion names its element the same four ways a [port](port.md) does, by port, identifier, unit identifier or meta id.
+A deletion names one element of the referenced model which is not wanted in this context. The removal is conceptual: the submodel is everything of the referenced model minus the deleted elements, and minus what depends on them. Every deletion names its element the same four ways a [reference](sbaseref.md) of the package does, by port, identifier, unit identifier or meta id.
 
 The report shows the number of deletions in the column "deletions" and the four references of every deletion in the inspector.
 

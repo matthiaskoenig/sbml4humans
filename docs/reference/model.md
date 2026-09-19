@@ -211,7 +211,7 @@ A [port](port.md) declares one element of the model as an intended point of inte
 
 The report shows the ports of a model as a section of the report.
 
-Default: nothing of the model is declared as an interface, and a model which includes it names its elements directly.
+Default: nothing of the model is declared as an interface.
 
 - `1020501` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; or &lt;modelDefinition&gt; object using Hierarchical Model Composition: &lt;listOfSubmodels&gt; and &lt;listOfPorts&gt;.
 - `1020502` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfSubmodels&gt; and &lt;listOfPorts&gt;.

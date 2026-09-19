@@ -4,7 +4,7 @@ The element of a submodel which takes the place of the element carrying it.
 
 A replaced by turns a replacement around: the element which carries it disappears and the element of the [submodel](submodel.md) it names stays, so that every reference to the element of the containing model points into the submodel afterwards. It is how a model declares a placeholder which one of its parts fills in.
 
-An element carries at most one replaced by, and it names the element which replaces it the same four ways a [replaced element](replacedelement.md) does, with a [nested reference](sbaseref.md) for an element which sits deeper.
+An element carries at most one replaced by, and it names the element which replaces it the same four ways a [deletion](deletion.md) does, by port, identifier, unit identifier or meta id, with a [nested reference](sbaseref.md) for an element which sits deeper.
 
 The report shows the replacement in the inspector of the element, links the submodel and the element inside it, and shows the replacement as an element of its own.
 
@@ -69,6 +69,7 @@ This is the way to name a replacing element which carries no identifier of its o
 A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel takes the place of this element.
 
 - `1020705` (error): If an &lt;sBaseRef&gt; object contains an &lt;sBaseRef&gt; child, the parent &lt;sBaseRef&gt; must point to a &lt;submodel&gt; object, or a &lt;port&gt; that itself points to a &lt;submodel&gt; object.
+- `1020710` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single &lt;sBaseRef&gt; child.
 - `1020711` (warning): The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.
 
 ## Validation rules

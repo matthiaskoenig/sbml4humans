@@ -4,7 +4,7 @@ An element of the model which other models are meant to connect to.
 
 A port gives a name to one element of the model and declares it as an intended point of interaction, so that a model which includes this one connects to the port instead of reaching into the model. Port identifiers live in a namespace of their own, which is why a port may carry the same identifier as an element of the model.
 
-Exactly one of the four references of a port is set, and each of them names the element in a different way. The use of ports is advisory in this version of the package, nothing enforces it.
+Exactly one of the three references of a port is set, by identifier, by unit identifier or by meta id, and each of them names the element in a different way. A port may not name a port of its own model, which is why the fourth way every other reference of the package offers is not open to it. The use of ports is advisory in this version of the package, nothing enforces it.
 
 The report shows which element a port names, links it, and lists the ports of a model in a section of their own.
 
@@ -28,6 +28,7 @@ The report shows the port reference as text; it does not follow it into another 
 
 - `1020701` (error): The value of a 'comp:portRef' attribute on an &lt;sBaseRef&gt; object must be the identifier of a &lt;port&gt; object in the &lt;model&gt; referenced by that &lt;sBaseRef&gt;.
 - `1020706` (error): The value of a 'comp:portRef' attribute on an SBaseRef object must always conform to the syntax of the SBML data type SId.
+- `1020803` (error): A &lt;port&gt; object must have a value for the required attribute 'comp:id', and one, and only one, of the attributes 'comp:idRef', 'comp:unitRef', or 'comp:metaIdRef'. No other attributes from the Hierarchical Model Composition namespace are permitted on a &lt;port&gt; object.
 
 <span id="idref"></span>**idRef**
 
@@ -69,6 +70,7 @@ A port which names a submodel of its model can reach through it with a [nested r
 The report shows the chain in the inspector of the port and links the element at its end.
 
 - `1020705` (error): If an &lt;sBaseRef&gt; object contains an &lt;sBaseRef&gt; child, the parent &lt;sBaseRef&gt; must point to a &lt;submodel&gt; object, or a &lt;port&gt; that itself points to a &lt;submodel&gt; object.
+- `1020710` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, an SBaseRef object may only contain a single &lt;sBaseRef&gt; child.
 - `1020711` (warning): The 'sbaseRef' spelling of an SBaseRef child of an SBaseRef object is considered deprecated, and 'sBaseRef' should be used instead.
 
 ## Validation rules
