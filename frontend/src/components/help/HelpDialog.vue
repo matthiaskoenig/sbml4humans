@@ -208,6 +208,10 @@ watch(
       return;
     }
     loadDetails();
+    // the details of a session which has shown a dialog already say at once that a key is no
+    // entry: nothing opens for it, and the watcher below takes it out of the route. Only the
+    // first dialog of a session has to open before it can know
+    if (details.value && !entryOf(details.value, key)) return;
     await nextTick();
     const element = dialog.value;
     if (!element) return;
@@ -219,9 +223,10 @@ watch(
 );
 
 /** A key which is no entry of the glossary: a link written by hand, an entry a later version
- * renamed, anything at all, since the key comes from the url. The dialog closes as the report
- * does for an element which it does not hold, and it replaces the route rather than pushing one,
- * so that the way back does not lead through an entry which shows nothing. */
+ * renamed, anything at all, since the key comes from the url. The key leaves the route, which
+ * closes the dialog it opened, as the report closes the inspector of an element it does not
+ * hold; it replaces the route rather than pushing one, so that the way back does not lead
+ * through an entry which shows nothing. */
 watch([details, help], ([loaded, key]) => {
   if (loaded && key && !entryOf(loaded, key)) void view.closeHelp("replace");
 });

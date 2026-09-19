@@ -369,6 +369,22 @@ describe("HelpDialog", () => {
     },
   );
 
+  // the first dialog of a session cannot know that a key is no entry before its details are
+  // there; every dialog after it can, and shows nothing at all rather than a modal for a tick
+  it("opens no dialog at all for such a key once the details are loaded", async () => {
+    await mountDialog({ help: "types/Species" });
+    expect(showModal).toHaveBeenCalledTimes(1);
+    await router.push({ path: "/report", query: {} });
+    await flushPromises();
+
+    const replace = vi.spyOn(router, "replace");
+    await open("types/Nope");
+    expect(showModal).toHaveBeenCalledTimes(1);
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(router.currentRoute.value.query.help).toBeUndefined();
+    expect(has("help-title")).toBe(false);
+  });
+
   it("shows a skeleton and what the eager glossary knows while the details load", async () => {
     load.mockReset().mockReturnValue(new Promise(() => undefined));
     await mountDialog({ help: "types/Species" });
