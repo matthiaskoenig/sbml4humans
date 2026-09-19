@@ -80,6 +80,19 @@
       "package": "core",
       "docs": "reference/concepts/#rendered-units"
     },
+    "datatypes/Association": {
+      "kind": "datatype",
+      "label": "Association",
+      "summary": "one node of the gene association of a reaction, of the three kinds the package defines",
+      "description": "`Association` is the abstract class of the nodes a [gene product association](glossary:types/GeneProductAssociation) is built from. It is never written as an element of its own: every node is one of its three subclasses, an [and](glossary:types/And), an [or](glossary:types/Or) or a [gene product reference](glossary:types/GeneProductRef), and the name of the element is the name of that class with a small first letter. An `and` and an `or` hold two or more associations of their own, which is what makes the class recursive and the association of a reaction a tree of any depth.\n\nThe report gives every node an element of its own and renders the tree as the expression it stands for, `((b3670 and b3671) or (b0077 and b0078))`, with a link at every gene product.",
+      "package": "fbc",
+      "docs": "reference/datatypes/#association",
+      "spec": {
+        "label": "fbc v3 3.10",
+        "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
+        "section": "3.10"
+      }
+    },
     "datatypes/CompSBase": {
       "kind": "datatype",
       "label": "CompSBase",
@@ -87,6 +100,68 @@
       "description": "The report keeps the two subcomponents the comp package adds to every element in one block: the [replaced elements](glossary:types/ReplacedElement), the elements of submodels which this element takes the place of, and the [replaced by](glossary:types/ReplacedBy), the element of a submodel which takes the place of this one. An element may carry both, and an element which takes part in no replacement carries neither.\n\nThe inspector shows the block as two rows of the element: [comp:replacedBy](glossary:types/SBase/comp.replacedBy), the submodel and the element inside it which takes the place of this one, and [comp:listOfReplacedElements](glossary:types/SBase/comp.replacedElements), a table with one row per replacement, each naming its submodel and the element it replaces. Every one of these names is a link to the element it stands for.",
       "package": "report",
       "docs": "reference/datatypes/#compsbase"
+    },
+    "datatypes/FbcOperation": {
+      "kind": "datatype",
+      "label": "FbcOperation",
+      "summary": "how a flux bound of Version 1 relates the flux of a reaction to its value",
+      "description": "Version 1 of the package wrote a constraint of a flux as a [flux bound](glossary:types/FluxBound) of the model, one (in)equality of the form reaction, operator, value, and the operator is an attribute of this type: `R5 >= 0`, `R5 <= INF` and `R7 = 1.0` are three such bounds. Version 2 removed the construct and the type with it, because a [reaction](glossary:types/Reaction) names the [parameters](glossary:types/Parameter) of its lower and its upper bound instead, and which of the two a bound is follows from the attribute which names it.\n\nThe report shows the operation in the column \"operation\" of the flux bounds of a Version 1 model and next to the value in the inspector. The three values are the mathematical symbols `<=`, `>=` and `=`, in this order:",
+      "package": "fbc",
+      "docs": "reference/datatypes/#fbcoperation",
+      "spec": {
+        "label": "fbc v1 3.2.2",
+        "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1",
+        "section": "3.2.2"
+      },
+      "related": [
+        "datatypes/FbcType"
+      ],
+      "values": [
+        "lessEqual",
+        "greaterEqual",
+        "equal"
+      ]
+    },
+    "datatypes/FbcType": {
+      "kind": "datatype",
+      "label": "FbcType",
+      "summary": "the sense of an objective, the direction in which it is optimised",
+      "description": "The [type](glossary:types/Objective/type) of an [objective](glossary:types/Objective) is the sense of the optimality constraint: whether an analysis looks for the flux distribution which makes the weighted sum of the fluxes as large as the bounds allow, or as small. Nothing else of the package carries the type, and the package has defined it with the same two values since Version 1.\n\nThe report shows the value as the file writes it, in the column \"type\" of the objectives of a model and in the inspector of an objective. The two values are:",
+      "package": "fbc",
+      "docs": "reference/datatypes/#fbctype",
+      "spec": {
+        "label": "fbc v3 3.2.1",
+        "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
+        "section": "3.2.1"
+      },
+      "related": [
+        "datatypes/FbcVariableType",
+        "datatypes/FbcOperation"
+      ],
+      "values": [
+        "maximize",
+        "minimize"
+      ]
+    },
+    "datatypes/FbcVariableType": {
+      "kind": "datatype",
+      "label": "FbcVariableType",
+      "summary": "whether a term of a sum is linear or quadratic in its variable",
+      "description": "Version 3 of the package added the type so that a [flux objective](glossary:types/FluxObjective) and a [component](glossary:types/UserDefinedConstraintComponent) of a user defined constraint say how their variable enters the sum. A linear term is the variable multiplied by its coefficient, `C * J`; a quadratic term is the square of the variable, `C * J^2`, or the product of the two variables where the term names a second one, `C * J1 * J2`. Without the attribute the two cannot be told apart, which is why Version 3 requires it; a document of Version 1 or Version 2 has no such attribute and every term of it is linear.\n\nThe report writes a term as the product it is, with a superscript two on a quadratic variable which stands alone and with the second variable next to the first where the term names one. The two values are:",
+      "package": "fbc",
+      "docs": "reference/datatypes/#fbcvariabletype",
+      "spec": {
+        "label": "fbc v3 3.2.2",
+        "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
+        "section": "3.2.2"
+      },
+      "related": [
+        "datatypes/FbcType"
+      ],
+      "values": [
+        "linear",
+        "quadratic"
+      ]
     },
     "datatypes/ID": {
       "kind": "datatype",
@@ -131,6 +206,18 @@
         "datatypes/latex"
       ]
     },
+    "datatypes/ModelFbc": {
+      "kind": "datatype",
+      "label": "ModelFbc",
+      "summary": "what the fbc package adds to a model, its strictness and its active objective",
+      "description": "The report keeps the two attributes which fbc gives a model as a whole in one block: whether the model keeps to the restrictions of a strict problem, and which of its [objectives](glossary:types/Objective) is the one an analysis optimises. The second of them is an attribute of the list of objectives and not of the model, and the report carries a list as an object of its own only where it states something an `SBase` states, which is why the two are shown together.\n\nThe inspector shows the block as two rows of the model, [fbc:strict](glossary:types/Model/fbc.strict) and [fbc:activeObjective](glossary:types/Model/fbc.activeObjective), the second a link to the objective it names. The lists which fbc adds to a model are sections of the report and not part of this block.",
+      "package": "report",
+      "docs": "reference/datatypes/#modelfbc",
+      "related": [
+        "datatypes/SpeciesFbc",
+        "datatypes/ReactionFbc"
+      ]
+    },
     "datatypes/ModelHistory": {
       "kind": "datatype",
       "label": "ModelHistory",
@@ -154,6 +241,18 @@
       "related": [
         "datatypes/SIdRef",
         "datatypes/SId"
+      ]
+    },
+    "datatypes/ReactionFbc": {
+      "kind": "datatype",
+      "label": "ReactionFbc",
+      "summary": "what the fbc package adds to a reaction, its flux bounds and its genes",
+      "description": "The report keeps the three things which fbc gives a [reaction](glossary:types/Reaction) in one block: the [parameters](glossary:types/Parameter) which bound its flux from below and from above, and the [gene product association](glossary:types/GeneProductAssociation) which says under which genes it can run.\n\nThe inspector shows the block as three rows of the reaction, [fbc:lowerFluxBound](glossary:types/Reaction/fbc.lowerFluxBound) and [fbc:upperFluxBound](glossary:types/Reaction/fbc.upperFluxBound), each a link to the parameter it names, and [fbc:geneProductAssociation](glossary:types/Reaction/fbc.geneProductAssociation), which names the association and renders its tree below it. The two bounds are columns of the table of the reactions as well.",
+      "package": "report",
+      "docs": "reference/datatypes/#reactionfbc",
+      "related": [
+        "datatypes/SpeciesFbc",
+        "datatypes/ModelFbc"
       ]
     },
     "datatypes/SBOTerm": {
@@ -201,6 +300,18 @@
       "related": [
         "datatypes/SId",
         "datatypes/UnitSIdRef"
+      ]
+    },
+    "datatypes/SpeciesFbc": {
+      "kind": "datatype",
+      "label": "SpeciesFbc",
+      "summary": "what the fbc package adds to a species, its composition and its charge",
+      "description": "The report keeps the two attributes which fbc gives a [species](glossary:types/Species) in one block: the elemental composition of the species and its charge. Neither enters the mathematics of the model, and together they are what a check of the mass and the charge balance of a reaction needs.\n\nThe inspector shows the block as two rows of the species, [fbc:chemicalFormula](glossary:types/Species/fbc.chemicalFormula) and [fbc:charge](glossary:types/Species/fbc.charge).",
+      "package": "report",
+      "docs": "reference/datatypes/#speciesfbc",
+      "related": [
+        "datatypes/ReactionFbc",
+        "datatypes/ModelFbc"
       ]
     },
     "datatypes/UnitSIdRef": {
@@ -831,6 +942,26 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.12"
       },
+      "rules": [
+        {
+          "id": 2021001,
+          "severity": "error",
+          "message": "An <And> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an <GeneAnd.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2021002,
+          "severity": "error",
+          "message": "An <And> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on an <And>.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2021003,
+          "severity": "error",
+          "message": "An <And> object must have two or more concrete <Association> objects: <GeneProductRef>, <And>, or <Or>. No other elements from the SBML Level 3 Flux Balance Constraints namespace are permitted on an <And> object.",
+          "section": "L3V1 Fbc V3 Section 3.12"
+        }
+      ],
       "attributes": [
         "types/And/associations"
       ],
@@ -856,7 +987,16 @@
         "label": "fbc v3 3.12",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.12"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021003,
+          "severity": "error",
+          "message": "An <And> object must have two or more concrete <Association> objects: <GeneProductRef>, <And>, or <Or>. No other elements from the SBML Level 3 Flux Balance Constraints namespace are permitted on an <And> object.",
+          "section": "L3V1 Fbc V3 Section 3.12"
+        }
+      ]
     },
     "types/AssignmentRule": {
       "kind": "type",
@@ -2389,6 +2529,29 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1",
         "section": "3.5"
       },
+      "rules": [
+        {
+          "id": 2010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> object the values of the attributes id and fbc:id on every instance of the following classes of objects must be unique across the set of all id and fbc:id attribute values of all such objects in a model: the model itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <fluxBound>, <objective>, <fluxObjective>, <geneProduct> and <geneProductAssociation> objects defined by the Flux Balance Constraints package.",
+          "section": "L3V1 Fbc V3 Section 3.2"
+        },
+        {
+          "id": 2020401,
+          "severity": "error",
+          "message": "A <fluxBound> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a <fluxBound>."
+        },
+        {
+          "id": 2020402,
+          "severity": "error",
+          "message": "A <fluxBound> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on a <fluxBound>."
+        },
+        {
+          "id": 2020403,
+          "severity": "error",
+          "message": "A <fluxBound> object must have the required attributes 'fbc:reaction', 'fbc:operation' and 'fbc:value', and may have the optional attributes 'fbc:id' and 'fbc:name'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on a <fluxBound> object."
+        }
+      ],
       "attributes": [
         "types/FluxBound/reaction",
         "types/FluxBound/operation",
@@ -2409,13 +2572,27 @@
       "docs": "reference/fluxbound/#operation",
       "owner": "types/FluxBound",
       "type": {
-        "label": "FbcOperation"
+        "label": "FbcOperation",
+        "key": "datatypes/FbcOperation"
       },
       "spec": {
         "label": "fbc v1 3.2.2",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1",
         "section": "3.2.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020406,
+          "severity": "error",
+          "message": "The attribute 'fbc:operation' of a <fluxBound> must be of the data type FbcOperation and thus it's value must be one of 'lessEqual', 'greaterEqual' or 'equal'."
+        },
+        {
+          "id": 2020409,
+          "severity": "error",
+          "message": "The combined set of all <fluxBound>'s with identical values for 'fbc:reaction' must be consistent. That is while it is possible to define a lower and an upper bound for a reaction, it is not possible to define multiple lower or upper bounds."
+        }
+      ]
     },
     "types/FluxBound/reaction": {
       "kind": "attribute",
@@ -2433,7 +2610,25 @@
         "label": "fbc v1 3.5",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1",
         "section": "3.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020404,
+          "severity": "error",
+          "message": "The attribute 'fbc:reaction' of a <fluxBound> must be of the data type SIdRef."
+        },
+        {
+          "id": 2020408,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:reaction' of a <fluxBound> object must be the identifier of an existing <reaction> object defined in the enclosing <model> object."
+        },
+        {
+          "id": 2020409,
+          "severity": "error",
+          "message": "The combined set of all <fluxBound>'s with identical values for 'fbc:reaction' must be consistent. That is while it is possible to define a lower and an upper bound for a reaction, it is not possible to define multiple lower or upper bounds."
+        }
+      ]
     },
     "types/FluxBound/value": {
       "kind": "attribute",
@@ -2451,7 +2646,15 @@
         "label": "fbc v1 3.5",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1",
         "section": "3.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020407,
+          "severity": "error",
+          "message": "The attribute 'fbc:value' of a <fluxBound> must be of the data type double."
+        }
+      ]
     },
     "types/FluxObjective": {
       "kind": "type",
@@ -2465,6 +2668,32 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.7"
       },
+      "rules": [
+        {
+          "id": 2010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> object the values of the attributes id and fbc:id on every instance of the following classes of objects must be unique across the set of all id and fbc:id attribute values of all such objects in a model: the model itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <fluxBound>, <objective>, <fluxObjective>, <geneProduct> and <geneProductAssociation> objects defined by the Flux Balance Constraints package.",
+          "section": "L3V1 Fbc V3 Section 3.2"
+        },
+        {
+          "id": 2020601,
+          "severity": "error",
+          "message": "A <fluxObjective> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a <fluxObjective>.",
+          "section": "L3V1 Core, Section 3.2"
+        },
+        {
+          "id": 2020602,
+          "severity": "error",
+          "message": "A <fluxObjective> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on a <fluxObjective>.",
+          "section": "L3V1 Core, Section 3.2"
+        },
+        {
+          "id": 2020603,
+          "severity": "error",
+          "message": "A <fluxObjective> object must have the required attributes 'fbc:reaction' and 'fbc:coefficient', and may have the optional attributes 'fbc:id' and 'fbc:name'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on a <fluxObjective> object.",
+          "section": "L3V1 Fbc V3, Section 3.7"
+        }
+      ],
       "attributes": [
         "types/FluxObjective/reaction",
         "types/FluxObjective/reaction2",
@@ -2493,7 +2722,22 @@
         "label": "fbc v3 3.7",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.7"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020607,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:coefficient' of a <fluxObjective> object must conform to the syntax of the SBML data type 'double'.",
+          "section": "L3V1 Fbc V3, Section 3.7"
+        },
+        {
+          "id": 2020608,
+          "severity": "error",
+          "message": "When the value of the <model> 'fbc:strict' attribute is true, the value of the attribute 'fbc:coefficient' of a <fluxObjective> object must not be set to 'NaN', 'INF' or '-INF'.",
+          "section": "L3V1 Fbc V3, Section 3.3"
+        }
+      ]
     },
     "types/FluxObjective/reaction": {
       "kind": "attribute",
@@ -2511,7 +2755,22 @@
         "label": "fbc v3 3.7",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.7"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020605,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:reaction' of a <fluxObjective> object must conform to the syntax of the SBML data type 'SIdRef'.",
+          "section": "L3V1 Fbc V3, Section 3.7"
+        },
+        {
+          "id": 2020606,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:reaction' of a <fluxObjective> object must be the identifier of an existing <reaction> object defined in the enclosing <model> object.",
+          "section": "L3V1 Fbc V3, Section 3.7"
+        }
+      ]
     },
     "types/FluxObjective/reaction2": {
       "kind": "attribute",
@@ -2529,7 +2788,23 @@
         "label": "fbc v3 3.7",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.7"
-      }
+      },
+      "required": false,
+      "default": "a quadratic term is the square of the flux of the first reaction",
+      "rules": [
+        {
+          "id": 2020610,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:reaction2' of a <fluxObjective> object must conform to the syntax of the SBML data type 'SIdRef'.",
+          "section": "L3V1 Fbc V3, Section 3.7"
+        },
+        {
+          "id": 2020611,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:reaction2' of a <fluxObjective> object must be the identifier of an existing <reaction> object defined in the enclosing <model> object.",
+          "section": "L3V1 Fbc V3, Section 3.7"
+        }
+      ]
     },
     "types/FluxObjective/variableType": {
       "kind": "attribute",
@@ -2540,13 +2815,22 @@
       "docs": "reference/fluxobjective/#variabletype",
       "owner": "types/FluxObjective",
       "type": {
-        "label": "FbcVariableType"
+        "label": "FbcVariableType",
+        "key": "datatypes/FbcVariableType"
       },
       "spec": {
         "label": "fbc v3 3.7",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.7"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020609,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:variableType' of a <fluxObjective> object must conform to the syntax of SBML data type 'FbcVariableType' and may only take on the allowed values of 'FbcVariableType' defined in SBML; that is, the value must be one of the following: 'linear' or 'quadratic'."
+        }
+      ]
     },
     "types/FunctionDefinition": {
       "kind": "type",
@@ -2704,6 +2988,32 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.5"
       },
+      "rules": [
+        {
+          "id": 2010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> object the values of the attributes id and fbc:id on every instance of the following classes of objects must be unique across the set of all id and fbc:id attribute values of all such objects in a model: the model itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <fluxBound>, <objective>, <fluxObjective>, <geneProduct> and <geneProductAssociation> objects defined by the Flux Balance Constraints package.",
+          "section": "L3V1 Fbc V3 Section 3.2"
+        },
+        {
+          "id": 2021201,
+          "severity": "error",
+          "message": "A <GeneProduct> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a <GeneProduct>.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2021202,
+          "severity": "error",
+          "message": "A <GeneProduct> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on a <GeneProduct>.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2021203,
+          "severity": "error",
+          "message": "A <GeneProduct> object must have the required attributes 'fbc:id' and 'fbc:label' may have the optional attributes 'fbc:name' and 'fbc:associatedSpecies'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on a <GeneProduct> object.",
+          "section": "L3V1 Fbc V3 Section 3.5"
+        }
+      ],
       "attributes": [
         "types/GeneProduct/label",
         "types/GeneProduct/associatedSpecies"
@@ -2730,7 +3040,16 @@
         "label": "fbc v3 3.5",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.5"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 2021207,
+          "severity": "error",
+          "message": "The attribute 'fbc:associatedSpecies' on a <GeneProduct> must be the identifier of an existing <Species> defined in the enclosing <Model>.",
+          "section": "L3V1 Fbc V3 Section 3.5"
+        }
+      ]
     },
     "types/GeneProduct/label": {
       "kind": "attribute",
@@ -2748,7 +3067,22 @@
         "label": "fbc v3 3.5",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021204,
+          "severity": "error",
+          "message": "The attribute 'fbc:label' on a <GeneProduct> must be of the data type 'string'.",
+          "section": "L3V1 Fbc V3 Section 3.5"
+        },
+        {
+          "id": 2021205,
+          "severity": "error",
+          "message": "The attribute 'fbc:label' on a <GeneProduct> must be unique among the set of all <GeneProduct> elements defined in the <Model>.",
+          "section": "L3V1 Fbc V3 Section 3.5"
+        }
+      ]
     },
     "types/GeneProductAssociation": {
       "kind": "type",
@@ -2762,6 +3096,38 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.9"
       },
+      "rules": [
+        {
+          "id": 2010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> object the values of the attributes id and fbc:id on every instance of the following classes of objects must be unique across the set of all id and fbc:id attribute values of all such objects in a model: the model itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <fluxBound>, <objective>, <fluxObjective>, <geneProduct> and <geneProductAssociation> objects defined by the Flux Balance Constraints package.",
+          "section": "L3V1 Fbc V3 Section 3.2"
+        },
+        {
+          "id": 2020801,
+          "severity": "error",
+          "message": "A <GeneProductAssociation> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a <GeneProductAssociation.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2020802,
+          "severity": "error",
+          "message": "A <GeneProductAssociation> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on a <GeneProductAssociation.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2020803,
+          "severity": "error",
+          "message": "A <GeneProductAssociation> object may have the optional attributes 'fbc:id' and 'fbc:name'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on a <GeneProductAssociation> object.",
+          "section": "L3V1 Fbc V3 Section 3.9"
+        },
+        {
+          "id": 2020805,
+          "severity": "error",
+          "message": "A <GeneProductAssociation> object must have one and only one of the concrete <Association> objects: <GeneProductRef>, <And> or <Or>.",
+          "section": "L3V1 Fbc V3 Section 3.9"
+        }
+      ],
       "attributes": [
         "types/GeneProductAssociation/association"
       ],
@@ -2782,13 +3148,23 @@
       "docs": "reference/geneproductassociation/#association",
       "owner": "types/GeneProductAssociation",
       "type": {
-        "label": "Association"
+        "label": "Association",
+        "key": "datatypes/Association"
       },
       "spec": {
         "label": "fbc v3 3.9",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.9"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020805,
+          "severity": "error",
+          "message": "A <GeneProductAssociation> object must have one and only one of the concrete <Association> objects: <GeneProductRef>, <And> or <Or>.",
+          "section": "L3V1 Fbc V3 Section 3.9"
+        }
+      ]
     },
     "types/GeneProductRef": {
       "kind": "type",
@@ -2802,6 +3178,26 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.11"
       },
+      "rules": [
+        {
+          "id": 2020901,
+          "severity": "error",
+          "message": "A <GeneProductRef> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a <GeneProductRef>.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2020902,
+          "severity": "error",
+          "message": "A <GeneProductRef> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on a <GeneProductRef>.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2020903,
+          "severity": "error",
+          "message": "A <GeneProductRef> object must have the required attribute 'fbc:geneProduct' and may have the optional attribute 'fbc:id'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on a <> object.",
+          "section": "L3V1 Fbc V3 Section 3.11"
+        }
+      ],
       "attributes": [
         "types/GeneProductRef/geneProduct"
       ],
@@ -2828,7 +3224,22 @@
         "label": "fbc v3 3.11",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.11"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020904,
+          "severity": "error",
+          "message": "The attribute 'fbc:geneProduct' on a <GeneProductRef> must be of the data type 'SIdRef'.",
+          "section": "L3V1 Fbc V3 Section 3.11"
+        },
+        {
+          "id": 2020908,
+          "severity": "error",
+          "message": "The attribute 'fbc:geneProduct' on a <GeneProductRef> if set, must refer to 'id' of a <GeneProduct> in the <Model>.",
+          "section": "L3V1 Fbc V3 Section 3.11"
+        }
+      ]
     },
     "types/InitialAssignment": {
       "kind": "type",
@@ -3648,13 +4059,15 @@
       "docs": "reference/model/#fbc",
       "owner": "types/Model",
       "type": {
-        "label": "ModelFbc"
+        "label": "ModelFbc",
+        "key": "datatypes/ModelFbc"
       },
       "spec": {
         "label": "fbc v3 3.3",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.3"
-      }
+      },
+      "required": true
     },
     "types/Model/fbc.activeObjective": {
       "kind": "attribute",
@@ -3672,7 +4085,22 @@
         "label": "fbc v3 3.3.1",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.3.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020207,
+          "severity": "error",
+          "message": "The value of attribute 'fbc:activeObjective' on the <listOfObjectives> object must be of the data type SIdRef.",
+          "section": "L3V1 Fbc V3 Section 3.3.1"
+        },
+        {
+          "id": 2020208,
+          "severity": "error",
+          "message": "The value of attribute 'fbc:activeObjective' on the <listOfObjectives> object must be the identifier of an existing <objective>.",
+          "section": "L3V1 Fbc V3 Section 3.3.1"
+        }
+      ]
     },
     "types/Model/fbc.strict": {
       "kind": "attribute",
@@ -3690,7 +4118,88 @@
         "label": "fbc v3 3.3",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.3"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020209,
+          "severity": "error",
+          "message": "A <model> object must have the required attributes 'strict'. No other attributes from the Flux Balance Constraints namespace are permitted on a <model> object.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020210,
+          "severity": "error",
+          "message": "The attribute 'fbc:strict' on the <model> object must have a value of datatype Boolean.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020608,
+          "severity": "error",
+          "message": "When the value of the <model> 'fbc:strict' attribute is true, the value of the attribute 'fbc:coefficient' of a <fluxObjective> object must not be set to 'NaN', 'INF' or '-INF'.",
+          "section": "L3V1 Fbc V3, Section 3.3"
+        },
+        {
+          "id": 2020707,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', a <Reaction> must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020708,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020709,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020710,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an <InitialAssignment>.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020711,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attribute 'fbc:lowerFluxBound' may not have the value 'INF'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020712,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> object referred to by the attribute 'fbc:upperFluxBound' may not have the value '-INF'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020713,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the <Parameter> object referred to by the attribute 'fbc:upperFluxBound' .",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020714,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the 'constant' attribute of <SpeciesReference> elements of a <Reaction> must be set to 'true'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020715,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the value of a <SpeciesReference>'s 'stoichiometry> attribute must not be set to 'NaN', '-INF' or 'INF'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020716,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <SpeciesReference> elements of a <Reaction> may not be targeted by an <InitialAssignment>.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        }
+      ]
     },
     "types/Model/kind": {
       "kind": "attribute",
@@ -3849,7 +4358,28 @@
         "label": "fbc v1 3.3.1",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1",
         "section": "3.3.1"
-      }
+      },
+      "required": false,
+      "default": "the bounds of a reaction are inferred from its reversibility",
+      "rules": [
+        {
+          "id": 2020201,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> object using Flux Balance Constraints: <listOfFluxBounds> (V1 only), <listOfObjectives> <listOfGeneProducts> (V2 onwards) and <listOfUserDefinedConstraints> (V3).",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020202,
+          "severity": "error",
+          "message": "The various ListOf subobjects with a <model> object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the <model>, it must not be empty: <listOfFluxBounds> (V1 only), <listOfObjectives> and <listOfGeneProducts> (V2).",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020203,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfFluxBounds> container object may only contain <fluxBound> objects."
+        }
+      ]
     },
     "types/Model/listOfFunctionDefinitions": {
       "kind": "attribute",
@@ -3894,7 +4424,28 @@
         "label": "fbc v3 3.3.2",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.3.2"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 2020201,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> object using Flux Balance Constraints: <listOfFluxBounds> (V1 only), <listOfObjectives> <listOfGeneProducts> (V2 onwards) and <listOfUserDefinedConstraints> (V3).",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020202,
+          "severity": "error",
+          "message": "The various ListOf subobjects with a <model> object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the <model>, it must not be empty: <listOfFluxBounds> (V1 only), <listOfObjectives> and <listOfGeneProducts> (V2).",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020211,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfGeneProducts> container object may only contain <geneProduct> objects.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        }
+      ]
     },
     "types/Model/listOfInitialAssignments": {
       "kind": "attribute",
@@ -3939,7 +4490,29 @@
         "label": "fbc v3 3.3.1",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.3.1"
-      }
+      },
+      "required": false,
+      "default": "the model poses no optimisation problem and cannot be formulated as a linear program",
+      "rules": [
+        {
+          "id": 2020201,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> object using Flux Balance Constraints: <listOfFluxBounds> (V1 only), <listOfObjectives> <listOfGeneProducts> (V2 onwards) and <listOfUserDefinedConstraints> (V3).",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020202,
+          "severity": "error",
+          "message": "The various ListOf subobjects with a <model> object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the <model>, it must not be empty: <listOfFluxBounds> (V1 only), <listOfObjectives> and <listOfGeneProducts> (V2).",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020204,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfObjectives> container object may only contain <objective> objects.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        }
+      ]
     },
     "types/Model/listOfParameters": {
       "kind": "attribute",
@@ -4207,7 +4780,23 @@
         "label": "fbc v3 3.3.3",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.3.3"
-      }
+      },
+      "required": false,
+      "default": "only the reaction network and the flux bounds constrain the fluxes",
+      "rules": [
+        {
+          "id": 2020201,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> object using Flux Balance Constraints: <listOfFluxBounds> (V1 only), <listOfObjectives> <listOfGeneProducts> (V2 onwards) and <listOfUserDefinedConstraints> (V3).",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020213,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <ListOfUserDefinedConstraints> container object may only contain <userDefinedConstraint> objects.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        }
+      ]
     },
     "types/Model/substanceUnits": {
       "kind": "attribute",
@@ -4426,6 +5015,38 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.6"
       },
+      "rules": [
+        {
+          "id": 2010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> object the values of the attributes id and fbc:id on every instance of the following classes of objects must be unique across the set of all id and fbc:id attribute values of all such objects in a model: the model itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <fluxBound>, <objective>, <fluxObjective>, <geneProduct> and <geneProductAssociation> objects defined by the Flux Balance Constraints package.",
+          "section": "L3V1 Fbc V3 Section 3.2"
+        },
+        {
+          "id": 2020501,
+          "severity": "error",
+          "message": "An <objective> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an <objective>.",
+          "section": "L3V1 Core, Section 3.2"
+        },
+        {
+          "id": 2020502,
+          "severity": "error",
+          "message": "An <objective> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on an <objective>.",
+          "section": "L3V1 Core, Section 3.2"
+        },
+        {
+          "id": 2020503,
+          "severity": "error",
+          "message": "An <objective> object must have the required attributes 'fbc:id' and 'fbc:type' and may have the optional attribute 'fbc:name'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on an <objective> object.",
+          "section": "L3V1 Fbc V3, Section 3.6"
+        },
+        {
+          "id": 2020506,
+          "severity": "error",
+          "message": "An <objective> object must have one and only one instance of the <listOfFluxObjectives> object.",
+          "section": "L3V1 Fbc V3, Section 3.6"
+        }
+      ],
       "attributes": [
         "types/Objective/type",
         "types/Objective/listOfFluxObjectives"
@@ -4452,7 +5073,28 @@
         "label": "fbc v3 3.7",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.7"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020506,
+          "severity": "error",
+          "message": "An <objective> object must have one and only one instance of the <listOfFluxObjectives> object.",
+          "section": "L3V1 Fbc V3, Section 3.6"
+        },
+        {
+          "id": 2020507,
+          "severity": "error",
+          "message": "The <listOfFluxObjectives> subobject within an <objective> object must not be empty.",
+          "section": "L3V1 Fbc V3, Section 3.6"
+        },
+        {
+          "id": 2020508,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfFluxObjectives> container object may only contain <fluxObjective> objects.",
+          "section": "L3V1 Fbc V3, Section 3.6"
+        }
+      ]
     },
     "types/Objective/type": {
       "kind": "attribute",
@@ -4463,13 +5105,23 @@
       "docs": "reference/objective/#type",
       "owner": "types/Objective",
       "type": {
-        "label": "FbcType"
+        "label": "FbcType",
+        "key": "datatypes/FbcType"
       },
       "spec": {
         "label": "fbc v3 3.6",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.6"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2020505,
+          "severity": "error",
+          "message": "The attribute 'fbc:type' on an <objective> must be of the data type FbcType and thus its value must be one of 'minimize' or 'maximize.",
+          "section": "L3V1 Fbc V3, Section 3.6"
+        }
+      ]
     },
     "types/Or": {
       "kind": "type",
@@ -4483,6 +5135,26 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.13"
       },
+      "rules": [
+        {
+          "id": 2021101,
+          "severity": "error",
+          "message": "An <Or> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an <Or>.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2021102,
+          "severity": "error",
+          "message": "An <Or> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on an <Or>.",
+          "section": "L3V1 Core Section 3.2"
+        },
+        {
+          "id": 2021103,
+          "severity": "error",
+          "message": "An <Or> object must have two or more concrete <Association> objects: <GeneProductRef>, <And>, or <Or>. No other elements from the SBML Level 3 Flux Balance Constraints namespace are permitted on an <Or> object.",
+          "section": "L3V1 Fbc V3 Section 3.13"
+        }
+      ],
       "attributes": [
         "types/Or/associations"
       ],
@@ -4508,7 +5180,16 @@
         "label": "fbc v3 3.13",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.13"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021103,
+          "severity": "error",
+          "message": "An <Or> object must have two or more concrete <Association> objects: <GeneProductRef>, <And>, or <Or>. No other elements from the SBML Level 3 Flux Balance Constraints namespace are permitted on an <Or> object.",
+          "section": "L3V1 Fbc V3 Section 3.13"
+        }
+      ]
     },
     "types/Output": {
       "kind": "type",
@@ -5450,13 +6131,15 @@
       "docs": "reference/reaction/#fbc",
       "owner": "types/Reaction",
       "type": {
-        "label": "ReactionFbc"
+        "label": "ReactionFbc",
+        "key": "datatypes/ReactionFbc"
       },
       "spec": {
         "label": "fbc v3 3.8",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.8"
-      }
+      },
+      "required": false
     },
     "types/Reaction/fbc.geneProductAssociation": {
       "kind": "attribute",
@@ -5474,7 +6157,16 @@
         "label": "fbc v3 3.9",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.9"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 2020701,
+          "severity": "error",
+          "message": "There may be at most one instance of a <GeneProductAssociation> within a <Reaction> object using Flux BalanceConstraints.",
+          "section": "L3V1 Fbc V3 Section 3.8"
+        }
+      ]
     },
     "types/Reaction/fbc.lowerFluxBound": {
       "kind": "attribute",
@@ -5492,7 +6184,65 @@
         "label": "fbc v3 3.8",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.8"
-      }
+      },
+      "required": false,
+      "default": "only a model which is not strict may leave the bound unset",
+      "rules": [
+        {
+          "id": 2020702,
+          "severity": "error",
+          "message": "An SBML <Reaction> object may have the optional attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'. No other attributes from the Flux Balance Constraints namespaces are permitted on a <Reaction>.",
+          "section": "L3V1 Fbc V3 Section 3.8"
+        },
+        {
+          "id": 2020703,
+          "severity": "error",
+          "message": "The attribute 'fbc:lowerFluxBound' of a <Reaction> must be of the data type 'SIdRef'.",
+          "section": "L3V1 Fbc V3 Section 3.8"
+        },
+        {
+          "id": 2020705,
+          "severity": "error",
+          "message": "The attribute 'fbc:lowerFluxBound' of a <Reaction> must point to an existing <Parameter> in the model.",
+          "section": "L3V1 Fbc V3 Section 3.8"
+        },
+        {
+          "id": 2020707,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', a <Reaction> must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020708,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020709,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020710,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an <InitialAssignment>.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020711,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attribute 'fbc:lowerFluxBound' may not have the value 'INF'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020713,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the <Parameter> object referred to by the attribute 'fbc:upperFluxBound' .",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        }
+      ]
     },
     "types/Reaction/fbc.upperFluxBound": {
       "kind": "attribute",
@@ -5510,7 +6260,65 @@
         "label": "fbc v3 3.8",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.8"
-      }
+      },
+      "required": false,
+      "default": "only a model which is not strict may leave the bound unset",
+      "rules": [
+        {
+          "id": 2020702,
+          "severity": "error",
+          "message": "An SBML <Reaction> object may have the optional attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'. No other attributes from the Flux Balance Constraints namespaces are permitted on a <Reaction>.",
+          "section": "L3V1 Fbc V3 Section 3.8"
+        },
+        {
+          "id": 2020704,
+          "severity": "error",
+          "message": "The attribute 'fbc:upperFluxBound' of a <Reaction> must be of the data type 'SIdRef'.",
+          "section": "L3V1 Fbc V3 Section 3.8"
+        },
+        {
+          "id": 2020706,
+          "severity": "error",
+          "message": "The attribute 'fbc:upperFluxBound' of a <Reaction> must point to an existing <Parameter> in the model.",
+          "section": "L3V1 Fbc V3 Section 3.8"
+        },
+        {
+          "id": 2020707,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', a <Reaction> must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020708,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020709,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020710,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an <InitialAssignment>.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020712,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> object referred to by the attribute 'fbc:upperFluxBound' may not have the value '-INF'.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
+        {
+          "id": 2020713,
+          "severity": "error",
+          "message": "When the value of the <Model>s 'fbc:strict' attribute is 'true', the <Parameter> object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the <Parameter> object referred to by the attribute 'fbc:upperFluxBound' .",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        }
+      ]
     },
     "types/Reaction/kineticLaw": {
       "kind": "attribute",
@@ -6843,7 +7651,35 @@
         "label": "fbc v3 3.16",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.16"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 2021503,
+          "severity": "error",
+          "message": "A <keyValuePair> object must have the required attribute 'fbc:key', and may have the optional attributes 'fbc:id', 'fbc:name', 'fbc:value' and 'fbc:uri'. No other attributes from the SBML Level 3 Flux Balance Constraints namespaces are permitted on a <keyValuePair> object."
+        },
+        {
+          "id": 2021504,
+          "severity": "error",
+          "message": "The attribute 'fbc:key' on a <keyValuePair> must have a value of data type 'string'."
+        },
+        {
+          "id": 2021506,
+          "severity": "error",
+          "message": "The attribute 'fbc:value' on a <keyValuePair> must have a value of data type 'string'."
+        },
+        {
+          "id": 2021507,
+          "severity": "error",
+          "message": "The attribute 'fbc:uri' on a <keyValuePair> must have a value of data type 'string'."
+        },
+        {
+          "id": 2021508,
+          "severity": "error",
+          "message": "A <ListOfKeyValuePairs> object must have the required attribute 'xmlns'. No other attributes from the SBML Level~3 Flux Balance Constraints namespaces are permitted on a <ListOfKeyValuePairs> object."
+        }
+      ]
     },
     "types/SBase/lists": {
       "kind": "attribute",
@@ -7482,31 +8318,53 @@
       "docs": "reference/species/#fbc",
       "owner": "types/Species",
       "type": {
-        "label": "SpeciesFbc"
+        "label": "SpeciesFbc",
+        "key": "datatypes/SpeciesFbc"
       },
       "spec": {
         "label": "fbc v3 3.4",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.4"
-      }
+      },
+      "required": false
     },
     "types/Species/fbc.charge": {
       "kind": "attribute",
       "label": "fbc:charge",
       "summary": "the charge of the species, counted in electrons",
-      "description": "The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Together with the chemical formula it is what a check of the charge balance of a reaction needs.\n\nThe report shows the charge in the inspector of the species.",
+      "description": "The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Versions 1 and 2 of the package wrote it as an integer, Version 3 as a double, so that a species which stands for a pseudoisomer or an aggregate molecule can carry a charge which is not a whole number. Together with the chemical formula it is what a check of the charge balance of a reaction needs.\n\nThe report shows the charge in the inspector of the species.",
       "package": "fbc",
       "docs": "reference/species/#fbc-charge",
       "owner": "types/Species",
       "type": {
-        "label": "integer",
-        "key": "datatypes/integer"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "fbc v3 3.4",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.4"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 2020301,
+          "severity": "error",
+          "message": "A SBML <species> object may have the optional attributes 'fbc:charge' and 'fbc:chemicalFormula'. No other attributes from the Flux Balance Constraints namespaces are permitted on a <species>.",
+          "section": "L3V1 Fbc V3 Section 3.4"
+        },
+        {
+          "id": 2020302,
+          "severity": "error",
+          "message": "The value of attribute 'fbc:charge' on SBML <species> object must be of the data type integer."
+        },
+        {
+          "id": 2020304,
+          "severity": "error",
+          "message": "The value of attribute 'fbc:charge' on SBML <species> object must be of the data type double.",
+          "section": "L3V1 Fbc V3 Section 3.4"
+        }
+      ]
     },
     "types/Species/fbc.chemicalFormula": {
       "kind": "attribute",
@@ -7524,7 +8382,22 @@
         "label": "fbc v3 3.4",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.4"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 2020301,
+          "severity": "error",
+          "message": "A SBML <species> object may have the optional attributes 'fbc:charge' and 'fbc:chemicalFormula'. No other attributes from the Flux Balance Constraints namespaces are permitted on a <species>.",
+          "section": "L3V1 Fbc V3 Section 3.4"
+        },
+        {
+          "id": 2020303,
+          "severity": "error",
+          "message": "The value of attribute 'fbc:chemicalFormula' on the SBML <species> object must be set to a string consisting only of atomic names or user defined compounds and their occurrence.",
+          "section": "L3V1 Fbc V3 Section 3.4"
+        }
+      ]
     },
     "types/Species/hasOnlySubstanceUnits": {
       "kind": "attribute",
@@ -8784,6 +9657,28 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.14"
       },
+      "rules": [
+        {
+          "id": 2021401,
+          "severity": "error",
+          "message": "An <userDefinedConstraint> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an <userDefinedConstraint>."
+        },
+        {
+          "id": 2021402,
+          "severity": "error",
+          "message": "An <userDefinedConstraint> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <userDefinedConstraint>."
+        },
+        {
+          "id": 2021403,
+          "severity": "error",
+          "message": "An <userDefinedConstraint> object must have the required attributes 'fbc:lowerBound' and 'fbc:upperBound', and may have the optional attributes 'fbc:id' and 'fbc:name'. No other attributes from the SBML Level 3 Flux Balance Constraints namespaces are permitted on an <userDefinedConstraint> object."
+        },
+        {
+          "id": 2021404,
+          "severity": "error",
+          "message": "An <userDefinedConstraint> object must contain one and only one instance of the <listOfUserDefinedConstraintComponents> element. No other elements from the SBML Level 3 Flux Balance Constraints namespaces are permitted on an <userDefinedConstraint> object."
+        }
+      ],
       "attributes": [
         "types/UserDefinedConstraint/lowerBound",
         "types/UserDefinedConstraint/upperBound",
@@ -8812,7 +9707,20 @@
         "label": "fbc v3 3.15",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.15"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021404,
+          "severity": "error",
+          "message": "An <userDefinedConstraint> object must contain one and only one instance of the <listOfUserDefinedConstraintComponents> element. No other elements from the SBML Level 3 Flux Balance Constraints namespaces are permitted on an <userDefinedConstraint> object."
+        },
+        {
+          "id": 2021408,
+          "severity": "error",
+          "message": "Apart from the general notes and annotations subobjects permitted on all SBML objects, a <listOfUserDefinedConstraintComponents> container object may only contain <userDefinedConstraintComponent> objects."
+        }
+      ]
     },
     "types/UserDefinedConstraint/lowerBound": {
       "kind": "attribute",
@@ -8830,7 +9738,15 @@
         "label": "fbc v3 3.14",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.14"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021405,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:lowerBound' of an <userDefinedConstraint> object must be the identifier of an existing <parameter> object defined in the enclosing <model> object."
+        }
+      ]
     },
     "types/UserDefinedConstraint/upperBound": {
       "kind": "attribute",
@@ -8848,7 +9764,15 @@
         "label": "fbc v3 3.14",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.14"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021406,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:upperBound' of an <userDefinedConstraint> object must be the identifier of an existing <parameter> object defined in the enclosing <model> object."
+        }
+      ]
     },
     "types/UserDefinedConstraintComponent": {
       "kind": "type",
@@ -8862,6 +9786,23 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.15"
       },
+      "rules": [
+        {
+          "id": 2021301,
+          "severity": "error",
+          "message": "An <userDefinedConstraintComponent> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an <userDefinedConstraintComponent>."
+        },
+        {
+          "id": 2021302,
+          "severity": "error",
+          "message": "An <userDefinedConstraintComponent> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <userDefinedConstraintComponent>."
+        },
+        {
+          "id": 2021303,
+          "severity": "error",
+          "message": "An <userDefinedConstraintComponent> object must have the required attributes 'fbc:coefficient', 'fbc:variable' and 'fbc:variableType', and may have the optional attributes 'fbc:id', 'fbc:name' and 'fbc:variable2'. No other attributes from the SBML Level 3 Flux Balance Constraints namespaces are permitted on an <userDefinedConstraintComponent> object."
+        }
+      ],
       "attributes": [
         "types/UserDefinedConstraintComponent/variable",
         "types/UserDefinedConstraintComponent/variable2",
@@ -8891,7 +9832,15 @@
         "label": "fbc v3 3.15",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.15"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021304,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:coefficient' of an <userDefinedConstraintComponent> object must be the identifier of an existing <parameter> object defined in the enclosing <model> object."
+        }
+      ]
     },
     "types/UserDefinedConstraintComponent/variable": {
       "kind": "attribute",
@@ -8909,7 +9858,15 @@
         "label": "fbc v3 3.15",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.15"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021305,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:variable' of an <userDefinedConstraintComponent> object must be the identifier of an existing <reaction> or <parameter> object defined in the enclosing <model> object."
+        }
+      ]
     },
     "types/UserDefinedConstraintComponent/variable2": {
       "kind": "attribute",
@@ -8927,7 +9884,16 @@
         "label": "fbc v3 3.15",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.15"
-      }
+      },
+      "required": false,
+      "default": "a quadratic component is the square of its first variable",
+      "rules": [
+        {
+          "id": 2021308,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:variable2' of an <userDefinedConstraintComponent> object must be the identifier of an existing <reaction> or <parameter> object defined in the enclosing <model> object."
+        }
+      ]
     },
     "types/UserDefinedConstraintComponent/variableType": {
       "kind": "attribute",
@@ -8938,13 +9904,22 @@
       "docs": "reference/userdefinedconstraintcomponent/#variabletype",
       "owner": "types/UserDefinedConstraintComponent",
       "type": {
-        "label": "FbcVariableType"
+        "label": "FbcVariableType",
+        "key": "datatypes/FbcVariableType"
       },
       "spec": {
         "label": "fbc v3 3.15",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.15"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 2021306,
+          "severity": "error",
+          "message": "The value of the attribute 'fbc:variableType' of an <userDefinedConstraintComponent> object must conform to the syntax of SBML data type 'FbcVariableType' and may only take on the allowed values of 'FbcVariableType' defined in SBML; that is, the value must be one of the following: 'linear' or 'quadratic'."
+        }
+      ]
     },
     "types/comp": {
       "kind": "type",
@@ -9054,6 +10029,38 @@
         "label": "fbc v3",
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1"
       },
+      "rules": [
+        {
+          "id": 2010101,
+          "severity": "error",
+          "message": "To conform to Version 1 of the Flux Balance Constraints package specification for SBML Level 3, an SBML document must declare the use of the following XML Namespace: 'http://www.sbml.org/sbml/level3/version1/fbc/version1'",
+          "section": "L3V1 Fbc V3 Section 3.1"
+        },
+        {
+          "id": 2010102,
+          "severity": "error",
+          "message": "Wherever they appear in an SBML document, elements and attributes from the Flux Balance Constraints package must be declared either implicitly or explicitly to be in the XML namespace 'http://www.sbml.org/sbml/level3/version1/fbc/version1'",
+          "section": "L3V1 Fbc V3 Section 3.1"
+        },
+        {
+          "id": 2020101,
+          "severity": "error",
+          "message": "In all SBML documents using the Flux Balance Constraints package, the SBML object must include a value for the attribute 'fbc:required'.",
+          "section": "L3V1 Core Section 4.1.2"
+        },
+        {
+          "id": 2020102,
+          "severity": "error",
+          "message": "The value of attribute 'fbc:required' on the SBML object must be of the data type Boolean.",
+          "section": "L3V1 Core Section 4.1.2"
+        },
+        {
+          "id": 2020103,
+          "severity": "error",
+          "message": "The value of attribute 'fbc:required' on the SBML object must be set to 'false'.",
+          "section": "L3V1 Fbc V3 Section 3.1"
+        }
+      ],
       "related": [
         "types/GeneProduct",
         "types/GeneProductAssociation",

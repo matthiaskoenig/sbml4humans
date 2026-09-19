@@ -20,7 +20,7 @@ The report shows these attributes for every element: the id and the name in the 
 | [replacements](#replacements) | [`CompSBase`](datatypes.md#compsbase) | optional | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [comp:replacedBy](#comp-replacedby) | [`ReplacedBy`](replacedby.md) | optional | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [comp:listOfReplacedElements](#comp-listofreplacedelements) | [`list`](datatypes.md#list) | optional | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | [`list`](datatypes.md#list) | - | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | [`list`](datatypes.md#list) | optional | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [distrib:listOfUncertainties](#distrib-listofuncertainties) | [`list`](datatypes.md#list) | - | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
@@ -118,6 +118,12 @@ A key value pair carries metadata for which SBML has no attribute: the tool whic
 Every key of one element is unique, the value is a string, and the uri says where the key is defined, for example a document which lists the keys of a tool.
 
 The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
+
+- `2021503` (error): A &lt;keyValuePair&gt; object must have the required attribute 'fbc:key', and may have the optional attributes 'fbc:id', 'fbc:name', 'fbc:value' and 'fbc:uri'. No other attributes from the SBML Level 3 Flux Balance Constraints namespaces are permitted on a &lt;keyValuePair&gt; object.
+- `2021504` (error): The attribute 'fbc:key' on a &lt;keyValuePair&gt; must have a value of data type 'string'.
+- `2021506` (error): The attribute 'fbc:value' on a &lt;keyValuePair&gt; must have a value of data type 'string'.
+- `2021507` (error): The attribute 'fbc:uri' on a &lt;keyValuePair&gt; must have a value of data type 'string'.
+- `2021508` (error): A &lt;ListOfKeyValuePairs&gt; object must have the required attribute 'xmlns'. No other attributes from the SBML Level~3 Flux Balance Constraints namespaces are permitted on a &lt;ListOfKeyValuePairs&gt; object.
 
 <span id="distrib-listofuncertainties"></span>**distrib:listOfUncertainties**
 

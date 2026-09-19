@@ -29,13 +29,13 @@ The report shows the model as the root of the report, its lists as the sections 
 | [listOfEvents](#listofevents) | [`list`](datatypes.md#list) | optional | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [comp:listOfSubmodels](#comp-listofsubmodels) | [`list`](datatypes.md#list) | optional | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [comp:listOfPorts](#comp-listofports) | [`list`](datatypes.md#list) | optional | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [fbc:listOfGeneProducts](#fbc-listofgeneproducts) | [`list`](datatypes.md#list) | - | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc](#fbc) | `ModelFbc` | - | what the model says about the constraint based problem it describes | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:strict](#fbc-strict) | [`boolean`](datatypes.md#boolean) | - | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:activeObjective](#fbc-activeobjective) | [`SIdRef`](datatypes.md#sidref) | - | the objective which is optimised unless an analysis says otherwise | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:listOfFluxBounds](#fbc-listoffluxbounds) | [`list`](datatypes.md#list) | - | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
-| [fbc:listOfUserDefinedConstraints](#fbc-listofuserdefinedconstraints) | [`list`](datatypes.md#list) | - | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:listOfObjectives](#fbc-listofobjectives) | [`list`](datatypes.md#list) | - | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:listOfGeneProducts](#fbc-listofgeneproducts) | [`list`](datatypes.md#list) | optional | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc](#fbc) | [`ModelFbc`](datatypes.md#modelfbc) | required | what the model says about the constraint based problem it describes | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:strict](#fbc-strict) | [`boolean`](datatypes.md#boolean) | required | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:activeObjective](#fbc-activeobjective) | [`SIdRef`](datatypes.md#sidref) | required | the objective which is optimised unless an analysis says otherwise | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:listOfFluxBounds](#fbc-listoffluxbounds) | [`list`](datatypes.md#list) | optional | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
+| [fbc:listOfUserDefinedConstraints](#fbc-listofuserdefinedconstraints) | [`list`](datatypes.md#list) | optional | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:listOfObjectives](#fbc-listofobjectives) | [`list`](datatypes.md#list) | optional | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [qual:listOfQualitativeSpecies](#qual-listofqualitativespecies) | [`list`](datatypes.md#list) | - | the entities of a qualitative model, which carry a level | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 | [qual:listOfTransitions](#qual-listoftransitions) | [`list`](datatypes.md#list) | - | the rules which decide the level of the qualitative species | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
@@ -223,6 +223,10 @@ Every [gene product](geneproduct.md) stands for one gene or one of its products 
 
 The report shows the gene products of a model as a section of the report.
 
+- `2020201` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; object using Flux Balance Constraints: &lt;listOfFluxBounds&gt; (V1 only), &lt;listOfObjectives&gt; &lt;listOfGeneProducts&gt; (V2 onwards) and &lt;listOfUserDefinedConstraints&gt; (V3).
+- `2020202` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfFluxBounds&gt; (V1 only), &lt;listOfObjectives&gt; and &lt;listOfGeneProducts&gt; (V2).
+- `2020211` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfGeneProducts&gt; container object may only contain &lt;geneProduct&gt; objects.
+
 <span id="fbc"></span>**fbc**
 
 The block holds the two attributes which belong to the model as a whole: whether it keeps to the restrictions of a strict problem, and which of its objectives is the active one.
@@ -237,11 +241,28 @@ A model which is not strict may compute a bound during a simulation, with an ini
 
 The report shows it in the inspector of the model.
 
+- `2020209` (error): A &lt;model&gt; object must have the required attributes 'strict'. No other attributes from the Flux Balance Constraints namespace are permitted on a &lt;model&gt; object.
+- `2020210` (error): The attribute 'fbc:strict' on the &lt;model&gt; object must have a value of datatype Boolean.
+- `2020608` (error): When the value of the &lt;model&gt; 'fbc:strict' attribute is true, the value of the attribute 'fbc:coefficient' of a &lt;fluxObjective&gt; object must not be set to 'NaN', 'INF' or '-INF'.
+- `2020707` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', a &lt;Reaction&gt; must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.
+- `2020708` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.
+- `2020709` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.
+- `2020710` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an &lt;InitialAssignment&gt;.
+- `2020711` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attribute 'fbc:lowerFluxBound' may not have the value 'INF'.
+- `2020712` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' may not have the value '-INF'.
+- `2020713` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' .
+- `2020714` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the 'constant' attribute of &lt;SpeciesReference&gt; elements of a &lt;Reaction&gt; must be set to 'true'.
+- `2020715` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the value of a &lt;SpeciesReference&gt;'s 'stoichiometry&gt; attribute must not be set to 'NaN', '-INF' or 'INF'.
+- `2020716` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;SpeciesReference&gt; elements of a &lt;Reaction&gt; may not be targeted by an &lt;InitialAssignment&gt;.
+
 <span id="fbc-activeobjective"></span>**fbc:activeObjective**
 
 A model may carry several [objectives](objective.md), for example the growth it was published with next to the alternatives it was studied with, and this attribute names the one which describes the published simulation. It is an attribute of the list of objectives, which the report does not carry as an object of its own, so it sits next to `strict` in the fbc block of the model.
 
 The report links the objective in the inspector of the model, and the inspector of that objective shows the model under "referenced by".
+
+- `2020207` (error): The value of attribute 'fbc:activeObjective' on the &lt;listOfObjectives&gt; object must be of the data type SIdRef.
+- `2020208` (error): The value of attribute 'fbc:activeObjective' on the &lt;listOfObjectives&gt; object must be the identifier of an existing &lt;objective&gt;.
 
 <span id="fbc-listoffluxbounds"></span>**fbc:listOfFluxBounds**
 
@@ -249,17 +270,34 @@ A [flux bound](fluxbound.md) is how the first version of the package constrained
 
 The report shows the flux bounds of a Version 1 model as a section of the report.
 
+Default: the bounds of a reaction are inferred from its reversibility.
+
+- `2020201` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; object using Flux Balance Constraints: &lt;listOfFluxBounds&gt; (V1 only), &lt;listOfObjectives&gt; &lt;listOfGeneProducts&gt; (V2 onwards) and &lt;listOfUserDefinedConstraints&gt; (V3).
+- `2020202` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfFluxBounds&gt; (V1 only), &lt;listOfObjectives&gt; and &lt;listOfGeneProducts&gt; (V2).
+- `2020203` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfFluxBounds&gt; container object may only contain &lt;fluxBound&gt; objects.
+
 <span id="fbc-listofuserdefinedconstraints"></span>**fbc:listOfUserDefinedConstraints**
 
 A [user defined constraint](userdefinedconstraint.md) bounds a combination of fluxes and parameters which the stoichiometry of the network leaves free, for example the ratio of two reactions or a shared budget. The list exists from Version 3 of the package on and is empty in every earlier document.
 
 The report shows the user defined constraints of a model as a section of the report.
 
+Default: only the reaction network and the flux bounds constrain the fluxes.
+
+- `2020201` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; object using Flux Balance Constraints: &lt;listOfFluxBounds&gt; (V1 only), &lt;listOfObjectives&gt; &lt;listOfGeneProducts&gt; (V2 onwards) and &lt;listOfUserDefinedConstraints&gt; (V3).
+- `2020213` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;ListOfUserDefinedConstraints&gt; container object may only contain &lt;userDefinedConstraint&gt; objects.
+
 <span id="fbc-listofobjectives"></span>**fbc:listOfObjectives**
 
 A model may define several [objectives](objective.md) and declares one of them as the active objective, the function which an analysis optimises unless it is told otherwise. The others are kept so that a model can carry the alternatives it was studied with.
 
 The report shows the objectives of a model as a section of the report.
+
+Default: the model poses no optimisation problem and cannot be formulated as a linear program.
+
+- `2020201` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; object using Flux Balance Constraints: &lt;listOfFluxBounds&gt; (V1 only), &lt;listOfObjectives&gt; &lt;listOfGeneProducts&gt; (V2 onwards) and &lt;listOfUserDefinedConstraints&gt; (V3).
+- `2020202` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfFluxBounds&gt; (V1 only), &lt;listOfObjectives&gt; and &lt;listOfGeneProducts&gt; (V2).
+- `2020204` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfObjectives&gt; container object may only contain &lt;objective&gt; objects.
 
 <span id="qual-listofqualitativespecies"></span>**qual:listOfQualitativeSpecies**
 

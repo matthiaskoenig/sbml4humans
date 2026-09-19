@@ -183,3 +183,77 @@ What the comp package adds to an element, the replacements it takes part in.
 The report keeps the two subcomponents the comp package adds to every element in one block: the [replaced elements](replacedelement.md), the elements of submodels which this element takes the place of, and the [replaced by](replacedby.md), the element of a submodel which takes the place of this one. An element may carry both, and an element which takes part in no replacement carries neither.
 
 The inspector shows the block as two rows of the element: [comp:replacedBy](sbase.md#comp-replacedby), the submodel and the element inside it which takes the place of this one, and [comp:listOfReplacedElements](sbase.md#comp-listofreplacedelements), a table with one row per replacement, each naming its submodel and the element it replaces. Every one of these names is a link to the element it stands for.
+
+## `FbcType` {#fbctype}
+
+The sense of an objective, the direction in which it is optimised.
+
+The [type](objective.md#type) of an [objective](objective.md) is the sense of the optimality constraint: whether an analysis looks for the flux distribution which makes the weighted sum of the fluxes as large as the bounds allow, or as small. Nothing else of the package carries the type, and the package has defined it with the same two values since Version 1.
+
+The report shows the value as the file writes it, in the column "type" of the objectives of a model and in the inspector of an objective. The two values are:
+
+- `maximize`
+- `minimize`
+
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.2.1.
+
+## `FbcVariableType` {#fbcvariabletype}
+
+Whether a term of a sum is linear or quadratic in its variable.
+
+Version 3 of the package added the type so that a [flux objective](fluxobjective.md) and a [component](userdefinedconstraintcomponent.md) of a user defined constraint say how their variable enters the sum. A linear term is the variable multiplied by its coefficient, `C * J`; a quadratic term is the square of the variable, `C * J^2`, or the product of the two variables where the term names a second one, `C * J1 * J2`. Without the attribute the two cannot be told apart, which is why Version 3 requires it; a document of Version 1 or Version 2 has no such attribute and every term of it is linear.
+
+The report writes a term as the product it is, with a superscript two on a quadratic variable which stands alone and with the second variable next to the first where the term names one. The two values are:
+
+- `linear`
+- `quadratic`
+
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.2.2.
+
+## `FbcOperation` {#fbcoperation}
+
+How a flux bound of Version 1 relates the flux of a reaction to its value.
+
+Version 1 of the package wrote a constraint of a flux as a [flux bound](fluxbound.md) of the model, one (in)equality of the form reaction, operator, value, and the operator is an attribute of this type: `R5 >= 0`, `R5 <= INF` and `R7 = 1.0` are three such bounds. Version 2 removed the construct and the type with it, because a [reaction](reaction.md) names the [parameters](parameter.md) of its lower and its upper bound instead, and which of the two a bound is follows from the attribute which names it.
+
+The report shows the operation in the column "operation" of the flux bounds of a Version 1 model and next to the value in the inspector. The three values are the mathematical symbols `<=`, `>=` and `=`, in this order:
+
+- `lessEqual`
+- `greaterEqual`
+- `equal`
+
+[SBML Level 3 Package: Flux Balance Constraints, Version 1 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1), Section 3.2.2.
+
+## `Association` {#association}
+
+One node of the gene association of a reaction, of the three kinds the package defines.
+
+`Association` is the abstract class of the nodes a [gene product association](geneproductassociation.md) is built from. It is never written as an element of its own: every node is one of its three subclasses, an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md), and the name of the element is the name of that class with a small first letter. An `and` and an `or` hold two or more associations of their own, which is what makes the class recursive and the association of a reaction a tree of any depth.
+
+The report gives every node an element of its own and renders the tree as the expression it stands for, `((b3670 and b3671) or (b0077 and b0078))`, with a link at every gene product.
+
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.10.
+
+## `ModelFbc` {#modelfbc}
+
+What the fbc package adds to a model, its strictness and its active objective.
+
+The report keeps the two attributes which fbc gives a model as a whole in one block: whether the model keeps to the restrictions of a strict problem, and which of its [objectives](objective.md) is the one an analysis optimises. The second of them is an attribute of the list of objectives and not of the model, and the report carries a list as an object of its own only where it states something an `SBase` states, which is why the two are shown together.
+
+The inspector shows the block as two rows of the model, [fbc:strict](model.md#fbc-strict) and [fbc:activeObjective](model.md#fbc-activeobjective), the second a link to the objective it names. The lists which fbc adds to a model are sections of the report and not part of this block.
+
+## `SpeciesFbc` {#speciesfbc}
+
+What the fbc package adds to a species, its composition and its charge.
+
+The report keeps the two attributes which fbc gives a [species](species.md) in one block: the elemental composition of the species and its charge. Neither enters the mathematics of the model, and together they are what a check of the mass and the charge balance of a reaction needs.
+
+The inspector shows the block as two rows of the species, [fbc:chemicalFormula](species.md#fbc-chemicalformula) and [fbc:charge](species.md#fbc-charge).
+
+## `ReactionFbc` {#reactionfbc}
+
+What the fbc package adds to a reaction, its flux bounds and its genes.
+
+The report keeps the three things which fbc gives a [reaction](reaction.md) in one block: the [parameters](parameter.md) which bound its flux from below and from above, and the [gene product association](geneproductassociation.md) which says under which genes it can run.
+
+The inspector shows the block as three rows of the reaction, [fbc:lowerFluxBound](reaction.md#fbc-lowerfluxbound) and [fbc:upperFluxBound](reaction.md#fbc-upperfluxbound), each a link to the parameter it names, and [fbc:geneProductAssociation](reaction.md#fbc-geneproductassociation), which names the association and renders its tree below it. The two bounds are columns of the table of the reactions as well.

@@ -10,13 +10,21 @@ The report shows it as the branches of the tree in the inspector of a reaction a
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [associations](#associations) | [`list`](datatypes.md#list) | - | the alternative nodes, two or more of them | [fbc v3 3.13](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [associations](#associations) | [`list`](datatypes.md#list) | required | the alternative nodes, two or more of them | [fbc v3 3.13](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
 <span id="associations"></span>**associations**
 
 The order of the nodes carries no meaning: an `or` is a set of alternatives of which one suffices. The report keeps them in the order of the file.
+
+- `2021103` (error): An &lt;Or&gt; object must have two or more concrete &lt;Association&gt; objects: &lt;GeneProductRef&gt;, &lt;And&gt;, or &lt;Or&gt;. No other elements from the SBML Level 3 Flux Balance Constraints namespace are permitted on an &lt;Or&gt; object.
+
+## Validation rules
+
+- `2021101` (error): An &lt;Or&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an &lt;Or&gt;.
+- `2021102` (error): An &lt;Or&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on an &lt;Or&gt;.
+- `2021103` (error): An &lt;Or&gt; object must have two or more concrete &lt;Association&gt; objects: &lt;GeneProductRef&gt;, &lt;And&gt;, or &lt;Or&gt;. No other elements from the SBML Level 3 Flux Balance Constraints namespace are permitted on an &lt;Or&gt; object.
 
 ## Related elements
 

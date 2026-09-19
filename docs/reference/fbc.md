@@ -8,6 +8,14 @@ The fbc package holds what such a model needs beyond the core: the lower and the
 
 The report shows the gene products, the objectives, the flux bounds of Version 1 and the user defined constraints of Version 3 as sections of a model of their own, and the fbc attributes of a species and of a reaction in their inspector.
 
+## Validation rules
+
+- `2010101` (error): To conform to Version 1 of the Flux Balance Constraints package specification for SBML Level 3, an SBML document must declare the use of the following XML Namespace: 'http://www.sbml.org/sbml/level3/version1/fbc/version1'
+- `2010102` (error): Wherever they appear in an SBML document, elements and attributes from the Flux Balance Constraints package must be declared either implicitly or explicitly to be in the XML namespace 'http://www.sbml.org/sbml/level3/version1/fbc/version1'
+- `2020101` (error): In all SBML documents using the Flux Balance Constraints package, the SBML object must include a value for the attribute 'fbc:required'.
+- `2020102` (error): The value of attribute 'fbc:required' on the SBML object must be of the data type Boolean.
+- `2020103` (error): The value of attribute 'fbc:required' on the SBML object must be set to 'false'.
+
 ## Related elements
 
 - [GeneProduct](geneproduct.md): a gene or one of its products which the reactions of the model depend on

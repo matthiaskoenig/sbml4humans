@@ -18,9 +18,9 @@ The report shows the initial quantity of a species, its units, the flags which s
 | [boundaryCondition](#boundarycondition) | [`boolean`](datatypes.md#boolean) | required | whether the quantity of the species is left unchanged by the reactions | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [constant](#constant) | [`boolean`](datatypes.md#boolean) | required | whether the quantity of the species stays fixed during a simulation | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [conversionFactor](#conversionfactor) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which converts the extent of a reaction into the quantity of the species | [core 4.6.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `SpeciesFbc` | - | the chemical formula and the charge which fbc adds to a species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:chemicalFormula](#fbc-chemicalformula) | [`string`](datatypes.md#string) | - | the elemental composition of the species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:charge](#fbc-charge) | [`integer`](datatypes.md#integer) | - | the charge of the species, counted in electrons | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc](#fbc) | [`SpeciesFbc`](datatypes.md#speciesfbc) | optional | the chemical formula and the charge which fbc adds to a species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:chemicalFormula](#fbc-chemicalformula) | [`string`](datatypes.md#string) | optional | the elemental composition of the species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:charge](#fbc-charge) | [`double`](datatypes.md#double) | optional | the charge of the species, counted in electrons | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -116,11 +116,18 @@ The formula must consist only of atomic names of the periodic table or user defi
 
 The report shows the formula in the inspector of the species.
 
+- `2020301` (error): A SBML &lt;species&gt; object may have the optional attributes 'fbc:charge' and 'fbc:chemicalFormula'. No other attributes from the Flux Balance Constraints namespaces are permitted on a &lt;species&gt;.
+- `2020303` (error): The value of attribute 'fbc:chemicalFormula' on the SBML &lt;species&gt; object must be set to a string consisting only of atomic names or user defined compounds and their occurrence.
+
 <span id="fbc-charge"></span>**fbc:charge**
 
-The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Together with the chemical formula it is what a check of the charge balance of a reaction needs.
+The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Versions 1 and 2 of the package wrote it as an integer, Version 3 as a double, so that a species which stands for a pseudoisomer or an aggregate molecule can carry a charge which is not a whole number. Together with the chemical formula it is what a check of the charge balance of a reaction needs.
 
 The report shows the charge in the inspector of the species.
+
+- `2020301` (error): A SBML &lt;species&gt; object may have the optional attributes 'fbc:charge' and 'fbc:chemicalFormula'. No other attributes from the Flux Balance Constraints namespaces are permitted on a &lt;species&gt;.
+- `2020302` (error): The value of attribute 'fbc:charge' on SBML &lt;species&gt; object must be of the data type integer.
+- `2020304` (error): The value of attribute 'fbc:charge' on SBML &lt;species&gt; object must be of the data type double.
 
 ## In the report
 

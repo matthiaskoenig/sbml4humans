@@ -17,10 +17,10 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 | [listOfProducts](#listofproducts) | [`list`](datatypes.md#list) | optional | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [listOfModifiers](#listofmodifiers) | [`list`](datatypes.md#list) | optional | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [kineticLaw](#kineticlaw) | [`KineticLaw`](kineticlaw.md) | optional | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `ReactionFbc` | - | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:upperFluxBound](#fbc-upperfluxbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:geneProductAssociation](#fbc-geneproductassociation) | [`GeneProductAssociation`](geneproductassociation.md) | - | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc](#fbc) | [`ReactionFbc`](datatypes.md#reactionfbc) | optional | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:upperFluxBound](#fbc-upperfluxbound) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:geneProductAssociation](#fbc-geneproductassociation) | [`GeneProductAssociation`](geneproductassociation.md) | optional | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -98,17 +98,43 @@ The bound is not a number but the identifier of a [parameter](parameter.md) of t
 
 The report links the parameter in the inspector of the reaction.
 
+Default: only a model which is not strict may leave the bound unset.
+
+- `2020702` (error): An SBML &lt;Reaction&gt; object may have the optional attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'. No other attributes from the Flux Balance Constraints namespaces are permitted on a &lt;Reaction&gt;.
+- `2020703` (error): The attribute 'fbc:lowerFluxBound' of a &lt;Reaction&gt; must be of the data type 'SIdRef'.
+- `2020705` (error): The attribute 'fbc:lowerFluxBound' of a &lt;Reaction&gt; must point to an existing &lt;Parameter&gt; in the model.
+- `2020707` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', a &lt;Reaction&gt; must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.
+- `2020708` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.
+- `2020709` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.
+- `2020710` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an &lt;InitialAssignment&gt;.
+- `2020711` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attribute 'fbc:lowerFluxBound' may not have the value 'INF'.
+- `2020713` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' .
+
 <span id="fbc-upperfluxbound"></span>**fbc:upperFluxBound**
 
 Like the lower bound it names a [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
 
 The report links the parameter in the inspector of the reaction.
 
+Default: only a model which is not strict may leave the bound unset.
+
+- `2020702` (error): An SBML &lt;Reaction&gt; object may have the optional attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'. No other attributes from the Flux Balance Constraints namespaces are permitted on a &lt;Reaction&gt;.
+- `2020704` (error): The attribute 'fbc:upperFluxBound' of a &lt;Reaction&gt; must be of the data type 'SIdRef'.
+- `2020706` (error): The attribute 'fbc:upperFluxBound' of a &lt;Reaction&gt; must point to an existing &lt;Parameter&gt; in the model.
+- `2020707` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', a &lt;Reaction&gt; must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.
+- `2020708` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.
+- `2020709` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.
+- `2020710` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an &lt;InitialAssignment&gt;.
+- `2020712` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' may not have the value '-INF'.
+- `2020713` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' .
+
 <span id="fbc-geneproductassociation"></span>**fbc:geneProductAssociation**
 
 The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
 
 The report shows the tree in the inspector of the reaction, one line per branch, and links every gene product it names.
+
+- `2020701` (error): There may be at most one instance of a &lt;GeneProductAssociation&gt; within a &lt;Reaction&gt; object using Flux BalanceConstraints.
 
 ## In the report
 

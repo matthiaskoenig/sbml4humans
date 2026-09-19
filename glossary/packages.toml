@@ -106,6 +106,95 @@ The inspector shows the block as two rows of the element: [comp:replacedBy](sbas
 
 
 # ----------------------------------------------------------------------------
+# the data types of fbc: the three enumerations the package defines, the
+# abstract class of the nodes of a gene association, and the blocks the report
+# builds from what fbc adds to a model, to a species and to a reaction
+# ----------------------------------------------------------------------------
+[datatypes.FbcType]
+label = "FbcType"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.2.1" }
+values = ["maximize", "minimize"]
+summary = "the sense of an objective, the direction in which it is optimised"
+description = """
+The [type](objective.md#type) of an [objective](objective.md) is the sense of the optimality constraint: whether an analysis looks for the flux distribution which makes the weighted sum of the fluxes as large as the bounds allow, or as small. Nothing else of the package carries the type, and the package has defined it with the same two values since Version 1.
+
+The report shows the value as the file writes it, in the column "type" of the objectives of a model and in the inspector of an objective. The two values are:
+"""
+related = ["FbcVariableType", "FbcOperation"]
+
+[datatypes.FbcVariableType]
+label = "FbcVariableType"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.2.2" }
+values = ["linear", "quadratic"]
+summary = "whether a term of a sum is linear or quadratic in its variable"
+description = """
+Version 3 of the package added the type so that a [flux objective](fluxobjective.md) and a [component](userdefinedconstraintcomponent.md) of a user defined constraint say how their variable enters the sum. A linear term is the variable multiplied by its coefficient, `C * J`; a quadratic term is the square of the variable, `C * J^2`, or the product of the two variables where the term names a second one, `C * J1 * J2`. Without the attribute the two cannot be told apart, which is why Version 3 requires it; a document of Version 1 or Version 2 has no such attribute and every term of it is linear.
+
+The report writes a term as the product it is, with a superscript two on a quadratic variable which stands alone and with the second variable next to the first where the term names one. The two values are:
+"""
+related = ["FbcType"]
+
+[datatypes.FbcOperation]
+label = "FbcOperation"
+package = "fbc"
+spec = { doc = "fbc1", section = "3.2.2" }
+values = ["lessEqual", "greaterEqual", "equal"]
+summary = "how a flux bound of Version 1 relates the flux of a reaction to its value"
+description = """
+Version 1 of the package wrote a constraint of a flux as a [flux bound](fluxbound.md) of the model, one (in)equality of the form reaction, operator, value, and the operator is an attribute of this type: `R5 >= 0`, `R5 <= INF` and `R7 = 1.0` are three such bounds. Version 2 removed the construct and the type with it, because a [reaction](reaction.md) names the [parameters](parameter.md) of its lower and its upper bound instead, and which of the two a bound is follows from the attribute which names it.
+
+The report shows the operation in the column "operation" of the flux bounds of a Version 1 model and next to the value in the inspector. The three values are the mathematical symbols `<=`, `>=` and `=`, in this order:
+"""
+related = ["FbcType"]
+
+[datatypes.Association]
+label = "Association"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.10" }
+summary = "one node of the gene association of a reaction, of the three kinds the package defines"
+description = """
+`Association` is the abstract class of the nodes a [gene product association](geneproductassociation.md) is built from. It is never written as an element of its own: every node is one of its three subclasses, an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md), and the name of the element is the name of that class with a small first letter. An `and` and an `or` hold two or more associations of their own, which is what makes the class recursive and the association of a reaction a tree of any depth.
+
+The report gives every node an element of its own and renders the tree as the expression it stands for, `((b3670 and b3671) or (b0077 and b0078))`, with a link at every gene product.
+"""
+
+[datatypes.ModelFbc]
+label = "ModelFbc"
+package = "report"
+summary = "what the fbc package adds to a model, its strictness and its active objective"
+description = """
+The report keeps the two attributes which fbc gives a model as a whole in one block: whether the model keeps to the restrictions of a strict problem, and which of its [objectives](objective.md) is the one an analysis optimises. The second of them is an attribute of the list of objectives and not of the model, and the report carries a list as an object of its own only where it states something an `SBase` states, which is why the two are shown together.
+
+The inspector shows the block as two rows of the model, [fbc:strict](model.md#fbc-strict) and [fbc:activeObjective](model.md#fbc-activeobjective), the second a link to the objective it names. The lists which fbc adds to a model are sections of the report and not part of this block.
+"""
+related = ["SpeciesFbc", "ReactionFbc"]
+
+[datatypes.SpeciesFbc]
+label = "SpeciesFbc"
+package = "report"
+summary = "what the fbc package adds to a species, its composition and its charge"
+description = """
+The report keeps the two attributes which fbc gives a [species](species.md) in one block: the elemental composition of the species and its charge. Neither enters the mathematics of the model, and together they are what a check of the mass and the charge balance of a reaction needs.
+
+The inspector shows the block as two rows of the species, [fbc:chemicalFormula](species.md#fbc-chemicalformula) and [fbc:charge](species.md#fbc-charge).
+"""
+related = ["ReactionFbc", "ModelFbc"]
+
+[datatypes.ReactionFbc]
+label = "ReactionFbc"
+package = "report"
+summary = "what the fbc package adds to a reaction, its flux bounds and its genes"
+description = """
+The report keeps the three things which fbc gives a [reaction](reaction.md) in one block: the [parameters](parameter.md) which bound its flux from below and from above, and the [gene product association](geneproductassociation.md) which says under which genes it can run.
+
+The inspector shows the block as three rows of the reaction, [fbc:lowerFluxBound](reaction.md#fbc-lowerfluxbound) and [fbc:upperFluxBound](reaction.md#fbc-upperfluxbound), each a link to the parameter it names, and [fbc:geneProductAssociation](reaction.md#fbc-geneproductassociation), which names the association and renders its tree below it. The two bounds are columns of the table of the reactions as well.
+"""
+related = ["SpeciesFbc", "ModelFbc"]
+
+
+# ----------------------------------------------------------------------------
 # the packages themselves
 # ----------------------------------------------------------------------------
 [types.comp]
@@ -127,6 +216,7 @@ related = ["ExternalModelDefinition", "Submodel", "Port", "Model"]
 label = "Flux Balance Constraints (fbc)"
 package = "fbc"
 spec = { doc = "fbc3" }
+rules = [2010101, 2010102, 2020101, 2020102, 2020103]
 summary = "the package which describes a constraint based model"
 description = """
 A constraint based model does not integrate rate laws over time. It assumes a steady state and chooses the fluxes of the reactions so that an objective function becomes extremal while every flux stays within its bounds, which is what flux balance analysis does with a genome scale reconstruction.
@@ -215,6 +305,8 @@ label = "fbc:listOfKeyValuePairs"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.16" }
+required = false
+rules = [2021503, 2021504, 2021506, 2021507, 2021508]
 summary = "the controlled annotation fbc Version 3 allows on any element"
 description = """
 A key value pair carries metadata for which SBML has no attribute: the tool which produced a number, the database a reaction was taken from, the assumption behind a bound. It is written into the annotation of an element, in a namespace the package defines, so that every tool reads the same format instead of inventing its own.
@@ -274,6 +366,8 @@ label = "fbc:listOfGeneProducts"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.3.2" }
+required = false
+rules = [2020201, 2020202, 2020211]
 summary = "the genes and gene products the reactions of the model depend on"
 description = """
 Every [gene product](geneproduct.md) stands for one gene or one of its products and carries the label under which the reconstruction knows it. The reactions name them in their gene product association.
@@ -286,6 +380,7 @@ label = "fbc"
 package = "fbc"
 type = "ModelFbc"
 spec = { doc = "fbc3", section = "3.3" }
+required = true
 summary = "what the model says about the constraint based problem it describes"
 description = """
 The block holds the two attributes which belong to the model as a whole: whether it keeps to the restrictions of a strict problem, and which of its objectives is the active one.
@@ -298,6 +393,8 @@ label = "fbc:strict"
 package = "fbc"
 type = "boolean"
 spec = { doc = "fbc3", section = "3.3" }
+required = true
+rules = [2020209, 2020210, 2020608, 2020707, 2020708, 2020709, 2020710, 2020711, 2020712, 2020713, 2020714, 2020715, 2020716]
 summary = "whether the model keeps to the restrictions of a linear or quadratic program"
 description = """
 A strict model can be handed to a solver which does not read arbitrary mathematics: every reaction has both flux bounds, every bound is a constant [parameter](parameter.md) with a value which is not missing and not infinite in the direction which would remove the bound, every stoichiometry is a constant number, every coefficient of a flux objective is finite, and no initial assignment touches a bound or a stoichiometry.
@@ -312,6 +409,8 @@ label = "fbc:activeObjective"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.3.1" }
+required = true
+rules = [2020207, 2020208]
 summary = "the objective which is optimised unless an analysis says otherwise"
 description = """
 A model may carry several [objectives](objective.md), for example the growth it was published with next to the alternatives it was studied with, and this attribute names the one which describes the published simulation. It is an attribute of the list of objectives, which the report does not carry as an object of its own, so it sits next to `strict` in the fbc block of the model.
@@ -324,6 +423,9 @@ label = "fbc:listOfFluxBounds"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc1", section = "3.3.1" }
+required = false
+default = "the bounds of a reaction are inferred from its reversibility"
+rules = [2020201, 2020202, 2020203]
 summary = "the constraints of the fluxes of a Version 1 model"
 description = """
 A [flux bound](fluxbound.md) is how the first version of the package constrained a reaction. Version 2 removed the construct and replaced it by the two attributes of a [reaction](reaction.md) which name a parameter, so the list is empty for every document of a later version.
@@ -336,6 +438,9 @@ label = "fbc:listOfUserDefinedConstraints"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.3.3" }
+required = false
+default = "only the reaction network and the flux bounds constrain the fluxes"
+rules = [2020201, 2020213]
 summary = "the constraints of the model which the reaction network does not impose"
 description = """
 A [user defined constraint](userdefinedconstraint.md) bounds a combination of fluxes and parameters which the stoichiometry of the network leaves free, for example the ratio of two reactions or a shared budget. The list exists from Version 3 of the package on and is empty in every earlier document.
@@ -348,6 +453,9 @@ label = "fbc:listOfObjectives"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.3.1" }
+required = false
+default = "the model poses no optimisation problem and cannot be formulated as a linear program"
+rules = [2020201, 2020202, 2020204]
 summary = "the objective functions of the constraint based model"
 description = """
 A model may define several [objectives](objective.md) and declares one of them as the active objective, the function which an analysis optimises unless it is told otherwise. The others are kept so that a model can carry the alternatives it was studied with.
@@ -388,6 +496,7 @@ label = "fbc"
 package = "fbc"
 type = "SpeciesFbc"
 spec = { doc = "fbc3", section = "3.4" }
+required = false
 summary = "the chemical formula and the charge which fbc adds to a species"
 description = """
 A constraint based model needs the elemental composition and the charge of a species to check that its reactions are balanced. Both are annotations of the species in the sense that they do not enter the mathematics of the model.
@@ -400,6 +509,8 @@ label = "fbc:chemicalFormula"
 package = "fbc"
 type = "string"
 spec = { doc = "fbc3", section = "3.4" }
+required = false
+rules = [2020301, 2020303]
 summary = "the elemental composition of the species"
 description = """
 The formula must consist only of atomic names of the periodic table or user defined compounds, each of which takes the form of a single capital letter followed by zero or more lowercase letters, with an integer behind a symbol where more than one atom is present. The order should follow the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, and every element including hydrogen in alphabetical order when the formula contains no carbon. `C10H12N5O13P3` is such a formula.
@@ -410,11 +521,13 @@ The report shows the formula in the inspector of the species.
 [types.Species.attributes."fbc.charge"]
 label = "fbc:charge"
 package = "fbc"
-type = "integer"
+type = "double"
 spec = { doc = "fbc3", section = "3.4" }
+required = false
+rules = [2020301, 2020302, 2020304]
 summary = "the charge of the species, counted in electrons"
 description = """
-The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Together with the chemical formula it is what a check of the charge balance of a reaction needs.
+The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Versions 1 and 2 of the package wrote it as an integer, Version 3 as a double, so that a species which stands for a pseudoisomer or an aggregate molecule can carry a charge which is not a whole number. Together with the chemical formula it is what a check of the charge balance of a reaction needs.
 
 The report shows the charge in the inspector of the species.
 """
@@ -424,6 +537,7 @@ label = "fbc"
 package = "fbc"
 type = "ReactionFbc"
 spec = { doc = "fbc3", section = "3.8" }
+required = false
 summary = "the flux bounds and the gene association which fbc adds to a reaction"
 description = """
 The fbc package extends a reaction with the two parameters which bound its flux and with the gene product association which says under which genes it can run. Together with the [objective](objective.md) of the model they are what a flux balance analysis needs.
@@ -436,6 +550,9 @@ label = "fbc:lowerFluxBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.8" }
+required = false
+default = "only a model which is not strict may leave the bound unset"
+rules = [2020702, 2020703, 2020705, 2020707, 2020708, 2020709, 2020710, 2020711, 2020713]
 summary = "the parameter which holds the smallest flux the reaction may carry"
 description = """
 The bound is not a number but the identifier of a [parameter](parameter.md) of the model, so that many reactions can share one bound and a scenario is changed in one place. A model which sets `strict` of the fbc package has to give every reaction both bounds, and every bound has to be a constant parameter with a value which is neither missing nor infinite in the direction which would remove the bound; without `strict` a bound may be computed during a simulation.
@@ -448,6 +565,9 @@ label = "fbc:upperFluxBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.8" }
+required = false
+default = "only a model which is not strict may leave the bound unset"
+rules = [2020702, 2020704, 2020706, 2020707, 2020708, 2020709, 2020710, 2020712, 2020713]
 summary = "the parameter which holds the largest flux the reaction may carry"
 description = """
 Like the lower bound it names a [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
@@ -460,6 +580,8 @@ label = "fbc:geneProductAssociation"
 package = "fbc"
 type = "GeneProductAssociation"
 spec = { doc = "fbc3", section = "3.9" }
+required = false
+rules = [2020701]
 summary = "the genes under which the reaction can run"
 description = """
 The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
@@ -1103,6 +1225,7 @@ A replacement which names a submodel of the instantiated model carries a [nested
 label = "GeneProduct"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.5" }
+rules = [2010301, 2021201, 2021202, 2021203]
 summary = "a gene or one of its products which the reactions of the model depend on"
 description = """
 A gene product stands for a gene, a transcript or a protein which has to be present for a reaction to run. It exists so that the gene associations of a genome scale reconstruction, which used to be written into the notes of a reaction, have a place of their own and can be referenced.
@@ -1118,6 +1241,8 @@ label = "label"
 package = "fbc"
 type = "string"
 spec = { doc = "fbc3", section = "3.5" }
+required = true
+rules = [2021204, 2021205]
 summary = "the identifier under which the source of the model knows the gene"
 description = """
 The label carries the gene identifier as it is written in the reconstruction, for example `b3670` or `Rv0649`. It is required, because the identifier of the gene product itself has to follow the rules of an SBML identifier and the gene identifier usually does not.
@@ -1130,6 +1255,8 @@ label = "associatedSpecies"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.5" }
+required = false
+rules = [2021207]
 summary = "the species of the model which stands for this gene product"
 description = """
 Some reconstructions model a gene product as a [species](species.md) which participates in reactions. The attribute connects the two, and when it is set it names an existing species of the model.
@@ -1141,6 +1268,7 @@ The report links the species in the column "associated species" and in the inspe
 label = "Objective"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.6" }
+rules = [2010301, 2020501, 2020502, 2020503, 2020506]
 summary = "the function a flux balance analysis maximises or minimises"
 description = """
 An objective is a direction, "maximize" or "minimize", together with a weighted sum of reaction fluxes, its flux objectives. It is what turns a network with bounds into a solvable optimisation problem: the fluxes are chosen within the bounds of the reactions so that this sum becomes extremal.
@@ -1156,6 +1284,8 @@ label = "type"
 package = "fbc"
 type = "FbcType"
 spec = { doc = "fbc3", section = "3.6" }
+required = true
+rules = [2020505]
 summary = "whether the objective is maximised or minimised"
 description = """
 The type is the sense of the optimality constraint and is either `maximize` or `minimize`. It is required, an objective without it is not defined.
@@ -1168,6 +1298,8 @@ label = "listOfFluxObjectives"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.7" }
+required = true
+rules = [2020506, 2020507, 2020508]
 summary = "the reactions of the objective with their coefficient"
 description = """
 A flux objective is one term of the objective function: the [reaction](reaction.md) whose flux is meant and the coefficient the flux is weighted with. An objective which is defined has at least one of them.
@@ -1179,6 +1311,7 @@ The report shows the number of flux objectives in the column "flux objectives" a
 label = "FluxObjective"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.7" }
+rules = [2010301, 2020601, 2020602, 2020603]
 summary = "one term of an objective: a reaction weighted by a coefficient"
 description = """
 A flux objective names the [reaction](reaction.md) whose flux enters the objective function and the number the flux is multiplied with. An [objective](objective.md) is the sum of its flux objectives, so a genome scale model usually carries one term of coefficient one on its biomass reaction.
@@ -1192,6 +1325,8 @@ label = "reaction"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.7" }
+required = true
+rules = [2020605, 2020606]
 summary = "the reaction whose flux this term of the objective weighs"
 description = """
 The attribute is required and names a [reaction](reaction.md) of the model. The report links it, and the inspector of that reaction shows the flux objective under "referenced by", which is how the reactions an analysis optimises are found.
@@ -1202,6 +1337,9 @@ label = "reaction2"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.7" }
+required = false
+default = "a quadratic term is the square of the flux of the first reaction"
+rules = [2020610, 2020611]
 summary = "the second reaction of a mixed quadratic term, from Version 3 on"
 description = """
 A quadratic flux objective which names a second [reaction](reaction.md) weighs the product of the two fluxes, `coefficient * J1 * J2`, instead of the square of one. The attribute exists from Version 3 of the package on and is empty in every earlier document.
@@ -1214,6 +1352,8 @@ label = "coefficient"
 package = "fbc"
 type = "double"
 spec = { doc = "fbc3", section = "3.7" }
+required = true
+rules = [2020607, 2020608]
 summary = "the number the flux of the reaction is multiplied with"
 description = """
 The coefficient is a signed number and carries no units, since the term takes the units of the flux, extent per time. A negative coefficient turns a term of a maximisation into one which is pushed down, which is how one objective can trade growth against the uptake of a substrate.
@@ -1226,6 +1366,8 @@ label = "variableType"
 package = "fbc"
 type = "FbcVariableType"
 spec = { doc = "fbc3", section = "3.7" }
+required = true
+rules = [2020609]
 summary = "whether the flux enters the objective linearly or quadratically"
 description = """
 The type is `linear`, the classical case in which the flux appears as it is, or `quadratic`, in which it appears squared or multiplied by the flux of the second reaction. Without it a quadratic term reads like a linear one, and `Minimize: 1 R1 + [4 R2^2]/2` and `Minimize: 1 R1 + 4 R2` cannot be told apart.
@@ -1237,6 +1379,7 @@ The attribute is required from Version 3 of the package on and does not exist be
 label = "FluxBound"
 package = "fbc"
 spec = { doc = "fbc1", section = "3.5" }
+rules = [2010301, 2020401, 2020402, 2020403]
 summary = "a constraint on the flux of a reaction, as fbc Version 1 writes it"
 description = """
 A flux bound of the first version of the package is an object of the model which names a [reaction](reaction.md), an operation and a value, so that two of them are needed to keep a flux inside an interval and one with the operation `equal` fixes it.
@@ -1250,6 +1393,8 @@ label = "reaction"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc1", section = "3.5" }
+required = true
+rules = [2020404, 2020408, 2020409]
 summary = "the reaction whose flux the bound constrains"
 description = """
 The attribute is required and names a [reaction](reaction.md) of the model. The report links it, and the inspector of the reaction lists every bound which constrains it under "referenced by", which is where the capacity of a reaction of a Version 1 model is read.
@@ -1260,6 +1405,8 @@ label = "operation"
 package = "fbc"
 type = "FbcOperation"
 spec = { doc = "fbc1", section = "3.2.2" }
+required = true
+rules = [2020406, 2020409]
 summary = "how the flux is related to the value: greaterEqual, lessEqual or equal"
 description = """
 The operation says which side of the value the flux has to stay on. `greaterEqual` and `lessEqual` are the lower and the upper bound, `equal` fixes the flux at the value, which is how a measured exchange rate is written.
@@ -1272,6 +1419,8 @@ label = "value"
 package = "fbc"
 type = "double"
 spec = { doc = "fbc1", section = "3.5" }
+required = true
+rules = [2020407]
 summary = "the number the flux is compared with"
 description = """
 The value carries the units of a reaction flux, extent per time, which the model defines globally. An infinite value states that the flux is not bounded in that direction, and the report shows it as the [sign of infinity](concepts.md#number) with the direction of that bound.
@@ -1281,6 +1430,7 @@ The value carries the units of a reaction flux, extent per time, which the model
 label = "UserDefinedConstraint"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.14" }
+rules = [2021401, 2021402, 2021403, 2021404]
 summary = "a constraint over a combination of fluxes and parameters, added in Version 3"
 description = """
 The bounds of a [reaction](reaction.md) constrain one flux at a time, and the stoichiometry of the network constrains the fluxes which share a species. A user defined constraint is everything else a modeller knows: that two reactions run at a fixed ratio, that a set of reactions shares a budget, or that a flux is coupled to a parameter which a simulation changes.
@@ -1296,6 +1446,8 @@ label = "lowerBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.14" }
+required = true
+rules = [2021405]
 summary = "the parameter which holds the smallest value the constraint may take"
 description = """
 The attribute is required and names a [parameter](parameter.md) of the model, the way the lower flux bound of a reaction does, so that a scenario is changed in one place. A constraint whose two bounds name the same parameter is an equality.
@@ -1306,6 +1458,8 @@ label = "upperBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.14" }
+required = true
+rules = [2021406]
 summary = "the parameter which holds the largest value the constraint may take"
 description = """
 The attribute is required and names a [parameter](parameter.md) of the model. Together with the lower bound it reads `lowerBound <= sum of the components <= upperBound`.
@@ -1316,6 +1470,8 @@ label = "listOfUserDefinedConstraintComponents"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.15" }
+required = true
+rules = [2021404, 2021408]
 summary = "the weighted variables the constraint is the sum of"
 description = """
 A constraint which is defined has at least one [component](userdefinedconstraintcomponent.md). The report shows them as a table of the variable, the coefficient and the type of every term, with a link to each of them.
@@ -1325,6 +1481,7 @@ A constraint which is defined has at least one [component](userdefinedconstraint
 label = "UserDefinedConstraintComponent"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.15" }
+rules = [2021301, 2021302, 2021303]
 summary = "one weighted variable of a user defined constraint"
 description = """
 A component is one term of the sum a [user defined constraint](userdefinedconstraint.md) bounds: the model variable it is about, the [parameter](parameter.md) which holds the number the variable is multiplied with, and whether the variable enters the sum linearly or quadratically.
@@ -1338,6 +1495,8 @@ label = "variable"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.15" }
+required = true
+rules = [2021305]
 summary = "the reaction or the parameter this term of the constraint weighs"
 description = """
 The attribute is required and names either a [reaction](reaction.md), in which case the term is about its flux, or a [parameter](parameter.md) which is not constant. The report links the element it names.
@@ -1348,6 +1507,9 @@ label = "variable2"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.15" }
+required = false
+default = "a quadratic component is the square of its first variable"
+rules = [2021308]
 summary = "the second variable of a mixed quadratic term"
 description = """
 A quadratic component which names a second variable weighs the product of the two, `coefficient * v1 * v2`, instead of the square of the first. It is optional and empty in a linear component.
@@ -1358,6 +1520,8 @@ label = "coefficient"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.15" }
+required = true
+rules = [2021304]
 summary = "the parameter which holds the number the variable is multiplied with"
 description = """
 Unlike the coefficient of a [flux objective](fluxobjective.md), which is a number written into the file, the coefficient of a component is the identifier of a [parameter](parameter.md), so that the weights of a constraint can be changed in one place. In a strict model that parameter has to be constant and its value finite.
@@ -1368,6 +1532,8 @@ label = "variableType"
 package = "fbc"
 type = "FbcVariableType"
 spec = { doc = "fbc3", section = "3.15" }
+required = true
+rules = [2021306]
 summary = "whether the variable enters the constraint linearly or quadratically"
 description = """
 The type is `linear` or `quadratic`, as in a [flux objective](fluxobjective.md): a quadratic component squares its variable, or multiplies it by the second variable where it names one. It is required.
@@ -1378,6 +1544,7 @@ The type is `linear` or `quadratic`, as in a [flux objective](fluxobjective.md):
 label = "GeneProductAssociation"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.9" }
+rules = [2010301, 2020801, 2020802, 2020803, 2020805]
 summary = "the genes a reaction needs, as the tree of operators over them"
 description = """
 A gene product association is what a genome scale reconstruction knows about the genetics of a reaction: which genes have to be expressed for the reaction to carry a flux. It belongs to one [reaction](reaction.md) and holds exactly one node, which is an [and](and.md), an [or](or.md) or a single [gene product reference](geneproductref.md).
@@ -1393,6 +1560,8 @@ label = "association"
 package = "fbc"
 type = "Association"
 spec = { doc = "fbc3", section = "3.9" }
+required = true
+rules = [2020805]
 summary = "the single node the association holds"
 description = """
 The node is an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md); the last of them is the whole association of a reaction which depends on one gene alone.
@@ -1404,6 +1573,7 @@ The report renders the node and everything below it as the expression it stands 
 label = "And"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.12" }
+rules = [2021001, 2021002, 2021003]
 summary = "the associations below it are all needed at once"
 description = """
 An `and` is a complex: every gene below it has to be expressed for the reaction to run, and the loss of one of them stops the reaction. It holds two or more nodes, each of which is an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md), so the operators nest to any depth.
@@ -1417,6 +1587,8 @@ label = "associations"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.12" }
+required = true
+rules = [2021003]
 summary = "the nodes which are all needed, two or more of them"
 description = """
 The order of the nodes carries no meaning: an `and` is a set of conditions which hold at the same time. The report keeps them in the order of the file.
@@ -1426,6 +1598,7 @@ The order of the nodes carries no meaning: an `and` is a set of conditions which
 label = "Or"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.13" }
+rules = [2021101, 2021102, 2021103]
 summary = "one of the associations below it suffices"
 description = """
 An `or` is a set of alternatives: the isoenzymes of a reaction, or the several complexes which can catalyse it. The reaction runs as long as one of the nodes below it is satisfied, which is why a gene of an `or` alone is no knockout. It holds two or more nodes, each of which is an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md).
@@ -1439,6 +1612,8 @@ label = "associations"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.13" }
+required = true
+rules = [2021103]
 summary = "the alternative nodes, two or more of them"
 description = """
 The order of the nodes carries no meaning: an `or` is a set of alternatives of which one suffices. The report keeps them in the order of the file.
@@ -1448,6 +1623,7 @@ The order of the nodes carries no meaning: an `or` is a set of alternatives of w
 label = "GeneProductRef"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.11" }
+rules = [2020901, 2020902, 2020903]
 summary = "the leaf of an association: one gene product the reaction depends on"
 description = """
 A gene product reference is where an association names a gene. It carries the identifier of a [gene product](geneproduct.md) of the model and nothing else, so it is the place at which the tree of a reaction meets the list of the genes.
@@ -1461,6 +1637,8 @@ label = "geneProduct"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.11" }
+required = true
+rules = [2020904, 2020908]
 summary = "the gene product this leaf of the association names"
 description = """
 The attribute is required and names a [gene product](geneproduct.md) of the same model. The report shows the label of that gene product, which is the identifier the reconstruction uses, and links the element behind it.

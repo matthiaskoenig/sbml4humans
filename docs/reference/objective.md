@@ -12,8 +12,8 @@ The report shows the objectives of a model in a section of their own and lists t
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [type](#type) | `FbcType` | - | whether the objective is maximised or minimised | [fbc v3 3.6](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [listOfFluxObjectives](#listoffluxobjectives) | [`list`](datatypes.md#list) | - | the reactions of the objective with their coefficient | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [type](#type) | [`FbcType`](datatypes.md#fbctype) | required | whether the objective is maximised or minimised | [fbc v3 3.6](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [listOfFluxObjectives](#listoffluxobjectives) | [`list`](datatypes.md#list) | required | the reactions of the objective with their coefficient | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -23,11 +23,25 @@ The type is the sense of the optimality constraint and is either `maximize` or `
 
 The report shows the type in the column "type" and in the inspector.
 
+- `2020505` (error): The attribute 'fbc:type' on an &lt;objective&gt; must be of the data type FbcType and thus its value must be one of 'minimize' or 'maximize.
+
 <span id="listoffluxobjectives"></span>**listOfFluxObjectives**
 
 A flux objective is one term of the objective function: the [reaction](reaction.md) whose flux is meant and the coefficient the flux is weighted with. An objective which is defined has at least one of them.
 
 The report shows the number of flux objectives in the column "flux objectives" and the table of the reactions with their coefficients in the inspector, with a link to every reaction.
+
+- `2020506` (error): An &lt;objective&gt; object must have one and only one instance of the &lt;listOfFluxObjectives&gt; object.
+- `2020507` (error): The &lt;listOfFluxObjectives&gt; subobject within an &lt;objective&gt; object must not be empty.
+- `2020508` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfFluxObjectives&gt; container object may only contain &lt;fluxObjective&gt; objects.
+
+## Validation rules
+
+- `2010301` (error): (Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a &lt;model&gt; object the values of the attributes id and fbc:id on every instance of the following classes of objects must be unique across the set of all id and fbc:id attribute values of all such objects in a model: the model itself, plus all contained &lt;functionDefinition&gt;, &lt;compartment&gt;, &lt;species&gt;, &lt;reaction&gt;, &lt;speciesReference&gt;, &lt;modifierSpeciesReference&gt;, &lt;event&gt;, and &lt;parameter&gt; objects, plus the &lt;fluxBound&gt;, &lt;objective&gt;, &lt;fluxObjective&gt;, &lt;geneProduct&gt; and &lt;geneProductAssociation&gt; objects defined by the Flux Balance Constraints package.
+- `2020501` (error): An &lt;objective&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an &lt;objective&gt;.
+- `2020502` (error): An &lt;objective&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on an &lt;objective&gt;.
+- `2020503` (error): An &lt;objective&gt; object must have the required attributes 'fbc:id' and 'fbc:type' and may have the optional attribute 'fbc:name'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on an &lt;objective&gt; object.
+- `2020506` (error): An &lt;objective&gt; object must have one and only one instance of the &lt;listOfFluxObjectives&gt; object.
 
 ## Related elements
 
