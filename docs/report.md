@@ -39,7 +39,7 @@ The columns of a table are those of the type, the attributes of the core and of 
 
 A column which no row of the table fills is left out of it, so that a table shows what its model uses rather than what its type may carry. The flux bounds and the gene association of a reaction are in the table of a constraint based model and in no other, the initial concentration is in the table of a model which states one, and a model of Level 3 Version 2, which has no fast flag, does not carry that column. A reaction of Level 1 or 2 which does not write the flag has the default of its level, which is `false` from Level 2 Version 2 on, and the fast column is shown only when a reaction of the model is fast: a column of that default in every row says nothing, while a single fast reaction is what a reader has to see. The decision is made over every row of the type and not over the rows a search leaves, so that a column does not come and go while a reader types, and any other column of flags stays as soon as one row states one, because `false` is a value and an attribute which is not set is not.
 
-The [reference](reference/index.md) page of a type explains every attribute the report shows for it, in two tables: the attributes the specification gives the type, and the fields the report computes on top of them. The columns of the table are spread over both tables, and the id and the name, with which every table starts, are explained once for all types on the [SBase](reference/sbase.md) page which every type page links. Hovering a column header shows the same explanation as one sentence.
+The [reference](reference/index.md) page of a type explains every attribute the report shows for it, in two tables: the attributes the specification gives the type, and the fields the report computes on top of them. The columns of the table are spread over both tables, and the id and the name, with which every table starts, are explained once for all types on the [SBase](reference/sbase.md) page which every type page links. Hovering a column header shows the same explanation as one sentence, and the help icon next to it opens the whole [explanation](#explanations) in the report.
 
 The id of a row carries the mark of the type of that row, the same mark the type bar and the inspector use, so a row says on its own which kind of element it is, which matters where tables look alike, as the tables of the rules do. An element which the file gives no id, as most [initial assignments](reference/initialassignment.md), rules and constraints of a curated model, shows the name the report gives it instead, set in italics so that it is told apart from an id the file writes: the element it sets for an assignment or a rule, the meta id or the place of a constraint. It is the same name the inspector and every link use, and the column sorts by it.
 
@@ -67,7 +67,7 @@ The inspector opens at the left of the tables for the selected element and shows
 
 [![The inspector of a species, with its attributes, its links and its annotations](images/inspector-species.png)](images/inspector-species.png)
 
-Its header carries the mark and the name of the type, the id of the element, its name, and two buttons, on one line. The name of the type is a link into the [reference](reference/index.md) of this documentation, which explains the type and all of its attributes. An element which the file gives no id is named by the name the report gives it, in italics. Where the inspector is too narrow for all of it, the name of the element gives way first and the end of the name of the type after it, whose mark names it on hover. The "XML" button switches the inspector to the XML of the element, and the cross closes it.
+Its header carries the mark and the name of the type, the id of the element, its name, and two buttons, on one line. The name of the type opens what the type is, as every name of the report does; the [explanation](#explanations) links its page in the [reference](reference/index.md) of this documentation, which explains the type and all of its attributes. An element which the file gives no id is named by the name the report gives it, in italics. Where the inspector is too narrow for all of it, the name of the element gives way first and the end of the name of the type after it, whose mark names it on hover. The "XML" button switches the inspector to the XML of the element, and the cross closes it.
 
 Below the header are three sections, one under the other in one scroll, each parted from the next by a hairline. A reader who drags the inspector wider than about 900 px gets the three next to each other instead, a column each with a scroll of its own.
 
@@ -92,6 +92,30 @@ The annotations themselves are the controlled vocabulary terms of the element, o
 The notes of the element follow where it has any, rendered as the XHTML the author wrote, and the history of the SBML encoding last: who created it, with which organization and mail address, when it was created and when it was modified.
 
 The "XML" button in the header replaces the three sections by the SBML of the element as it stands in the file, with a button which copies it. It is there for what a report cannot show better than the file itself: an annotation in a format the report does not read, an element of a package it does not support, or simply the exact text. The button is there for every element, including the document and the model, whose XML would be the whole file: for those two the view shows their annotation element alone, under a caption which says so, because that is where a tool writes what a file says about itself, and it says that the element carries no annotation where there is none.
+
+## Explanations
+
+Every name the report shows is explained: a type, an attribute, the header of a column and the kind of a link. Hovering the name shows the one sentence which says what it is, and a click on it opens the explanation itself, in a dialog over the report.
+
+[![The explanation of the initialAmount of a species, opened from the label of the inspector, over the report of the repressilator](images/help-dialog.png)](images/help-dialog.png)
+
+The labels of the inspector open it: the label of a row of the attributes, the name of the type in the header, the heading of a group of links and the header of a column of a small table. Where a click on the name already does something else, a small help icon next to it opens the dialog instead. In the header of a column of an element table, where a click sorts the table, the icon appears while the pointer rests on the header or the keyboard is in it; next to the heading of a table it is always there. A name the glossary does not explain stays plain text.
+
+The dialog shows, one part under the other and each of them only where the entry has it:
+
+- the one sentence of the tooltip, which leads the rest
+- **Overview**, what the thing is and what the report does with it, the text of its page in the [reference](reference/index.md)
+- **Technical**, the low level: the [data type](reference/datatypes.md) of the value, whether the specification requires the attribute, what holds when the file does not set it, and the section of the specification which defines it, linked to that specification
+- **Validation rules**, the rules of the specification which concern the entry: the number a validator reports, whether it is an error or a warning, and the message, all three as libsbml states them, which is the library that judges the file of a reader
+- **Attributes**, for a type, every attribute it carries with its data type, whether it is required and its one sentence, and behind them the attributes every element carries
+- **Related elements**, the entries which are read next to this one
+- the link which opens the entry on its page of the reference
+
+[![The explanation of the type Species, whose attributes are a table in which every row opens the attribute it names](images/help-type.png)](images/help-type.png)
+
+The dialog is a small reference of its own: the type in front of an attribute, the badge of its data type, a row of the attributes, a related element and every name the text links open the explanation of what they name, and the back button of the browser walks back through the entries which were opened. Each of them is a link like every other, so a ctrl-click or a middle click opens an explanation in a new tab. `Esc` and the cross close the dialog and give the focus back to the label which opened it.
+
+The open explanation is part of the url of the report, as the parameter `help`, so an explanation can be linked and a reload keeps it open. A report which was opened from python explains itself without a network: the explanations ship with the application.
 
 ## Archives and models
 
@@ -122,6 +146,7 @@ The state of a report is part of its address, so a report can be linked in the s
 | `pk` | the selected element, given by its [primary key](reference/concepts.md#primary-key), which the report builds for every element because not every element of SBML has an id |
 | `q` | the text of the search |
 | `types` | the types the tables show, separated by commas; without the parameter every type is shown |
+| `help` | the entry whose explanation is open, given by its key, `types/Species`, `types/Species/initialAmount`, `links/compartment`, `datatypes/SIdRef` or `concepts/derivedUnits` |
 | `entry` | the location of the SBML entry inside the COMBINE archive |
 | `model` | the id of the model or of the model definition |
 | `url` | the address the model was downloaded from, for a report which was loaded from a url |

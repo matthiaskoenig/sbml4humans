@@ -6,9 +6,11 @@
 
 **Architecture:** `glossary/*.toml` stays the single source. It gains `required`, `default` and `rules` (libsbml rule numbers, resolved by the generator) on its entries and a section `datatypes`. `sbml4humans.glossary` writes a third output, `frontend/src/data/glossary-details.json`, with the descriptions as markdown whose reference links are rewritten to `glossary:<key>`, and extends the reference pages. The frontend loads the details and `markdown-it` lazily with the first dialog; the open entry is the route query `help=<key>`.
 
-**Tech Stack:** python 3.14, python-libsbml, pytest, ruff, ty; Vue 3.5, TypeScript, Vue Router 5, Tailwind 4, `@lucide/vue`, DOMPurify, new: `markdown-it` (MIT) with `@types/markdown-it`; vitest, Playwright.
+**Tech Stack:** python 3.14, python-libsbml, pytest, ruff, ty; Vue 3.5, TypeScript, Vue Router 5, Tailwind 4, `@lucide/vue`, DOMPurify, new: `markdown-it` (MIT), which ships its own types from version 15 on, so `@types/markdown-it` is not installed; vitest, Playwright.
 
 **Spec:** `superpowers/specs/2026-09-19-glossary-help-dialog-design.md`
+
+**As it was executed:** the tasks 5 and 14 were each split in two (5a, 5b, 14a, 14b), and the rulings which were made while the plan was carried out are written in the description of the pull request.
 
 ## Global Constraints
 
