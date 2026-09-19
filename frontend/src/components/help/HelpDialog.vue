@@ -30,8 +30,8 @@ import { useReportView } from "@/report/view";
  * the page behind it made inert and the return of the focus to the label which opened it. */
 const view = useReportView();
 
-/** The long descriptions and the technical detail, behind a dynamic import of 300+ KB which the
- * first dialog of a session pays for, not every page of the application. */
+/** The long descriptions and the technical detail, the half megabyte of json which the first
+ * dialog of a session fetches, not every page of the application. */
 const details = ref<GlossaryDetails | null>(null);
 /** The details could not be loaded, for example a reader who is offline with a report the local
  * server serves from a stale cache: the dialog then shows what it knows without them. */
@@ -317,7 +317,7 @@ function onClick(event: MouseEvent): void {
         <p v-if="summary" class="text-sm font-medium text-gray-900" data-testid="help-summary">
           {{ summary }}
         </p>
-        <!-- the details are one dynamic import away, which is quick and is not nothing -->
+        <!-- the details are one fetch away, which is quick and is not nothing -->
         <div v-if="loading" class="mt-4 animate-pulse space-y-2" data-testid="help-skeleton">
           <div class="h-3 w-1/3 rounded bg-gray-100"></div>
           <div class="h-3 rounded bg-gray-100"></div>

@@ -2,20 +2,20 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { SbmlType } from "@/api/types";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import { EDGE_KINDS } from "@/data/edgeKinds";
 import { COLUMNS } from "@/report/columns";
 import { attributeKey, linkKey, typeKey } from "@/report/glossary";
-import { loadGlossaryDetails, type GlossaryDetails } from "@/report/glossaryDetails";
+import type { GlossaryDetails } from "@/report/glossaryDetails";
 
 import { ATTRIBUTES_DIR, TYPES, modelUnitFields, staticFields } from "./glossaryFields";
 
-// read with readFileSync, not through `loadGlossaryDetails`: the loader's dynamic `import()` is
-// the only reference to the json the production bundle may carry, and a static import here, for
-// a file this size, would pull the details back into the same chunk as everything else.
+// read with readFileSync, not through `loadGlossaryDetails`: the loader fetches the url of the
+// json, which is a file of the build and no module of it, and a static import here, for a file
+// this size, would pull the details into the same chunk as everything else.
 const DETAILS_PATH = join(
   dirname(fileURLToPath(import.meta.url)),
   "..",
@@ -123,13 +123,66 @@ describe("glossary details", () => {
 });
 
 describe("loadGlossaryDetails", () => {
-  it("returns the same promise twice", () => {
-    expect(loadGlossaryDetails()).toBe(loadGlossaryDetails());
+  const fetchDetails = vi.fn();
+
+  /** A module of its own for every test, so that the promise one of them cached is gone with
+   * it: the cache is a module variable, which is exactly what it has to be. */
+  async function loader(): Promise<() => Promise<GlossaryDetails>> {
+    vi.resetModules();
+    return (await import("@/report/glossaryDetails")).loadGlossaryDetails;
+  }
+
+  /** What the server answers, as much of a `Response` as the loader reads of it. */
+  function answers(response: Partial<Response>): void {
+    fetchDetails.mockResolvedValue(response as Response);
+  }
+
+  beforeEach(() => {
+    fetchDetails.mockReset();
+    vi.stubGlobal("fetch", fetchDetails);
   });
 
-  it("resolves the entries of the details json", async () => {
-    const loaded = await loadGlossaryDetails();
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("fetches the details and resolves with their entries", async () => {
+    answers({ ok: true, json: () => Promise.resolve(details) });
+    const loaded = await (await loader())();
     expect(loaded.entries["types/Species"]?.label).toBe("Species");
     expect(loaded.entries["types/Species"]?.kind).toBe("type");
+    expect(String(fetchDetails.mock.calls[0]?.[0])).toContain("glossary-details");
+  });
+
+  it("fetches once, however many dialogs ask for the details", async () => {
+    answers({ ok: true, json: () => Promise.resolve(details) });
+    const load = await loader();
+    expect(load()).toBe(load());
+    await load();
+    expect(fetchDetails).toHaveBeenCalledTimes(1);
+  });
+
+  it("drops a rejected promise, so that the next dialog tries again", async () => {
+    fetchDetails.mockRejectedValueOnce(new Error("offline"));
+    const load = await loader();
+    await expect(load()).rejects.toThrow("offline");
+    answers({ ok: true, json: () => Promise.resolve(details) });
+    await expect(load()).resolves.toHaveProperty("entries");
+    expect(fetchDetails).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects a response which is not ok", async () => {
+    answers({ ok: false, status: 404 });
+    await expect((await loader())()).rejects.toThrow("404");
+  });
+
+  // the page of a deployment which no longer has the file of this version, which a server
+  // answers with its index.html rather than with a 404
+  it("rejects a body which is not the json", async () => {
+    answers({
+      ok: true,
+      json: () => Promise.reject(new SyntaxError("Unexpected token '<'")),
+    });
+    await expect((await loader())()).rejects.toThrow(SyntaxError);
   });
 });

@@ -2,6 +2,8 @@
  * `glossary.json` (`glossary.ts`) because a dialog needs it only once a reader opens one, while
  * the label and the summary every tooltip shows have to be there from the first render. */
 
+import DETAILS_URL from "@/data/glossary-details.json?url";
+
 /** The kind of thing an entry explains, the same four the eager glossary groups entries into,
  * plus the data types of the specification, which only the details carry. */
 export type HelpKind = "type" | "attribute" | "link" | "concept" | "datatype";
@@ -42,19 +44,28 @@ export interface GlossaryDetails {
 }
 
 /** The cached promise of the loaded details, so that every dialog which opens after the first
- * shares one fetch instead of importing the file again; reset when the import rejects, so that a
+ * shares one fetch instead of asking for the file again; reset when the fetch rejects, so that a
  * reader who opens a dialog after a failed load (for example while offline) gets a fresh attempt
  * rather than a promise stuck forever in its rejected state. */
 let cachedDetails: Promise<GlossaryDetails> | undefined;
 
-/** Loads `glossary-details.json` behind a dynamic `import()`, the only reference to that file in
- * the frontend, so that Vite puts its 300+ KB into a chunk of its own instead of the entry chunk
- * every page pays for. Call it when a dialog is about to open, never at module load. */
+/** Fetches the details from the url of the json. A server which does not have the file answers
+ * either with a status of its own or with the page of the application, whose html is no json:
+ * both reject, and the next dialog asks again. */
+async function fetchDetails(): Promise<GlossaryDetails> {
+  const response = await fetch(DETAILS_URL);
+  if (!response.ok) {
+    throw new Error(`the details of the glossary answered ${response.status}`);
+  }
+  return (await response.json()) as GlossaryDetails;
+}
+
+/** Loads `glossary-details.json`, which the build emits as a file of its own (`?url`) and which
+ * nothing of the application imports, so that its half megabyte is no part of any chunk a page
+ * loads. Call it when a dialog is about to open, never at module load. */
 export function loadGlossaryDetails(): Promise<GlossaryDetails> {
   if (!cachedDetails) {
-    cachedDetails = import("@/data/glossary-details.json").then(
-      (module) => module.default as GlossaryDetails,
-    );
+    cachedDetails = fetchDetails();
     cachedDetails.catch(() => {
       cachedDetails = undefined;
     });

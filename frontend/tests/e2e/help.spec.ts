@@ -226,20 +226,27 @@ test.describe("the help dialog", () => {
   }) => {
     // the dev server serves every module by its source path, so a request is matched by the file
     // name it carries rather than by a bundled chunk name, which only the production build has;
-    // that build is checked separately, by the chunk list `vite build` writes, not by this test
-    const urls: string[] = [];
-    page.on("request", (request) => urls.push(request.url()));
+    // that build is checked separately, by the list of files `vite build` writes, not by this
+    // test. The url of the details is a module of a few bytes which every report page holds from
+    // its first render, so the json itself is told from it by the kind of request it is: the
+    // loader fetches it, the module is a script the browser imports.
+    const requests: { url: string; kind: string }[] = [];
+    page.on("request", (request) =>
+      requests.push({ url: request.url(), kind: request.resourceType() }),
+    );
+    const fetchedDetails = () =>
+      requests.some(({ url, kind }) => url.includes("glossary-details") && kind === "fetch");
 
     await page.goto(`/examples/${encodeURIComponent(REPRESSILATOR)}`);
     await expect(page.getByTestId("report-page")).toBeVisible();
     const inspector = await selectFirstSpecies(page);
-    expect(urls.some((url) => url.includes("glossary-details"))).toBe(false);
-    expect(urls.some((url) => url.includes("HelpMarkdown"))).toBe(false);
-    expect(urls.some((url) => url.includes("markdown-it"))).toBe(false);
+    expect(fetchedDetails()).toBe(false);
+    expect(requests.some(({ url }) => url.includes("HelpMarkdown"))).toBe(false);
+    expect(requests.some(({ url }) => url.includes("markdown-it"))).toBe(false);
 
     await attributeRow(inspector, "initialAmount").getByTestId("help-label").click();
     await expect(page.getByTestId("help-dialog")).toBeVisible();
-    await expect.poll(() => urls.some((url) => url.includes("glossary-details"))).toBe(true);
+    await expect.poll(fetchedDetails).toBe(true);
   });
 
   test("the footer links the reference page of the entry, at the anchor of its attribute", async ({
