@@ -12,8 +12,8 @@ The report shows the gene products of a model in a section of their own, with a 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [label](#label) | `string` | the identifier under which the source of the model knows the gene | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [associatedSpecies](#associatedspecies) | `SIdRef` | the species of the model which stands for this gene product | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [label](#label) | `string` | the identifier under which the source of the model knows the gene | [fbc v3 3.5](https://doi.org/10.1515/jib-2026-0006) |
+| [associatedSpecies](#associatedspecies) | `SIdRef` | the species of the model which stands for this gene product | [fbc v3 3.5](https://doi.org/10.1515/jib-2026-0006) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -37,4 +37,4 @@ The report links the species in the column "associated species" and in the inspe
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.5 (Olivier and Bergmann, COMBINE specification).
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://doi.org/10.1515/jib-2026-0006), Section 3.5 (Olivier and Bergmann, COMBINE specification).
