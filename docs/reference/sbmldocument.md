@@ -30,9 +30,21 @@ The report shows the version next to the level in the attributes of the document
 
 <span id="packages"></span>**packages**
 
-Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc and distrib and shows the elements they add.
+Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc, qual and distrib and shows the elements they add.
 
-The report lists the prefix and the version of every declared package in the attributes of the document.
+The report lists the prefix and the version of every declared package in the attributes of the document. The namespace of the core itself, which a file declares as well, is no package and is not listed.
+
+## In the report
+
+| field | type | meaning |
+| --- | --- | --- |
+| [annotation](#annotation) | `string` | the annotation element of the document as the file writes it |
+
+<span id="annotation"></span>**annotation**
+
+The annotation of the `sbml` element is where a tool writes what it knows about the file in its own vocabulary, next to the RDF the report reads as [annotations](sbase.md). The report does not carry the XML of the document, which is the whole file, so it carries the annotation element alone.
+
+The "XML" button in the header of the inspector shows it.
 
 ## Related elements
 

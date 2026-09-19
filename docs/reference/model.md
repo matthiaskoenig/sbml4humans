@@ -29,8 +29,15 @@ The report shows the model as the root of the report, its lists as the sections 
 | [events](#events) | `list` | the events of the model | [core 4.2.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [submodels](#submodels) | `list` | the models which this model instantiates | [comp 3.4.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [ports](#ports) | `list` | the elements of the model which are meant to be used from outside | [comp 3.4.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [gene products](#gene-products) | `list` | the genes and gene products the reactions of the model depend on | [fbc 3.3.2](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [objectives](#objectives) | `list` | the objective functions of the constraint based model | [fbc 3.3.1](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [gene products](#gene-products) | `list` | the genes and gene products the reactions of the model depend on | [fbc v3 3.3.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc](#fbc) | `ModelFbc` | what the model says about the constraint based problem it describes | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [strict](#strict) | `boolean` | whether the model keeps to the restrictions of a linear or quadratic program | [fbc v3 3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [active objective](#active-objective) | `SIdRef` | the objective which is optimised unless an analysis says otherwise | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [flux bounds](#flux-bounds) | `list` | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
+| [user defined constraints](#user-defined-constraints) | `list` | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [objectives](#objectives) | `list` | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [qualitative species](#qualitative-species) | `list` | the entities of a qualitative model, which carry a level | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [transitions](#transitions) | `list` | the rules which decide the level of the qualitative species | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -154,17 +161,62 @@ Every [gene product](geneproduct.md) stands for one gene or one of its products 
 
 The report shows the gene products of a model as a section of the report.
 
+<span id="fbc"></span>**fbc**
+
+The block holds the two attributes which belong to the model as a whole: whether it keeps to the restrictions of a strict problem, and which of its objectives is the active one.
+
+The report shows both in the inspector of a model of a document which uses fbc.
+
+<span id="strict"></span>**strict**
+
+A strict model can be handed to a solver which does not read arbitrary mathematics: every reaction has both flux bounds, every bound is a constant [parameter](parameter.md) with a value which is not missing and not infinite in the direction which would remove the bound, every stoichiometry is a constant number, every coefficient of a flux objective is finite, and no initial assignment touches a bound or a stoichiometry.
+
+A model which is not strict may compute a bound during a simulation, with an initial assignment, a rule or an event, which is how a hybrid model changes the capacity of a reaction over time. The attribute therefore says how every other number of the report has to be read, and it is required from Version 2 of the package on; a Version 1 document has none.
+
+The report shows it in the inspector of the model.
+
+<span id="active-objective"></span>**active objective**
+
+A model may carry several [objectives](objective.md), for example the growth it was published with next to the alternatives it was studied with, and this attribute names the one which describes the published simulation. It is an attribute of the list of objectives, which the report does not carry as an object of its own, so it sits next to `strict` in the fbc block of the model.
+
+The report links the objective in the inspector of the model, and the inspector of that objective shows the model under "referenced by".
+
+<span id="flux-bounds"></span>**flux bounds**
+
+A [flux bound](fluxbound.md) is how the first version of the package constrained a reaction. Version 2 removed the construct and replaced it by the two attributes of a [reaction](reaction.md) which name a parameter, so the list is empty for every document of a later version.
+
+The report shows the flux bounds of a Version 1 model as a section of the report.
+
+<span id="user-defined-constraints"></span>**user defined constraints**
+
+A [user defined constraint](userdefinedconstraint.md) bounds a combination of fluxes and parameters which the stoichiometry of the network leaves free, for example the ratio of two reactions or a shared budget. The list exists from Version 3 of the package on and is empty in every earlier document.
+
+The report shows the user defined constraints of a model as a section of the report.
+
 <span id="objectives"></span>**objectives**
 
 A model may define several [objectives](objective.md) and declares one of them as the active objective, the function which an analysis optimises unless it is told otherwise. The others are kept so that a model can carry the alternatives it was studied with.
 
 The report shows the objectives of a model as a section of the report.
 
+<span id="qualitative-species"></span>**qualitative species**
+
+A model which uses the qual package holds its [qualitative species](qualitativespecies.md) in a list of their own, next to the species of the core. The two are not the same thing and a model does not mix them: an entity of a qualitative model has no amount and no concentration, it has a level.
+
+The report shows them as a section of their own.
+
+<span id="transitions"></span>**transitions**
+
+The [transitions](transition.md) are the dynamics of a qualitative model, what the reactions with their kinetic laws are to a kinetic one. Every one of them reads some qualitative species and changes others.
+
+The report shows them as a section of their own.
+
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
 | [kind](#kind) | `string` | whether the model is the model of the document or a model definition |
+| [annotation](#annotation) | `string` | the annotation element of the model as the file writes it |
 | [rendered substance units](#rendered-substance-units) | `latex` | the substance units of the model rendered as a formula |
 | [rendered time units](#rendered-time-units) | `latex` | the time units of the model rendered as a formula |
 | [rendered volume units](#rendered-volume-units) | `latex` | the volume units of the model rendered as a formula |
@@ -177,6 +229,12 @@ The report shows the objectives of a model as a section of the report.
 A document contains at most one model, but the comp package adds model definitions, which are models that exist to be instantiated by a submodel. The report treats both the same way and marks which of the two an element is.
 
 The kind is shown in the attributes of the inspector of a model, it is `model` or `modelDefinition`.
+
+<span id="annotation"></span>**annotation**
+
+The annotation of the model is where a tool writes what it knows about the model in its own vocabulary, next to the RDF the report reads as [annotations](sbase.md) and as [history](sbase.md). The report does not carry the XML of the model, which is the whole model, so it carries the annotation element alone.
+
+The "XML" button in the header of the inspector shows it.
 
 <span id="rendered-substance-units"></span>**rendered substance units**
 

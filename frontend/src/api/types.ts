@@ -1,30 +1,53 @@
 /** The report types generated from the JSON schema plus the unions the components work with. */
 import type {
   AlgebraicRule,
+  And,
   AssignmentRule,
   Compartment,
   Constraint,
+  DefaultTerm,
+  Delay,
+  Deletion,
   Event,
   EventAssignment,
   ExternalModelDefinition,
+  FluxBound,
+  FluxObjective,
   FunctionDefinition,
+  FunctionTerm,
   GeneProduct,
+  GeneProductAssociation,
+  GeneProductRef,
   InitialAssignment,
+  Input,
   KineticLaw,
   LocalParameter,
   Model,
   ModifierSpeciesReference,
   Objective,
+  Or,
+  Output,
   Parameter,
   Port,
+  Priority,
+  QualitativeSpecies,
   RateRule,
   Reaction,
+  ReplacedBy,
+  ReplacedElement,
+  SBaseRef,
   SBMLDocument,
   Species,
   SpeciesReference,
   Submodel,
+  Transition,
+  Trigger,
   Uncertainty,
+  UncertParameter,
+  UncertSpan,
   UnitDefinition,
+  UserDefinedConstraint,
+  UserDefinedConstraintComponent,
 } from "@/types/report";
 
 export type * from "@/types/report";
@@ -49,7 +72,11 @@ export type SbmlElement =
   | Submodel
   | Port
   | GeneProduct
-  | Objective;
+  | Objective
+  | FluxBound
+  | UserDefinedConstraint
+  | QualitativeSpecies
+  | Transition;
 
 /** The objects nested in another object, reachable through the inspector only. */
 export type NestedElement =
@@ -57,11 +84,35 @@ export type NestedElement =
   | ModifierSpeciesReference
   | KineticLaw
   | LocalParameter
+  | Trigger
+  | Priority
+  | Delay
   | EventAssignment
-  | Uncertainty;
+  | Deletion
+  | ReplacedElement
+  | ReplacedBy
+  | SBaseRef
+  | FluxObjective
+  | UserDefinedConstraintComponent
+  | GeneProductAssociation
+  | And
+  | Or
+  | GeneProductRef
+  | Input
+  | Output
+  | FunctionTerm
+  | DefaultTerm
+  | Uncertainty
+  | UncertParameter
+  | UncertSpan;
 
 export type SBase = DocumentElement | SbmlElement | NestedElement;
 export type Rule = AssignmentRule | RateRule | AlgebraicRule;
+/** One measure of an uncertainty: a single statistic or the interval a span stands for
+ * (distrib §3.11, §3.12). */
+export type UncertMeasure = UncertSpan | UncertParameter;
+/** One node of the gene product association of a reaction (fbc §3.10). */
+export type Association = GeneProductRef | And | Or;
 
 export type SbmlType = NonNullable<SBase["sbmlType"]>;
 export type ElementType = NonNullable<SbmlElement["sbmlType"]>;

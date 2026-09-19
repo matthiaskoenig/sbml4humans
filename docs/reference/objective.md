@@ -12,8 +12,8 @@ The report shows the objectives of a model in a section of their own and lists t
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [type](#type) | `FbcType` | whether the objective is maximised or minimised | [fbc 3.6](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [flux objectives](#flux-objectives) | `list` | the reactions of the objective with their coefficient | [fbc 3.7](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [type](#type) | `FbcType` | whether the objective is maximised or minimised | [fbc v3 3.6](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [flux objectives](#flux-objectives) | `list` | the reactions of the objective with their coefficient | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -37,4 +37,4 @@ The report shows the number of flux objectives in the column "flux objectives" a
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf), Section 3.6 (Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082).
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.6 (Olivier and Bergmann, COMBINE specification).

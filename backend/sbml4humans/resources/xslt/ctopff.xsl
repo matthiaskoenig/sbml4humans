@@ -124,7 +124,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
     <mn>
       <x:apply-templates select="m:sep/preceding-sibling::node()"/>
     </mn>
-    <mo>&#183;<!-- middle dot --></mo>
+    <mo>&#x22C5;<!-- dot operator, which mmltex writes as the cdot of latex --></mo>
     <msup>
       <mn>10</mn>
       <mn>
@@ -606,7 +606,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
   <x:if test="$p &gt; 3 and $op != 'minus'"><mo>(</mo></x:if>
   <x:for-each select="*[position()&gt;1]">
    <x:if test="position() &gt; 1">
-    <mo>&#183;<!-- middle dot --></mo>
+    <mo>&#x22C5;<!-- dot operator, which mmltex writes as the cdot of latex --></mo>
    </x:if>
    <x:if test="position()&gt;= $first">
    <x:apply-templates select=".">
@@ -660,7 +660,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
 <x:call-template name="infix">
  <x:with-param name="this-p" select="2"/>
  <x:with-param name="p" select="$p"/>
- <x:with-param name="mo"><mo>and</mo></x:with-param>
+ <x:with-param name="mo"><mo>&#8743;<!-- and --></mo></x:with-param>
 </x:call-template>
 </x:template>
 
@@ -672,7 +672,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
 <x:call-template name="infix">
  <x:with-param name="this-p" select="3"/>
  <x:with-param name="p" select="$p"/>
- <x:with-param name="mo"><mo>or</mo></x:with-param>
+ <x:with-param name="mo"><mo>&#8744;<!-- or --></mo></x:with-param>
 </x:call-template>
 </x:template>
 
@@ -683,7 +683,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
 <x:call-template name="infix">
  <x:with-param name="this-p" select="3"/>
  <x:with-param name="p" select="$p"/>
- <x:with-param name="mo"><mo>xor</mo></x:with-param>
+ <x:with-param name="mo"><mo>&#8853;<!-- xor --></mo></x:with-param>
 </x:call-template>
 </x:template>
 
@@ -692,7 +692,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
 <x:template match="m:apply[*[1][self::m:not]]
                        |m:apply[*[1][self::m:csymbol='not']]">
 <mrow>
-<mo>not</mo>
+<mo>&#172;<!-- not --></mo>
 <x:apply-templates select="*[2]">
   <x:with-param name="p" select="7"/>
 </x:apply-templates>

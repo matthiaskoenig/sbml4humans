@@ -1,0 +1,988 @@
+{
+  "uid": "d9120c398a4f484ea3b0d57052bb958d",
+  "manifest": {
+    "entries": [
+      {
+        "location": ".",
+        "format": "http://identifiers.org/combine.specifications/omex",
+        "master": false
+      },
+      {
+        "location": "./manifest.xml",
+        "format": "http://identifiers.org/combine.specifications/omex-manifest",
+        "master": false
+      },
+      {
+        "location": "./model.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml",
+        "master": true
+      }
+    ]
+  },
+  "reports": {
+    "./model.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": null,
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "keyValuePairs": [],
+          "level": 3,
+          "version": 1,
+          "packages": [
+            {
+              "prefix": "fbc",
+              "version": 1
+            }
+          ],
+          "annotationXml": null
+        },
+        "models": [
+          {
+            "pk": "fbc_bounds_v1/Model:fbc_bounds_v1",
+            "sbmlType": "Model",
+            "id": "fbc_bounds_v1",
+            "metaId": "meta_fbc_bounds_v1",
+            "name": "Flux bounds of fbc Version 1",
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example of the first version of the fbc package, in which the capacity of a reaction is not an attribute of the reaction but a <code>fluxBound</code> object of its own.</p>\n    <p>Every bound names the reaction it constrains, the operation which relates the flux to its value and the value itself, so that two bounds are needed to keep a flux inside an interval and a third states an equality. The reaction <code>v1</code> carries such a pair, the exchange <code>EX_glc</code> is fixed by one bound of the operation <code>equal</code>, and the upper bound of <code>v1</code> is infinite, which is how the package writes an unbounded direction.</p>\n    <p>The model defines two objectives and declares the maximisation of the biomass as the active one; the second objective minimises the glucose uptake with a negative coefficient. The species carry the chemical formula and the charge which fbc adds to them in every one of its versions.</p>\n  </body>\n</notes>",
+            "cvterms": [],
+            "history": null,
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "kind": "model",
+            "annotationXml": null,
+            "substanceUnits": "mmole",
+            "substanceUnitsLatex": "mmol",
+            "timeUnits": "hr",
+            "timeUnitsLatex": "hr",
+            "volumeUnits": "litre",
+            "volumeUnitsLatex": "l",
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": "mmole",
+            "extentUnitsLatex": "mmol",
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [
+              {
+                "pk": "fbc_bounds_v1/UnitDefinition:hr",
+                "sbmlType": "UnitDefinition",
+                "id": "hr",
+                "metaId": null,
+                "name": "hour",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"hr\" name=\"hour\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "hr",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
+              },
+              {
+                "pk": "fbc_bounds_v1/UnitDefinition:mmole",
+                "sbmlType": "UnitDefinition",
+                "id": "mmole",
+                "metaId": null,
+                "name": "mmole",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "mmol",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  }
+                ]
+              },
+              {
+                "pk": "fbc_bounds_v1/UnitDefinition:mmole_per_hr",
+                "sbmlType": "UnitDefinition",
+                "id": "mmole_per_hr",
+                "metaId": null,
+                "name": "mmole per hour",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mmole_per_hr\" name=\"mmole per hour\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"3600\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "\\frac{mmol}{hr}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 3600
+                  }
+                ]
+              }
+            ],
+            "listOfCompartments": [
+              {
+                "pk": "fbc_bounds_v1/Compartment:cell",
+                "sbmlType": "Compartment",
+                "id": "cell",
+                "metaId": null,
+                "name": "cell",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"cell\" name=\"cell\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "fbc_bounds_v1/Species:glc",
+                "sbmlType": "Species",
+                "id": "glc",
+                "metaId": null,
+                "name": "glucose",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"glc\" name=\"glucose\" compartment=\"cell\" initialConcentration=\"5\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\" fbc:charge=\"0\" fbc:chemicalFormula=\"C6H12O6\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 5,
+                "substanceUnits": "mmole",
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mmol",
+                "derivedUnits": "\\frac{mmol}{l}",
+                "conversionFactor": null,
+                "fbc": {
+                  "chemicalFormula": "C6H12O6",
+                  "charge": 0
+                }
+              },
+              {
+                "pk": "fbc_bounds_v1/Species:atp",
+                "sbmlType": "Species",
+                "id": "atp",
+                "metaId": null,
+                "name": "ATP",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"atp\" name=\"ATP\" compartment=\"cell\" initialConcentration=\"1\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\" fbc:charge=\"-4\" fbc:chemicalFormula=\"C10H12N5O13P3\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 1,
+                "substanceUnits": "mmole",
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mmol",
+                "derivedUnits": "\\frac{mmol}{l}",
+                "conversionFactor": null,
+                "fbc": {
+                  "chemicalFormula": "C10H12N5O13P3",
+                  "charge": -4
+                }
+              },
+              {
+                "pk": "fbc_bounds_v1/Species:adp",
+                "sbmlType": "Species",
+                "id": "adp",
+                "metaId": null,
+                "name": "ADP",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"adp\" name=\"ADP\" compartment=\"cell\" initialConcentration=\"1\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\" fbc:charge=\"-3\" fbc:chemicalFormula=\"C10H12N5O10P2\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 1,
+                "substanceUnits": "mmole",
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mmol",
+                "derivedUnits": "\\frac{mmol}{l}",
+                "conversionFactor": null,
+                "fbc": {
+                  "chemicalFormula": "C10H12N5O10P2",
+                  "charge": -3
+                }
+              },
+              {
+                "pk": "fbc_bounds_v1/Species:biomass",
+                "sbmlType": "Species",
+                "id": "biomass",
+                "metaId": null,
+                "name": "biomass",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"biomass\" name=\"biomass\" compartment=\"cell\" initialConcentration=\"0\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 0,
+                "substanceUnits": "mmole",
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mmol",
+                "derivedUnits": "\\frac{mmol}{l}",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [],
+            "listOfInitialAssignments": [],
+            "listOfRules": [],
+            "listOfConstraints": [],
+            "listOfReactions": [
+              {
+                "pk": "fbc_bounds_v1/Reaction:v1",
+                "sbmlType": "Reaction",
+                "id": "v1",
+                "metaId": null,
+                "name": "glycolysis",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<reaction id=\"v1\" name=\"glycolysis\" reversible=\"false\" fast=\"false\" compartment=\"cell\">\n  <listOfReactants>\n    <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n    <speciesReference species=\"adp\" stoichiometry=\"2\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"atp\" stoichiometry=\"2\" constant=\"true\"/>\n    <speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "reversible": false,
+                "fast": false,
+                "compartment": "cell",
+                "listOfReactants": [
+                  {
+                    "pk": "fbc_bounds_v1/SpeciesReference:v1.reactant.glc",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "species": "glc",
+                    "stoichiometry": 1,
+                    "constant": true
+                  },
+                  {
+                    "pk": "fbc_bounds_v1/SpeciesReference:v1.reactant.adp",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"adp\" stoichiometry=\"2\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "species": "adp",
+                    "stoichiometry": 2,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [
+                  {
+                    "pk": "fbc_bounds_v1/SpeciesReference:v1.product.atp",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"atp\" stoichiometry=\"2\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "species": "atp",
+                    "stoichiometry": 2,
+                    "constant": true
+                  },
+                  {
+                    "pk": "fbc_bounds_v1/SpeciesReference:v1.product.biomass",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "species": "biomass",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfModifiers": [],
+                "kineticLaw": null,
+                "equation": "glc + 2.0 adp ➞ 2.0 atp + biomass",
+                "fbc": null
+              },
+              {
+                "pk": "fbc_bounds_v1/Reaction:EX_glc",
+                "sbmlType": "Reaction",
+                "id": "EX_glc",
+                "metaId": null,
+                "name": "glucose exchange",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<reaction id=\"EX_glc\" name=\"glucose exchange\" reversible=\"true\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "reversible": true,
+                "fast": false,
+                "compartment": null,
+                "listOfReactants": [
+                  {
+                    "pk": "fbc_bounds_v1/SpeciesReference:EX_glc.reactant.glc",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "species": "glc",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [],
+                "listOfModifiers": [],
+                "kineticLaw": null,
+                "equation": "glc ⇆ ",
+                "fbc": null
+              },
+              {
+                "pk": "fbc_bounds_v1/Reaction:EX_biomass",
+                "sbmlType": "Reaction",
+                "id": "EX_biomass",
+                "metaId": null,
+                "name": "biomass exchange",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<reaction id=\"EX_biomass\" name=\"biomass exchange\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "reversible": false,
+                "fast": false,
+                "compartment": null,
+                "listOfReactants": [
+                  {
+                    "pk": "fbc_bounds_v1/SpeciesReference:EX_biomass.reactant.biomass",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"biomass\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "species": "biomass",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [],
+                "listOfModifiers": [],
+                "kineticLaw": null,
+                "equation": "biomass ➞ ",
+                "fbc": null
+              }
+            ],
+            "listOfEvents": [],
+            "listOfSubmodels": [],
+            "listOfPorts": [],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [
+              {
+                "pk": "fbc_bounds_v1/Objective:biomass_max",
+                "sbmlType": "Objective",
+                "id": "biomass_max",
+                "metaId": null,
+                "name": "maximal biomass",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:objective fbc:id=\"biomass_max\" fbc:name=\"maximal biomass\" fbc:type=\"maximize\">\n  <fbc:listOfFluxObjectives>\n    <fbc:fluxObjective fbc:reaction=\"EX_biomass\" fbc:coefficient=\"1\"/>\n  </fbc:listOfFluxObjectives>\n</fbc:objective>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "type": "maximize",
+                "listOfFluxObjectives": [
+                  {
+                    "pk": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"EX_biomass\" fbc:coefficient=\"1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "reaction": "EX_biomass",
+                    "reaction2": null,
+                    "coefficient": 1,
+                    "variableType": null
+                  }
+                ]
+              },
+              {
+                "pk": "fbc_bounds_v1/Objective:glc_min",
+                "sbmlType": "Objective",
+                "id": "glc_min",
+                "metaId": null,
+                "name": "minimal glucose uptake",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:objective fbc:id=\"glc_min\" fbc:name=\"minimal glucose uptake\" fbc:type=\"minimize\">\n  <fbc:listOfFluxObjectives>\n    <fbc:fluxObjective fbc:reaction=\"EX_glc\" fbc:coefficient=\"-1\"/>\n  </fbc:listOfFluxObjectives>\n</fbc:objective>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "type": "minimize",
+                "listOfFluxObjectives": [
+                  {
+                    "pk": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
+                    "sbmlType": "FluxObjective",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<fbc:fluxObjective fbc:reaction=\"EX_glc\" fbc:coefficient=\"-1\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "reaction": "EX_glc",
+                    "reaction2": null,
+                    "coefficient": -1,
+                    "variableType": null
+                  }
+                ]
+              }
+            ],
+            "listOfFluxBounds": [
+              {
+                "pk": "fbc_bounds_v1/FluxBound:v1_lb",
+                "sbmlType": "FluxBound",
+                "id": "v1_lb",
+                "metaId": "meta_v1_lb",
+                "name": "lower bound of the glycolysis",
+                "sbo": null,
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The reaction is irreversible, so its flux may not become negative.</p>\n  </body>\n</notes>",
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:fluxBound metaid=\"meta_v1_lb\" fbc:id=\"v1_lb\" fbc:name=\"lower bound of the glycolysis\" fbc:reaction=\"v1\" fbc:operation=\"greaterEqual\" fbc:value=\"0\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The reaction is irreversible, so its flux may not become negative.</p>\n    </body>\n  </notes>\n</fbc:fluxBound>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "reaction": "v1",
+                "operation": "greaterEqual",
+                "value": 0
+              },
+              {
+                "pk": "fbc_bounds_v1/FluxBound:v1_ub",
+                "sbmlType": "FluxBound",
+                "id": "v1_ub",
+                "metaId": null,
+                "name": "upper bound of the glycolysis",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:fluxBound fbc:id=\"v1_ub\" fbc:name=\"upper bound of the glycolysis\" fbc:reaction=\"v1\" fbc:operation=\"lessEqual\" fbc:value=\"INF\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "reaction": "v1",
+                "operation": "lessEqual",
+                "value": "Infinity"
+              },
+              {
+                "pk": "fbc_bounds_v1/FluxBound:EX_glc_fixed",
+                "sbmlType": "FluxBound",
+                "id": "EX_glc_fixed",
+                "metaId": null,
+                "name": "fixed glucose uptake",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<fbc:fluxBound fbc:id=\"EX_glc_fixed\" fbc:name=\"fixed glucose uptake\" fbc:reaction=\"EX_glc\" fbc:operation=\"equal\" fbc:value=\"-10\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "reaction": "EX_glc",
+                "operation": "equal",
+                "value": -10
+              }
+            ],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": {
+              "strict": null,
+              "activeObjective": "biomass_max"
+            }
+          }
+        ],
+        "externalModelDefinitions": [],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "fbc_bounds_v1/Model:fbc_bounds_v1": {
+              "pk": "fbc_bounds_v1/Model:fbc_bounds_v1",
+              "sbmlType": "Model",
+              "id": "fbc_bounds_v1",
+              "name": "Flux bounds of fbc Version 1",
+              "model": null
+            },
+            "fbc_bounds_v1/UnitDefinition:hr": {
+              "pk": "fbc_bounds_v1/UnitDefinition:hr",
+              "sbmlType": "UnitDefinition",
+              "id": "hr",
+              "name": "hour",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/UnitDefinition:mmole": {
+              "pk": "fbc_bounds_v1/UnitDefinition:mmole",
+              "sbmlType": "UnitDefinition",
+              "id": "mmole",
+              "name": "mmole",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/UnitDefinition:mmole_per_hr": {
+              "pk": "fbc_bounds_v1/UnitDefinition:mmole_per_hr",
+              "sbmlType": "UnitDefinition",
+              "id": "mmole_per_hr",
+              "name": "mmole per hour",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Compartment:cell": {
+              "pk": "fbc_bounds_v1/Compartment:cell",
+              "sbmlType": "Compartment",
+              "id": "cell",
+              "name": "cell",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Species:glc": {
+              "pk": "fbc_bounds_v1/Species:glc",
+              "sbmlType": "Species",
+              "id": "glc",
+              "name": "glucose",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Species:atp": {
+              "pk": "fbc_bounds_v1/Species:atp",
+              "sbmlType": "Species",
+              "id": "atp",
+              "name": "ATP",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Species:adp": {
+              "pk": "fbc_bounds_v1/Species:adp",
+              "sbmlType": "Species",
+              "id": "adp",
+              "name": "ADP",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Species:biomass": {
+              "pk": "fbc_bounds_v1/Species:biomass",
+              "sbmlType": "Species",
+              "id": "biomass",
+              "name": "biomass",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Reaction:v1": {
+              "pk": "fbc_bounds_v1/Reaction:v1",
+              "sbmlType": "Reaction",
+              "id": "v1",
+              "name": "glycolysis",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/SpeciesReference:v1.reactant.glc": {
+              "pk": "fbc_bounds_v1/SpeciesReference:v1.reactant.glc",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/SpeciesReference:v1.reactant.adp": {
+              "pk": "fbc_bounds_v1/SpeciesReference:v1.reactant.adp",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/SpeciesReference:v1.product.atp": {
+              "pk": "fbc_bounds_v1/SpeciesReference:v1.product.atp",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/SpeciesReference:v1.product.biomass": {
+              "pk": "fbc_bounds_v1/SpeciesReference:v1.product.biomass",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Reaction:EX_glc": {
+              "pk": "fbc_bounds_v1/Reaction:EX_glc",
+              "sbmlType": "Reaction",
+              "id": "EX_glc",
+              "name": "glucose exchange",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/SpeciesReference:EX_glc.reactant.glc": {
+              "pk": "fbc_bounds_v1/SpeciesReference:EX_glc.reactant.glc",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Reaction:EX_biomass": {
+              "pk": "fbc_bounds_v1/Reaction:EX_biomass",
+              "sbmlType": "Reaction",
+              "id": "EX_biomass",
+              "name": "biomass exchange",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/SpeciesReference:EX_biomass.reactant.biomass": {
+              "pk": "fbc_bounds_v1/SpeciesReference:EX_biomass.reactant.biomass",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxBound:v1_lb": {
+              "pk": "fbc_bounds_v1/FluxBound:v1_lb",
+              "sbmlType": "FluxBound",
+              "id": "v1_lb",
+              "name": "lower bound of the glycolysis",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxBound:v1_ub": {
+              "pk": "fbc_bounds_v1/FluxBound:v1_ub",
+              "sbmlType": "FluxBound",
+              "id": "v1_ub",
+              "name": "upper bound of the glycolysis",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxBound:EX_glc_fixed": {
+              "pk": "fbc_bounds_v1/FluxBound:EX_glc_fixed",
+              "sbmlType": "FluxBound",
+              "id": "EX_glc_fixed",
+              "name": "fixed glucose uptake",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Objective:biomass_max": {
+              "pk": "fbc_bounds_v1/Objective:biomass_max",
+              "sbmlType": "Objective",
+              "id": "biomass_max",
+              "name": "maximal biomass",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass": {
+              "pk": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
+              "sbmlType": "FluxObjective",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/Objective:glc_min": {
+              "pk": "fbc_bounds_v1/Objective:glc_min",
+              "sbmlType": "Objective",
+              "id": "glc_min",
+              "name": "minimal glucose uptake",
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            },
+            "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc": {
+              "pk": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
+              "sbmlType": "FluxObjective",
+              "id": null,
+              "name": null,
+              "model": "fbc_bounds_v1/Model:fbc_bounds_v1"
+            }
+          },
+          "edges": [
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "fbc_bounds_v1/Model:fbc_bounds_v1",
+              "kind": "model"
+            },
+            {
+              "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
+              "target": "fbc_bounds_v1/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
+              "target": "fbc_bounds_v1/UnitDefinition:hr",
+              "kind": "units"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:glc",
+              "target": "fbc_bounds_v1/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:glc",
+              "target": "fbc_bounds_v1/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:atp",
+              "target": "fbc_bounds_v1/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:atp",
+              "target": "fbc_bounds_v1/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:adp",
+              "target": "fbc_bounds_v1/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:adp",
+              "target": "fbc_bounds_v1/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:biomass",
+              "target": "fbc_bounds_v1/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "fbc_bounds_v1/Species:biomass",
+              "target": "fbc_bounds_v1/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "fbc_bounds_v1/Reaction:v1",
+              "target": "fbc_bounds_v1/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "fbc_bounds_v1/Reaction:v1",
+              "target": "fbc_bounds_v1/SpeciesReference:v1.reactant.glc",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/SpeciesReference:v1.reactant.glc",
+              "target": "fbc_bounds_v1/Species:glc",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/Reaction:v1",
+              "target": "fbc_bounds_v1/SpeciesReference:v1.reactant.adp",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/SpeciesReference:v1.reactant.adp",
+              "target": "fbc_bounds_v1/Species:adp",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/Reaction:v1",
+              "target": "fbc_bounds_v1/SpeciesReference:v1.product.atp",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_bounds_v1/SpeciesReference:v1.product.atp",
+              "target": "fbc_bounds_v1/Species:atp",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_bounds_v1/Reaction:v1",
+              "target": "fbc_bounds_v1/SpeciesReference:v1.product.biomass",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_bounds_v1/SpeciesReference:v1.product.biomass",
+              "target": "fbc_bounds_v1/Species:biomass",
+              "kind": "product"
+            },
+            {
+              "source": "fbc_bounds_v1/Reaction:EX_glc",
+              "target": "fbc_bounds_v1/SpeciesReference:EX_glc.reactant.glc",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/SpeciesReference:EX_glc.reactant.glc",
+              "target": "fbc_bounds_v1/Species:glc",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/Reaction:EX_biomass",
+              "target": "fbc_bounds_v1/SpeciesReference:EX_biomass.reactant.biomass",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/SpeciesReference:EX_biomass.reactant.biomass",
+              "target": "fbc_bounds_v1/Species:biomass",
+              "kind": "reactant"
+            },
+            {
+              "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
+              "target": "fbc_bounds_v1/Objective:biomass_max",
+              "kind": "activeObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/Objective:biomass_max",
+              "target": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
+              "target": "fbc_bounds_v1/Reaction:EX_biomass",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/Objective:glc_min",
+              "target": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
+              "target": "fbc_bounds_v1/Reaction:EX_glc",
+              "kind": "fluxObjective"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxBound:v1_lb",
+              "target": "fbc_bounds_v1/Reaction:v1",
+              "kind": "fluxBound"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxBound:v1_ub",
+              "target": "fbc_bounds_v1/Reaction:v1",
+              "kind": "fluxBound"
+            },
+            {
+              "source": "fbc_bounds_v1/FluxBound:EX_glc_fixed",
+              "target": "fbc_bounds_v1/Reaction:EX_glc",
+              "kind": "fluxBound"
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.004 [s]"
+      }
+    }
+  }
+}

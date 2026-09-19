@@ -1,0 +1,1337 @@
+{
+  "uid": "d67e8378f5bd4199b5114f0ca955dfe4",
+  "manifest": {
+    "entries": [
+      {
+        "location": ".",
+        "format": "http://identifiers.org/combine.specifications/omex",
+        "master": false
+      },
+      {
+        "location": "./manifest.xml",
+        "format": "http://identifiers.org/combine.specifications/omex-manifest",
+        "master": false
+      },
+      {
+        "location": "./model.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml",
+        "master": true
+      }
+    ]
+  },
+  "reports": {
+    "./model.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": null,
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "keyValuePairs": [],
+          "level": 3,
+          "version": 1,
+          "packages": [
+            {
+              "prefix": "distrib",
+              "version": 1
+            }
+          ],
+          "annotationXml": null
+        },
+        "models": [
+          {
+            "pk": "distrib_spans/Model:distrib_spans",
+            "sbmlType": "Model",
+            "id": "distrib_spans",
+            "metaId": "meta_distrib_spans",
+            "name": "Uncertainty spans and distributions",
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>A Michaelis Menten rate law whose parameters are measured quantities. Every measurement is recorded with the distrib package: what was measured, how well it is known and where the number comes from.</p>\n    <p>The file writes every shape the package allows. An uncertainty which is a span carries its two ends as numbers (the range of <code>Km</code>, the confidence interval of the substrate) or as references to parameters of the model (the confidence interval of <code>Km</code> in the lysate, which names <code>Km_lower</code> and <code>Km_upper</code>). An uncertainty which is a single value carries it as a number or, for the mean of <code>Vmax</code>, as a reference to the parameter <code>Vmax_mean</code>, with the units it is measured in. A distribution carries the parameters it is defined by as uncert parameters of its own, and the rate carries the distribution as math.</p>\n    <p>The parameter <code>Km</code> carries two uncertainties, one per publication, because measurements from different sources belong into different uncertainties, and the notes of each of them say where its numbers come from. An uncertainty is not restricted to a parameter: the substrate carries one and so does the assignment rule of the rate.</p>\n  </body>\n</notes>",
+            "cvterms": [],
+            "history": null,
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "kind": "model",
+            "annotationXml": null,
+            "substanceUnits": "mmole",
+            "substanceUnitsLatex": "mmol",
+            "timeUnits": "min",
+            "timeUnitsLatex": "min",
+            "volumeUnits": "litre",
+            "volumeUnitsLatex": "l",
+            "areaUnits": "m2",
+            "areaUnitsLatex": "m^2",
+            "lengthUnits": "metre",
+            "lengthUnitsLatex": "m",
+            "extentUnits": "mmole",
+            "extentUnitsLatex": "mmol",
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [
+              {
+                "pk": "distrib_spans/UnitDefinition:min",
+                "sbmlType": "UnitDefinition",
+                "id": "min",
+                "metaId": null,
+                "name": "minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"min\" name=\"minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              },
+              {
+                "pk": "distrib_spans/UnitDefinition:m2",
+                "sbmlType": "UnitDefinition",
+                "id": "m2",
+                "metaId": null,
+                "name": "meter^2",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"m2\" name=\"meter^2\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"2\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "m^2",
+                "listOfUnits": [
+                  {
+                    "kind": "metre",
+                    "exponent": 2,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
+              },
+              {
+                "pk": "distrib_spans/UnitDefinition:mmole",
+                "sbmlType": "UnitDefinition",
+                "id": "mmole",
+                "metaId": null,
+                "name": "mmole",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "mmol",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  }
+                ]
+              },
+              {
+                "pk": "distrib_spans/UnitDefinition:mmole_per_l",
+                "sbmlType": "UnitDefinition",
+                "id": "mmole_per_l",
+                "metaId": null,
+                "name": "mmole/l",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mmole_per_l\" name=\"mmole/l\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "\\frac{mmol}{l}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
+              },
+              {
+                "pk": "distrib_spans/UnitDefinition:mmole_per_min_l",
+                "sbmlType": "UnitDefinition",
+                "id": "mmole_per_min_l",
+                "metaId": null,
+                "name": "mmole/min/l",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mmole_per_min_l\" name=\"mmole/min/l\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"-3\" multiplier=\"1\"/>\n    <unit kind=\"litre\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "\\frac{mmol}{l \\cdot min}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": -3,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "litre",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              }
+            ],
+            "listOfCompartments": [
+              {
+                "pk": "distrib_spans/Compartment:cell",
+                "sbmlType": "Compartment",
+                "id": "cell",
+                "metaId": null,
+                "name": "cell",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"cell\" name=\"cell\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "distrib_spans/Species:S",
+                "sbmlType": "Species",
+                "id": "S",
+                "metaId": null,
+                "name": "substrate",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"S\" name=\"substrate\" compartment=\"cell\" initialConcentration=\"0.5\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\">\n  <distrib:listOfUncertainties>\n    <distrib:uncertainty distrib:id=\"u_S\" distrib:name=\"titration of the substrate\">\n      <notes>\n        <body xmlns=\"http://www.w3.org/1999/xhtml\">\n          <p>The concentration at the start of the assay, from five titrations of the same batch.</p>\n        </body>\n      </notes>\n      <distrib:uncertParameter distrib:value=\"0.5\" distrib:units=\"mmole_per_l\" distrib:type=\"mean\"/>\n      <distrib:uncertSpan distrib:units=\"mmole_per_l\" distrib:type=\"confidenceInterval\" distrib:valueLower=\"0.42\" distrib:valueUpper=\"0.58\"/>\n    </distrib:uncertainty>\n  </distrib:listOfUncertainties>\n</species>",
+                "comp": null,
+                "uncertainties": [
+                  {
+                    "pk": "distrib_spans/Uncertainty:u_S",
+                    "sbmlType": "Uncertainty",
+                    "id": "u_S",
+                    "metaId": null,
+                    "name": "titration of the substrate",
+                    "sbo": null,
+                    "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The concentration at the start of the assay, from five titrations of the same batch.</p>\n  </body>\n</notes>",
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<distrib:uncertainty distrib:id=\"u_S\" distrib:name=\"titration of the substrate\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The concentration at the start of the assay, from five titrations of the same batch.</p>\n    </body>\n  </notes>\n  <distrib:uncertParameter distrib:value=\"0.5\" distrib:units=\"mmole_per_l\" distrib:type=\"mean\"/>\n  <distrib:uncertSpan distrib:units=\"mmole_per_l\" distrib:type=\"confidenceInterval\" distrib:valueLower=\"0.42\" distrib:valueUpper=\"0.58\"/>\n</distrib:uncertainty>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "uncertParameters": [
+                      {
+                        "pk": "distrib_spans/UncertParameter:u_S.mean",
+                        "sbmlType": "UncertParameter",
+                        "id": null,
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:value=\"0.5\" distrib:units=\"mmole_per_l\" distrib:type=\"mean\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "mean",
+                        "var": null,
+                        "value": 0.5,
+                        "units": "mmole_per_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": []
+                      },
+                      {
+                        "pk": "distrib_spans/UncertSpan:u_S.confidenceInterval",
+                        "sbmlType": "UncertSpan",
+                        "id": null,
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertSpan distrib:units=\"mmole_per_l\" distrib:type=\"confidenceInterval\" distrib:valueLower=\"0.42\" distrib:valueUpper=\"0.58\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "confidenceInterval",
+                        "var": null,
+                        "value": null,
+                        "units": "mmole_per_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": [],
+                        "valueLower": 0.42,
+                        "valueUpper": 0.58,
+                        "varLower": null,
+                        "varUpper": null
+                      }
+                    ]
+                  }
+                ],
+                "keyValuePairs": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 0.5,
+                "substanceUnits": "mmole",
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mmol",
+                "derivedUnits": "\\frac{mmol}{l}",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [
+              {
+                "pk": "distrib_spans/Parameter:Km",
+                "sbmlType": "Parameter",
+                "id": "Km",
+                "metaId": null,
+                "name": "Michaelis constant",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"Km\" name=\"Michaelis constant\" value=\"0.5\" units=\"mmole_per_l\" constant=\"true\">\n  <distrib:listOfUncertainties>\n    <distrib:uncertainty distrib:id=\"u_Km_purified\" distrib:name=\"Wilson 1997, purified enzyme\">\n      <notes>\n        <body xmlns=\"http://www.w3.org/1999/xhtml\">\n          <p>Twelve initial rate measurements on the purified enzyme, fitted with a hyperbola. The range is the smallest and the largest of the fitted constants.</p>\n        </body>\n      </notes>\n      <distrib:uncertParameter metaid=\"meta_u_Km_purified_mean\" distrib:id=\"Km_purified_mean\" distrib:name=\"mean of the fitted constants\" distrib:value=\"0.5\" distrib:units=\"mmole_per_l\" distrib:type=\"mean\">\n        <notes>\n          <body xmlns=\"http://www.w3.org/1999/xhtml\">\n            <p>The value the parameter of the model is set to.</p>\n          </body>\n        </notes>\n      </distrib:uncertParameter>\n      <distrib:uncertParameter distrib:value=\"0.06\" distrib:units=\"mmole_per_l\" distrib:type=\"standardDeviation\"/>\n      <distrib:uncertParameter distrib:value=\"12\" distrib:type=\"sampleSize\"/>\n      <distrib:uncertSpan distrib:id=\"Km_purified_range\" distrib:units=\"mmole_per_l\" distrib:type=\"range\" distrib:valueLower=\"0.38\" distrib:valueUpper=\"0.63\"/>\n    </distrib:uncertainty>\n    <distrib:uncertainty distrib:id=\"u_Km_lysate\" distrib:name=\"Baker 2012, cell lysate\">\n      <notes>\n        <body xmlns=\"http://www.w3.org/1999/xhtml\">\n          <p>The same constant measured in a cell lysate, where it is larger and less certain. The ends of the confidence interval are parameters of the model, so that a simulation can sample between them.</p>\n        </body>\n      </notes>\n      <distrib:uncertParameter distrib:value=\"0.59\" distrib:units=\"mmole_per_l\" distrib:type=\"median\"/>\n      <distrib:uncertSpan distrib:id=\"Km_lysate_ci\" distrib:name=\"95% confidence interval\" distrib:type=\"confidenceInterval\" distrib:varLower=\"Km_lower\" distrib:varUpper=\"Km_upper\"/>\n    </distrib:uncertainty>\n  </distrib:listOfUncertainties>\n</parameter>",
+                "comp": null,
+                "uncertainties": [
+                  {
+                    "pk": "distrib_spans/Uncertainty:u_Km_purified",
+                    "sbmlType": "Uncertainty",
+                    "id": "u_Km_purified",
+                    "metaId": null,
+                    "name": "Wilson 1997, purified enzyme",
+                    "sbo": null,
+                    "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Twelve initial rate measurements on the purified enzyme, fitted with a hyperbola. The range is the smallest and the largest of the fitted constants.</p>\n  </body>\n</notes>",
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<distrib:uncertainty distrib:id=\"u_Km_purified\" distrib:name=\"Wilson 1997, purified enzyme\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>Twelve initial rate measurements on the purified enzyme, fitted with a hyperbola. The range is the smallest and the largest of the fitted constants.</p>\n    </body>\n  </notes>\n  <distrib:uncertParameter metaid=\"meta_u_Km_purified_mean\" distrib:id=\"Km_purified_mean\" distrib:name=\"mean of the fitted constants\" distrib:value=\"0.5\" distrib:units=\"mmole_per_l\" distrib:type=\"mean\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>The value the parameter of the model is set to.</p>\n      </body>\n    </notes>\n  </distrib:uncertParameter>\n  <distrib:uncertParameter distrib:value=\"0.06\" distrib:units=\"mmole_per_l\" distrib:type=\"standardDeviation\"/>\n  <distrib:uncertParameter distrib:value=\"12\" distrib:type=\"sampleSize\"/>\n  <distrib:uncertSpan distrib:id=\"Km_purified_range\" distrib:units=\"mmole_per_l\" distrib:type=\"range\" distrib:valueLower=\"0.38\" distrib:valueUpper=\"0.63\"/>\n</distrib:uncertainty>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "uncertParameters": [
+                      {
+                        "pk": "distrib_spans/UncertParameter:Km_purified_mean",
+                        "sbmlType": "UncertParameter",
+                        "id": "Km_purified_mean",
+                        "metaId": "meta_u_Km_purified_mean",
+                        "name": "mean of the fitted constants",
+                        "sbo": null,
+                        "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The value the parameter of the model is set to.</p>\n  </body>\n</notes>",
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter metaid=\"meta_u_Km_purified_mean\" distrib:id=\"Km_purified_mean\" distrib:name=\"mean of the fitted constants\" distrib:value=\"0.5\" distrib:units=\"mmole_per_l\" distrib:type=\"mean\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The value the parameter of the model is set to.</p>\n    </body>\n  </notes>\n</distrib:uncertParameter>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "mean",
+                        "var": null,
+                        "value": 0.5,
+                        "units": "mmole_per_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": []
+                      },
+                      {
+                        "pk": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
+                        "sbmlType": "UncertParameter",
+                        "id": null,
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:value=\"0.06\" distrib:units=\"mmole_per_l\" distrib:type=\"standardDeviation\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "standardDeviation",
+                        "var": null,
+                        "value": 0.06,
+                        "units": "mmole_per_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": []
+                      },
+                      {
+                        "pk": "distrib_spans/UncertParameter:u_Km_purified.sampleSize",
+                        "sbmlType": "UncertParameter",
+                        "id": null,
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:value=\"12\" distrib:type=\"sampleSize\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "sampleSize",
+                        "var": null,
+                        "value": 12,
+                        "units": null,
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": []
+                      },
+                      {
+                        "pk": "distrib_spans/UncertSpan:Km_purified_range",
+                        "sbmlType": "UncertSpan",
+                        "id": "Km_purified_range",
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertSpan distrib:id=\"Km_purified_range\" distrib:units=\"mmole_per_l\" distrib:type=\"range\" distrib:valueLower=\"0.38\" distrib:valueUpper=\"0.63\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "range",
+                        "var": null,
+                        "value": null,
+                        "units": "mmole_per_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": [],
+                        "valueLower": 0.38,
+                        "valueUpper": 0.63,
+                        "varLower": null,
+                        "varUpper": null
+                      }
+                    ]
+                  },
+                  {
+                    "pk": "distrib_spans/Uncertainty:u_Km_lysate",
+                    "sbmlType": "Uncertainty",
+                    "id": "u_Km_lysate",
+                    "metaId": null,
+                    "name": "Baker 2012, cell lysate",
+                    "sbo": null,
+                    "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The same constant measured in a cell lysate, where it is larger and less certain. The ends of the confidence interval are parameters of the model, so that a simulation can sample between them.</p>\n  </body>\n</notes>",
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<distrib:uncertainty distrib:id=\"u_Km_lysate\" distrib:name=\"Baker 2012, cell lysate\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The same constant measured in a cell lysate, where it is larger and less certain. The ends of the confidence interval are parameters of the model, so that a simulation can sample between them.</p>\n    </body>\n  </notes>\n  <distrib:uncertParameter distrib:value=\"0.59\" distrib:units=\"mmole_per_l\" distrib:type=\"median\"/>\n  <distrib:uncertSpan distrib:id=\"Km_lysate_ci\" distrib:name=\"95% confidence interval\" distrib:type=\"confidenceInterval\" distrib:varLower=\"Km_lower\" distrib:varUpper=\"Km_upper\"/>\n</distrib:uncertainty>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "uncertParameters": [
+                      {
+                        "pk": "distrib_spans/UncertParameter:u_Km_lysate.median",
+                        "sbmlType": "UncertParameter",
+                        "id": null,
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:value=\"0.59\" distrib:units=\"mmole_per_l\" distrib:type=\"median\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "median",
+                        "var": null,
+                        "value": 0.59,
+                        "units": "mmole_per_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": []
+                      },
+                      {
+                        "pk": "distrib_spans/UncertSpan:Km_lysate_ci",
+                        "sbmlType": "UncertSpan",
+                        "id": "Km_lysate_ci",
+                        "metaId": null,
+                        "name": "95% confidence interval",
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertSpan distrib:id=\"Km_lysate_ci\" distrib:name=\"95% confidence interval\" distrib:type=\"confidenceInterval\" distrib:varLower=\"Km_lower\" distrib:varUpper=\"Km_upper\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "confidenceInterval",
+                        "var": null,
+                        "value": null,
+                        "units": null,
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": [],
+                        "valueLower": null,
+                        "valueUpper": null,
+                        "varLower": "Km_lower",
+                        "varUpper": "Km_upper"
+                      }
+                    ]
+                  }
+                ],
+                "keyValuePairs": [],
+                "value": 0.5,
+                "constant": true,
+                "units": "mmole_per_l",
+                "unitsLatex": "\\frac{mmol}{l}",
+                "derivedUnits": "\\frac{mmol}{l}"
+              },
+              {
+                "pk": "distrib_spans/Parameter:Km_lower",
+                "sbmlType": "Parameter",
+                "id": "Km_lower",
+                "metaId": null,
+                "name": "lower end of the confidence interval of Km",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"Km_lower\" name=\"lower end of the confidence interval of Km\" value=\"0.41\" units=\"mmole_per_l\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 0.41,
+                "constant": true,
+                "units": "mmole_per_l",
+                "unitsLatex": "\\frac{mmol}{l}",
+                "derivedUnits": "\\frac{mmol}{l}"
+              },
+              {
+                "pk": "distrib_spans/Parameter:Km_upper",
+                "sbmlType": "Parameter",
+                "id": "Km_upper",
+                "metaId": null,
+                "name": "upper end of the confidence interval of Km",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"Km_upper\" name=\"upper end of the confidence interval of Km\" value=\"0.77\" units=\"mmole_per_l\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 0.77,
+                "constant": true,
+                "units": "mmole_per_l",
+                "unitsLatex": "\\frac{mmol}{l}",
+                "derivedUnits": "\\frac{mmol}{l}"
+              },
+              {
+                "pk": "distrib_spans/Parameter:Vmax",
+                "sbmlType": "Parameter",
+                "id": "Vmax",
+                "metaId": null,
+                "name": "maximal rate",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"Vmax\" name=\"maximal rate\" value=\"0.5\" units=\"mmole_per_min_l\" constant=\"true\">\n  <distrib:listOfUncertainties>\n    <distrib:uncertainty distrib:id=\"u_Vmax\" distrib:name=\"Wilson 1997, purified enzyme\">\n      <notes>\n        <body xmlns=\"http://www.w3.org/1999/xhtml\">\n          <p>The maximal rate of the same assay. Its mean is not written as a number but as the parameter <code>Vmax_mean</code>, which the rest of the model can read, and the distribution it was drawn from is a Beta distribution with the two parameters the distribution takes.</p>\n        </body>\n      </notes>\n      <distrib:uncertParameter distrib:id=\"Vmax_mean_measure\" distrib:var=\"Vmax_mean\" distrib:units=\"mmole_per_min_l\" distrib:type=\"mean\"/>\n      <distrib:uncertParameter distrib:id=\"Vmax_distribution\" distrib:name=\"Beta distribution\" distrib:type=\"distribution\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution\">\n        <distrib:listOfUncertParameters>\n          <distrib:uncertParameter distrib:id=\"Vmax_alpha\" distrib:name=\"alpha\" distrib:value=\"2\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#alpha\"/>\n          <distrib:uncertParameter distrib:id=\"Vmax_beta\" distrib:name=\"beta\" distrib:value=\"5\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#beta\"/>\n        </distrib:listOfUncertParameters>\n      </distrib:uncertParameter>\n    </distrib:uncertainty>\n  </distrib:listOfUncertainties>\n</parameter>",
+                "comp": null,
+                "uncertainties": [
+                  {
+                    "pk": "distrib_spans/Uncertainty:u_Vmax",
+                    "sbmlType": "Uncertainty",
+                    "id": "u_Vmax",
+                    "metaId": null,
+                    "name": "Wilson 1997, purified enzyme",
+                    "sbo": null,
+                    "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The maximal rate of the same assay. Its mean is not written as a number but as the parameter <code>Vmax_mean</code>, which the rest of the model can read, and the distribution it was drawn from is a Beta distribution with the two parameters the distribution takes.</p>\n  </body>\n</notes>",
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<distrib:uncertainty distrib:id=\"u_Vmax\" distrib:name=\"Wilson 1997, purified enzyme\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The maximal rate of the same assay. Its mean is not written as a number but as the parameter <code>Vmax_mean</code>, which the rest of the model can read, and the distribution it was drawn from is a Beta distribution with the two parameters the distribution takes.</p>\n    </body>\n  </notes>\n  <distrib:uncertParameter distrib:id=\"Vmax_mean_measure\" distrib:var=\"Vmax_mean\" distrib:units=\"mmole_per_min_l\" distrib:type=\"mean\"/>\n  <distrib:uncertParameter distrib:id=\"Vmax_distribution\" distrib:name=\"Beta distribution\" distrib:type=\"distribution\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution\">\n    <distrib:listOfUncertParameters>\n      <distrib:uncertParameter distrib:id=\"Vmax_alpha\" distrib:name=\"alpha\" distrib:value=\"2\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#alpha\"/>\n      <distrib:uncertParameter distrib:id=\"Vmax_beta\" distrib:name=\"beta\" distrib:value=\"5\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#beta\"/>\n    </distrib:listOfUncertParameters>\n  </distrib:uncertParameter>\n</distrib:uncertainty>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "uncertParameters": [
+                      {
+                        "pk": "distrib_spans/UncertParameter:Vmax_mean_measure",
+                        "sbmlType": "UncertParameter",
+                        "id": "Vmax_mean_measure",
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:id=\"Vmax_mean_measure\" distrib:var=\"Vmax_mean\" distrib:units=\"mmole_per_min_l\" distrib:type=\"mean\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "mean",
+                        "var": "Vmax_mean",
+                        "value": null,
+                        "units": "mmole_per_min_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": []
+                      },
+                      {
+                        "pk": "distrib_spans/UncertParameter:Vmax_distribution",
+                        "sbmlType": "UncertParameter",
+                        "id": "Vmax_distribution",
+                        "metaId": null,
+                        "name": "Beta distribution",
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:id=\"Vmax_distribution\" distrib:name=\"Beta distribution\" distrib:type=\"distribution\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution\">\n  <distrib:listOfUncertParameters>\n    <distrib:uncertParameter distrib:id=\"Vmax_alpha\" distrib:name=\"alpha\" distrib:value=\"2\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#alpha\"/>\n    <distrib:uncertParameter distrib:id=\"Vmax_beta\" distrib:name=\"beta\" distrib:value=\"5\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#beta\"/>\n  </distrib:listOfUncertParameters>\n</distrib:uncertParameter>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "distribution",
+                        "var": null,
+                        "value": null,
+                        "units": null,
+                        "definitionUrl": "https://en.wikipedia.org/wiki/Beta_distribution",
+                        "math": null,
+                        "uncertParameters": [
+                          {
+                            "pk": "distrib_spans/UncertParameter:Vmax_alpha",
+                            "sbmlType": "UncertParameter",
+                            "id": "Vmax_alpha",
+                            "metaId": null,
+                            "name": "alpha",
+                            "sbo": null,
+                            "notes": null,
+                            "cvterms": [],
+                            "history": null,
+                            "xml": "<distrib:uncertParameter distrib:id=\"Vmax_alpha\" distrib:name=\"alpha\" distrib:value=\"2\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#alpha\"/>",
+                            "comp": null,
+                            "uncertainties": [],
+                            "keyValuePairs": [],
+                            "type": "externalParameter",
+                            "var": null,
+                            "value": 2,
+                            "units": null,
+                            "definitionUrl": "https://en.wikipedia.org/wiki/Beta_distribution#alpha",
+                            "math": null,
+                            "uncertParameters": []
+                          },
+                          {
+                            "pk": "distrib_spans/UncertParameter:Vmax_beta",
+                            "sbmlType": "UncertParameter",
+                            "id": "Vmax_beta",
+                            "metaId": null,
+                            "name": "beta",
+                            "sbo": null,
+                            "notes": null,
+                            "cvterms": [],
+                            "history": null,
+                            "xml": "<distrib:uncertParameter distrib:id=\"Vmax_beta\" distrib:name=\"beta\" distrib:value=\"5\" distrib:type=\"externalParameter\" distrib:definitionURL=\"https://en.wikipedia.org/wiki/Beta_distribution#beta\"/>",
+                            "comp": null,
+                            "uncertainties": [],
+                            "keyValuePairs": [],
+                            "type": "externalParameter",
+                            "var": null,
+                            "value": 5,
+                            "units": null,
+                            "definitionUrl": "https://en.wikipedia.org/wiki/Beta_distribution#beta",
+                            "math": null,
+                            "uncertParameters": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "keyValuePairs": [],
+                "value": 0.5,
+                "constant": true,
+                "units": "mmole_per_min_l",
+                "unitsLatex": "\\frac{mmol}{l \\cdot min}",
+                "derivedUnits": "\\frac{mmol}{l \\cdot min}"
+              },
+              {
+                "pk": "distrib_spans/Parameter:Vmax_mean",
+                "sbmlType": "Parameter",
+                "id": "Vmax_mean",
+                "metaId": null,
+                "name": "mean of the maximal rate",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"Vmax_mean\" name=\"mean of the maximal rate\" value=\"0.5\" units=\"mmole_per_min_l\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 0.5,
+                "constant": true,
+                "units": "mmole_per_min_l",
+                "unitsLatex": "\\frac{mmol}{l \\cdot min}",
+                "derivedUnits": "\\frac{mmol}{l \\cdot min}"
+              },
+              {
+                "pk": "distrib_spans/Parameter:v",
+                "sbmlType": "Parameter",
+                "id": "v",
+                "metaId": null,
+                "name": "rate of the reaction",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"v\" name=\"rate of the reaction\" units=\"mmole_per_min_l\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": null,
+                "constant": false,
+                "units": "mmole_per_min_l",
+                "unitsLatex": "\\frac{mmol}{l \\cdot min}",
+                "derivedUnits": "\\frac{mmol}{l \\cdot min}"
+              }
+            ],
+            "listOfInitialAssignments": [],
+            "listOfRules": [
+              {
+                "pk": "distrib_spans/AssignmentRule:v",
+                "sbmlType": "AssignmentRule",
+                "id": null,
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<assignmentRule variable=\"v\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <divide/>\n      <apply>\n        <times/>\n        <ci> Vmax </ci>\n        <ci> S </ci>\n      </apply>\n      <apply>\n        <plus/>\n        <ci> Km </ci>\n        <ci> S </ci>\n      </apply>\n    </apply>\n  </math>\n  <distrib:listOfUncertainties>\n    <distrib:uncertainty distrib:id=\"u_v\" distrib:name=\"propagated uncertainty of the rate\">\n      <notes>\n        <body xmlns=\"http://www.w3.org/1999/xhtml\">\n          <p>The uncertainty of the rate at the concentration the assay starts at, propagated from the uncertainties of the parameters. It is written on the rule which computes the rate, because that is where the number comes into being.</p>\n        </body>\n      </notes>\n      <distrib:uncertParameter distrib:value=\"0.04\" distrib:units=\"mmole_per_min_l\" distrib:type=\"standardDeviation\"/>\n      <distrib:uncertParameter distrib:id=\"v_distribution\" distrib:type=\"distribution\" distrib:definitionURL=\"http://www.sbml.org/sbml/symbols/distrib/normal\">\n        <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n          <apply>\n            <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/distrib/normal\"> normal </csymbol>\n            <ci> Vmax_mean </ci>\n            <cn> 0.04 </cn>\n          </apply>\n        </math>\n      </distrib:uncertParameter>\n    </distrib:uncertainty>\n  </distrib:listOfUncertainties>\n</assignmentRule>",
+                "comp": null,
+                "uncertainties": [
+                  {
+                    "pk": "distrib_spans/Uncertainty:u_v",
+                    "sbmlType": "Uncertainty",
+                    "id": "u_v",
+                    "metaId": null,
+                    "name": "propagated uncertainty of the rate",
+                    "sbo": null,
+                    "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The uncertainty of the rate at the concentration the assay starts at, propagated from the uncertainties of the parameters. It is written on the rule which computes the rate, because that is where the number comes into being.</p>\n  </body>\n</notes>",
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<distrib:uncertainty distrib:id=\"u_v\" distrib:name=\"propagated uncertainty of the rate\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The uncertainty of the rate at the concentration the assay starts at, propagated from the uncertainties of the parameters. It is written on the rule which computes the rate, because that is where the number comes into being.</p>\n    </body>\n  </notes>\n  <distrib:uncertParameter distrib:value=\"0.04\" distrib:units=\"mmole_per_min_l\" distrib:type=\"standardDeviation\"/>\n  <distrib:uncertParameter distrib:id=\"v_distribution\" distrib:type=\"distribution\" distrib:definitionURL=\"http://www.sbml.org/sbml/symbols/distrib/normal\">\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/distrib/normal\"> normal </csymbol>\n        <ci> Vmax_mean </ci>\n        <cn> 0.04 </cn>\n      </apply>\n    </math>\n  </distrib:uncertParameter>\n</distrib:uncertainty>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "uncertParameters": [
+                      {
+                        "pk": "distrib_spans/UncertParameter:u_v.standardDeviation",
+                        "sbmlType": "UncertParameter",
+                        "id": null,
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:value=\"0.04\" distrib:units=\"mmole_per_min_l\" distrib:type=\"standardDeviation\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "standardDeviation",
+                        "var": null,
+                        "value": 0.04,
+                        "units": "mmole_per_min_l",
+                        "definitionUrl": null,
+                        "math": null,
+                        "uncertParameters": []
+                      },
+                      {
+                        "pk": "distrib_spans/UncertParameter:v_distribution",
+                        "sbmlType": "UncertParameter",
+                        "id": "v_distribution",
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<distrib:uncertParameter distrib:id=\"v_distribution\" distrib:type=\"distribution\" distrib:definitionURL=\"http://www.sbml.org/sbml/symbols/distrib/normal\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <csymbol encoding=\"text\" definitionURL=\"http://www.sbml.org/sbml/symbols/distrib/normal\"> normal </csymbol>\n      <ci> Vmax_mean </ci>\n      <cn> 0.04 </cn>\n    </apply>\n  </math>\n</distrib:uncertParameter>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "type": "distribution",
+                        "var": null,
+                        "value": null,
+                        "units": null,
+                        "definitionUrl": "http://www.sbml.org/sbml/symbols/distrib/normal",
+                        "math": {
+                          "latex": " \\mathrm{normal}\\left(\\mathit{Vmax_{mean}},0.04\\right)",
+                          "formula": "normal(Vmax_mean, 0.04)"
+                        },
+                        "uncertParameters": []
+                      }
+                    ]
+                  }
+                ],
+                "keyValuePairs": [],
+                "variable": "v",
+                "math": {
+                  "latex": " \\frac{\\mathit{Vmax}\\cdot \\mathit{S}}{\\mathit{Km}+\\mathit{S}}",
+                  "formula": "Vmax * S / (Km + S)"
+                },
+                "derivedUnits": "\\frac{mmol}{l \\cdot min}"
+              }
+            ],
+            "listOfConstraints": [],
+            "listOfReactions": [],
+            "listOfEvents": [],
+            "listOfSubmodels": [],
+            "listOfPorts": [],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
+          }
+        ],
+        "externalModelDefinitions": [],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "distrib_spans/Model:distrib_spans": {
+              "pk": "distrib_spans/Model:distrib_spans",
+              "sbmlType": "Model",
+              "id": "distrib_spans",
+              "name": "Uncertainty spans and distributions",
+              "model": null
+            },
+            "distrib_spans/UnitDefinition:min": {
+              "pk": "distrib_spans/UnitDefinition:min",
+              "sbmlType": "UnitDefinition",
+              "id": "min",
+              "name": "minute",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UnitDefinition:m2": {
+              "pk": "distrib_spans/UnitDefinition:m2",
+              "sbmlType": "UnitDefinition",
+              "id": "m2",
+              "name": "meter^2",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UnitDefinition:mmole": {
+              "pk": "distrib_spans/UnitDefinition:mmole",
+              "sbmlType": "UnitDefinition",
+              "id": "mmole",
+              "name": "mmole",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UnitDefinition:mmole_per_l": {
+              "pk": "distrib_spans/UnitDefinition:mmole_per_l",
+              "sbmlType": "UnitDefinition",
+              "id": "mmole_per_l",
+              "name": "mmole/l",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UnitDefinition:mmole_per_min_l": {
+              "pk": "distrib_spans/UnitDefinition:mmole_per_min_l",
+              "sbmlType": "UnitDefinition",
+              "id": "mmole_per_min_l",
+              "name": "mmole/min/l",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Compartment:cell": {
+              "pk": "distrib_spans/Compartment:cell",
+              "sbmlType": "Compartment",
+              "id": "cell",
+              "name": "cell",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Species:S": {
+              "pk": "distrib_spans/Species:S",
+              "sbmlType": "Species",
+              "id": "S",
+              "name": "substrate",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Uncertainty:u_S": {
+              "pk": "distrib_spans/Uncertainty:u_S",
+              "sbmlType": "Uncertainty",
+              "id": "u_S",
+              "name": "titration of the substrate",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:u_S.mean": {
+              "pk": "distrib_spans/UncertParameter:u_S.mean",
+              "sbmlType": "UncertParameter",
+              "id": null,
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertSpan:u_S.confidenceInterval": {
+              "pk": "distrib_spans/UncertSpan:u_S.confidenceInterval",
+              "sbmlType": "UncertSpan",
+              "id": null,
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Parameter:Km": {
+              "pk": "distrib_spans/Parameter:Km",
+              "sbmlType": "Parameter",
+              "id": "Km",
+              "name": "Michaelis constant",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Uncertainty:u_Km_purified": {
+              "pk": "distrib_spans/Uncertainty:u_Km_purified",
+              "sbmlType": "Uncertainty",
+              "id": "u_Km_purified",
+              "name": "Wilson 1997, purified enzyme",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:Km_purified_mean": {
+              "pk": "distrib_spans/UncertParameter:Km_purified_mean",
+              "sbmlType": "UncertParameter",
+              "id": "Km_purified_mean",
+              "name": "mean of the fitted constants",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:u_Km_purified.standardDeviation": {
+              "pk": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
+              "sbmlType": "UncertParameter",
+              "id": null,
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:u_Km_purified.sampleSize": {
+              "pk": "distrib_spans/UncertParameter:u_Km_purified.sampleSize",
+              "sbmlType": "UncertParameter",
+              "id": null,
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertSpan:Km_purified_range": {
+              "pk": "distrib_spans/UncertSpan:Km_purified_range",
+              "sbmlType": "UncertSpan",
+              "id": "Km_purified_range",
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Uncertainty:u_Km_lysate": {
+              "pk": "distrib_spans/Uncertainty:u_Km_lysate",
+              "sbmlType": "Uncertainty",
+              "id": "u_Km_lysate",
+              "name": "Baker 2012, cell lysate",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:u_Km_lysate.median": {
+              "pk": "distrib_spans/UncertParameter:u_Km_lysate.median",
+              "sbmlType": "UncertParameter",
+              "id": null,
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertSpan:Km_lysate_ci": {
+              "pk": "distrib_spans/UncertSpan:Km_lysate_ci",
+              "sbmlType": "UncertSpan",
+              "id": "Km_lysate_ci",
+              "name": "95% confidence interval",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Parameter:Km_lower": {
+              "pk": "distrib_spans/Parameter:Km_lower",
+              "sbmlType": "Parameter",
+              "id": "Km_lower",
+              "name": "lower end of the confidence interval of Km",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Parameter:Km_upper": {
+              "pk": "distrib_spans/Parameter:Km_upper",
+              "sbmlType": "Parameter",
+              "id": "Km_upper",
+              "name": "upper end of the confidence interval of Km",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Parameter:Vmax": {
+              "pk": "distrib_spans/Parameter:Vmax",
+              "sbmlType": "Parameter",
+              "id": "Vmax",
+              "name": "maximal rate",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Uncertainty:u_Vmax": {
+              "pk": "distrib_spans/Uncertainty:u_Vmax",
+              "sbmlType": "Uncertainty",
+              "id": "u_Vmax",
+              "name": "Wilson 1997, purified enzyme",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:Vmax_mean_measure": {
+              "pk": "distrib_spans/UncertParameter:Vmax_mean_measure",
+              "sbmlType": "UncertParameter",
+              "id": "Vmax_mean_measure",
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:Vmax_distribution": {
+              "pk": "distrib_spans/UncertParameter:Vmax_distribution",
+              "sbmlType": "UncertParameter",
+              "id": "Vmax_distribution",
+              "name": "Beta distribution",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:Vmax_alpha": {
+              "pk": "distrib_spans/UncertParameter:Vmax_alpha",
+              "sbmlType": "UncertParameter",
+              "id": "Vmax_alpha",
+              "name": "alpha",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:Vmax_beta": {
+              "pk": "distrib_spans/UncertParameter:Vmax_beta",
+              "sbmlType": "UncertParameter",
+              "id": "Vmax_beta",
+              "name": "beta",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Parameter:Vmax_mean": {
+              "pk": "distrib_spans/Parameter:Vmax_mean",
+              "sbmlType": "Parameter",
+              "id": "Vmax_mean",
+              "name": "mean of the maximal rate",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Parameter:v": {
+              "pk": "distrib_spans/Parameter:v",
+              "sbmlType": "Parameter",
+              "id": "v",
+              "name": "rate of the reaction",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/AssignmentRule:v": {
+              "pk": "distrib_spans/AssignmentRule:v",
+              "sbmlType": "AssignmentRule",
+              "id": null,
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/Uncertainty:u_v": {
+              "pk": "distrib_spans/Uncertainty:u_v",
+              "sbmlType": "Uncertainty",
+              "id": "u_v",
+              "name": "propagated uncertainty of the rate",
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:u_v.standardDeviation": {
+              "pk": "distrib_spans/UncertParameter:u_v.standardDeviation",
+              "sbmlType": "UncertParameter",
+              "id": null,
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            },
+            "distrib_spans/UncertParameter:v_distribution": {
+              "pk": "distrib_spans/UncertParameter:v_distribution",
+              "sbmlType": "UncertParameter",
+              "id": "v_distribution",
+              "name": null,
+              "model": "distrib_spans/Model:distrib_spans"
+            }
+          },
+          "edges": [
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "distrib_spans/Model:distrib_spans",
+              "kind": "model"
+            },
+            {
+              "source": "distrib_spans/Species:S",
+              "target": "distrib_spans/Uncertainty:u_S",
+              "kind": "uncertainty"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_S",
+              "target": "distrib_spans/UncertParameter:u_S.mean",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:u_S.mean",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_S",
+              "target": "distrib_spans/UncertSpan:u_S.confidenceInterval",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertSpan:u_S.confidenceInterval",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Km",
+              "target": "distrib_spans/Uncertainty:u_Km_purified",
+              "kind": "uncertainty"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Km_purified",
+              "target": "distrib_spans/UncertParameter:Km_purified_mean",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:Km_purified_mean",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Km_purified",
+              "target": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Km_purified",
+              "target": "distrib_spans/UncertParameter:u_Km_purified.sampleSize",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Km_purified",
+              "target": "distrib_spans/UncertSpan:Km_purified_range",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertSpan:Km_purified_range",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Km",
+              "target": "distrib_spans/Uncertainty:u_Km_lysate",
+              "kind": "uncertainty"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Km_lysate",
+              "target": "distrib_spans/UncertParameter:u_Km_lysate.median",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:u_Km_lysate.median",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Km_lysate",
+              "target": "distrib_spans/UncertSpan:Km_lysate_ci",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertSpan:Km_lysate_ci",
+              "target": "distrib_spans/Parameter:Km_lower",
+              "kind": "varLower"
+            },
+            {
+              "source": "distrib_spans/UncertSpan:Km_lysate_ci",
+              "target": "distrib_spans/Parameter:Km_upper",
+              "kind": "varUpper"
+            },
+            {
+              "source": "distrib_spans/Parameter:Vmax",
+              "target": "distrib_spans/Uncertainty:u_Vmax",
+              "kind": "uncertainty"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Vmax",
+              "target": "distrib_spans/UncertParameter:Vmax_mean_measure",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:Vmax_mean_measure",
+              "target": "distrib_spans/Parameter:Vmax_mean",
+              "kind": "var"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:Vmax_mean_measure",
+              "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_Vmax",
+              "target": "distrib_spans/UncertParameter:Vmax_distribution",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:Vmax_distribution",
+              "target": "distrib_spans/UncertParameter:Vmax_alpha",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:Vmax_distribution",
+              "target": "distrib_spans/UncertParameter:Vmax_beta",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/AssignmentRule:v",
+              "target": "distrib_spans/Uncertainty:u_v",
+              "kind": "uncertainty"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_v",
+              "target": "distrib_spans/UncertParameter:u_v.standardDeviation",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:u_v.standardDeviation",
+              "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Uncertainty:u_v",
+              "target": "distrib_spans/UncertParameter:v_distribution",
+              "kind": "uncertParameter"
+            },
+            {
+              "source": "distrib_spans/UncertParameter:v_distribution",
+              "target": "distrib_spans/Parameter:Vmax_mean",
+              "kind": "math"
+            },
+            {
+              "source": "distrib_spans/Model:distrib_spans",
+              "target": "distrib_spans/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Model:distrib_spans",
+              "target": "distrib_spans/UnitDefinition:min",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Model:distrib_spans",
+              "target": "distrib_spans/UnitDefinition:m2",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Species:S",
+              "target": "distrib_spans/Compartment:cell",
+              "kind": "compartment"
+            },
+            {
+              "source": "distrib_spans/Species:S",
+              "target": "distrib_spans/UnitDefinition:mmole",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Km",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Km_lower",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Km_upper",
+              "target": "distrib_spans/UnitDefinition:mmole_per_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Vmax",
+              "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:Vmax_mean",
+              "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/Parameter:v",
+              "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
+              "kind": "units"
+            },
+            {
+              "source": "distrib_spans/AssignmentRule:v",
+              "target": "distrib_spans/Parameter:v",
+              "kind": "variable"
+            },
+            {
+              "source": "distrib_spans/AssignmentRule:v",
+              "target": "distrib_spans/Parameter:Km",
+              "kind": "math"
+            },
+            {
+              "source": "distrib_spans/AssignmentRule:v",
+              "target": "distrib_spans/Species:S",
+              "kind": "math"
+            },
+            {
+              "source": "distrib_spans/AssignmentRule:v",
+              "target": "distrib_spans/Parameter:Vmax",
+              "kind": "math"
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.024 [s]"
+      }
+    }
+  }
+}

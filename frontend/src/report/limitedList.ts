@@ -12,20 +12,21 @@ export interface LimitedList<T> {
   showAll: () => void;
 }
 
-/** The first LIST_LIMIT items of a reactive list, the count of the rest, and an action that
+/** The first `limit` items of a reactive list, the count of the rest, and an action that
  * reveals them. The expansion resets whenever the list itself changes, so a component instance
  * the inspector reuses for another element of the same type never carries a previous "show all"
- * over to a list it was never clicked for. */
-export function useLimitedList<T>(items: () => T[]): LimitedList<T> {
+ * over to a list it was never clicked for.
+ *
+ * `limit` is LIST_LIMIT for a flat list. A list which nests, the branches of a gene product
+ * association, passes a smaller one, because every one of its items opens a list of its own. */
+export function useLimitedList<T>(items: () => T[], limit: number = LIST_LIMIT): LimitedList<T> {
   const list = computed(items);
   const expanded = ref(false);
   watch(list, () => {
     expanded.value = false;
   });
-  const shown = computed(() => (expanded.value ? list.value : list.value.slice(0, LIST_LIMIT)));
-  const hiddenCount = computed(() =>
-    expanded.value ? 0 : Math.max(0, list.value.length - LIST_LIMIT),
-  );
+  const shown = computed(() => (expanded.value ? list.value : list.value.slice(0, limit)));
+  const hiddenCount = computed(() => (expanded.value ? 0 : Math.max(0, list.value.length - limit)));
   return {
     shown,
     hiddenCount,

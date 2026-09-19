@@ -17,10 +17,10 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 | [products](#products) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [modifiers](#modifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [kinetic law](#kinetic-law) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc 3.8](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
-| [gene product association](#gene-product-association) | `string` | the logical expression of the genes under which the reaction can run | [fbc 3.9](https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf) |
+| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [gene product association](#gene-product-association) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -28,13 +28,13 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 The flag says whether the process can proceed in both directions. It does not change the equations of a simulation, it is an assertion which structural analyses such as elementary mode analysis rely on, and which says that the rate of an irreversible reaction never becomes negative.
 
-The report shows the flag as a mark in the column "reversible" and writes the equation with a double arrow when it is set.
+The report shows the flag as a mark in the column "reversible", a check for a reversible reaction and a cross for an irreversible one, and writes the equation with a double arrow for a reversible reaction. Level 1 and Level 2 make a reaction reversible unless the file says otherwise, so a reaction of those levels which does not write the flag is shown as reversible; Level 3 has no default.
 
 <span id="fast"></span>**fast**
 
 In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a quasi steady state immediately. The attribute was removed in Level 3 Version 2, where the speed of every reaction is given by its kinetic law alone.
 
-The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written.
+The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written. Level 1 and Level 2 from Version 2 on make a reaction slow unless the file says otherwise, so a reaction of those levels which does not write the flag is shown with the cross of `false`; Level 2 Version 1 gave the flag no default, and a reaction of that version which does not write it is shown with the dash of an attribute which is not set.
 
 <span id="compartment"></span>**compartment**
 
@@ -86,9 +86,9 @@ The report links the parameter in the inspector of the reaction.
 
 <span id="gene-product-association"></span>**gene product association**
 
-An association relates gene products with the operators `and` and `or`: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
+The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
 
-The report writes the association of a reaction as this expression and links every [gene product](geneproduct.md) it names.
+The report shows the tree in the inspector of the reaction, one line per branch, and links every gene product it names.
 
 ## In the report
 
@@ -97,7 +97,6 @@ The report writes the association of a reaction as this expression and links eve
 | [kinetic law](#kinetic-law-2) | `Math` | the rate formula of the reaction's kinetic law, rendered |
 | [derived units](#derived-units) | `latex` | the units the report derives for the rate formula of the kinetic law |
 | [equation](#equation) | `string` | the reaction written as a chemical equation |
-| [gene products](#gene-products) | `list` | the gene products named by the association of the reaction |
 
 <span id="kinetic-law-2"></span>**kinetic law**
 
@@ -112,10 +111,6 @@ The report derives the units of the [kinetic law](kineticlaw.md)'s formula from 
 The report builds the equation from the reactants and the products of the reaction, with a single or a double arrow according to the flag "reversible". A stoichiometry of one is left out, a stoichiometry of minus one becomes a minus in front of the species, and a stoichiometry which is no number, because a rule or an initial assignment sets it, is replaced by the identifier of the species reference, or by a question mark when it has none. The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
 
 The equation is a column of the table of reactions and a row of the inspector.
-
-<span id="gene-products"></span>**gene products**
-
-The report collects the gene products of the association tree of the reaction, so that they can be linked without parsing the expression. The list carries every gene product once, in the order of its identifier, and says nothing about how they are combined; the association does that.
 
 ## Related elements
 

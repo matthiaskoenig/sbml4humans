@@ -46,8 +46,10 @@ def _collect_pks(obj: object) -> list[str]:
 def _check_report(response: ReportResponse) -> None:
     """Check the report response: its structure, unique pks and link graph.
 
-    No two elements of a report, nor two link graph nodes, share a pk, and
-    the nodes of the link graph are exactly the elements of the report.
+    No two elements of a report, nor two link graph nodes, share a pk, the
+    nodes of the link graph are exactly the elements of the report, and no
+    edge is repeated: two attributes of one element which name the same
+    element, the substance and the extent units of a model, are one link.
     """
     assert len(response.uid) == 32
     assert response.manifest.entries
@@ -68,6 +70,9 @@ def _check_report(response: ReportResponse) -> None:
         assert node_pks == element_pks, (
             f"{location}: node pks and element pks differ by {node_pks ^ element_pks}"
         )
+        edges = entry.report.link_graph.edges
+        repeated = {edge for edge, count in Counter(edges).items() if count > 1}
+        assert not repeated, f"{location}: repeated edges {repeated}"
 
 
 @pytest.mark.parametrize("example", list(load_examples().values()), ids=lambda e: e.id)

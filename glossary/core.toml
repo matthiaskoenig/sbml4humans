@@ -40,9 +40,9 @@ type = "SId"
 spec = { doc = "l3v2", section = "3.2.1" }
 summary = "the identifier other elements of the model use to reference the element"
 description = """
-The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one.
+The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one. On an initial assignment, a rule and an event assignment it is optional and it exists from Level 3 Version 2 on, so most models leave it empty; what such an element sets is its symbol or its variable, not its id.
 
-The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element.
+The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element. An element without an id is named by the key of its [primary key](concepts.md) instead, and an element which the file nests in another one after that element.
 """
 
 [types.SBase.attributes.name]
@@ -97,7 +97,9 @@ summary = "the controlled vocabulary terms which link the element to database en
 description = """
 An annotation relates the element to an entry of an external database, for example to a ChEBI compound, a UniProt protein or a Gene Ontology process. Every relation names a qualifier, such as "is" or "is part of", so that the meaning of the reference is explicit. The qualifiers are those of MIRIAM and the entries are named by their identifiers.org url.
 
-The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource.
+An annotation can carry annotations of its own, which qualify it further: the evidence for a relation, or the modification of the protein a species stands for.
+
+The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource, and shows the terms below a term indented under it.
 """
 
 [types.SBase.attributes.history]
@@ -117,7 +119,7 @@ package = "report"
 type = "string"
 summary = "the element as it is written in the SBML file"
 description = """
-The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display.
+The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display. The document and the model are the exception: their XML is the whole file, so the report carries their annotation element instead. The nodes of a [gene product association](geneproductassociation.md) carry none either, because the XML of their [reaction](reaction.md) contains the whole association and every node of a deep tree would repeat the part below it.
 
 The "XML" button in the header of the inspector puts the XML view in the place of its sections.
 """
@@ -160,15 +162,27 @@ A version is a minor revision within a level which corrects and refines the lang
 The report shows the version next to the level in the attributes of the document.
 """
 
+[types.SBMLDocument.attributes.annotationXml]
+label = "annotation"
+package = "report"
+type = "string"
+spec = { doc = "l3v2", section = "3.2.6" }
+summary = "the annotation element of the document as the file writes it"
+description = """
+The annotation of the `sbml` element is where a tool writes what it knows about the file in its own vocabulary, next to the RDF the report reads as [annotations](sbase.md). The report does not carry the XML of the document, which is the whole file, so it carries the annotation element alone.
+
+The "XML" button in the header of the inspector shows it.
+"""
+
 [types.SBMLDocument.attributes.packages]
 label = "packages"
 type = "list"
 spec = { doc = "l3v2", section = "4.1.3" }
 summary = "the Level 3 packages the file uses, with their version"
 description = """
-Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc and distrib and shows the elements they add.
+Level 3 is modular: a package adds features on top of the core and is identified by its XML namespace, and every file declares which packages it uses and whether a reader has to understand them. The report reads the packages comp, fbc, qual and distrib and shows the elements they add.
 
-The report lists the prefix and the version of every declared package in the attributes of the document.
+The report lists the prefix and the version of every declared package in the attributes of the document. The namespace of the core itself, which a file declares as well, is no package and is not listed.
 """
 
 [types.Model]
@@ -192,6 +206,18 @@ description = """
 A document contains at most one model, but the comp package adds model definitions, which are models that exist to be instantiated by a submodel. The report treats both the same way and marks which of the two an element is.
 
 The kind is shown in the attributes of the inspector of a model, it is `model` or `modelDefinition`.
+"""
+
+[types.Model.attributes.annotationXml]
+label = "annotation"
+package = "report"
+type = "string"
+spec = { doc = "l3v2", section = "3.2.6" }
+summary = "the annotation element of the model as the file writes it"
+description = """
+The annotation of the model is where a tool writes what it knows about the model in its own vocabulary, next to the RDF the report reads as [annotations](sbase.md) and as [history](sbase.md). The report does not carry the XML of the model, which is the whole model, so it carries the annotation element alone.
+
+The "XML" button in the header of the inspector shows it.
 """
 
 [types.Model.attributes.substanceUnits]
@@ -482,19 +508,30 @@ summary = "a named unit built from the base units of SBML"
 description = """
 A unit definition composes a unit from base units, each raised to an exponent, scaled by a power of ten and multiplied by a factor; "millimole per litre per second" is such a product. Its identifier can then be used wherever a model declares units. Unit definitions are optional and a model has to be numerically consistent without them, but they let a reader and a tool check what the numbers mean.
 
-The report renders every unit definition as a formula instead of listing its parts, both in the table and in the inspector.
+The report renders every unit definition as a formula, in the table and in the inspector, and lists the units it is built from in the inspector.
 """
 related = ["Model", "Compartment", "Species", "Parameter"]
 
-[types.UnitDefinition.attributes.unitsLatex]
+[types.UnitDefinition.attributes.listOfUnits]
 label = "units"
+type = "list"
+spec = { doc = "l3v2", section = "4.4.2" }
+summary = "the units the definition multiplies, each with its exponent, scale and multiplier"
+description = """
+Every unit of the list is one factor of the definition: a base unit of SBML named by its kind, raised to the exponent, scaled by ten to the power of the scale and multiplied by the multiplier. "millimole per litre" is the mole with scale -3 times the litre with exponent -1, and "minute" is the second with multiplier 60. A definition with an empty list of units is an undefined unit, which is not the same as a dimensionless one.
+
+The inspector of a unit definition shows the units as a table of kind, exponent, scale and multiplier next to the formula the report renders from them, so a reader sees what the file says as well as what it means.
+"""
+
+[types.UnitDefinition.attributes.unitsLatex]
+label = "formula"
 package = "report"
 type = "latex"
 summary = "the composed unit rendered as a formula"
 description = """
 The report multiplies the base units of the definition with their exponent, scale and multiplier and renders the result as a formula, for example millimole per litre per second as a fraction.
 
-The rendered unit is the column "units" of the table of unit definitions and the row "units" of the inspector.
+The rendered unit is the column "units" of the table of unit definitions and the row "formula" of the inspector, above the units it is built from.
 """
 
 [types.Compartment]
@@ -975,7 +1012,7 @@ summary = "whether the reaction can also run backwards"
 description = """
 The flag says whether the process can proceed in both directions. It does not change the equations of a simulation, it is an assertion which structural analyses such as elementary mode analysis rely on, and which says that the rate of an irreversible reaction never becomes negative.
 
-The report shows the flag as a mark in the column "reversible" and writes the equation with a double arrow when it is set.
+The report shows the flag as a mark in the column "reversible", a check for a reversible reaction and a cross for an irreversible one, and writes the equation with a double arrow for a reversible reaction. Level 1 and Level 2 make a reaction reversible unless the file says otherwise, so a reaction of those levels which does not write the flag is shown as reversible; Level 3 has no default.
 """
 
 [types.Reaction.attributes.fast]
@@ -986,7 +1023,7 @@ summary = "whether the reaction was declared to be much faster than the others"
 description = """
 In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a quasi steady state immediately. The attribute was removed in Level 3 Version 2, where the speed of every reaction is given by its kinetic law alone.
 
-The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written.
+The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written. Level 1 and Level 2 from Version 2 on make a reaction slow unless the file says otherwise, so a reaction of those levels which does not write the flag is shown with the cross of `false`; Level 2 Version 1 gave the flag no default, and a reaction of that version which does not write it is shown with the dash of an attribute which is not set.
 """
 
 [types.Reaction.attributes.compartment]
@@ -1084,9 +1121,9 @@ summary = "an instantaneous change of the model when a condition becomes true"
 description = """
 An event describes a discontinuous change: when its trigger turns from false to true, the assignments of the event are executed and set new values for compartments, species, stoichiometries or parameters. A dose which is given at a fixed time, a switch which flips at a threshold or a medium which is exchanged are events. The change can be delayed, and a priority decides which of several simultaneous events is executed first.
 
-The report shows the rendered trigger, the priority and the delay of an event, the flags of its trigger and the table of its assignments.
+The report shows the rendered trigger, the priority and the delay of an event, the flags of its trigger and the table of its assignments, and opens the [trigger](trigger.md), the [priority](priority.md) and the [delay](delay.md) as elements of their own.
 """
-related = ["EventAssignment", "Parameter", "Species"]
+related = ["Trigger", "Priority", "Delay", "EventAssignment"]
 
 [types.Event.attributes.useValuesFromTriggerTime]
 label = "values from trigger time"
@@ -1097,6 +1134,15 @@ description = """
 An event which is delayed is triggered at one moment and executed at another, and the two moments can give different values. With "true" the formulas of the assignments are evaluated when the event triggers, with "false" when it is executed.
 
 The report shows the flag as a mark in the column "values from trigger time".
+"""
+
+[types.Event.attributes.trigger]
+label = "trigger"
+type = "Trigger"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition of the event, as an element of its own"
+description = """
+Every event has a [trigger](trigger.md), the element which holds the condition and the two flags which say how it is read. The report opens it in the inspector, with its own SBO term, notes and annotations.
 """
 
 [types.Event.attributes."trigger.math"]
@@ -1134,24 +1180,42 @@ The report shows the flag as a mark, in the column "persistent" and in the inspe
 
 [types.Event.attributes.priority]
 label = "priority"
+type = "Priority"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the element which orders the event against other events of the same moment"
+description = """
+An event may carry a [priority](priority.md), the element whose formula decides which of several events of one moment is executed first. An event without a priority has none, and the order of simultaneous events is then not fixed.
+"""
+
+[types.Event.attributes."priority.math"]
+label = "priority"
 type = "Math"
 spec = { doc = "l3v2", section = "4.12.3" }
 summary = "the formula which orders this event against other events of the same moment"
 description = """
-When several events are executed at the same moment, the one with the higher priority goes first; a larger number means a higher priority and the value is dimensionless. An event without a priority has none, and the order of simultaneous events is then not fixed.
+When several events are executed at the same moment, the one with the higher priority goes first; a larger number means a higher priority and the value is dimensionless.
 
-The report renders the priority in the column "priority" and in the inspector.
+The report renders the priority in the column "priority" of the events and in the inspector.
 """
 
 [types.Event.attributes.delay]
+label = "delay"
+type = "Delay"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the element which postpones the execution of the event"
+description = """
+An event may carry a [delay](delay.md), the element whose formula gives the time between the trigger and the execution. An event without a delay is executed immediately.
+"""
+
+[types.Event.attributes."delay.math"]
 label = "delay"
 type = "Math"
 spec = { doc = "l3v2", section = "4.12.4" }
 summary = "the formula which gives the time between the trigger and the execution"
 description = """
-The delay is evaluated at the moment the event triggers and has to be a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
+The delay is evaluated at the moment the event triggers and has to be a value which is not negative, in the time units of the model.
 
-The report renders the delay in the column "delay" and in the inspector.
+The report renders the delay in the column "delay" of the events and in the inspector.
 """
 
 [types.Event.attributes.listOfEventAssignments]
@@ -1221,7 +1285,7 @@ package = "report"
 type = "Reaction"
 summary = "the reaction which lists this species reference"
 description = """
-A species reference is written inside the list of reactants or of products of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it.
+A species reference is written inside the list of reactants or of products of one reaction. The report shows it as an element of its own, so it names the reaction it belongs to and links it; the link of that reaction to the reference is what says which reaction it is.
 
 The reaction is the first row of the inspector of a species reference.
 """
@@ -1232,7 +1296,7 @@ package = "report"
 type = "string"
 summary = "whether the reference is a reactant, a product or a modifier of its reaction"
 description = """
-SBML says the role of a participant by the list it stands in and not by an attribute of its own. The report looks up the list which holds the reference and shows the role as `reactant`, `product` or, for a [modifier species reference](modifierspeciesreference.md), `modifier`.
+SBML says the role of a participant by the list it stands in and not by an attribute of its own. The report reads it from the link of the reaction to the reference and shows it as `reactant`, `product` or, for a [modifier species reference](modifierspeciesreference.md), `modifier`.
 
 The role is shown in the inspector, below the reaction.
 """
@@ -1367,6 +1431,97 @@ description = """
 The report resolves the units of the local parameter and renders them as a formula, so that the units of a rate constant can be compared with the units the rate law needs.
 """
 
+
+[types.Trigger]
+label = "Trigger"
+package = "core"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition of an event, whose change from false to true fires it"
+description = """
+The trigger holds the condition of an [event](event.md) as a formula which returns a boolean value, and it decides when the event fires: at the moment the formula turns from false to true. It is an element of its own, so a model can say with an SBO term what kind of condition it is and explain in its notes what the condition stands for.
+
+The report shows the trigger as an element of its own, and its rendered condition and its two flags in the table and in the inspector of the event.
+"""
+related = ["Event", "Priority", "Delay", "EventAssignment"]
+
+[types.Trigger.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "the condition whose change from false to true fires the event"
+description = """
+The math is an expression which returns a boolean value, and the event fires at the moment it turns from false to true. It can fire again whenever the expression makes that transition again. A trigger without a formula can never fire.
+
+The report renders the condition in the column "trigger" of the events and in the inspector, and links the elements the condition reads.
+"""
+
+[types.Trigger.attributes.initialValue]
+label = "initial value"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the condition is taken to be true just before the simulation starts"
+description = """
+To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
+
+The report shows the flag as a mark, in the column "initial value" of the events and in the inspector.
+"""
+
+[types.Trigger.attributes.persistent]
+label = "persistent"
+type = "boolean"
+spec = { doc = "l3v2", section = "4.12.2" }
+summary = "whether the event is still executed when its condition becomes false again before execution"
+description = """
+Between the moment an event triggers and the moment it is executed, its condition may turn false again, because the event is delayed or because another event changed the model. With "true" the assignments are carried out anyway, with "false" the event is dropped.
+
+The report shows the flag as a mark, in the column "persistent" of the events and in the inspector.
+"""
+
+[types.Priority]
+label = "Priority"
+package = "core"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the formula which orders an event against the other events of the same moment"
+description = """
+The priority of an [event](event.md) decides which of several events executed at the same moment goes first: the one with the larger value. It is an element of its own, which a model can annotate and explain, and only a Level 3 model can carry one.
+
+The report shows the priority as an element of its own and its rendered formula in the table and in the inspector of the event.
+"""
+related = ["Event", "Trigger", "Delay"]
+
+[types.Priority.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.3" }
+summary = "the formula whose value orders the events of one moment"
+description = """
+The math returns a dimensionless number, and a larger value means the event is executed earlier. An event without a priority has none, and the order of simultaneous events is then not fixed.
+
+The report renders the formula in the column "priority" of the events and in the inspector, and links the elements it reads.
+"""
+
+[types.Delay]
+label = "Delay"
+package = "core"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the formula which gives the time between the trigger of an event and its execution"
+description = """
+The delay of an [event](event.md) postpones its assignments: the event fires at one moment and is carried out later. It is an element of its own, which a model can annotate and explain; whether the values of the assignments are taken from the moment of the trigger or from the moment of the execution is decided by the flag "values from trigger time" of the event.
+
+The report shows the delay as an element of its own and its rendered formula in the table and in the inspector of the event.
+"""
+related = ["Event", "Trigger", "Priority"]
+
+[types.Delay.attributes.math]
+label = "math"
+type = "Math"
+spec = { doc = "l3v2", section = "4.12.4" }
+summary = "the formula which gives the time between the trigger and the execution"
+description = """
+The math is evaluated at the moment the event triggers and has to give a value which is not negative, in the time units of the model. An event without a delay is executed immediately.
+
+The report renders the formula in the column "delay" of the events and in the inspector, and links the elements it reads.
+"""
 
 [types.EventAssignment]
 label = "Event assignment"

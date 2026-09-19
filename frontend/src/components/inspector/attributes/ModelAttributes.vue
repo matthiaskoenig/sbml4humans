@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Model } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
+import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import UnitsLink from "@/components/misc/UnitsLink.vue";
 import ValueText from "@/components/misc/ValueText.vue";
@@ -35,13 +36,24 @@ const resolve = (id: string | null | undefined) =>
   >
     <UnitsLink :pk="resolve(element[idKey])" :label="element[idKey]" :latex="element[latexKey]" />
   </AttributeRow>
+  <template v-if="element.fbc">
+    <AttributeRow label="strict" :type="element.sbmlType" field="fbc.strict"
+      ><BooleanMark :value="element.fbc.strict"
+    /></AttributeRow>
+    <AttributeRow label="active objective" :type="element.sbmlType" field="fbc.activeObjective">
+      <ElementLink
+        :pk="index?.resolve(element.pk, 'activeObjective', element.fbc.activeObjective)"
+        :label="element.fbc.activeObjective"
+      />
+    </AttributeRow>
+  </template>
   <AttributeRow label="conversion factor" :type="element.sbmlType" field="conversionFactor">
     <template v-if="element.conversionFactor">
       <ElementLink
         :pk="index?.resolve(element.pk, 'conversionFactor', element.conversionFactor.sid)"
         :label="element.conversionFactor.sid"
       />
-      <ValueText :value="element.conversionFactor.value" />
+      <ValueText :value="element.conversionFactor.value" double />
       <ValueText :value="element.conversionFactor.units" />
     </template>
     <span v-else class="text-gray-400">-</span>

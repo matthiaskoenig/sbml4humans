@@ -4,8 +4,10 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from 
 
 import type { ElementType, SbmlElement } from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
-import { columnsOf, type ColumnDef } from "@/report/columns";
+import { fieldValue, visibleColumns, type ColumnDef } from "@/report/columns";
+import { useReportIndex } from "@/report/context";
 import { attributeEntry } from "@/report/glossary";
+import { elementLabel } from "@/report/label";
 import { rowWindow } from "@/report/rowWindow";
 import { sortRows, type SortState } from "@/report/sort";
 import { useReportView } from "@/report/view";
@@ -26,12 +28,28 @@ const SORT_ICON_STROKE = 2.25;
 /** A click on these elements of a row does not change the selection. */
 const INTERACTIVE = "a, button, input, select, textarea, [contenteditable]";
 
-const props = defineProps<{ type: ElementType; rows: SbmlElement[] }>();
+const props = defineProps<{
+  type: ElementType;
+  rows: SbmlElement[];
+  /** Every row of the type, which decides the optional columns; the rows of a search are a
+   * part of it and would let a column come and go while a reader types. */
+  allRows?: SbmlElement[];
+}>();
 const view = useReportView();
+const index = useReportIndex();
 
-const columns = computed(() => columnsOf(props.type));
+const columns = computed(() => visibleColumns(props.type, props.allRows ?? props.rows));
 const sort = ref<SortState | null>(null);
-const sorted = computed(() => sortRows(props.rows, sort.value));
+
+/** The value a row sorts by in a column: its field, and in the id column the name a row the
+ * file gives no id is shown by. */
+function sortValue(row: SbmlElement, field: string): unknown {
+  const column = columns.value.find((c) => c.field === field);
+  if (column?.kind === "id" && !row.id) return elementLabel(index.value, row.pk);
+  return fieldValue(row, field);
+}
+
+const sorted = computed(() => sortRows(props.rows, sort.value, sortValue));
 const virtual = computed(() => props.rows.length > VIRTUAL_ROWS);
 const selectedPk = computed(() => view.state.value.pk);
 
@@ -79,7 +97,23 @@ const visible = computed(() => sorted.value.slice(range.value.start, range.value
  * have none, and a list of assignments would be compared as a list of objects, which leaves
  * every row equal and a sort that changes nothing under a header that promises one. */
 function sortable(column: ColumnDef): boolean {
-  return column.kind !== "math" && column.kind !== "units" && column.kind !== "assignments";
+  return (
+    column.kind !== "math" &&
+    column.kind !== "units" &&
+    column.kind !== "assignments" &&
+    column.kind !== "terms" &&
+    column.kind !== "elements" &&
+    column.kind !== "geneAssociation" &&
+    column.kind !== "influence"
+  );
+}
+
+/** The tooltip of a header: the summary of the attribute of the column, and for a column which
+ * counts the elements of a list, that it counts them, because the summary describes the list. */
+function headerTooltip(column: ColumnDef): string | undefined {
+  const summary = attributeEntry(props.type, column.field)?.summary;
+  if (!summary || column.kind !== "count") return summary;
+  return `the number of the ${column.header}: ${summary}`;
 }
 
 function toggleSort(column: ColumnDef): void {
@@ -196,7 +230,7 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
           >
             <button
               v-if="sortable(column)"
-              v-tooltip.bottom="attributeEntry(type, column.field)?.summary"
+              v-tooltip.bottom="headerTooltip(column)"
               type="button"
               class="flex w-full cursor-pointer items-center gap-1 rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-link"
               data-testid="sort-button"
@@ -209,12 +243,9 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
                 :stroke-width="SORT_ICON_STROKE"
               />
             </button>
-            <span
-              v-else
-              v-tooltip.bottom="attributeEntry(type, column.field)?.summary"
-              class="flex items-center gap-1"
-              >{{ column.header }}</span
-            >
+            <span v-else v-tooltip.bottom="headerTooltip(column)" class="flex items-center gap-1">{{
+              column.header
+            }}</span>
           </th>
         </tr>
       </thead>

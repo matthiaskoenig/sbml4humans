@@ -13,10 +13,10 @@ const index = useReportIndex();
 
 <template>
   <AttributeRow label="spatial dimensions" :type="element.sbmlType" field="spatialDimensions"
-    ><ValueText :value="element.spatialDimensions"
+    ><ValueText :value="element.spatialDimensions" double
   /></AttributeRow>
   <AttributeRow label="size" :type="element.sbmlType" field="size"
-    ><ValueText :value="element.size"
+    ><ValueText :value="element.size" double
   /></AttributeRow>
   <AttributeRow label="units" :type="element.sbmlType" field="units">
     <UnitsLink

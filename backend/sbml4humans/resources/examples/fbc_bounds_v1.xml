@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version1" level="3" version="1" fbc:required="false">
+  <model metaid="meta_fbc_bounds_v1" id="fbc_bounds_v1" name="Flux bounds of fbc Version 1" substanceUnits="mmole" timeUnits="hr" volumeUnits="litre" extentUnits="mmole">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <p>Example of the first version of the fbc package, in which the capacity of a reaction is not an attribute of the reaction but a <code>fluxBound</code> object of its own.</p>
+        <p>Every bound names the reaction it constrains, the operation which relates the flux to its value and the value itself, so that two bounds are needed to keep a flux inside an interval and a third states an equality. The reaction <code>v1</code> carries such a pair, the exchange <code>EX_glc</code> is fixed by one bound of the operation <code>equal</code>, and the upper bound of <code>v1</code> is infinite, which is how the package writes an unbounded direction.</p>
+        <p>The model defines two objectives and declares the maximisation of the biomass as the active one; the second objective minimises the glucose uptake with a negative coefficient. The species carry the chemical formula and the charge which fbc adds to them in every one of its versions.</p>
+      </body>
+    </notes>
+    <listOfUnitDefinitions>
+      <unitDefinition id="hr" name="hour">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="0" multiplier="3600"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole" name="mmole">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole_per_hr" name="mmole per hour">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="0" multiplier="3600"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="cell" name="cell" spatialDimensions="3" size="1" units="litre" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="glc" name="glucose" compartment="cell" initialConcentration="5" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false" fbc:chemicalFormula="C6H12O6" fbc:charge="0"/>
+      <species id="atp" name="ATP" compartment="cell" initialConcentration="1" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false" fbc:chemicalFormula="C10H12N5O13P3" fbc:charge="-4"/>
+      <species id="adp" name="ADP" compartment="cell" initialConcentration="1" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false" fbc:chemicalFormula="C10H12N5O10P2" fbc:charge="-3"/>
+      <species id="biomass" name="biomass" compartment="cell" initialConcentration="0" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfReactions>
+      <reaction id="v1" name="glycolysis" reversible="false" fast="false" compartment="cell">
+        <listOfReactants>
+          <speciesReference species="glc" stoichiometry="1" constant="true"/>
+          <speciesReference species="adp" stoichiometry="2" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="atp" stoichiometry="2" constant="true"/>
+          <speciesReference species="biomass" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="EX_glc" name="glucose exchange" reversible="true" fast="false">
+        <listOfReactants>
+          <speciesReference species="glc" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+      <reaction id="EX_biomass" name="biomass exchange" reversible="false" fast="false">
+        <listOfReactants>
+          <speciesReference species="biomass" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+    </listOfReactions>
+    <fbc:listOfFluxBounds>
+      <fbc:fluxBound metaid="meta_v1_lb" fbc:id="v1_lb" fbc:name="lower bound of the glycolysis" fbc:reaction="v1" fbc:operation="greaterEqual" fbc:value="0">
+        <notes>
+          <body xmlns="http://www.w3.org/1999/xhtml">
+            <p>The reaction is irreversible, so its flux may not become negative.</p>
+          </body>
+        </notes>
+      </fbc:fluxBound>
+      <fbc:fluxBound fbc:id="v1_ub" fbc:name="upper bound of the glycolysis" fbc:reaction="v1" fbc:operation="lessEqual" fbc:value="INF"/>
+      <fbc:fluxBound fbc:id="EX_glc_fixed" fbc:name="fixed glucose uptake" fbc:reaction="EX_glc" fbc:operation="equal" fbc:value="-10"/>
+    </fbc:listOfFluxBounds>
+    <fbc:listOfObjectives fbc:activeObjective="biomass_max">
+      <fbc:objective fbc:id="biomass_max" fbc:name="maximal biomass" fbc:type="maximize">
+        <fbc:listOfFluxObjectives>
+          <fbc:fluxObjective fbc:reaction="EX_biomass" fbc:coefficient="1"/>
+        </fbc:listOfFluxObjectives>
+      </fbc:objective>
+      <fbc:objective fbc:id="glc_min" fbc:name="minimal glucose uptake" fbc:type="minimize">
+        <fbc:listOfFluxObjectives>
+          <fbc:fluxObjective fbc:reaction="EX_glc" fbc:coefficient="-1"/>
+        </fbc:listOfFluxObjectives>
+      </fbc:objective>
+    </fbc:listOfObjectives>
+  </model>
+</sbml>

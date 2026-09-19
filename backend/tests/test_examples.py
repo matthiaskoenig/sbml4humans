@@ -3,6 +3,7 @@
 import shutil
 from pathlib import Path
 
+import libsbml
 import pytest
 from pymetadata.omex import Omex
 
@@ -17,9 +18,11 @@ from sbml4humans.examples import (
 )
 from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
+    EXAMPLES_DIR,
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
 )
+from sbml4humans.sbml import read_sbml
 
 
 def test_example_from_sbml() -> None:
@@ -130,3 +133,84 @@ def test_load_examples() -> None:
 def test_load_examples_is_cached() -> None:
     """Examples are only read once."""
     assert load_examples() is load_examples()
+
+
+def test_constraint_event_example_is_served() -> None:
+    """The example of the constraint, the event and the local parameters is served."""
+    example = load_examples()["constraint_event (constraint_event.xml)"]
+    assert example.file.name == "constraint_event.xml"
+    assert example.name == "model with a constraint, an event and local parameters"
+    assert example.description is not None
+    # a Level 3 Version 2 document of core alone uses no package
+    assert example.packages == []
+
+
+def test_comp_deletion_example_is_served() -> None:
+    """The example of the deletions and the replacements of comp is served."""
+    example = load_examples()["comp_deletion (comp_deletion.xml)"]
+    assert example.file.name == "comp_deletion.xml"
+    assert example.name == "Two cells and a tissue in one medium"
+    assert example.description is not None
+    assert example.packages == ["comp"]
+
+
+@pytest.mark.parametrize(
+    "example_id, name, packages",
+    [
+        (
+            "fbc_bounds_v1 (fbc_bounds_v1.xml)",
+            "Flux bounds of fbc Version 1",
+            ["fbc"],
+        ),
+        (
+            "fbc_constraints_v3 (fbc_constraints_v3.xml)",
+            "Constraints of fbc Version 3",
+            ["fbc"],
+        ),
+    ],
+)
+def test_fbc_version_examples_are_served(
+    example_id: str, name: str, packages: list[str]
+) -> None:
+    """The examples of the first and of the third version of fbc are served."""
+    example = load_examples()[example_id]
+    assert example.name == name
+    assert example.description is not None
+    assert example.packages == packages
+
+
+def test_qual_example_is_served() -> None:
+    """The example of a qualitative model is served with its package."""
+    example = load_examples()["qual_example (qual_example.xml)"]
+    assert example.name == "Qualitative example model"
+    assert example.description is not None
+    assert example.packages == ["qual"]
+
+
+def test_distrib_spans_example_is_served() -> None:
+    """The example of the spans and distributions of distrib is served."""
+    example = load_examples()["distrib_spans (distrib_spans.xml)"]
+    assert example.name == "Uncertainty spans and distributions"
+    assert example.description is not None
+    assert example.packages == ["distrib"]
+
+
+# the examples written for the complete data model, one per part of it which no
+# published model of the resources contains
+WRITTEN_EXAMPLES = [
+    "constraint_event.xml",
+    "comp_deletion.xml",
+    "fbc_bounds_v1.xml",
+    "fbc_constraints_v3.xml",
+    "qual_example.xml",
+    "distrib_spans.xml",
+]
+
+
+@pytest.mark.parametrize("name", WRITTEN_EXAMPLES)
+def test_written_examples_are_valid_sbml(name: str) -> None:
+    """An example written to teach is a valid SBML document, without a warning."""
+    doc: libsbml.SBMLDocument = read_sbml(EXAMPLES_DIR / name)
+    doc.checkConsistency()
+    messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
+    assert messages == []

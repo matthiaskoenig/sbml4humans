@@ -42,6 +42,78 @@ test.describe("repressilator", () => {
     await expect(page.getByTestId("inspector")).toHaveCount(0);
   });
 
+  test("walks from a species over its participation to the reaction which consumes it", async ({
+    page,
+  }) => {
+    const row = page.getByTestId("table-Species").locator('tbody tr[data-pk$="Species:X"]').first();
+    await row.click();
+    const inspector = page.getByTestId("inspector");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("X");
+
+    // the links of a species ask over its participations: the reactant group names the reaction
+    // which consumes it, not the species reference between the two
+    const reactants = inspector.getByTestId("links-referenced-by").getByTestId("links-reactant");
+    const reaction = reactants.getByTestId("element-link").first();
+    await expect(reaction).toHaveText("Reaction1");
+    await reaction.click();
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1");
+
+    // the attributes of the reaction list the participation itself, named after its reaction
+    // and its species
+    await inspector
+      .getByTestId("attribute-row")
+      .filter({ hasText: "reactants" })
+      .first()
+      .getByTestId("element-link")
+      .first()
+      .click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Species reference");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1.X");
+
+    // the participation names its reaction, its role and its species
+    const rows = inspector.getByTestId("attribute-row");
+    await expect(rows.filter({ hasText: "role" }).first()).toContainText("reactant");
+    await rows.filter({ hasText: "reaction" }).first().getByTestId("element-link").click();
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1");
+  });
+
+  test("names the reaction whose kinetic law reads a species and walks on to the law", async ({
+    page,
+  }) => {
+    const row = page
+      .getByTestId("table-Species")
+      .locator('tbody tr[data-pk$="Species:PX"]')
+      .first();
+    await row.click();
+    const inspector = page.getByTestId("inspector");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("PX");
+
+    // the math links of a species ask over the kinetic law: they name the reactions whose speed
+    // reads it, and not the meta ids which key their kinetic laws
+    const math = inspector
+      .getByTestId("links-referenced-by")
+      .getByTestId("links-math")
+      .getByTestId("element-link");
+    await expect(math).toHaveText(["Reaction7", "Reaction11"]);
+    await math.first().click();
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction7");
+
+    // the reaction lists what its kinetic law reads and names the law after itself
+    const references = inspector.getByTestId("links-references");
+    await expect(references.getByTestId("links-math")).toContainText("PX");
+    await references.getByTestId("links-kineticLaw").getByTestId("element-link").click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Kinetic law");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction7.kineticLaw");
+
+    // the kinetic law keeps its own links
+    await expect(inspector.getByTestId("links-references").getByTestId("links-math")).toContainText(
+      "PX",
+    );
+    await expect(
+      inspector.getByTestId("links-referenced-by").getByTestId("links-kineticLaw"),
+    ).toContainText("Reaction7");
+  });
+
   test("the search filters the tables", async ({ page }) => {
     const speciesRows = page.getByTestId("table-Species").locator("tbody tr[data-pk]");
     const total = await speciesRows.count();

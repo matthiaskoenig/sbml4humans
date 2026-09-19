@@ -1,6 +1,7 @@
 # The glossary of the SBML Level 3 packages the report supports and of the
 # elements they add: comp (hierarchical model composition), fbc (flux balance
-# constraints) and distrib (distributions). It follows the format of
+# constraints), qual (qualitative models) and distrib (distributions). It
+# follows the format of
 # `core.toml`: the summary becomes a tooltip of the application, the
 # description becomes a reference page of the documentation site. Run
 # `uv run python -m sbml4humans.glossary` after a change and commit the
@@ -13,7 +14,7 @@
 # Every key of `types` is the name of a type of the report model
 # (`frontend/src/schema/report.schema.json`), so that a typo cannot generate a
 # page which no element of a report reaches. The only exceptions are the shared
-# attributes `SBase` and the three package entries `comp`, `fbc` and `distrib`
+# attributes `SBase` and the four package entries `comp`, `fbc`, `qual` and `distrib`
 # below, which describe a package instead of an element and have a page of
 # their own; `--check` rejects every other key.
 
@@ -23,11 +24,27 @@ short = "comp"
 citation = "Smith et al. 2015, J Integr Bioinform 12(2):268"
 url = "https://sbml.org/documents/specifications/level-3/version-1/comp/"
 
-[specs.fbc]
-label = "SBML Level 3 Package: Flux Balance Constraints, Version 2 Release 1"
-short = "fbc"
-citation = "Olivier and Bergmann 2018, J Integr Bioinform 15(1):20170082"
-url = "https://sbml.org/specifications/sbml-level-3/version-1/fbc/sbml-fbc-version-2-release-1.pdf"
+# fbc is cited per version, because its three versions describe three data
+# models: a construct which only Version 1 has is cited there, and everything
+# the report reads with the semantics of the current version is cited in
+# Version 3, whose section numbers the entries carry.
+[specs.fbc1]
+label = "SBML Level 3 Package: Flux Balance Constraints, Version 1 Release 1"
+short = "fbc v1"
+citation = "Olivier and Bergmann 2013, COMBINE specification"
+url = "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1"
+
+[specs.fbc3]
+label = "SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1"
+short = "fbc v3"
+citation = "Olivier and Bergmann, COMBINE specification"
+url = "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1"
+
+[specs.qual]
+label = "SBML Level 3 Package: Qualitative Models, Version 1 Release 1"
+short = "qual"
+citation = "Chaouiya et al. 2013, BMC Syst Biol 7:135"
+url = "https://sbml.org/documents/specifications/level-3/version-1/qual/"
 
 [specs.distrib]
 label = "The Distributions Package for SBML Level 3, Version 1 Release 1"
@@ -56,16 +73,30 @@ related = ["ExternalModelDefinition", "Submodel", "Port", "Model"]
 [types.fbc]
 label = "Flux Balance Constraints (fbc)"
 package = "fbc"
-spec = { doc = "fbc" }
+spec = { doc = "fbc3" }
 summary = "the package which describes a constraint based model"
 description = """
 A constraint based model does not integrate rate laws over time. It assumes a steady state and chooses the fluxes of the reactions so that an objective function becomes extremal while every flux stays within its bounds, which is what flux balance analysis does with a genome scale reconstruction.
 
-The fbc package holds what such a model needs beyond the core: the lower and the upper flux bound of a [reaction](reaction.md), the [objectives](objective.md) with their flux objectives, the [gene products](geneproduct.md) and the association which relates them to a reaction, and the chemical formula and the charge of a [species](species.md).
+The fbc package holds what such a model needs beyond the core: the lower and the upper flux bound of a [reaction](reaction.md), the [objectives](objective.md) with their flux objectives, the [gene products](geneproduct.md) and the association which relates them to a reaction, and the chemical formula and the charge of a [species](species.md). Its three versions write part of it differently: Version 1 states a bound as a [flux bound](fluxbound.md) of its own, Version 2 makes the two bounds attributes of the reaction which name parameters and adds the gene products, and Version 3 adds the [user defined constraints](userdefinedconstraint.md) over several fluxes and the key value pairs which annotate an element.
 
-The report shows the gene products and the objectives of a model as sections of their own and the fbc attributes of a species and of a reaction in their inspector.
+The report shows the gene products, the objectives, the flux bounds of Version 1 and the user defined constraints of Version 3 as sections of a model of their own, and the fbc attributes of a species and of a reaction in their inspector.
 """
-related = ["GeneProduct", "Objective", "Species", "Reaction"]
+related = ["GeneProduct", "GeneProductAssociation", "Objective", "FluxBound", "UserDefinedConstraint", "Species", "Reaction"]
+
+[types.qual]
+label = "Qualitative Models (qual)"
+package = "qual"
+spec = { doc = "qual" }
+summary = "the package which describes a model whose entities carry a level"
+description = """
+A qualitative model does not integrate rate laws over time. Its entities carry a level, a whole number which stands for a range of activity, and a rule says which level an entity takes next given the levels of the entities which act on it. It is how a regulatory network is written down when the kinetics are unknown, which is the usual case for a network of genes, and it covers the logical models of the Boolean school as well as Petri nets.
+
+The qual package holds what such a model needs beyond the core: the [qualitative species](qualitativespecies.md) with their levels, and the [transitions](transition.md) with the [inputs](input.md) they read, the [outputs](output.md) they change and the [function terms](functionterm.md) which decide between them.
+
+The report shows the qualitative species and the transitions of a model as sections of their own, the inputs of a transition with the sign of their influence, and the function terms as the transition table they are.
+"""
+related = ["QualitativeSpecies", "Transition", "Input", "Output", "FunctionTerm"]
 
 [types.distrib]
 label = "Distributions (distrib)"
@@ -121,6 +152,20 @@ Every entry names a submodel and one element inside it which this element replac
 The report lists the submodel and the named element of every replacement in the inspector.
 """
 
+[types.SBase.attributes.keyValuePairs]
+label = "key value pairs"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.16" }
+summary = "the controlled annotation fbc Version 3 allows on any element"
+description = """
+A key value pair carries metadata for which SBML has no attribute: the tool which produced a number, the database a reaction was taken from, the assumption behind a bound. It is written into the annotation of an element, in a namespace the package defines, so that every tool reads the same format instead of inventing its own.
+
+Every key of one element is unique, the value is a string, and the uri says where the key is defined, for example a document which lists the keys of a tool.
+
+The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
+"""
+
 [types.SBase.attributes.uncertainties]
 label = "uncertainties"
 package = "distrib"
@@ -130,7 +175,7 @@ summary = "the statistical measures of the value of the element"
 description = """
 Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
 
-The report lists the uncertainties of an element in its inspector with the number of their parameters, and shows every [uncertainty](uncertainty.md) as an element of its own.
+The report shows the uncertainties of an element in its inspector, each of them named with a link to it and with the table of the measures it collects, so that how well a value is known is read where the value is. Every [uncertainty](uncertainty.md) is an element of its own, which names the element it describes under "Referenced by", and the search finds an element by the names, the notes and the types of the measures of its uncertainties.
 """
 
 
@@ -165,7 +210,7 @@ The report shows the ports of a model as a section of the report.
 label = "gene products"
 package = "fbc"
 type = "list"
-spec = { doc = "fbc", section = "3.3.2" }
+spec = { doc = "fbc3", section = "3.3.2" }
 summary = "the genes and gene products the reactions of the model depend on"
 description = """
 Every [gene product](geneproduct.md) stands for one gene or one of its products and carries the label under which the reconstruction knows it. The reactions name them in their gene product association.
@@ -173,11 +218,73 @@ Every [gene product](geneproduct.md) stands for one gene or one of its products 
 The report shows the gene products of a model as a section of the report.
 """
 
+[types.Model.attributes.fbc]
+label = "fbc"
+package = "fbc"
+type = "ModelFbc"
+spec = { doc = "fbc3", section = "3.3" }
+summary = "what the model says about the constraint based problem it describes"
+description = """
+The block holds the two attributes which belong to the model as a whole: whether it keeps to the restrictions of a strict problem, and which of its objectives is the active one.
+
+The report shows both in the inspector of a model of a document which uses fbc.
+"""
+
+[types.Model.attributes."fbc.strict"]
+label = "strict"
+package = "fbc"
+type = "boolean"
+spec = { doc = "fbc3", section = "3.3" }
+summary = "whether the model keeps to the restrictions of a linear or quadratic program"
+description = """
+A strict model can be handed to a solver which does not read arbitrary mathematics: every reaction has both flux bounds, every bound is a constant [parameter](parameter.md) with a value which is not missing and not infinite in the direction which would remove the bound, every stoichiometry is a constant number, every coefficient of a flux objective is finite, and no initial assignment touches a bound or a stoichiometry.
+
+A model which is not strict may compute a bound during a simulation, with an initial assignment, a rule or an event, which is how a hybrid model changes the capacity of a reaction over time. The attribute therefore says how every other number of the report has to be read, and it is required from Version 2 of the package on; a Version 1 document has none.
+
+The report shows it in the inspector of the model.
+"""
+
+[types.Model.attributes."fbc.activeObjective"]
+label = "active objective"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.3.1" }
+summary = "the objective which is optimised unless an analysis says otherwise"
+description = """
+A model may carry several [objectives](objective.md), for example the growth it was published with next to the alternatives it was studied with, and this attribute names the one which describes the published simulation. It is an attribute of the list of objectives, which the report does not carry as an object of its own, so it sits next to `strict` in the fbc block of the model.
+
+The report links the objective in the inspector of the model, and the inspector of that objective shows the model under "referenced by".
+"""
+
+[types.Model.attributes.listOfFluxBounds]
+label = "flux bounds"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc1", section = "3.3.1" }
+summary = "the constraints of the fluxes of a Version 1 model"
+description = """
+A [flux bound](fluxbound.md) is how the first version of the package constrained a reaction. Version 2 removed the construct and replaced it by the two attributes of a [reaction](reaction.md) which name a parameter, so the list is empty for every document of a later version.
+
+The report shows the flux bounds of a Version 1 model as a section of the report.
+"""
+
+[types.Model.attributes.listOfUserDefinedConstraints]
+label = "user defined constraints"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.3.3" }
+summary = "the constraints of the model which the reaction network does not impose"
+description = """
+A [user defined constraint](userdefinedconstraint.md) bounds a combination of fluxes and parameters which the stoichiometry of the network leaves free, for example the ratio of two reactions or a shared budget. The list exists from Version 3 of the package on and is empty in every earlier document.
+
+The report shows the user defined constraints of a model as a section of the report.
+"""
+
 [types.Model.attributes.listOfObjectives]
 label = "objectives"
 package = "fbc"
 type = "list"
-spec = { doc = "fbc", section = "3.3.1" }
+spec = { doc = "fbc3", section = "3.3.1" }
 summary = "the objective functions of the constraint based model"
 description = """
 A model may define several [objectives](objective.md) and declares one of them as the active objective, the function which an analysis optimises unless it is told otherwise. The others are kept so that a model can carry the alternatives it was studied with.
@@ -189,11 +296,35 @@ The report shows the objectives of a model as a section of the report.
 # ----------------------------------------------------------------------------
 # what fbc adds to a species and to a reaction
 # ----------------------------------------------------------------------------
+[types.Model.attributes.listOfQualitativeSpecies]
+label = "qualitative species"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.4" }
+summary = "the entities of a qualitative model, which carry a level"
+description = """
+A model which uses the qual package holds its [qualitative species](qualitativespecies.md) in a list of their own, next to the species of the core. The two are not the same thing and a model does not mix them: an entity of a qualitative model has no amount and no concentration, it has a level.
+
+The report shows them as a section of their own.
+"""
+
+[types.Model.attributes.listOfTransitions]
+label = "transitions"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.4" }
+summary = "the rules which decide the level of the qualitative species"
+description = """
+The [transitions](transition.md) are the dynamics of a qualitative model, what the reactions with their kinetic laws are to a kinetic one. Every one of them reads some qualitative species and changes others.
+
+The report shows them as a section of their own.
+"""
+
 [types.Species.attributes.fbc]
 label = "fbc"
 package = "fbc"
 type = "SpeciesFbc"
-spec = { doc = "fbc", section = "3.4" }
+spec = { doc = "fbc3", section = "3.4" }
 summary = "the chemical formula and the charge which fbc adds to a species"
 description = """
 A constraint based model needs the elemental composition and the charge of a species to check that its reactions are balanced. Both are annotations of the species in the sense that they do not enter the mathematics of the model.
@@ -205,7 +336,7 @@ The report shows them in the inspector of a species of a model which uses fbc.
 label = "chemical formula"
 package = "fbc"
 type = "string"
-spec = { doc = "fbc", section = "3.4" }
+spec = { doc = "fbc3", section = "3.4" }
 summary = "the elemental composition of the species"
 description = """
 The formula must consist only of atomic names of the periodic table or user defined compounds, each of which takes the form of a single capital letter followed by zero or more lowercase letters, with an integer behind a symbol where more than one atom is present. The order should follow the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, and every element including hydrogen in alphabetical order when the formula contains no carbon. `C10H12N5O13P3` is such a formula.
@@ -217,7 +348,7 @@ The report shows the formula in the inspector of the species.
 label = "charge"
 package = "fbc"
 type = "integer"
-spec = { doc = "fbc", section = "3.4" }
+spec = { doc = "fbc3", section = "3.4" }
 summary = "the charge of the species, counted in electrons"
 description = """
 The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Together with the chemical formula it is what a check of the charge balance of a reaction needs.
@@ -229,7 +360,7 @@ The report shows the charge in the inspector of the species.
 label = "fbc"
 package = "fbc"
 type = "ReactionFbc"
-spec = { doc = "fbc", section = "3.8" }
+spec = { doc = "fbc3", section = "3.8" }
 summary = "the flux bounds and the gene association which fbc adds to a reaction"
 description = """
 The fbc package extends a reaction with the two parameters which bound its flux and with the gene product association which says under which genes it can run. Together with the [objective](objective.md) of the model they are what a flux balance analysis needs.
@@ -241,7 +372,7 @@ The report shows the bounds, the association and the gene products it names in t
 label = "lower flux bound"
 package = "fbc"
 type = "SIdRef"
-spec = { doc = "fbc", section = "3.8" }
+spec = { doc = "fbc3", section = "3.8" }
 summary = "the parameter which holds the smallest flux the reaction may carry"
 description = """
 The bound is not a number but the identifier of a [parameter](parameter.md) of the model, so that many reactions can share one bound and a scenario is changed in one place. A model which sets `strict` of the fbc package has to give every reaction both bounds, and every bound has to be a constant parameter with a value which is neither missing nor infinite in the direction which would remove the bound; without `strict` a bound may be computed during a simulation.
@@ -253,7 +384,7 @@ The report links the parameter in the inspector of the reaction.
 label = "upper flux bound"
 package = "fbc"
 type = "SIdRef"
-spec = { doc = "fbc", section = "3.8" }
+spec = { doc = "fbc3", section = "3.8" }
 summary = "the parameter which holds the largest flux the reaction may carry"
 description = """
 Like the lower bound it names a [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
@@ -264,22 +395,13 @@ The report links the parameter in the inspector of the reaction.
 [types.Reaction.attributes."fbc.geneProductAssociation"]
 label = "gene product association"
 package = "fbc"
-type = "string"
-spec = { doc = "fbc", section = "3.9" }
-summary = "the logical expression of the genes under which the reaction can run"
+type = "GeneProductAssociation"
+spec = { doc = "fbc3", section = "3.9" }
+summary = "the genes under which the reaction can run"
 description = """
-An association relates gene products with the operators `and` and `or`: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
+The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
 
-The report writes the association of a reaction as this expression and links every [gene product](geneproduct.md) it names.
-"""
-
-[types.Reaction.attributes."fbc.geneProducts"]
-label = "gene products"
-package = "report"
-type = "list"
-summary = "the gene products named by the association of the reaction"
-description = """
-The report collects the gene products of the association tree of the reaction, so that they can be linked without parsing the expression. The list carries every gene product once, in the order of its identifier, and says nothing about how they are combined; the association does that.
+The report shows the tree in the inspector of the reaction, one line per branch, and links every gene product it names.
 """
 
 
@@ -446,6 +568,334 @@ Every element of a file may carry a meta id, and this is the way to name an elem
 The report searches the element with that meta id in the model and links it.
 """
 
+[types.Port.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches from the named submodel into the model it instantiates"
+description = """
+A port which names a submodel of its model can reach through it with a [nested reference](sbaseref.md), so that the port stands for an element buried inside that submodel. The chain may be of any length, one link per submodel it passes.
+
+The report shows the chain in the inspector of the port and links the element at its end.
+"""
+
+[types.ExternalModelDefinition.attributes.md5]
+label = "md5"
+package = "comp"
+type = "string"
+spec = { doc = "comp", section = "3.3.2" }
+summary = "the checksum of the document at the source"
+description = """
+The checksum is optional and is the md5 sum of the whole file at the source, as it was when the model was written. It is how a reader tells whether the file they reach is the file the composed model was built against, which matters when the source is a URL that somebody else maintains.
+
+The report shows the checksum in the inspector of the external model definition; it does not fetch the file and cannot check it.
+"""
+
+
+# ----------------------------------------------------------------------------
+# the references of comp: the deletions and the replacements
+# ----------------------------------------------------------------------------
+[types.SBaseRef]
+label = "Reference"
+package = "comp"
+spec = { doc = "comp", section = "3.7" }
+summary = "a link of a chain which reaches into a submodel of a submodel"
+description = """
+A reference names one element of a model in one of four ways: by [port](port.md), by identifier, by unit identifier or by meta id, and exactly one of the four is set.
+
+A [port](port.md), a [deletion](deletion.md), a [replaced element](replacedelement.md) and a [replaced by](replacedby.md) are references themselves. Where one of them has to reach an element which sits deeper than the submodel it names, it carries a reference of this class, which names an element of the model that submodel instantiates, and that reference may carry the next one. The chain is how a model reaches an element of a sub-submodel which no port of its own exposes.
+
+The report shows the chain in the inspector of the element which starts it and resolves it to the element at its end.
+"""
+related = ["Port", "Deletion", "ReplacedElement", "ReplacedBy", "comp"]
+
+[types.SBaseRef.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the model which this link of the chain names"
+description = """
+The reference names a [port](port.md) of the model the submodel above it instantiates. Port identifiers are a namespace of their own, so a port may carry the identifier of an element of the same model without naming it.
+"""
+
+[types.SBaseRef.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which this link of the chain names, by its identifier"
+description = """
+The reference names an element of the model the submodel above it instantiates. When that element is a [submodel](submodel.md) again, the next link of the chain reaches into it.
+"""
+
+[types.SBaseRef.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which this link of the chain names"
+description = """
+Unit identifiers live in a namespace of their own, so naming a [unit definition](unitdefinition.md) needs an attribute of its own. The units which SBML reserves cannot be named here: they can neither be replaced nor deleted.
+"""
+
+[types.SBaseRef.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which this link of the chain names, by its meta id"
+description = """
+Every element of a file may carry a meta id, and this is the way to name an element which has no identifier of its own, for example a rule or a reaction written without one.
+"""
+
+[types.SBaseRef.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the next link of the chain, one submodel deeper"
+description = """
+A reference which names a [submodel](submodel.md) carries the reference which names the element inside it. There is no limit to the depth of the chain.
+"""
+
+[types.Deletion]
+label = "Deletion"
+package = "comp"
+spec = { doc = "comp", section = "3.5.3" }
+summary = "an element which is removed from a submodel before it is instantiated"
+description = """
+A deletion names one element of the model a [submodel](submodel.md) instantiates and removes it from the composed model. It is how a model uses a part of another model: the initial assignment which the containing model provides itself, the reaction which does not belong in the new context, the parameter which is set from outside.
+
+The removal reaches further than the named element. Everything which depends on it goes with it: a species takes the species references which name it, and with them the reactions which become meaningless, and a compartment takes the species inside it.
+
+A deletion carries an identifier of its own, so that a [replaced element](replacedelement.md) can say that it takes the place of what was deleted, and a name, because deletions are shown to modellers.
+
+The report shows the deletions of a submodel in its inspector, links the element every one of them removes and shows each deletion as an element of its own.
+"""
+related = ["Submodel", "ReplacedElement", "Port", "comp"]
+
+[types.Deletion.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the submodel whose element is removed"
+description = """
+The deletion names a [port](port.md) of the model the submodel instantiates, and the element behind that port is what is removed. Naming the port instead of the element is the friendlier way, because the port is the interface the other model offers.
+"""
+
+[types.Deletion.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is removed, by its identifier"
+description = """
+The identifier is resolved in the model the submodel instantiates, not in the model which declares the deletion.
+"""
+
+[types.Deletion.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which is removed"
+description = """
+Unit identifiers live in a namespace of their own. The units which SBML reserves cannot be deleted.
+"""
+
+[types.Deletion.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is removed, by its meta id"
+description = """
+This is the way to delete an element which carries no identifier, for example a rule or a reaction written without one.
+"""
+
+[types.Deletion.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches into a submodel of the submodel"
+description = """
+A deletion which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be removed.
+"""
+
+[types.ReplacedElement]
+label = "Replaced element"
+package = "comp"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "an element of a submodel which the element carrying it takes the place of"
+description = """
+A replacement is the glue of a composed model. The element which carries the replaced element stays, the element it names disappears, and every reference to the one that disappeared points at the one that stays. Two submodels are connected by letting one element of the containing model replace an element of each: the three become one.
+
+Each replaced element names the [submodel](submodel.md) it reaches into and one element inside it, by port, identifier, unit identifier or meta id, and reaches deeper with a [nested reference](sbaseref.md). It may carry a conversion factor which rescales the replaced value, and instead of naming an element it may name a [deletion](deletion.md), which records that the element takes the place of something the submodel lost.
+
+The report lists the replacements of an element in its inspector, links the submodel and the element inside it, and shows every replacement as an element of its own.
+"""
+related = ["Submodel", "ReplacedBy", "Deletion", "comp"]
+
+[types.ReplacedElement.attributes.submodelRef]
+label = "submodel"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "the submodel which holds the replaced element"
+description = """
+The reference names a [submodel](submodel.md) of the model which carries the replacement. It is required, and it says which model the other references are resolved in: only elements of the model that submodel instantiates can be named.
+"""
+
+[types.ReplacedElement.attributes.deletion]
+label = "deletion"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "the deletion of the submodel whose element this element takes the place of"
+description = """
+The reference names a [deletion](deletion.md) of the named submodel and takes the place of the four references: instead of an element which is replaced, the replacement names an element which was removed. It changes nothing about the composed model and nothing about its mathematics; it records the decision that this element is what the submodel lost, so that a reader, and a tool which draws the model, can follow it.
+"""
+
+[types.ReplacedElement.attributes.conversionFactor]
+label = "conversion factor"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.2" }
+summary = "the parameter which rescales the replaced value to the scale of this element"
+description = """
+The reference names a [parameter](parameter.md) of the model which carries the replacement. One unit of the replaced element multiplied by the factor is one unit of the replacing element, which is how a submodel written in millimole is used by a model written in mole. The factor applies to every reference to the replaced element, and the factors of nested replacements multiply.
+
+A replacement cannot carry a conversion factor and a deletion at the same time: what is deleted has no value left to convert.
+"""
+
+[types.ReplacedElement.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the submodel whose element is replaced"
+description = """
+The replacement names a [port](port.md) of the model the submodel instantiates, and the element behind that port is what is replaced. It is the first choice of the specification, because the port is the interface the other model offers.
+"""
+
+[types.ReplacedElement.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is replaced, by its identifier"
+description = """
+The identifier is resolved in the model the named submodel instantiates. It is the choice for an element which no port exposes.
+"""
+
+[types.ReplacedElement.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which is replaced"
+description = """
+Unit identifiers live in a namespace of their own. The units which SBML reserves cannot be replaced.
+"""
+
+[types.ReplacedElement.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which is replaced, by its meta id"
+description = """
+This is the way to replace an element which carries no identifier of its own.
+"""
+
+[types.ReplacedElement.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches into a submodel of the named submodel"
+description = """
+A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be replaced.
+"""
+
+[types.ReplacedBy]
+label = "Replaced by"
+package = "comp"
+spec = { doc = "comp", section = "3.6.4" }
+summary = "the element of a submodel which takes the place of the element carrying it"
+description = """
+A replaced by turns a replacement around: the element which carries it disappears and the element of the [submodel](submodel.md) it names stays, so that every reference to the element of the containing model points into the submodel afterwards. It is how a model declares a placeholder which one of its parts fills in.
+
+An element carries at most one replaced by, and it names the element which replaces it the same four ways a [replaced element](replacedelement.md) does, with a [nested reference](sbaseref.md) for an element which sits deeper.
+
+The report shows the replacement in the inspector of the element, links the submodel and the element inside it, and shows the replacement as an element of its own.
+"""
+related = ["Submodel", "ReplacedElement", "comp"]
+
+[types.ReplacedBy.attributes.submodelRef]
+label = "submodel"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.6.4" }
+summary = "the submodel which holds the replacing element"
+description = """
+The reference names a [submodel](submodel.md) of the model which carries the replacement. It is required, and the other references are resolved in the model that submodel instantiates.
+"""
+
+[types.ReplacedBy.attributes.portRef]
+label = "port ref"
+package = "comp"
+type = "PortSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the port of the submodel whose element takes the place of this element"
+description = """
+The replacement names a [port](port.md) of the model the submodel instantiates, and the element behind that port is the one which stays.
+"""
+
+[types.ReplacedBy.attributes.idRef]
+label = "id ref"
+package = "comp"
+type = "SIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which replaces this element, by its identifier"
+description = """
+The identifier is resolved in the model the named submodel instantiates.
+"""
+
+[types.ReplacedBy.attributes.unitRef]
+label = "unit ref"
+package = "comp"
+type = "UnitSIdRef"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the unit definition which replaces this unit definition"
+description = """
+Unit identifiers live in a namespace of their own. The units which SBML reserves cannot replace anything.
+"""
+
+[types.ReplacedBy.attributes.metaIdRef]
+label = "meta id ref"
+package = "comp"
+type = "IDREF"
+spec = { doc = "comp", section = "3.7.1" }
+summary = "the element which replaces this element, by its meta id"
+description = """
+This is the way to name a replacing element which carries no identifier of its own.
+"""
+
+[types.ReplacedBy.attributes.sbaseRef]
+label = "nested reference"
+package = "comp"
+type = "SBaseRef"
+spec = { doc = "comp", section = "3.7.2" }
+summary = "the reference which reaches into a submodel of the named submodel"
+description = """
+A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel takes the place of this element.
+"""
+
 
 # ----------------------------------------------------------------------------
 # the elements of fbc
@@ -453,7 +903,7 @@ The report searches the element with that meta id in the model and links it.
 [types.GeneProduct]
 label = "Gene product"
 package = "fbc"
-spec = { doc = "fbc", section = "3.5" }
+spec = { doc = "fbc3", section = "3.5" }
 summary = "a gene or one of its products which the reactions of the model depend on"
 description = """
 A gene product stands for a gene, a transcript or a protein which has to be present for a reaction to run. It exists so that the gene associations of a genome scale reconstruction, which used to be written into the notes of a reaction, have a place of their own and can be referenced.
@@ -468,7 +918,7 @@ related = ["Reaction", "Species", "fbc"]
 label = "label"
 package = "fbc"
 type = "string"
-spec = { doc = "fbc", section = "3.5" }
+spec = { doc = "fbc3", section = "3.5" }
 summary = "the identifier under which the source of the model knows the gene"
 description = """
 The label carries the gene identifier as it is written in the reconstruction, for example `b3670` or `Rv0649`. It is required, because the identifier of the gene product itself has to follow the rules of an SBML identifier and the gene identifier usually does not.
@@ -480,7 +930,7 @@ The report shows the label in the column "label" and in the inspector.
 label = "associated species"
 package = "fbc"
 type = "SIdRef"
-spec = { doc = "fbc", section = "3.5" }
+spec = { doc = "fbc3", section = "3.5" }
 summary = "the species of the model which stands for this gene product"
 description = """
 Some reconstructions model a gene product as a [species](species.md) which participates in reactions. The attribute connects the two, and when it is set it names an existing species of the model.
@@ -491,7 +941,7 @@ The report links the species in the column "associated species" and in the inspe
 [types.Objective]
 label = "Objective"
 package = "fbc"
-spec = { doc = "fbc", section = "3.6" }
+spec = { doc = "fbc3", section = "3.6" }
 summary = "the function a flux balance analysis maximises or minimises"
 description = """
 An objective is a direction, "maximize" or "minimize", together with a weighted sum of reaction fluxes, its flux objectives. It is what turns a network with bounds into a solvable optimisation problem: the fluxes are chosen within the bounds of the reactions so that this sum becomes extremal.
@@ -506,7 +956,7 @@ related = ["Reaction", "Parameter", "fbc"]
 label = "type"
 package = "fbc"
 type = "FbcType"
-spec = { doc = "fbc", section = "3.6" }
+spec = { doc = "fbc3", section = "3.6" }
 summary = "whether the objective is maximised or minimised"
 description = """
 The type is the sense of the optimality constraint and is either `maximize` or `minimize`. It is required, an objective without it is not defined.
@@ -518,12 +968,303 @@ The report shows the type in the column "type" and in the inspector.
 label = "flux objectives"
 package = "fbc"
 type = "list"
-spec = { doc = "fbc", section = "3.7" }
+spec = { doc = "fbc3", section = "3.7" }
 summary = "the reactions of the objective with their coefficient"
 description = """
 A flux objective is one term of the objective function: the [reaction](reaction.md) whose flux is meant and the coefficient the flux is weighted with. An objective which is defined has at least one of them.
 
 The report shows the number of flux objectives in the column "flux objectives" and the table of the reactions with their coefficients in the inspector, with a link to every reaction.
+"""
+
+[types.FluxObjective]
+label = "Flux objective"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.7" }
+summary = "one term of an objective: a reaction weighted by a coefficient"
+description = """
+A flux objective names the [reaction](reaction.md) whose flux enters the objective function and the number the flux is multiplied with. An [objective](objective.md) is the sum of its flux objectives, so a genome scale model usually carries one term of coefficient one on its biomass reaction.
+
+It is an element of the report and not a row of its objective, because the specification derives it from `SBase`: it may carry an identifier, a name, an SBO term, notes and annotations, and the reference to its reaction starts here, not at the objective around it.
+"""
+related = ["Objective", "Reaction", "fbc"]
+
+[types.FluxObjective.attributes.reaction]
+label = "reaction"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.7" }
+summary = "the reaction whose flux this term of the objective weighs"
+description = """
+The attribute is required and names a [reaction](reaction.md) of the model. The report links it, and the inspector of that reaction shows the flux objective under "referenced by", which is how the reactions an analysis optimises are found.
+"""
+
+[types.FluxObjective.attributes.reaction2]
+label = "second reaction"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.7" }
+summary = "the second reaction of a mixed quadratic term, from Version 3 on"
+description = """
+A quadratic flux objective which names a second [reaction](reaction.md) weighs the product of the two fluxes, `coefficient * J1 * J2`, instead of the square of one. The attribute exists from Version 3 of the package on and is empty in every earlier document.
+
+The report links the reaction next to the first one.
+"""
+
+[types.FluxObjective.attributes.coefficient]
+label = "coefficient"
+package = "fbc"
+type = "double"
+spec = { doc = "fbc3", section = "3.7" }
+summary = "the number the flux of the reaction is multiplied with"
+description = """
+The coefficient is a signed number and carries no units, since the term takes the units of the flux, extent per time. A negative coefficient turns a term of a maximisation into one which is pushed down, which is how one objective can trade growth against the uptake of a substrate.
+
+In a strict model the coefficient has to be a finite number. The report shows it next to the reaction.
+"""
+
+[types.FluxObjective.attributes.variableType]
+label = "variable type"
+package = "fbc"
+type = "FbcVariableType"
+spec = { doc = "fbc3", section = "3.7" }
+summary = "whether the flux enters the objective linearly or quadratically"
+description = """
+The type is `linear`, the classical case in which the flux appears as it is, or `quadratic`, in which it appears squared or multiplied by the flux of the second reaction. Without it a quadratic term reads like a linear one, and `Minimize: 1 R1 + [4 R2^2]/2` and `Minimize: 1 R1 + 4 R2` cannot be told apart.
+
+The attribute is required from Version 3 of the package on and does not exist before it, so a Version 1 or Version 2 document leaves it empty and every term of its objectives is linear.
+"""
+
+[types.FluxBound]
+label = "Flux bound"
+package = "fbc"
+spec = { doc = "fbc1", section = "3.5" }
+summary = "a constraint on the flux of a reaction, as fbc Version 1 writes it"
+description = """
+A flux bound of the first version of the package is an object of the model which names a [reaction](reaction.md), an operation and a value, so that two of them are needed to keep a flux inside an interval and one with the operation `equal` fixes it.
+
+Version 2 removed the construct: a [reaction](reaction.md) names the [parameters](parameter.md) of its lower and its upper bound instead, which lets other elements of the model compute a bound and keeps one bound in one place for many reactions. The report shows a flux bound only for a document which is written in Version 1, where it is the only place the capacity of a reaction is stated.
+"""
+related = ["Reaction", "Model", "fbc"]
+
+[types.FluxBound.attributes.reaction]
+label = "reaction"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc1", section = "3.5" }
+summary = "the reaction whose flux the bound constrains"
+description = """
+The attribute is required and names a [reaction](reaction.md) of the model. The report links it, and the inspector of the reaction lists every bound which constrains it under "referenced by", which is where the capacity of a reaction of a Version 1 model is read.
+"""
+
+[types.FluxBound.attributes.operation]
+label = "operation"
+package = "fbc"
+type = "FbcOperation"
+spec = { doc = "fbc1", section = "3.2.2" }
+summary = "how the flux is related to the value: greaterEqual, lessEqual or equal"
+description = """
+The operation says which side of the value the flux has to stay on. `greaterEqual` and `lessEqual` are the lower and the upper bound, `equal` fixes the flux at the value, which is how a measured exchange rate is written.
+
+The report shows the operation next to the value.
+"""
+
+[types.FluxBound.attributes.value]
+label = "value"
+package = "fbc"
+type = "double"
+spec = { doc = "fbc1", section = "3.5" }
+summary = "the number the flux is compared with"
+description = """
+The value carries the units of a reaction flux, extent per time, which the model defines globally. An infinite value states that the flux is not bounded in that direction, and the report shows it as the [sign of infinity](concepts.md#number) with the direction of that bound.
+"""
+
+[types.UserDefinedConstraint]
+label = "User defined constraint"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.14" }
+summary = "a constraint over a combination of fluxes and parameters, added in Version 3"
+description = """
+The bounds of a [reaction](reaction.md) constrain one flux at a time, and the stoichiometry of the network constrains the fluxes which share a species. A user defined constraint is everything else a modeller knows: that two reactions run at a fixed ratio, that a set of reactions shares a budget, or that a flux is coupled to a parameter which a simulation changes.
+
+It is a sum of its [components](userdefinedconstraintcomponent.md), each of which weighs one model variable, and the sum has to stay between the values of the two [parameters](parameter.md) it names as its bounds.
+
+The report shows the user defined constraints of a model in a section of their own, with the table of their components.
+"""
+related = ["UserDefinedConstraintComponent", "Parameter", "Reaction", "fbc"]
+
+[types.UserDefinedConstraint.attributes.lowerBound]
+label = "lower bound"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.14" }
+summary = "the parameter which holds the smallest value the constraint may take"
+description = """
+The attribute is required and names a [parameter](parameter.md) of the model, the way the lower flux bound of a reaction does, so that a scenario is changed in one place. A constraint whose two bounds name the same parameter is an equality.
+"""
+
+[types.UserDefinedConstraint.attributes.upperBound]
+label = "upper bound"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.14" }
+summary = "the parameter which holds the largest value the constraint may take"
+description = """
+The attribute is required and names a [parameter](parameter.md) of the model. Together with the lower bound it reads `lowerBound <= sum of the components <= upperBound`.
+"""
+
+[types.UserDefinedConstraint.attributes.listOfUserDefinedConstraintComponents]
+label = "components"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the weighted variables the constraint is the sum of"
+description = """
+A constraint which is defined has at least one [component](userdefinedconstraintcomponent.md). The report shows them as a table of the variable, the coefficient and the type of every term, with a link to each of them.
+"""
+
+[types.UserDefinedConstraintComponent]
+label = "User defined constraint component"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "one weighted variable of a user defined constraint"
+description = """
+A component is one term of the sum a [user defined constraint](userdefinedconstraint.md) bounds: the model variable it is about, the [parameter](parameter.md) which holds the number the variable is multiplied with, and whether the variable enters the sum linearly or quadratically.
+
+The variable is either a [reaction](reaction.md), whose flux is meant, or a parameter which is not constant, which is how a constraint reaches a quantity the network does not carry.
+"""
+related = ["UserDefinedConstraint", "Reaction", "Parameter", "fbc"]
+
+[types.UserDefinedConstraintComponent.attributes.variable]
+label = "variable"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the reaction or the parameter this term of the constraint weighs"
+description = """
+The attribute is required and names either a [reaction](reaction.md), in which case the term is about its flux, or a [parameter](parameter.md) which is not constant. The report links the element it names.
+"""
+
+[types.UserDefinedConstraintComponent.attributes.variable2]
+label = "second variable"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the second variable of a mixed quadratic term"
+description = """
+A quadratic component which names a second variable weighs the product of the two, `coefficient * v1 * v2`, instead of the square of the first. It is optional and empty in a linear component.
+"""
+
+[types.UserDefinedConstraintComponent.attributes.coefficient]
+label = "coefficient"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "the parameter which holds the number the variable is multiplied with"
+description = """
+Unlike the coefficient of a [flux objective](fluxobjective.md), which is a number written into the file, the coefficient of a component is the identifier of a [parameter](parameter.md), so that the weights of a constraint can be changed in one place. In a strict model that parameter has to be constant and its value finite.
+"""
+
+[types.UserDefinedConstraintComponent.attributes.variableType]
+label = "variable type"
+package = "fbc"
+type = "FbcVariableType"
+spec = { doc = "fbc3", section = "3.15" }
+summary = "whether the variable enters the constraint linearly or quadratically"
+description = """
+The type is `linear` or `quadratic`, as in a [flux objective](fluxobjective.md): a quadratic component squares its variable, or multiplies it by the second variable where it names one. It is required.
+"""
+
+
+[types.GeneProductAssociation]
+label = "Gene product association"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.9" }
+summary = "the genes a reaction needs, as the tree of operators over them"
+description = """
+A gene product association is what a genome scale reconstruction knows about the genetics of a reaction: which genes have to be expressed for the reaction to carry a flux. It belongs to one [reaction](reaction.md) and holds exactly one node, which is an [and](and.md), an [or](or.md) or a single [gene product reference](geneproductref.md).
+
+The tree is the meaning of the construct, not a decoration of it. A knockout analysis removes a gene, evaluates the tree of every reaction and switches off the reactions whose tree becomes false, so an `and` and an `or` of the same genes describe two different organisms.
+
+The report shows the association in the inspector of its reaction and gives every node of the tree a page of its own, so that a reader can follow a gene into the reactions which depend on it.
+"""
+related = ["Reaction", "And", "Or", "GeneProductRef", "GeneProduct"]
+
+[types.GeneProductAssociation.attributes.association]
+label = "association"
+package = "fbc"
+type = "Association"
+spec = { doc = "fbc3", section = "3.9" }
+summary = "the single node the association holds"
+description = """
+The node is an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md); the last of them is the whole association of a reaction which depends on one gene alone.
+
+The report renders the node and everything below it as the expression it stands for.
+"""
+
+[types.And]
+label = "And"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.12" }
+summary = "the associations below it are all needed at once"
+description = """
+An `and` is a complex: every gene below it has to be expressed for the reaction to run, and the loss of one of them stops the reaction. It holds two or more nodes, each of which is an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md), so the operators nest to any depth.
+
+The report shows it as the branches of the tree in the inspector of a reaction and links the nodes below it.
+"""
+related = ["GeneProductAssociation", "Or", "GeneProductRef"]
+
+[types.And.attributes.associations]
+label = "associations"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.12" }
+summary = "the nodes which are all needed, two or more of them"
+description = """
+The order of the nodes carries no meaning: an `and` is a set of conditions which hold at the same time. The report keeps them in the order of the file.
+"""
+
+[types.Or]
+label = "Or"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.13" }
+summary = "one of the associations below it suffices"
+description = """
+An `or` is a set of alternatives: the isoenzymes of a reaction, or the several complexes which can catalyse it. The reaction runs as long as one of the nodes below it is satisfied, which is why a gene of an `or` alone is no knockout. It holds two or more nodes, each of which is an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md).
+
+The report shows it as the branches of the tree in the inspector of a reaction and links the nodes below it.
+"""
+related = ["GeneProductAssociation", "And", "GeneProductRef"]
+
+[types.Or.attributes.associations]
+label = "associations"
+package = "fbc"
+type = "list"
+spec = { doc = "fbc3", section = "3.13" }
+summary = "the alternative nodes, two or more of them"
+description = """
+The order of the nodes carries no meaning: an `or` is a set of alternatives of which one suffices. The report keeps them in the order of the file.
+"""
+
+[types.GeneProductRef]
+label = "Gene product reference"
+package = "fbc"
+spec = { doc = "fbc3", section = "3.11" }
+summary = "the leaf of an association: one gene product the reaction depends on"
+description = """
+A gene product reference is where an association names a gene. It carries the identifier of a [gene product](geneproduct.md) of the model and nothing else, so it is the place at which the tree of a reaction meets the list of the genes.
+
+The report makes it an element of its own because the reference is where the file writes the identifier: the link to the gene product starts here, and the same gene may be named by several references of one reaction.
+"""
+related = ["GeneProduct", "GeneProductAssociation", "And", "Or"]
+
+[types.GeneProductRef.attributes.geneProduct]
+label = "gene product"
+package = "fbc"
+type = "SIdRef"
+spec = { doc = "fbc3", section = "3.11" }
+summary = "the gene product this leaf of the association names"
+description = """
+The attribute is required and names a [gene product](geneproduct.md) of the same model. The report shows the label of that gene product, which is the identifier the reconstruction uses, and links the element behind it.
 """
 
 
@@ -540,7 +1281,7 @@ An uncertainty collects the measures which belong together, for example the mean
 
 The measures do not affect a simulation. They say where a number comes from and how well it is known, which is what a reader of a published model wants to see and what a sampling of the parameters of a model needs.
 
-The report shows every uncertainty as an element of its own, with the table of its parameters, and lists the uncertainties of an element in its inspector.
+The report shows every uncertainty as an element of its own, with the table of its measures and a link to the element it describes, and it shows the same table in the inspector of that element.
 """
 related = ["Parameter", "Species", "distrib"]
 
@@ -553,5 +1294,550 @@ summary = "the statistical measures which make up the uncertainty"
 description = """
 Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 
-The report lists the type, the variable, the value, the units, the definition and the rendered math of every parameter in the inspector of the uncertainty.
+The report shows every parameter of an uncertainty as a row of the table in the inspector of that uncertainty, with its value or the interval of a span, its units, its definition and its math, and links every parameter to the element it is, where its notes say where the measurement comes from.
+"""
+
+
+[types.UncertParameter]
+label = "Uncert parameter"
+package = "distrib"
+spec = { doc = "distrib", section = "3.11" }
+summary = "one statistical measure of an uncertainty"
+description = """
+An uncert parameter is one measure of the [uncertainty](uncertainty.md) it belongs to: its mean, its standard deviation, the size of the sample it was measured on, or the distribution the value was drawn from. Its [type](uncertparameter.md#type) says which of the sixteen measures of the package it is, and the number behind that measure is either its [value](uncertparameter.md#value) or the element its [var](uncertparameter.md#var) names.
+
+It is an element of the report and not a row of its uncertainty, because the specification derives it from `SBase` and from the `DistribBase` of the package: it may carry an identifier, a name, an SBO term, notes and annotations, and the notes of a measure are where a file records which paper or which experiment the number comes from, which is what the package exists for.
+
+A measure which is an interval is an [uncert span](uncertspan.md), a class of its own, and a measure of the type `distribution` or `externalParameter` carries the parameters which define it as [uncert parameters](uncertparameter.md#uncert-parameters) of its own.
+"""
+related = ["Uncertainty", "UncertSpan", "Parameter", "distrib"]
+
+[types.UncertParameter.attributes.type]
+label = "type"
+package = "distrib"
+type = "UncertKind"
+spec = { doc = "distrib", section = "3.11.1" }
+summary = "which statistical measure the parameter is"
+description = """
+The attribute is required and is one of sixteen values. Ten of them are a single number: `mean`, `median`, `mode`, `variance`, `standardDeviation`, `standardError`, `coefficientOfVariation`, `skewness`, `kurtosis` and `sampleSize`. Four of them are an interval and are written as an [uncert span](uncertspan.md): `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, where the confidence and the credible interval are always the 95 percent interval. The last two say where a value comes from: `distribution`, the distribution it was drawn from, and `externalParameter`, a measure this specification does not define, which names what it means in its [definition](uncertparameter.md#definition-url).
+
+The report shows the type in the first column of the parameters of an uncertainty and as the name of a parameter which carries no identifier.
+"""
+
+[types.UncertParameter.attributes.value]
+label = "value"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the number of the measure"
+description = """
+A measure which is a single number carries it here, in the [units](uncertparameter.md#units) of the parameter. A file writes either the value or the [var](uncertparameter.md#var), never both: the value is the measurement as it was made, the var is the element of the model which holds it.
+
+The report shows the value in the column "value" of the parameters of an uncertainty and in the inspector of the parameter.
+"""
+
+[types.UncertParameter.attributes.var]
+label = "var"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the element of the model which holds the number of the measure"
+description = """
+Where the measure is not a fixed number but a quantity of the model, the parameter names that element instead of writing a value: the standard deviation of a parameter may be a parameter of its own, which a simulation reads and a sampling changes. The identifier of the uncert parameter itself has no mathematical meaning and cannot be used for this, which is why the specification defines the attribute.
+
+The report links the element the var names, and the inspector of that element shows the measure under "referenced by".
+"""
+
+[types.UncertParameter.attributes.units]
+label = "units"
+package = "distrib"
+type = "UnitSIdRef"
+spec = { doc = "distrib", section = "3.11.3" }
+summary = "the units the measure is given in"
+description = """
+The units are either a [unit definition](unitdefinition.md) of the model or one of the base units of SBML. They are usually the units of the element the uncertainty belongs to, for a mean or a standard deviation, or dimensionless, for a coefficient of variation or a sample size.
+
+The report links the unit definition where the units name one.
+"""
+
+[types.UncertParameter.attributes.definitionUrl]
+label = "definition url"
+package = "distrib"
+type = "anyURI"
+spec = { doc = "distrib", section = "3.11.4" }
+summary = "what a distribution or an external parameter means"
+description = """
+A parameter of the type `distribution` may name the distribution it stands for, and a parameter of the type `externalParameter` has to name what it is: an entry of an ontology such as ProbOnto, the `csymbol` of a distribution of this package, or another definition which says what the number means. No other type of parameter carries it, because the specification defines the others completely.
+
+The report shows the last segment of the url as a link in the table of the parameters of an uncertainty.
+"""
+
+[types.UncertParameter.attributes.math]
+label = "math"
+package = "distrib"
+type = "Math"
+spec = { doc = "distrib", section = "3.11.6" }
+summary = "the formula which defines a distribution"
+description = """
+Only a parameter of the type `distribution` or `externalParameter` carries math, and for a distribution the formula is the distribution itself, usually one of the `csymbol` distributions the package defines, such as `normal(2, 2)`.
+
+The report renders the formula and links every element it names, from the parameter which carries the math and not from the uncertainty around it, so that two parameters of one uncertainty stay apart.
+"""
+
+[types.UncertParameter.attributes.uncertParameters]
+label = "uncert parameters"
+package = "distrib"
+type = "list"
+spec = { doc = "distrib", section = "3.11.7" }
+summary = "the parameters which define a distribution or an external parameter"
+description = """
+A distribution is defined by the parameters it takes: a Beta distribution by its alpha and its beta, a zeta distribution by its shape. They are uncert parameters of the parameter which names the distribution, of any type and to any depth, and without them a report shows the name of a distribution and none of its numbers.
+
+The report shows every one of them indented below the parameter it defines, in the table of the measures of the uncertainty and in the inspector of that parameter.
+"""
+
+[types.UncertSpan]
+label = "Uncert span"
+package = "distrib"
+spec = { doc = "distrib", section = "3.12" }
+summary = "a measure of an uncertainty which is an interval"
+description = """
+Four of the sixteen measures of the package are an interval and not a number: the [range](uncertspan.md#type) of a measurement, its 95 percent confidence interval, its 95 percent credible interval and its interquartile range. A span is the [uncert parameter](uncertparameter.md) of such a measure, with the two ends of the interval in the place of the single value of a parameter.
+
+Each end is either a number, in [value lower](uncertspan.md#value-lower) and [value upper](uncertspan.md#value-upper), or an element of the model, in [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper). An end which is set by neither is not defined, so a span may be open at one end.
+
+The report shows a span as the interval it is, `1 to 4`, with a link where an end names an element.
+"""
+related = ["UncertParameter", "Uncertainty", "distrib"]
+
+[types.UncertSpan.attributes.interval]
+label = "interval"
+package = "report"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the two ends of the span as the interval they stand for"
+description = """
+The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.
+
+The row is the reading of [value lower](uncertspan.md#value-lower), [value upper](uncertspan.md#value-upper), [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper), each of which the file writes on its own.
+"""
+
+[types.UncertSpan.attributes.valueLower]
+label = "value lower"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the lower end of the interval as a number"
+description = """
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var lower](uncertspan.md#var-lower) for the lower end, and where it writes neither the interval is open at the bottom.
+
+The report shows it as the left side of the interval.
+"""
+
+[types.UncertSpan.attributes.valueUpper]
+label = "value upper"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the upper end of the interval as a number"
+description = """
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var upper](uncertspan.md#var-upper) for the upper end, and where it writes neither the interval is open at the top.
+
+The report shows it as the right side of the interval.
+"""
+
+[types.UncertSpan.attributes.varLower]
+label = "var lower"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the element of the model which holds the lower end"
+description = """
+Where the lower end of the interval is a quantity of the model and not a fixed number, the span names that element, the way the [var](uncertparameter.md#var) of a parameter names one. Its units are the units of the element it names.
+
+The report links the element, and the inspector of that element shows the span under "referenced by".
+"""
+
+[types.UncertSpan.attributes.varUpper]
+label = "var upper"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the element of the model which holds the upper end"
+description = """
+Where the upper end of the interval is a quantity of the model and not a fixed number, the span names that element, the way the [var](uncertparameter.md#var) of a parameter names one. Its units are the units of the element it names.
+
+The report links the element, and the inspector of that element shows the span under "referenced by".
+"""
+
+[types.UncertSpan.attributes.type]
+label = "type"
+package = "distrib"
+type = "UncertKind"
+spec = { doc = "distrib", section = "3.11.1" }
+summary = "which interval the span is"
+description = """
+The attribute is required. A span carries one of the four measures which are an interval, `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, or `externalParameter`, the measure the package does not define, which may be an interval as well. The other eleven values are a single number and belong to an [uncert parameter](uncertparameter.md#type).
+
+The report shows the type in the first column of the parameters of an uncertainty and as the name of a span which carries no identifier.
+"""
+
+[types.UncertSpan.attributes.units]
+label = "units"
+package = "distrib"
+type = "UnitSIdRef"
+spec = { doc = "distrib", section = "3.12" }
+summary = "the units both ends of the interval are given in"
+description = """
+The units of the two ends of the span, which have to be the same, given as a [unit definition](unitdefinition.md) of the model or as a base unit of SBML. An end which names an element carries the units of that element instead.
+
+The report links the unit definition where the units name one.
+"""
+
+[types.UncertSpan.attributes.value]
+label = "value"
+package = "distrib"
+type = "double"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the single number of a measure, which a span does not use"
+description = """
+A span carries its numbers in [value lower](uncertspan.md#value-lower) and [value upper](uncertspan.md#value-upper). The attribute belongs to the [uncert parameter](uncertparameter.md#value) a span derives from and is left unset by every interval, so the report shows the interval in its place.
+"""
+
+[types.UncertSpan.attributes.var]
+label = "var"
+package = "distrib"
+type = "SIdRef"
+spec = { doc = "distrib", section = "3.11.2" }
+summary = "the element of a single number, which a span does not use"
+description = """
+A span names the elements of its two ends in [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper). The attribute belongs to the [uncert parameter](uncertparameter.md#var) a span derives from and is left unset by every interval.
+"""
+
+[types.UncertSpan.attributes.definitionUrl]
+label = "definition url"
+package = "distrib"
+type = "anyURI"
+spec = { doc = "distrib", section = "3.11.4" }
+summary = "what an external parameter which is an interval means"
+description = """
+A span of the type `externalParameter` names what its interval is, an entry of an ontology or another definition which says what the two ends mean, the way an [uncert parameter](uncertparameter.md#definition-url) does. The four intervals the specification defines carry no definition url.
+
+The report shows the last segment of the url as a link in the table of the parameters of an uncertainty.
+"""
+
+[types.UncertSpan.attributes.math]
+label = "math"
+package = "distrib"
+type = "Math"
+spec = { doc = "distrib", section = "3.11.6" }
+summary = "the formula of an external parameter which is an interval"
+description = """
+Only a span of the type `externalParameter` carries math, the way an [uncert parameter](uncertparameter.md#math) of the type `distribution` does.
+
+The report renders the formula and links every element it names from the span which carries it.
+"""
+
+[types.UncertSpan.attributes.uncertParameters]
+label = "uncert parameters"
+package = "distrib"
+type = "list"
+spec = { doc = "distrib", section = "3.11.7" }
+summary = "the parameters which define an external parameter"
+description = """
+A span of the type `externalParameter` may be defined by parameters of its own, the way a [distribution](uncertparameter.md#uncert-parameters) is. The four intervals the specification defines need none, because their two ends define them.
+
+The report shows every one of them indented below the span it defines.
+"""
+
+# ----------------------------------------------------------------------------
+# qual
+# ----------------------------------------------------------------------------
+[types.QualitativeSpecies]
+label = "Qualitative species"
+package = "qual"
+spec = { doc = "qual", section = "3.5" }
+summary = "an entity of a qualitative model, which carries a level instead of an amount"
+description = """
+A qualitative species is what a [species](species.md) is to a kinetic model: the thing the model is about. Its state is not a concentration but a level, a whole number between zero and its [maximum level](qualitativespecies.md#max-level), which stands for a range of activity, for example "the gene is off" and "the gene is on".
+
+It is the node of the influence graph of a logical model and the place of a Petri net. Which of the two a file writes is read from the [transitions](transition.md) which change it.
+
+The report shows the qualitative species of a model in a section of their own, with their levels, and links every transition which reads or changes one in its inspector.
+"""
+related = ["Transition", "Input", "Output", "Compartment", "qual"]
+
+[types.QualitativeSpecies.attributes.compartment]
+label = "compartment"
+package = "qual"
+type = "SIdRef"
+spec = { doc = "qual", section = "3.5" }
+summary = "the compartment the qualitative species is located in"
+description = """
+The attribute is required and names a [compartment](compartment.md) of the model, the same way a [species](species.md) names one. The compartment of a qualitative model carries no size which enters a formula; it says where in the cell the entity is, which is what tells two copies of one protein in two compartments apart.
+
+The report links the compartment in the column "compartment" and in the inspector.
+"""
+
+[types.QualitativeSpecies.attributes.constant]
+label = "constant"
+package = "qual"
+type = "boolean"
+spec = { doc = "qual", section = "3.5" }
+summary = "whether no transition may change the level of the species"
+description = """
+A constant qualitative species is an input of the system: transitions read it and none of them is allowed to change it, so its level is a condition of the experiment and not a result of the model. The attribute is required.
+
+The report shows the flag as a mark in the column "constant" and in the inspector.
+"""
+
+[types.QualitativeSpecies.attributes.initialLevel]
+label = "initial level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.5" }
+summary = "the level of the species at the start of a simulation"
+description = """
+The initial level is the state the entity starts in, a whole number which cannot be negative and cannot exceed the maximum level. It is optional: a model which is analysed over all of its states, which is what an attractor analysis of a logical model does, gives no starting state.
+
+The report shows the level in the column "initial level" and in the inspector, and an unset level as a dash.
+"""
+
+[types.QualitativeSpecies.attributes.maxLevel]
+label = "max level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.5" }
+summary = "the highest level the species can take"
+description = """
+The maximum level decides how the whole model is read: with the value one the entity is Boolean, off or on, and every condition over it is a logical one; with a higher value it is multi valued and its levels stand for the thresholds at which it acts differently on the things it regulates.
+
+It is optional, because the levels a species actually takes can be derived from the [result levels](functionterm.md#result-level) of the transitions which change it.
+
+The report shows the level in the column "max level" and in the inspector.
+"""
+
+[types.Transition]
+label = "Transition"
+package = "qual"
+spec = { doc = "qual", section = "3.6" }
+summary = "what the level of a qualitative species becomes, and under which condition"
+description = """
+A transition is to a qualitative model what a [reaction](reaction.md) with its kinetic law is to a kinetic one: it holds the dynamics. It reads the [qualitative species](qualitativespecies.md) of its [inputs](input.md), it changes those of its [outputs](output.md), and its [function terms](functionterm.md) say which level the outputs take: the result level of the first term whose condition holds, and the level of the [default term](defaultterm.md) where none of them holds.
+
+Its identifier is optional and has no mathematical meaning, because nothing in a qualitative model refers to a transition.
+
+The report shows the transitions of a model in a section of their own, with the species they read and the species they change, and the inspector shows the function terms as the table of condition and result level they are.
+"""
+related = ["QualitativeSpecies", "Input", "Output", "FunctionTerm", "DefaultTerm", "qual"]
+
+[types.Transition.attributes.listOfInputs]
+label = "inputs"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "the qualitative species the transition reads"
+description = """
+Every [input](input.md) names one [qualitative species](qualitativespecies.md) whose level the condition of a function term may read, with the threshold at which it matters and the sign of its influence. A transition may list none of them, in which case its terms read no species at all.
+
+The report shows the species of the inputs with their sign in the column "inputs" and the table of the inputs in the inspector.
+"""
+
+[types.Transition.attributes.listOfOutputs]
+label = "outputs"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "the qualitative species the transition changes"
+description = """
+Every [output](output.md) names one [qualitative species](qualitativespecies.md) whose level the transition sets or increases. A transition without outputs changes nothing, which is why a model which does something has at least one.
+
+The report shows the species of the outputs in the column "outputs" and the table of the outputs in the inspector.
+"""
+
+[types.Transition.attributes.listOfFunctionTerms]
+label = "function terms"
+package = "qual"
+type = "list"
+spec = { doc = "qual", section = "3.6.3" }
+summary = "the terms which decide the level, in the order in which they are read"
+description = """
+The list is the transition table of the transition. Its [terms](functionterm.md) are read in the order in which the file writes them and the first one whose condition holds decides the result level, so two terms whose conditions overlap are not a contradiction: the earlier one wins.
+
+The report shows the terms as a table of condition and result level in the inspector of the transition, with the default term as its last row.
+"""
+
+[types.Transition.attributes.defaultTerm]
+label = "default term"
+package = "qual"
+type = "DefaultTerm"
+spec = { doc = "qual", section = "3.6.4" }
+summary = "the term which holds in every state no function term covers"
+description = """
+Every transition has exactly one [default term](defaultterm.md), which makes the transition table total: whatever the levels of the inputs, some term gives a result level.
+
+The report shows it as the last row of the table of the function terms, under the condition "otherwise".
+"""
+
+[types.Input]
+label = "Input"
+package = "qual"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "a qualitative species a transition reads, with the sign of its influence"
+description = """
+An input names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) reads. Together with the [outputs](output.md) of the transitions the inputs are the influence graph of the model, the picture a reader of a regulatory model actually wants: who acts on whom, and whether the action activates or inhibits.
+
+It is an element of the report and not a row of its transition, because the specification derives it from `SBase`: it may carry an identifier, a name, an SBO term, notes and annotations, and the reference to its species starts here, not at the transition around it.
+"""
+related = ["Transition", "QualitativeSpecies", "Output", "qual"]
+
+[types.Input.attributes.qualitativeSpecies]
+label = "qualitative species"
+package = "qual"
+type = "SIdRef"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "the species whose level the transition reads"
+description = """
+The attribute is required and names a [qualitative species](qualitativespecies.md) of the model. The report links it, and the inspector of that species shows the input under "referenced by", which is how the transitions that read an entity are found.
+"""
+
+[types.Input.attributes.thresholdLevel]
+label = "threshold level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "the level of the species at which the input acts"
+description = """
+A multi valued species does not act the same way at every level: it acts on one target above one level and on another above a higher one. The threshold level is that level, and the identifier of the input stands for it in the math of a [function term](functionterm.md), so that a condition reads `A >= theta_B_A` instead of a bare number.
+
+The report shows the threshold in the column "threshold" of the inputs of a transition and in the inspector.
+"""
+
+[types.Input.attributes.transitionEffect]
+label = "transition effect"
+package = "qual"
+type = "transitionInputEffect"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "whether the transition consumes the level of the species it reads"
+description = """
+The effect is `none`, where the transition only reads the level, which is what a logical model does, or `consumption`, where the firing of the transition takes the level away from the species, which is what a Petri net does with the tokens of the places before a transition. The attribute is required.
+
+The report shows the effect in the table of the inputs in the inspector of the transition.
+"""
+
+[types.Input.attributes.sign]
+label = "sign"
+package = "qual"
+type = "sign"
+spec = { doc = "qual", section = "3.6.1" }
+summary = "whether the influence of the species activates or inhibits"
+description = """
+The sign is `positive` for an activation, `negative` for an inhibition, `dual` where the species does both depending on the level of the others, and `unknown` where the file does not say. The specification adds it for visualisation: the mathematics of the model is in the [function terms](functionterm.md), and the sign is what lets a reader, or a drawing of the influence graph, see an arrow and a bar without reading the conditions.
+
+The report shows the sign next to the species of the input in the column "inputs" of the transitions and in the table of the inputs in the inspector.
+"""
+
+[types.Output]
+label = "Output"
+package = "qual"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "a qualitative species a transition changes, with the effect it has on it"
+description = """
+An output names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) changes. Its [transition effect](output.md#transition-effect) is what tells the two formalisms of the package apart: `assignmentLevel` for a logical model, `production` for a Petri net.
+
+It is an element of the report and not a row of its transition, because the specification derives it from `SBase`: it may carry an identifier, a name, an SBO term, notes and annotations, and the reference to its species starts here, not at the transition around it.
+"""
+related = ["Transition", "QualitativeSpecies", "Input", "qual"]
+
+[types.Output.attributes.qualitativeSpecies]
+label = "qualitative species"
+package = "qual"
+type = "SIdRef"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "the species whose level the transition changes"
+description = """
+The attribute is required and names a [qualitative species](qualitativespecies.md) of the model which is not constant, since a constant species is an input of the system which no transition may change. The report links it, and the inspector of that species shows the output under "referenced by", which is how the transitions that decide the level of an entity are found.
+"""
+
+[types.Output.attributes.outputLevel]
+label = "output level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "the level the transition produces per result level"
+description = """
+Where the transition effect is `production`, the level the species gains is the result level of the term which fires multiplied by the output level, which is the weight of the arc of a Petri net. The attribute is required there and has no meaning for an `assignmentLevel` output, where the level is the result level itself.
+
+The report shows the output level in the table of the outputs in the inspector of the transition.
+"""
+
+[types.Output.attributes.transitionEffect]
+label = "transition effect"
+package = "qual"
+type = "transitionOutputEffect"
+spec = { doc = "qual", section = "3.6.2" }
+summary = "whether the transition sets the level of the species or adds to it"
+description = """
+The effect is `assignmentLevel`, where the level of the species becomes the result level of the term which fires, which is how a logical model is written, or `production`, where the result level multiplied by the output level is added to it, which is how a Petri net is written. The attribute is required, and it is the attribute which says in which of the two formalisms a file is written.
+
+The report shows the effect in the table of the outputs in the inspector of the transition.
+"""
+
+[types.FunctionTerm]
+label = "Function term"
+package = "qual"
+spec = { doc = "qual", section = "3.6.5" }
+summary = "one row of the transition table: a condition and the level it results in"
+description = """
+A function term is a condition and a level. The condition is ordinary MathML which returns a boolean value and reads the levels of the [qualitative species](qualitativespecies.md) of the transition; where it holds, the [outputs](output.md) take the result level of the term.
+
+The terms of a [transition](transition.md) are read in order and the first one which holds decides, so the list of terms with the [default term](defaultterm.md) behind it is the state transition table of the transition.
+"""
+related = ["Transition", "DefaultTerm", "QualitativeSpecies", "qual"]
+
+[types.FunctionTerm.attributes.resultLevel]
+label = "result level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.5" }
+summary = "the level the outputs take where the condition of the term holds"
+description = """
+The result level is a whole number which cannot be negative. An `assignmentLevel` output takes it as its new level, a `production` output gains it multiplied by its output level. The attribute is required.
+
+The report shows it in the column "result level" of the table of the terms in the inspector of the transition.
+"""
+
+[types.FunctionTerm.attributes.math]
+label = "math"
+package = "qual"
+type = "Math"
+spec = { doc = "qual", section = "3.6.5" }
+summary = "the condition under which the term decides the level"
+description = """
+The math is an expression which returns a boolean value, usually a comparison of the level of a species with the threshold of an input combined with `and`, `or` and `not`. A symbol in it is the identifier of a qualitative species, which means its level, of an [input](input.md), which means its threshold level, or of an [output](output.md), which means its output level.
+
+The report renders the condition in the table of the terms in the inspector of the transition and links every element the condition reads.
+"""
+
+[types.DefaultTerm]
+label = "Default term"
+package = "qual"
+spec = { doc = "qual", section = "3.6.4" }
+summary = "the level of a transition in every state no function term covers"
+description = """
+The default term carries no condition: it is what makes the transition table of a [transition](transition.md) total, the row "otherwise" behind the [function terms](functionterm.md). Every transition has exactly one of them.
+
+The specification notes that the class is not derived from `SBase` while libsbml gives it the full surface of one, so the report reads it as it reads every other element, with its meta id, its SBO term, its notes and its annotations.
+"""
+related = ["Transition", "FunctionTerm", "qual"]
+
+[types.DefaultTerm.attributes.resultLevel]
+label = "result level"
+package = "qual"
+type = "integer"
+spec = { doc = "qual", section = "3.6.4" }
+summary = "the level the outputs take where no function term holds"
+description = """
+The result level is a whole number which cannot be negative, and it is required. In most files it is zero, which reads as "the entity is off unless one of the terms switches it on".
+
+The report shows it as the last row of the table of the terms in the inspector of the transition, under the condition "otherwise".
 """

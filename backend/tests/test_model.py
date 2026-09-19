@@ -1,5 +1,7 @@
 """Tests of the report data model."""
 
+import json
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
@@ -15,8 +17,10 @@ from sbml4humans.model import (
     Math,
     Model,
     Node,
+    Parameter,
     RateRule,
     Report,
+    ReportResponse,
     SBase,
     SBMLDocument,
     Species,
@@ -61,6 +65,72 @@ def test_math_and_cvterm() -> None:
     assert (
         cvterm.model_dump(mode="json", by_alias=True)["resources"] == cvterm.resources
     )
+
+
+def test_an_infinite_value_is_carried_as_the_constant_it_is() -> None:
+    """JSON has no literal for an infinite value, the report writes the constant.
+
+    `inf` used to serialise as `null`, so the upper bound `INF` of a reaction,
+    the value of an unbounded parameter and an attribute the file does not set
+    at all read as the same dash in the report.
+    """
+    upper = Parameter(pk="m/Parameter:ub", id="ub", value=float("inf"))
+    lower = Parameter(pk="m/Parameter:lb", id="lb", value=float("-inf"))
+    unset = Parameter(pk="m/Parameter:p", id="p")
+    dumped = [
+        json.loads(p.model_dump_json(by_alias=True))["value"]
+        for p in (upper, lower, unset)
+    ]
+    assert dumped == ["Infinity", "-Infinity", None]
+
+
+def test_a_value_which_is_not_a_number_is_carried_as_well() -> None:
+    """A NaN is a value of a double like an infinite one, and is carried like one."""
+    species = Species(
+        pk="m/Species:s", id="s", compartment="c", initial_amount=float("nan")
+    )
+    dumped = json.loads(species.model_dump_json(by_alias=True))
+    assert dumped["initialAmount"] == "NaN"
+
+
+def _number_properties(schema: object, path: str = "") -> Iterator[tuple[str, object]]:
+    """Every property of a JSON schema which accepts a number, with its path."""
+    if isinstance(schema, dict):
+        for key, value in schema.items():
+            if key == "properties" and isinstance(value, dict):
+                for name, prop in value.items():
+                    if '"number"' in json.dumps(prop):
+                        yield f"{path}.{name}", prop
+            yield from _number_properties(value, f"{path}/{key}")
+    elif isinstance(schema, list):
+        for item in schema:
+            yield from _number_properties(item, path)
+
+
+def test_every_double_of_the_report_carries_them() -> None:
+    """Every double of the schema says that it may be one of the three constants.
+
+    The frontend types are generated from the schema, and a renderer only
+    reads the constants where the type of a field names them: a float of the
+    model which is not a `Double` would send "Infinity" to a field typed as a
+    number alone.
+    """
+    schema = ReportResponse.model_json_schema(by_alias=True)
+    properties = dict(_number_properties(schema))
+    assert properties
+    constants = [{"const": "Infinity"}, {"const": "-Infinity"}, {"const": "NaN"}]
+    missing = [
+        path
+        for path, prop in properties.items()
+        if not all(json.dumps(c) in json.dumps(prop) for c in constants)
+    ]
+    assert missing == []
+
+
+def test_an_infinite_value_validates_back() -> None:
+    """The constants are read back into the doubles they stand for."""
+    parameter = Parameter.model_validate({"pk": "m/Parameter:ub", "value": "Infinity"})
+    assert parameter.value == float("inf")
 
 
 def _model() -> Model:

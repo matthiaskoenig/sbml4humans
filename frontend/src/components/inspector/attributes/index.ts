@@ -3,30 +3,53 @@ import type { Component } from "vue";
 import type { SbmlType } from "@/api/types";
 
 import AlgebraicRuleAttributes from "./AlgebraicRuleAttributes.vue";
+import AndAttributes from "./AndAttributes.vue";
 import AssignmentRuleAttributes from "./AssignmentRuleAttributes.vue";
 import CompartmentAttributes from "./CompartmentAttributes.vue";
 import ConstraintAttributes from "./ConstraintAttributes.vue";
+import DefaultTermAttributes from "./DefaultTermAttributes.vue";
+import DelayAttributes from "./DelayAttributes.vue";
+import DeletionAttributes from "./DeletionAttributes.vue";
 import EventAssignmentAttributes from "./EventAssignmentAttributes.vue";
 import EventAttributes from "./EventAttributes.vue";
 import ExternalModelDefinitionAttributes from "./ExternalModelDefinitionAttributes.vue";
+import FluxBoundAttributes from "./FluxBoundAttributes.vue";
+import FluxObjectiveAttributes from "./FluxObjectiveAttributes.vue";
 import FunctionDefinitionAttributes from "./FunctionDefinitionAttributes.vue";
+import FunctionTermAttributes from "./FunctionTermAttributes.vue";
+import GeneProductAssociationAttributes from "./GeneProductAssociationAttributes.vue";
 import GeneProductAttributes from "./GeneProductAttributes.vue";
+import GeneProductRefAttributes from "./GeneProductRefAttributes.vue";
 import InitialAssignmentAttributes from "./InitialAssignmentAttributes.vue";
+import InputAttributes from "./InputAttributes.vue";
 import KineticLawAttributes from "./KineticLawAttributes.vue";
 import LocalParameterAttributes from "./LocalParameterAttributes.vue";
 import ModelAttributes from "./ModelAttributes.vue";
 import ModifierSpeciesReferenceAttributes from "./ModifierSpeciesReferenceAttributes.vue";
 import ObjectiveAttributes from "./ObjectiveAttributes.vue";
+import OrAttributes from "./OrAttributes.vue";
+import OutputAttributes from "./OutputAttributes.vue";
 import ParameterAttributes from "./ParameterAttributes.vue";
 import PortAttributes from "./PortAttributes.vue";
+import PriorityAttributes from "./PriorityAttributes.vue";
+import QualitativeSpeciesAttributes from "./QualitativeSpeciesAttributes.vue";
 import RateRuleAttributes from "./RateRuleAttributes.vue";
 import ReactionAttributes from "./ReactionAttributes.vue";
+import ReplacedByAttributes from "./ReplacedByAttributes.vue";
+import ReplacedElementAttributes from "./ReplacedElementAttributes.vue";
+import SBaseRefAttributes from "./SBaseRefAttributes.vue";
 import SBMLDocumentAttributes from "./SBMLDocumentAttributes.vue";
 import SpeciesAttributes from "./SpeciesAttributes.vue";
 import SpeciesReferenceAttributes from "./SpeciesReferenceAttributes.vue";
 import SubmodelAttributes from "./SubmodelAttributes.vue";
+import TransitionAttributes from "./TransitionAttributes.vue";
+import TriggerAttributes from "./TriggerAttributes.vue";
 import UncertaintyAttributes from "./UncertaintyAttributes.vue";
+import UncertParameterAttributes from "./UncertParameterAttributes.vue";
+import UncertSpanAttributes from "./UncertSpanAttributes.vue";
 import UnitDefinitionAttributes from "./UnitDefinitionAttributes.vue";
+import UserDefinedConstraintAttributes from "./UserDefinedConstraintAttributes.vue";
+import UserDefinedConstraintComponentAttributes from "./UserDefinedConstraintComponentAttributes.vue";
 
 /** The type specific attributes component of every SBML type, each taking `element`. */
 export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
@@ -48,11 +71,34 @@ export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
   Submodel: SubmodelAttributes,
   Port: PortAttributes,
   GeneProduct: GeneProductAttributes,
+  GeneProductAssociation: GeneProductAssociationAttributes,
+  And: AndAttributes,
+  Or: OrAttributes,
+  GeneProductRef: GeneProductRefAttributes,
   Objective: ObjectiveAttributes,
+  FluxObjective: FluxObjectiveAttributes,
+  FluxBound: FluxBoundAttributes,
+  UserDefinedConstraint: UserDefinedConstraintAttributes,
+  UserDefinedConstraintComponent: UserDefinedConstraintComponentAttributes,
+  QualitativeSpecies: QualitativeSpeciesAttributes,
+  Transition: TransitionAttributes,
+  Input: InputAttributes,
+  Output: OutputAttributes,
+  FunctionTerm: FunctionTermAttributes,
+  DefaultTerm: DefaultTermAttributes,
   SpeciesReference: SpeciesReferenceAttributes,
   ModifierSpeciesReference: ModifierSpeciesReferenceAttributes,
   KineticLaw: KineticLawAttributes,
   LocalParameter: LocalParameterAttributes,
+  Trigger: TriggerAttributes,
+  Priority: PriorityAttributes,
+  Delay: DelayAttributes,
   EventAssignment: EventAssignmentAttributes,
   Uncertainty: UncertaintyAttributes,
+  UncertParameter: UncertParameterAttributes,
+  UncertSpan: UncertSpanAttributes,
+  Deletion: DeletionAttributes,
+  ReplacedElement: ReplacedElementAttributes,
+  ReplacedBy: ReplacedByAttributes,
+  SBaseRef: SBaseRefAttributes,
 };

@@ -78,10 +78,11 @@ const sections = computed(() => {
   const { q, types } = view.state.value;
   return ELEMENT_TYPES.map((info) => {
     const all = byType.get(info.type) ?? [];
-    const rows = q.trim() ? all.filter((element) => matches(element, q)) : all;
+    const rows = q.trim() ? all.filter((element) => matches(element, q, current)) : all;
     return {
       type: info.type,
       rows,
+      all,
       total: all.length,
       visible: types === null || types.includes(info.type),
     };
@@ -160,6 +161,7 @@ watch([selectedPk, index], ([pk, current]) => {
             :key="section.type"
             :type="section.type"
             :rows="section.rows as SbmlElement[]"
+            :all-rows="section.all as SbmlElement[]"
             :total="section.total"
           />
         </div>

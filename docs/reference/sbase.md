@@ -20,13 +20,14 @@ The report shows these attributes for every element: the id and the name in the 
 | [replacements](#replacements) | `CompSBase` | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [replaced by](#replaced-by) | `ReplacedBy` | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [replaced elements](#replaced-elements) | `list` | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [key value pairs](#key-value-pairs) | `list` | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [uncertainties](#uncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
 
-The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one.
+The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one. On an initial assignment, a rule and an event assignment it is optional and it exists from Level 3 Version 2 on, so most models leave it empty; what such an element sets is its symbol or its variable, not its id.
 
-The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element.
+The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element. An element without an id is named by the key of its [primary key](concepts.md) instead, and an element which the file nests in another one after that element.
 
 <span id="name"></span>**name**
 
@@ -56,7 +57,9 @@ The report renders the notes of the selected element in the last section of the 
 
 An annotation relates the element to an entry of an external database, for example to a ChEBI compound, a UniProt protein or a Gene Ontology process. Every relation names a qualifier, such as "is" or "is part of", so that the meaning of the reference is explicit. The qualifiers are those of MIRIAM and the entries are named by their identifiers.org url.
 
-The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource.
+An annotation can carry annotations of its own, which qualify it further: the evidence for a relation, or the modification of the protein a species stands for.
+
+The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource, and shows the terms below a term indented under it.
 
 <span id="history"></span>**history**
 
@@ -82,11 +85,19 @@ Every entry names a submodel and one element inside it which this element replac
 
 The report lists the submodel and the named element of every replacement in the inspector.
 
+<span id="key-value-pairs"></span>**key value pairs**
+
+A key value pair carries metadata for which SBML has no attribute: the tool which produced a number, the database a reaction was taken from, the assumption behind a bound. It is written into the annotation of an element, in a namespace the package defines, so that every tool reads the same format instead of inventing its own.
+
+Every key of one element is unique, the value is a string, and the uri says where the key is defined, for example a document which lists the keys of a tool.
+
+The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
+
 <span id="uncertainties"></span>**uncertainties**
 
 Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
 
-The report lists the uncertainties of an element in its inspector with the number of their parameters, and shows every [uncertainty](uncertainty.md) as an element of its own.
+The report shows the uncertainties of an element in its inspector, each of them named with a link to it and with the table of the measures it collects, so that how well a value is known is read where the value is. Every [uncertainty](uncertainty.md) is an element of its own, which names the element it describes under "Referenced by", and the search finds an element by the names, the notes and the types of the measures of its uncertainties.
 
 ## In the report
 
@@ -96,7 +107,7 @@ The report lists the uncertainties of an element in its inspector with the numbe
 
 <span id="xml"></span>**xml**
 
-The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display.
+The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display. The document and the model are the exception: their XML is the whole file, so the report carries their annotation element instead. The nodes of a [gene product association](geneproductassociation.md) carry none either, because the XML of their [reaction](reaction.md) contains the whole association and every node of a deep tree would repeat the part below it.
 
 The "XML" button in the header of the inspector puts the XML view in the place of its sections.
 

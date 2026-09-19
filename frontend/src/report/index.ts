@@ -1,4 +1,5 @@
 import type {
+  Association,
   Edge,
   EdgeKind,
   SbmlElement,
@@ -9,8 +10,20 @@ import type {
   Report,
   SBMLDocument,
   SBase,
+  UncertMeasure,
+  Uncertainty,
 } from "@/api/types";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
+
+/** The edge kinds of a participation: a reaction links to every reactant, product and modifier
+ * it lists, and each of those links to its species with the same kind. */
+export const PARTICIPATION_KINDS = ["reactant", "product", "modifier"] as const;
+export type ParticipationKind = (typeof PARTICIPATION_KINDS)[number];
+
+/** How deep a gene product association is followed: the tree of a reaction of Recon3D is a
+ * few operators deep, and the limit only keeps a graph which is not a tree from recursing
+ * without end. */
+const MAX_ASSOCIATION_DEPTH = 64;
 
 function push<K, V>(map: Map<K, V[]>, key: K, value: V): void {
   const list = map.get(key);
@@ -91,6 +104,53 @@ export class ReportIndex {
     return this.incoming.get(pk) ?? [];
   }
 
+  /** The reaction which lists a species or modifier reference and the role the reference plays
+   * in it, read from the edge of the reaction to the reference. A species reference belongs to
+   * exactly one list of one reaction, so there is at most one such edge. */
+  participation(pk: string): { reaction: string; role: ParticipationKind } | null {
+    for (const edge of this.referencedBy(pk)) {
+      // the species a reference names carries the same kinds, from the reference; only the edge
+      // of a reaction names a participation
+      if (this.nodes.get(edge.source)?.sbmlType !== "Reaction") continue;
+      if (PARTICIPATION_KINDS.includes(edge.kind as ParticipationKind)) {
+        return { reaction: edge.source, role: edge.kind as ParticipationKind };
+      }
+    }
+    return null;
+  }
+
+  /** The reaction whose gene product association holds the node, read upwards over the edges
+   * of the association tree, which lead from the reaction to its association and from every
+   * node to the nodes below it (fbc §3.9 to §3.13). Null for anything which is no node of a
+   * tree. */
+  associationReaction(pk: string): string | null {
+    let current = pk;
+    for (let depth = 0; depth < MAX_ASSOCIATION_DEPTH; depth++) {
+      const parent = this.referencedBy(current).find(
+        (edge) => edge.kind === "geneProductAssociation",
+      )?.source;
+      if (!parent) return null;
+      if (this.nodes.get(parent)?.sbmlType === "Reaction") return parent;
+      current = parent;
+    }
+    return null;
+  }
+
+  /** The gene products the association of a reaction names, once each, in the order in which
+   * the tree names them. */
+  geneProducts(reactionPk: string): string[] {
+    const products = new Set<string>();
+    const walk = (pk: string, depth: number): void => {
+      if (depth > MAX_ASSOCIATION_DEPTH) return;
+      for (const edge of this.references(pk)) {
+        if (edge.kind === "geneProductAssociation") walk(edge.target, depth + 1);
+        else if (edge.kind === "geneProduct") products.add(edge.target);
+      }
+    };
+    walk(reactionPk, 0);
+    return [...products];
+  }
+
   /** The pk of the element with the id, or failing that the metaId, referenced by the source
    * through an edge of the kind, if any. */
   resolve(sourcePk: string, kind: EdgeKind, id: string | null | undefined): string | null {
@@ -104,9 +164,14 @@ export class ReportIndex {
     return null;
   }
 
+  /** An element and everything nested in it which carries a pk of its own: its uncertainties,
+   * the replacements of the comp package it carries and the chain of references below one. */
   private add(element: SBase): void {
     this.elements.set(element.pk, element);
-    for (const uncertainty of element.uncertainties ?? []) this.add(uncertainty);
+    for (const uncertainty of element.uncertainties ?? []) this.addUncertainty(uncertainty);
+    if (element.comp?.replacedBy) this.add(element.comp.replacedBy);
+    for (const replaced of element.comp?.replacedElements ?? []) this.add(replaced);
+    if ("sbaseRef" in element && element.sbaseRef) this.add(element.sbaseRef);
   }
 
   private addModel(model: Model): void {
@@ -125,6 +190,22 @@ export class ReportIndex {
     if (model.id) this.byModel.set(model.id, byType);
   }
 
+  /** An uncertainty or one of its measures and every measure below it: a distribution is
+   * defined by uncert parameters of its own, to any depth (distrib §3.11.7). */
+  private addUncertainty(owner: Uncertainty | UncertMeasure): void {
+    this.add(owner);
+    for (const measure of owner.uncertParameters ?? []) this.addUncertainty(measure);
+  }
+
+  /** A node of a gene product association and every node below it (fbc §3.10). */
+  private addAssociation(node: Association | null | undefined): void {
+    if (!node) return;
+    this.add(node);
+    if (node.sbmlType === "And" || node.sbmlType === "Or") {
+      for (const child of node.associations ?? []) this.addAssociation(child);
+    }
+  }
+
   private addElement(element: SbmlElement): void {
     this.add(element);
     switch (element.sbmlType) {
@@ -137,9 +218,32 @@ export class ReportIndex {
           for (const parameter of element.kineticLaw.listOfLocalParameters ?? [])
             this.add(parameter);
         }
+        if (element.fbc?.geneProductAssociation) {
+          this.add(element.fbc.geneProductAssociation);
+          this.addAssociation(element.fbc.geneProductAssociation.association);
+        }
+        break;
+      case "UserDefinedConstraint":
+        for (const component of element.listOfUserDefinedConstraintComponents ?? [])
+          this.add(component);
+        break;
+      case "Objective":
+        for (const fluxObjective of element.listOfFluxObjectives ?? []) this.add(fluxObjective);
+        break;
+      case "Submodel":
+        for (const deletion of element.listOfDeletions ?? []) this.add(deletion);
         break;
       case "Event":
+        if (element.trigger) this.add(element.trigger);
+        if (element.priority) this.add(element.priority);
+        if (element.delay) this.add(element.delay);
         for (const assignment of element.listOfEventAssignments ?? []) this.add(assignment);
+        break;
+      case "Transition":
+        for (const input of element.listOfInputs ?? []) this.add(input);
+        for (const output of element.listOfOutputs ?? []) this.add(output);
+        for (const term of element.listOfFunctionTerms ?? []) this.add(term);
+        if (element.defaultTerm) this.add(element.defaultTerm);
         break;
       default:
         break;

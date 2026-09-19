@@ -13,7 +13,7 @@ const index = useReportIndex();
 
 <template>
   <AttributeRow label="value" :type="element.sbmlType" field="value"
-    ><ValueText :value="element.value"
+    ><ValueText :value="element.value" double
   /></AttributeRow>
   <AttributeRow label="units" :type="element.sbmlType" field="units">
     <UnitsLink

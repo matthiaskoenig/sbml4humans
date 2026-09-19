@@ -9,18 +9,49 @@ export type EdgeKind =
   | "reactant"
   | "product"
   | "modifier"
+  | "kineticLaw"
+  | "localParameter"
+  | "trigger"
+  | "priority"
+  | "delay"
+  | "eventAssignment"
   | "variable"
+  | "variable2"
   | "symbol"
   | "units"
   | "conversionFactor"
+  | "timeConversionFactor"
+  | "extentConversionFactor"
   | "fluxBound"
+  | "lowerFluxBound"
+  | "upperFluxBound"
   | "geneProduct"
+  | "geneProductAssociation"
   | "associatedSpecies"
   | "fluxObjective"
+  | "reaction2"
+  | "activeObjective"
+  | "lowerBound"
+  | "upperBound"
+  | "constraintComponent"
+  | "coefficient"
+  | "input"
+  | "output"
+  | "functionTerm"
+  | "defaultTerm"
+  | "uncertainty"
+  | "uncertParameter"
+  | "var"
+  | "varLower"
+  | "varUpper"
+  | "model"
+  | "externalModelDefinition"
   | "modelRef"
   | "port"
+  | "deletion"
   | "replacedBy"
   | "replacedElement"
+  | "sBaseRef"
   | "math";
 
 /**
@@ -65,6 +96,10 @@ export interface Report {
 }
 /**
  * The document: level, version and the packages it uses.
+ *
+ * `annotation_xml` takes the place of the `xml` of every other element, which
+ * is not part of the report for the document and the model because it is the
+ * whole file.
  */
 export interface SBMLDocument {
   pk: string;
@@ -79,16 +114,22 @@ export interface SBMLDocument {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   level: number;
   version: number;
   packages?: Package[];
+  annotationXml?: string | null;
 }
 /**
  * An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.
+ *
+ * A term can carry terms of its own, which qualify it further: the evidence
+ * for a relation or the modification of a protein (core §6).
  */
 export interface CVTerm {
   qualifier: string;
   resources: string[];
+  nested?: CVTerm[];
 }
 /**
  * The history of an element: creators and dates.
@@ -118,24 +159,25 @@ export interface CompSBase {
  * The element of a submodel which replaces this element.
  */
 export interface ReplacedBy {
-  submodelRef: string;
-  sbaseRef: SBaseRef;
-}
-/**
- * A comp reference to an element by port, id, unit or metaId.
- */
-export interface SBaseRef {
+  pk: string;
+  sbmlType?: "ReplacedBy";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
   metaIdRef?: string | null;
-}
-/**
- * An element of a submodel which this element replaces.
- */
-export interface ReplacedElement {
+  sbaseRef?: SBaseRef | null;
   submodelRef: string;
-  sbaseRef: SBaseRef;
 }
 /**
  * A distrib uncertainty of an element.
@@ -153,18 +195,56 @@ export interface Uncertainty {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
-  uncertParameters?: UncertParameter[];
+  keyValuePairs?: KeyValuePair[];
+  uncertParameters?: (UncertSpan | UncertParameter)[];
 }
 /**
- * A parameter of a distrib uncertainty.
+ * One entry of the controlled annotation of fbc Version 3 (fbc §3.17).
+ *
+ * A key value pair carries metadata which no attribute of SBML holds, and
+ * libsbml reads it from the annotation of any element. It is a nested object
+ * of that element and not an element of the report: nothing references it, it
+ * references nothing, and libsbml does not read the identifier and the name
+ * the specification allows it back from a file.
  */
-export interface UncertParameter {
-  var?: string | null;
-  value?: number | null;
-  units?: string | null;
+export interface KeyValuePair {
+  key?: string | null;
+  value?: string | null;
+  uri?: string | null;
+}
+/**
+ * An uncertainty which is an interval (distrib §3.12).
+ *
+ * The four kinds of uncertainty which are a span, the range, the confidence
+ * interval, the credible interval and the interquartile range, carry their
+ * two ends here instead of the single `value` of an `UncertParameter`: each
+ * end as a number or as the element the `var` of that end names.
+ */
+export interface UncertSpan {
+  pk: string;
+  sbmlType?: "UncertSpan";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   type?: string | null;
+  var?: string | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  units?: string | null;
   definitionUrl?: string | null;
   math?: Math | null;
+  uncertParameters?: (UncertSpan | UncertParameter)[];
+  valueLower?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  valueUpper?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  varLower?: string | null;
+  varUpper?: string | null;
 }
 /**
  * The math of an element as latex and as L3 formula string.
@@ -172,6 +252,89 @@ export interface UncertParameter {
 export interface Math {
   latex: string;
   formula: string;
+}
+/**
+ * One statistical measure of a distrib uncertainty (distrib §3.11).
+ *
+ * The `type` says which statistic the parameter describes, and the statistic
+ * is given either as a number in `value` or as the element `var` names. A
+ * parameter of the type `distribution` or `externalParameter` describes
+ * itself by its `definition_url`, its math and the parameters nested in it.
+ */
+export interface UncertParameter {
+  pk: string;
+  sbmlType?: "UncertParameter";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  type?: string | null;
+  var?: string | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  units?: string | null;
+  definitionUrl?: string | null;
+  math?: Math | null;
+  uncertParameters?: (UncertSpan | UncertParameter)[];
+}
+/**
+ * A link of a reference chain, which names an element of a submodel.
+ *
+ * The chain starts at a port, a deletion, a replaced element or a replaced
+ * by, whose reference names a submodel; every further link names an element
+ * of the model that submodel instantiates (comp §3.7.2).
+ */
+export interface SBaseRef {
+  pk: string;
+  sbmlType?: "SBaseRef";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  portRef?: string | null;
+  idRef?: string | null;
+  unitRef?: string | null;
+  metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
+}
+/**
+ * An element of a submodel which this element replaces.
+ */
+export interface ReplacedElement {
+  pk: string;
+  sbmlType?: "ReplacedElement";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  portRef?: string | null;
+  idRef?: string | null;
+  unitRef?: string | null;
+  metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
+  submodelRef: string;
+  deletion?: string | null;
+  conversionFactor?: string | null;
 }
 /**
  * An SBML package used by the document.
@@ -182,6 +345,10 @@ export interface Package {
 }
 /**
  * A model or comp model definition with the lists of its elements.
+ *
+ * `annotation_xml` takes the place of the `xml` of every other element, which
+ * is not part of the report for the document and the model because it is the
+ * whole file.
  */
 export interface Model {
   pk: string;
@@ -196,7 +363,9 @@ export interface Model {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   kind?: "model" | "modelDefinition";
+  annotationXml?: string | null;
   substanceUnits?: string | null;
   substanceUnitsLatex?: string | null;
   timeUnits?: string | null;
@@ -224,13 +393,18 @@ export interface Model {
   listOfPorts?: Port[];
   listOfGeneProducts?: GeneProduct[];
   listOfObjectives?: Objective[];
+  listOfFluxBounds?: FluxBound[];
+  listOfUserDefinedConstraints?: UserDefinedConstraint[];
+  listOfQualitativeSpecies?: QualitativeSpecies[];
+  listOfTransitions?: Transition[];
+  fbc?: ModelFbc | null;
 }
 /**
  * The conversion factor parameter of a model or species.
  */
 export interface ConversionFactor {
   sid: string;
-  value?: number | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   units?: string | null;
 }
 /**
@@ -249,10 +423,11 @@ export interface FunctionDefinition {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
 }
 /**
- * A unit definition with its rendered units.
+ * A unit definition with its units and their rendered formula.
  */
 export interface UnitDefinition {
   pk: string;
@@ -267,7 +442,22 @@ export interface UnitDefinition {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   unitsLatex?: string | null;
+  listOfUnits?: Unit[];
+}
+/**
+ * One factor of a unit definition: a base unit with exponent, scale and multiplier.
+ *
+ * A unit carries no identifier and nothing in SBML refers to it, so it is a
+ * nested object of its definition and not an element of the report with a
+ * primary key of its own.
+ */
+export interface Unit {
+  kind?: string | null;
+  exponent?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  scale?: number | null;
+  multiplier?: number | "Infinity" | "-Infinity" | "NaN" | null;
 }
 /**
  * A compartment.
@@ -285,8 +475,9 @@ export interface Compartment {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
-  spatialDimensions?: number | null;
-  size?: number | null;
+  keyValuePairs?: KeyValuePair[];
+  spatialDimensions?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  size?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
   units?: string | null;
   unitsLatex?: string | null;
@@ -308,9 +499,10 @@ export interface Species {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   compartment: string;
-  initialAmount?: number | null;
-  initialConcentration?: number | null;
+  initialAmount?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  initialConcentration?: number | "Infinity" | "-Infinity" | "NaN" | null;
   substanceUnits?: string | null;
   hasOnlySubstanceUnits?: boolean | null;
   boundaryCondition?: boolean | null;
@@ -322,10 +514,13 @@ export interface Species {
 }
 /**
  * The fbc extension of a species.
+ *
+ * The charge is a double, which is what fbc Version 3 made of the integer of
+ * the versions before it (fbc §3.4).
  */
 export interface SpeciesFbc {
   chemicalFormula?: string | null;
-  charge?: number | null;
+  charge?: number | "Infinity" | "-Infinity" | "NaN" | null;
 }
 /**
  * A global parameter.
@@ -343,7 +538,8 @@ export interface Parameter {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
-  value?: number | null;
+  keyValuePairs?: KeyValuePair[];
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
   units?: string | null;
   unitsLatex?: string | null;
@@ -365,6 +561,7 @@ export interface InitialAssignment {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   symbol: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -385,6 +582,7 @@ export interface AssignmentRule {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   variable: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -405,6 +603,7 @@ export interface RateRule {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   variable: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -425,6 +624,7 @@ export interface AlgebraicRule {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   derivedUnits?: string | null;
 }
@@ -444,6 +644,7 @@ export interface Constraint {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   message?: string | null;
 }
@@ -467,6 +668,7 @@ export interface Reaction {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   reversible?: boolean | null;
   fast?: boolean | null;
   compartment?: string | null;
@@ -493,8 +695,9 @@ export interface SpeciesReference {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   species: string;
-  stoichiometry?: number | null;
+  stoichiometry?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
 }
 /**
@@ -513,6 +716,7 @@ export interface ModifierSpeciesReference {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   species: string;
 }
 /**
@@ -531,6 +735,7 @@ export interface KineticLaw {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   derivedUnits?: string | null;
   listOfLocalParameters?: LocalParameter[];
@@ -551,22 +756,95 @@ export interface LocalParameter {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
-  value?: number | null;
+  keyValuePairs?: KeyValuePair[];
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   units?: string | null;
   unitsLatex?: string | null;
   derivedUnits?: string | null;
 }
 /**
  * The fbc extension of a reaction.
- *
- * `gene_products` are the ids referenced by the association, so that the
- * link graph does not parse the infix string.
  */
 export interface ReactionFbc {
   lowerFluxBound?: string | null;
   upperFluxBound?: string | null;
-  geneProductAssociation?: string | null;
-  geneProducts?: string[];
+  geneProductAssociation?: GeneProductAssociation | null;
+}
+/**
+ * The genes under which a reaction can run, as the tree of fbc §3.9.
+ */
+export interface GeneProductAssociation {
+  pk: string;
+  sbmlType?: "GeneProductAssociation";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  association?: GeneProductRef | And | Or | null;
+}
+/**
+ * A leaf of a gene product association: the gene product it names.
+ */
+export interface GeneProductRef {
+  pk: string;
+  sbmlType?: "GeneProductRef";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  geneProduct: string;
+}
+/**
+ * Associations which are all needed at once: the subunits of a complex.
+ */
+export interface And {
+  pk: string;
+  sbmlType?: "And";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  associations?: (GeneProductRef | And | Or)[];
+}
+/**
+ * Associations of which one suffices: the isozymes of a reaction.
+ */
+export interface Or {
+  pk: string;
+  sbmlType?: "Or";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  associations?: (GeneProductRef | And | Or)[];
 }
 /**
  * An event with trigger, priority, delay and assignments.
@@ -584,19 +862,71 @@ export interface Event {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   useValuesFromTriggerTime?: boolean | null;
   trigger?: Trigger | null;
-  priority?: Math | null;
-  delay?: Math | null;
+  priority?: Priority | null;
+  delay?: Delay | null;
   listOfEventAssignments?: EventAssignment[];
 }
 /**
- * The trigger of an event.
+ * The trigger of an event: the condition which fires it.
  */
 export interface Trigger {
+  pk: string;
+  sbmlType?: "Trigger";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   math?: Math | null;
   initialValue?: boolean | null;
   persistent?: boolean | null;
+}
+/**
+ * The priority of an event: the order of the events of one moment.
+ */
+export interface Priority {
+  pk: string;
+  sbmlType?: "Priority";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  math?: Math | null;
+}
+/**
+ * The delay of an event: the time between the trigger and the execution.
+ */
+export interface Delay {
+  pk: string;
+  sbmlType?: "Delay";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  math?: Math | null;
 }
 /**
  * An assignment executed by an event.
@@ -614,6 +944,7 @@ export interface EventAssignment {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   variable: string;
   math?: Math | null;
 }
@@ -633,10 +964,34 @@ export interface Submodel {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   modelRef: string;
   timeConversionFactor?: string | null;
   extentConversionFactor?: string | null;
-  listOfDeletions?: SBaseRef[];
+  listOfDeletions?: Deletion[];
+}
+/**
+ * An element of a submodel which is removed before it is instantiated.
+ */
+export interface Deletion {
+  pk: string;
+  sbmlType?: "Deletion";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  portRef?: string | null;
+  idRef?: string | null;
+  unitRef?: string | null;
+  metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
 }
 /**
  * A comp port referencing an element of the model.
@@ -654,10 +1009,12 @@ export interface Port {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
   metaIdRef?: string | null;
+  sbaseRef?: SBaseRef | null;
 }
 /**
  * An fbc gene product.
@@ -675,6 +1032,7 @@ export interface GeneProduct {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   label?: string | null;
   associatedSpecies?: string | null;
 }
@@ -694,15 +1052,244 @@ export interface Objective {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   type?: string | null;
   listOfFluxObjectives?: FluxObjective[];
 }
 /**
- * A weighted reaction of an objective.
+ * One term of an objective: a reaction weighted by a coefficient.
  */
 export interface FluxObjective {
+  pk: string;
+  sbmlType?: "FluxObjective";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   reaction: string;
-  coefficient?: number | null;
+  reaction2?: string | null;
+  coefficient?: number | "Infinity" | "-Infinity" | "NaN" | null;
+  variableType?: string | null;
+}
+/**
+ * A bound of the flux of a reaction, the constraint of fbc Version 1.
+ *
+ * Version 2 replaced it by the `lowerFluxBound` and `upperFluxBound`
+ * attributes of a reaction, which name a parameter instead of holding a
+ * value, so a bound of a Version 1 document is an element of the report and
+ * of no later one.
+ */
+export interface FluxBound {
+  pk: string;
+  sbmlType?: "FluxBound";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  reaction?: string | null;
+  operation?: string | null;
+  value?: number | "Infinity" | "-Infinity" | "NaN" | null;
+}
+/**
+ * A constraint of fbc Version 3 over a combination of model variables.
+ */
+export interface UserDefinedConstraint {
+  pk: string;
+  sbmlType?: "UserDefinedConstraint";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  lowerBound?: string | null;
+  upperBound?: string | null;
+  listOfUserDefinedConstraintComponents?: UserDefinedConstraintComponent[];
+}
+/**
+ * One term of a user defined constraint (fbc §3.15).
+ */
+export interface UserDefinedConstraintComponent {
+  pk: string;
+  sbmlType?: "UserDefinedConstraintComponent";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  variable?: string | null;
+  variable2?: string | null;
+  coefficient?: string | null;
+  variableType?: string | null;
+}
+/**
+ * An entity of a qualitative model, which carries a level instead of an amount.
+ *
+ * The level is a whole number between zero and `max_level`: the node of an
+ * influence graph in a logical model, the place of a Petri net (qual §3.5).
+ */
+export interface QualitativeSpecies {
+  pk: string;
+  sbmlType?: "QualitativeSpecies";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  compartment: string;
+  constant?: boolean | null;
+  initialLevel?: number | null;
+  maxLevel?: number | null;
+}
+/**
+ * The dynamics of a qualitative model: what the level of a species becomes.
+ *
+ * A transition reads the species of its inputs, writes the species of its
+ * outputs and decides between them with its function terms, the first of
+ * which whose condition holds gives the result level (qual §3.6).
+ */
+export interface Transition {
+  pk: string;
+  sbmlType?: "Transition";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  listOfInputs?: Input[];
+  listOfOutputs?: Output[];
+  listOfFunctionTerms?: FunctionTerm[];
+  defaultTerm?: DefaultTerm | null;
+}
+/**
+ * A qualitative species a transition reads, with the sign of its influence.
+ */
+export interface Input {
+  pk: string;
+  sbmlType?: "Input";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  qualitativeSpecies: string;
+  thresholdLevel?: number | null;
+  transitionEffect?: string | null;
+  sign?: string | null;
+}
+/**
+ * A qualitative species a transition changes, with the effect it has on it.
+ */
+export interface Output {
+  pk: string;
+  sbmlType?: "Output";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  qualitativeSpecies: string;
+  outputLevel?: number | null;
+  transitionEffect?: string | null;
+}
+/**
+ * One row of the transition table: a condition and the level it results in.
+ */
+export interface FunctionTerm {
+  pk: string;
+  sbmlType?: "FunctionTerm";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  resultLevel?: number | null;
+  math?: Math | null;
+}
+/**
+ * The level of a transition in every state no function term covers.
+ */
+export interface DefaultTerm {
+  pk: string;
+  sbmlType?: "DefaultTerm";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  resultLevel?: number | null;
+}
+/**
+ * The fbc extension of a model.
+ *
+ * `strict` exists from Version 2 on and `active_objective` is the attribute
+ * of the `listOfObjectives`, which the report does not carry as an object of
+ * its own (fbc §3.3, §3.3.1).
+ */
+export interface ModelFbc {
+  strict?: boolean | null;
+  activeObjective?: string | null;
 }
 /**
  * A comp reference to a model in another document.
@@ -720,8 +1307,10 @@ export interface ExternalModelDefinition {
   xml?: string | null;
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
   source: string;
   modelRef?: string | null;
+  md5?: string | null;
 }
 /**
  * All objects of a report and the references between them.

@@ -18,9 +18,7 @@ const modelOptions = computed(() =>
     value: model.id ?? "",
   })),
 );
-const packages = computed(
-  () => props.index.document.packages?.map((pkg) => pkg.prefix).filter((p) => p) ?? [],
-);
+const packages = computed(() => props.index.document.packages?.map((pkg) => pkg.prefix) ?? []);
 </script>
 
 <template>

@@ -119,4 +119,12 @@ describe("glossary", () => {
     expect(referenceUrl("Species")).toBe(`${DOCS_URL}reference/species/`);
     expect(referenceUrl("Reaction")).toBe(`${DOCS_URL}reference/reaction/`);
   });
+
+  it("explains a link kind in every context in which a group of it is shown", () => {
+    // the compartment of a qualitative species is a group of the same kind as the compartment of
+    // a species, and the bounds of a user defined constraint bound a sum, not a flux
+    expect(linkEntry("compartment")?.summary).toContain("qualitative species");
+    expect(linkEntry("lowerBound")?.summary).toContain("user defined constraint");
+    expect(linkEntry("lowerBound")?.summary).not.toContain("flux");
+  });
 });

@@ -1,6 +1,7 @@
 """Formatting of units as strings and latex."""
 
 import contextlib
+import math
 
 import libsbml
 import numpy as np
@@ -12,6 +13,10 @@ ureg.define("item = dimensionless")
 ureg.define("avogadro = 6.02214179E23 dimensionless")
 Q_ = ureg.Quantity
 
+# the symbols of the base units which pint does not write. A units attribute
+# which names a base unit shows its identifier next to the rendering, and
+# `dimensionless` has no symbol shorter than that identifier, so its rendering
+# as an attribute is the placeholder which leaves the identifier alone
 short_names = {
     "metre": "m",
     "meter": "m",
@@ -20,6 +25,63 @@ short_names = {
     "dimensionless": "-",
     "second": "s",
 }
+
+# the rendering of a quantity without dimension, which is a unit of its own
+# and not the dash of units which are not declared or cannot be derived
+DIMENSIONLESS = "dimensionless"
+
+
+def _factor(u: libsbml.Unit) -> tuple[str, float] | None:
+    """The rendering of one unit of a definition and its exponent.
+
+    A unit is `(multiplier * 10^scale * kind)^exponent` (core §4.4.2). Level 3
+    requires the three numbers, and libsbml answers a missing one with NaN or,
+    for the scale, with the largest integer, which a power of ten does not
+    survive; a missing number is read as the value Level 2 gives it. A
+    fractional exponent of Level 3 is read as the double it is. A dimensionless
+    unit of magnitude one is no factor of the product and gives None.
+    """
+    kind = libsbml.UnitKind_toString(u.getKind())
+    exponent = u.getExponentAsDouble()
+    exponent = exponent if math.isfinite(exponent) else 1.0
+    scale = u.getScale() if u.isSetScale() else 0
+    multiplier = u.getMultiplier()
+    multiplier = multiplier if math.isfinite(multiplier) else 1.0
+    try:
+        magnitude = multiplier * 10.0**scale
+    except OverflowError:
+        magnitude = math.inf
+    if not math.isfinite(magnitude):
+        # beyond the range of a double pint cannot compact the unit, so the
+        # power of ten is written as the file gives it
+        us = f"10^{{{scale}}}*{ureg.Unit(kind):~}"
+        if abs(exponent) != 1.0:
+            us = f"({us})^{abs(exponent):g}"
+        return us, exponent
+
+    # (m * 10^s *k)^e, parsed with pint
+    term = Q_(magnitude, kind) ** abs(exponent)
+    with contextlib.suppress(KeyError):
+        term = term.to_compact()
+
+    if np.isclose(term.magnitude, 1.0):
+        term = Q_(1, term.units)
+
+    us = f"{term:~}"  # short formating
+    if us == "1":
+        return None
+    # handle min and hr
+    us = us.replace("60.0 s", "1 min")
+    us = us.replace("3600.0 s", "1 hr")
+    us = us.replace("3.6 ks", "1 hr")
+    us = us.replace("86.4 ks", "1 day")
+    us = us.replace("10.0 mm", "1 cm")
+
+    # remove 1.0 prefixes
+    us = us.replace("1 ", "")
+    # exponent
+    us = us.replace(" ** ", "^")
+    return us, exponent
 
 
 def udef_to_string(
@@ -58,42 +120,18 @@ def udef_to_string(
     # collect nominators and denominators
     nom: str = ""
     denom: str = ""
+    dimensionless = False
     if ud:
         for u in ud.getListOfUnits():
-            m = u.getMultiplier()
-            s: int = u.getScale()
-            e = u.getExponent()
-            k = libsbml.UnitKind_toString(u.getKind())
-
-            # (m * 10^s *k)^e
-            # parse with pint
-            term = Q_(float(m) * 10**s, k) ** float(abs(e))
-            with contextlib.suppress(KeyError):
-                term = term.to_compact()
-
-            if np.isclose(term.magnitude, 1.0):
-                term = Q_(1, term.units)
-
-            us = f"{term:~}"  # short formating
-            # handle min and hr
-            us = us.replace("60.0 s", "1 min")
-            us = us.replace("3600.0 s", "1 hr")
-            us = us.replace("3.6 ks", "1 hr")
-            us = us.replace("86.4 ks", "1 day")
-            us = us.replace("10.0 mm", "1 cm")
-
-            # remove 1.0 prefixes
-            us = us.replace("1 ", "")
-            # exponent
-            us = us.replace(" ** ", "^")
-
-            if e >= 0.0:
+            factor = _factor(u)
+            if factor is None:
+                dimensionless = True
+                continue
+            us, exponent = factor
+            if exponent >= 0.0:
                 nom = us if nom == "" else f"{nom}*{us}"
             else:
                 denom = us if denom == "" else f"{denom}*{us}"
-
-    else:
-        nom = "-"
 
     nom = nom.replace("*", " \\cdot ")
     denom = denom.replace("*", " \\cdot ")
@@ -104,6 +142,6 @@ def udef_to_string(
     elif denom:
         ustr = f"\\frac{{1}}{{{denom}}}"
     else:
-        ustr = "-"
+        ustr = DIMENSIONLESS if dimensionless else "-"
 
     return "-" if ustr == "1" else ustr

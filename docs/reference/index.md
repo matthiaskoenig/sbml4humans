@@ -27,6 +27,9 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Modifier species reference](modifierspeciesreference.md) | the participation of a species in a reaction as a modifier |
 | [Kinetic law](kineticlaw.md) | the formula which gives the speed of a reaction |
 | [Local parameter](localparameter.md) | a named value which only one kinetic law uses |
+| [Trigger](trigger.md) | the condition of an event, whose change from false to true fires it |
+| [Priority](priority.md) | the formula which orders an event against the other events of the same moment |
+| [Delay](delay.md) | the formula which gives the time between the trigger of an event and its execution |
 | [Event assignment](eventassignment.md) | the new value an event gives to one element of the model |
 
 ## Hierarchical models (comp)
@@ -37,6 +40,10 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [External model definition](externalmodeldefinition.md) | a model of another SBML file which this document can instantiate |
 | [Submodel](submodel.md) | the instantiation of another model inside this model |
 | [Port](port.md) | an element of the model which other models are meant to connect to |
+| [Reference](sbaseref.md) | a link of a chain which reaches into a submodel of a submodel |
+| [Deletion](deletion.md) | an element which is removed from a submodel before it is instantiated |
+| [Replaced element](replacedelement.md) | an element of a submodel which the element carrying it takes the place of |
+| [Replaced by](replacedby.md) | the element of a submodel which takes the place of the element carrying it |
 
 ## Flux balance constraints (fbc)
 
@@ -45,6 +52,26 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Flux Balance Constraints (fbc)](fbc.md) | the package which describes a constraint based model |
 | [Gene product](geneproduct.md) | a gene or one of its products which the reactions of the model depend on |
 | [Objective](objective.md) | the function a flux balance analysis maximises or minimises |
+| [Flux objective](fluxobjective.md) | one term of an objective: a reaction weighted by a coefficient |
+| [Flux bound](fluxbound.md) | a constraint on the flux of a reaction, as fbc Version 1 writes it |
+| [User defined constraint](userdefinedconstraint.md) | a constraint over a combination of fluxes and parameters, added in Version 3 |
+| [User defined constraint component](userdefinedconstraintcomponent.md) | one weighted variable of a user defined constraint |
+| [Gene product association](geneproductassociation.md) | the genes a reaction needs, as the tree of operators over them |
+| [And](and.md) | the associations below it are all needed at once |
+| [Or](or.md) | one of the associations below it suffices |
+| [Gene product reference](geneproductref.md) | the leaf of an association: one gene product the reaction depends on |
+
+## Qualitative models (qual)
+
+| element | meaning |
+| --- | --- |
+| [Qualitative Models (qual)](qual.md) | the package which describes a model whose entities carry a level |
+| [Qualitative species](qualitativespecies.md) | an entity of a qualitative model, which carries a level instead of an amount |
+| [Transition](transition.md) | what the level of a qualitative species becomes, and under which condition |
+| [Input](input.md) | a qualitative species a transition reads, with the sign of its influence |
+| [Output](output.md) | a qualitative species a transition changes, with the effect it has on it |
+| [Function term](functionterm.md) | one row of the transition table: a condition and the level it results in |
+| [Default term](defaultterm.md) | the level of a transition in every state no function term covers |
 
 ## Distributions (distrib)
 
@@ -52,3 +79,5 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | --- | --- |
 | [Distributions (distrib)](distrib.md) | the package which records the uncertainty of a value |
 | [Uncertainty](uncertainty.md) | a set of statistical measures of the value of an element |
+| [Uncert parameter](uncertparameter.md) | one statistical measure of an uncertainty |
+| [Uncert span](uncertspan.md) | a measure of an uncertainty which is an interval |

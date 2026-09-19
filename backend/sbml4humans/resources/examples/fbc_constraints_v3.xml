@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version3" level="3" version="1" fbc:required="false">
+  <model metaid="meta_fbc_constraints_v3" id="fbc_constraints_v3" name="Constraints of fbc Version 3" substanceUnits="mmole" timeUnits="hr" volumeUnits="litre" extentUnits="mmole" fbc:strict="false">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <p>Example of what the third version of the fbc package adds to a constraint based model.</p>
+        <p>A user defined constraint bounds a linear combination of fluxes which the stoichiometry of the network does not couple: <code>ratio</code> holds the flux of <code>v2</code> at twice the flux of <code>v1</code>, and <code>budget</code> weighs a reaction against a parameter which a simulation may change.</p>
+        <p>A flux objective says whether it enters the objective function linearly or quadratically, and a quadratic one may name a second reaction, so that the product of two fluxes is optimised. The charge of a species is a double here and not an integer, because a pseudoisomer carries the average charge of the species it stands for.</p>
+        <p>Key value pairs are the controlled annotation of the package: a key, its value and the address at which the key is defined, written on any element which needs metadata that no other attribute of SBML holds.</p>
+      </body>
+    </notes>
+    <annotation>
+      <listOfKeyValuePairs xmlns="http://sbml.org/fbc/keyvaluepair">
+        <keyValuePair key="reconstruction" value="manual" uri="https://sbml.org/fbc/keyvaluepair"/>
+        <keyValuePair key="solver" value="glpk"/>
+      </listOfKeyValuePairs>
+    </annotation>
+    <listOfUnitDefinitions>
+      <unitDefinition id="hr" name="hour">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="0" multiplier="3600"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole" name="mmole">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole_per_hr" name="mmole per hour">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="0" multiplier="3600"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="cell" name="cell" spatialDimensions="3" size="1" units="litre" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="glc" name="glucose" compartment="cell" initialConcentration="5" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false" fbc:chemicalFormula="C6H12O6" fbc:charge="0"/>
+      <species id="pi" name="phosphate pool" compartment="cell" initialConcentration="1" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false" fbc:chemicalFormula="HO4P" fbc:charge="-1.5"/>
+      <species id="biomass" name="biomass" compartment="cell" initialConcentration="0" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter sboTerm="SBO:0000625" id="lb" name="default lower bound" value="-1000" units="mmole_per_hr" constant="true"/>
+      <parameter sboTerm="SBO:0000625" id="ub" name="default upper bound" value="1000" units="mmole_per_hr" constant="true"/>
+      <parameter sboTerm="SBO:0000625" id="zero" name="zero bound" value="0" units="mmole_per_hr" constant="true"/>
+      <parameter id="ratio_lb" name="lower bound of the ratio constraint" value="0" units="mmole_per_hr" constant="true"/>
+      <parameter id="ratio_ub" name="upper bound of the ratio constraint" value="0" units="mmole_per_hr" constant="true"/>
+      <parameter id="budget_lb" name="lower bound of the budget constraint" value="0" units="mmole_per_hr" constant="true"/>
+      <parameter id="budget_ub" name="upper bound of the budget constraint" value="10" units="mmole_per_hr" constant="true"/>
+      <parameter id="c_one" name="coefficient one" value="1" units="dimensionless" constant="true"/>
+      <parameter id="c_two" name="coefficient two" value="2" units="dimensionless" constant="true"/>
+      <parameter id="maintenance" name="maintenance demand" value="1" units="mmole_per_hr" constant="false">
+        <annotation>
+          <listOfKeyValuePairs xmlns="http://sbml.org/fbc/keyvaluepair">
+            <keyValuePair key="source" value="measured" uri="https://sbml.org/fbc/keyvaluepair"/>
+          </listOfKeyValuePairs>
+        </annotation>
+      </parameter>
+    </listOfParameters>
+    <listOfReactions>
+      <reaction id="v1" name="uptake" reversible="false" fast="false" compartment="cell" fbc:lowerFluxBound="zero" fbc:upperFluxBound="ub">
+        <listOfReactants>
+          <speciesReference species="glc" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="pi" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <fbc:geneProductAssociation fbc:id="gpa_v1" fbc:name="association of the uptake">
+          <fbc:or>
+            <fbc:and>
+              <fbc:geneProductRef fbc:geneProduct="g_ptsG"/>
+              <fbc:geneProductRef fbc:geneProduct="g_ptsH"/>
+            </fbc:and>
+            <fbc:geneProductRef fbc:id="ref_galP" fbc:geneProduct="g_galP"/>
+          </fbc:or>
+        </fbc:geneProductAssociation>
+      </reaction>
+      <reaction id="v2" name="growth" reversible="false" fast="false" compartment="cell" fbc:lowerFluxBound="zero" fbc:upperFluxBound="ub">
+        <listOfReactants>
+          <speciesReference species="pi" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="biomass" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <fbc:geneProductAssociation>
+          <fbc:geneProductRef fbc:geneProduct="g_galP"/>
+        </fbc:geneProductAssociation>
+      </reaction>
+      <reaction id="EX_glc" name="glucose exchange" reversible="true" fast="false" fbc:lowerFluxBound="lb" fbc:upperFluxBound="ub">
+        <listOfProducts>
+          <speciesReference species="glc" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="EX_biomass" name="biomass exchange" reversible="false" fast="false" fbc:lowerFluxBound="zero" fbc:upperFluxBound="ub">
+        <listOfReactants>
+          <speciesReference species="biomass" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+      </reaction>
+    </listOfReactions>
+    <fbc:listOfObjectives fbc:activeObjective="growth_max">
+      <fbc:objective fbc:id="growth_max" fbc:name="maximal growth" fbc:type="maximize">
+        <fbc:listOfFluxObjectives>
+          <fbc:fluxObjective fbc:id="fo_biomass" fbc:name="the biomass term" fbc:reaction="EX_biomass" fbc:coefficient="1" fbc:variableType="linear"/>
+        </fbc:listOfFluxObjectives>
+      </fbc:objective>
+      <fbc:objective fbc:id="uptake_min" fbc:name="minimal squared uptake" fbc:type="minimize">
+        <fbc:listOfFluxObjectives>
+          <fbc:fluxObjective fbc:id="fo_uptake" fbc:name="the quadratic uptake term" fbc:reaction="v1" fbc:reaction2="v2" fbc:coefficient="4" fbc:variableType="quadratic"/>
+        </fbc:listOfFluxObjectives>
+      </fbc:objective>
+    </fbc:listOfObjectives>
+    <fbc:listOfGeneProducts>
+      <fbc:geneProduct fbc:id="g_ptsG" fbc:name="glucose specific PTS enzyme IICB" fbc:label="b1101"/>
+      <fbc:geneProduct fbc:id="g_ptsH" fbc:name="phosphocarrier protein HPr" fbc:label="b2415"/>
+      <fbc:geneProduct fbc:id="g_galP" fbc:name="galactose proton symporter" fbc:label="b2943"/>
+    </fbc:listOfGeneProducts>
+    <fbc:listOfUserDefinedConstraints>
+      <fbc:userDefinedConstraint metaid="meta_ratio" fbc:id="ratio" fbc:name="the growth is twice the uptake" fbc:lowerBound="ratio_lb" fbc:upperBound="ratio_ub">
+        <notes>
+          <body xmlns="http://www.w3.org/1999/xhtml">
+            <p>2 v1 - v2 = 0, a constraint the stoichiometry of the network does not impose.</p>
+          </body>
+        </notes>
+        <fbc:listOfUserDefinedConstraintComponents>
+          <fbc:userDefinedConstraintComponent fbc:id="ratio_v1" fbc:name="twice the uptake" fbc:variable="v1" fbc:coefficient="c_two" fbc:variableType="linear"/>
+          <fbc:userDefinedConstraintComponent fbc:id="ratio_v2" fbc:variable="v2" fbc:coefficient="c_one" fbc:variableType="linear"/>
+        </fbc:listOfUserDefinedConstraintComponents>
+      </fbc:userDefinedConstraint>
+      <fbc:userDefinedConstraint fbc:id="budget" fbc:name="the maintenance demand of the growth" fbc:lowerBound="budget_lb" fbc:upperBound="budget_ub">
+        <fbc:listOfUserDefinedConstraintComponents>
+          <fbc:userDefinedConstraintComponent fbc:id="budget_v2" fbc:variable="v2" fbc:variable2="maintenance" fbc:coefficient="c_one" fbc:variableType="quadratic"/>
+        </fbc:listOfUserDefinedConstraintComponents>
+      </fbc:userDefinedConstraint>
+    </fbc:listOfUserDefinedConstraints>
+  </model>
+</sbml>

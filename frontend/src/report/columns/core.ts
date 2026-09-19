@@ -9,7 +9,17 @@ const DERIVED_UNITS: ColumnDef = {
   latexField: "derivedUnits",
 };
 
-type CoreType = Exclude<ElementType, "Submodel" | "Port" | "GeneProduct" | "Objective">;
+type CoreType = Exclude<
+  ElementType,
+  | "Submodel"
+  | "Port"
+  | "GeneProduct"
+  | "Objective"
+  | "FluxBound"
+  | "UserDefinedConstraint"
+  | "QualitativeSpecies"
+  | "Transition"
+>;
 
 export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
   FunctionDefinition: [...ID_COLUMNS, MATH],
@@ -28,14 +38,22 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
   Species: [
     ...ID_COLUMNS,
     { field: "compartment", header: "compartment", kind: "link", link: "compartment" },
-    { field: "initialAmount", header: "initial amount", kind: "number" },
-    { field: "initialConcentration", header: "initial concentration", kind: "number" },
+    { field: "fbc.chemicalFormula", header: "formula", kind: "text", optional: true },
+    { field: "fbc.charge", header: "charge", kind: "number", optional: true },
+    { field: "initialAmount", header: "initial amount", kind: "number", optional: true },
+    {
+      field: "initialConcentration",
+      header: "initial concentration",
+      kind: "number",
+      optional: true,
+    },
     {
       field: "substanceUnits",
       header: "substance units",
       kind: "link",
       link: "units",
       latexField: "unitsLatex",
+      optional: true,
     },
     { field: "hasOnlySubstanceUnits", header: "only substance units", kind: "boolean" },
     { field: "boundaryCondition", header: "boundary condition", kind: "boolean" },
@@ -68,19 +86,46 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
     DERIVED_UNITS,
   ],
   AlgebraicRule: [...ID_COLUMNS, MATH, DERIVED_UNITS],
-  Constraint: [...ID_COLUMNS, MATH, { field: "message", header: "message", kind: "text" }],
+  Constraint: [...ID_COLUMNS, MATH, { field: "message", header: "message", kind: "xhtml" }],
   Reaction: [
     ...ID_COLUMNS,
     { field: "reversible", header: "reversible", kind: "boolean" },
-    { field: "fast", header: "fast", kind: "boolean" },
-    { field: "compartment", header: "compartment", kind: "link", link: "compartment" },
+    { field: "fast", header: "fast", kind: "boolean", onlyWhenTrue: true },
+    {
+      field: "compartment",
+      header: "compartment",
+      kind: "link",
+      link: "compartment",
+      optional: true,
+    },
     { field: "equation", header: "equation", kind: "text" },
-    { field: "kineticLaw.math", header: "kinetic law", kind: "math" },
+    {
+      field: "fbc.lowerFluxBound",
+      header: "lower bound",
+      kind: "link",
+      link: "lowerFluxBound",
+      optional: true,
+    },
+    {
+      field: "fbc.upperFluxBound",
+      header: "upper bound",
+      kind: "link",
+      link: "upperFluxBound",
+      optional: true,
+    },
+    {
+      field: "fbc.geneProductAssociation",
+      header: "gene association",
+      kind: "geneAssociation",
+      optional: true,
+    },
+    { field: "kineticLaw.math", header: "kinetic law", kind: "math", optional: true },
     {
       field: "kineticLaw.derivedUnits",
       header: "derived units",
       kind: "units",
       latexField: "kineticLaw.derivedUnits",
+      optional: true,
     },
   ],
   Event: [
@@ -89,8 +134,8 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnDef[]>> = {
     { field: "trigger.math", header: "trigger", kind: "math" },
     { field: "trigger.persistent", header: "persistent", kind: "boolean" },
     { field: "trigger.initialValue", header: "initial value", kind: "boolean" },
-    { field: "priority", header: "priority", kind: "math" },
-    { field: "delay", header: "delay", kind: "math" },
+    { field: "priority.math", header: "priority", kind: "math" },
+    { field: "delay.math", header: "delay", kind: "math" },
     { field: "listOfEventAssignments", header: "assignments", kind: "assignments" },
   ],
 };

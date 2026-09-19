@@ -6,16 +6,50 @@ uses snake_case, the JSON of the frontend camelCase (`by_alias=True`).
 """
 
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    SerializerFunctionWrapHandler,
+    WithJsonSchema,
+    model_serializer,
+)
 from pydantic.alias_generators import to_camel
 
 
 class ReportModel(BaseModel):
-    """Base of every class of the report: camelCase aliases in JSON."""
+    """Base of every class of the report: camelCase aliases in JSON.
 
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+    `ser_json_inf_nan` writes the three constants of a double which JSON has no
+    literal for as the strings pydantic defines for them, `"Infinity"`,
+    `"-Infinity"` and `"NaN"`. The default of pydantic is `null`, which makes
+    an unbounded flux, a value which is not a number and an attribute the file
+    does not set at all the same three characters in a report.
+    """
+
+    model_config = ConfigDict(
+        alias_generator=to_camel, populate_by_name=True, ser_json_inf_nan="strings"
+    )
+
+
+# a double of SBML, which may be infinite or not a number (core §3.1.5). The
+# schema says what the api sends, so that the generated types of the frontend
+# carry the constants as well and every renderer of a number has to read them.
+Double = Annotated[
+    float,
+    WithJsonSchema(
+        {
+            "anyOf": [
+                {"type": "number"},
+                {"const": "Infinity"},
+                {"const": "-Infinity"},
+                {"const": "NaN"},
+            ]
+        }
+    ),
+]
 
 
 # -------------------------------------------------------------------------------------
@@ -29,10 +63,15 @@ class Math(ReportModel):
 
 
 class CVTerm(ReportModel):
-    """An annotation: a qualifier (BQB or BQM of pymetadata) with its resources."""
+    """An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.
+
+    A term can carry terms of its own, which qualify it further: the evidence
+    for a relation or the modification of a protein (core §6).
+    """
 
     qualifier: str
     resources: list[str]
+    nested: list[CVTerm] = Field(default_factory=list)
 
 
 class Creator(ReportModel):
@@ -52,41 +91,11 @@ class ModelHistory(ReportModel):
     modified_dates: list[str] = Field(default_factory=list)
 
 
-class SBaseRef(ReportModel):
-    """A comp reference to an element by port, id, unit or metaId."""
-
-    port_ref: str | None = None
-    id_ref: str | None = None
-    unit_ref: str | None = None
-    meta_id_ref: str | None = None
-
-
-class ReplacedBy(ReportModel):
-    """The element of a submodel which replaces this element."""
-
-    submodel_ref: str
-    sbase_ref: SBaseRef
-
-
-class ReplacedElement(ReportModel):
-    """An element of a submodel which this element replaces."""
-
-    submodel_ref: str
-    sbase_ref: SBaseRef
-
-
-class CompSBase(ReportModel):
-    """The comp extension of an element."""
-
-    replaced_by: ReplacedBy | None = None
-    replaced_elements: list[ReplacedElement] = Field(default_factory=list)
-
-
 class ConversionFactor(ReportModel):
     """The conversion factor parameter of a model or species."""
 
     sid: str
-    value: float | None = None
+    value: Double | None = None
     units: str | None = None
 
 
@@ -115,39 +124,158 @@ class SBase(ReportModel):
     xml: str | None = None
     comp: CompSBase | None = None
     uncertainties: list[Uncertainty] = Field(default_factory=list)
+    key_value_pairs: list[KeyValuePair] = Field(default_factory=list)
 
 
-class UncertParameter(ReportModel):
-    """A parameter of a distrib uncertainty."""
+class KeyValuePair(ReportModel):
+    """One entry of the controlled annotation of fbc Version 3 (fbc §3.17).
 
-    var: str | None = None
-    value: float | None = None
-    units: str | None = None
+    A key value pair carries metadata which no attribute of SBML holds, and
+    libsbml reads it from the annotation of any element. It is a nested object
+    of that element and not an element of the report: nothing references it, it
+    references nothing, and libsbml does not read the identifier and the name
+    the specification allows it back from a file.
+    """
+
+    key: str | None = None
+    value: str | None = None
+    uri: str | None = None
+
+
+class UncertParameter(SBase):
+    """One statistical measure of a distrib uncertainty (distrib §3.11).
+
+    The `type` says which statistic the parameter describes, and the statistic
+    is given either as a number in `value` or as the element `var` names. A
+    parameter of the type `distribution` or `externalParameter` describes
+    itself by its `definition_url`, its math and the parameters nested in it.
+    """
+
+    sbml_type: Literal["UncertParameter"] = "UncertParameter"
     type: str | None = None
+    var: str | None = None
+    value: Double | None = None
+    units: str | None = None
     definition_url: str | None = None
     math: Math | None = None
+    uncert_parameters: list[UncertMeasure] = Field(default_factory=list)
+
+
+class UncertSpan(UncertParameter):
+    """An uncertainty which is an interval (distrib §3.12).
+
+    The four kinds of uncertainty which are a span, the range, the confidence
+    interval, the credible interval and the interquartile range, carry their
+    two ends here instead of the single `value` of an `UncertParameter`: each
+    end as a number or as the element the `var` of that end names.
+    """
+
+    sbml_type: Literal["UncertSpan"] = "UncertSpan"
+    value_lower: Double | None = None
+    value_upper: Double | None = None
+    var_lower: str | None = None
+    var_upper: str | None = None
+
+
+# a measure of an uncertainty is a parameter or the span a parameter becomes
+# when the statistic is an interval (distrib §3.11.1). The span comes first,
+# because it validates as the parameter it derives from as well.
+UncertMeasure = UncertSpan | UncertParameter
 
 
 class Uncertainty(SBase):
     """A distrib uncertainty of an element."""
 
     sbml_type: Literal["Uncertainty"] = "Uncertainty"
-    uncert_parameters: list[UncertParameter] = Field(default_factory=list)
+    uncert_parameters: list[UncertMeasure] = Field(default_factory=list)
 
 
+# -------------------------------------------------------------------------------------
+# the references of comp, which every element carries and which are `SBase`
+# -------------------------------------------------------------------------------------
+class SBaseRefFields(SBase):
+    """The fields of a comp reference to an element (comp §3.7).
+
+    A reference names one element of a model by its port, its id, its unit id
+    or its meta id, and may carry a reference of its own which reaches into a
+    submodel of that model. `Port`, `Deletion`, `ReplacedElement` and
+    `ReplacedBy` derive from `SBaseRef` in the specification, so they carry
+    these fields next to the attributes of their own class. The class holds the
+    fields alone and leaves `sbml_type` to the classes below it, each of which
+    pins it to its own name.
+    """
+
+    port_ref: str | None = None
+    id_ref: str | None = None
+    unit_ref: str | None = None
+    meta_id_ref: str | None = None
+    sbase_ref: SBaseRef | None = None
+
+
+class SBaseRef(SBaseRefFields):
+    """A link of a reference chain, which names an element of a submodel.
+
+    The chain starts at a port, a deletion, a replaced element or a replaced
+    by, whose reference names a submodel; every further link names an element
+    of the model that submodel instantiates (comp §3.7.2).
+    """
+
+    sbml_type: Literal["SBaseRef"] = "SBaseRef"
+
+
+class Deletion(SBaseRefFields):
+    """An element of a submodel which is removed before it is instantiated."""
+
+    sbml_type: Literal["Deletion"] = "Deletion"
+
+
+class ReplacedBy(SBaseRefFields):
+    """The element of a submodel which replaces this element."""
+
+    sbml_type: Literal["ReplacedBy"] = "ReplacedBy"
+    submodel_ref: str
+
+
+class ReplacedElement(SBaseRefFields):
+    """An element of a submodel which this element replaces."""
+
+    sbml_type: Literal["ReplacedElement"] = "ReplacedElement"
+    submodel_ref: str
+    deletion: str | None = None
+    conversion_factor: str | None = None
+
+
+class CompSBase(ReportModel):
+    """The comp extension of an element."""
+
+    replaced_by: ReplacedBy | None = None
+    replaced_elements: list[ReplacedElement] = Field(default_factory=list)
+
+
+SBaseRefFields.model_rebuild()
 SBase.model_rebuild()
+# the two classes of distrib carry the comp extension of an `SBase` and the
+# parameters nested in them, so both are built once every name they use exists
+UncertParameter.model_rebuild()
+UncertSpan.model_rebuild()
 
 
 # -------------------------------------------------------------------------------------
 # core objects
 # -------------------------------------------------------------------------------------
 class SBMLDocument(SBase):
-    """The document: level, version and the packages it uses."""
+    """The document: level, version and the packages it uses.
+
+    `annotation_xml` takes the place of the `xml` of every other element, which
+    is not part of the report for the document and the model because it is the
+    whole file.
+    """
 
     sbml_type: Literal["SBMLDocument"] = "SBMLDocument"
     level: int
     version: int
     packages: list[Package] = Field(default_factory=list)
+    annotation_xml: str | None = None
 
 
 class FunctionDefinition(SBase):
@@ -157,19 +285,34 @@ class FunctionDefinition(SBase):
     math: Math | None = None
 
 
+class Unit(ReportModel):
+    """One factor of a unit definition: a base unit with exponent, scale and multiplier.
+
+    A unit carries no identifier and nothing in SBML refers to it, so it is a
+    nested object of its definition and not an element of the report with a
+    primary key of its own.
+    """
+
+    kind: str | None = None
+    exponent: Double | None = None
+    scale: int | None = None
+    multiplier: Double | None = None
+
+
 class UnitDefinition(SBase):
-    """A unit definition with its rendered units."""
+    """A unit definition with its units and their rendered formula."""
 
     sbml_type: Literal["UnitDefinition"] = "UnitDefinition"
     units_latex: str | None = None
+    list_of_units: list[Unit] = Field(default_factory=list)
 
 
 class Compartment(SBase):
     """A compartment."""
 
     sbml_type: Literal["Compartment"] = "Compartment"
-    spatial_dimensions: float | None = None
-    size: float | None = None
+    spatial_dimensions: Double | None = None
+    size: Double | None = None
     constant: bool | None = None
     units: str | None = None
     units_latex: str | None = None
@@ -177,10 +320,14 @@ class Compartment(SBase):
 
 
 class SpeciesFbc(ReportModel):
-    """The fbc extension of a species."""
+    """The fbc extension of a species.
+
+    The charge is a double, which is what fbc Version 3 made of the integer of
+    the versions before it (fbc §3.4).
+    """
 
     chemical_formula: str | None = None
-    charge: int | None = None
+    charge: Double | None = None
 
 
 class Species(SBase):
@@ -188,8 +335,8 @@ class Species(SBase):
 
     sbml_type: Literal["Species"] = "Species"
     compartment: str
-    initial_amount: float | None = None
-    initial_concentration: float | None = None
+    initial_amount: Double | None = None
+    initial_concentration: Double | None = None
     substance_units: str | None = None
     has_only_substance_units: bool | None = None
     boundary_condition: bool | None = None
@@ -204,7 +351,7 @@ class Parameter(SBase):
     """A global parameter."""
 
     sbml_type: Literal["Parameter"] = "Parameter"
-    value: float | None = None
+    value: Double | None = None
     constant: bool | None = None
     units: str | None = None
     units_latex: str | None = None
@@ -264,7 +411,7 @@ class SpeciesReference(SBase):
 
     sbml_type: Literal["SpeciesReference"] = "SpeciesReference"
     species: str
-    stoichiometry: float | None = None
+    stoichiometry: Double | None = None
     constant: bool | None = None
 
 
@@ -279,7 +426,7 @@ class LocalParameter(SBase):
     """A local parameter of a kinetic law."""
 
     sbml_type: Literal["LocalParameter"] = "LocalParameter"
-    value: float | None = None
+    value: Double | None = None
     units: str | None = None
     units_latex: str | None = None
     derived_units: str | None = None
@@ -295,16 +442,11 @@ class KineticLaw(SBase):
 
 
 class ReactionFbc(ReportModel):
-    """The fbc extension of a reaction.
-
-    `gene_products` are the ids referenced by the association, so that the
-    link graph does not parse the infix string.
-    """
+    """The fbc extension of a reaction."""
 
     lower_flux_bound: str | None = None
     upper_flux_bound: str | None = None
-    gene_product_association: str | None = None
-    gene_products: list[str] = Field(default_factory=list)
+    gene_product_association: GeneProductAssociation | None = None
 
 
 class Reaction(SBase):
@@ -327,12 +469,27 @@ class Reaction(SBase):
     fbc: ReactionFbc | None = None
 
 
-class Trigger(ReportModel):
-    """The trigger of an event."""
+class Trigger(SBase):
+    """The trigger of an event: the condition which fires it."""
 
+    sbml_type: Literal["Trigger"] = "Trigger"
     math: Math | None = None
     initial_value: bool | None = None
     persistent: bool | None = None
+
+
+class Priority(SBase):
+    """The priority of an event: the order of the events of one moment."""
+
+    sbml_type: Literal["Priority"] = "Priority"
+    math: Math | None = None
+
+
+class Delay(SBase):
+    """The delay of an event: the time between the trigger and the execution."""
+
+    sbml_type: Literal["Delay"] = "Delay"
+    math: Math | None = None
 
 
 class EventAssignment(SBase):
@@ -349,8 +506,8 @@ class Event(SBase):
     sbml_type: Literal["Event"] = "Event"
     use_values_from_trigger_time: bool | None = None
     trigger: Trigger | None = None
-    priority: Math | None = None
-    delay: Math | None = None
+    priority: Priority | None = None
+    delay: Delay | None = None
     list_of_event_assignments: list[EventAssignment] = Field(default_factory=list)
 
 
@@ -364,17 +521,13 @@ class Submodel(SBase):
     model_ref: str
     time_conversion_factor: str | None = None
     extent_conversion_factor: str | None = None
-    list_of_deletions: list[SBaseRef] = Field(default_factory=list)
+    list_of_deletions: list[Deletion] = Field(default_factory=list)
 
 
-class Port(SBase):
+class Port(SBaseRefFields):
     """A comp port referencing an element of the model."""
 
     sbml_type: Literal["Port"] = "Port"
-    port_ref: str | None = None
-    id_ref: str | None = None
-    unit_ref: str | None = None
-    meta_id_ref: str | None = None
 
 
 class ExternalModelDefinition(SBase):
@@ -383,6 +536,7 @@ class ExternalModelDefinition(SBase):
     sbml_type: Literal["ExternalModelDefinition"] = "ExternalModelDefinition"
     source: str
     model_ref: str | None = None
+    md5: str | None = None
 
 
 # -------------------------------------------------------------------------------------
@@ -396,11 +550,92 @@ class GeneProduct(SBase):
     associated_species: str | None = None
 
 
-class FluxObjective(ReportModel):
-    """A weighted reaction of an objective."""
+class AssociationNode(SBase):
+    """An element of a gene product association, written without its empty fields.
 
+    The association trees are the bulk of a genome scale model, 33000 nodes of
+    Recon3D, and their nodes carry none of the attributes of `SBase` in a real
+    file, whose nulls and empty lists were 4.5 MB of its report. Every field
+    left out is optional in the schema and reads back as the default it is.
+    The class holds the serialisation alone and leaves `sbml_type` to the
+    classes below it, the way `SBaseRefFields` does.
+    """
+
+    @model_serializer(mode="wrap")
+    def _leave_out_empty_fields(
+        self, handler: SerializerFunctionWrapHandler
+    ) -> dict[str, Any]:
+        """The fields of the node which carry a value."""
+        return {
+            key: value
+            for key, value in handler(self).items()
+            if value is not None and value != []
+        }
+
+
+class GeneProductRef(AssociationNode):
+    """A leaf of a gene product association: the gene product it names."""
+
+    sbml_type: Literal["GeneProductRef"] = "GeneProductRef"
+    gene_product: str
+
+
+class And(AssociationNode):
+    """Associations which are all needed at once: the subunits of a complex."""
+
+    sbml_type: Literal["And"] = "And"
+    associations: list[Association] = Field(default_factory=list)
+
+
+class Or(AssociationNode):
+    """Associations of which one suffices: the isozymes of a reaction."""
+
+    sbml_type: Literal["Or"] = "Or"
+    associations: list[Association] = Field(default_factory=list)
+
+
+# an association is a gene product, a conjunction or a disjunction of
+# associations, to any depth (fbc §3.10). The union carries no discriminator:
+# it is recursive, and pydantic cannot apply one to a reference which is still
+# being built.
+Association = GeneProductRef | And | Or
+
+
+class GeneProductAssociation(AssociationNode):
+    """The genes under which a reaction can run, as the tree of fbc §3.9."""
+
+    sbml_type: Literal["GeneProductAssociation"] = "GeneProductAssociation"
+    association: Association | None = None
+
+
+And.model_rebuild()
+Or.model_rebuild()
+ReactionFbc.model_rebuild()
+
+
+class FluxObjective(SBase):
+    """One term of an objective: a reaction weighted by a coefficient."""
+
+    sbml_type: Literal["FluxObjective"] = "FluxObjective"
     reaction: str
-    coefficient: float | None = None
+    reaction2: str | None = None
+    coefficient: Double | None = None
+    variable_type: str | None = None
+
+
+class FluxBound(SBase):
+    """A bound of the flux of a reaction, the constraint of fbc Version 1.
+
+    Version 2 replaced it by the `lowerFluxBound` and `upperFluxBound`
+    attributes of a reaction, which name a parameter instead of holding a
+    value, so a bound of a Version 1 document is an element of the report and
+    of no later one.
+    """
+
+    sbml_type: Literal["FluxBound"] = "FluxBound"
+    reaction: str | None = None
+    operation: str | None = None
+    value: Double | None = None
 
 
 class Objective(SBase):
@@ -411,14 +646,121 @@ class Objective(SBase):
     list_of_flux_objectives: list[FluxObjective] = Field(default_factory=list)
 
 
+class UserDefinedConstraintComponent(SBase):
+    """One term of a user defined constraint (fbc §3.15)."""
+
+    sbml_type: Literal["UserDefinedConstraintComponent"] = (
+        "UserDefinedConstraintComponent"
+    )
+    variable: str | None = None
+    variable2: str | None = None
+    coefficient: str | None = None
+    variable_type: str | None = None
+
+
+class UserDefinedConstraint(SBase):
+    """A constraint of fbc Version 3 over a combination of model variables."""
+
+    sbml_type: Literal["UserDefinedConstraint"] = "UserDefinedConstraint"
+    lower_bound: str | None = None
+    upper_bound: str | None = None
+    list_of_user_defined_constraint_components: list[UserDefinedConstraintComponent] = (
+        Field(default_factory=list)
+    )
+
+
+# -------------------------------------------------------------------------------------
+# qual
+# -------------------------------------------------------------------------------------
+class QualitativeSpecies(SBase):
+    """An entity of a qualitative model, which carries a level instead of an amount.
+
+    The level is a whole number between zero and `max_level`: the node of an
+    influence graph in a logical model, the place of a Petri net (qual §3.5).
+    """
+
+    sbml_type: Literal["QualitativeSpecies"] = "QualitativeSpecies"
+    compartment: str
+    constant: bool | None = None
+    initial_level: int | None = None
+    max_level: int | None = None
+
+
+class Input(SBase):
+    """A qualitative species a transition reads, with the sign of its influence."""
+
+    sbml_type: Literal["Input"] = "Input"
+    qualitative_species: str
+    threshold_level: int | None = None
+    transition_effect: str | None = None
+    sign: str | None = None
+
+
+class Output(SBase):
+    """A qualitative species a transition changes, with the effect it has on it."""
+
+    sbml_type: Literal["Output"] = "Output"
+    qualitative_species: str
+    output_level: int | None = None
+    transition_effect: str | None = None
+
+
+class FunctionTerm(SBase):
+    """One row of the transition table: a condition and the level it results in."""
+
+    sbml_type: Literal["FunctionTerm"] = "FunctionTerm"
+    result_level: int | None = None
+    math: Math | None = None
+
+
+class DefaultTerm(SBase):
+    """The level of a transition in every state no function term covers."""
+
+    sbml_type: Literal["DefaultTerm"] = "DefaultTerm"
+    result_level: int | None = None
+
+
+class Transition(SBase):
+    """The dynamics of a qualitative model: what the level of a species becomes.
+
+    A transition reads the species of its inputs, writes the species of its
+    outputs and decides between them with its function terms, the first of
+    which whose condition holds gives the result level (qual §3.6).
+    """
+
+    sbml_type: Literal["Transition"] = "Transition"
+    list_of_inputs: list[Input] = Field(default_factory=list)
+    list_of_outputs: list[Output] = Field(default_factory=list)
+    list_of_function_terms: list[FunctionTerm] = Field(default_factory=list)
+    default_term: DefaultTerm | None = None
+
+
+class ModelFbc(ReportModel):
+    """The fbc extension of a model.
+
+    `strict` exists from Version 2 on and `active_objective` is the attribute
+    of the `listOfObjectives`, which the report does not carry as an object of
+    its own (fbc §3.3, §3.3.1).
+    """
+
+    strict: bool | None = None
+    active_objective: str | None = None
+
+
 # -------------------------------------------------------------------------------------
 # model and report
 # -------------------------------------------------------------------------------------
 class Model(SBase):
-    """A model or comp model definition with the lists of its elements."""
+    """A model or comp model definition with the lists of its elements.
+
+    `annotation_xml` takes the place of the `xml` of every other element, which
+    is not part of the report for the document and the model because it is the
+    whole file.
+    """
 
     sbml_type: Literal["Model"] = "Model"
     kind: Literal["model", "modelDefinition"] = "model"
+    annotation_xml: str | None = None
     substance_units: str | None = None
     substance_units_latex: str | None = None
     time_units: str | None = None
@@ -446,6 +788,13 @@ class Model(SBase):
     list_of_ports: list[Port] = Field(default_factory=list)
     list_of_gene_products: list[GeneProduct] = Field(default_factory=list)
     list_of_objectives: list[Objective] = Field(default_factory=list)
+    list_of_flux_bounds: list[FluxBound] = Field(default_factory=list)
+    list_of_user_defined_constraints: list[UserDefinedConstraint] = Field(
+        default_factory=list
+    )
+    list_of_qualitative_species: list[QualitativeSpecies] = Field(default_factory=list)
+    list_of_transitions: list[Transition] = Field(default_factory=list)
+    fbc: ModelFbc | None = None
 
 
 class Node(ReportModel):
@@ -472,18 +821,49 @@ class EdgeKind(StrEnum):
     REACTANT = "reactant"
     PRODUCT = "product"
     MODIFIER = "modifier"
+    KINETIC_LAW = "kineticLaw"
+    LOCAL_PARAMETER = "localParameter"
+    TRIGGER = "trigger"
+    PRIORITY = "priority"
+    DELAY = "delay"
+    EVENT_ASSIGNMENT = "eventAssignment"
     VARIABLE = "variable"
+    VARIABLE_2 = "variable2"
     SYMBOL = "symbol"
     UNITS = "units"
     CONVERSION_FACTOR = "conversionFactor"
+    TIME_CONVERSION_FACTOR = "timeConversionFactor"
+    EXTENT_CONVERSION_FACTOR = "extentConversionFactor"
     FLUX_BOUND = "fluxBound"
+    LOWER_FLUX_BOUND = "lowerFluxBound"
+    UPPER_FLUX_BOUND = "upperFluxBound"
     GENE_PRODUCT = "geneProduct"
+    GENE_PRODUCT_ASSOCIATION = "geneProductAssociation"
     ASSOCIATED_SPECIES = "associatedSpecies"
     FLUX_OBJECTIVE = "fluxObjective"
+    REACTION_2 = "reaction2"
+    ACTIVE_OBJECTIVE = "activeObjective"
+    LOWER_BOUND = "lowerBound"
+    UPPER_BOUND = "upperBound"
+    CONSTRAINT_COMPONENT = "constraintComponent"
+    COEFFICIENT = "coefficient"
+    INPUT = "input"
+    OUTPUT = "output"
+    FUNCTION_TERM = "functionTerm"
+    DEFAULT_TERM = "defaultTerm"
+    UNCERTAINTY = "uncertainty"
+    UNCERT_PARAMETER = "uncertParameter"
+    VAR = "var"
+    VAR_LOWER = "varLower"
+    VAR_UPPER = "varUpper"
+    MODEL = "model"
+    EXTERNAL_MODEL_DEFINITION = "externalModelDefinition"
     MODEL_REF = "modelRef"
     PORT = "port"
+    DELETION = "deletion"
     REPLACED_BY = "replacedBy"
     REPLACED_ELEMENT = "replacedElement"
+    SBASE_REF = "sBaseRef"
     MATH = "math"
 
 

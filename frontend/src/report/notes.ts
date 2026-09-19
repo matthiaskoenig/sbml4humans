@@ -10,7 +10,8 @@ purifier.addHook("afterSanitizeAttributes", (node) => {
   if (node.tagName === "IMG") node.setAttribute("referrerpolicy", "no-referrer");
 });
 
-/** Sanitises the xhtml of an SBase's notes for use with `v-html`. On top of DOMPurify's `html`
+/** Sanitises the xhtml of an SBase's notes, and of the message of a constraint, which follows
+ * the same restrictions (core §4.10.2), for use with `v-html`. On top of DOMPurify's `html`
  * profile this forbids the elements and attributes real notes do not use: `style`, the form
  * elements (`form`, `input`, `button`, `textarea`, `select`, `option`, `optgroup`, `datalist`,
  * `fieldset`, `legend`, `output`), `dialog`, `audio` and `video`, the attributes that start a

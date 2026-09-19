@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:distrib="http://www.sbml.org/sbml/level3/version1/distrib/version1" level="3" version="1" distrib:required="true">
+  <model metaid="meta_distrib_spans" id="distrib_spans" name="Uncertainty spans and distributions" substanceUnits="mmole" timeUnits="min" volumeUnits="litre" areaUnits="m2" lengthUnits="metre" extentUnits="mmole">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <p>A Michaelis Menten rate law whose parameters are measured quantities. Every measurement is recorded with the distrib package: what was measured, how well it is known and where the number comes from.</p>
+        <p>The file writes every shape the package allows. An uncertainty which is a span carries its two ends as numbers (the range of <code>Km</code>, the confidence interval of the substrate) or as references to parameters of the model (the confidence interval of <code>Km</code> in the lysate, which names <code>Km_lower</code> and <code>Km_upper</code>). An uncertainty which is a single value carries it as a number or, for the mean of <code>Vmax</code>, as a reference to the parameter <code>Vmax_mean</code>, with the units it is measured in. A distribution carries the parameters it is defined by as uncert parameters of its own, and the rate carries the distribution as math.</p>
+        <p>The parameter <code>Km</code> carries two uncertainties, one per publication, because measurements from different sources belong into different uncertainties, and the notes of each of them say where its numbers come from. An uncertainty is not restricted to a parameter: the substrate carries one and so does the assignment rule of the rate.</p>
+      </body>
+    </notes>
+    <listOfUnitDefinitions>
+      <unitDefinition id="min" name="minute">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="m2" name="meter^2">
+        <listOfUnits>
+          <unit kind="metre" exponent="2" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole" name="mmole">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole_per_l" name="mmole/l">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+          <unit kind="litre" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mmole_per_min_l" name="mmole/min/l">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="-3" multiplier="1"/>
+          <unit kind="litre" exponent="-1" scale="0" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="cell" name="cell" spatialDimensions="3" size="1" units="litre" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="S" name="substrate" compartment="cell" initialConcentration="0.5" substanceUnits="mmole" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false">
+        <distrib:listOfUncertainties>
+          <distrib:uncertainty distrib:id="u_S" distrib:name="titration of the substrate">
+            <notes>
+              <body xmlns="http://www.w3.org/1999/xhtml">
+                <p>The concentration at the start of the assay, from five titrations of the same batch.</p>
+              </body>
+            </notes>
+            <distrib:uncertParameter distrib:type="mean" distrib:value="0.5" distrib:units="mmole_per_l"/>
+            <distrib:uncertSpan distrib:type="confidenceInterval" distrib:valueLower="0.42" distrib:valueUpper="0.58" distrib:units="mmole_per_l"/>
+          </distrib:uncertainty>
+        </distrib:listOfUncertainties>
+      </species>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="Km" name="Michaelis constant" value="0.5" units="mmole_per_l" constant="true">
+        <distrib:listOfUncertainties>
+          <distrib:uncertainty distrib:id="u_Km_purified" distrib:name="Wilson 1997, purified enzyme">
+            <notes>
+              <body xmlns="http://www.w3.org/1999/xhtml">
+                <p>Twelve initial rate measurements on the purified enzyme, fitted with a hyperbola. The range is the smallest and the largest of the fitted constants.</p>
+              </body>
+            </notes>
+            <distrib:uncertParameter metaid="meta_u_Km_purified_mean" distrib:id="Km_purified_mean" distrib:name="mean of the fitted constants" distrib:type="mean" distrib:value="0.5" distrib:units="mmole_per_l">
+              <notes>
+                <body xmlns="http://www.w3.org/1999/xhtml">
+                  <p>The value the parameter of the model is set to.</p>
+                </body>
+              </notes>
+            </distrib:uncertParameter>
+            <distrib:uncertParameter distrib:type="standardDeviation" distrib:value="0.06" distrib:units="mmole_per_l"/>
+            <distrib:uncertParameter distrib:type="sampleSize" distrib:value="12"/>
+            <distrib:uncertSpan distrib:id="Km_purified_range" distrib:type="range" distrib:valueLower="0.38" distrib:valueUpper="0.63" distrib:units="mmole_per_l"/>
+          </distrib:uncertainty>
+          <distrib:uncertainty distrib:id="u_Km_lysate" distrib:name="Baker 2012, cell lysate">
+            <notes>
+              <body xmlns="http://www.w3.org/1999/xhtml">
+                <p>The same constant measured in a cell lysate, where it is larger and less certain. The ends of the confidence interval are parameters of the model, so that a simulation can sample between them.</p>
+              </body>
+            </notes>
+            <distrib:uncertParameter distrib:type="median" distrib:value="0.59" distrib:units="mmole_per_l"/>
+            <distrib:uncertSpan distrib:id="Km_lysate_ci" distrib:name="95% confidence interval" distrib:type="confidenceInterval" distrib:varLower="Km_lower" distrib:varUpper="Km_upper"/>
+          </distrib:uncertainty>
+        </distrib:listOfUncertainties>
+      </parameter>
+      <parameter id="Km_lower" name="lower end of the confidence interval of Km" value="0.41" units="mmole_per_l" constant="true"/>
+      <parameter id="Km_upper" name="upper end of the confidence interval of Km" value="0.77" units="mmole_per_l" constant="true"/>
+      <parameter id="Vmax" name="maximal rate" value="0.5" units="mmole_per_min_l" constant="true">
+        <distrib:listOfUncertainties>
+          <distrib:uncertainty distrib:id="u_Vmax" distrib:name="Wilson 1997, purified enzyme">
+            <notes>
+              <body xmlns="http://www.w3.org/1999/xhtml">
+                <p>The maximal rate of the same assay. Its mean is not written as a number but as the parameter <code>Vmax_mean</code>, which the rest of the model can read, and the distribution it was drawn from is a Beta distribution with the two parameters the distribution takes.</p>
+              </body>
+            </notes>
+            <distrib:uncertParameter distrib:id="Vmax_mean_measure" distrib:type="mean" distrib:var="Vmax_mean" distrib:units="mmole_per_min_l"/>
+            <distrib:uncertParameter distrib:id="Vmax_distribution" distrib:name="Beta distribution" distrib:type="distribution" distrib:definitionURL="https://en.wikipedia.org/wiki/Beta_distribution">
+              <distrib:listOfUncertParameters>
+                <distrib:uncertParameter distrib:id="Vmax_alpha" distrib:name="alpha" distrib:type="externalParameter" distrib:value="2" distrib:definitionURL="https://en.wikipedia.org/wiki/Beta_distribution#alpha"/>
+                <distrib:uncertParameter distrib:id="Vmax_beta" distrib:name="beta" distrib:type="externalParameter" distrib:value="5" distrib:definitionURL="https://en.wikipedia.org/wiki/Beta_distribution#beta"/>
+              </distrib:listOfUncertParameters>
+            </distrib:uncertParameter>
+          </distrib:uncertainty>
+        </distrib:listOfUncertainties>
+      </parameter>
+      <parameter id="Vmax_mean" name="mean of the maximal rate" value="0.5" units="mmole_per_min_l" constant="true"/>
+      <parameter id="v" name="rate of the reaction" units="mmole_per_min_l" constant="false"/>
+    </listOfParameters>
+    <listOfRules>
+      <assignmentRule variable="v">
+        <distrib:listOfUncertainties>
+          <distrib:uncertainty distrib:id="u_v" distrib:name="propagated uncertainty of the rate">
+            <notes>
+              <body xmlns="http://www.w3.org/1999/xhtml">
+                <p>The uncertainty of the rate at the concentration the assay starts at, propagated from the uncertainties of the parameters. It is written on the rule which computes the rate, because that is where the number comes into being.</p>
+              </body>
+            </notes>
+            <distrib:uncertParameter distrib:type="standardDeviation" distrib:value="0.04" distrib:units="mmole_per_min_l"/>
+            <distrib:uncertParameter distrib:id="v_distribution" distrib:type="distribution" distrib:definitionURL="http://www.sbml.org/sbml/symbols/distrib/normal">
+              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                <apply>
+                  <csymbol encoding="text" definitionURL="http://www.sbml.org/sbml/symbols/distrib/normal"> normal </csymbol>
+                  <ci> Vmax_mean </ci>
+                  <cn> 0.04 </cn>
+                </apply>
+              </math>
+            </distrib:uncertParameter>
+          </distrib:uncertainty>
+        </distrib:listOfUncertainties>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <divide/>
+            <apply>
+              <times/>
+              <ci> Vmax </ci>
+              <ci> S </ci>
+            </apply>
+            <apply>
+              <plus/>
+              <ci> Km </ci>
+              <ci> S </ci>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+    </listOfRules>
+  </model>
+</sbml>

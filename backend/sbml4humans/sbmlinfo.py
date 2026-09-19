@@ -9,6 +9,8 @@ graph (`sbml4humans.links`).
 import hashlib
 import logging
 import math
+from collections.abc import Callable, Iterable, Sequence
+from functools import partial
 from pathlib import Path
 from typing import Any, Literal
 
@@ -16,33 +18,49 @@ import libsbml
 from pymetadata.core.miriam import BQB, BQM
 
 from sbml4humans.links import build_link_graph
-from sbml4humans.mathml import math_info, math_symbols
+from sbml4humans.mathml import math_info, math_symbols, math_units
 from sbml4humans.model import (
     AlgebraicRule,
+    And,
     AssignmentRule,
+    Association,
     Compartment,
     CompSBase,
     Constraint,
     ConversionFactor,
     Creator,
     CVTerm,
+    DefaultTerm,
+    Delay,
+    Deletion,
     Event,
     EventAssignment,
     ExternalModelDefinition,
+    FluxBound,
     FluxObjective,
     FunctionDefinition,
+    FunctionTerm,
     GeneProduct,
+    GeneProductAssociation,
+    GeneProductRef,
     InitialAssignment,
+    Input,
+    KeyValuePair,
     KineticLaw,
     LocalParameter,
     Math,
     Model,
+    ModelFbc,
     ModelHistory,
     ModifierSpeciesReference,
     Objective,
+    Or,
+    Output,
     Package,
     Parameter,
     Port,
+    Priority,
+    QualitativeSpecies,
     RateRule,
     Reaction,
     ReactionFbc,
@@ -55,12 +73,18 @@ from sbml4humans.model import (
     SpeciesFbc,
     SpeciesReference,
     Submodel,
+    Transition,
     Trigger,
     Uncertainty,
+    UncertMeasure,
     UncertParameter,
+    UncertSpan,
+    Unit,
     UnitDefinition,
+    UserDefinedConstraint,
+    UserDefinedConstraintComponent,
 )
-from sbml4humans.sbml import read_sbml
+from sbml4humans.sbml import package_plugins, read_sbml
 from sbml4humans.units import udef_to_string
 
 
@@ -73,6 +97,123 @@ BIOLOGICAL_QUALIFIERS: dict[int, BQB] = {getattr(libsbml, q.value): q for q in B
 
 DOCUMENT_SCOPE = "document"
 
+# the key of the model of a document which carries neither an id nor a metaId,
+# which its id is optional for in Level 3 (core §4.2.1)
+MAIN_MODEL_KEY = "model"
+
+# libsbml aliases `getId()` and `isSetId()` of these classes to the attribute
+# which names what they set, for compatibility with the levels in which they
+# had no id: the `symbol` of an initial assignment (core §4.8.2), the
+# `variable` of an assignment or rate rule (§4.9.1) and the `variable` of an
+# event assignment (§4.12.5). Their id is `getIdAttribute()`.
+ALIASED_ID_CLASSES = (
+    libsbml.InitialAssignment,
+    libsbml.Rule,
+    libsbml.EventAssignment,
+)
+
+# libsbml answers the sign of an input and the transition effect of an input and
+# of an output as the integer of its constant and, unlike the enumerations of
+# distrib and fbc, offers no `_toString` helper for them, so the report maps them
+# to the words the specification defines (qual §3.6.1, §3.6.2). The constants
+# `INPUT_SIGN_VALUE_NOTSET` and the two `UNKNOWN` of the transition effects mark
+# an attribute libsbml could not read as one of those words and are left out:
+# they are no value of the specification, and `isSet` guards the read anyway.
+INPUT_SIGNS: dict[int, str] = {
+    libsbml.INPUT_SIGN_POSITIVE: "positive",
+    libsbml.INPUT_SIGN_NEGATIVE: "negative",
+    libsbml.INPUT_SIGN_DUAL: "dual",
+    libsbml.INPUT_SIGN_UNKNOWN: "unknown",
+}
+INPUT_TRANSITION_EFFECTS: dict[int, str] = {
+    libsbml.INPUT_TRANSITION_EFFECT_NONE: "none",
+    libsbml.INPUT_TRANSITION_EFFECT_CONSUMPTION: "consumption",
+}
+OUTPUT_TRANSITION_EFFECTS: dict[int, str] = {
+    libsbml.OUTPUT_TRANSITION_EFFECT_PRODUCTION: "production",
+    libsbml.OUTPUT_TRANSITION_EFFECT_ASSIGNMENT_LEVEL: "assignmentLevel",
+}
+
+# the classes whose aliased `getId()` names a target which is unique within the
+# model, so that it keys the element as long as it carries no id of its own: a
+# model has at most one initial assignment per symbol and at most one rule per
+# variable (core §4.8.2, §4.9.1), while two events may assign one variable
+KEYED_BY_TARGET_CLASSES = (libsbml.InitialAssignment, libsbml.Rule)
+
+
+def _identifier(sbase: libsbml.SBase) -> str | None:
+    """The id of an element as the file carries it, None when it has none."""
+    if isinstance(sbase, ALIASED_ID_CLASSES):
+        return sbase.getIdAttribute() if sbase.isSetIdAttribute() else None
+    return sbase.getId() if sbase.isSetId() else None
+
+
+def _has_own_key(sbase: libsbml.SBase) -> bool:
+    """Whether an element is keyed by an identifier of the file, its id or metaId."""
+    return _identifier(sbase) is not None or sbase.isSetMetaId()
+
+
+def _unique_keys(keys: Sequence[str]) -> list[str]:
+    """The keys, a key which repeats an earlier one told apart by its occurrence.
+
+    The first occurrence keeps its key and a repetition becomes `<key>.1`,
+    `<key>.2` and so on, passing over a key which another element of the list
+    carries already. A key a parent gives its child ends in an identifier of
+    the file, which cannot be a number, so the suffix names no other child.
+    """
+    reserved = set(keys)
+    used: set[str] = set()
+    unique: list[str] = []
+    for key in keys:
+        candidate, occurrence = key, 0
+        while candidate in used or (occurrence > 0 and candidate in reserved):
+            occurrence += 1
+            candidate = f"{key}.{occurrence}"
+        used.add(candidate)
+        unique.append(candidate)
+    return unique
+
+
+def _keyed[T: libsbml.SBase](
+    siblings: Iterable[T], key_of: Callable[[T], str]
+) -> list[tuple[T, str]]:
+    """The children of one list with the keys their parent gives them.
+
+    The key names what a child is about, the species of a species reference
+    or the fluxes of a flux objective, which the file does not change when it
+    reorders the list. Where the specification allows two children about the
+    same thing, a species twice among the reactants of a reaction (core
+    §4.11.3), the repetition is told apart by its occurrence. A child which
+    carries an id or a metaId is keyed by it and takes no part.
+    """
+    children = list(siblings)
+    derived = iter(
+        _unique_keys([key_of(child) for child in children if not _has_own_key(child)])
+    )
+    return [
+        (child, key_of(child) if _has_own_key(child) else next(derived))
+        for child in children
+    ]
+
+
+def _reference_path(ref: libsbml.SBaseRef) -> list[str]:
+    """The identifiers a comp reference and the chain of references below it name.
+
+    A reference names one element by its port, its id, its unit id or its meta
+    id, exactly one of them (comp §3.7.1), and a reference into a submodel of
+    a submodel carries the next one.
+    """
+    path: list[str] = []
+    link: libsbml.SBaseRef | None = ref
+    while link is not None:
+        for attribute in ("portRef", "idRef", "unitRef", "metaIdRef"):
+            value = _attribute(link, attribute)
+            if value is not None:
+                path.append(value)
+                break
+        link = link.getSBaseRef() if link.isSetSBaseRef() else None
+    return path
+
 
 def _attribute(sbase: Any, key: str) -> Any | None:
     """The attribute `key` of a libsbml object if it is set, else None."""
@@ -80,13 +221,6 @@ def _attribute(sbase: Any, key: str) -> Any | None:
     if getattr(sbase, f"isSet{key}")():
         return getattr(sbase, f"get{key}")()
     return None
-
-
-def _number(value: float | None) -> float | None:
-    """A float attribute, NaN (not JSON) becomes None."""
-    if value is None or math.isnan(value):
-        return None
-    return value
 
 
 class SBMLDocumentInfo:
@@ -97,12 +231,14 @@ class SBMLDocumentInfo:
         report: the report after `build`.
         symbols: the symbols of every math, keyed by the pk of the object
             carrying the math (kinetic law, rule, event, ...).
+        units: the units the numbers of every math name, keyed the same way.
     """
 
     def __init__(self, doc: libsbml.SBMLDocument):
         """Prepare the build of the report of the document."""
         self.doc = doc
         self.symbols: dict[str, set[str]] = {}
+        self.units_of_math: dict[str, set[str]] = {}
         self.scope = DOCUMENT_SCOPE
         self.report: Report
 
@@ -141,12 +277,24 @@ class SBMLDocumentInfo:
             models=models,
             external_model_definitions=external,
         )
-        self.report.link_graph = build_link_graph(self.report, self.symbols)
+        self.report.link_graph = build_link_graph(
+            self.report, self.symbols, self.units_of_math
+        )
         return self.report
 
     # ---------------------------------------------------------------------------------
     # base
     # ---------------------------------------------------------------------------------
+    @staticmethod
+    def annotation_xml(sbase: libsbml.SBase) -> str | None:
+        """The annotation element of an element as the file writes it.
+
+        The report carries it for the document and for the model, whose own xml
+        is the whole file and therefore not part of the report, so that a non
+        RDF annotation on either of them stays visible (core §3.2.6).
+        """
+        return sbase.getAnnotationString() if sbase.isSetAnnotation() else None
+
     @staticmethod
     def _sbml_type(sbase: libsbml.SBase) -> str:
         """The name of the libsbml class of the element."""
@@ -162,44 +310,29 @@ class SBMLDocumentInfo:
         the xml, which is byte identical for siblings such as two reactant
         references without ids and would otherwise collide.
 
-        `use_id` is False when the id, though set, is not a globally unique
-        identity and must not be used for the pk:
+        An initial assignment and a rule without an id of their own are keyed
+        by the symbol or the variable they set, which a model has at most one
+        of them for. That is where the report has kept them since its first
+        release, and it keeps the permalink of a rule of a Level 2 document,
+        where these elements cannot carry an id at all, out of the digest.
 
-        * an `EventAssignment`: libsbml aliases its `getId()`/`isSetId()` to
-          the `variable` attribute, which is not a genuine id and, unlike the
-          `symbol` of an initial assignment or the `variable` of a rule, is
-          not unique across the events of a model (two events may assign the
-          same variable).
-        * a `LocalParameter`: its id is a genuine id, required by SBML, but
-          scoped to its own kinetic law, not to the model (two kinetic laws
-          may each have a local parameter of the same id), so `key` (which
-          includes the kinetic law) is used for the pk instead; the `id`
-          field of the report object still carries the local parameter id.
+        `use_id` is False for a `LocalParameter`: its id is a genuine id,
+        required by SBML, but scoped to its own kinetic law, not to the model
+        (two kinetic laws may each have a local parameter of the same id), so
+        `key` (which includes the kinetic law) is used for the pk instead; the
+        `id` field of the report object still carries the local parameter id.
         """
-        if use_id and sbase.isSetId():
-            return sbase.getId()
+        if use_id:
+            identifier = _identifier(sbase)
+            if identifier is not None:
+                return identifier
+            if isinstance(sbase, KEYED_BY_TARGET_CLASSES) and sbase.isSetId():
+                return sbase.getId()
         if sbase.isSetMetaId():
             return sbase.getMetaId()
         if key is not None:
             return key
         return hashlib.sha1(sbase.toSBML().encode("utf-8")).hexdigest()
-
-    def _pk(
-        self,
-        sbase: libsbml.SBase,
-        scope: str | None = None,
-        sbml_type: str | None = None,
-        key: str | None = None,
-        use_id: bool = True,
-    ) -> str:
-        """The primary key `<scope>/<type>:<id>` of an element.
-
-        The type is the `sbml_type` of the report object, which differs from the
-        libsbml class for a comp model definition. The id falls back to the
-        metaId, then to `key` and finally to the digest of the xml.
-        """
-        type_ = sbml_type or self._sbml_type(sbase)
-        return f"{scope or self.scope}/{type_}:{self._key(sbase, key, use_id)}"
 
     def sbase(
         self,
@@ -209,21 +342,38 @@ class SBMLDocumentInfo:
         pk: str | None = None,
         key: str | None = None,
         use_id: bool = True,
+        with_xml: bool = True,
     ) -> dict[str, Any]:
         """The fields of `SBase` of an element, for the constructor of its class.
 
-        A known pk is passed in, every other pk is built from scope and type.
-        A nested element without an id or metaId uses `key`, derived from its
-        parent, instead of the digest of its xml (see `_key`).
+        The primary key is `<scope>/<type>:<key>`. The type is the `sbml_type`
+        of the report object, which differs from the libsbml class for a comp
+        model definition, and the key is the one of `_key`, which falls back to
+        `key`, derived from the parent of a nested element without an id or a
+        metaId. It is computed once and keys the replacements and the
+        uncertainties of the element as well. A known pk is passed in with its
+        key, which is how the document is keyed without the digest of the
+        whole file.
+
+        `with_xml` is False for an element whose xml is part of the xml of its
+        parent in full and says nothing more, a node of a gene product
+        association, which would otherwise repeat its subtree at every level.
         """
+        if pk is None:
+            key = self._key(sbase, key, use_id)
+            type_ = sbml_type or self._sbml_type(sbase)
+            pk = f"{scope or self.scope}/{type_}:{key}"
+        elif key is None:
+            key = pk
         xml = None
-        if sbase.getTypeCode() not in {libsbml.SBML_DOCUMENT, libsbml.SBML_MODEL}:
+        if with_xml and sbase.getTypeCode() not in {
+            libsbml.SBML_DOCUMENT,
+            libsbml.SBML_MODEL,
+        }:
             xml = sbase.toSBML()
         return {
-            "pk": pk
-            if pk is not None
-            else self._pk(sbase, scope, sbml_type, key, use_id),
-            "id": sbase.getId() if sbase.isSetId() else None,
+            "pk": pk,
+            "id": _identifier(sbase),
             "meta_id": sbase.getMetaId() if sbase.isSetMetaId() else None,
             "name": sbase.getName() if sbase.isSetName() else None,
             "sbo": sbase.getSBOTermID() if sbase.isSetSBOTerm() else None,
@@ -231,8 +381,9 @@ class SBMLDocumentInfo:
             "cvterms": self.cvterms(sbase),
             "history": self.history(sbase),
             "xml": xml,
-            "comp": self.comp_sbase(sbase),
-            "uncertainties": self.uncertainties(sbase, self._key(sbase, key, use_id)),
+            "comp": self.comp_sbase(sbase, key),
+            "uncertainties": self.uncertainties(sbase, key),
+            "key_value_pairs": self.key_value_pairs(sbase),
         }
 
     @staticmethod
@@ -240,19 +391,10 @@ class SBMLDocumentInfo:
         """The annotations of an element, the SBO term as BQB_IS annotation."""
         cvterms: list[CVTerm] = []
         if sbase.isSetAnnotation():
-            for k in range(sbase.getNumCVTerms()):
-                cv: libsbml.CVTerm = sbase.getCVTerm(k)
-                q_type = cv.getQualifierType()
-                if q_type == libsbml.MODEL_QUALIFIER:
-                    qualifier = MODEL_QUALIFIERS[cv.getModelQualifierType()].value
-                elif q_type == libsbml.BIOLOGICAL_QUALIFIER:
-                    qualifier = BIOLOGICAL_QUALIFIERS[
-                        cv.getBiologicalQualifierType()
-                    ].value
-                else:
-                    raise ValueError(f"Unsupported qualifier type: '{q_type}'")
-                resources = [cv.getResourceURI(r) for r in range(cv.getNumResources())]
-                cvterms.append(CVTerm(qualifier=qualifier, resources=resources))
+            cvterms = [
+                SBMLDocumentInfo.cvterm(sbase.getCVTerm(k))
+                for k in range(sbase.getNumCVTerms())
+            ]
 
         if sbase.isSetSBOTerm():
             sbo = sbase.getSBOTermID()
@@ -263,6 +405,29 @@ class SBMLDocumentInfo:
                 )
                 cvterms.insert(0, sbo_term)
         return cvterms
+
+    @staticmethod
+    def cvterm(cv: libsbml.CVTerm) -> CVTerm:
+        """One annotation with its resources and the terms which qualify it.
+
+        A CV term can carry terms of its own, which say how the relation of the
+        term above them is meant, for example the evidence for it (core §6).
+        """
+        q_type = cv.getQualifierType()
+        if q_type == libsbml.MODEL_QUALIFIER:
+            qualifier = MODEL_QUALIFIERS[cv.getModelQualifierType()].value
+        elif q_type == libsbml.BIOLOGICAL_QUALIFIER:
+            qualifier = BIOLOGICAL_QUALIFIERS[cv.getBiologicalQualifierType()].value
+        else:
+            raise ValueError(f"Unsupported qualifier type: '{q_type}'")
+        return CVTerm(
+            qualifier=qualifier,
+            resources=[cv.getResourceURI(r) for r in range(cv.getNumResources())],
+            nested=[
+                SBMLDocumentInfo.cvterm(cv.getNestedCVTerm(k))
+                for k in range(cv.getNumNestedCVTerms())
+            ],
+        )
 
     @staticmethod
     def history(sbase: libsbml.SBase) -> ModelHistory | None:
@@ -293,10 +458,12 @@ class SBMLDocumentInfo:
         )
 
     def math(self, owner_pk: str, astnode: libsbml.ASTNode | None) -> Math | None:
-        """The math of an element, its symbols are recorded for the link graph."""
+        """The math of an element, its symbols and units are recorded for the link graph."""
         if astnode is None:
             return None
         self.symbols.setdefault(owner_pk, set()).update(math_symbols(astnode))
+        if units := math_units(astnode):
+            self.units_of_math.setdefault(owner_pk, set()).update(units)
         return math_info(astnode)
 
     def units(self, sid: str | None, model: libsbml.Model) -> str | None:
@@ -314,7 +481,7 @@ class SBMLDocumentInfo:
             return ConversionFactor(sid=sid)
         return ConversionFactor(
             sid=sid,
-            value=_number(_attribute(parameter, "value")),
+            value=_attribute(parameter, "value"),
             units=_attribute(parameter, "units"),
         )
 
@@ -325,27 +492,34 @@ class SBMLDocumentInfo:
         """The document with its packages."""
         doc = self.doc
         packages = [
-            Package(
-                prefix=doc.getPlugin(k).getPrefix(),
-                version=doc.getPlugin(k).getPackageVersion(),
-            )
-            for k in range(doc.getNumPlugins())
+            Package(prefix=plugin.getPrefix(), version=plugin.getPackageVersion())
+            for plugin in package_plugins(doc)
         ]
         fields = self.sbase(
             doc,
-            scope=DOCUMENT_SCOPE,
             pk=f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}",
+            key=DOCUMENT_SCOPE,
         )
         return SBMLDocument(
-            **fields, level=doc.getLevel(), version=doc.getVersion(), packages=packages
+            **fields,
+            level=doc.getLevel(),
+            version=doc.getVersion(),
+            packages=packages,
+            annotation_xml=self.annotation_xml(doc),
         )
 
     def model(
         self, model: libsbml.Model, kind: Literal["model", "modelDefinition"]
     ) -> Model:
-        """A model or model definition with the lists of its elements."""
-        self.scope = self._key(model)
-        fields = self.sbase(model, sbml_type="Model")
+        """A model or model definition with the lists of its elements.
+
+        The model of the document without an id or a metaId is keyed as the
+        model, where the digest of its xml moved every primary key of it
+        whenever any value of it changed. A model definition carries an id.
+        """
+        key = self._main_model_key() if kind == "model" else None
+        self.scope = self._key(model, key)
+        fields = self.sbase(model, sbml_type="Model", key=key)
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             sid = _attribute(model, f"{key}Units")
             fields[f"{key}_units"] = sid
@@ -353,6 +527,7 @@ class SBMLDocumentInfo:
         return Model(
             **fields,
             kind=kind,
+            annotation_xml=self.annotation_xml(model),
             conversion_factor=self.conversion_factor(model, model),
             list_of_function_definitions=[
                 self.function_definition(fd)
@@ -372,18 +547,27 @@ class SBMLDocumentInfo:
                 self.initial_assignment(ia)
                 for ia in model.getListOfInitialAssignments()
             ],
-            list_of_rules=[self.rule(r) for r in model.getListOfRules()],
+            list_of_rules=self.rules(model),
             list_of_constraints=[
-                self.constraint(c) for c in model.getListOfConstraints()
+                self.constraint(c, f"constraint.{index}")
+                for index, c in enumerate(model.getListOfConstraints())
             ],
             list_of_reactions=[
                 self.reaction(r, model) for r in model.getListOfReactions()
             ],
-            list_of_events=[self.event(e) for e in model.getListOfEvents()],
+            list_of_events=[
+                self.event(e, f"event.{index}")
+                for index, e in enumerate(model.getListOfEvents())
+            ],
             list_of_submodels=self.submodels(model),
             list_of_ports=self.ports(model),
             list_of_gene_products=self.gene_products(model),
             list_of_objectives=self.objectives(model),
+            list_of_flux_bounds=self.flux_bounds(model),
+            list_of_user_defined_constraints=self.user_defined_constraints(model),
+            list_of_qualitative_species=self.qualitative_species(model),
+            list_of_transitions=self.transitions(model),
+            fbc=self.model_fbc(model),
         )
 
     # ---------------------------------------------------------------------------------
@@ -397,8 +581,27 @@ class SBMLDocumentInfo:
         )
 
     def unit_definition(self, ud: libsbml.UnitDefinition) -> UnitDefinition:
-        """A unit definition."""
-        return UnitDefinition(**self.sbase(ud), units_latex=udef_to_string(ud))
+        """A unit definition with its units and their rendered formula."""
+        return UnitDefinition(
+            **self.sbase(ud),
+            units_latex=udef_to_string(ud),
+            list_of_units=[self.unit(u) for u in ud.getListOfUnits()],
+        )
+
+    @staticmethod
+    def unit(u: libsbml.Unit) -> Unit:
+        """One unit of a unit definition.
+
+        The kind is the name of the base unit, which libsbml returns as the
+        integer of its constant, and the exponent is read as a double because
+        Level 3 allows a fractional one (core §4.4.2).
+        """
+        return Unit(
+            kind=libsbml.UnitKind_toString(u.getKind()) if u.isSetKind() else None,
+            exponent=u.getExponentAsDouble() if u.isSetExponent() else None,
+            scale=_attribute(u, "scale"),
+            multiplier=_attribute(u, "multiplier"),
+        )
 
     def compartment(self, c: libsbml.Compartment, model: libsbml.Model) -> Compartment:
         """A compartment."""
@@ -411,8 +614,8 @@ class SBMLDocumentInfo:
         )
         return Compartment(
             **self.sbase(c),
-            spatial_dimensions=_number(spatial_dimensions),
-            size=_number(_attribute(c, "size")),
+            spatial_dimensions=spatial_dimensions,
+            size=_attribute(c, "size"),
             constant=_attribute(c, "constant"),
             units=units,
             units_latex=self.units(units, model),
@@ -422,18 +625,11 @@ class SBMLDocumentInfo:
     def species(self, s: libsbml.Species, model: libsbml.Model) -> Species:
         """A species."""
         substance_units = _attribute(s, "substanceUnits")
-        fbc: libsbml.FbcSpeciesPlugin | None = s.getPlugin("fbc")
-        species_fbc = None
-        if fbc:
-            species_fbc = SpeciesFbc(
-                chemical_formula=_attribute(fbc, "chemicalFormula"),
-                charge=_attribute(fbc, "charge"),
-            )
         return Species(
             **self.sbase(s),
             compartment=s.getCompartment(),
-            initial_amount=_number(_attribute(s, "initialAmount")),
-            initial_concentration=_number(_attribute(s, "initialConcentration")),
+            initial_amount=_attribute(s, "initialAmount"),
+            initial_concentration=_attribute(s, "initialConcentration"),
             substance_units=substance_units,
             has_only_substance_units=_attribute(s, "hasOnlySubstanceUnits"),
             boundary_condition=_attribute(s, "boundaryCondition"),
@@ -441,7 +637,7 @@ class SBMLDocumentInfo:
             units_latex=self.units(substance_units, model),
             derived_units=udef_to_string(s.getDerivedUnitDefinition()),
             conversion_factor=self.conversion_factor(s, model),
-            fbc=species_fbc,
+            fbc=self.species_fbc(s),
         )
 
     def parameter(self, p: libsbml.Parameter, model: libsbml.Model) -> Parameter:
@@ -449,7 +645,7 @@ class SBMLDocumentInfo:
         units = _attribute(p, "units")
         return Parameter(
             **self.sbase(p),
-            value=_number(_attribute(p, "value")),
+            value=_attribute(p, "value"),
             constant=_attribute(p, "constant"),
             units=units,
             units_latex=self.units(units, model),
@@ -466,9 +662,44 @@ class SBMLDocumentInfo:
             derived_units=udef_to_string(ia.getDerivedUnitDefinition()),
         )
 
-    def rule(self, rule: libsbml.Rule) -> AssignmentRule | RateRule | AlgebraicRule:
-        """A rule, by its libsbml class."""
-        fields = self.sbase(rule)
+    def _main_model_key(self) -> str | None:
+        """The key of the model of the document when it carries no identifier.
+
+        It is `model`, unless a model definition of the document carries that
+        id, where the digest of the xml keeps the two apart.
+        """
+        plugin: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
+        if plugin and any(
+            md.getId() == MAIN_MODEL_KEY for md in plugin.getListOfModelDefinitions()
+        ):
+            return None
+        return MAIN_MODEL_KEY
+
+    def rules(
+        self, model: libsbml.Model
+    ) -> list[AssignmentRule | RateRule | AlgebraicRule]:
+        """The rules of a model, an algebraic rule keyed by its place.
+
+        An assignment and a rate rule are keyed by the variable they set, which
+        a model has one rule for at most (core §4.9.1). An algebraic rule sets
+        no variable, so one without an id or a metaId is keyed by its place
+        among the algebraic rules, which an edit of its formula does not move.
+        """
+        rules: list[AssignmentRule | RateRule | AlgebraicRule] = []
+        algebraic = 0
+        for r in model.getListOfRules():
+            key = None
+            if isinstance(r, libsbml.AlgebraicRule):
+                key = f"algebraicRule.{algebraic}"
+                algebraic += 1
+            rules.append(self.rule(r, key))
+        return rules
+
+    def rule(
+        self, rule: libsbml.Rule, key: str | None = None
+    ) -> AssignmentRule | RateRule | AlgebraicRule:
+        """A rule, by its libsbml class, `key` names it without an identifier."""
+        fields = self.sbase(rule, key=key)
         math_ = self.math(fields["pk"], _attribute(rule, "math"))
         derived = udef_to_string(rule.getDerivedUnitDefinition())
         if isinstance(rule, libsbml.AssignmentRule):
@@ -483,9 +714,9 @@ class SBMLDocumentInfo:
             return AlgebraicRule(**fields, math=math_, derived_units=derived)
         raise TypeError(rule)
 
-    def constraint(self, c: libsbml.Constraint) -> Constraint:
-        """A constraint."""
-        fields = self.sbase(c)
+    def constraint(self, c: libsbml.Constraint, key: str) -> Constraint:
+        """A constraint, `key` names it by its place when it carries no identifier."""
+        fields = self.sbase(c, key=key)
         return Constraint(
             **fields,
             math=self.math(fields["pk"], _attribute(c, "math")),
@@ -498,29 +729,37 @@ class SBMLDocumentInfo:
         reaction_key = self._key(r)
         return Reaction(
             **fields,
-            reversible=_attribute(r, "reversible"),
-            fast=_attribute(r, "fast"),
+            reversible=self._reversible(r),
+            fast=self._fast(r),
             compartment=_attribute(r, "compartment"),
             list_of_reactants=[
-                self.species_reference(sr, f"{reaction_key}.reactant.{sr.getSpecies()}")
-                for sr in r.getListOfReactants()
+                self.species_reference(sr, key)
+                for sr, key in _keyed(
+                    r.getListOfReactants(),
+                    lambda sr: f"{reaction_key}.reactant.{sr.getSpecies()}",
+                )
             ],
             list_of_products=[
-                self.species_reference(sr, f"{reaction_key}.product.{sr.getSpecies()}")
-                for sr in r.getListOfProducts()
+                self.species_reference(sr, key)
+                for sr, key in _keyed(
+                    r.getListOfProducts(),
+                    lambda sr: f"{reaction_key}.product.{sr.getSpecies()}",
+                )
             ],
             list_of_modifiers=[
                 ModifierSpeciesReference(
-                    **self.sbase(m, key=f"{reaction_key}.modifier.{m.getSpecies()}"),
-                    species=m.getSpecies(),
+                    **self.sbase(m, key=key), species=m.getSpecies()
                 )
-                for m in r.getListOfModifiers()
+                for m, key in _keyed(
+                    r.getListOfModifiers(),
+                    lambda m: f"{reaction_key}.modifier.{m.getSpecies()}",
+                )
             ],
             kinetic_law=self.kinetic_law(r.getKineticLaw(), model, reaction_key)
             if r.isSetKineticLaw()
             else None,
             equation=self._equation(r),
-            fbc=self.reaction_fbc(r),
+            fbc=self.reaction_fbc(r, reaction_key),
         )
 
     def species_reference(
@@ -530,9 +769,52 @@ class SBMLDocumentInfo:
         return SpeciesReference(
             **self.sbase(sr, key=key),
             species=sr.getSpecies(),
-            stoichiometry=_number(_attribute(sr, "stoichiometry")),
+            stoichiometry=self._stoichiometry(sr),
             constant=_attribute(sr, "constant"),
         )
+
+    @staticmethod
+    def _reversible(r: libsbml.Reaction) -> bool | None:
+        """Whether a reaction is reversible, with the default of Level 1 and 2.
+
+        Level 1 and every version of Level 2 make a reaction reversible
+        unless it says otherwise (L2V4 §4.13.1), and libsbml answers that
+        default without calling the attribute set in Level 2 Version 1. Level 3
+        requires the attribute and has no default.
+        """
+        if r.isSetReversible():
+            return r.getReversible()
+        return True if r.getLevel() < 3 else None
+
+    @staticmethod
+    def _fast(r: libsbml.Reaction) -> bool | None:
+        """Whether a reaction is fast, with the default of its level and version.
+
+        Level 1 and Level 2 from Version 2 on make a reaction slow unless it
+        says otherwise (L2V4 §4.13.1), which libsbml answers without calling
+        the attribute set. Level 2 Version 1 defined no default (the changes
+        of L2V2 in its appendix), Level 3 Version 1 requires the attribute and
+        Level 3 Version 2 has none.
+        """
+        if r.isSetFast():
+            return r.getFast()
+        level, version = r.getLevel(), r.getVersion()
+        return False if level == 1 or (level == 2 and version >= 2) else None
+
+    @staticmethod
+    def _stoichiometry(sr: libsbml.SpeciesReference) -> float | None:
+        """The stoichiometry of a reference, with the default of Level 1 and 2.
+
+        Level 1 and 2 define the default 1 for a reference which neither
+        writes a number nor a `stoichiometryMath` (L2V4 §4.13.2), and libsbml
+        answers it without calling the attribute set. Level 3 has no default:
+        an unset stoichiometry is set by a rule or an assignment, or unknown.
+        """
+        if sr.isSetStoichiometry():
+            return sr.getStoichiometry()
+        if sr.getLevel() < 3 and not sr.isSetStoichiometryMath():
+            return sr.getStoichiometry()
+        return None
 
     def kinetic_law(
         self, klaw: libsbml.KineticLaw, model: libsbml.Model, reaction_key: str
@@ -541,16 +823,17 @@ class SBMLDocumentInfo:
         kinetic_law_key = f"{reaction_key}.kineticLaw"
         fields = self.sbase(klaw, key=kinetic_law_key)
         local_parameters = []
-        for lp in klaw.getListOfLocalParameters():
+        for lp in self._kinetic_law_parameters(klaw):
             units = _attribute(lp, "units")
             local_parameters.append(
                 LocalParameter(
                     **self.sbase(
                         lp,
+                        sbml_type="LocalParameter",
                         key=f"{kinetic_law_key}.{lp.getId()}",
                         use_id=False,
                     ),
-                    value=_number(_attribute(lp, "value")),
+                    value=_attribute(lp, "value"),
                     units=units,
                     units_latex=self.units(units, model),
                     derived_units=udef_to_string(lp.getDerivedUnitDefinition()),
@@ -562,6 +845,22 @@ class SBMLDocumentInfo:
             derived_units=udef_to_string(klaw.getDerivedUnitDefinition()),
             list_of_local_parameters=local_parameters,
         )
+
+    @staticmethod
+    def _kinetic_law_parameters(klaw: libsbml.KineticLaw) -> list[libsbml.Parameter]:
+        """The parameters of a kinetic law, of a document of any level.
+
+        Level 3 writes them as `<localParameter>` in a `<listOfLocalParameters>`
+        and libsbml returns them from `getListOfLocalParameters`; Level 1 and
+        Level 2 write them as `<parameter>` in a `<listOfParameters>`, where
+        libsbml keeps them as `Parameter` objects of `getListOfParameters` and
+        leaves `getListOfLocalParameters` empty (core §4.11.5, §4.11.6). Both
+        carry the id, the value and the units the report shows, so the report
+        has one `LocalParameter` for either.
+        """
+        if klaw.getLevel() >= 3:
+            return list(klaw.getListOfLocalParameters())
+        return list(klaw.getListOfParameters())
 
     @staticmethod
     def _equation(reaction: libsbml.Reaction) -> str:
@@ -593,24 +892,45 @@ class SBMLDocumentInfo:
                 items.append(f"{stoichiometry} {species}")
         return " + ".join(items)
 
-    def event(self, e: libsbml.Event) -> Event:
-        """An event with trigger, priority, delay and assignments."""
-        fields = self.sbase(e)
-        pk = fields["pk"]
-        event_key = self._key(e)
+    def event(self, e: libsbml.Event, key: str) -> Event:
+        """An event with trigger, priority, delay and assignments.
+
+        `key` names the event by its place when it carries no identifier, and
+        every object of the event is keyed after the event.
+        """
+        fields = self.sbase(e, key=key)
+        event_key = self._key(e, key)
         trigger = None
         if e.isSetTrigger():
             t: libsbml.Trigger = e.getTrigger()
+            trigger_fields = self.sbase(t, key=f"{event_key}.trigger")
             trigger = Trigger(
-                math=self.math(pk, _attribute(t, "math")),
+                **trigger_fields,
+                math=self.math(trigger_fields["pk"], _attribute(t, "math")),
                 initial_value=_attribute(t, "initialValue"),
                 persistent=_attribute(t, "persistent"),
             )
-        assignments = []
-        for ea in e.getListOfEventAssignments():
-            ea_fields = self.sbase(
-                ea, key=f"{event_key}.{ea.getVariable()}", use_id=False
+        priority = None
+        if e.isSetPriority():
+            p: libsbml.Priority = e.getPriority()
+            priority_fields = self.sbase(p, key=f"{event_key}.priority")
+            priority = Priority(
+                **priority_fields,
+                math=self.math(priority_fields["pk"], _attribute(p, "math")),
             )
+        delay = None
+        if e.isSetDelay():
+            d: libsbml.Delay = e.getDelay()
+            delay_fields = self.sbase(d, key=f"{event_key}.delay")
+            delay = Delay(
+                **delay_fields,
+                math=self.math(delay_fields["pk"], _attribute(d, "math")),
+            )
+        assignments = []
+        for ea, ea_key in _keyed(
+            e.getListOfEventAssignments(), lambda ea: f"{event_key}.{ea.getVariable()}"
+        ):
+            ea_fields = self.sbase(ea, key=ea_key)
             assignments.append(
                 EventAssignment(
                     **ea_fields,
@@ -622,30 +942,44 @@ class SBMLDocumentInfo:
             **fields,
             use_values_from_trigger_time=_attribute(e, "useValuesFromTriggerTime"),
             trigger=trigger,
-            priority=self.math(pk, _attribute(e.getPriority(), "math"))
-            if e.isSetPriority()
-            else None,
-            delay=self.math(pk, _attribute(e.getDelay(), "math"))
-            if e.isSetDelay()
-            else None,
+            priority=priority,
+            delay=delay,
             list_of_event_assignments=assignments,
         )
 
     # ---------------------------------------------------------------------------------
     # comp
     # ---------------------------------------------------------------------------------
-    @staticmethod
-    def _sbase_ref(ref: libsbml.SBaseRef) -> SBaseRef:
-        """The comp reference of an element."""
-        return SBaseRef(
-            port_ref=_attribute(ref, "portRef"),
-            id_ref=_attribute(ref, "idRef"),
-            unit_ref=_attribute(ref, "unitRef"),
-            meta_id_ref=_attribute(ref, "metaIdRef"),
-        )
+    def _sbase_ref_fields(self, ref: libsbml.SBaseRef, key: str) -> dict[str, Any]:
+        """The fields of a comp reference, for the constructor of its class.
 
-    def comp_sbase(self, sbase: libsbml.SBase) -> CompSBase | None:
-        """The comp extension of an element: replaced by and replaced elements."""
+        A reference is an `SBase` (comp §3.7), so it carries the fields of one
+        next to the four references and the reference chain below it. `key` is
+        the key its parent gives it, used for the pk when the reference carries
+        neither an id nor a metaId.
+        """
+        nested = None
+        if ref.isSetSBaseRef():
+            nested_key = f"{self._key(ref, key)}.sBaseRef"
+            nested = SBaseRef(
+                **self._sbase_ref_fields(ref.getSBaseRef(), nested_key),
+            )
+        return {
+            **self.sbase(ref, key=key),
+            "port_ref": _attribute(ref, "portRef"),
+            "id_ref": _attribute(ref, "idRef"),
+            "unit_ref": _attribute(ref, "unitRef"),
+            "meta_id_ref": _attribute(ref, "metaIdRef"),
+            "sbase_ref": nested,
+        }
+
+    def comp_sbase(self, sbase: libsbml.SBase, key: str) -> CompSBase | None:
+        """The comp extension of an element: replaced by and replaced elements.
+
+        Args:
+            sbase: the element carrying the extension.
+            key: the key of the element, which keys its replacements.
+        """
         plugin = sbase.getPlugin("comp")
         if not plugin or not isinstance(plugin, libsbml.CompSBasePlugin):
             return None
@@ -653,17 +987,38 @@ class SBMLDocumentInfo:
         if plugin.isSetReplacedBy():
             rb: libsbml.ReplacedBy = plugin.getReplacedBy()
             replaced_by = ReplacedBy(
-                submodel_ref=rb.getSubmodelRef(), sbase_ref=self._sbase_ref(rb)
+                **self._sbase_ref_fields(rb, f"{key}.replacedBy"),
+                submodel_ref=rb.getSubmodelRef(),
             )
         replaced_elements = [
             ReplacedElement(
-                submodel_ref=re.getSubmodelRef(), sbase_ref=self._sbase_ref(re)
+                **self._sbase_ref_fields(re, re_key),
+                submodel_ref=re.getSubmodelRef(),
+                deletion=_attribute(re, "deletion"),
+                conversion_factor=_attribute(re, "conversionFactor"),
             )
-            for re in plugin.getListOfReplacedElements() or []
+            for re, re_key in _keyed(
+                plugin.getListOfReplacedElements() or [],
+                partial(self._replaced_element_key, element_key=key),
+            )
         ]
         if replaced_by is None and not replaced_elements:
             return None
         return CompSBase(replaced_by=replaced_by, replaced_elements=replaced_elements)
+
+    @staticmethod
+    def _replaced_element_key(re: libsbml.ReplacedElement, element_key: str) -> str:
+        """The key of a replacement: its element, its submodel and what it names.
+
+        No element of a submodel may be named by more than one port, replaced
+        element or deletion (comp §3.4.3), so the submodel and the chain of
+        references name the replacement whatever the order of the list, and a
+        replacement which stands for a deletion is named by that deletion.
+        """
+        path = _reference_path(re)
+        if not path and re.isSetDeletion():
+            path = [re.getDeletion()]
+        return ".".join([element_key, "replacedElement", re.getSubmodelRef(), *path])
 
     def external_model_definition(
         self, emd: libsbml.ExternalModelDefinition
@@ -673,6 +1028,7 @@ class SBMLDocumentInfo:
             **self.sbase(emd, scope=DOCUMENT_SCOPE),
             source=emd.getSource(),
             model_ref=_attribute(emd, "modelRef"),
+            md5=_attribute(emd, "md5"),
         )
 
     def submodels(self, model: libsbml.Model) -> list[Submodel]:
@@ -686,10 +1042,26 @@ class SBMLDocumentInfo:
                 model_ref=s.getModelRef(),
                 time_conversion_factor=_attribute(s, "timeConversionFactor"),
                 extent_conversion_factor=_attribute(s, "extentConversionFactor"),
-                list_of_deletions=[self._sbase_ref(d) for d in s.getListOfDeletions()],
+                list_of_deletions=[
+                    Deletion(**self._sbase_ref_fields(d, key))
+                    for d, key in _keyed(
+                        s.getListOfDeletions(),
+                        partial(self._deletion_key, submodel_key=self._key(s)),
+                    )
+                ],
             )
             for s in plugin.getListOfSubmodels()
         ]
+
+    @staticmethod
+    def _deletion_key(d: libsbml.Deletion, submodel_key: str) -> str:
+        """The key of a deletion: its submodel and the element it names.
+
+        No element of a submodel may be named by more than one port, replaced
+        element or deletion (comp §3.4.3), so what a deletion names keys it
+        whatever the order of the list.
+        """
+        return ".".join([submodel_key, "deletion", *_reference_path(d)])
 
     def ports(self, model: libsbml.Model) -> list[Port]:
         """The comp ports of a model."""
@@ -697,7 +1069,7 @@ class SBMLDocumentInfo:
         if not plugin:
             return []
         return [
-            Port(**self.sbase(p), **self._sbase_ref(p).model_dump())
+            Port(**self._sbase_ref_fields(p, self._key(p)))
             for p in plugin.getListOfPorts()
         ]
 
@@ -718,62 +1090,387 @@ class SBMLDocumentInfo:
             for gp in plugin.getListOfGeneProducts()
         ]
 
+    def model_fbc(self, model: libsbml.Model) -> ModelFbc | None:
+        """The fbc extension of a model: its strictness and its active objective.
+
+        `strict` is required from Version 2 on and does not exist in Version 1,
+        where `isSetStrict` is False, and `activeObjective` is the attribute of
+        the list of objectives (fbc §3.3, §3.3.1).
+        """
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return None
+        active = plugin.getActiveObjectiveId()
+        return ModelFbc(
+            strict=_attribute(plugin, "strict"),
+            active_objective=active or None,
+        )
+
     def objectives(self, model: libsbml.Model) -> list[Objective]:
-        """The fbc objectives of a model."""
+        """The fbc objectives of a model with their flux objectives."""
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return []
+        objectives = []
+        for o in plugin.getListOfObjectives():
+            objective_key = self._key(o)
+            objectives.append(
+                Objective(
+                    **self.sbase(o),
+                    type=_attribute(o, "type"),
+                    list_of_flux_objectives=[
+                        self.flux_objective(f, key)
+                        for f, key in _keyed(
+                            o.getListOfFluxObjectives(),
+                            partial(
+                                self._flux_objective_key, objective_key=objective_key
+                            ),
+                        )
+                    ],
+                )
+            )
+        return objectives
+
+    @staticmethod
+    def _flux_objective_key(f: libsbml.FluxObjective, objective_key: str) -> str:
+        """The key of a term of an objective: the objective and the fluxes it multiplies.
+
+        A linear term is keyed by its reaction, a quadratic one by the two
+        fluxes of the product, the second reaction or, without one, the square
+        of the first (fbc §3.7).
+        """
+        fluxes = [f.getReaction()]
+        if f.isSetReaction2():
+            fluxes.append(f.getReaction2())
+        elif f.isSetVariableType() and f.getVariableTypeAsString() == "quadratic":
+            fluxes.append(f.getReaction())
+        return ".".join([objective_key, "fluxObjective", *fluxes])
+
+    def flux_objective(self, f: libsbml.FluxObjective, key: str) -> FluxObjective:
+        """One term of an objective, `key` names it within its objective.
+
+        `reaction2` and `variableType` were added in Version 3, where the type
+        is required; a document of an earlier version sets neither of them.
+        """
+        return FluxObjective(
+            **self.sbase(f, key=key),
+            reaction=f.getReaction(),
+            reaction2=_attribute(f, "reaction2"),
+            coefficient=f.getCoefficient() if f.isSetCoefficient() else None,
+            variable_type=f.getVariableTypeAsString()
+            if f.isSetVariableType()
+            else None,
+        )
+
+    def flux_bounds(self, model: libsbml.Model) -> list[FluxBound]:
+        """The flux bounds of a model, which only fbc Version 1 has.
+
+        libsbml keeps the list empty for a document of a later version, where
+        the bounds of a reaction are the two attributes which name a parameter.
+        """
         plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
         if not plugin:
             return []
         return [
-            Objective(
-                **self.sbase(o),
-                type=_attribute(o, "type"),
-                list_of_flux_objectives=[
-                    FluxObjective(
-                        reaction=f.getReaction(),
-                        coefficient=_number(f.getCoefficient())
-                        if f.isSetCoefficient()
-                        else None,
-                    )
-                    for f in o.getListOfFluxObjectives()
-                ],
+            FluxBound(
+                **self.sbase(fb, key=f"fluxBound.{index}"),
+                reaction=_attribute(fb, "reaction"),
+                operation=_attribute(fb, "operation"),
+                value=_attribute(fb, "value"),
             )
-            for o in plugin.getListOfObjectives()
+            for index, fb in enumerate(plugin.getListOfFluxBounds())
         ]
 
-    def reaction_fbc(self, r: libsbml.Reaction) -> ReactionFbc | None:
-        """The fbc extension of a reaction: bounds and gene product association."""
+    @staticmethod
+    def key_value_pairs(sbase: libsbml.SBase) -> list[KeyValuePair]:
+        """The key value pairs of an element, the controlled annotation of fbc §3.17.
+
+        libsbml reads them from the annotation of any element of a document
+        which uses fbc, whatever its version, and exposes them on the fbc
+        plugin of that element. It reads the key, the value and the uri back
+        from a file, but not the identifier and the name the specification
+        allows, so the report carries the three attributes which survive.
+        """
+        plugin = sbase.getPlugin("fbc")
+        if not plugin or not isinstance(plugin, libsbml.FbcSBasePlugin):
+            return []
+        return [
+            KeyValuePair(
+                key=_attribute(kvp, "key"),
+                value=_attribute(kvp, "value"),
+                uri=_attribute(kvp, "uri"),
+            )
+            for kvp in plugin.getListOfKeyValuePairs()
+        ]
+
+    @staticmethod
+    def species_fbc(s: libsbml.Species) -> SpeciesFbc | None:
+        """The fbc extension of a species: its chemical formula and its charge.
+
+        fbc Version 3 widened the charge from an integer to a double, and
+        libsbml keeps the two in attributes of their own: `getCharge` reads the
+        integer of a Version 1 or Version 2 document and returns zero for a
+        Version 3 one, `getChargeAsDouble` the other way around, so the version
+        of the plugin decides which of them is the charge of the file. An
+        element which sets neither attribute carries no block rather than one
+        of empty values.
+        """
+        plugin: libsbml.FbcSpeciesPlugin | None = s.getPlugin("fbc")
+        if not plugin:
+            return None
+        charge = None
+        if plugin.isSetCharge():
+            charge = (
+                plugin.getChargeAsDouble()
+                if plugin.getPackageVersion() >= 3
+                else float(plugin.getCharge())
+            )
+        formula = _attribute(plugin, "chemicalFormula")
+        if charge is None and formula is None:
+            return None
+        return SpeciesFbc(chemical_formula=formula, charge=charge)
+
+    def reaction_fbc(
+        self, r: libsbml.Reaction, reaction_key: str
+    ) -> ReactionFbc | None:
+        """The fbc extension of a reaction: bounds and gene product association.
+
+        A reaction which sets none of the three, which is every reaction of a
+        Version 1 document, where the attributes do not exist, carries no block
+        rather than one of empty values.
+        """
         plugin: libsbml.FbcReactionPlugin | None = r.getPlugin("fbc")
         if not plugin:
             return None
-        association = None
-        gene_products: list[str] = []
-        if plugin.isSetGeneProductAssociation():
-            root: libsbml.FbcAssociation = (
-                plugin.getGeneProductAssociation().getAssociation()
-            )
-            association = root.toInfix()
-            gene_products = sorted(self._gene_product_refs(root))
+        lower = _attribute(plugin, "lowerFluxBound")
+        upper = _attribute(plugin, "upperFluxBound")
+        association = self.gene_product_association(plugin, reaction_key)
+        if lower is None and upper is None and association is None:
+            return None
         return ReactionFbc(
-            lower_flux_bound=_attribute(plugin, "lowerFluxBound"),
-            upper_flux_bound=_attribute(plugin, "upperFluxBound"),
+            lower_flux_bound=lower,
+            upper_flux_bound=upper,
             gene_product_association=association,
-            gene_products=gene_products,
         )
 
-    @staticmethod
-    def _gene_product_refs(association: libsbml.FbcAssociation) -> set[str]:
-        """The gene product ids referenced by an association tree."""
-        if isinstance(association, libsbml.GeneProductRef):
-            return {association.getGeneProduct()}
-        refs: set[str] = set()
-        # FbcAnd and FbcOr, the only other subclasses of FbcAssociation, expose
-        # getNumAssociations/getAssociation; the libsbml stubs do not declare them
-        # on the base class.
-        for k in range(association.getNumAssociations()):  # ty: ignore[unresolved-attribute]
-            refs |= SBMLDocumentInfo._gene_product_refs(
-                association.getAssociation(k)  # ty: ignore[unresolved-attribute]
+    def user_defined_constraints(
+        self, model: libsbml.Model
+    ) -> list[UserDefinedConstraint]:
+        """The user defined constraints of a model, which fbc Version 3 added.
+
+        libsbml keeps the list empty for a document of an earlier version,
+        which has no way to write a constraint over more than one flux.
+        """
+        plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if not plugin:
+            return []
+        constraints = []
+        for index, udc in enumerate(plugin.getListOfUserDefinedConstraints()):
+            key = self._key(udc, f"userDefinedConstraint.{index}")
+            constraints.append(
+                UserDefinedConstraint(
+                    **self.sbase(udc, key=key),
+                    lower_bound=_attribute(udc, "lowerBound"),
+                    upper_bound=_attribute(udc, "upperBound"),
+                    list_of_user_defined_constraint_components=[
+                        UserDefinedConstraintComponent(
+                            **self.sbase(c, key=f"{key}.component.{position}"),
+                            variable=_attribute(c, "variable"),
+                            variable2=_attribute(c, "variable2"),
+                            coefficient=_attribute(c, "coefficient"),
+                            variable_type=c.getVariableTypeAsString()
+                            if c.isSetVariableType()
+                            else None,
+                        )
+                        for position, c in enumerate(
+                            udc.getListOfUserDefinedConstraintComponents()
+                        )
+                    ],
+                )
             )
-        return refs
+        return constraints
+
+    def gene_product_association(
+        self, plugin: libsbml.FbcReactionPlugin, reaction_key: str
+    ) -> GeneProductAssociation | None:
+        """The gene product association of a reaction, as the tree of fbc §3.9.
+
+        Args:
+            plugin: the fbc extension of the reaction.
+            reaction_key: the key of the reaction, which keys the association
+                and, through it, every node of its tree.
+        """
+        if not plugin.isSetGeneProductAssociation():
+            return None
+        gpa: libsbml.GeneProductAssociation = plugin.getGeneProductAssociation()
+        key = f"{reaction_key}.geneProductAssociation"
+        association = (
+            self.association(gpa.getAssociation(), f"{self._key(gpa, key)}.association")
+            if gpa.isSetAssociation()
+            else None
+        )
+        return GeneProductAssociation(
+            **self.sbase(gpa, key=key, with_xml=False), association=association
+        )
+
+    def association(self, a: libsbml.FbcAssociation, key: str) -> Association:
+        """One node of an association tree, with the nodes below it.
+
+        A node is a reference to a gene product, or an `and` or an `or` of two
+        or more nodes (fbc §3.10 to §3.13). `key` is the key its parent gives
+        it, used for the pk when the node carries neither an id nor a metaId.
+        """
+        if isinstance(a, libsbml.GeneProductRef):
+            return GeneProductRef(
+                **self.sbase(a, key=key, with_xml=False),
+                gene_product=a.getGeneProduct(),
+            )
+        # the type of the report is the name the specification gives the element,
+        # which is the name of the libsbml class without its package prefix
+        if isinstance(a, libsbml.FbcAnd):
+            return And(
+                **self.sbase(a, sbml_type="And", key=key, with_xml=False),
+                associations=self._associations(a, key),
+            )
+        if isinstance(a, libsbml.FbcOr):
+            return Or(
+                **self.sbase(a, sbml_type="Or", key=key, with_xml=False),
+                associations=self._associations(a, key),
+            )
+        raise TypeError(a)
+
+    def _associations(self, a: libsbml.FbcAssociation, key: str) -> list[Association]:
+        """The nodes below an `and` or an `or`, keyed by their position.
+
+        FbcAnd and FbcOr expose `getNumAssociations` and `getAssociation`; the
+        libsbml stubs declare neither of them on the base class.
+        """
+        return [
+            self.association(
+                a.getAssociation(k),  # ty: ignore[unresolved-attribute]
+                f"{self._key(a, key)}.{k}",
+            )
+            for k in range(a.getNumAssociations())  # ty: ignore[unresolved-attribute]
+        ]
+
+    # ---------------------------------------------------------------------------------
+    # qual
+    # ---------------------------------------------------------------------------------
+    def qualitative_species(self, model: libsbml.Model) -> list[QualitativeSpecies]:
+        """The qualitative species of a model with their levels (qual §3.5).
+
+        `getInitialLevel` and `getMaxLevel` answer the largest integer for an
+        attribute the file does not set, so the levels are read through the
+        `isSet` guard of `_attribute`.
+        """
+        plugin: libsbml.QualModelPlugin | None = model.getPlugin("qual")
+        if not plugin:
+            return []
+        return [
+            QualitativeSpecies(
+                **self.sbase(qs),
+                compartment=qs.getCompartment(),
+                constant=_attribute(qs, "constant"),
+                initial_level=_attribute(qs, "initialLevel"),
+                max_level=_attribute(qs, "maxLevel"),
+            )
+            for qs in plugin.getListOfQualitativeSpecies()
+        ]
+
+    def transitions(self, model: libsbml.Model) -> list[Transition]:
+        """The transitions of a model with their inputs, outputs and terms.
+
+        The identifier of a transition is optional and has no mathematical
+        meaning (qual §3.6), so a transition without one is keyed by its
+        position and everything below it by that key.
+        """
+        plugin: libsbml.QualModelPlugin | None = model.getPlugin("qual")
+        if not plugin:
+            return []
+        transitions = []
+        for index, t in enumerate(plugin.getListOfTransitions()):
+            key = self._key(t, f"transition.{index}")
+            transitions.append(
+                Transition(
+                    **self.sbase(t, key=key),
+                    list_of_inputs=[
+                        self.qual_input(i, f"{key}.input.{position}")
+                        for position, i in enumerate(t.getListOfInputs())
+                    ],
+                    list_of_outputs=[
+                        self.qual_output(o, f"{key}.output.{position}")
+                        for position, o in enumerate(t.getListOfOutputs())
+                    ],
+                    list_of_function_terms=[
+                        self.function_term(ft, f"{key}.functionTerm.{position}")
+                        for position, ft in enumerate(t.getListOfFunctionTerms())
+                    ],
+                    default_term=self.default_term(t, key),
+                )
+            )
+        return transitions
+
+    def qual_input(self, i: libsbml.Input, key: str) -> Input:
+        """One input of a transition: the species it reads and the sign of it.
+
+        `key` names the input within its transition, used for the pk when the
+        input carries neither an id nor a metaId.
+        """
+        return Input(
+            **self.sbase(i, key=key),
+            qualitative_species=i.getQualitativeSpecies(),
+            threshold_level=_attribute(i, "thresholdLevel"),
+            transition_effect=INPUT_TRANSITION_EFFECTS.get(i.getTransitionEffect())
+            if i.isSetTransitionEffect()
+            else None,
+            sign=INPUT_SIGNS.get(i.getSign()) if i.isSetSign() else None,
+        )
+
+    def qual_output(self, o: libsbml.Output, key: str) -> Output:
+        """One output of a transition: the species it writes and how.
+
+        `key` names the output within its transition, used for the pk when the
+        output carries neither an id nor a metaId.
+        """
+        return Output(
+            **self.sbase(o, key=key),
+            qualitative_species=o.getQualitativeSpecies(),
+            output_level=_attribute(o, "outputLevel"),
+            transition_effect=OUTPUT_TRANSITION_EFFECTS.get(o.getTransitionEffect())
+            if o.isSetTransitionEffect()
+            else None,
+        )
+
+    def function_term(self, ft: libsbml.FunctionTerm, key: str) -> FunctionTerm:
+        """One function term: the level its condition results in (qual §3.6.5).
+
+        The math is ordinary MathML and its symbols are the identifiers of
+        qualitative species, of inputs and of outputs, which the link graph
+        resolves in the SId namespace of the model.
+        """
+        fields = self.sbase(ft, key=key)
+        return FunctionTerm(
+            **fields,
+            result_level=_attribute(ft, "resultLevel"),
+            math=self.math(fields["pk"], _attribute(ft, "math")),
+        )
+
+    def default_term(
+        self, t: libsbml.Transition, transition_key: str
+    ) -> DefaultTerm | None:
+        """The default term of a transition: its level where no term holds.
+
+        The specification notes that the class is not derived from `SBase`,
+        while libsbml gives it the full surface of one and the report reads it
+        as it reads every other element (qual §3.6.4).
+        """
+        if not t.isSetDefaultTerm():
+            return None
+        dt: libsbml.DefaultTerm = t.getDefaultTerm()
+        return DefaultTerm(
+            **self.sbase(dt, key=f"{transition_key}.defaultTerm"),
+            result_level=_attribute(dt, "resultLevel"),
+        )
 
     # ---------------------------------------------------------------------------------
     # distrib
@@ -790,17 +1487,82 @@ class SBMLDocumentInfo:
             return []
         uncertainties = []
         for index, u in enumerate(plugin.getListOfUncertainties()):
-            fields = self.sbase(u, key=f"{parent_key}.uncertainty.{index}")
-            parameters = [
-                UncertParameter(
-                    var=_attribute(p, "var"),
-                    value=_number(_attribute(p, "value")),
-                    units=_attribute(p, "units"),
-                    type=p.getTypeAsString() if p.isSetType() else None,
-                    definition_url=_attribute(p, "definitionURL"),
-                    math=self.math(fields["pk"], _attribute(p, "math")),
+            key = f"{parent_key}.uncertainty.{index}"
+            fields = self.sbase(u, key=key)
+            uncertainties.append(
+                Uncertainty(
+                    **fields,
+                    uncert_parameters=self.uncert_parameters(u, self._key(u, key)),
                 )
-                for p in u.getListOfUncertParameters()
-            ]
-            uncertainties.append(Uncertainty(**fields, uncert_parameters=parameters))
+            )
         return uncertainties
+
+    def uncert_parameters(
+        self,
+        parent: libsbml.Uncertainty | libsbml.UncertParameter,
+        parent_key: str,
+    ) -> list[UncertMeasure]:
+        """The uncert parameters of an uncertainty or of a parameter.
+
+        A parameter of the type `distribution` or `externalParameter` carries
+        the parameters which define it as a list of its own, to any depth
+        (distrib §3.11.7), and a parameter whose statistic is an interval is an
+        `UncertSpan` with the two ends of that interval (distrib §3.12).
+        libsbml keeps both classes in one list.
+
+        A measure of an uncertainty without an id or a metaId is keyed by its
+        type, which an uncertainty carries once at most, and an external
+        parameter by its definition url, which is unique among the external
+        parameters of an uncertainty (distrib §3.10). The parameters of a
+        parameter have no rule of that kind and are keyed by their place.
+        """
+        measures: list[UncertMeasure] = []
+        children = list(parent.getListOfUncertParameters())
+        if isinstance(parent, libsbml.Uncertainty):
+            keyed = _keyed(
+                children, partial(self._uncert_measure_key, uncertainty_key=parent_key)
+            )
+        else:
+            keyed = [
+                (p, f"{parent_key}.{p.getElementName()}.{index}")
+                for index, p in enumerate(children)
+            ]
+        for p, key in keyed:
+            fields = self.sbase(p, key=key)
+            fields |= {
+                "type": p.getTypeAsString() if p.isSetType() else None,
+                "var": _attribute(p, "var"),
+                "value": _attribute(p, "value"),
+                "units": _attribute(p, "units"),
+                "definition_url": _attribute(p, "definitionURL"),
+                "math": self.math(fields["pk"], _attribute(p, "math")),
+                "uncert_parameters": self.uncert_parameters(p, self._key(p, key)),
+            }
+            if isinstance(p, libsbml.UncertSpan):
+                measures.append(
+                    UncertSpan(
+                        **fields,
+                        value_lower=_attribute(p, "valueLower"),
+                        value_upper=_attribute(p, "valueUpper"),
+                        var_lower=_attribute(p, "varLower"),
+                        var_upper=_attribute(p, "varUpper"),
+                    )
+                )
+            else:
+                measures.append(UncertParameter(**fields))
+        return measures
+
+    @staticmethod
+    def _uncert_measure_key(p: libsbml.UncertParameter, uncertainty_key: str) -> str:
+        """The key of a measure of an uncertainty: its type, or its definition.
+
+        An uncertainty carries every type of measure once at most, the
+        external parameters apart, which are told apart by their definition
+        url (distrib §3.10).
+        """
+        if not p.isSetType():
+            return f"{uncertainty_key}.{p.getElementName()}"
+        kind = p.getTypeAsString()
+        if kind == "externalParameter" and p.isSetDefinitionURL():
+            return f"{uncertainty_key}.{kind}.{p.getDefinitionURL()}"
+        return f"{uncertainty_key}.{kind}"

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" level="3" version="1" comp:required="true">
+  <model metaid="meta_comp_deletion" id="comp_deletion" name="Two cells and a tissue in one medium" substanceUnits="mole" timeUnits="min" volumeUnits="litre" extentUnits="mole">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <p>Example of the composition machinery of the comp package: a medium holding two cells and a tissue.</p>
+        <p>The model definition <code>cell</code> is instantiated three times: twice directly, as the submodels <code>cell1</code> and <code>cell2</code>, and once through the model definition <code>tissue</code>, which holds a cell of its own. The fourth submodel instantiates an external model definition, a document of unit definitions named with its checksum; the report does not read that document, so what its deletion removes stays a name.</p>
+        <p>The compartment <code>medium</code> replaces the compartment of every cell, so that the four instances share one volume, and the species <code>glc</code> replaces their glucose. The submodel <code>cell1</code> loses its own rate constant and its sink reaction through two deletions, and the parameter <code>k_total</code> of this model records that it takes the place of the deleted constant.</p>
+      </body>
+    </notes>
+    <listOfUnitDefinitions>
+      <unitDefinition id="min" name="minute">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="per_min" name="per minute">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="mole_per_min" name="mole per minute">
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="0" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="0" multiplier="60"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="medium" name="shared medium" spatialDimensions="3" size="1" units="litre" constant="true">
+        <comp:listOfReplacedElements>
+          <comp:replacedElement metaid="meta_medium_cell1" comp:submodelRef="cell1" comp:portRef="cell_port"/>
+          <comp:replacedElement metaid="meta_medium_cell2" comp:submodelRef="cell2" comp:portRef="cell_port"/>
+          <comp:replacedElement metaid="meta_medium_tissue" comp:submodelRef="tissue1" comp:idRef="cell_in_tissue">
+            <comp:sBaseRef comp:portRef="cell_port"/>
+          </comp:replacedElement>
+        </comp:listOfReplacedElements>
+      </compartment>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species metaid="meta_glc" id="glc" name="glucose" compartment="medium" initialConcentration="5" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false">
+        <comp:listOfReplacedElements>
+          <comp:replacedElement metaid="meta_glc_cell1" comp:submodelRef="cell1" comp:portRef="glc_port" comp:conversionFactor="f_amount"/>
+          <comp:replacedElement metaid="meta_glc_cell2" comp:submodelRef="cell2" comp:portRef="glc_port"/>
+        </comp:listOfReplacedElements>
+      </species>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="k_total" name="rate constant of the medium" value="0.1" units="per_min" constant="true">
+        <comp:listOfReplacedElements>
+          <comp:replacedElement metaid="meta_k_total_cell1" comp:submodelRef="cell1" comp:deletion="del_k"/>
+        </comp:listOfReplacedElements>
+      </parameter>
+      <parameter id="Vmax_shared" name="maximal rate of the medium" value="1" units="mole_per_min" constant="true">
+        <comp:replacedBy metaid="meta_Vmax_shared" comp:submodelRef="cell2" comp:portRef="Vmax_port"/>
+      </parameter>
+      <parameter id="f_amount" name="conversion factor of the amounts of cell1" value="1" units="dimensionless" constant="true"/>
+      <parameter id="f_time" name="conversion factor of the time of cell2" value="1" units="dimensionless" constant="true"/>
+      <parameter id="f_extent" name="conversion factor of the extent of cell2" value="1" units="dimensionless" constant="true"/>
+      <parameter id="glc_amount" name="amount of glucose in the medium" value="5" units="mole" constant="false"/>
+    </listOfParameters>
+    <listOfRules>
+      <assignmentRule metaid="meta_glc_amount_rule" variable="glc_amount">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> glc </ci>
+            <ci> medium </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+    </listOfRules>
+    <comp:listOfSubmodels>
+      <comp:submodel comp:id="cell1" comp:name="first cell, without its own rate constant" comp:modelRef="cell">
+        <comp:listOfDeletions>
+          <comp:deletion metaid="meta_del_k" sboTerm="SBO:0000002" comp:id="del_k" comp:name="deletion of the rate constant" comp:idRef="k">
+            <notes>
+              <body xmlns="http://www.w3.org/1999/xhtml">
+                <p>The first cell reads the rate constant of the medium instead of its own, so the constant of the cell and the sink reaction which uses it are removed.</p>
+              </body>
+            </notes>
+          </comp:deletion>
+          <comp:deletion metaid="meta_del_sink" comp:id="del_sink" comp:name="deletion of the sink reaction" comp:metaIdRef="meta_sink"/>
+        </comp:listOfDeletions>
+      </comp:submodel>
+      <comp:submodel comp:id="cell2" comp:name="second cell, on its own time and extent scale" comp:modelRef="cell" comp:timeConversionFactor="f_time" comp:extentConversionFactor="f_extent"/>
+      <comp:submodel comp:id="tissue1" comp:name="tissue holding a cell of its own" comp:modelRef="tissue"/>
+      <comp:submodel comp:id="unit_library" comp:name="unit definitions of another document" comp:modelRef="units">
+        <comp:listOfDeletions>
+          <comp:deletion comp:id="del_external_unit" comp:name="deletion of a unit definition of the other document" comp:unitRef="mg_per_day"/>
+        </comp:listOfDeletions>
+      </comp:submodel>
+    </comp:listOfSubmodels>
+    <comp:listOfPorts>
+      <comp:port comp:id="medium_port" comp:name="port of the medium" comp:idRef="medium"/>
+      <comp:port comp:id="per_min_port" comp:name="port of the unit per minute" comp:unitRef="per_min"/>
+      <comp:port comp:id="glc_amount_rule_port" comp:name="port of the rule of the glucose amount" comp:metaIdRef="meta_glc_amount_rule"/>
+    </comp:listOfPorts>
+  </model>
+  <comp:listOfModelDefinitions>
+    <comp:modelDefinition id="cell" name="a single cell" substanceUnits="mole" timeUnits="min" volumeUnits="litre" extentUnits="mole">
+      <listOfUnitDefinitions>
+        <unitDefinition id="min" name="minute">
+          <listOfUnits>
+            <unit kind="second" exponent="1" scale="0" multiplier="60"/>
+          </listOfUnits>
+        </unitDefinition>
+        <unitDefinition id="per_min" name="per minute">
+          <listOfUnits>
+            <unit kind="second" exponent="-1" scale="0" multiplier="60"/>
+          </listOfUnits>
+        </unitDefinition>
+        <unitDefinition id="mole_per_min" name="mole per minute">
+          <listOfUnits>
+            <unit kind="mole" exponent="1" scale="0" multiplier="1"/>
+            <unit kind="second" exponent="-1" scale="0" multiplier="60"/>
+          </listOfUnits>
+        </unitDefinition>
+      </listOfUnitDefinitions>
+      <listOfCompartments>
+        <compartment id="c" name="cell volume" spatialDimensions="3" size="1" units="litre" constant="true"/>
+      </listOfCompartments>
+      <listOfSpecies>
+        <species metaid="meta_glc_cell" id="glc" name="glucose of the cell" compartment="c" initialConcentration="1" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      </listOfSpecies>
+      <listOfParameters>
+        <parameter id="k" name="rate constant of the cell" value="0.2" units="per_min" constant="true"/>
+        <parameter id="Vmax" name="maximal rate of the cell" value="2" units="mole_per_min" constant="true"/>
+      </listOfParameters>
+      <listOfReactions>
+        <reaction metaid="meta_sink" id="sink" name="consumption of glucose" reversible="false" fast="false">
+          <listOfReactants>
+            <speciesReference species="glc" stoichiometry="1" constant="true"/>
+          </listOfReactants>
+          <kineticLaw>
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <apply>
+                <times/>
+                <ci> k </ci>
+                <ci> glc </ci>
+                <ci> c </ci>
+              </apply>
+            </math>
+          </kineticLaw>
+        </reaction>
+      </listOfReactions>
+      <comp:listOfPorts>
+        <comp:port comp:id="cell_port" comp:name="port of the compartment" comp:idRef="c"/>
+        <comp:port comp:id="glc_port" comp:name="port of the glucose" comp:idRef="glc"/>
+        <comp:port comp:id="Vmax_port" comp:name="port of the maximal rate" comp:idRef="Vmax"/>
+      </comp:listOfPorts>
+    </comp:modelDefinition>
+    <comp:modelDefinition id="tissue" name="a tissue built from one cell" substanceUnits="mole" timeUnits="min" volumeUnits="litre" extentUnits="mole">
+      <listOfUnitDefinitions>
+        <unitDefinition id="min" name="minute">
+          <listOfUnits>
+            <unit kind="second" exponent="1" scale="0" multiplier="60"/>
+          </listOfUnits>
+        </unitDefinition>
+      </listOfUnitDefinitions>
+      <listOfCompartments>
+        <compartment id="t" name="tissue volume" spatialDimensions="3" size="1" units="litre" constant="true"/>
+      </listOfCompartments>
+      <comp:listOfSubmodels>
+        <comp:submodel comp:id="cell_in_tissue" comp:name="the cell of the tissue" comp:modelRef="cell"/>
+      </comp:listOfSubmodels>
+    </comp:modelDefinition>
+  </comp:listOfModelDefinitions>
+  <comp:listOfExternalModelDefinitions>
+    <comp:externalModelDefinition comp:id="units" comp:name="the unit definitions of another document" comp:source="unit_definitions.xml" comp:modelRef="unit_definitions" comp:md5="bde1522151d26d8fbca09893ce85ac52"/>
+  </comp:listOfExternalModelDefinitions>
+</sbml>

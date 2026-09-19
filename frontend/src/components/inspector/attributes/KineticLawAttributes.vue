@@ -10,7 +10,7 @@ defineProps<{ element: KineticLaw }>();
 
 const COLUMNS = [
   { key: "id", header: "id" },
-  { key: "value", header: "value" },
+  { key: "value", header: "value", double: true },
   { key: "unitsLatex", header: "units" },
   { key: "derivedUnits", header: "derived units" },
 ];
@@ -29,7 +29,11 @@ const COLUMNS = [
     field="listOfLocalParameters"
     :wide="!!element.listOfLocalParameters?.length"
   >
-    <NestedTable :rows="element.listOfLocalParameters ?? []" :columns="COLUMNS">
+    <NestedTable
+      :rows="element.listOfLocalParameters ?? []"
+      :columns="COLUMNS"
+      type="LocalParameter"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" :label="row.id" /></template>
       <template #cell-unitsLatex="{ row }"
         ><UnitsView :latex="row.unitsLatex" :units="row.units"

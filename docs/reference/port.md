@@ -16,6 +16,7 @@ The report shows which element a port names, links it, and lists the ports of a 
 | [id ref](#id-ref) | `SIdRef` | the element which this port names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [unit ref](#unit-ref) | `UnitSIdRef` | the unit definition which this port names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [meta id ref](#meta-id-ref) | `IDREF` | the element which this port names, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [nested reference](#nested-reference) | `SBaseRef` | the reference which reaches from the named submodel into the model it instantiates | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -42,6 +43,12 @@ The report links the unit definition the port names.
 Every element of a file may carry a meta id, and this is the way to name an element which has no identifier, for example a rule or a reaction which was written without one.
 
 The report searches the element with that meta id in the model and links it.
+
+<span id="nested-reference"></span>**nested reference**
+
+A port which names a submodel of its model can reach through it with a [nested reference](sbaseref.md), so that the port stands for an element buried inside that submodel. The chain may be of any length, one link per submodel it passes.
+
+The report shows the chain in the inspector of the port and links the element at its end.
 
 ## Related elements
 

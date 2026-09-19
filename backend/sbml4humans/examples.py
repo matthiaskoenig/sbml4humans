@@ -17,7 +17,7 @@ from sbml4humans.resources import (
     API_EXAMPLES_OMEX,
     BIOMODELS_CURATED_PATH,
 )
-from sbml4humans.sbml import read_sbml
+from sbml4humans.sbml import package_plugins, read_sbml
 
 
 logger = logging.getLogger(__name__)
@@ -57,7 +57,7 @@ def example_from_sbml(
         raise ValueError(f"Model could not be read for '{sbml_path}'")
 
     model_id = model.getId() if model.isSetId() else sbml_path.stem
-    packages = [doc.getPlugin(k).getPrefix() for k in range(doc.getNumPlugins())]
+    packages = [plugin.getPrefix() for plugin in package_plugins(doc)]
 
     return ExampleMetaData(
         id=example_id or f"{model_id} ({sbml_path.name})",

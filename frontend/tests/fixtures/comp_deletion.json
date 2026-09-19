@@ -1,0 +1,1934 @@
+{
+  "uid": "d5f74759df544d3ab77027627e6a5230",
+  "manifest": {
+    "entries": [
+      {
+        "location": ".",
+        "format": "http://identifiers.org/combine.specifications/omex",
+        "master": false
+      },
+      {
+        "location": "./manifest.xml",
+        "format": "http://identifiers.org/combine.specifications/omex-manifest",
+        "master": false
+      },
+      {
+        "location": "./model.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml",
+        "master": true
+      }
+    ]
+  },
+  "reports": {
+    "./model.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": null,
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "keyValuePairs": [],
+          "level": 3,
+          "version": 1,
+          "packages": [
+            {
+              "prefix": "comp",
+              "version": 1
+            }
+          ],
+          "annotationXml": null
+        },
+        "models": [
+          {
+            "pk": "comp_deletion/Model:comp_deletion",
+            "sbmlType": "Model",
+            "id": "comp_deletion",
+            "metaId": "meta_comp_deletion",
+            "name": "Two cells and a tissue in one medium",
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example of the composition machinery of the comp package: a medium holding two cells and a tissue.</p>\n    <p>The model definition <code>cell</code> is instantiated three times: twice directly, as the submodels <code>cell1</code> and <code>cell2</code>, and once through the model definition <code>tissue</code>, which holds a cell of its own. The fourth submodel instantiates an external model definition, a document of unit definitions named with its checksum; the report does not read that document, so what its deletion removes stays a name.</p>\n    <p>The compartment <code>medium</code> replaces the compartment of every cell, so that the four instances share one volume, and the species <code>glc</code> replaces their glucose. The submodel <code>cell1</code> loses its own rate constant and its sink reaction through two deletions, and the parameter <code>k_total</code> of this model records that it takes the place of the deleted constant.</p>\n  </body>\n</notes>",
+            "cvterms": [],
+            "history": null,
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "kind": "model",
+            "annotationXml": null,
+            "substanceUnits": "mole",
+            "substanceUnitsLatex": "mole",
+            "timeUnits": "min",
+            "timeUnitsLatex": "min",
+            "volumeUnits": "litre",
+            "volumeUnitsLatex": "l",
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": "mole",
+            "extentUnitsLatex": "mole",
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [
+              {
+                "pk": "comp_deletion/UnitDefinition:min",
+                "sbmlType": "UnitDefinition",
+                "id": "min",
+                "metaId": null,
+                "name": "minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"min\" name=\"minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              },
+              {
+                "pk": "comp_deletion/UnitDefinition:per_min",
+                "sbmlType": "UnitDefinition",
+                "id": "per_min",
+                "metaId": null,
+                "name": "per minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"per_min\" name=\"per minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "\\frac{1}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              },
+              {
+                "pk": "comp_deletion/UnitDefinition:mole_per_min",
+                "sbmlType": "UnitDefinition",
+                "id": "mole_per_min",
+                "metaId": null,
+                "name": "mole per minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mole_per_min\" name=\"mole per minute\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "\\frac{mol}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              }
+            ],
+            "listOfCompartments": [
+              {
+                "pk": "comp_deletion/Compartment:medium",
+                "sbmlType": "Compartment",
+                "id": "medium",
+                "metaId": null,
+                "name": "shared medium",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"medium\" name=\"shared medium\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\">\n  <comp:listOfReplacedElements>\n    <comp:replacedElement metaid=\"meta_medium_cell1\" comp:portRef=\"cell_port\" comp:submodelRef=\"cell1\"/>\n    <comp:replacedElement metaid=\"meta_medium_cell2\" comp:portRef=\"cell_port\" comp:submodelRef=\"cell2\"/>\n    <comp:replacedElement metaid=\"meta_medium_tissue\" comp:idRef=\"cell_in_tissue\" comp:submodelRef=\"tissue1\">\n      <comp:sBaseRef comp:portRef=\"cell_port\"/>\n    </comp:replacedElement>\n  </comp:listOfReplacedElements>\n</compartment>",
+                "comp": {
+                  "replacedBy": null,
+                  "replacedElements": [
+                    {
+                      "pk": "comp_deletion/ReplacedElement:meta_medium_cell1",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "meta_medium_cell1",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"meta_medium_cell1\" comp:portRef=\"cell_port\" comp:submodelRef=\"cell1\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "keyValuePairs": [],
+                      "portRef": "cell_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
+                      "submodelRef": "cell1",
+                      "deletion": null,
+                      "conversionFactor": null
+                    },
+                    {
+                      "pk": "comp_deletion/ReplacedElement:meta_medium_cell2",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "meta_medium_cell2",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"meta_medium_cell2\" comp:portRef=\"cell_port\" comp:submodelRef=\"cell2\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "keyValuePairs": [],
+                      "portRef": "cell_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
+                      "submodelRef": "cell2",
+                      "deletion": null,
+                      "conversionFactor": null
+                    },
+                    {
+                      "pk": "comp_deletion/ReplacedElement:meta_medium_tissue",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "meta_medium_tissue",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"meta_medium_tissue\" comp:idRef=\"cell_in_tissue\" comp:submodelRef=\"tissue1\">\n  <comp:sBaseRef comp:portRef=\"cell_port\"/>\n</comp:replacedElement>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "keyValuePairs": [],
+                      "portRef": null,
+                      "idRef": "cell_in_tissue",
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": {
+                        "pk": "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef",
+                        "sbmlType": "SBaseRef",
+                        "id": null,
+                        "metaId": null,
+                        "name": null,
+                        "sbo": null,
+                        "notes": null,
+                        "cvterms": [],
+                        "history": null,
+                        "xml": "<comp:sBaseRef comp:portRef=\"cell_port\"/>",
+                        "comp": null,
+                        "uncertainties": [],
+                        "keyValuePairs": [],
+                        "portRef": "cell_port",
+                        "idRef": null,
+                        "unitRef": null,
+                        "metaIdRef": null,
+                        "sbaseRef": null
+                      },
+                      "submodelRef": "tissue1",
+                      "deletion": null,
+                      "conversionFactor": null
+                    }
+                  ]
+                },
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "comp_deletion/Species:glc",
+                "sbmlType": "Species",
+                "id": "glc",
+                "metaId": "meta_glc",
+                "name": "glucose",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species metaid=\"meta_glc\" id=\"glc\" name=\"glucose\" compartment=\"medium\" initialConcentration=\"5\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\">\n  <comp:listOfReplacedElements>\n    <comp:replacedElement metaid=\"meta_glc_cell1\" comp:portRef=\"glc_port\" comp:submodelRef=\"cell1\" comp:conversionFactor=\"f_amount\"/>\n    <comp:replacedElement metaid=\"meta_glc_cell2\" comp:portRef=\"glc_port\" comp:submodelRef=\"cell2\"/>\n  </comp:listOfReplacedElements>\n</species>",
+                "comp": {
+                  "replacedBy": null,
+                  "replacedElements": [
+                    {
+                      "pk": "comp_deletion/ReplacedElement:meta_glc_cell1",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "meta_glc_cell1",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"meta_glc_cell1\" comp:portRef=\"glc_port\" comp:submodelRef=\"cell1\" comp:conversionFactor=\"f_amount\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "keyValuePairs": [],
+                      "portRef": "glc_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
+                      "submodelRef": "cell1",
+                      "deletion": null,
+                      "conversionFactor": "f_amount"
+                    },
+                    {
+                      "pk": "comp_deletion/ReplacedElement:meta_glc_cell2",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "meta_glc_cell2",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"meta_glc_cell2\" comp:portRef=\"glc_port\" comp:submodelRef=\"cell2\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "keyValuePairs": [],
+                      "portRef": "glc_port",
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
+                      "submodelRef": "cell2",
+                      "deletion": null,
+                      "conversionFactor": null
+                    }
+                  ]
+                },
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "medium",
+                "initialAmount": null,
+                "initialConcentration": 5,
+                "substanceUnits": null,
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": null,
+                "derivedUnits": "\\frac{mol}{l}",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [
+              {
+                "pk": "comp_deletion/Parameter:k_total",
+                "sbmlType": "Parameter",
+                "id": "k_total",
+                "metaId": null,
+                "name": "rate constant of the medium",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"k_total\" name=\"rate constant of the medium\" value=\"0.1\" units=\"per_min\" constant=\"true\">\n  <comp:listOfReplacedElements>\n    <comp:replacedElement metaid=\"meta_k_total_cell1\" comp:submodelRef=\"cell1\" comp:deletion=\"del_k\"/>\n  </comp:listOfReplacedElements>\n</parameter>",
+                "comp": {
+                  "replacedBy": null,
+                  "replacedElements": [
+                    {
+                      "pk": "comp_deletion/ReplacedElement:meta_k_total_cell1",
+                      "sbmlType": "ReplacedElement",
+                      "id": null,
+                      "metaId": "meta_k_total_cell1",
+                      "name": null,
+                      "sbo": null,
+                      "notes": null,
+                      "cvterms": [],
+                      "history": null,
+                      "xml": "<comp:replacedElement metaid=\"meta_k_total_cell1\" comp:submodelRef=\"cell1\" comp:deletion=\"del_k\"/>",
+                      "comp": null,
+                      "uncertainties": [],
+                      "keyValuePairs": [],
+                      "portRef": null,
+                      "idRef": null,
+                      "unitRef": null,
+                      "metaIdRef": null,
+                      "sbaseRef": null,
+                      "submodelRef": "cell1",
+                      "deletion": "del_k",
+                      "conversionFactor": null
+                    }
+                  ]
+                },
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 0.1,
+                "constant": true,
+                "units": "per_min",
+                "unitsLatex": "\\frac{1}{min}",
+                "derivedUnits": "\\frac{1}{min}"
+              },
+              {
+                "pk": "comp_deletion/Parameter:Vmax_shared",
+                "sbmlType": "Parameter",
+                "id": "Vmax_shared",
+                "metaId": null,
+                "name": "maximal rate of the medium",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"Vmax_shared\" name=\"maximal rate of the medium\" value=\"1\" units=\"mole_per_min\" constant=\"true\">\n  <comp:replacedBy metaid=\"meta_Vmax_shared\" comp:portRef=\"Vmax_port\" comp:submodelRef=\"cell2\"/>\n</parameter>",
+                "comp": {
+                  "replacedBy": {
+                    "pk": "comp_deletion/ReplacedBy:meta_Vmax_shared",
+                    "sbmlType": "ReplacedBy",
+                    "id": null,
+                    "metaId": "meta_Vmax_shared",
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<comp:replacedBy metaid=\"meta_Vmax_shared\" comp:portRef=\"Vmax_port\" comp:submodelRef=\"cell2\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "portRef": "Vmax_port",
+                    "idRef": null,
+                    "unitRef": null,
+                    "metaIdRef": null,
+                    "sbaseRef": null,
+                    "submodelRef": "cell2"
+                  },
+                  "replacedElements": []
+                },
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 1,
+                "constant": true,
+                "units": "mole_per_min",
+                "unitsLatex": "\\frac{mol}{min}",
+                "derivedUnits": "\\frac{mol}{min}"
+              },
+              {
+                "pk": "comp_deletion/Parameter:f_amount",
+                "sbmlType": "Parameter",
+                "id": "f_amount",
+                "metaId": null,
+                "name": "conversion factor of the amounts of cell1",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"f_amount\" name=\"conversion factor of the amounts of cell1\" value=\"1\" units=\"dimensionless\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 1,
+                "constant": true,
+                "units": "dimensionless",
+                "unitsLatex": "-",
+                "derivedUnits": "dimensionless"
+              },
+              {
+                "pk": "comp_deletion/Parameter:f_time",
+                "sbmlType": "Parameter",
+                "id": "f_time",
+                "metaId": null,
+                "name": "conversion factor of the time of cell2",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"f_time\" name=\"conversion factor of the time of cell2\" value=\"1\" units=\"dimensionless\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 1,
+                "constant": true,
+                "units": "dimensionless",
+                "unitsLatex": "-",
+                "derivedUnits": "dimensionless"
+              },
+              {
+                "pk": "comp_deletion/Parameter:f_extent",
+                "sbmlType": "Parameter",
+                "id": "f_extent",
+                "metaId": null,
+                "name": "conversion factor of the extent of cell2",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"f_extent\" name=\"conversion factor of the extent of cell2\" value=\"1\" units=\"dimensionless\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 1,
+                "constant": true,
+                "units": "dimensionless",
+                "unitsLatex": "-",
+                "derivedUnits": "dimensionless"
+              },
+              {
+                "pk": "comp_deletion/Parameter:glc_amount",
+                "sbmlType": "Parameter",
+                "id": "glc_amount",
+                "metaId": null,
+                "name": "amount of glucose in the medium",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"glc_amount\" name=\"amount of glucose in the medium\" value=\"5\" units=\"mole\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 5,
+                "constant": false,
+                "units": "mole",
+                "unitsLatex": "mole",
+                "derivedUnits": "mol"
+              }
+            ],
+            "listOfInitialAssignments": [],
+            "listOfRules": [
+              {
+                "pk": "comp_deletion/AssignmentRule:glc_amount",
+                "sbmlType": "AssignmentRule",
+                "id": null,
+                "metaId": "meta_glc_amount_rule",
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<assignmentRule metaid=\"meta_glc_amount_rule\" variable=\"glc_amount\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> glc </ci>\n      <ci> medium </ci>\n    </apply>\n  </math>\n</assignmentRule>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "variable": "glc_amount",
+                "math": {
+                  "latex": " \\mathit{glc}\\cdot \\mathit{medium}",
+                  "formula": "glc * medium"
+                },
+                "derivedUnits": "mol"
+              }
+            ],
+            "listOfConstraints": [],
+            "listOfReactions": [],
+            "listOfEvents": [],
+            "listOfSubmodels": [
+              {
+                "pk": "comp_deletion/Submodel:cell1",
+                "sbmlType": "Submodel",
+                "id": "cell1",
+                "metaId": null,
+                "name": "first cell, without its own rate constant",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:submodel comp:id=\"cell1\" comp:name=\"first cell, without its own rate constant\" comp:modelRef=\"cell\">\n  <comp:listOfDeletions>\n    <comp:deletion metaid=\"meta_del_k\" sboTerm=\"SBO:0000002\" comp:idRef=\"k\" comp:id=\"del_k\" comp:name=\"deletion of the rate constant\">\n      <notes>\n        <body xmlns=\"http://www.w3.org/1999/xhtml\">\n          <p>The first cell reads the rate constant of the medium instead of its own, so the constant of the cell and the sink reaction which uses it are removed.</p>\n        </body>\n      </notes>\n    </comp:deletion>\n    <comp:deletion metaid=\"meta_del_sink\" comp:metaIdRef=\"meta_sink\" comp:id=\"del_sink\" comp:name=\"deletion of the sink reaction\"/>\n  </comp:listOfDeletions>\n</comp:submodel>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "modelRef": "cell",
+                "timeConversionFactor": null,
+                "extentConversionFactor": null,
+                "listOfDeletions": [
+                  {
+                    "pk": "comp_deletion/Deletion:del_k",
+                    "sbmlType": "Deletion",
+                    "id": "del_k",
+                    "metaId": "meta_del_k",
+                    "name": "deletion of the rate constant",
+                    "sbo": "SBO:0000002",
+                    "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The first cell reads the rate constant of the medium instead of its own, so the constant of the cell and the sink reaction which uses it are removed.</p>\n  </body>\n</notes>",
+                    "cvterms": [
+                      {
+                        "qualifier": "BQB_IS",
+                        "resources": [
+                          "https://identifiers.org/SBO:0000002"
+                        ],
+                        "nested": []
+                      }
+                    ],
+                    "history": null,
+                    "xml": "<comp:deletion metaid=\"meta_del_k\" sboTerm=\"SBO:0000002\" comp:idRef=\"k\" comp:id=\"del_k\" comp:name=\"deletion of the rate constant\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The first cell reads the rate constant of the medium instead of its own, so the constant of the cell and the sink reaction which uses it are removed.</p>\n    </body>\n  </notes>\n</comp:deletion>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "portRef": null,
+                    "idRef": "k",
+                    "unitRef": null,
+                    "metaIdRef": null,
+                    "sbaseRef": null
+                  },
+                  {
+                    "pk": "comp_deletion/Deletion:del_sink",
+                    "sbmlType": "Deletion",
+                    "id": "del_sink",
+                    "metaId": "meta_del_sink",
+                    "name": "deletion of the sink reaction",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<comp:deletion metaid=\"meta_del_sink\" comp:metaIdRef=\"meta_sink\" comp:id=\"del_sink\" comp:name=\"deletion of the sink reaction\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "portRef": null,
+                    "idRef": null,
+                    "unitRef": null,
+                    "metaIdRef": "meta_sink",
+                    "sbaseRef": null
+                  }
+                ]
+              },
+              {
+                "pk": "comp_deletion/Submodel:cell2",
+                "sbmlType": "Submodel",
+                "id": "cell2",
+                "metaId": null,
+                "name": "second cell, on its own time and extent scale",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:submodel comp:id=\"cell2\" comp:name=\"second cell, on its own time and extent scale\" comp:modelRef=\"cell\" comp:timeConversionFactor=\"f_time\" comp:extentConversionFactor=\"f_extent\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "modelRef": "cell",
+                "timeConversionFactor": "f_time",
+                "extentConversionFactor": "f_extent",
+                "listOfDeletions": []
+              },
+              {
+                "pk": "comp_deletion/Submodel:tissue1",
+                "sbmlType": "Submodel",
+                "id": "tissue1",
+                "metaId": null,
+                "name": "tissue holding a cell of its own",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:submodel comp:id=\"tissue1\" comp:name=\"tissue holding a cell of its own\" comp:modelRef=\"tissue\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "modelRef": "tissue",
+                "timeConversionFactor": null,
+                "extentConversionFactor": null,
+                "listOfDeletions": []
+              },
+              {
+                "pk": "comp_deletion/Submodel:unit_library",
+                "sbmlType": "Submodel",
+                "id": "unit_library",
+                "metaId": null,
+                "name": "unit definitions of another document",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:submodel comp:id=\"unit_library\" comp:name=\"unit definitions of another document\" comp:modelRef=\"units\">\n  <comp:listOfDeletions>\n    <comp:deletion comp:unitRef=\"mg_per_day\" comp:id=\"del_external_unit\" comp:name=\"deletion of a unit definition of the other document\"/>\n  </comp:listOfDeletions>\n</comp:submodel>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "modelRef": "units",
+                "timeConversionFactor": null,
+                "extentConversionFactor": null,
+                "listOfDeletions": [
+                  {
+                    "pk": "comp_deletion/Deletion:del_external_unit",
+                    "sbmlType": "Deletion",
+                    "id": "del_external_unit",
+                    "metaId": null,
+                    "name": "deletion of a unit definition of the other document",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<comp:deletion comp:unitRef=\"mg_per_day\" comp:id=\"del_external_unit\" comp:name=\"deletion of a unit definition of the other document\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "portRef": null,
+                    "idRef": null,
+                    "unitRef": "mg_per_day",
+                    "metaIdRef": null,
+                    "sbaseRef": null
+                  }
+                ]
+              }
+            ],
+            "listOfPorts": [
+              {
+                "pk": "comp_deletion/Port:medium_port",
+                "sbmlType": "Port",
+                "id": "medium_port",
+                "metaId": null,
+                "name": "port of the medium",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:port comp:idRef=\"medium\" comp:id=\"medium_port\" comp:name=\"port of the medium\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "portRef": null,
+                "idRef": "medium",
+                "unitRef": null,
+                "metaIdRef": null,
+                "sbaseRef": null
+              },
+              {
+                "pk": "comp_deletion/Port:per_min_port",
+                "sbmlType": "Port",
+                "id": "per_min_port",
+                "metaId": null,
+                "name": "port of the unit per minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:port comp:unitRef=\"per_min\" comp:id=\"per_min_port\" comp:name=\"port of the unit per minute\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "portRef": null,
+                "idRef": null,
+                "unitRef": "per_min",
+                "metaIdRef": null,
+                "sbaseRef": null
+              },
+              {
+                "pk": "comp_deletion/Port:glc_amount_rule_port",
+                "sbmlType": "Port",
+                "id": "glc_amount_rule_port",
+                "metaId": null,
+                "name": "port of the rule of the glucose amount",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:port comp:metaIdRef=\"meta_glc_amount_rule\" comp:id=\"glc_amount_rule_port\" comp:name=\"port of the rule of the glucose amount\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "portRef": null,
+                "idRef": null,
+                "unitRef": null,
+                "metaIdRef": "meta_glc_amount_rule",
+                "sbaseRef": null
+              }
+            ],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
+          },
+          {
+            "pk": "cell/Model:cell",
+            "sbmlType": "Model",
+            "id": "cell",
+            "metaId": null,
+            "name": "a single cell",
+            "sbo": null,
+            "notes": null,
+            "cvterms": [],
+            "history": null,
+            "xml": "<comp:modelDefinition id=\"cell\" name=\"a single cell\" substanceUnits=\"mole\" timeUnits=\"min\" volumeUnits=\"litre\" extentUnits=\"mole\">\n  <listOfUnitDefinitions>\n    <unitDefinition id=\"min\" name=\"minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n    <unitDefinition id=\"per_min\" name=\"per minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n    <unitDefinition id=\"mole_per_min\" name=\"mole per minute\">\n      <listOfUnits>\n        <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n        <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n  </listOfUnitDefinitions>\n  <listOfCompartments>\n    <compartment id=\"c\" name=\"cell volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <listOfSpecies>\n    <species metaid=\"meta_glc_cell\" id=\"glc\" name=\"glucose of the cell\" compartment=\"c\" initialConcentration=\"1\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>\n  </listOfSpecies>\n  <listOfParameters>\n    <parameter id=\"k\" name=\"rate constant of the cell\" value=\"0.2\" units=\"per_min\" constant=\"true\"/>\n    <parameter id=\"Vmax\" name=\"maximal rate of the cell\" value=\"2\" units=\"mole_per_min\" constant=\"true\"/>\n  </listOfParameters>\n  <listOfReactions>\n    <reaction metaid=\"meta_sink\" id=\"sink\" name=\"consumption of glucose\" reversible=\"false\" fast=\"false\">\n      <listOfReactants>\n        <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n      </listOfReactants>\n      <kineticLaw>\n        <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n          <apply>\n            <times/>\n            <ci> k </ci>\n            <ci> glc </ci>\n            <ci> c </ci>\n          </apply>\n        </math>\n      </kineticLaw>\n    </reaction>\n  </listOfReactions>\n  <comp:listOfPorts>\n    <comp:port comp:idRef=\"c\" comp:id=\"cell_port\" comp:name=\"port of the compartment\"/>\n    <comp:port comp:idRef=\"glc\" comp:id=\"glc_port\" comp:name=\"port of the glucose\"/>\n    <comp:port comp:idRef=\"Vmax\" comp:id=\"Vmax_port\" comp:name=\"port of the maximal rate\"/>\n  </comp:listOfPorts>\n</comp:modelDefinition>",
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "kind": "modelDefinition",
+            "annotationXml": null,
+            "substanceUnits": "mole",
+            "substanceUnitsLatex": "mole",
+            "timeUnits": "min",
+            "timeUnitsLatex": "min",
+            "volumeUnits": "litre",
+            "volumeUnitsLatex": "l",
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": "mole",
+            "extentUnitsLatex": "mole",
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [
+              {
+                "pk": "cell/UnitDefinition:min",
+                "sbmlType": "UnitDefinition",
+                "id": "min",
+                "metaId": null,
+                "name": "minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"min\" name=\"minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              },
+              {
+                "pk": "cell/UnitDefinition:per_min",
+                "sbmlType": "UnitDefinition",
+                "id": "per_min",
+                "metaId": null,
+                "name": "per minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"per_min\" name=\"per minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "\\frac{1}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              },
+              {
+                "pk": "cell/UnitDefinition:mole_per_min",
+                "sbmlType": "UnitDefinition",
+                "id": "mole_per_min",
+                "metaId": null,
+                "name": "mole per minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"mole_per_min\" name=\"mole per minute\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "\\frac{mol}{min}",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 1
+                  },
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              }
+            ],
+            "listOfCompartments": [
+              {
+                "pk": "cell/Compartment:c",
+                "sbmlType": "Compartment",
+                "id": "c",
+                "metaId": null,
+                "name": "cell volume",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"c\" name=\"cell volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "cell/Species:glc",
+                "sbmlType": "Species",
+                "id": "glc",
+                "metaId": "meta_glc_cell",
+                "name": "glucose of the cell",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species metaid=\"meta_glc_cell\" id=\"glc\" name=\"glucose of the cell\" compartment=\"c\" initialConcentration=\"1\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "compartment": "c",
+                "initialAmount": null,
+                "initialConcentration": 1,
+                "substanceUnits": null,
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": null,
+                "derivedUnits": "\\frac{mol}{l}",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [
+              {
+                "pk": "cell/Parameter:k",
+                "sbmlType": "Parameter",
+                "id": "k",
+                "metaId": null,
+                "name": "rate constant of the cell",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"k\" name=\"rate constant of the cell\" value=\"0.2\" units=\"per_min\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 0.2,
+                "constant": true,
+                "units": "per_min",
+                "unitsLatex": "\\frac{1}{min}",
+                "derivedUnits": "\\frac{1}{min}"
+              },
+              {
+                "pk": "cell/Parameter:Vmax",
+                "sbmlType": "Parameter",
+                "id": "Vmax",
+                "metaId": null,
+                "name": "maximal rate of the cell",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"Vmax\" name=\"maximal rate of the cell\" value=\"2\" units=\"mole_per_min\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 2,
+                "constant": true,
+                "units": "mole_per_min",
+                "unitsLatex": "\\frac{mol}{min}",
+                "derivedUnits": "\\frac{mol}{min}"
+              }
+            ],
+            "listOfInitialAssignments": [],
+            "listOfRules": [],
+            "listOfConstraints": [],
+            "listOfReactions": [
+              {
+                "pk": "cell/Reaction:sink",
+                "sbmlType": "Reaction",
+                "id": "sink",
+                "metaId": "meta_sink",
+                "name": "consumption of glucose",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<reaction metaid=\"meta_sink\" id=\"sink\" name=\"consumption of glucose\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k </ci>\n        <ci> glc </ci>\n        <ci> c </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "reversible": false,
+                "fast": false,
+                "compartment": null,
+                "listOfReactants": [
+                  {
+                    "pk": "cell/SpeciesReference:sink.reactant.glc",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "species": "glc",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [],
+                "listOfModifiers": [],
+                "kineticLaw": {
+                  "pk": "cell/KineticLaw:sink.kineticLaw",
+                  "sbmlType": "KineticLaw",
+                  "id": null,
+                  "metaId": null,
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k </ci>\n      <ci> glc </ci>\n      <ci> c </ci>\n    </apply>\n  </math>\n</kineticLaw>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "keyValuePairs": [],
+                  "math": {
+                    "latex": " \\mathit{k}\\cdot \\mathit{glc}\\cdot \\mathit{c}",
+                    "formula": "k * glc * c"
+                  },
+                  "derivedUnits": "\\frac{mol}{min}",
+                  "listOfLocalParameters": []
+                },
+                "equation": "glc ➞ ",
+                "fbc": null
+              }
+            ],
+            "listOfEvents": [],
+            "listOfSubmodels": [],
+            "listOfPorts": [
+              {
+                "pk": "cell/Port:cell_port",
+                "sbmlType": "Port",
+                "id": "cell_port",
+                "metaId": null,
+                "name": "port of the compartment",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:port comp:idRef=\"c\" comp:id=\"cell_port\" comp:name=\"port of the compartment\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "portRef": null,
+                "idRef": "c",
+                "unitRef": null,
+                "metaIdRef": null,
+                "sbaseRef": null
+              },
+              {
+                "pk": "cell/Port:glc_port",
+                "sbmlType": "Port",
+                "id": "glc_port",
+                "metaId": null,
+                "name": "port of the glucose",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:port comp:idRef=\"glc\" comp:id=\"glc_port\" comp:name=\"port of the glucose\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "portRef": null,
+                "idRef": "glc",
+                "unitRef": null,
+                "metaIdRef": null,
+                "sbaseRef": null
+              },
+              {
+                "pk": "cell/Port:Vmax_port",
+                "sbmlType": "Port",
+                "id": "Vmax_port",
+                "metaId": null,
+                "name": "port of the maximal rate",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:port comp:idRef=\"Vmax\" comp:id=\"Vmax_port\" comp:name=\"port of the maximal rate\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "portRef": null,
+                "idRef": "Vmax",
+                "unitRef": null,
+                "metaIdRef": null,
+                "sbaseRef": null
+              }
+            ],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
+          },
+          {
+            "pk": "tissue/Model:tissue",
+            "sbmlType": "Model",
+            "id": "tissue",
+            "metaId": null,
+            "name": "a tissue built from one cell",
+            "sbo": null,
+            "notes": null,
+            "cvterms": [],
+            "history": null,
+            "xml": "<comp:modelDefinition id=\"tissue\" name=\"a tissue built from one cell\" substanceUnits=\"mole\" timeUnits=\"min\" volumeUnits=\"litre\" extentUnits=\"mole\">\n  <listOfUnitDefinitions>\n    <unitDefinition id=\"min\" name=\"minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n  </listOfUnitDefinitions>\n  <listOfCompartments>\n    <compartment id=\"t\" name=\"tissue volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <comp:listOfSubmodels>\n    <comp:submodel comp:id=\"cell_in_tissue\" comp:name=\"the cell of the tissue\" comp:modelRef=\"cell\"/>\n  </comp:listOfSubmodels>\n</comp:modelDefinition>",
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "kind": "modelDefinition",
+            "annotationXml": null,
+            "substanceUnits": "mole",
+            "substanceUnitsLatex": "mole",
+            "timeUnits": "min",
+            "timeUnitsLatex": "min",
+            "volumeUnits": "litre",
+            "volumeUnitsLatex": "l",
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": "mole",
+            "extentUnitsLatex": "mole",
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [
+              {
+                "pk": "tissue/UnitDefinition:min",
+                "sbmlType": "UnitDefinition",
+                "id": "min",
+                "metaId": null,
+                "name": "minute",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"min\" name=\"minute\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
+              }
+            ],
+            "listOfCompartments": [
+              {
+                "pk": "tissue/Compartment:t",
+                "sbmlType": "Compartment",
+                "id": "t",
+                "metaId": null,
+                "name": "tissue volume",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"t\" name=\"tissue volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [],
+            "listOfParameters": [],
+            "listOfInitialAssignments": [],
+            "listOfRules": [],
+            "listOfConstraints": [],
+            "listOfReactions": [],
+            "listOfEvents": [],
+            "listOfSubmodels": [
+              {
+                "pk": "tissue/Submodel:cell_in_tissue",
+                "sbmlType": "Submodel",
+                "id": "cell_in_tissue",
+                "metaId": null,
+                "name": "the cell of the tissue",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:submodel comp:id=\"cell_in_tissue\" comp:name=\"the cell of the tissue\" comp:modelRef=\"cell\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "modelRef": "cell",
+                "timeConversionFactor": null,
+                "extentConversionFactor": null,
+                "listOfDeletions": []
+              }
+            ],
+            "listOfPorts": [],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
+          }
+        ],
+        "externalModelDefinitions": [
+          {
+            "pk": "document/ExternalModelDefinition:units",
+            "sbmlType": "ExternalModelDefinition",
+            "id": "units",
+            "metaId": null,
+            "name": "the unit definitions of another document",
+            "sbo": null,
+            "notes": null,
+            "cvterms": [],
+            "history": null,
+            "xml": "<comp:externalModelDefinition comp:id=\"units\" comp:name=\"the unit definitions of another document\" comp:source=\"unit_definitions.xml\" comp:modelRef=\"unit_definitions\" comp:md5=\"bde1522151d26d8fbca09893ce85ac52\"/>",
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "source": "unit_definitions.xml",
+            "modelRef": "unit_definitions",
+            "md5": "bde1522151d26d8fbca09893ce85ac52"
+          }
+        ],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "document/ExternalModelDefinition:units": {
+              "pk": "document/ExternalModelDefinition:units",
+              "sbmlType": "ExternalModelDefinition",
+              "id": "units",
+              "name": "the unit definitions of another document",
+              "model": null
+            },
+            "comp_deletion/Model:comp_deletion": {
+              "pk": "comp_deletion/Model:comp_deletion",
+              "sbmlType": "Model",
+              "id": "comp_deletion",
+              "name": "Two cells and a tissue in one medium",
+              "model": null
+            },
+            "comp_deletion/UnitDefinition:min": {
+              "pk": "comp_deletion/UnitDefinition:min",
+              "sbmlType": "UnitDefinition",
+              "id": "min",
+              "name": "minute",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/UnitDefinition:per_min": {
+              "pk": "comp_deletion/UnitDefinition:per_min",
+              "sbmlType": "UnitDefinition",
+              "id": "per_min",
+              "name": "per minute",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/UnitDefinition:mole_per_min": {
+              "pk": "comp_deletion/UnitDefinition:mole_per_min",
+              "sbmlType": "UnitDefinition",
+              "id": "mole_per_min",
+              "name": "mole per minute",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Compartment:medium": {
+              "pk": "comp_deletion/Compartment:medium",
+              "sbmlType": "Compartment",
+              "id": "medium",
+              "name": "shared medium",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/ReplacedElement:meta_medium_cell1": {
+              "pk": "comp_deletion/ReplacedElement:meta_medium_cell1",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/ReplacedElement:meta_medium_cell2": {
+              "pk": "comp_deletion/ReplacedElement:meta_medium_cell2",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/ReplacedElement:meta_medium_tissue": {
+              "pk": "comp_deletion/ReplacedElement:meta_medium_tissue",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef": {
+              "pk": "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef",
+              "sbmlType": "SBaseRef",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Species:glc": {
+              "pk": "comp_deletion/Species:glc",
+              "sbmlType": "Species",
+              "id": "glc",
+              "name": "glucose",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/ReplacedElement:meta_glc_cell1": {
+              "pk": "comp_deletion/ReplacedElement:meta_glc_cell1",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/ReplacedElement:meta_glc_cell2": {
+              "pk": "comp_deletion/ReplacedElement:meta_glc_cell2",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Parameter:k_total": {
+              "pk": "comp_deletion/Parameter:k_total",
+              "sbmlType": "Parameter",
+              "id": "k_total",
+              "name": "rate constant of the medium",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/ReplacedElement:meta_k_total_cell1": {
+              "pk": "comp_deletion/ReplacedElement:meta_k_total_cell1",
+              "sbmlType": "ReplacedElement",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Parameter:Vmax_shared": {
+              "pk": "comp_deletion/Parameter:Vmax_shared",
+              "sbmlType": "Parameter",
+              "id": "Vmax_shared",
+              "name": "maximal rate of the medium",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/ReplacedBy:meta_Vmax_shared": {
+              "pk": "comp_deletion/ReplacedBy:meta_Vmax_shared",
+              "sbmlType": "ReplacedBy",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Parameter:f_amount": {
+              "pk": "comp_deletion/Parameter:f_amount",
+              "sbmlType": "Parameter",
+              "id": "f_amount",
+              "name": "conversion factor of the amounts of cell1",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Parameter:f_time": {
+              "pk": "comp_deletion/Parameter:f_time",
+              "sbmlType": "Parameter",
+              "id": "f_time",
+              "name": "conversion factor of the time of cell2",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Parameter:f_extent": {
+              "pk": "comp_deletion/Parameter:f_extent",
+              "sbmlType": "Parameter",
+              "id": "f_extent",
+              "name": "conversion factor of the extent of cell2",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Parameter:glc_amount": {
+              "pk": "comp_deletion/Parameter:glc_amount",
+              "sbmlType": "Parameter",
+              "id": "glc_amount",
+              "name": "amount of glucose in the medium",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/AssignmentRule:glc_amount": {
+              "pk": "comp_deletion/AssignmentRule:glc_amount",
+              "sbmlType": "AssignmentRule",
+              "id": null,
+              "name": null,
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Submodel:cell1": {
+              "pk": "comp_deletion/Submodel:cell1",
+              "sbmlType": "Submodel",
+              "id": "cell1",
+              "name": "first cell, without its own rate constant",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Submodel:cell2": {
+              "pk": "comp_deletion/Submodel:cell2",
+              "sbmlType": "Submodel",
+              "id": "cell2",
+              "name": "second cell, on its own time and extent scale",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Submodel:tissue1": {
+              "pk": "comp_deletion/Submodel:tissue1",
+              "sbmlType": "Submodel",
+              "id": "tissue1",
+              "name": "tissue holding a cell of its own",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Submodel:unit_library": {
+              "pk": "comp_deletion/Submodel:unit_library",
+              "sbmlType": "Submodel",
+              "id": "unit_library",
+              "name": "unit definitions of another document",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Port:medium_port": {
+              "pk": "comp_deletion/Port:medium_port",
+              "sbmlType": "Port",
+              "id": "medium_port",
+              "name": "port of the medium",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Port:per_min_port": {
+              "pk": "comp_deletion/Port:per_min_port",
+              "sbmlType": "Port",
+              "id": "per_min_port",
+              "name": "port of the unit per minute",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Port:glc_amount_rule_port": {
+              "pk": "comp_deletion/Port:glc_amount_rule_port",
+              "sbmlType": "Port",
+              "id": "glc_amount_rule_port",
+              "name": "port of the rule of the glucose amount",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Deletion:del_k": {
+              "pk": "comp_deletion/Deletion:del_k",
+              "sbmlType": "Deletion",
+              "id": "del_k",
+              "name": "deletion of the rate constant",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Deletion:del_sink": {
+              "pk": "comp_deletion/Deletion:del_sink",
+              "sbmlType": "Deletion",
+              "id": "del_sink",
+              "name": "deletion of the sink reaction",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "comp_deletion/Deletion:del_external_unit": {
+              "pk": "comp_deletion/Deletion:del_external_unit",
+              "sbmlType": "Deletion",
+              "id": "del_external_unit",
+              "name": "deletion of a unit definition of the other document",
+              "model": "comp_deletion/Model:comp_deletion"
+            },
+            "cell/Model:cell": {
+              "pk": "cell/Model:cell",
+              "sbmlType": "Model",
+              "id": "cell",
+              "name": "a single cell",
+              "model": null
+            },
+            "cell/UnitDefinition:min": {
+              "pk": "cell/UnitDefinition:min",
+              "sbmlType": "UnitDefinition",
+              "id": "min",
+              "name": "minute",
+              "model": "cell/Model:cell"
+            },
+            "cell/UnitDefinition:per_min": {
+              "pk": "cell/UnitDefinition:per_min",
+              "sbmlType": "UnitDefinition",
+              "id": "per_min",
+              "name": "per minute",
+              "model": "cell/Model:cell"
+            },
+            "cell/UnitDefinition:mole_per_min": {
+              "pk": "cell/UnitDefinition:mole_per_min",
+              "sbmlType": "UnitDefinition",
+              "id": "mole_per_min",
+              "name": "mole per minute",
+              "model": "cell/Model:cell"
+            },
+            "cell/Compartment:c": {
+              "pk": "cell/Compartment:c",
+              "sbmlType": "Compartment",
+              "id": "c",
+              "name": "cell volume",
+              "model": "cell/Model:cell"
+            },
+            "cell/Species:glc": {
+              "pk": "cell/Species:glc",
+              "sbmlType": "Species",
+              "id": "glc",
+              "name": "glucose of the cell",
+              "model": "cell/Model:cell"
+            },
+            "cell/Parameter:k": {
+              "pk": "cell/Parameter:k",
+              "sbmlType": "Parameter",
+              "id": "k",
+              "name": "rate constant of the cell",
+              "model": "cell/Model:cell"
+            },
+            "cell/Parameter:Vmax": {
+              "pk": "cell/Parameter:Vmax",
+              "sbmlType": "Parameter",
+              "id": "Vmax",
+              "name": "maximal rate of the cell",
+              "model": "cell/Model:cell"
+            },
+            "cell/Reaction:sink": {
+              "pk": "cell/Reaction:sink",
+              "sbmlType": "Reaction",
+              "id": "sink",
+              "name": "consumption of glucose",
+              "model": "cell/Model:cell"
+            },
+            "cell/SpeciesReference:sink.reactant.glc": {
+              "pk": "cell/SpeciesReference:sink.reactant.glc",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "cell/Model:cell"
+            },
+            "cell/KineticLaw:sink.kineticLaw": {
+              "pk": "cell/KineticLaw:sink.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "cell/Model:cell"
+            },
+            "cell/Port:cell_port": {
+              "pk": "cell/Port:cell_port",
+              "sbmlType": "Port",
+              "id": "cell_port",
+              "name": "port of the compartment",
+              "model": "cell/Model:cell"
+            },
+            "cell/Port:glc_port": {
+              "pk": "cell/Port:glc_port",
+              "sbmlType": "Port",
+              "id": "glc_port",
+              "name": "port of the glucose",
+              "model": "cell/Model:cell"
+            },
+            "cell/Port:Vmax_port": {
+              "pk": "cell/Port:Vmax_port",
+              "sbmlType": "Port",
+              "id": "Vmax_port",
+              "name": "port of the maximal rate",
+              "model": "cell/Model:cell"
+            },
+            "tissue/Model:tissue": {
+              "pk": "tissue/Model:tissue",
+              "sbmlType": "Model",
+              "id": "tissue",
+              "name": "a tissue built from one cell",
+              "model": null
+            },
+            "tissue/UnitDefinition:min": {
+              "pk": "tissue/UnitDefinition:min",
+              "sbmlType": "UnitDefinition",
+              "id": "min",
+              "name": "minute",
+              "model": "tissue/Model:tissue"
+            },
+            "tissue/Compartment:t": {
+              "pk": "tissue/Compartment:t",
+              "sbmlType": "Compartment",
+              "id": "t",
+              "name": "tissue volume",
+              "model": "tissue/Model:tissue"
+            },
+            "tissue/Submodel:cell_in_tissue": {
+              "pk": "tissue/Submodel:cell_in_tissue",
+              "sbmlType": "Submodel",
+              "id": "cell_in_tissue",
+              "name": "the cell of the tissue",
+              "model": "tissue/Model:tissue"
+            }
+          },
+          "edges": [
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "comp_deletion/Model:comp_deletion",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "cell/Model:cell",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "tissue/Model:tissue",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "document/ExternalModelDefinition:units",
+              "kind": "externalModelDefinition"
+            },
+            {
+              "source": "comp_deletion/Compartment:medium",
+              "target": "comp_deletion/ReplacedElement:meta_medium_cell1",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_cell1",
+              "target": "comp_deletion/Submodel:cell1",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_cell1",
+              "target": "cell/Compartment:c",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/Compartment:medium",
+              "target": "comp_deletion/ReplacedElement:meta_medium_cell2",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_cell2",
+              "target": "comp_deletion/Submodel:cell2",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_cell2",
+              "target": "cell/Compartment:c",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/Compartment:medium",
+              "target": "comp_deletion/ReplacedElement:meta_medium_tissue",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_tissue",
+              "target": "comp_deletion/Submodel:tissue1",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_tissue",
+              "target": "cell/Compartment:c",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_medium_tissue",
+              "target": "comp_deletion/SBaseRef:meta_medium_tissue.sBaseRef",
+              "kind": "sBaseRef"
+            },
+            {
+              "source": "comp_deletion/Species:glc",
+              "target": "comp_deletion/ReplacedElement:meta_glc_cell1",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_glc_cell1",
+              "target": "comp_deletion/Submodel:cell1",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_glc_cell1",
+              "target": "cell/Species:glc",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_glc_cell1",
+              "target": "comp_deletion/Parameter:f_amount",
+              "kind": "conversionFactor"
+            },
+            {
+              "source": "comp_deletion/Species:glc",
+              "target": "comp_deletion/ReplacedElement:meta_glc_cell2",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_glc_cell2",
+              "target": "comp_deletion/Submodel:cell2",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_glc_cell2",
+              "target": "cell/Species:glc",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/Parameter:k_total",
+              "target": "comp_deletion/ReplacedElement:meta_k_total_cell1",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_k_total_cell1",
+              "target": "comp_deletion/Submodel:cell1",
+              "kind": "replacedElement"
+            },
+            {
+              "source": "comp_deletion/ReplacedElement:meta_k_total_cell1",
+              "target": "comp_deletion/Deletion:del_k",
+              "kind": "deletion"
+            },
+            {
+              "source": "comp_deletion/Parameter:Vmax_shared",
+              "target": "comp_deletion/ReplacedBy:meta_Vmax_shared",
+              "kind": "replacedBy"
+            },
+            {
+              "source": "comp_deletion/ReplacedBy:meta_Vmax_shared",
+              "target": "comp_deletion/Submodel:cell2",
+              "kind": "replacedBy"
+            },
+            {
+              "source": "comp_deletion/ReplacedBy:meta_Vmax_shared",
+              "target": "cell/Parameter:Vmax",
+              "kind": "replacedBy"
+            },
+            {
+              "source": "comp_deletion/Model:comp_deletion",
+              "target": "comp_deletion/UnitDefinition:min",
+              "kind": "units"
+            },
+            {
+              "source": "comp_deletion/Species:glc",
+              "target": "comp_deletion/Compartment:medium",
+              "kind": "compartment"
+            },
+            {
+              "source": "comp_deletion/Parameter:k_total",
+              "target": "comp_deletion/UnitDefinition:per_min",
+              "kind": "units"
+            },
+            {
+              "source": "comp_deletion/Parameter:Vmax_shared",
+              "target": "comp_deletion/UnitDefinition:mole_per_min",
+              "kind": "units"
+            },
+            {
+              "source": "comp_deletion/AssignmentRule:glc_amount",
+              "target": "comp_deletion/Parameter:glc_amount",
+              "kind": "variable"
+            },
+            {
+              "source": "comp_deletion/AssignmentRule:glc_amount",
+              "target": "comp_deletion/Species:glc",
+              "kind": "math"
+            },
+            {
+              "source": "comp_deletion/AssignmentRule:glc_amount",
+              "target": "comp_deletion/Compartment:medium",
+              "kind": "math"
+            },
+            {
+              "source": "comp_deletion/Submodel:cell1",
+              "target": "cell/Model:cell",
+              "kind": "modelRef"
+            },
+            {
+              "source": "comp_deletion/Submodel:cell1",
+              "target": "comp_deletion/Deletion:del_k",
+              "kind": "deletion"
+            },
+            {
+              "source": "comp_deletion/Deletion:del_k",
+              "target": "cell/Parameter:k",
+              "kind": "deletion"
+            },
+            {
+              "source": "comp_deletion/Submodel:cell1",
+              "target": "comp_deletion/Deletion:del_sink",
+              "kind": "deletion"
+            },
+            {
+              "source": "comp_deletion/Deletion:del_sink",
+              "target": "cell/Reaction:sink",
+              "kind": "deletion"
+            },
+            {
+              "source": "comp_deletion/Submodel:cell2",
+              "target": "cell/Model:cell",
+              "kind": "modelRef"
+            },
+            {
+              "source": "comp_deletion/Submodel:cell2",
+              "target": "comp_deletion/Parameter:f_time",
+              "kind": "timeConversionFactor"
+            },
+            {
+              "source": "comp_deletion/Submodel:cell2",
+              "target": "comp_deletion/Parameter:f_extent",
+              "kind": "extentConversionFactor"
+            },
+            {
+              "source": "comp_deletion/Submodel:tissue1",
+              "target": "tissue/Model:tissue",
+              "kind": "modelRef"
+            },
+            {
+              "source": "comp_deletion/Submodel:unit_library",
+              "target": "document/ExternalModelDefinition:units",
+              "kind": "modelRef"
+            },
+            {
+              "source": "comp_deletion/Submodel:unit_library",
+              "target": "comp_deletion/Deletion:del_external_unit",
+              "kind": "deletion"
+            },
+            {
+              "source": "comp_deletion/Port:medium_port",
+              "target": "comp_deletion/Compartment:medium",
+              "kind": "port"
+            },
+            {
+              "source": "comp_deletion/Port:per_min_port",
+              "target": "comp_deletion/UnitDefinition:per_min",
+              "kind": "port"
+            },
+            {
+              "source": "comp_deletion/Port:glc_amount_rule_port",
+              "target": "comp_deletion/AssignmentRule:glc_amount",
+              "kind": "port"
+            },
+            {
+              "source": "cell/Model:cell",
+              "target": "cell/UnitDefinition:min",
+              "kind": "units"
+            },
+            {
+              "source": "cell/Species:glc",
+              "target": "cell/Compartment:c",
+              "kind": "compartment"
+            },
+            {
+              "source": "cell/Parameter:k",
+              "target": "cell/UnitDefinition:per_min",
+              "kind": "units"
+            },
+            {
+              "source": "cell/Parameter:Vmax",
+              "target": "cell/UnitDefinition:mole_per_min",
+              "kind": "units"
+            },
+            {
+              "source": "cell/Reaction:sink",
+              "target": "cell/SpeciesReference:sink.reactant.glc",
+              "kind": "reactant"
+            },
+            {
+              "source": "cell/SpeciesReference:sink.reactant.glc",
+              "target": "cell/Species:glc",
+              "kind": "reactant"
+            },
+            {
+              "source": "cell/Reaction:sink",
+              "target": "cell/KineticLaw:sink.kineticLaw",
+              "kind": "kineticLaw"
+            },
+            {
+              "source": "cell/KineticLaw:sink.kineticLaw",
+              "target": "cell/Compartment:c",
+              "kind": "math"
+            },
+            {
+              "source": "cell/KineticLaw:sink.kineticLaw",
+              "target": "cell/Species:glc",
+              "kind": "math"
+            },
+            {
+              "source": "cell/KineticLaw:sink.kineticLaw",
+              "target": "cell/Parameter:k",
+              "kind": "math"
+            },
+            {
+              "source": "cell/Port:cell_port",
+              "target": "cell/Compartment:c",
+              "kind": "port"
+            },
+            {
+              "source": "cell/Port:glc_port",
+              "target": "cell/Species:glc",
+              "kind": "port"
+            },
+            {
+              "source": "cell/Port:Vmax_port",
+              "target": "cell/Parameter:Vmax",
+              "kind": "port"
+            },
+            {
+              "source": "tissue/Model:tissue",
+              "target": "tissue/UnitDefinition:min",
+              "kind": "units"
+            },
+            {
+              "source": "tissue/Submodel:cell_in_tissue",
+              "target": "cell/Model:cell",
+              "kind": "modelRef"
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.025 [s]"
+      }
+    }
+  }
+}

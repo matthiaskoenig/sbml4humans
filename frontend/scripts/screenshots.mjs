@@ -1,5 +1,5 @@
-// Screenshots of the application for the documentation, taken in place of the
-// `<!-- screenshot: ... -->` markers of docs/index.md, docs/inputs.md and docs/report.md.
+// Screenshots of the application for the documentation, written to docs/images/ and shown by
+// docs/index.md, docs/inputs.md and docs/report.md.
 // Usage: start the backend (cd backend && uv run uvicorn sbml4humans.api:api --port 1444) and
 // the dev server (cd frontend && npx vite --port 3456), then `npm run screenshots`. Rerun it
 // after a change of the user interface, the images are committed alongside the documentation.
@@ -10,8 +10,8 @@
 // wide, which is what draws their text at the size of the text next to them. The report as a
 // whole needs its type bar, its tables and its inspector at once, which no window that narrow
 // shows: it is captured in REPORT_VIEWPORT, the narrowest window in which the layout is honest,
-// and the documentation links those three images to their file, so that a click opens them at
-// full size.
+// and the documentation links those images to their file, so that a click opens them at full
+// size. The two tables of a qualitative model fit the column and are captured at its width.
 import { chromium, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -271,7 +271,7 @@ try {
   );
 
   // examples.png: the filter and the first cards of the examples page. The grid holds all the
-  // examples (95 at the time of writing), far taller than any window, so the picture ends below
+  // examples (101 at the time of writing), far taller than any window, so the picture ends below
   // the third row of cards.
   await pages.goto(`${BASE_URL}/examples`);
   await expect.poll(() => pages.getByTestId("example-card").count()).toBeGreaterThan(50);
@@ -315,7 +315,38 @@ try {
   await shot("report-search", report, {
     clip: { x: 0, y: 0, width: REPORT_VIEWPORT.width, height: Math.ceil(filled) + 16 },
   });
+
   await report.close();
+
+  // report-qual.png: the report of a qualitative model, the one kind of model which is built
+  // from no reaction at all. Its two tables are the state space of the model and its influence
+  // graph, which is what the columns of a qualitative report are for, and nothing is selected so
+  // that both tables have the whole width of the window. The signs of the influences are the
+  // point of the picture, so it is taken in a window as wide as the column of the site, where
+  // they are drawn at the size of the text next to them, from the type bar down: the two tables
+  // fit that width, and the app bar above them does not.
+  const qual = await newPage(PAGE_VIEWPORT);
+  await open(qual, "qual_example (qual_example.xml)");
+  await expect(qual.getByTestId("inspector")).toHaveCount(0);
+  await expect(qual.getByTestId("table-QualitativeSpecies")).toBeVisible();
+  await expect(qual.getByTestId("table-Transition")).toBeVisible();
+  for (const type of ["QualitativeSpecies", "Transition"]) {
+    const table = qual.getByTestId(`table-${type}`);
+    const fits = await table.evaluate((element) => element.scrollWidth <= element.clientWidth);
+    if (!fits) throw new Error(`the table of the ${type} is wider than the column of the site`);
+  }
+  const typeBar = await qual.getByTestId("type-bar").boundingBox();
+  const qualTables = await qual.getByTestId("tables").boundingBox();
+  await restPointer(qual);
+  await shot("report-qual", qual, {
+    clip: {
+      x: 0,
+      y: typeBar.y,
+      width: PAGE_VIEWPORT.width,
+      height: qualTables.y - typeBar.y + (await cutWithin(qual, qualTables.height)),
+    },
+  });
+  await qual.close();
 
   // report-overview.png: the whole page with an element selected, the type bar, the tables, the
   // inspector of the selected species and the footer. The tables start at the species, whose
@@ -380,6 +411,32 @@ try {
   const annotations = annotationsColumn.locator("section").first();
   await annotations.scrollIntoViewIfNeeded();
   await shot("inspector-annotations", annotations);
+
+  // inspector-gene-association.png: the attributes of a reaction of a constraint based model, the
+  // rows a reader of such a model comes for: the equation, the two flux bounds and the genes the
+  // reaction needs as the expression their tree stands for. R_CYTBD of the E. coli core model is
+  // an `or` of two `and` groups, the two complexes which each catalyse it, which is the shape of
+  // an association and still one line. The window is grown until the three sections of the
+  // inspector neither scroll nor stretch, so that the attributes are not cut by the pane, and
+  // the picture is the inspector from its header to the end of its attributes, which is what
+  // tells it from a table of the page.
+  await open(parts, "e_coli_core (e_coli_core.xml.gz)");
+  await parts.getByTestId("search-input").fill("R_CYTBD");
+  await selectRow(parts, parts.getByTestId("table-Reaction"), "R_CYTBD");
+  await expect(parts.getByTestId("attributes-column")).toBeVisible();
+  await fitInspector(parts);
+  await restPointer(parts);
+  const inspector = await parts.getByTestId("inspector").boundingBox();
+  // the section of the attributes ends 0.75rem below its content
+  const attributesEnd = (await contentBottom(parts.getByTestId("attributes-column"))) + 12;
+  await shot("inspector-gene-association", parts, {
+    clip: {
+      x: inspector.x,
+      y: inspector.y,
+      width: inspector.width,
+      height: Math.ceil(attributesEnd - inspector.y),
+    },
+  });
 
   // archive-entries.png: the context of a COMBINE archive report in the app bar, a strip of the
   // bar from the select of the entries on, as wide as the article column. The bar from the logo

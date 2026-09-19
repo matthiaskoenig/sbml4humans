@@ -6,7 +6,8 @@ import { openExample } from "./helpers";
 function wrappedCells(column: Locator): Promise<string[]> {
   return column.evaluate((element) => {
     const view = element.ownerDocument.defaultView;
-    return [...element.querySelectorAll('[data-testid="nested-table"] tbody td')]
+    // the empty cell which closes a table of aligned columns holds nothing to wrap
+    return [...element.querySelectorAll('[data-testid="nested-table"] tbody td:not([aria-hidden])')]
       .filter((cell) => {
         // the box of a cell is stretched to the height of its row, so the element inside it is
         // what says how many lines the content of this cell covers
@@ -189,4 +190,87 @@ test("the type bar lists the types the model uses and the tables are left of the
   expect(footer.y).toBeGreaterThanOrEqual(inspector.y + inspector.height);
   await page.getByTestId("tables").evaluate((element) => (element.scrollTop = 400));
   expect((await page.getByTestId("app-footer").boundingBox())!.y).toBe(footer.y);
+});
+
+test("the header of the inspector keeps a long type on one line at a laptop width", async ({
+  page,
+}) => {
+  // "User defined constraint component" wrapped onto three lines of the 40 px header at 1280 px
+  // and lost its first and last line; the name of the element gives way instead, and in the
+  // third of a 1280 px window the end of the type after it, never the id
+  const layout = async (width: number) => {
+    await page.setViewportSize({ width, height: 800 });
+    await page.goto(
+      "/examples/fbc_constraints_v3%20(fbc_constraints_v3.xml)?pk=fbc_constraints_v3/UserDefinedConstraintComponent:ratio_v1",
+    );
+    const header = page.getByTestId("inspector-header");
+    await expect(header.getByTestId("inspector-type")).toHaveText(
+      "User defined constraint component",
+    );
+    return header.evaluate((element) => {
+      const box = (id: string) => {
+        const target = element.querySelector(`[data-testid="${id}"]`)!;
+        return {
+          height: target.getBoundingClientRect().height,
+          clipped: target.scrollWidth > target.clientWidth,
+        };
+      };
+      return {
+        header: element.getBoundingClientRect().height,
+        type: box("inspector-type"),
+        id: box("inspector-id"),
+        overflows: element.scrollWidth > element.clientWidth,
+      };
+    });
+  };
+  for (const width of [1280, 1440, 1600]) {
+    const boxes = await layout(width);
+    expect(boxes.header).toBe(40);
+    expect(boxes.type.height).toBeLessThanOrEqual(20);
+    expect(boxes.id.clipped).toBe(false);
+    expect(boxes.overflows).toBe(false);
+    // from 1440 px on the type is whole. The application ships no font of its own, so this holds
+    // for the sans font of the system: DejaVu Sans, the default of many Linux systems and of the
+    // GitHub runner, is the widest of the common ones and needs the tighter gaps of the header
+    if (width >= 1440) expect(boxes.type.clipped).toBe(false);
+  }
+});
+
+test("the sections of the inspector are as high as what they hold in a tall window", async ({
+  page,
+}) => {
+  // in a window taller than the inspector the three sections stretched to a third each, with
+  // gaps as high as the sections below their content
+  await page.setViewportSize({ width: 1440, height: 1800 });
+  await page.goto(
+    "/examples/constraint_event%20(constraint_event.xml)?pk=constraint_event/Species:S2",
+  );
+  const body = page.getByTestId("inspector-body");
+  await expect(body.getByTestId("attributes-column")).toBeVisible();
+  const gaps = await body.evaluate((element) =>
+    [...element.firstElementChild!.children].map((section) => {
+      const content = [...section.children].reduce(
+        (height, child) => height + child.getBoundingClientRect().height,
+        0,
+      );
+      // the padding of a section is 0.75rem above and below
+      return Math.round(section.getBoundingClientRect().height - content - 24);
+    }),
+  );
+  for (const gap of gaps) expect(gap).toBeLessThanOrEqual(8);
+});
+
+test("the attributes of the inspector carry their heading in the three columns as well", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.addInitScript(() => localStorage.setItem("sbml4humans.split.inspector-width", "1100"));
+  await page.goto(
+    "/examples/constraint_event%20(constraint_event.xml)?pk=constraint_event/Species:S2",
+  );
+  const heading = page.getByTestId("inspector-body").getByRole("heading", { name: "Attributes" });
+  await expect(heading).toBeVisible();
+  const references = page.getByTestId("links-references").getByRole("heading");
+  // the headings of the three columns stand on one line
+  expect((await heading.boundingBox())!.y).toBe((await references.boundingBox())!.y);
 });

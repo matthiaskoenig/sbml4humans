@@ -1,0 +1,124 @@
+import { expect, type Page } from "@playwright/test";
+import { test } from "@playwright/test";
+
+import { openExample } from "./helpers";
+
+// `comp_deletion.xml` is the example of the composition machinery of comp: the deletions of a
+// submodel, the replacements of an element with their conversion factor and their deletion, a
+// reference which reaches through a submodel of a submodel and an external model definition.
+const EXAMPLE = "comp_deletion (comp_deletion.xml)";
+
+/** The row of an element table, clicked on the cell of its id: every other cell of a comp table
+ * holds links of its own, which would navigate instead of selecting the row. */
+function row(page: Page, pk: string) {
+  return page.locator(`tbody tr[data-pk$="${pk}"] td`).first();
+}
+
+/** The attribute row of the inspector with that label. */
+function attribute(page: Page, label: string) {
+  return page
+    .getByTestId("inspector")
+    .getByTestId("attribute-row")
+    .filter({ has: page.locator("dt", { hasText: new RegExp(`^${label}$`) }) });
+}
+
+test.describe("comp_deletion", () => {
+  test.beforeEach(async ({ page }) => {
+    await openExample(page, EXAMPLE);
+  });
+
+  test("links every deletion of a submodel and the element it removes", async ({ page }) => {
+    await row(page, "Submodel:cell1").click();
+    const inspector = page.getByTestId("inspector");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Submodel");
+    const deletions = attribute(page, "deletions").getByTestId("nested-table");
+    await expect(deletions.locator("thead th")).toHaveText(["deletion", "element"]);
+    await expect(deletions.locator("tbody tr").first().locator("td")).toHaveText(["del_k", "k"]);
+
+    // the deletion is an element of its own, with the attributes of the file
+    await deletions.getByTestId("element-link").first().click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Deletion");
+    await expect(inspector.getByTestId("inspector-id")).toHaveText("del_k");
+    await expect(attribute(page, "id ref")).toContainText("k");
+    await expect(inspector.getByTestId("notes")).toContainText("rate constant of the medium");
+    // it links the parameter of the submodel which the composed model does not contain
+    await inspector
+      .getByTestId("links-references")
+      .getByTestId("links-deletion")
+      .getByTestId("element-link")
+      .click();
+    await expect(page).toHaveURL(/pk=cell\/Parameter:k$/);
+  });
+
+  test("walks from a species over its replacement to the species it replaces", async ({ page }) => {
+    await row(page, "Species:glc").click();
+    const inspector = page.getByTestId("inspector");
+    const replaced = attribute(page, "replaced elements").getByTestId("nested-table");
+    await expect(replaced.locator("tbody tr").first().locator("td")).toHaveText(["cell1", "glc"]);
+
+    await inspector
+      .getByTestId("links-references")
+      .getByTestId("links-replacedElement")
+      .getByTestId("element-link")
+      .first()
+      .click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Replaced element");
+    await expect(attribute(page, "submodel")).toContainText("cell1");
+    await expect(attribute(page, "port ref")).toContainText("glc_port");
+    await expect(attribute(page, "conversion factor")).toContainText("f_amount");
+
+    // the replacement names the submodel and the species inside it which it replaces
+    await inspector
+      .getByTestId("links-references")
+      .getByTestId("links-replacedElement")
+      .getByTestId("element-link")
+      .nth(1)
+      .click();
+    await expect(page).toHaveURL(/pk=cell\/Species:glc$/);
+    await expect(inspector.getByTestId("inspector-name")).toHaveText("glucose of the cell");
+  });
+
+  test("follows a reference through a submodel of a submodel", async ({ page }) => {
+    await row(page, "Compartment:medium").click();
+    const inspector = page.getByTestId("inspector");
+    await inspector
+      .getByTestId("links-references")
+      .getByTestId("links-replacedElement")
+      .getByTestId("element-link")
+      .nth(2)
+      .click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Replaced element");
+    await expect(attribute(page, "id ref")).toContainText("cell_in_tissue");
+    await expect(attribute(page, "nested reference")).toContainText("cell_port");
+    // the chain ends at the compartment of the cell inside the tissue
+    await inspector
+      .getByTestId("links-references")
+      .getByTestId("links-replacedElement")
+      .getByTestId("element-link")
+      .nth(1)
+      .click();
+    await expect(page).toHaveURL(/pk=cell\/Compartment:c$/);
+  });
+
+  test("keeps a reference into an external document as the name the file writes", async ({
+    page,
+  }) => {
+    await row(page, "Submodel:unit_library").click();
+    const inspector = page.getByTestId("inspector");
+    const deletions = attribute(page, "deletions").getByTestId("nested-table");
+    const cells = deletions.locator("tbody tr").first().locator("td");
+    await expect(cells).toHaveText(["del_external_unit", "mg_per_day"]);
+    // the document of the external model definition is not read, so the unit definition it
+    // removes is a name and not a link
+    await expect(cells.nth(1).getByTestId("element-link")).toHaveCount(0);
+
+    // the external model definition carries the checksum of the document it names
+    await inspector
+      .getByTestId("links-references")
+      .getByTestId("links-modelRef")
+      .getByTestId("element-link")
+      .click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("External model definition");
+    await expect(attribute(page, "md5")).toContainText("bde1522151d26d8fbca09893ce85ac52");
+  });
+});

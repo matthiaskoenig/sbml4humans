@@ -5,7 +5,7 @@
 [![MIT License](https://img.shields.io/github/license/matthiaskoenig/sbml4humans.svg)](https://opensource.org/license/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22827237.svg)](https://doi.org/10.5281/zenodo.22827237)
 
-[SBML4Humans](https://sbml4humans.de) renders [SBML](sbml.md) models as interactive, human readable reports. Give it a model and it gives you a page which shows what the model contains: its compartments, species, reactions, rules and events, the mathematics of the model as typeset formulas, the units it computes from the file, the references between the elements, and the annotations resolved to the entries they point at.
+[SBML4Humans](https://sbml4humans.de) renders [SBML](sbml.md) models as interactive, human readable reports. Give it a model and it gives you a page which shows what the model contains: its compartments, species, reactions, rules and events, the mathematics of the model as typeset formulas, the units it computes from the file, the references between the elements, and the annotations resolved to the entries they point at. It reads SBML of every level and version libsbml reads, and the four Level 3 packages [comp](reference/comp.md), [fbc](reference/fbc.md), [qual](reference/qual.md) and [distrib](reference/distrib.md), so a hierarchical model, a genome scale reconstruction, a logical model and a model whose values carry their uncertainty are shown with everything the package adds to them.
 
 [![The report of the repressilator model, with the type bar, the element tables and the inspector of a selected species](images/report-overview.png)](images/report-overview.png)
 
@@ -26,6 +26,8 @@ It is written for the people who have to read models rather than write them:
 ## What a report shows
 
 A report is one page per model. The bar at the top lists every element type the model uses with the number of elements of that type, the tables under it show the elements of each type with the columns which matter for that type, and the inspector at the right shows one element in full: its attributes, everything it references and everything which references it, its notes, its annotations and its history, and the raw XML when that is what you need. Every column header of an element table, every attribute label of the inspector, every mark of a type and every group of links carries a one sentence explanation on hover, and the type in the header of the inspector links its page in the reference.
+
+The report carries the data model of the file rather than a summary of it. The objects a file nests inside another are elements of the report like the species and the reactions, each with a page of its own in the [reference](reference/index.md): the trigger, the priority and the delay of an event, the participation of a species in a reaction, the deletions and replacements of a hierarchical model, the tree of genes a reaction needs, the terms of a transition and the measures of an uncertainty. A reference between two elements is a link a reader follows in both directions, from the element which states it to the element it names and back.
 
 [Reading a report](report.md) walks through all of it.
 

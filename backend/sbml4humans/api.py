@@ -5,6 +5,12 @@ Served with `uvicorn sbml4humans.api:api`.
 Error contract: the frontend expects every response with status 200. Failures
 are reported in the body as `{"errors": [message, traceback], "warnings": [],
 "info": {...}}`, with the query parameters of the request as `info`.
+
+A report endpoint returns its `ReportResponse` as it is. FastAPI takes an
+instance of the response model without validating it again and writes its JSON
+in one pass of pydantic, which applies the configuration of the model: camelCase
+keys and an infinite value or a value which is not a number as the strings
+`"Infinity"`, `"-Infinity"` and `"NaN"`.
 """
 
 import logging
@@ -149,12 +155,12 @@ def examples() -> dict[str, list[dict[str, Any]]]:
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def example(example_id: str) -> dict[str, Any]:
+def example(example_id: str) -> ReportResponse:
     """Create the report data of an example."""
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    return _dump(report_for_path(example.file))
+    return report_for_path(example.file)
 
 
 @api.post(
@@ -163,9 +169,9 @@ def example(example_id: str) -> dict[str, Any]:
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def report_from_file(source: UploadFile) -> dict[str, Any]:
+def report_from_file(source: UploadFile) -> ReportResponse:
     """Create the report data of an uploaded SBML file or COMBINE archive."""
-    return _dump(report_for_bytes(source.file.read()))
+    return report_for_bytes(source.file.read())
 
 
 @api.get(
@@ -174,9 +180,9 @@ def report_from_file(source: UploadFile) -> dict[str, Any]:
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def report_from_url(url: str) -> dict[str, Any]:
+def report_from_url(url: str) -> ReportResponse:
     """Create the report data of an SBML file or COMBINE archive behind a url."""
-    return _dump(report_for_bytes(download(url)))
+    return report_for_bytes(download(url))
 
 
 @api.post(
@@ -185,15 +191,10 @@ def report_from_url(url: str) -> dict[str, Any]:
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-async def report_from_content(request: Request) -> dict[str, Any]:
+async def report_from_content(request: Request) -> ReportResponse:
     """Create the report data of the SBML content in the request body."""
     content = await request.body()
-    return _dump(await run_in_threadpool(report_for_bytes, content))
-
-
-def _dump(response: ReportResponse) -> dict[str, Any]:
-    """The JSON of a response with camelCase keys."""
-    return response.model_dump(mode="json", by_alias=True)
+    return await run_in_threadpool(report_for_bytes, content)
 
 
 @api.get("/api/annotation_resource", tags=["metadata"])

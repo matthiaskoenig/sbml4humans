@@ -6,9 +6,9 @@ A report shows more than the model file contains: it resolves references, derive
 
 The identifier the report gives to every element it shows.
 
-SBML identifies an element by its id, which is unique within one model, and many elements of a model have no id at all. The report therefore builds a key of its own for every element, of the form `<scope>/<type>:<id>`: the scope, which is the model the element belongs to or the document for an element of the document, the type of the element and its id. An element without an id falls back to its meta id, then to a key derived from its parent and its position, and finally to a digest of its XML, so that two reactants of one reaction without ids stay distinct.
+SBML identifies an element by its id, which is unique within one model, and many elements of a model have no id at all. The report therefore builds a key of its own for every element, of the form `<scope>/<type>:<id>`: the scope, which is the model the element belongs to or the document for an element of the document, the type of the element and its id. An element without an id falls back to the element it sets, for an [initial assignment](initialassignment.md) or a rule, then to its meta id, and then to a key of what it is about: an element nested in another one is keyed after its parent and what it names, a reactant after its reaction and its species (`Reaction1.reactant.X`), a replacement after its element, its submodel and the element it reaches, a measure of an uncertainty after its type (`u_Km.standardDeviation`), and an element which names nothing, an algebraic rule, a constraint, an event or a transition, after its place among the elements of its type (`algebraicRule.0`). Where a list repeats such a key, a species which a reaction lists twice among its reactants, the repetition is told apart by its occurrence (`Reaction1.reactant.X.1`). The model of a document without an id is scoped as `model`, and only an element which the specification requires an id of, and which the file leaves without one, is keyed by a digest of its XML.
 
-The primary key is what the links of a report point at, what the url of a report names when an element is selected and what the inspector shows when an element has neither an id nor a meta id.
+The primary key is what the links of a report point at and what the url of a report names when an element is selected. An element without an id is shown by the key alone, without the scope and the type in front of it, in the header of the inspector and as the label of every link to it. An element which the file nests in another one is named after that element and its place in it instead, because a meta id says nothing about where it sits: the kinetic law of `Reaction1` reads `Reaction1.kineticLaw`, the trigger of the event `Start` reads `Start.trigger`, an assignment of that event to `kp` reads `Start.kp` and a reactant `X` of `Reaction1` reads `Reaction1.X`.
 
 ## sbml type
 
@@ -22,9 +22,17 @@ The type is shown as the mark in front of every element, as the header of every 
 
 The units of a quantity or of a formula as they follow from the model.
 
-A model does not have to declare units everywhere: a compartment, a species or a parameter inherits the units of the model when it declares none, and the units of a formula follow from the units of the elements it uses. The report derives the units which follow from the model, reduces them to base units with their exponent, scale and multiplier, and renders the result as a formula.
+A model does not have to declare units everywhere: a compartment, a species or a parameter inherits the units of the model when it declares none, and the units of a formula follow from the units of the elements it uses. The report derives the units which follow from the model, reduces them to base units with their exponent, scale and multiplier, and renders the result as a formula. A quantity without a dimension reads `dimensionless`, and a dash says that the units are not declared or that the model does not say enough to derive them.
 
 Derived units are shown in the column "derived units" of the tables and in the inspector. They are the fastest check whether a kinetic law is dimensionally what it should be, because the derived units of a kinetic law are extent per time when the law is right.
+
+## number
+
+How the report shows a number which is infinite or not a number.
+
+A double of SBML may be infinite or not a number, `INF`, `-INF` and `NaN` as a file writes them, and both are ordinary values: the upper bound of an unbounded flux is `INF`, and a `NaN` says that a quantity is defined but its number is not known. JSON has no literal for either of them, so the report sends them as the three constants `"Infinity"`, `"-Infinity"` and `"NaN"`, which keeps them apart from `null`, the attribute a file does not set at all.
+
+The report shows an infinite value as the sign of infinity with the direction of its bound, ∞ and -∞, with the `INF` or `-INF` of the file as its tooltip, and a value which is not a number as `NaN`. An attribute which is not set stays the dash every empty cell of the report shows. Every other number is shown with six significant digits, and the full number is the tooltip of the rounded one.
 
 ## equation
 
@@ -48,7 +56,7 @@ The units an element declares, rendered as a formula.
 
 A units attribute names a unit definition, and a unit definition is a list of base units with an exponent, a scale and a multiplier. The report resolves the reference and renders the product as a formula, so that a table shows millimole over litre as a fraction instead of the identifier `mmol_per_l`, next to the identifier it comes from.
 
-The rendered units appear in the units columns of the tables, in the units of the inspector and as the whole content of the table of unit definitions.
+The rendered units appear in the units columns of the tables, in the units of the inspector and in the units column of the table of unit definitions, whose inspector shows them as the formula above the units the definition is built from.
 
 ## model kind
 

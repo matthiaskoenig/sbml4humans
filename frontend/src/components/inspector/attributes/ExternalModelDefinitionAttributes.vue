@@ -13,4 +13,7 @@ defineProps<{ element: ExternalModelDefinition }>();
   <AttributeRow label="model ref" :type="element.sbmlType" field="modelRef"
     ><ValueText :value="element.modelRef" mono
   /></AttributeRow>
+  <AttributeRow label="md5" :type="element.sbmlType" field="md5"
+    ><ValueText :value="element.md5" mono
+  /></AttributeRow>
 </template>

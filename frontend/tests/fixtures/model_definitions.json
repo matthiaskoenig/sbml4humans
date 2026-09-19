@@ -1,5 +1,5 @@
 {
-  "uid": "c9207ab4177d4c798b218116c61e4f84",
+  "uid": "d96f7b64a85c43baaab3446e00f451b6",
   "manifest": {
     "entries": [
       {
@@ -35,6 +35,7 @@
           "xml": null,
           "comp": null,
           "uncertainties": [],
+          "keyValuePairs": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -42,7 +43,8 @@
               "prefix": "comp",
               "version": 1
             }
-          ]
+          ],
+          "annotationXml": null
         },
         "models": [
           {
@@ -71,7 +73,9 @@
             "xml": null,
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "model",
+            "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_model_definitions\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mmole",
             "substanceUnitsLatex": "mmol",
             "timeUnits": "min",
@@ -100,7 +104,16 @@
                 "xml": "<unitDefinition id=\"m2\" name=\"meter^2\">\n  <listOfUnits>\n    <unit kind=\"metre\" exponent=\"2\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "m^2"
+                "keyValuePairs": [],
+                "unitsLatex": "m^2",
+                "listOfUnits": [
+                  {
+                    "kind": "metre",
+                    "exponent": 2,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
               },
               {
                 "pk": "model_definitions/UnitDefinition:min",
@@ -115,7 +128,16 @@
                 "xml": "<unitDefinition id=\"min\" name=\"min\">\n  <listOfUnits>\n    <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "min"
+                "keyValuePairs": [],
+                "unitsLatex": "min",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 60
+                  }
+                ]
               },
               {
                 "pk": "model_definitions/UnitDefinition:mmole",
@@ -130,7 +152,16 @@
                 "xml": "<unitDefinition id=\"mmole\" name=\"mmole\">\n  <listOfUnits>\n    <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"0.001\"/>\n  </listOfUnits>\n</unitDefinition>",
                 "comp": null,
                 "uncertainties": [],
-                "unitsLatex": "mmol"
+                "keyValuePairs": [],
+                "unitsLatex": "mmol",
+                "listOfUnits": [
+                  {
+                    "kind": "mole",
+                    "exponent": 1,
+                    "scale": 0,
+                    "multiplier": 0.001
+                  }
+                ]
               }
             ],
             "listOfCompartments": [
@@ -147,6 +178,7 @@
                 "xml": "<compartment id=\"c\" spatialDimensions=\"3\" size=\"2\" units=\"litre\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 2,
                 "constant": true,
@@ -169,6 +201,7 @@
                 "xml": "<species id=\"A1\" compartment=\"c\" initialAmount=\"1\" substanceUnits=\"mmole\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "c",
                 "initialAmount": 1,
                 "initialConcentration": null,
@@ -191,7 +224,12 @@
             "listOfSubmodels": [],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
           },
           {
             "pk": "m1/Model:m1",
@@ -206,7 +244,9 @@
             "xml": "<comp:modelDefinition id=\"m1\" name=\"Model Definition 1\">\n  <listOfCompartments>\n    <compartment id=\"d\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <listOfSpecies>\n    <species id=\"A\" compartment=\"d\" initialAmount=\"1\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"false\" constant=\"false\"/>\n  </listOfSpecies>\n</comp:modelDefinition>",
             "comp": null,
             "uncertainties": [],
+            "keyValuePairs": [],
             "kind": "modelDefinition",
+            "annotationXml": null,
             "substanceUnits": null,
             "substanceUnitsLatex": null,
             "timeUnits": null,
@@ -236,6 +276,7 @@
                 "xml": "<compartment id=\"d\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -258,6 +299,7 @@
                 "xml": "<species id=\"A\" compartment=\"d\" initialAmount=\"1\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"false\" constant=\"false\"/>",
                 "comp": null,
                 "uncertainties": [],
+                "keyValuePairs": [],
                 "compartment": "d",
                 "initialAmount": 1,
                 "initialConcentration": null,
@@ -280,7 +322,12 @@
             "listOfSubmodels": [],
             "listOfPorts": [],
             "listOfGeneProducts": [],
-            "listOfObjectives": []
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
           }
         ],
         "externalModelDefinitions": [],
@@ -359,6 +406,16 @@
           },
           "edges": [
             {
+              "source": "document/SBMLDocument:document",
+              "target": "model_definitions/Model:model_definitions",
+              "kind": "model"
+            },
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "m1/Model:m1",
+              "kind": "model"
+            },
+            {
               "source": "model_definitions/Model:model_definitions",
               "target": "model_definitions/UnitDefinition:mmole",
               "kind": "units"
@@ -371,11 +428,6 @@
             {
               "source": "model_definitions/Model:model_definitions",
               "target": "model_definitions/UnitDefinition:m2",
-              "kind": "units"
-            },
-            {
-              "source": "model_definitions/Model:model_definitions",
-              "target": "model_definitions/UnitDefinition:mmole",
               "kind": "units"
             },
             {

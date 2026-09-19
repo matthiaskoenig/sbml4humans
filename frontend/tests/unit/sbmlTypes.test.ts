@@ -29,6 +29,10 @@ describe("sbml types", () => {
       "Port",
       "GeneProduct",
       "Objective",
+      "FluxBound",
+      "UserDefinedConstraint",
+      "QualitativeSpecies",
+      "Transition",
     ]);
   });
 
@@ -43,11 +47,35 @@ describe("sbml types", () => {
     }
   });
 
+  it("marks the package of the qual types", () => {
+    expect(typeInfo("QualitativeSpecies").pkg).toBe("qual");
+    expect(typeInfo("Transition").pkg).toBe("qual");
+    expect(typeInfo("Input").pkg).toBe("qual");
+    expect(typeInfo("Output").pkg).toBe("qual");
+    expect(typeInfo("FunctionTerm").pkg).toBe("qual");
+    expect(typeInfo("DefaultTerm").pkg).toBe("qual");
+  });
+
+  it("marks the package of the distrib types", () => {
+    expect(typeInfo("Uncertainty").pkg).toBe("distrib");
+    expect(typeInfo("UncertParameter").pkg).toBe("distrib");
+    expect(typeInfo("UncertSpan").pkg).toBe("distrib");
+    expect(typeInfo("UncertSpan").label).toBe("Uncert span");
+  });
+
   it("marks the package of the comp and fbc types", () => {
     expect(typeInfo("Submodel").pkg).toBe("comp");
     expect(typeInfo("Port").pkg).toBe("comp");
     expect(typeInfo("GeneProduct").pkg).toBe("fbc");
+    expect(typeInfo("GeneProductAssociation").pkg).toBe("fbc");
+    expect(typeInfo("And").pkg).toBe("fbc");
+    expect(typeInfo("Or").pkg).toBe("fbc");
+    expect(typeInfo("GeneProductRef").pkg).toBe("fbc");
     expect(typeInfo("Objective").pkg).toBe("fbc");
+    expect(typeInfo("FluxObjective").pkg).toBe("fbc");
+    expect(typeInfo("FluxBound").pkg).toBe("fbc");
+    expect(typeInfo("UserDefinedConstraint").pkg).toBe("fbc");
+    expect(typeInfo("UserDefinedConstraintComponent").pkg).toBe("fbc");
     expect(typeInfo("Species").pkg).toBe("core");
   });
 
@@ -62,8 +90,32 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(17);
+    expect(EDGE_KINDS).toHaveLength(48);
+    // a reaction names its kinetic law behind its participants, an event its assignments behind
+    // its trigger, its priority and its delay
+    expect(EDGE_KINDS.indexOf("kineticLaw")).toBe(EDGE_KINDS.indexOf("modifier") + 1);
+    expect(EDGE_KINDS.indexOf("localParameter")).toBe(EDGE_KINDS.indexOf("kineticLaw") + 1);
+    expect(EDGE_KINDS.indexOf("eventAssignment")).toBe(EDGE_KINDS.indexOf("delay") + 1);
+    // an element names its uncertainties and each of them its measures
+    expect(EDGE_KINDS.indexOf("uncertainty")).toBe(EDGE_KINDS.indexOf("uncertParameter") - 1);
+    expect(edgeKindLabel("kineticLaw")).toBe("kinetic law");
+    expect(edgeKindLabel("eventAssignment")).toBe("event assignment");
+    expect(edgeKindLabel("geneProductAssociation")).toBe("gene product association");
     expect(edgeKindLabel("fluxBound")).toBe("flux bound");
     expect(edgeKindLabel("replacedBy")).toBe("replaced by");
+    expect(edgeKindLabel("localParameter")).toBe("local parameter");
+    expect(edgeKindLabel("externalModelDefinition")).toBe("external model definition");
+    expect(edgeKindLabel("sBaseRef")).toBe("reference");
+    expect(edgeKindLabel("functionTerm")).toBe("function term");
+    expect(edgeKindLabel("defaultTerm")).toBe("default term");
+    expect(edgeKindLabel("uncertainty")).toBe("uncertainty");
+    expect(edgeKindLabel("uncertParameter")).toBe("uncert parameter");
+    expect(edgeKindLabel("var")).toBe("var");
+    // an attribute of a pair has a kind of its own, so the element it names says which it is
+    expect(EDGE_KINDS.indexOf("varUpper")).toBe(EDGE_KINDS.indexOf("varLower") + 1);
+    expect(edgeKindLabel("lowerFluxBound")).toBe("lower flux bound");
+    expect(edgeKindLabel("reaction2")).toBe("second reaction");
+    expect(edgeKindLabel("variable2")).toBe("second variable");
+    expect(edgeKindLabel("timeConversionFactor")).toBe("time conversion factor");
   });
 });

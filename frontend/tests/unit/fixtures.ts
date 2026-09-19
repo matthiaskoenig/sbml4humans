@@ -15,9 +15,15 @@ export type FixtureName =
   | "cell_cycle"
   | "icg_body"
   | "fbc_example"
+  | "fbc_bounds_v1"
+  | "fbc_constraints_v3"
   | "model_definitions"
+  | "comp_deletion"
   | "comp_models"
-  | "distrib_uncertainties";
+  | "distrib_uncertainties"
+  | "distrib_spans"
+  | "constraint_event"
+  | "qual_example";
 
 export function loadFixture(name: FixtureName): ReportResponse {
   const path = join(FIXTURES_DIR, `${name}.json`);

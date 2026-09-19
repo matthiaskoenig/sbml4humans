@@ -1,12 +1,27 @@
 """Tests of the http api."""
 
+import json
 from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
 
 from sbml4humans import __version__, api
+from sbml4humans.model import ReportResponse
 from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
+
+
+def _strict_json(content: bytes) -> Any:
+    """The JSON of a response body, refusing the tokens JSON does not define.
+
+    Python writes an infinite float as the bare token `Infinity`, which
+    `json.loads` accepts and `JSON.parse` of a browser does not.
+    """
+
+    def refuse(token: str) -> None:
+        raise ValueError(f"the body carries the token {token}, which is no JSON")
+
+    return json.loads(content, parse_constant=refuse)
 
 
 def _check_error(data: dict[str, Any], info: dict[str, str] | None = None) -> None:
@@ -98,6 +113,44 @@ def test_example(client: TestClient) -> None:
     data = response.json()
     _check_report(data)
     assert len(data["reports"]) == 3
+
+
+def test_an_infinite_value_reaches_the_frontend(client: TestClient) -> None:
+    """The api sends an infinite value as the constant the report reads.
+
+    The decision belongs to the whole report: an unbounded flux is the common
+    case of a constraint based model, and `null` is what an attribute the file
+    does not set at all sends.
+    """
+    response = client.get("/api/examples/fbc_bounds_v1 (fbc_bounds_v1.xml)")
+    assert response.status_code == 200
+    report = next(iter(_strict_json(response.content)["reports"].values()))["report"]
+    bounds = {b["id"]: b["value"] for b in report["models"][0]["listOfFluxBounds"]}
+    assert bounds["v1_ub"] == "Infinity"
+    assert bounds["v1_lb"] == 0.0
+
+    response = client.get("/api/examples/fbc_example (fbc_example.xml)")
+    parameters = {
+        p["id"]: p["value"]
+        for p in next(iter(_strict_json(response.content)["reports"].values()))[
+            "report"
+        ]["models"][0]["listOfParameters"]
+    }
+    assert parameters["ub_inf"] == "Infinity"
+    assert parameters["lb_inf"] == "-Infinity"
+
+
+def test_a_report_endpoint_returns_the_response_for_fastapi_to_write() -> None:
+    """A report endpoint hands its response to FastAPI, which writes it once.
+
+    The endpoints dumped the response to a dictionary through its JSON, which
+    FastAPI validated into the response model again and wrote a second time:
+    three passes over a report of 100 MB. FastAPI takes the model as it is
+    and writes its JSON in one pass, with the constants of a double which JSON
+    has no literal for as the strings of the model configuration.
+    """
+    response = api.example("fbc_bounds_v1 (fbc_bounds_v1.xml)")
+    assert isinstance(response, ReportResponse)
 
 
 def test_example_with_special_characters(client: TestClient) -> None:

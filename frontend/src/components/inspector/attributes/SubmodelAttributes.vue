@@ -1,19 +1,30 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import type { Submodel } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import { useReportIndex } from "@/report/context";
+import { referenceName, referenceTarget } from "@/report/comp";
 
-defineProps<{ element: Submodel }>();
+const props = defineProps<{ element: Submodel }>();
 const index = useReportIndex();
 
 const DELETION_COLUMNS = [
-  { key: "portRef", header: "port ref" },
-  { key: "idRef", header: "id ref" },
-  { key: "unitRef", header: "unit ref" },
-  { key: "metaIdRef", header: "meta id ref" },
+  { key: "pk", header: "deletion", field: "id" },
+  { key: "name", header: "element" },
 ];
+/** Every deletion with the element it removes, which a deletion of an external model, whose
+ * document the report does not read, does not resolve to. */
+const deletions = computed(() =>
+  (props.element.listOfDeletions ?? []).map((deletion) => {
+    const target = referenceTarget(index.value, deletion.pk, "deletion");
+    // the element names itself where the report resolved the reference, and the deletion keeps
+    // the name of the file where it does not, which is an element of another document
+    return { pk: deletion.pk, name: target ? null : referenceName(deletion), target };
+  }),
+);
 </script>
 
 <template>
@@ -29,7 +40,7 @@ const DELETION_COLUMNS = [
     field="timeConversionFactor"
   >
     <ElementLink
-      :pk="index?.resolve(element.pk, 'conversionFactor', element.timeConversionFactor)"
+      :pk="index?.resolve(element.pk, 'timeConversionFactor', element.timeConversionFactor)"
       :label="element.timeConversionFactor"
     />
   </AttributeRow>
@@ -39,7 +50,7 @@ const DELETION_COLUMNS = [
     field="extentConversionFactor"
   >
     <ElementLink
-      :pk="index?.resolve(element.pk, 'conversionFactor', element.extentConversionFactor)"
+      :pk="index?.resolve(element.pk, 'extentConversionFactor', element.extentConversionFactor)"
       :label="element.extentConversionFactor"
     />
   </AttributeRow>
@@ -48,6 +59,10 @@ const DELETION_COLUMNS = [
     :type="element.sbmlType"
     field="listOfDeletions"
     :wide="!!element.listOfDeletions?.length"
-    ><NestedTable :rows="element.listOfDeletions ?? []" :columns="DELETION_COLUMNS"
-  /></AttributeRow>
+  >
+    <NestedTable :rows="deletions" :columns="DELETION_COLUMNS" type="Deletion">
+      <template #cell-pk="{ row }"><ElementLink :pk="row.pk" mark /></template>
+      <template #cell-name="{ row }"><ElementLink :pk="row.target" :label="row.name" /></template>
+    </NestedTable>
+  </AttributeRow>
 </template>
