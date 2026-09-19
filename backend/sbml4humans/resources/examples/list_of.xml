@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" level="3" version="2" comp:required="true">
+  <model metaid="meta_list_of" id="list_of" name="ListOf containers with attributes of their own">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <p>Every <code>ListOf</code> container of SBML derives from <code>SBase</code>: a list may carry a metaid, an SBO term, notes and an annotation of its own, and from Level 3 Version 2 on an id and a name. This model states them on several of its lists, and explains a list which is empty.</p>
+      </body>
+    </notes>
+    <listOfUnitDefinitions metaid="meta_units" name="the units of the model">
+      <unitDefinition id="per_second">
+        <listOfUnits metaid="meta_per_second_units">
+          <notes>
+            <body xmlns="http://www.w3.org/1999/xhtml">
+              <p>A single unit, the second, with the exponent -1.</p>
+            </body>
+          </notes>
+          <unit kind="second" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment id="cell" spatialDimensions="3" size="1" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies metaid="meta_species" sboTerm="SBO:0000247" id="metabolites" name="the metabolites of the pathway">
+      <notes>
+        <body xmlns="http://www.w3.org/1999/xhtml">
+          <p>The species of this list are the two metabolites of the pathway, measured in <a href="https://doi.org/10.1000/example">the study</a> the model is built on.</p>
+        </body>
+      </notes>
+      <annotation>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
+          <rdf:Description rdf:about="#meta_species">
+            <bqbiol:isPartOf>
+              <rdf:Bag>
+                <rdf:li rdf:resource="https://identifiers.org/GO:0006096"/>
+              </rdf:Bag>
+            </bqbiol:isPartOf>
+          </rdf:Description>
+        </rdf:RDF>
+      </annotation>
+      <species id="S1" compartment="cell" initialConcentration="10" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="S2" compartment="cell" initialConcentration="0" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="k1" value="0.1" units="per_second" constant="true"/>
+    </listOfParameters>
+    <listOfRules metaid="meta_rules">
+      <notes>
+        <body xmlns="http://www.w3.org/1999/xhtml">
+          <p>This model has no rules: the list is empty on purpose, which Level 3 Version 2 allows, so that the note can say so.</p>
+        </body>
+      </notes>
+    </listOfRules>
+    <listOfReactions>
+      <reaction id="J0" reversible="false">
+        <listOfReactants metaid="meta_J0_reactants" name="what J0 consumes">
+          <speciesReference species="S1" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="S2" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> cell </ci>
+              <ci> k1 </ci>
+              <ci> S1 </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+    <comp:listOfPorts>
+      <comp:port comp:id="metabolites_port" comp:metaIdRef="meta_species"/>
+    </comp:listOfPorts>
+  </model>
+</sbml>

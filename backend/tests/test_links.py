@@ -1484,6 +1484,133 @@ def test_math_of_a_function_term_reaches_species_and_inputs(
 # -------------------------------------------------------------------------------------
 # references which follow an external model definition into another entry
 # -------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
+# the ListOf containers which carry something of their own
+# -------------------------------------------------------------------------------------
+LIST_OF_XML = EXAMPLES_DIR / "list_of.xml"
+
+
+@pytest.fixture(scope="module")
+def list_of() -> Report:
+    """The report of the example of the lists which state something of their own."""
+    return SBMLDocumentInfo.from_sbml(LIST_OF_XML)
+
+
+def test_every_list_is_a_node_of_its_model(list_of: Report) -> None:
+    """A list of the report is a node like every other `SBase`, of its model."""
+    model = list_of.models[0]
+    nodes = {
+        pk: node
+        for pk, node in list_of.link_graph.nodes.items()
+        if node.sbml_type == "ListOf"
+    }
+    assert set(nodes) == {
+        "list_of/ListOf:meta_units",
+        "list_of/ListOf:meta_per_second_units",
+        "list_of/ListOf:metabolites",
+        "list_of/ListOf:meta_rules",
+        "list_of/ListOf:meta_J0_reactants",
+    }
+    assert all(node.model == model.pk for node in nodes.values())
+    species = nodes["list_of/ListOf:metabolites"]
+    assert (species.id, species.name) == (
+        "metabolites",
+        "the metabolites of the pathway",
+    )
+    # the model which owns three of them stays a node of no model
+    assert list_of.link_graph.nodes[model.pk].model is None
+
+
+def test_owner_names_its_lists(list_of: Report) -> None:
+    """The element which owns a list names it, the way a reaction names its kinetic law."""
+    m = "list_of"
+    assert _edges(list_of, kind=EdgeKind.LIST_OF) == {
+        (f"{m}/Model:{m}", f"{m}/ListOf:meta_units", "listOf"),
+        (f"{m}/Model:{m}", f"{m}/ListOf:metabolites", "listOf"),
+        (f"{m}/Model:{m}", f"{m}/ListOf:meta_rules", "listOf"),
+        (
+            f"{m}/UnitDefinition:per_second",
+            f"{m}/ListOf:meta_per_second_units",
+            "listOf",
+        ),
+        (f"{m}/Reaction:J0", f"{m}/ListOf:meta_J0_reactants", "listOf"),
+    }
+    nodes = list_of.link_graph.nodes
+    assert all(
+        e.source in nodes and e.target in nodes for e in list_of.link_graph.edges
+    )
+
+
+def test_port_names_a_list_by_its_metaid(
+    list_of: Report, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A comp reference by metaId resolves to the list which carries the metaId.
+
+    A port may stand for a whole list of its model (comp §3.4.3), and the
+    metaId is the one identifier a list carries in every level and version.
+    """
+    assert _edges(list_of, source="list_of/Port:metabolites_port") == {
+        ("list_of/Port:metabolites_port", "list_of/ListOf:metabolites", "port"),
+    }
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        SBMLDocumentInfo.from_sbml(LIST_OF_XML)
+    assert caplog.text == ""
+
+
+def test_port_names_a_list_by_its_id(caplog: pytest.LogCaptureFixture) -> None:
+    """The id of a list is an SId of its model, which an `idRef` resolves (core §3.3)."""
+    sbml = LIST_OF_XML.read_text()
+    assert 'comp:metaIdRef="meta_species"' in sbml
+    sbml = sbml.replace('comp:metaIdRef="meta_species"', 'comp:idRef="metabolites"')
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        report = SBMLDocumentInfo.from_sbml(sbml)
+    assert _edges(report, source="list_of/Port:metabolites_port") == {
+        ("list_of/Port:metabolites_port", "list_of/ListOf:metabolites", "port"),
+    }
+    assert caplog.text == ""
+
+
+def test_metaid_which_no_list_carries_is_logged(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A metaId neither an element nor a list carries is logged and is no edge."""
+    sbml = LIST_OF_XML.read_text().replace(
+        'comp:metaIdRef="meta_species"', 'comp:metaIdRef="meta_missing"'
+    )
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        report = SBMLDocumentInfo.from_sbml(sbml)
+    assert _edges(report, source="list_of/Port:metabolites_port") == set()
+    assert "list_of/Port:metabolites_port" in caplog.text
+
+
+def test_lists_of_the_document_and_of_an_extension_are_nodes() -> None:
+    """The document names its lists, and an element the list of its replacements.
+
+    A list of the document belongs to no model, and a list of a nested object
+    is found wherever the object sits.
+    """
+    sbml = (EXAMPLES_DIR / "comp_deletion.xml").read_text()
+    assert "<comp:listOfModelDefinitions>" in sbml
+    sbml = sbml.replace(
+        "<comp:listOfModelDefinitions>",
+        '<comp:listOfModelDefinitions metaid="meta_definitions">',
+    ).replace(
+        "<comp:listOfReplacedElements>",
+        '<comp:listOfReplacedElements metaid="meta_replaced">',
+        1,
+    )
+    report = SBMLDocumentInfo.from_sbml(sbml)
+    model = report.models[0]
+    medium = next(c for c in model.list_of_compartments if c.id == "medium")
+    nodes = report.link_graph.nodes
+    assert nodes["document/ListOf:meta_definitions"].model is None
+    assert nodes[f"{model.id}/ListOf:meta_replaced"].model == model.pk
+    assert _edges(report, kind=EdgeKind.LIST_OF) == {
+        (report.document.pk, "document/ListOf:meta_definitions", "listOf"),
+        (medium.pk, f"{model.id}/ListOf:meta_replaced", "listOf"),
+    }
+
+
 def _linked(sources: dict[str, Path | str]) -> dict[str, Report]:
     """The reports of the documents by location, linked as the entries of one archive."""
     infos = {

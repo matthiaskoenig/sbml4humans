@@ -125,6 +125,26 @@ class SBase(ReportModel):
     comp: CompSBase | None = None
     uncertainties: list[Uncertainty] = Field(default_factory=list)
     key_value_pairs: list[KeyValuePair] = Field(default_factory=list)
+    lists: list[ListOf] = Field(default_factory=list)
+
+
+class ListOf(SBase):
+    """A ListOf container of an element which carries something of its own.
+
+    Every `ListOf` class of SBML derives from `SBase` (core §4.2.7): a
+    `listOfSpecies` or a `listOfReactants` may carry a metaid, an SBO term,
+    notes and an annotation, and from Level 3 Version 2 on an id and a name.
+    The report has one type for all of them, which `element` tells apart by the
+    name the list has in the file, and carries a list only where it states one
+    of these, in the `lists` of the element which owns it. The elements of the
+    list stay where the report has them, in the `list_of_species` of the model,
+    so the list carries their number alone and its `xml` is the list without
+    them.
+    """
+
+    sbml_type: Literal["ListOf"] = "ListOf"
+    element: str
+    size: int
 
 
 class KeyValuePair(ReportModel):
@@ -254,8 +274,10 @@ class CompSBase(ReportModel):
 
 SBaseRefFields.model_rebuild()
 SBase.model_rebuild()
-# the two classes of distrib carry the comp extension of an `SBase` and the
-# parameters nested in them, so both are built once every name they use exists
+# a list and the two classes of distrib carry the comp extension of an `SBase`,
+# and the latter the parameters nested in them, so they are built once every
+# name they use exists
+ListOf.model_rebuild()
 UncertParameter.model_rebuild()
 UncertSpan.model_rebuild()
 
@@ -772,8 +794,8 @@ class ModelFbc(ReportModel):
     """The fbc extension of a model.
 
     `strict` exists from Version 2 on and `active_objective` is the attribute
-    of the `listOfObjectives`, which the report does not carry as an object of
-    its own (fbc §3.3, §3.3.1).
+    of the `listOfObjectives`, which the report carries as an object of its own
+    only where the list states something an `SBase` does (fbc §3.3, §3.3.1).
     """
 
     strict: bool | None = None
@@ -884,6 +906,7 @@ class EdgeKind(StrEnum):
     OUTPUT = "output"
     FUNCTION_TERM = "functionTerm"
     DEFAULT_TERM = "defaultTerm"
+    LIST_OF = "listOf"
     UNCERTAINTY = "uncertainty"
     UNCERT_PARAMETER = "uncertParameter"
     VAR = "var"
