@@ -140,6 +140,53 @@ jobs:
           path: frontend/playwright-report
           retention-days: 7
 
+  package:
+    # the python package as a user installs it: the wheel with the built frontend in it,
+    # installed into an environment of its own, opens the report of a file
+    name: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          python-version: "3.14"
+          enable-cache: true
+      - name: Build the frontend into the package
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build:package
+      - name: Build the wheel and the sdist
+        working-directory: backend
+        run: uv build --out-dir ../dist
+      - name: Open a report with the installed wheel
+        run: |
+          uv venv --python 3.14 "$RUNNER_TEMP/venv"
+          uv pip install --python "$RUNNER_TEMP/venv/bin/python" dist/*.whl
+          # outside of the checkout, so that the package which is tested is the installed one
+          cd "$RUNNER_TEMP"
+          model="$GITHUB_WORKSPACE/backend/sbml4humans/resources/examples/comp_deletion.xml"
+          url="$(venv/bin/sbml4humans --no-browser "$model")"
+          echo "$url"
+          curl --fail --silent "$url" | grep --quiet '<div id="app">'
+          report="${url%%/report*}/api/local/reports/${url##*local=}"
+          curl --fail --silent "$report" | grep --quiet '"./unit_definitions.xml"'
+          venv/bin/sbml4humans --stop
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
   release:
     needs: [test, schema, frontend, e2e]
     if: startsWith(github.ref, 'refs/tags/')
@@ -174,3 +221,24 @@ jobs:
       - name: Fast-forward main to the release
         # no --force: the push fails loudly if it would not be a fast-forward
         run: git push origin HEAD:main
+
+  publish:
+    # the package on PyPI, by trusted publishing: the project on PyPI names this repository,
+    # this workflow and the environment `pypi` as its publisher, see docs/development.md.
+    # Next to the GitHub release and not before it: main follows the release either way.
+    needs: [test, schema, frontend, e2e, package]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/sbml4humans/
+    permissions:
+      id-token: write  # the identity PyPI trusts
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.14.2

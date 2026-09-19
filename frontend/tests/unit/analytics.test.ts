@@ -3,7 +3,7 @@ import { set } from "vue-gtag";
 import type * as vueGtag from "vue-gtag";
 import type { RouteLocationNormalizedGeneric, Router } from "vue-router";
 
-import { gtagSettings } from "@/analytics";
+import { analyticsEnabled, gtagSettings } from "@/analytics";
 
 vi.mock("vue-gtag", async (importOriginal) => {
   const original = await importOriginal<typeof vueGtag>();
@@ -70,5 +70,14 @@ describe("gtagSettings", () => {
     hook(buildRoute());
     expect(set).toHaveBeenCalledTimes(1);
     expect(set).toHaveBeenCalledWith({ page_location: `${window.location.origin}/report` });
+  });
+});
+
+describe("analyticsEnabled", () => {
+  it("reports for the production build of the site alone", () => {
+    expect(analyticsEnabled({ PROD: true })).toBe(true);
+    expect(analyticsEnabled({ PROD: false })).toBe(false);
+    // the build of the python package serves one machine and reports nothing
+    expect(analyticsEnabled({ PROD: true, VITE_ANALYTICS: "off" })).toBe(false);
   });
 });

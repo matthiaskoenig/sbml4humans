@@ -14,28 +14,28 @@ As in `2026-09-19-external-model-definitions.md`: test first, all checks before 
 
 ### Task 1: the local app
 
-- [ ] `tests/test_local.py`, then `sbml4humans/local.py`: `ReportStore`, `LocalApp` (routing, host and origin check, static files with fallback), the local endpoints with the secret and the error contract. `api.py` shares its error contract as `add_error_contract(app)`.
+- [x] `tests/test_local.py`, then `sbml4humans/local.py`: `ReportStore`, `LocalApp` (routing, host and origin check, static files with fallback), the local endpoints with the secret and the error contract. `api.py` shares its error contract as `add_error_contract(app)`.
 
 ### Task 2: the server process
 
-- [ ] `serve()` with the state file and the idle watcher, `python -m sbml4humans.local`. `platformdirs` becomes a dependency (`uv add`).
+- [x] `serve()` with the state file and the idle watcher, `python -m sbml4humans.local`. `platformdirs` becomes a dependency (`uv add`).
 
 ### Task 3: `show()`, `stop()` and the command
 
-- [ ] `tests/test_show.py`, then `sbml4humans/show.py`, the export in `__init__.py`, `cli.py` and the console script.
+- [x] `tests/test_show.py`, then `sbml4humans/show.py`, the export in `__init__.py`, `cli.py` and the console script.
 
 ### Task 4: the frontend
 
-- [ ] Unit tests, then the client (`getLocal`, `pingLocal`), the store (`loadLocal`), the page (`local` in the route, the ping), `view.ts` keeps `local`.
-- [ ] `.env.package`, `npm run build:package`, `VITE_ANALYTICS`, the git ignore of the build.
-- [ ] End to end test of `/report?local=`.
+- [x] Unit tests, then the client (`getLocal`, `pingLocal`), the store (`loadLocal`), the page (`local` in the route, the ping), `view.ts` keeps `local`.
+- [x] `.env.package`, `npm run build:package`, `VITE_ANALYTICS`, the git ignore of the build.
+- [x] End to end test of `/report?local=`.
 
 ### Task 5: packaging and CI
 
-- [ ] `artifacts` of hatch, the `package` job, the `publish` job.
-- [ ] The real thing by hand: build, install the wheel into a fresh environment, `sbml4humans` on a comp model, look at the page in the browser.
+- [x] `artifacts` of hatch, the `package` job, the `publish` job.
+- [x] The real thing by hand: build, install the wheel into a fresh environment, `sbml4humans` on a comp model, look at the page in the browser.
 
 ### Task 6: documentation and the pull request
 
-- [ ] `docs/python.md` and the navigation, `docs/inputs.md`, `docs/development.md` (the build of the package, PyPI), `README.md`, `CLAUDE.md`.
-- [ ] All checks, push, pull request which closes #33.
+- [x] `docs/python.md` and the navigation, `docs/inputs.md`, `docs/development.md` (the build of the package, PyPI), `README.md`, `CLAUDE.md`.
+- [x] All checks, push, pull request which closes #33.

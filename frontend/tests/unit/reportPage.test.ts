@@ -6,13 +6,19 @@ import * as client from "@/api/client";
 import { vTooltip } from "@/directives/tooltip";
 import ReportPage from "@/pages/ReportPage.vue";
 import { router } from "@/router";
-import { useReportStore } from "@/stores/report";
+import { LOCAL_PING_INTERVAL, useReportStore } from "@/stores/report";
 
 import { loadFixture } from "./fixtures";
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
-  return { ...original, getExample: vi.fn(), postContent: vi.fn() };
+  return {
+    ...original,
+    getExample: vi.fn(),
+    postContent: vi.fn(),
+    getLocal: vi.fn(),
+    pingLocal: vi.fn(),
+  };
 });
 
 let wrapper: ReturnType<typeof mount> | null = null;
@@ -40,6 +46,7 @@ describe("ReportPage", () => {
   afterEach(() => {
     wrapper?.unmount();
     wrapper = null;
+    vi.useRealTimers();
   });
 
   it("shows the empty state on /report while the report of an example is loaded", async () => {
@@ -59,6 +66,37 @@ describe("ReportPage", () => {
     const page = await mountReport({ url: "" });
     expect(page.find("[data-testid=no-report]").exists()).toBe(true);
     expect(page.find("[data-testid=report-page]").exists()).toBe(false);
+  });
+
+  it("shows the report of a local token and keeps the local server alive while it is open", async () => {
+    vi.useFakeTimers();
+    vi.mocked(client.getLocal).mockReset().mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(client.pingLocal).mockReset().mockResolvedValue(undefined);
+    const page = await mountReport({ local: "token1" });
+    expect(client.getLocal).toHaveBeenCalledWith("token1");
+    expect(page.find("[data-testid=report-page]").exists()).toBe(true);
+
+    // the server ends itself when it is idle, so an open report says that it is still read
+    expect(client.pingLocal).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(LOCAL_PING_INTERVAL);
+    expect(client.pingLocal).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2 * LOCAL_PING_INTERVAL);
+    expect(client.pingLocal).toHaveBeenCalledTimes(3);
+    page.unmount();
+    wrapper = null;
+    await vi.advanceTimersByTimeAsync(2 * LOCAL_PING_INTERVAL);
+    expect(client.pingLocal).toHaveBeenCalledTimes(3);
+  });
+
+  it("does not ping for a report which is not a local one", async () => {
+    vi.useFakeTimers();
+    vi.mocked(client.pingLocal).mockReset();
+    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    const store = useReportStore();
+    await store.loadContent("<sbml/>");
+    await mountReport();
+    await vi.advanceTimersByTimeAsync(3 * LOCAL_PING_INTERVAL);
+    expect(client.pingLocal).not.toHaveBeenCalled();
   });
 
   it("shows the report of pasted content on /report", async () => {

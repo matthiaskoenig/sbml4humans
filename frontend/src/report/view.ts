@@ -1,10 +1,14 @@
 import { computed, type ComputedRef } from "vue";
-import { useRoute, useRouter, type RouteLocationRaw } from "vue-router";
+import { useRoute, useRouter, type LocationQueryRaw, type RouteLocationRaw } from "vue-router";
 
 import type { ElementType } from "@/api/types";
 import { parseQuery, toQuery, type ViewState } from "@/report/query";
 
 type Mode = "push" | "replace";
+
+/** The keys of the route query which say where the report came from, the url of a model and the
+ * token of a local report: they are not view state, and every route of the report keeps them. */
+const SOURCE_KEYS = ["url", "local"] as const;
 
 /** The view state of the report page and the actions that write it back to the route. */
 export function useReportView(): {
@@ -20,11 +24,18 @@ export function useReportView(): {
   const router = useRouter();
   const state = computed(() => parseQuery(route.query));
 
+  /** The query of a view state, with the source of the report the route names. */
+  function queryOf(next: ViewState): LocationQueryRaw {
+    const query = { ...toQuery(next) };
+    for (const key of SOURCE_KEYS) {
+      const value = route.query[key];
+      if (typeof value === "string") query[key] = value;
+    }
+    return query;
+  }
+
   function update(patch: Partial<ViewState>, mode: Mode = "push"): Promise<unknown> {
-    const query = { ...toQuery({ ...state.value, ...patch }) };
-    // the url of a loaded report is not view state, keep it
-    if (typeof route.query.url === "string") query.url = route.query.url;
-    return router[mode]({ path: route.path, query });
+    return router[mode]({ path: route.path, query: queryOf({ ...state.value, ...patch }) });
   }
 
   return {
@@ -40,9 +51,7 @@ export function useReportView(): {
       const next = across
         ? { entry: across.entry, model: across.model, pk, q: "", types: null }
         : { ...state.value, pk };
-      const query = { ...toQuery(next) };
-      if (typeof route.query.url === "string") query.url = route.query.url;
-      return { path: route.path, query };
+      return { path: route.path, query: queryOf(next) };
     },
   };
 }

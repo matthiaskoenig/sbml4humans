@@ -98,6 +98,16 @@ export function postContent(text: string): Promise<ReportResponse> {
   });
 }
 
+/** The report the local server of `sbml4humans.show` holds under a token. */
+export function getLocal(token: string): Promise<ReportResponse> {
+  return request<ReportResponse>(`/local/reports/${encodeURIComponent(token)}`);
+}
+
+/** Tell the local server that a report of it is still open: it ends itself when it is idle. */
+export async function pingLocal(): Promise<void> {
+  await request<{ version: string }>("/local/ping", { signal: AbortSignal.timeout(15_000) });
+}
+
 /** Resolve an annotation resource (identifiers.org and similar) via pymetadata. Aborts after 15
  * seconds, so a request the annotation service never answers still fails like any other error
  * instead of holding its resolve queue slot forever. */

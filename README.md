@@ -19,6 +19,14 @@ A report carries the data model of the file: every level and version of SBML whi
 
 Use it at [sbml4humans.de](https://sbml4humans.de) with a file, a url or pasted SBML, or with one of the example models which ship with it.
 
+Or use it from python, where the report of a local file opens in your browser and the file never leaves your machine ([Reports from python](https://matthiaskoenig.github.io/sbml4humans/python/)):
+
+```python
+from sbml4humans import show
+
+show("model.xml")
+```
+
 ## Documentation
 
 The documentation is available at [matthiaskoenig.github.io/sbml4humans](https://matthiaskoenig.github.io/sbml4humans/): what [SBML](https://matthiaskoenig.github.io/sbml4humans/sbml/) is, how to [load a model](https://matthiaskoenig.github.io/sbml4humans/inputs/), how to [read a report](https://matthiaskoenig.github.io/sbml4humans/report/), the [reference](https://matthiaskoenig.github.io/sbml4humans/reference/) of every element type with its attributes, and, for contributors, the [development](https://matthiaskoenig.github.io/sbml4humans/development/) of the application.

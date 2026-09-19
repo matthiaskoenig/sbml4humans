@@ -1,6 +1,6 @@
 # Loading a model
 
-A report is created from a model you provide. The home page offers three ways to do that, and the examples page offers models which are already there. Whatever the input is, it is sent to the backend, which reads it with libsbml and answers with the data the report is built from. The file is written to a temporary file for that and is deleted with the request, it is not stored.
+A report is created from a model you provide. The home page offers three ways to do that, and the examples page offers models which are already there. A fourth way does not use the web application at all: the python package opens the report of a file on your own machine, as [Reports from python](python.md) describes. Whatever the input is, it is sent to the backend, which reads it with libsbml and answers with the data the report is built from. The file is written to a temporary file for that and is deleted with the request, it is not stored.
 
 ## The three inputs
 

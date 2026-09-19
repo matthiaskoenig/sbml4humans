@@ -8,7 +8,7 @@ import { loadFixture } from "./fixtures";
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
-  return { ...original, getExample: vi.fn(), getUrl: vi.fn() };
+  return { ...original, getExample: vi.fn(), getUrl: vi.fn(), getLocal: vi.fn() };
 });
 
 describe("report store", () => {
@@ -33,6 +33,19 @@ describe("report store", () => {
     expect(store.defaultEntry).toBe(store.entries[0]);
     expect(store.indexFor("./models/omex_comp.xml")?.mainModel?.id).toBe("omex_comp");
     expect(store.source).toEqual({ kind: "example", id: "CompModels", name: "CompModels" });
+  });
+
+  it("loads the report of a local token once", async () => {
+    vi.mocked(client.getLocal).mockResolvedValue(loadFixture("comp_deletion"));
+    const store = useReportStore();
+    await store.loadLocal("token1");
+    await store.loadLocal("token1");
+    expect(client.getLocal).toHaveBeenCalledTimes(1);
+    expect(client.getLocal).toHaveBeenCalledWith("token1");
+    expect(store.source).toEqual({ kind: "local", token: "token1", name: "local report" });
+    expect(store.defaultEntry).toBe("./comp_deletion.xml");
+    await store.loadLocal("token2");
+    expect(client.getLocal).toHaveBeenCalledTimes(2);
   });
 
   it("prefers the master entry", async () => {

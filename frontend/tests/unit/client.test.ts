@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  getLocal,
+  pingLocal,
   ApiError,
   getAnnotationResource,
   getExample,
@@ -128,6 +130,20 @@ describe("api client", () => {
     const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
     expect(init.signal).toBeDefined();
     expect(init.signal).toBe(timeoutSpy.mock.results[0]?.value);
+  });
+
+  it("reads the report of a local token and pings the local server", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ uid: "x", manifest: {}, reports: {} }));
+    vi.stubGlobal("fetch", fetchMock);
+    await getLocal("a token/with?marks");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      `${import.meta.env.VITE_API_URL}/local/reports/a%20token%2Fwith%3Fmarks`,
+    );
+    fetchMock.mockResolvedValue(jsonResponse({ version: "1.0.0" }));
+    await pingLocal();
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(`${import.meta.env.VITE_API_URL}/local/ping`);
   });
 
   it("fixtures carry the report response shape", () => {

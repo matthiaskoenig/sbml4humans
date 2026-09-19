@@ -5,9 +5,19 @@ build-backend = "hatchling.build"
 [project]
 name = "sbml4humans"
 dynamic = ["version"]
-description = "The http api of sbml4humans, the human readable report of SBML models."
+description = "Interactive, human readable reports of SBML models, in the browser and from python."
+readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
+keywords = ["SBML", "systems biology", "computational modelling", "report", "COMBINE archive"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
 authors = [
     {name = "Matthias König", email = "konigmatt@googlemail.com"},
 ]
@@ -24,8 +34,9 @@ dependencies = [
     "fastapi>=0.141.1",
     "uvicorn>=0.52.4",
     "python-multipart>=0.0.32",
-    # downloading models from urls
+    # downloading models from urls, and the client of the local server of `show`
     "httpx>=0.28.1",
+    # the state file of the local server of `show`, in the cache directory of the user
     "platformdirs>=4.4",
 ]
 
@@ -34,6 +45,7 @@ sbml4humans = "sbml4humans.cli:main"
 
 [project.urls]
 Homepage = "https://sbml4humans.de"
+Documentation = "https://matthiaskoenig.github.io/sbml4humans/"
 Repository = "https://github.com/matthiaskoenig/sbml4humans"
 
 [dependency-groups]
@@ -80,6 +92,12 @@ replace = "\"name\": \"sbml4humans\",\n  \"version\": \"{new_version}\""
 filename = "../frontend/package-lock.json"
 search = "\"name\": \"sbml4humans\",\n      \"version\": \"{current_version}\""
 replace = "\"name\": \"sbml4humans\",\n      \"version\": \"{new_version}\""
+
+# the frontend which `sbml4humans.show` serves is built into the package before the wheel
+# (`npm run build:package` in frontend/). It is git ignored, which hatch takes as excluded,
+# so it is named as an artifact of the build.
+[tool.hatch.build]
+artifacts = ["sbml4humans/resources/frontend/**"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["sbml4humans"]

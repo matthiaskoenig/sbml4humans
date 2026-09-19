@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
+    "build:package": "vue-tsc --noEmit -p tsconfig.app.json && vite build --mode package --outDir ../backend/sbml4humans/resources/frontend --emptyOutDir",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
     "lint": "eslint . && prettier --check .",

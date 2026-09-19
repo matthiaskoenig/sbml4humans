@@ -1,26 +1,43 @@
 import { defineStore } from "pinia";
 import { computed, markRaw, ref, shallowRef } from "vue";
 
-import { type ApiError, getExample, getUrl, postContent, postFile, toApiError } from "@/api/client";
+import {
+  type ApiError,
+  getExample,
+  getLocal,
+  getUrl,
+  postContent,
+  postFile,
+  toApiError,
+} from "@/api/client";
 import type { ReportResponse } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 
-export type SourceKind = "example" | "url" | "file" | "content";
+/** `local` is the report of a file of this machine, which `sbml4humans.show` of the python
+ * package created on its local server and which the page reads by its token. */
+export type SourceKind = "example" | "url" | "file" | "content" | "local";
+
+/** How often an open local report tells its server that it is still read [ms]. The server ends
+ * itself after a quarter of an hour without a request, and a browser wakes the timers of a tab
+ * in the background once a minute. */
+export const LOCAL_PING_INTERVAL = 60_000;
 
 /** Where the current report came from. */
 export interface ReportSource {
   kind: SourceKind;
   id?: string;
   url?: string;
+  token?: string;
   /** Shown while loading and in the context bar. */
   name: string;
 }
 
 function sameSource(a: ReportSource, b: ReportSource): boolean {
-  return (
-    a.kind === b.kind &&
-    (a.kind === "example" ? a.id === b.id : a.kind === "url" ? a.url === b.url : false)
-  );
+  if (a.kind !== b.kind) return false;
+  if (a.kind === "example") return a.id === b.id;
+  if (a.kind === "url") return a.url === b.url;
+  if (a.kind === "local") return a.token === b.token;
+  return false;
 }
 
 export const useReportStore = defineStore("report", () => {
@@ -67,6 +84,8 @@ export const useReportStore = defineStore("report", () => {
 
   const loadExample = (id: string) => load({ kind: "example", id, name: id }, () => getExample(id));
   const loadUrl = (url: string) => load({ kind: "url", url, name: url }, () => getUrl(url));
+  const loadLocal = (token: string) =>
+    load({ kind: "local", token, name: "local report" }, () => getLocal(token));
   const loadFile = (file: File) => load({ kind: "file", name: file.name }, () => postFile(file));
   const loadContent = (text: string) =>
     load({ kind: "content", name: "pasted SBML" }, () => postContent(text));
@@ -88,6 +107,7 @@ export const useReportStore = defineStore("report", () => {
     indexFor,
     loadExample,
     loadUrl,
+    loadLocal,
     loadFile,
     loadContent,
     clear,

@@ -8,6 +8,14 @@ type GtagSettings = Parameters<typeof createGtag>[0];
 /** The Google Analytics measurement id sbml4humans reports to. */
 const TAG_ID = "G-TZ6E25RS0Q";
 
+/** Whether a build reports page views: the production build of sbml4humans.de does, a
+ * development server does not, and neither does the build which ships with the python package
+ * (`npm run build:package`, `VITE_ANALYTICS=off`), which serves the models of one machine to
+ * that machine. */
+export function analyticsEnabled(env: { PROD: boolean; VITE_ANALYTICS?: string }): boolean {
+  return env.PROD && env.VITE_ANALYTICS !== "off";
+}
+
 /** The origin and path of a route, without its query or hash: a report page carries the loaded
  * model's url, the search term and the permalink id in the query, and none of that belongs in
  * an analytics report. */
