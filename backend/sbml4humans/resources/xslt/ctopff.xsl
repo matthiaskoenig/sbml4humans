@@ -124,7 +124,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
     <mn>
       <x:apply-templates select="m:sep/preceding-sibling::node()"/>
     </mn>
-    <mo>&#183;<!-- middle dot --></mo>
+    <mo>&#x22C5;<!-- dot operator, which mmltex writes as the cdot of latex --></mo>
     <msup>
       <mn>10</mn>
       <mn>
@@ -606,7 +606,7 @@ Or the Apache 2, MIT or MPL 1.1 or MPL 2.0 licences.
   <x:if test="$p &gt; 3 and $op != 'minus'"><mo>(</mo></x:if>
   <x:for-each select="*[position()&gt;1]">
    <x:if test="position() &gt; 1">
-    <mo>&#183;<!-- middle dot --></mo>
+    <mo>&#x22C5;<!-- dot operator, which mmltex writes as the cdot of latex --></mo>
    </x:if>
    <x:if test="position()&gt;= $first">
    <x:apply-templates select=".">

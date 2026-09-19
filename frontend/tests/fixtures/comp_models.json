@@ -1,5 +1,5 @@
 {
-  "uid": "2b6372596520478c94677c9f32eecd0c",
+  "uid": "5ba6e3eb0c6b4247ab9fc052eca72922",
   "manifest": {
     "entries": [
       {
@@ -286,7 +286,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k1}·\\mathit{S2}",
+                    "latex": " \\mathit{k1}\\cdot \\mathit{S2}",
                     "formula": "k1 * S2"
                   },
                   "derivedUnits": "-",
@@ -434,6 +434,13 @@
               "name": null,
               "model": "omex_minimal/Model:omex_minimal"
             },
+            "omex_minimal/KineticLaw:J0.kineticLaw": {
+              "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
             "omex_minimal/Port:cell_port": {
               "pk": "omex_minimal/Port:cell_port",
               "sbmlType": "Port",
@@ -446,13 +453,6 @@
               "sbmlType": "Port",
               "id": "S1_port",
               "name": "Port of S1",
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/KineticLaw:J0.kineticLaw": {
-              "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
               "model": "omex_minimal/Model:omex_minimal"
             }
           },
@@ -1190,7 +1190,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S0}-\\mathit{S1})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S0}-\\mathit{S1})",
                     "formula": "D * (S0 - S1)"
                   },
                   "derivedUnits": "-",
@@ -1272,7 +1272,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S1}-\\mathit{S2})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S1}-\\mathit{S2})",
                     "formula": "D * (S1 - S2)"
                   },
                   "derivedUnits": "-",
@@ -1354,7 +1354,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S2}-\\mathit{S3})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S2}-\\mathit{S3})",
                     "formula": "D * (S2 - S3)"
                   },
                   "derivedUnits": "-",
@@ -1436,7 +1436,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S3}-\\mathit{S4})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S3}-\\mathit{S4})",
                     "formula": "D * (S3 - S4)"
                   },
                   "derivedUnits": "-",
@@ -1865,6 +1865,13 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/KineticLaw:J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Reaction:J1": {
               "pk": "omex_comp/Reaction:J1",
               "sbmlType": "Reaction",
@@ -1882,6 +1889,13 @@
             "omex_comp/SpeciesReference:J1.product.S2": {
               "pk": "omex_comp/SpeciesReference:J1.product.S2",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/KineticLaw:J1.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J1.kineticLaw",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
@@ -1907,6 +1921,13 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/KineticLaw:J2.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J2.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Reaction:J3": {
               "pk": "omex_comp/Reaction:J3",
               "sbmlType": "Reaction",
@@ -1924,6 +1945,13 @@
             "omex_comp/SpeciesReference:J3.product.S4": {
               "pk": "omex_comp/SpeciesReference:J3.product.S4",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/KineticLaw:J3.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J3.kineticLaw",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
@@ -1960,34 +1988,6 @@
               "pk": "omex_comp/Submodel:submodel4",
               "sbmlType": "Submodel",
               "id": "submodel4",
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J0.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J0.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J1.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J1.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J2.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J2.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J3.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J3.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             }
@@ -2966,7 +2966,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S0}-\\mathit{S1})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S0}-\\mathit{S1})",
                     "formula": "D * (S0 - S1)"
                   },
                   "derivedUnits": "-",
@@ -3048,7 +3048,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S1}-\\mathit{S2})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S1}-\\mathit{S2})",
                     "formula": "D * (S1 - S2)"
                   },
                   "derivedUnits": "-",
@@ -3130,7 +3130,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S2}-\\mathit{S3})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S2}-\\mathit{S3})",
                     "formula": "D * (S2 - S3)"
                   },
                   "derivedUnits": "-",
@@ -3212,7 +3212,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{D}·(\\mathit{S3}-\\mathit{S4})",
+                    "latex": " \\mathit{D}\\cdot (\\mathit{S3}-\\mathit{S4})",
                     "formula": "D * (S3 - S4)"
                   },
                   "derivedUnits": "-",
@@ -3294,7 +3294,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{submodel0\\_\\_k1}·\\mathit{submodel0\\_\\_S2}",
+                    "latex": " \\mathit{submodel0\\_\\_k1}\\cdot \\mathit{submodel0\\_\\_S2}",
                     "formula": "submodel0__k1 * submodel0__S2"
                   },
                   "derivedUnits": "-",
@@ -3376,7 +3376,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{submodel1\\_\\_k1}·\\mathit{submodel1\\_\\_S2}",
+                    "latex": " \\mathit{submodel1\\_\\_k1}\\cdot \\mathit{submodel1\\_\\_S2}",
                     "formula": "submodel1__k1 * submodel1__S2"
                   },
                   "derivedUnits": "-",
@@ -3458,7 +3458,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{submodel2\\_\\_k1}·\\mathit{submodel2\\_\\_S2}",
+                    "latex": " \\mathit{submodel2\\_\\_k1}\\cdot \\mathit{submodel2\\_\\_S2}",
                     "formula": "submodel2__k1 * submodel2__S2"
                   },
                   "derivedUnits": "-",
@@ -3540,7 +3540,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{submodel3\\_\\_k1}·\\mathit{submodel3\\_\\_S2}",
+                    "latex": " \\mathit{submodel3\\_\\_k1}\\cdot \\mathit{submodel3\\_\\_S2}",
                     "formula": "submodel3__k1 * submodel3__S2"
                   },
                   "derivedUnits": "-",
@@ -3622,7 +3622,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{submodel4\\_\\_k1}·\\mathit{submodel4\\_\\_S2}",
+                    "latex": " \\mathit{submodel4\\_\\_k1}\\cdot \\mathit{submodel4\\_\\_S2}",
                     "formula": "submodel4__k1 * submodel4__S2"
                   },
                   "derivedUnits": "-",
@@ -3832,6 +3832,13 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/KineticLaw:J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Reaction:J1": {
               "pk": "omex_comp/Reaction:J1",
               "sbmlType": "Reaction",
@@ -3849,6 +3856,13 @@
             "omex_comp/SpeciesReference:J1.product.S2": {
               "pk": "omex_comp/SpeciesReference:J1.product.S2",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/KineticLaw:J1.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J1.kineticLaw",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
@@ -3874,6 +3888,13 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/KineticLaw:J2.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J2.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Reaction:J3": {
               "pk": "omex_comp/Reaction:J3",
               "sbmlType": "Reaction",
@@ -3891,6 +3912,13 @@
             "omex_comp/SpeciesReference:J3.product.S4": {
               "pk": "omex_comp/SpeciesReference:J3.product.S4",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/KineticLaw:J3.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:J3.kineticLaw",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
@@ -3916,6 +3944,13 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/KineticLaw:submodel0__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Reaction:submodel1__J0": {
               "pk": "omex_comp/Reaction:submodel1__J0",
               "sbmlType": "Reaction",
@@ -3933,6 +3968,13 @@
             "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2": {
               "pk": "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2",
               "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
+            "omex_comp/KineticLaw:submodel1__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
+              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
@@ -3958,6 +4000,13 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/KineticLaw:submodel2__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Reaction:submodel3__J0": {
               "pk": "omex_comp/Reaction:submodel3__J0",
               "sbmlType": "Reaction",
@@ -3979,6 +4028,13 @@
               "name": null,
               "model": "omex_comp/Model:omex_comp"
             },
+            "omex_comp/KineticLaw:submodel3__J0.kineticLaw": {
+              "pk": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_comp/Model:omex_comp"
+            },
             "omex_comp/Reaction:submodel4__J0": {
               "pk": "omex_comp/Reaction:submodel4__J0",
               "sbmlType": "Reaction",
@@ -3996,62 +4052,6 @@
             "omex_comp/SpeciesReference:submodel4__J0.product.submodel4__S2": {
               "pk": "omex_comp/SpeciesReference:submodel4__J0.product.submodel4__S2",
               "sbmlType": "SpeciesReference",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J0.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J0.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J1.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J1.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J2.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J2.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:J3.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:J3.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:submodel0__J0.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:submodel1__J0.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:submodel2__J0.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_comp/Model:omex_comp"
-            },
-            "omex_comp/KineticLaw:submodel3__J0.kineticLaw": {
-              "pk": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
-              "sbmlType": "KineticLaw",
               "id": null,
               "name": null,
               "model": "omex_comp/Model:omex_comp"
@@ -4459,7 +4459,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.041 [s]"
+        "jsonReportTime": "0.039 [s]"
       }
     }
   }

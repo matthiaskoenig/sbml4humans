@@ -155,3 +155,32 @@ def test_logical_connectives_are_rendered_as_operators(
     latex = mathml.math_info(libsbml.parseL3Formula(formula)).latex
     assert expected in latex
     assert "and(" not in latex
+
+
+@pytest.mark.parametrize(
+    "cmathml, expected",
+    [
+        (
+            "<math xmlns='http://www.w3.org/1998/Math/MathML'>"
+            "<apply><times/><ci>Vmax</ci><ci>S1</ci></apply></math>",
+            r"\mathit{Vmax}\cdot \mathit{S1}",
+        ),
+        (
+            "<math xmlns='http://www.w3.org/1998/Math/MathML'>"
+            "<cn type='e-notation'>6.02<sep/>23</cn></math>",
+            r"6.02\cdot {10}^{23}",
+        ),
+    ],
+)
+def test_a_product_is_set_with_the_operator_of_latex(
+    cmathml: str, expected: str
+) -> None:
+    r"""The dot of a product is the binary operator `\cdot`.
+
+    The stylesheet wrote the middle dot U+00B7, which KaTeX sets as an
+    ordinary symbol glued to its left operand: `Vmax· S1` next to a spaced
+    `Km + S1`.
+    """
+    latex = mathml.cmathml_to_latex(cmathml)
+    assert expected in latex
+    assert "\u00b7" not in latex

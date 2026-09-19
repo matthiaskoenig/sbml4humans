@@ -1,5 +1,5 @@
 {
-  "uid": "00c9768989124ef681dc1bbe97fa0b84",
+  "uid": "46cd56db437a4fb3927b263615ffa624",
   "manifest": {
     "entries": [
       {
@@ -1963,7 +1963,7 @@
                 "keyValuePairs": [],
                 "variable": "Mass",
                 "math": {
-                  "latex": " \\mathit{Mass}·\\mathit{\\mu}",
+                  "latex": " \\mathit{Mass}\\cdot \\mathit{\\mu}",
                   "formula": "Mass * mu"
                 },
                 "derivedUnits": "-"
@@ -2152,7 +2152,7 @@
                 "keyValuePairs": [],
                 "variable": "k2",
                 "math": {
-                  "latex": " \\mathit{UbE}·\\mathit{V2}+(1-\\mathit{UbE})·\\mathit{V2prime}",
+                  "latex": " \\mathit{UbE}\\cdot \\mathit{V2}+(1-\\mathit{UbE})\\cdot \\mathit{V2prime}",
                   "formula": "UbE * V2 + (1 - UbE) * V2prime"
                 },
                 "derivedUnits": "mol"
@@ -2173,7 +2173,7 @@
                 "keyValuePairs": [],
                 "variable": "k6",
                 "math": {
-                  "latex": " \\mathit{UbE2}·\\mathit{V6}+(1-\\mathit{UbE2})·\\mathit{V6prime}",
+                  "latex": " \\mathit{UbE2}\\cdot \\mathit{V6}+(1-\\mathit{UbE2})\\cdot \\mathit{V6prime}",
                   "formula": "UbE2 * V6 + (1 - UbE2) * V6prime"
                 },
                 "derivedUnits": "mol"
@@ -2194,7 +2194,7 @@
                 "keyValuePairs": [],
                 "variable": "kwee",
                 "math": {
-                  "latex": " \\mathit{Vwprime}·(1-\\mathit{Wee1})+\\mathit{Vw}·\\mathit{Wee1}",
+                  "latex": " \\mathit{Vwprime}\\cdot (1-\\mathit{Wee1})+\\mathit{Vw}\\cdot \\mathit{Wee1}",
                   "formula": "Vwprime * (1 - Wee1) + Vw * Wee1"
                 },
                 "derivedUnits": "mol"
@@ -2215,7 +2215,7 @@
                 "keyValuePairs": [],
                 "variable": "k25",
                 "math": {
-                  "latex": " \\mathit{Cdc25}·\\mathit{V25}+(1-\\mathit{Cdc25})·\\mathit{V25prime}",
+                  "latex": " \\mathit{Cdc25}\\cdot \\mathit{V25}+(1-\\mathit{Cdc25})\\cdot \\mathit{V25prime}",
                   "formula": "Cdc25 * V25 + (1 - Cdc25) * V25prime"
                 },
                 "derivedUnits": "mol"
@@ -2236,7 +2236,7 @@
                 "keyValuePairs": [],
                 "variable": "MPF",
                 "math": {
-                  "latex": " \\mathit{G2K}+\\mathit{\\beta}·\\mathit{PG2}",
+                  "latex": " \\mathit{G2K}+\\mathit{\\beta}\\cdot \\mathit{PG2}",
                   "formula": "G2K + beta * PG2"
                 },
                 "derivedUnits": "mol"
@@ -2257,7 +2257,7 @@
                 "keyValuePairs": [],
                 "variable": "SPF",
                 "math": {
-                  "latex": " \\mathit{Cig1}+\\mathit{\\alpha}·\\mathit{G1K}+\\mathit{MPF}",
+                  "latex": " \\mathit{Cig1}+\\mathit{\\alpha}\\cdot \\mathit{G1K}+\\mathit{MPF}",
                   "formula": "Cig1 + alpha * G1K + MPF"
                 },
                 "derivedUnits": "mol"
@@ -2522,7 +2522,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G2K}·\\mathit{kwee}-\\mathit{k25}·\\mathit{PG2}",
+                    "latex": " \\mathit{G2K}\\cdot \\mathit{kwee}-\\mathit{k25}\\cdot \\mathit{PG2}",
                     "formula": "G2K * kwee - k25 * PG2"
                   },
                   "derivedUnits": "mol",
@@ -2630,7 +2630,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G2K}·\\mathit{k7}·\\mathit{R}-\\mathit{G2R}·\\mathit{k7r}",
+                    "latex": " \\mathit{G2K}\\cdot \\mathit{k7}\\cdot \\mathit{R}-\\mathit{G2R}\\cdot \\mathit{k7r}",
                     "formula": "G2K * k7 * R - G2R * k7r"
                   },
                   "derivedUnits": "mol",
@@ -2738,7 +2738,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k7}·\\mathit{PG2}·\\mathit{R}-\\mathit{k7r}·\\mathit{PG2R}",
+                    "latex": " \\mathit{k7}\\cdot \\mathit{PG2}\\cdot \\mathit{R}-\\mathit{k7r}\\cdot \\mathit{PG2R}",
                     "formula": "k7 * PG2 * R - k7r * PG2R"
                   },
                   "derivedUnits": "mol",
@@ -2828,7 +2828,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G2R}·\\mathit{k4}",
+                    "latex": " \\mathit{G2R}\\cdot \\mathit{k4}",
                     "formula": "G2R * k4"
                   },
                   "derivedUnits": "mol",
@@ -2899,7 +2899,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k4}·\\mathit{R}",
+                    "latex": " \\mathit{k4}\\cdot \\mathit{R}",
                     "formula": "k4 * R"
                   },
                   "derivedUnits": "mol",
@@ -2989,7 +2989,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k4}·\\mathit{PG2R}",
+                    "latex": " \\mathit{k4}\\cdot \\mathit{PG2R}",
                     "formula": "k4 * PG2R"
                   },
                   "derivedUnits": "mol",
@@ -3079,7 +3079,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G1R}·\\mathit{k4}",
+                    "latex": " \\mathit{G1R}\\cdot \\mathit{k4}",
                     "formula": "G1R * k4"
                   },
                   "derivedUnits": "mol",
@@ -3167,7 +3167,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G2K}·\\mathit{k2}",
+                    "latex": " \\mathit{G2K}\\cdot \\mathit{k2}",
                     "formula": "G2K * k2"
                   },
                   "derivedUnits": "mol",
@@ -3255,7 +3255,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k2}·\\mathit{PG2}",
+                    "latex": " \\mathit{k2}\\cdot \\mathit{PG2}",
                     "formula": "k2 * PG2"
                   },
                   "derivedUnits": "mol",
@@ -3343,7 +3343,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G1K}·\\mathit{k6}",
+                    "latex": " \\mathit{G1K}\\cdot \\mathit{k6}",
                     "formula": "G1K * k6"
                   },
                   "derivedUnits": "mol",
@@ -3433,7 +3433,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k2prime}·\\mathit{PG2R}",
+                    "latex": " \\mathit{k2prime}\\cdot \\mathit{PG2R}",
                     "formula": "k2prime * PG2R"
                   },
                   "derivedUnits": "mol",
@@ -3523,7 +3523,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G2R}·\\mathit{k2prime}",
+                    "latex": " \\mathit{G2R}\\cdot \\mathit{k2prime}",
                     "formula": "G2R * k2prime"
                   },
                   "derivedUnits": "mol",
@@ -3613,7 +3613,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G1R}·\\mathit{k6prime}",
+                    "latex": " \\mathit{G1R}\\cdot \\mathit{k6prime}",
                     "formula": "G1R * k6prime"
                   },
                   "derivedUnits": "mol",
@@ -3721,7 +3721,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G1K}·\\mathit{k8}·\\mathit{R}-\\mathit{G1R}·\\mathit{k8r}",
+                    "latex": " \\mathit{G1K}\\cdot \\mathit{k8}\\cdot \\mathit{R}-\\mathit{G1R}\\cdot \\mathit{k8r}",
                     "formula": "G1K * k8 * R - G1R * k8r"
                   },
                   "derivedUnits": "mol",
@@ -3829,7 +3829,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{G2R}·\\mathit{k2}",
+                    "latex": " \\mathit{G2R}\\cdot \\mathit{k2}",
                     "formula": "G2R * k2"
                   },
                   "derivedUnits": "mol",
@@ -3937,7 +3937,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k2}·\\mathit{PG2R}",
+                    "latex": " \\mathit{k2}\\cdot \\mathit{PG2R}",
                     "formula": "k2 * PG2R"
                   },
                   "derivedUnits": "mol",
@@ -4088,7 +4088,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\frac{\\mathit{kp}·\\mathit{Mass}·\\mathit{R}·\\mathit{SPF}}{\\mathit{Kmp}+\\mathit{R}}",
+                    "latex": " \\frac{\\mathit{kp}\\cdot \\mathit{Mass}\\cdot \\mathit{R}\\cdot \\mathit{SPF}}{\\mathit{Kmp}+\\mathit{R}}",
                     "formula": "kp * Mass * R * SPF / (Kmp + R)"
                   },
                   "derivedUnits": "mol",
@@ -4187,7 +4187,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\frac{\\mathit{IEB}·\\mathit{ki}·\\mathit{MPF}}{\\mathit{IEB}+\\mathit{Kmi}}-\\frac{\\mathit{IE}·\\mathit{kir}}{\\mathit{IE}+\\mathit{Kmir}}",
+                    "latex": " \\frac{\\mathit{IEB}\\cdot \\mathit{ki}\\cdot \\mathit{MPF}}{\\mathit{IEB}+\\mathit{Kmi}}-\\frac{\\mathit{IE}\\cdot \\mathit{kir}}{\\mathit{IE}+\\mathit{Kmir}}",
                     "formula": "IEB * ki * MPF / (IEB + Kmi) - IE * kir / (IE + Kmir)"
                   },
                   "derivedUnits": "mol",
@@ -4286,7 +4286,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\frac{\\mathit{IE}·\\mathit{ku}·\\mathit{UbEB}}{\\mathit{Kmu}+\\mathit{UbEB}}-\\frac{\\mathit{kur}·\\mathit{UbE}}{\\mathit{Kmur}+\\mathit{UbE}}",
+                    "latex": " \\frac{\\mathit{IE}\\cdot \\mathit{ku}\\cdot \\mathit{UbEB}}{\\mathit{Kmu}+\\mathit{UbEB}}-\\frac{\\mathit{kur}\\cdot \\mathit{UbE}}{\\mathit{Kmur}+\\mathit{UbE}}",
                     "formula": "IE * ku * UbEB / (Kmu + UbEB) - kur * UbE / (Kmur + UbE)"
                   },
                   "derivedUnits": "dimensionless",
@@ -4385,7 +4385,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\frac{\\mathit{ku2}·\\mathit{MPF}·\\mathit{UbE2B}}{\\mathit{Kmu2}+\\mathit{UbE2B}}-\\frac{\\mathit{kur2}·\\mathit{UbE2}}{\\mathit{Kmur2}+\\mathit{UbE2}}",
+                    "latex": " \\frac{\\mathit{ku2}\\cdot \\mathit{MPF}\\cdot \\mathit{UbE2B}}{\\mathit{Kmu2}+\\mathit{UbE2B}}-\\frac{\\mathit{kur2}\\cdot \\mathit{UbE2}}{\\mathit{Kmur2}+\\mathit{UbE2}}",
                     "formula": "ku2 * MPF * UbE2B / (Kmu2 + UbE2B) - kur2 * UbE2 / (Kmur2 + UbE2)"
                   },
                   "derivedUnits": "dimensionless",
@@ -4484,7 +4484,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\frac{\\mathit{kwr}·\\mathit{Wee1B}}{\\mathit{Kmwr}+\\mathit{Wee1B}}-\\frac{\\mathit{kw}·\\mathit{MPF}·\\mathit{Wee1}}{\\mathit{Kmw}+\\mathit{Wee1}}",
+                    "latex": " \\frac{\\mathit{kwr}\\cdot \\mathit{Wee1B}}{\\mathit{Kmwr}+\\mathit{Wee1B}}-\\frac{\\mathit{kw}\\cdot \\mathit{MPF}\\cdot \\mathit{Wee1}}{\\mathit{Kmw}+\\mathit{Wee1}}",
                     "formula": "kwr * Wee1B / (Kmwr + Wee1B) - kw * MPF * Wee1 / (Kmw + Wee1)"
                   },
                   "derivedUnits": "mol",
@@ -4583,7 +4583,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\frac{\\mathit{Cdc25B}·\\mathit{kc}·\\mathit{MPF}}{\\mathit{Cdc25B}+\\mathit{Kmc}}-\\frac{\\mathit{Cdc25}·\\mathit{kcr}}{\\mathit{Cdc25}+\\mathit{Kmcr}}",
+                    "latex": " \\frac{\\mathit{Cdc25B}\\cdot \\mathit{kc}\\cdot \\mathit{MPF}}{\\mathit{Cdc25B}+\\mathit{Kmc}}-\\frac{\\mathit{Cdc25}\\cdot \\mathit{kcr}}{\\mathit{Cdc25}+\\mathit{Kmcr}}",
                     "formula": "Cdc25B * kc * MPF / (Cdc25B + Kmc) - Cdc25 * kcr / (Cdc25 + Kmcr)"
                   },
                   "derivedUnits": "mol",
@@ -4744,7 +4744,7 @@
                     "keyValuePairs": [],
                     "variable": "kp",
                     "math": {
-                      "latex": " 2·\\mathit{kp}",
+                      "latex": " 2\\cdot \\mathit{kp}",
                       "formula": "2 * kp"
                     }
                   },
@@ -7813,7 +7813,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.329 [s]"
+        "jsonReportTime": "0.335 [s]"
       }
     }
   }

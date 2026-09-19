@@ -1,5 +1,5 @@
 {
-  "uid": "f3c3ae22c4db4d0da33de8ece09bd8e2",
+  "uid": "3a6d4f3203224edba3b120cd3e95b380",
   "manifest": {
     "entries": [
       {
@@ -542,7 +542,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{active}·\\mathit{cell}·\\frac{\\mathit{Vmax}·\\mathit{S1}}{\\mathit{Km}+\\mathit{S1}}",
+                    "latex": " \\mathit{active}\\cdot \\mathit{cell}\\cdot \\frac{\\mathit{Vmax}\\cdot \\mathit{S1}}{\\mathit{Km}+\\mathit{S1}}",
                     "formula": "active * cell * (Vmax * S1 / (Km + S1))"
                   },
                   "derivedUnits": "\\frac{mmol}{min}",
@@ -1154,7 +1154,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.053 [s]"
+        "jsonReportTime": "0.052 [s]"
       }
     }
   }

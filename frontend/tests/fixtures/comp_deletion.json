@@ -1,5 +1,5 @@
 {
-  "uid": "b262427ebf2141c8ae0fee0533dc8f0b",
+  "uid": "d5f74759df544d3ab77027627e6a5230",
   "manifest": {
     "entries": [
       {
@@ -540,7 +540,7 @@
                 "keyValuePairs": [],
                 "variable": "glc_amount",
                 "math": {
-                  "latex": " \\mathit{glc}·\\mathit{medium}",
+                  "latex": " \\mathit{glc}\\cdot \\mathit{medium}",
                   "formula": "glc * medium"
                 },
                 "derivedUnits": "mol"
@@ -1028,7 +1028,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k}·\\mathit{glc}·\\mathit{c}",
+                    "latex": " \\mathit{k}\\cdot \\mathit{glc}\\cdot \\mathit{c}",
                     "formula": "k * glc * c"
                   },
                   "derivedUnits": "\\frac{mol}{min}",
@@ -1927,7 +1927,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.026 [s]"
+        "jsonReportTime": "0.025 [s]"
       }
     }
   }

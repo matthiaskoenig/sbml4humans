@@ -1,5 +1,5 @@
 {
-  "uid": "b32734a6599d44849f5b12ec74bb317b",
+  "uid": "de40bc4e359140e2a051f32430dfb2bb",
   "manifest": {
     "entries": [
       {
@@ -1060,7 +1060,7 @@
                 "keyValuePairs": [],
                 "variable": "a_tr",
                 "math": {
-                  "latex": " (\\mathit{ps_{a}}-\\mathit{ps_{0}})·60",
+                  "latex": " (\\mathit{ps_{a}}-\\mathit{ps_{0}})\\cdot 60",
                   "formula": "(ps_a - ps_0) * 60"
                 },
                 "derivedUnits": "-"
@@ -1081,7 +1081,7 @@
                 "keyValuePairs": [],
                 "variable": "a0_tr",
                 "math": {
-                  "latex": " \\mathit{ps_{0}}·60",
+                  "latex": " \\mathit{ps_{0}}\\cdot 60",
                   "formula": "ps_0 * 60"
                 },
                 "derivedUnits": "-"
@@ -1144,7 +1144,7 @@
                 "keyValuePairs": [],
                 "variable": "alpha",
                 "math": {
-                  "latex": " \\frac{\\mathit{a_{tr}}·\\mathit{eff}·\\mathit{tau_{prot}}}{\\mathrm{ln}2·\\mathit{KM}}",
+                  "latex": " \\frac{\\mathit{a_{tr}}\\cdot \\mathit{eff}\\cdot \\mathit{tau_{prot}}}{\\mathrm{ln}2\\cdot \\mathit{KM}}",
                   "formula": "a_tr * eff * tau_prot / (ln(2) * KM)"
                 },
                 "derivedUnits": "dimensionless"
@@ -1165,7 +1165,7 @@
                 "keyValuePairs": [],
                 "variable": "alpha0",
                 "math": {
-                  "latex": " \\frac{\\mathit{a0_{tr}}·\\mathit{eff}·\\mathit{tau_{prot}}}{\\mathrm{ln}2·\\mathit{KM}}",
+                  "latex": " \\frac{\\mathit{a0_{tr}}\\cdot \\mathit{eff}\\cdot \\mathit{tau_{prot}}}{\\mathrm{ln}2\\cdot \\mathit{KM}}",
                   "formula": "a0_tr * eff * tau_prot / (ln(2) * KM)"
                 },
                 "derivedUnits": "dimensionless"
@@ -1250,7 +1250,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{kd_{mRNA}}·\\mathit{X}",
+                    "latex": " \\mathit{kd_{mRNA}}\\cdot \\mathit{X}",
                     "formula": "kd_mRNA * X"
                   },
                   "derivedUnits": "item",
@@ -1336,7 +1336,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{kd_{mRNA}}·\\mathit{Y}",
+                    "latex": " \\mathit{kd_{mRNA}}\\cdot \\mathit{Y}",
                     "formula": "kd_mRNA * Y"
                   },
                   "derivedUnits": "item",
@@ -1422,7 +1422,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{kd_{mRNA}}·\\mathit{Z}",
+                    "latex": " \\mathit{kd_{mRNA}}\\cdot \\mathit{Z}",
                     "formula": "kd_mRNA * Z"
                   },
                   "derivedUnits": "item",
@@ -1533,7 +1533,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k_{tl}}·\\mathit{X}",
+                    "latex": " \\mathit{k_{tl}}\\cdot \\mathit{X}",
                     "formula": "k_tl * X"
                   },
                   "derivedUnits": "item",
@@ -1644,7 +1644,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k_{tl}}·\\mathit{Y}",
+                    "latex": " \\mathit{k_{tl}}\\cdot \\mathit{Y}",
                     "formula": "k_tl * Y"
                   },
                   "derivedUnits": "item",
@@ -1755,7 +1755,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{k_{tl}}·\\mathit{Z}",
+                    "latex": " \\mathit{k_{tl}}\\cdot \\mathit{Z}",
                     "formula": "k_tl * Z"
                   },
                   "derivedUnits": "item",
@@ -1841,7 +1841,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{kd_{prot}}·\\mathit{PX}",
+                    "latex": " \\mathit{kd_{prot}}\\cdot \\mathit{PX}",
                     "formula": "kd_prot * PX"
                   },
                   "derivedUnits": "item",
@@ -1927,7 +1927,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{kd_{prot}}·\\mathit{PY}",
+                    "latex": " \\mathit{kd_{prot}}\\cdot \\mathit{PY}",
                     "formula": "kd_prot * PY"
                   },
                   "derivedUnits": "item",
@@ -2013,7 +2013,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{kd_{prot}}·\\mathit{PZ}",
+                    "latex": " \\mathit{kd_{prot}}\\cdot \\mathit{PZ}",
                     "formula": "kd_prot * PZ"
                   },
                   "derivedUnits": "item",
@@ -2116,7 +2116,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}·{\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PZ}}^{\\mathit{n}}}",
+                    "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}\\cdot {\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PZ}}^{\\mathit{n}}}",
                     "formula": "a0_tr + a_tr * KM^n / (KM^n + PZ^n)"
                   },
                   "derivedUnits": "\\frac{1}{item}",
@@ -2219,7 +2219,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}·{\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PX}}^{\\mathit{n}}}",
+                    "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}\\cdot {\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PX}}^{\\mathit{n}}}",
                     "formula": "a0_tr + a_tr * KM^n / (KM^n + PX^n)"
                   },
                   "derivedUnits": "\\frac{1}{item}",
@@ -2322,7 +2322,7 @@
                   "uncertainties": [],
                   "keyValuePairs": [],
                   "math": {
-                    "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}·{\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PY}}^{\\mathit{n}}}",
+                    "latex": " \\mathit{a0_{tr}}+\\frac{\\mathit{a_{tr}}\\cdot {\\mathit{KM}}^{\\mathit{n}}}{{\\mathit{KM}}^{\\mathit{n}}+{\\mathit{PY}}^{\\mathit{n}}}",
                     "formula": "a0_tr + a_tr * KM^n / (KM^n + PY^n)"
                   },
                   "derivedUnits": "\\frac{1}{item}",
@@ -3496,7 +3496,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.162 [s]"
+        "jsonReportTime": "0.153 [s]"
       }
     }
   }

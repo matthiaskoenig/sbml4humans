@@ -1,5 +1,5 @@
 {
-  "uid": "91ab6ac1f50f44d183bd4ada9d710cd6",
+  "uid": "d67e8378f5bd4199b5114f0ca955dfe4",
   "manifest": {
     "entries": [
       {
@@ -821,7 +821,7 @@
                 "keyValuePairs": [],
                 "variable": "v",
                 "math": {
-                  "latex": " \\frac{\\mathit{Vmax}·\\mathit{S}}{\\mathit{Km}+\\mathit{S}}",
+                  "latex": " \\frac{\\mathit{Vmax}\\cdot \\mathit{S}}{\\mathit{Km}+\\mathit{S}}",
                   "formula": "Vmax * S / (Km + S)"
                 },
                 "derivedUnits": "\\frac{mmol}{l \\cdot min}"
@@ -1330,7 +1330,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.028 [s]"
+        "jsonReportTime": "0.024 [s]"
       }
     }
   }
