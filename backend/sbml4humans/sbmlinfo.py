@@ -47,6 +47,7 @@ from sbml4humans.model import (
     Input,
     KeyValuePair,
     KineticLaw,
+    ListOf,
     LocalParameter,
     Math,
     Model,
@@ -151,6 +152,23 @@ def _identifier(sbase: libsbml.SBase) -> str | None:
 def _has_own_key(sbase: libsbml.SBase) -> bool:
     """Whether an element is keyed by an identifier of the file, its id or metaId."""
     return _identifier(sbase) is not None or sbase.isSetMetaId()
+
+
+def _states_something(list_of: libsbml.ListOf) -> bool:
+    """Whether a list carries something of its own, next to its elements.
+
+    Every `ListOf` class derives from `SBase` (core §4.2.7), so a list may
+    carry a metaid, an SBO term, notes and an annotation, and from Level 3
+    Version 2 on an id and a name. A list which states none of them is the
+    plain container of its elements, which the report has no object for.
+    """
+    return (
+        _has_own_key(list_of)
+        or list_of.isSetName()
+        or list_of.isSetSBOTerm()
+        or list_of.isSetNotes()
+        or list_of.isSetAnnotation()
+    )
 
 
 def _unique_keys(keys: Sequence[str]) -> list[str]:
@@ -352,6 +370,7 @@ class SBMLDocumentInfo:
         key: str | None = None,
         use_id: bool = True,
         with_xml: bool = True,
+        lists: Iterable[libsbml.ListOf] = (),
     ) -> dict[str, Any]:
         """The fields of `SBase` of an element, for the constructor of its class.
 
@@ -367,6 +386,11 @@ class SBMLDocumentInfo:
         `with_xml` is False for an element whose xml is part of the xml of its
         parent in full and says nothing more, a node of a gene product
         association, which would otherwise repeat its subtree at every level.
+
+        `lists` are the lists of the element, the `listOfReactants` of a
+        reaction, of which the report carries those which state something of
+        their own. The lists the comp and the distrib extension give every
+        element are added to them here.
         """
         if pk is None:
             key = self._key(sbase, key, use_id)
@@ -393,7 +417,99 @@ class SBMLDocumentInfo:
             "comp": self.comp_sbase(sbase, key),
             "uncertainties": self.uncertainties(sbase, key),
             "key_value_pairs": self.key_value_pairs(sbase),
+            "lists": self.lists(sbase, key, lists, scope),
         }
+
+    def lists(
+        self,
+        owner: libsbml.SBase,
+        owner_key: str,
+        lists: Iterable[libsbml.ListOf],
+        scope: str | None = None,
+    ) -> list[ListOf]:
+        """The lists of an element which carry something of their own.
+
+        A list without an id or a metaId is keyed by its owner and the name it
+        has in the file, which an owner has one list of at most:
+        `J0.listOfReactants`. A list of the model or of the document is keyed
+        by that name alone, `listOfRules`, because the scope of the primary key
+        names its owner already.
+
+        Args:
+            owner: the element which holds the lists.
+            owner_key: the key of the owner, which keys its lists.
+            lists: the lists of the class of the owner.
+            scope: the scope of the owner, where it is not the current one.
+        """
+        is_scope = isinstance(owner, libsbml.Model | libsbml.SBMLDocument)
+        prefix = "" if is_scope else f"{owner_key}."
+        return [
+            self.list_of(list_of, f"{prefix}{list_of.getElementName()}", scope)
+            for list_of in (*lists, *self._extension_lists(owner))
+            if _states_something(list_of)
+        ]
+
+    @staticmethod
+    def _extension_lists(sbase: libsbml.SBase) -> list[libsbml.ListOf]:
+        """The lists the comp and the distrib extension give an element.
+
+        comp lets any element list the elements it replaces (comp §3.6) and
+        distrib the uncertainties of its value (distrib §3.9). libsbml has no
+        list of replaced elements for an element which replaces nothing.
+        """
+        lists: list[libsbml.ListOf] = []
+        comp = sbase.getPlugin("comp")
+        if comp and isinstance(comp, libsbml.CompSBasePlugin):
+            replaced: libsbml.ListOfReplacedElements | None = (
+                comp.getListOfReplacedElements()
+            )
+            if replaced is not None:
+                lists.append(replaced)
+        distrib = sbase.getPlugin("distrib")
+        if distrib and isinstance(distrib, libsbml.DistribSBasePlugin):
+            lists.append(distrib.getListOfUncertainties())
+        return lists
+
+    def list_of(
+        self, list_of: libsbml.ListOf, key: str, scope: str | None = None
+    ) -> ListOf:
+        """A list which carries something of its own, without its elements.
+
+        `key` is the key its owner gives the list, used for the pk when the
+        list carries neither an id nor a metaId. The `size` is the number of
+        elements libsbml counts, which leaves out the default term a
+        `listOfFunctionTerms` holds next to its function terms.
+        """
+        fields = self.sbase(
+            list_of, scope=scope, sbml_type="ListOf", key=key, with_xml=False
+        )
+        fields["xml"] = self._list_xml(list_of)
+        return ListOf(**fields, element=list_of.getElementName(), size=list_of.size())
+
+    @staticmethod
+    def _list_xml(list_of: libsbml.ListOf) -> str:
+        """The xml of a list without its elements: what the list itself states.
+
+        The xml of a list in full is the xml of every element of it, which the
+        report carries with each of them already and which is most of the file
+        for the `listOfReactions` of a genome scale model. So a copy of the
+        list is emptied and written, which leaves its attributes, its notes and
+        its annotation and does not touch the document. The default term of a
+        `listOfFunctionTerms` is no entry of the list libsbml clears, so it is
+        taken out by itself (qual §3.6.3). A copy belongs to no document and
+        would declare the namespace of a package where the file writes its
+        prefix, `<listOfPorts xmlns="...">` for `<comp:listOfPorts>`, so it is
+        told the parent of the list, which does not make it a child of that
+        parent.
+        """
+        empty: libsbml.ListOf = list_of.clone()
+        empty.clear(True)
+        if isinstance(empty, libsbml.ListOfFunctionTerms):
+            empty.setDefaultTerm(None)
+        parent: libsbml.SBase | None = list_of.getParentSBMLObject()
+        if parent is not None:
+            empty.connectToParent(parent)
+        return empty.toSBML()
 
     @staticmethod
     def cvterms(sbase: libsbml.SBase) -> list[CVTerm]:
@@ -508,6 +624,7 @@ class SBMLDocumentInfo:
             doc,
             pk=f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}",
             key=DOCUMENT_SCOPE,
+            lists=self._document_lists(),
         )
         return SBMLDocument(
             **fields,
@@ -516,6 +633,20 @@ class SBMLDocumentInfo:
             packages=packages,
             annotation_xml=self.annotation_xml(doc),
         )
+
+    def _document_lists(self) -> list[libsbml.ListOf]:
+        """The lists of the document: the two lists of models comp gives it.
+
+        The model definitions and the external model definitions of a document
+        are listed next to its model (comp §3.3).
+        """
+        plugin: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
+        if not plugin:
+            return []
+        return [
+            plugin.getListOfModelDefinitions(),
+            plugin.getListOfExternalModelDefinitions(),
+        ]
 
     def model(
         self, model: libsbml.Model, kind: Literal["model", "modelDefinition"]
@@ -528,7 +659,9 @@ class SBMLDocumentInfo:
         """
         key = self._main_model_key() if kind == "model" else None
         self.scope = self._key(model, key)
-        fields = self.sbase(model, sbml_type="Model", key=key)
+        fields = self.sbase(
+            model, sbml_type="Model", key=key, lists=self._model_lists(model)
+        )
         for key in ["substance", "time", "volume", "area", "length", "extent"]:
             sid = _attribute(model, f"{key}Units")
             fields[f"{key}_units"] = sid
@@ -579,6 +712,41 @@ class SBMLDocumentInfo:
             fbc=self.model_fbc(model),
         )
 
+    @staticmethod
+    def _model_lists(model: libsbml.Model) -> list[libsbml.ListOf]:
+        """The lists of a model, in the order of the lists of the report.
+
+        The lists of a package are those of its plugin, which a model has for
+        the packages of its document only.
+        """
+        lists: list[libsbml.ListOf] = [
+            model.getListOfFunctionDefinitions(),
+            model.getListOfUnitDefinitions(),
+            model.getListOfCompartments(),
+            model.getListOfSpecies(),
+            model.getListOfParameters(),
+            model.getListOfInitialAssignments(),
+            model.getListOfRules(),
+            model.getListOfConstraints(),
+            model.getListOfReactions(),
+            model.getListOfEvents(),
+        ]
+        comp: libsbml.CompModelPlugin | None = model.getPlugin("comp")
+        if comp:
+            lists += [comp.getListOfSubmodels(), comp.getListOfPorts()]
+        fbc: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
+        if fbc:
+            lists += [
+                fbc.getListOfGeneProducts(),
+                fbc.getListOfObjectives(),
+                fbc.getListOfFluxBounds(),
+                fbc.getListOfUserDefinedConstraints(),
+            ]
+        qual: libsbml.QualModelPlugin | None = model.getPlugin("qual")
+        if qual:
+            lists += [qual.getListOfQualitativeSpecies(), qual.getListOfTransitions()]
+        return lists
+
     # ---------------------------------------------------------------------------------
     # core elements
     # ---------------------------------------------------------------------------------
@@ -592,7 +760,7 @@ class SBMLDocumentInfo:
     def unit_definition(self, ud: libsbml.UnitDefinition) -> UnitDefinition:
         """A unit definition with its units and their rendered formula."""
         return UnitDefinition(
-            **self.sbase(ud),
+            **self.sbase(ud, lists=[ud.getListOfUnits()]),
             units_latex=udef_to_string(ud),
             list_of_units=[self.unit(u) for u in ud.getListOfUnits()],
         )
@@ -734,7 +902,14 @@ class SBMLDocumentInfo:
 
     def reaction(self, r: libsbml.Reaction, model: libsbml.Model) -> Reaction:
         """A reaction with its participants, kinetic law and fbc extension."""
-        fields = self.sbase(r)
+        fields = self.sbase(
+            r,
+            lists=[
+                r.getListOfReactants(),
+                r.getListOfProducts(),
+                r.getListOfModifiers(),
+            ],
+        )
         reaction_key = self._key(r)
         return Reaction(
             **fields,
@@ -830,7 +1005,9 @@ class SBMLDocumentInfo:
     ) -> KineticLaw:
         """The kinetic law of a reaction with its local parameters."""
         kinetic_law_key = f"{reaction_key}.kineticLaw"
-        fields = self.sbase(klaw, key=kinetic_law_key)
+        fields = self.sbase(
+            klaw, key=kinetic_law_key, lists=[self._kinetic_law_list(klaw)]
+        )
         local_parameters = []
         for lp in self._kinetic_law_parameters(klaw):
             units = _attribute(lp, "units")
@@ -856,20 +1033,28 @@ class SBMLDocumentInfo:
         )
 
     @staticmethod
-    def _kinetic_law_parameters(klaw: libsbml.KineticLaw) -> list[libsbml.Parameter]:
-        """The parameters of a kinetic law, of a document of any level.
+    def _kinetic_law_list(klaw: libsbml.KineticLaw) -> libsbml.ListOf:
+        """The list of the parameters of a kinetic law, of a document of any level.
 
         Level 3 writes them as `<localParameter>` in a `<listOfLocalParameters>`
         and libsbml returns them from `getListOfLocalParameters`; Level 1 and
         Level 2 write them as `<parameter>` in a `<listOfParameters>`, where
         libsbml keeps them as `Parameter` objects of `getListOfParameters` and
-        leaves `getListOfLocalParameters` empty (core §4.11.5, §4.11.6). Both
-        carry the id, the value and the units the report shows, so the report
-        has one `LocalParameter` for either.
+        leaves `getListOfLocalParameters` empty (core §4.11.5, §4.11.6).
         """
         if klaw.getLevel() >= 3:
-            return list(klaw.getListOfLocalParameters())
-        return list(klaw.getListOfParameters())
+            return klaw.getListOfLocalParameters()
+        return klaw.getListOfParameters()
+
+    @staticmethod
+    def _kinetic_law_parameters(klaw: libsbml.KineticLaw) -> list[libsbml.Parameter]:
+        """The parameters of a kinetic law, of a document of any level.
+
+        A local parameter of Level 3 and a parameter of a kinetic law of Level
+        1 and Level 2 both carry the id, the value and the units the report
+        shows, so the report has one `LocalParameter` for either.
+        """
+        return list(SBMLDocumentInfo._kinetic_law_list(klaw))
 
     @staticmethod
     def _equation(reaction: libsbml.Reaction) -> str:
@@ -907,7 +1092,7 @@ class SBMLDocumentInfo:
         `key` names the event by its place when it carries no identifier, and
         every object of the event is keyed after the event.
         """
-        fields = self.sbase(e, key=key)
+        fields = self.sbase(e, key=key, lists=[e.getListOfEventAssignments()])
         event_key = self._key(e, key)
         trigger = None
         if e.isSetTrigger():
@@ -1047,7 +1232,7 @@ class SBMLDocumentInfo:
             return []
         return [
             Submodel(
-                **self.sbase(s),
+                **self.sbase(s, lists=[s.getListOfDeletions()]),
                 model_ref=s.getModelRef(),
                 time_conversion_factor=_attribute(s, "timeConversionFactor"),
                 extent_conversion_factor=_attribute(s, "extentConversionFactor"),
@@ -1125,7 +1310,7 @@ class SBMLDocumentInfo:
             objective_key = self._key(o)
             objectives.append(
                 Objective(
-                    **self.sbase(o),
+                    **self.sbase(o, lists=[o.getListOfFluxObjectives()]),
                     type=_attribute(o, "type"),
                     list_of_flux_objectives=[
                         self.flux_objective(f, key)
@@ -1278,7 +1463,11 @@ class SBMLDocumentInfo:
             key = self._key(udc, f"userDefinedConstraint.{index}")
             constraints.append(
                 UserDefinedConstraint(
-                    **self.sbase(udc, key=key),
+                    **self.sbase(
+                        udc,
+                        key=key,
+                        lists=[udc.getListOfUserDefinedConstraintComponents()],
+                    ),
                     lower_bound=_attribute(udc, "lowerBound"),
                     upper_bound=_attribute(udc, "upperBound"),
                     list_of_user_defined_constraint_components=[
@@ -1401,7 +1590,15 @@ class SBMLDocumentInfo:
             key = self._key(t, f"transition.{index}")
             transitions.append(
                 Transition(
-                    **self.sbase(t, key=key),
+                    **self.sbase(
+                        t,
+                        key=key,
+                        lists=[
+                            t.getListOfInputs(),
+                            t.getListOfOutputs(),
+                            t.getListOfFunctionTerms(),
+                        ],
+                    ),
                     list_of_inputs=[
                         self.qual_input(i, f"{key}.input.{position}")
                         for position, i in enumerate(t.getListOfInputs())
@@ -1524,6 +1721,10 @@ class SBMLDocumentInfo:
         parameter by its definition url, which is unique among the external
         parameters of an uncertainty (distrib §3.10). The parameters of a
         parameter have no rule of that kind and are keyed by their place.
+
+        The parameters of a parameter are a `listOfUncertParameters` in the
+        file, which is a list of that parameter, while the measures of an
+        uncertainty are its children without a list around them.
         """
         measures: list[UncertMeasure] = []
         children = list(parent.getListOfUncertParameters())
@@ -1537,7 +1738,7 @@ class SBMLDocumentInfo:
                 for index, p in enumerate(children)
             ]
         for p, key in keyed:
-            fields = self.sbase(p, key=key)
+            fields = self.sbase(p, key=key, lists=[p.getListOfUncertParameters()])
             fields |= {
                 "type": p.getTypeAsString() if p.isSetType() else None,
                 "var": _attribute(p, "var"),

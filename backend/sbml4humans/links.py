@@ -27,6 +27,7 @@ from sbml4humans.model import (
     GeneProductAssociation,
     GeneProductRef,
     LinkGraph,
+    ListOf,
     Model,
     ModifierSpeciesReference,
     Node,
@@ -87,14 +88,20 @@ class ModelIndex:
         for element in _elements(model):
             if element.id is not None:
                 self.sids.setdefault(element.id, element.pk)
-        for node in _nested(model):
+        for node in (model, *_nested(model)):
             for element in _with_extensions(node):
+                # the model is no element of itself, while its lists and what
+                # its extensions nest in it are elements of it
+                if element is model:
+                    continue
                 if element.meta_id is not None:
                     self.meta_ids.setdefault(element.meta_id, element.pk)
                 # distrib puts the ids of an uncertainty and of its measures in
-                # the SId namespace of the model, wherever they sit (distrib §3.8)
+                # the SId namespace of the model, wherever they sit (distrib
+                # §3.8), which is where Level 3 Version 2 puts the id of a list
+                # as well (core §3.3)
                 if (
-                    isinstance(element, Uncertainty | UncertParameter)
+                    isinstance(element, Uncertainty | UncertParameter | ListOf)
                     and element.id is not None
                 ):
                     self.sids.setdefault(element.id, element.pk)
@@ -199,8 +206,9 @@ def _nested(model: Model) -> Iterator[SBase]:
     a transition and the deletions of a submodel with the references below
     them. None of them is referenced by an SId, and neither is a port, so they
     are nodes without being part of the SId namespace of the model. The
-    objects the comp and distrib extensions nest in any of them follow from
-    `_with_extensions`.
+    objects the comp and distrib extensions nest in any of them and the lists
+    of any of them follow from `_with_extensions`, which is where the lists of
+    the model itself come from as well.
     """
     yield from model.list_of_unit_definitions
     yield from _elements(model)
@@ -284,12 +292,13 @@ def _event_children(event: Event) -> Iterator[SBase]:
 
 
 def _with_extensions(sbase: SBase) -> Iterator[SBase]:
-    """An element and every object its extensions nest in it.
+    """An element, every object its extensions nest in it and its lists.
 
     distrib gives any element uncertainties, each with its measures (distrib
     §3.9), and comp gives it replacements, each with the chain of references
-    below it (comp §3.6). All of them are `SBase` in turn and carry the two
-    extensions themselves.
+    below it (comp §3.6). Any element may own lists, and the report carries
+    those which state something of their own (core §4.2.7). All of them are
+    `SBase` in turn and carry the two extensions and lists themselves.
     """
     yield sbase
     for uncertainty in sbase.uncertainties:
@@ -298,6 +307,8 @@ def _with_extensions(sbase: SBase) -> Iterator[SBase]:
             yield from _with_extensions(measure)
     for ref in _comp_refs(sbase):
         yield from _with_extensions(ref)
+    for list_of in sbase.lists:
+        yield from _with_extensions(list_of)
 
 
 def _uncert_measures(owner: Uncertainty | UncertParameter) -> Iterator[UncertParameter]:
@@ -418,14 +429,18 @@ class LinkGraphBuilder:
     # nodes
     # ---------------------------------------------------------------------------------
     def _add_node(self, sbase: SBase, model_pk: str | None) -> None:
-        """Add the node of an element, of its uncertainties and of its replacements."""
+        """Add the node of an element, of its uncertainties, replacements and lists.
+
+        A model is a node of no model, while its lists and what its extensions
+        nest in it are nodes of it.
+        """
         for element in _with_extensions(sbase):
             self.nodes[element.pk] = Node(
                 pk=element.pk,
                 sbml_type=element.sbml_type,
                 id=element.id,
                 name=element.name,
-                model=model_pk,
+                model=None if element.pk == model_pk else model_pk,
             )
 
     def _collect_nodes(self) -> None:
@@ -434,7 +449,7 @@ class LinkGraphBuilder:
         for emd in self.report.external_model_definitions:
             self._add_node(emd, None)
         for model in self.report.models:
-            self._add_node(model, None)
+            self._add_node(model, model.pk)
             for element in _nested(model):
                 self._add_node(element, model.pk)
 
@@ -494,6 +509,17 @@ class LinkGraphBuilder:
                 )
         for units in sorted(self.units.get(source.pk, set())):
             self._units_edge(source, units, index)
+
+    def _list_edges(self, element: SBase) -> None:
+        """The edges of an element to its lists which state something of their own.
+
+        A list is a child of the element which owns it (core §4.2.7), so the
+        element names it, the way a reaction names its kinetic law.
+        """
+        for list_of in element.lists:
+            self.edges.append(
+                Edge(source=element.pk, target=list_of.pk, kind=EdgeKind.LIST_OF)
+            )
 
     # ---------------------------------------------------------------------------------
     # distrib: the uncertainties of an element and their measures
@@ -857,9 +883,13 @@ class LinkGraphBuilder:
 
         The document holds its model (core §4.1) and, with comp, the model
         definitions and the external model definitions of its lists (comp
-        §3.3), the way a reaction holds its kinetic law.
+        §3.3), the way a reaction holds its kinetic law. The document and an
+        external model definition name their lists, which belong to no model.
         """
         document = self.report.document
+        for owner in (document, *self.report.external_model_definitions):
+            for carrier in _with_extensions(owner):
+                self._list_edges(carrier)
         for model in self.report.models:
             self.edges.append(
                 Edge(source=document.pk, target=model.pk, kind=EdgeKind.MODEL)
@@ -883,12 +913,14 @@ class LinkGraphBuilder:
     def _model_edges(self, model: Model) -> None:
         """The edges of all elements of a model."""
         index = self.entry.indices[model.pk]
-        # every element carries the comp and distrib extensions, the model itself
-        # can be replaced as well, and so can the objects the extensions nest
+        # every element carries the comp and distrib extensions and may own
+        # lists, the model itself can be replaced as well, and so can the objects
+        # the extensions nest and the lists
         for element in [model, *_nested(model)]:
             for carrier in _with_extensions(element):
                 self._comp_edges(carrier, index)
                 self._uncertainty_edges(carrier, index)
+                self._list_edges(carrier)
                 if isinstance(carrier, SBaseRefFields):
                     self._sbase_ref_edge(carrier)
 

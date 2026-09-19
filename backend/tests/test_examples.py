@@ -191,6 +191,15 @@ def test_fbc_version_examples_are_served(
     assert example.packages == packages
 
 
+def test_list_of_example_is_served() -> None:
+    """The example of the lists which carry something of their own is served."""
+    example = load_examples()["list_of (list_of.xml)"]
+    assert example.file.name == "list_of.xml"
+    assert example.name == "ListOf containers with attributes of their own"
+    assert example.description is not None
+    assert example.packages == ["comp"]
+
+
 def test_qual_example_is_served() -> None:
     """The example of a qualitative model is served with its package."""
     example = load_examples()["qual_example (qual_example.xml)"]

@@ -16,6 +16,7 @@ from sbml4humans.model import (
     ExternalModelDefinition,
     ExternalModelResolution,
     LinkGraph,
+    ListOf,
     Math,
     Model,
     Node,
@@ -56,6 +57,32 @@ def test_sbase_defaults() -> None:
     assert sbase.history is None
     assert sbase.comp is None
     assert sbase.uncertainties == []
+    assert sbase.lists == []
+
+
+def test_a_list_is_an_sbase_with_the_lists_of_one() -> None:
+    """A list carries the fields of an `SBase`, its element name and its size.
+
+    One type stands for every `ListOf` class of SBML, and the JSON names the
+    lists of an element and the fields of a list in camelCase like the rest.
+    """
+    list_of = ListOf(
+        pk="m/ListOf:metabolites",
+        id="metabolites",
+        meta_id="meta_species",
+        element="listOfSpecies",
+        size=2,
+    )
+    assert list_of.sbml_type == "ListOf"
+    assert isinstance(list_of, SBase)
+    model = Model(pk="m/Model:m", id="m", lists=[list_of])
+    data = model.model_dump(mode="json", by_alias=True)
+    (dumped,) = data["lists"]
+    assert dumped["sbmlType"] == "ListOf"
+    assert dumped["metaId"] == "meta_species"
+    assert (dumped["element"], dumped["size"]) == ("listOfSpecies", 2)
+    assert dumped["lists"] == []
+    assert Model.model_validate(data) == model
 
 
 def test_math_and_cvterm() -> None:

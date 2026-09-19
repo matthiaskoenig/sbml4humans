@@ -80,6 +80,7 @@ EXAMPLE_IDS: list[str] = [
     "fbc_example",
     "fbc_mass_charge",
     "linear_chain",
+    "list_of",
     "minimal_model",
     "minimal_model_comp",
     "minimal_model_comp_flat",

@@ -1,6 +1,7 @@
 """Tests of the report information of a document."""
 
 import json
+from pathlib import Path
 
 import libsbml
 import pytest
@@ -1859,3 +1860,347 @@ def test_model_without_qual_carries_no_qual_lists(repressilator: Report) -> None
     model = repressilator.models[0]
     assert model.list_of_qualitative_species == []
     assert model.list_of_transitions == []
+
+
+# -------------------------------------------------------------------------------------
+# the ListOf containers which carry something of their own
+# -------------------------------------------------------------------------------------
+LIST_OF_XML = EXAMPLES_DIR / "list_of.xml"
+
+
+@pytest.fixture(scope="module")
+def list_of() -> Report:
+    """The report of the example of the lists which state something of their own."""
+    return SBMLDocumentInfo.from_sbml(LIST_OF_XML)
+
+
+def _all_lists(report: Report) -> list[dict[str, object]]:
+    """Every list the JSON of a report carries, wherever it is nested."""
+    found: list[dict[str, object]] = []
+
+    def walk(value: object) -> None:
+        if isinstance(value, dict):
+            found.extend(value.get("lists", []))
+            for child in value.values():
+                walk(child)
+        elif isinstance(value, list):
+            for child in value:
+                walk(child)
+
+    walk(report.model_dump(mode="json", by_alias=True, exclude={"link_graph"}))
+    return found
+
+
+def test_model_carries_the_lists_which_state_something(list_of: Report) -> None:
+    """A list with a metaid, notes or a name is carried, a plain list is not.
+
+    Every `ListOf` class derives from `SBase` (core §4.2.7). The model of the
+    example writes something on three of its lists and nothing on its
+    `listOfCompartments`, its `listOfParameters` and its `listOfReactions`,
+    and its `listOfRules` is empty, which does not make what it says empty.
+    """
+    model = list_of.models[0]
+    assert [(lo.element, lo.size) for lo in model.lists] == [
+        ("listOfUnitDefinitions", 1),
+        ("listOfSpecies", 2),
+        ("listOfRules", 0),
+    ]
+    assert all(lo.sbml_type == "ListOf" for lo in model.lists)
+    assert model.list_of_rules == []
+
+    units, _, rules = model.lists
+    assert (units.meta_id, units.name) == ("meta_units", "the units of the model")
+    assert (units.id, units.sbo, units.notes, units.cvterms) == (None, None, None, [])
+    assert rules.meta_id == "meta_rules"
+    assert rules.notes is not None
+    assert "the list is empty on purpose" in rules.notes
+
+
+def test_list_carries_the_fields_of_an_sbase(list_of: Report) -> None:
+    """A list carries its id, name, SBO term, notes and annotation like any element."""
+    species = list_of.models[0].lists[1]
+    assert species.id == "metabolites"
+    assert species.meta_id == "meta_species"
+    assert species.name == "the metabolites of the pathway"
+    assert species.sbo == "SBO:0000247"
+    assert species.notes is not None
+    assert "https://doi.org/10.1000/example" in species.notes
+    assert [(cv.qualifier, cv.resources) for cv in species.cvterms] == [
+        ("BQB_IS", ["https://identifiers.org/SBO:0000247"]),
+        ("BQB_IS_PART_OF", ["https://identifiers.org/GO:0006096"]),
+    ]
+
+
+def test_lists_of_nested_elements(list_of: Report) -> None:
+    """A unit definition and a reaction carry their lists which state something."""
+    model = list_of.models[0]
+    (per_second,) = model.list_of_unit_definitions
+    (units,) = per_second.lists
+    assert (units.element, units.size) == ("listOfUnits", 1)
+    assert units.meta_id == "meta_per_second_units"
+    assert units.notes is not None
+    assert "A single unit" in units.notes
+
+    (reaction,) = model.list_of_reactions
+    # the products are a plain list, and the reaction has no modifiers at all
+    (reactants,) = reaction.lists
+    assert (reactants.element, reactants.size) == ("listOfReactants", 1)
+    assert reactants.name == "what J0 consumes"
+    assert len(reaction.list_of_products) == 1
+    assert reaction.kinetic_law is not None
+    assert reaction.kinetic_law.lists == []
+
+
+def test_list_is_keyed_by_its_id_then_its_metaid(list_of: Report) -> None:
+    """A list is keyed like every element: by its id, else by its metaId."""
+    assert {lo["element"]: lo["pk"] for lo in _all_lists(list_of)} == {
+        "listOfUnitDefinitions": "list_of/ListOf:meta_units",
+        "listOfUnits": "list_of/ListOf:meta_per_second_units",
+        "listOfSpecies": "list_of/ListOf:metabolites",
+        "listOfRules": "list_of/ListOf:meta_rules",
+        "listOfReactants": "list_of/ListOf:meta_J0_reactants",
+    }
+
+
+def test_list_without_an_identifier_is_keyed_by_its_owner() -> None:
+    """A list without an id or a metaId is keyed by its owner and its element name.
+
+    An owner has one list of a name at most, so `J0.listOfReactants` names the
+    list whatever the file changes inside it, the way `J0.kineticLaw` names
+    the kinetic law. A list of the model is keyed by its name alone, because
+    the scope of the primary key is the model already.
+    """
+    sbml = LIST_OF_XML.read_text()
+    for meta_id in ("meta_per_second_units", "meta_rules", "meta_J0_reactants"):
+        assert f' metaid="{meta_id}"' in sbml
+        sbml = sbml.replace(f' metaid="{meta_id}"', "")
+    report = SBMLDocumentInfo.from_doc(_read_valid(sbml))
+    # the notes and the name which are left still make each of them an object
+    pks = {lo["element"]: lo["pk"] for lo in _all_lists(report)}
+    assert pks == {
+        "listOfUnitDefinitions": "list_of/ListOf:meta_units",
+        "listOfUnits": "list_of/ListOf:per_second.listOfUnits",
+        "listOfSpecies": "list_of/ListOf:metabolites",
+        "listOfRules": "list_of/ListOf:listOfRules",
+        "listOfReactants": "list_of/ListOf:J0.listOfReactants",
+    }
+    assert len(set(pks.values())) == len(pks)
+    (per_second,) = report.models[0].list_of_unit_definitions
+    (units,) = per_second.lists
+    assert units.meta_id is None
+    assert units.notes is not None
+
+
+def _read_valid(sbml: str) -> libsbml.SBMLDocument:
+    """The document of an SBML string which libsbml reads without an error."""
+    doc = read_sbml(sbml)
+    assert doc.getNumErrors(libsbml.LIBSBML_SEV_ERROR) == 0
+    return doc
+
+
+def test_xml_of_a_list_is_the_list_without_its_elements(list_of: Report) -> None:
+    """The xml of a list is what the list states: attributes, notes, annotation.
+
+    The elements of the list carry their own xml, and the xml of a
+    `listOfReactions` in full is most of the file.
+    """
+    species = list_of.models[0].lists[1]
+    assert species.xml is not None
+    assert species.xml.startswith(
+        '<listOfSpecies metaid="meta_species" sboTerm="SBO:0000247" id="metabolites"'
+    )
+    assert species.xml.endswith("</listOfSpecies>")
+    assert "<notes>" in species.xml
+    assert "<bqbiol:isPartOf>" in species.xml
+    assert "<species" not in species.xml
+
+    units = list_of.models[0].lists[0]
+    assert units.xml == (
+        '<listOfUnitDefinitions metaid="meta_units" name="the units of the model"/>'
+    )
+
+
+def test_xml_of_a_list_leaves_the_document_as_it_is() -> None:
+    """The list is emptied in a copy, the document keeps every element of it."""
+    doc = read_sbml(LIST_OF_XML)
+    before = libsbml.writeSBMLToString(doc)
+    SBMLDocumentInfo.from_doc(doc)
+    assert libsbml.writeSBMLToString(doc) == before
+    assert doc.getModel().getListOfSpecies().size() == 2
+
+
+@pytest.mark.parametrize(
+    "path",
+    [REPRESSILATOR_SBML, FBC_ECOLI_CORE_SBML, COMP_ICG_BODY],
+    ids=lambda path: path.name,
+)
+def test_model_with_plain_lists_carries_none(path: Path) -> None:
+    """A file which writes nothing on its lists has a report without a list."""
+    report = SBMLDocumentInfo.from_sbml(path)
+    assert _all_lists(report) == []
+    assert "ListOf" not in {n.sbml_type for n in report.link_graph.nodes.values()}
+
+
+def test_json_of_a_list_uses_camel_case(list_of: Report) -> None:
+    """The lists of an element and the fields of a list are camelCase in JSON."""
+    data = json.loads(list_of.model_dump_json(by_alias=True))
+    model = data["models"][0]
+    assert [lo["element"] for lo in model["lists"]] == [
+        "listOfUnitDefinitions",
+        "listOfSpecies",
+        "listOfRules",
+    ]
+    species = model["lists"][1]
+    assert species["sbmlType"] == "ListOf"
+    assert species["metaId"] == "meta_species"
+    assert species["size"] == 2
+    assert species["lists"] == []
+    assert model["listOfCompartments"][0]["lists"] == []
+    assert model["listOfReactions"][0]["lists"][0]["element"] == "listOfReactants"
+
+
+def test_list_of_a_package_keeps_the_prefix_of_the_file() -> None:
+    """The xml of a list of a package is written the way the file writes it.
+
+    A copy of a list belongs to no document and would declare the namespace of
+    the package instead of using its prefix.
+    """
+    sbml = LIST_OF_XML.read_text().replace(
+        "<comp:listOfPorts>", '<comp:listOfPorts metaid="meta_ports">'
+    )
+    report = SBMLDocumentInfo.from_doc(_read_valid(sbml))
+    ports = report.models[0].lists[-1]
+    assert (ports.element, ports.size) == ("listOfPorts", 1)
+    assert ports.pk == "list_of/ListOf:meta_ports"
+    assert ports.xml == '<comp:listOfPorts metaid="meta_ports"/>'
+
+
+def test_lists_of_the_document_are_scoped_to_the_document() -> None:
+    """The lists of model definitions comp gives the document are lists of it."""
+    sbml = (EXAMPLES_DIR / "comp_deletion.xml").read_text()
+    notes = '<notes><p xmlns="http://www.w3.org/1999/xhtml">the cells</p></notes>'
+    assert "<comp:listOfModelDefinitions>" in sbml
+    sbml = sbml.replace(
+        "<comp:listOfModelDefinitions>", f"<comp:listOfModelDefinitions>{notes}"
+    ).replace(
+        "<comp:listOfExternalModelDefinitions>",
+        '<comp:listOfExternalModelDefinitions metaid="meta_external">',
+    )
+    report = SBMLDocumentInfo.from_doc(_read_valid(sbml))
+    assert [(lo.pk, lo.element) for lo in report.document.lists] == [
+        ("document/ListOf:listOfModelDefinitions", "listOfModelDefinitions"),
+        ("document/ListOf:meta_external", "listOfExternalModelDefinitions"),
+    ]
+    definitions = report.document.lists[0]
+    assert definitions.size == len(report.models) - 1
+    assert definitions.xml is not None
+    assert "modelDefinition" not in definitions.xml
+
+
+def test_lists_of_the_extensions_of_an_element() -> None:
+    """The replaced elements and the uncertainties of an element are lists of it.
+
+    comp and distrib give every element a list of their own (comp §3.6, distrib
+    §3.9), and a parameter of an uncertainty lists the parameters which define
+    it (distrib §3.11.7).
+    """
+    sbml = (EXAMPLES_DIR / "comp_deletion.xml").read_text()
+    sbml = sbml.replace(
+        "<comp:listOfReplacedElements>",
+        '<comp:listOfReplacedElements metaid="meta_replaced">',
+        1,
+    ).replace(
+        "<comp:listOfDeletions>", '<comp:listOfDeletions sboTerm="SBO:0000001">', 1
+    )
+    report = SBMLDocumentInfo.from_doc(_read_valid(sbml))
+    model = report.models[0]
+    medium = next(c for c in model.list_of_compartments if c.id == "medium")
+    (replaced,) = medium.lists
+    assert replaced.pk == f"{model.id}/ListOf:meta_replaced"
+    assert replaced.element == "listOfReplacedElements"
+    assert medium.comp is not None
+    assert replaced.size == len(medium.comp.replaced_elements)
+    submodel = next(s for s in model.list_of_submodels if s.lists)
+    (deletions,) = submodel.lists
+    assert deletions.pk == f"{model.id}/ListOf:{submodel.id}.listOfDeletions"
+    assert deletions.sbo == "SBO:0000001"
+    assert deletions.xml == '<comp:listOfDeletions sboTerm="SBO:0000001"/>'
+
+    sbml = (EXAMPLES_DIR / "distrib_spans.xml").read_text()
+    sbml = sbml.replace(
+        "<distrib:listOfUncertainties>",
+        '<distrib:listOfUncertainties metaid="meta_uncertainties">',
+        1,
+    ).replace(
+        "<distrib:listOfUncertParameters>",
+        '<distrib:listOfUncertParameters metaid="meta_parameters">',
+        1,
+    )
+    report = SBMLDocumentInfo.from_doc(_read_valid(sbml))
+    assert {lo["pk"]: lo["element"] for lo in _all_lists(report)} == {
+        "distrib_spans/ListOf:meta_uncertainties": "listOfUncertainties",
+        "distrib_spans/ListOf:meta_parameters": "listOfUncertParameters",
+    }
+
+
+def test_list_of_function_terms_is_written_without_its_default_term() -> None:
+    """The default term is an element of the list like a function term (qual §3.6.3).
+
+    libsbml keeps it next to the entries of the list, so that emptying the list
+    leaves it in place.
+    """
+    sbml = (EXAMPLES_DIR / "qual_example.xml").read_text()
+    sbml = sbml.replace(
+        "<qual:listOfFunctionTerms>",
+        '<qual:listOfFunctionTerms metaid="meta_terms">',
+        1,
+    )
+    doc = _read_valid(sbml)
+    report = SBMLDocumentInfo.from_doc(doc)
+    transition = report.models[0].list_of_transitions[0]
+    (terms,) = transition.lists
+    assert terms.pk == "qual_example/ListOf:meta_terms"
+    assert terms.size == len(transition.list_of_function_terms) == 2
+    assert terms.xml == '<qual:listOfFunctionTerms metaid="meta_terms"/>'
+    assert transition.default_term is not None
+    plugin: libsbml.QualModelPlugin = doc.getModel().getPlugin("qual")
+    assert plugin.getTransition(0).isSetDefaultTerm()
+
+
+def test_list_of_parameters_of_a_level_2_kinetic_law() -> None:
+    """The parameters of a kinetic law of Level 2 are its `listOfParameters`.
+
+    Level 3 calls the list `listOfLocalParameters` (core §4.11.5), and a list
+    nested in a nested element is keyed by the key of that element.
+    """
+    sbml = """<sbml xmlns="http://www.sbml.org/sbml/level2/version4"
+      level="2" version="4">
+      <model id="m">
+        <listOfCompartments><compartment id="c"/></listOfCompartments>
+        <listOfSpecies><species id="s" compartment="c"/></listOfSpecies>
+        <listOfReactions>
+          <reaction id="r">
+            <listOfReactants><speciesReference species="s"/></listOfReactants>
+            <kineticLaw>
+              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                <apply><times/><ci> k </ci><ci> s </ci></apply>
+              </math>
+              <listOfParameters>
+                <notes><p xmlns="http://www.w3.org/1999/xhtml">fitted</p></notes>
+                <parameter id="k" value="1"/>
+              </listOfParameters>
+            </kineticLaw>
+          </reaction>
+        </listOfReactions>
+      </model>
+    </sbml>"""
+    report = SBMLDocumentInfo.from_doc(_read_valid(sbml))
+    (reaction,) = report.models[0].list_of_reactions
+    assert reaction.lists == []
+    assert reaction.kinetic_law is not None
+    (parameters,) = reaction.kinetic_law.lists
+    assert parameters.pk == "m/ListOf:r.kineticLaw.listOfParameters"
+    assert (parameters.element, parameters.size) == ("listOfParameters", 1)
+    assert parameters.xml is not None
+    assert "fitted" in parameters.xml
+    assert "<parameter" not in parameters.xml
