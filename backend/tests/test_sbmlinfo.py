@@ -1409,6 +1409,18 @@ def test_the_document_is_keyed_without_writing_its_xml(
     assert SBMLDocumentInfo(doc).document().pk == "document/SBMLDocument:document"
 
 
+def test_a_model_definition_leaves_its_xml_out_like_the_model() -> None:
+    """The xml of a model is the file, and the one of a model definition most of it.
+
+    A model definition of comp is a model with a type code of its own, so the
+    report carried it in full, every element of the definition a second time
+    in the xml of its model.
+    """
+    report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "model_definitions.xml")
+    assert [model.kind for model in report.models] == ["model", "modelDefinition"]
+    assert [model.xml for model in report.models] == [None, None]
+
+
 def test_association_of_a_single_gene_product() -> None:
     """An association which is one gene product is a reference without a node above it."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "fbc_constraints_v3.xml")

@@ -1,5 +1,5 @@
 {
-  "uid": "23eea35b53844a1ab37125bc319088d8",
+  "uid": "802a6147c8bc4b85933d3e7f061b757e",
   "manifest": {
     "entries": [
       {
@@ -814,7 +814,7 @@
             "notes": null,
             "cvterms": [],
             "history": null,
-            "xml": "<comp:modelDefinition id=\"cell\" name=\"a single cell\" substanceUnits=\"mole\" timeUnits=\"min\" volumeUnits=\"litre\" extentUnits=\"mole\">\n  <listOfUnitDefinitions>\n    <unitDefinition id=\"min\" name=\"minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n    <unitDefinition id=\"per_min\" name=\"per minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n    <unitDefinition id=\"mole_per_min\" name=\"mole per minute\">\n      <listOfUnits>\n        <unit kind=\"mole\" exponent=\"1\" scale=\"0\" multiplier=\"1\"/>\n        <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n  </listOfUnitDefinitions>\n  <listOfCompartments>\n    <compartment id=\"c\" name=\"cell volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <listOfSpecies>\n    <species metaid=\"meta_glc_cell\" id=\"glc\" name=\"glucose of the cell\" compartment=\"c\" initialConcentration=\"1\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>\n  </listOfSpecies>\n  <listOfParameters>\n    <parameter id=\"k\" name=\"rate constant of the cell\" value=\"0.2\" units=\"per_min\" constant=\"true\"/>\n    <parameter id=\"Vmax\" name=\"maximal rate of the cell\" value=\"2\" units=\"mole_per_min\" constant=\"true\"/>\n  </listOfParameters>\n  <listOfReactions>\n    <reaction metaid=\"meta_sink\" id=\"sink\" name=\"consumption of glucose\" reversible=\"false\" fast=\"false\">\n      <listOfReactants>\n        <speciesReference species=\"glc\" stoichiometry=\"1\" constant=\"true\"/>\n      </listOfReactants>\n      <kineticLaw>\n        <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n          <apply>\n            <times/>\n            <ci> k </ci>\n            <ci> glc </ci>\n            <ci> c </ci>\n          </apply>\n        </math>\n      </kineticLaw>\n    </reaction>\n  </listOfReactions>\n  <comp:listOfPorts>\n    <comp:port comp:idRef=\"c\" comp:id=\"cell_port\" comp:name=\"port of the compartment\"/>\n    <comp:port comp:idRef=\"glc\" comp:id=\"glc_port\" comp:name=\"port of the glucose\"/>\n    <comp:port comp:idRef=\"Vmax\" comp:id=\"Vmax_port\" comp:name=\"port of the maximal rate\"/>\n  </comp:listOfPorts>\n</comp:modelDefinition>",
+            "xml": null,
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
@@ -1171,7 +1171,7 @@
             "notes": null,
             "cvterms": [],
             "history": null,
-            "xml": "<comp:modelDefinition id=\"tissue\" name=\"a tissue built from one cell\" substanceUnits=\"mole\" timeUnits=\"min\" volumeUnits=\"litre\" extentUnits=\"mole\">\n  <listOfUnitDefinitions>\n    <unitDefinition id=\"min\" name=\"minute\">\n      <listOfUnits>\n        <unit kind=\"second\" exponent=\"1\" scale=\"0\" multiplier=\"60\"/>\n      </listOfUnits>\n    </unitDefinition>\n  </listOfUnitDefinitions>\n  <listOfCompartments>\n    <compartment id=\"t\" name=\"tissue volume\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>\n  </listOfCompartments>\n  <comp:listOfSubmodels>\n    <comp:submodel comp:id=\"cell_in_tissue\" comp:name=\"the cell of the tissue\" comp:modelRef=\"cell\"/>\n  </comp:listOfSubmodels>\n</comp:modelDefinition>",
+            "xml": null,
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
@@ -2064,7 +2064,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.033 [s]"
+        "jsonReportTime": "0.026 [s]"
       }
     },
     "./unit_definitions.xml": {
@@ -3592,7 +3592,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.011 [s]"
+        "jsonReportTime": "0.009 [s]"
       }
     }
   }

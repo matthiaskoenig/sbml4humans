@@ -399,10 +399,8 @@ class SBMLDocumentInfo:
         elif key is None:
             key = pk
         xml = None
-        if with_xml and sbase.getTypeCode() not in {
-            libsbml.SBML_DOCUMENT,
-            libsbml.SBML_MODEL,
-        }:
+        # a model definition of comp is a model with a type code of its own
+        if with_xml and not isinstance(sbase, (libsbml.SBMLDocument, libsbml.Model)):
             xml = sbase.toSBML()
         return {
             "pk": pk,
