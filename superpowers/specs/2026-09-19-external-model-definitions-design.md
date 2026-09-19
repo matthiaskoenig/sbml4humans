@@ -17,7 +17,7 @@ Every comp model which ships with the backend instantiates external model defini
 | `omeprazole_model.omex` | `./models/omeprazole_body.xml` | `omeprazole_liver.xml`, `omeprazole_kidney.xml`, `omeprazole_stomach.xml` | entries of the archive |
 | `minimal_model_comp.xml` | single file | `minimal_model.xml` (5 definitions) | file next to it in `resources/examples/` |
 | `comp_deletion.xml` | single file | `unit_definitions.xml`, with `md5` | file next to it in `resources/examples/` |
-| `icg_body.xml`, `dex_body.xml`, `spt_body.xml` | single files of `resources/models/comp/` | organ models | not shipped |
+| `icg_body.xml`, `dex_body.xml`, `spt_body.xml` | single files of `resources/models/comp/` | the organ models (`icg_liver.xml`, `dex_kidney.xml`, ...) | files next to them |
 
 ## Decisions
 
@@ -72,7 +72,7 @@ Every comp model which ships with the backend instantiates external model defini
 - `tests/test_external.py`: `resolve_source` (relative, nested directories, root, scheme, escape, percent encoding), every status, chains and circles, md5 match and mismatch.
 - `tests/test_links.py`: the invariant of `targetEntry`; a replacement, a deletion and a port which end at an element of another entry; the incoming side.
 - `tests/test_report.py`: the sibling entries of a trusted single file, none for an untrusted one, the refusal of `../`.
-- The walk of the issue becomes `tests/test_examples.py::test_comp_references_reach_elements`: over all shipped examples it counts the replacements, deletions and ports and how many of them end at an element. Every reference of the three archives and of the two single files with their files next to them has to resolve; the three single files without them stay at `notFound`.
+- The walk of the issue becomes `tests/test_examples.py::test_comp_references_reach_elements`: over all shipped examples it counts the replacements, deletions and ports and how many of them end at an element. Every reference of every example has to resolve, 368 in total: the documents the three archives and the five single files name are entries of the archive or files next to the example. An upload of `minimal_model_comp.xml` alone stays where it was, none of its ten references reaches an element.
 - Frontend unit tests of the index and the store (incoming edges across entries), an end to end test which follows a replaced element of `omex_comp.xml` of `CompModels` to the element of `omex_minimal.xml` and back.
 
 ## Out of scope
