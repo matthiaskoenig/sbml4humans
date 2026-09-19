@@ -12,7 +12,7 @@
       <compartment id="cell" name="cell" spatialDimensions="3" size="1" units="litre" constant="true"/>
     </listOfCompartments>
     <qual:listOfQualitativeSpecies>
-      <qual:qualitativeSpecies metaid="meta_S" sboTerm="SBO:0000252" qual:id="S" qual:name="signal" qual:compartment="cell" qual:constant="true" qual:maxLevel="1">
+      <qual:qualitativeSpecies metaid="meta_S" sboTerm="SBO:0000405" qual:id="S" qual:name="signal" qual:compartment="cell" qual:constant="true" qual:maxLevel="1">
         <notes>
           <body xmlns="http://www.w3.org/1999/xhtml">
             <p>The extracellular signal the switch responds to. It is constant, which makes it an input of the system: it is read by the transitions and changed by none of them, and an experiment sets its level. It carries no initial level, because the level it is held at is the condition of the experiment.</p>

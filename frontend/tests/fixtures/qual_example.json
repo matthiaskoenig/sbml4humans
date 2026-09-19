@@ -1,5 +1,5 @@
 {
-  "uid": "788ee04411ac424fb087f3bffba98685",
+  "uid": "ed6c4ffbe6294fada52491b742668b19",
   "manifest": {
     "entries": [
       {
@@ -121,13 +121,13 @@
                 "id": "S",
                 "metaId": "meta_S",
                 "name": "signal",
-                "sbo": "SBO:0000252",
+                "sbo": "SBO:0000405",
                 "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The extracellular signal the switch responds to. It is constant, which makes it an input of the system: it is read by the transitions and changed by none of them, and an experiment sets its level. It carries no initial level, because the level it is held at is the condition of the experiment.</p>\n  </body>\n</notes>",
                 "cvterms": [
                   {
                     "qualifier": "BQB_IS",
                     "resources": [
-                      "https://identifiers.org/SBO:0000252"
+                      "https://identifiers.org/SBO:0000405"
                     ],
                     "nested": []
                   },
@@ -140,7 +140,7 @@
                   }
                 ],
                 "history": null,
-                "xml": "<qual:qualitativeSpecies metaid=\"meta_S\" sboTerm=\"SBO:0000252\" qual:id=\"S\" qual:compartment=\"cell\" qual:constant=\"true\" qual:name=\"signal\" qual:maxLevel=\"1\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The extracellular signal the switch responds to. It is constant, which makes it an input of the system: it is read by the transitions and changed by none of them, and an experiment sets its level. It carries no initial level, because the level it is held at is the condition of the experiment.</p>\n    </body>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_S\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"https://identifiers.org/GO:0007165\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</qual:qualitativeSpecies>",
+                "xml": "<qual:qualitativeSpecies metaid=\"meta_S\" sboTerm=\"SBO:0000405\" qual:id=\"S\" qual:compartment=\"cell\" qual:constant=\"true\" qual:name=\"signal\" qual:maxLevel=\"1\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The extracellular signal the switch responds to. It is constant, which makes it an input of the system: it is read by the transitions and changed by none of them, and an experiment sets its level. It carries no initial level, because the level it is held at is the condition of the experiment.</p>\n    </body>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_S\">\n        <bqbiol:isVersionOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"https://identifiers.org/GO:0007165\"/>\n          </rdf:Bag>\n        </bqbiol:isVersionOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</qual:qualitativeSpecies>",
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
@@ -837,7 +837,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.032 [s]"
+        "jsonReportTime": "0.036 [s]"
       }
     }
   }

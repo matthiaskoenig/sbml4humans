@@ -47,6 +47,7 @@
       <parameter sboTerm="SBO:0000625" id="zero" name="zero bound" value="0" units="mmole_per_hr" constant="true"/>
       <parameter id="ratio_lb" name="lower bound of the ratio constraint" value="0" units="mmole_per_hr" constant="true"/>
       <parameter id="ratio_ub" name="upper bound of the ratio constraint" value="0" units="mmole_per_hr" constant="true"/>
+      <parameter id="budget_lb" name="lower bound of the budget constraint" value="0" units="mmole_per_hr" constant="true"/>
       <parameter id="budget_ub" name="upper bound of the budget constraint" value="10" units="mmole_per_hr" constant="true"/>
       <parameter id="c_one" name="coefficient one" value="1" units="dimensionless" constant="true"/>
       <parameter id="c_two" name="coefficient two" value="2" units="dimensionless" constant="true"/>
@@ -127,7 +128,7 @@
           <fbc:userDefinedConstraintComponent fbc:id="ratio_v2" fbc:variable="v2" fbc:coefficient="c_one" fbc:variableType="linear"/>
         </fbc:listOfUserDefinedConstraintComponents>
       </fbc:userDefinedConstraint>
-      <fbc:userDefinedConstraint fbc:id="budget" fbc:name="the maintenance demand of the growth" fbc:lowerBound="ratio_lb" fbc:upperBound="budget_ub">
+      <fbc:userDefinedConstraint fbc:id="budget" fbc:name="the maintenance demand of the growth" fbc:lowerBound="budget_lb" fbc:upperBound="budget_ub">
         <fbc:listOfUserDefinedConstraintComponents>
           <fbc:userDefinedConstraintComponent fbc:id="budget_v2" fbc:variable="v2" fbc:variable2="maintenance" fbc:coefficient="c_one" fbc:variableType="quadratic"/>
         </fbc:listOfUserDefinedConstraintComponents>

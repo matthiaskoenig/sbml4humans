@@ -1601,6 +1601,8 @@ def test_user_defined_constraints_of_a_version_3_model() -> None:
     assert second.variable == "v2"
 
     quadratic = model.list_of_user_defined_constraints[1]
+    # every constraint is bounded by parameters of its own
+    assert (quadratic.lower_bound, quadratic.upper_bound) == ("budget_lb", "budget_ub")
     component = quadratic.list_of_user_defined_constraint_components[0]
     assert (component.variable, component.variable2) == ("v2", "maintenance")
     assert component.variable_type == "quadratic"
@@ -1682,7 +1684,9 @@ def test_qualitative_species_carries_its_sbase_fields(qual_example: Report) -> N
     """The notes and the annotation of a qualitative species are part of the report."""
     signal = qual_example.models[0].list_of_qualitative_species[0]
     assert signal.meta_id == "meta_S"
-    assert signal.sbo == "SBO:0000252"
+    # an extracellular signal which an experiment sets is a perturbing agent, the
+    # term the example carried before named a polypeptide chain
+    assert signal.sbo == "SBO:0000405"
     assert signal.notes is not None
     assert "input of the system" in signal.notes
     assert [term.qualifier for term in signal.cvterms] == [

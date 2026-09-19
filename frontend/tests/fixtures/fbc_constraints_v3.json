@@ -1,5 +1,5 @@
 {
-  "uid": "9bf6cd731c5843e18087c22e33f47bb8",
+  "uid": "5cfc7f46c1334bf694ab01742ec57832",
   "manifest": {
     "entries": [
       {
@@ -393,6 +393,26 @@
                 "cvterms": [],
                 "history": null,
                 "xml": "<parameter id=\"ratio_ub\" name=\"upper bound of the ratio constraint\" value=\"0\" units=\"mmole_per_hr\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "value": 0,
+                "constant": true,
+                "units": "mmole_per_hr",
+                "unitsLatex": "\\frac{mmol}{hr}",
+                "derivedUnits": "\\frac{mmol}{hr}"
+              },
+              {
+                "pk": "fbc_constraints_v3/Parameter:budget_lb",
+                "sbmlType": "Parameter",
+                "id": "budget_lb",
+                "metaId": null,
+                "name": "lower bound of the budget constraint",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"budget_lb\" name=\"lower bound of the budget constraint\" value=\"0\" units=\"mmole_per_hr\" constant=\"true\"/>",
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
@@ -962,11 +982,11 @@
                 "notes": null,
                 "cvterms": [],
                 "history": null,
-                "xml": "<fbc:userDefinedConstraint fbc:id=\"budget\" fbc:name=\"the maintenance demand of the growth\" fbc:lowerBound=\"ratio_lb\" fbc:upperBound=\"budget_ub\">\n  <fbc:listOfUserDefinedConstraintComponents>\n    <fbc:userDefinedConstraintComponent fbc:id=\"budget_v2\" fbc:coefficient=\"c_one\" fbc:variable=\"v2\" fbc:variable2=\"maintenance\" fbc:variableType=\"quadratic\"/>\n  </fbc:listOfUserDefinedConstraintComponents>\n</fbc:userDefinedConstraint>",
+                "xml": "<fbc:userDefinedConstraint fbc:id=\"budget\" fbc:name=\"the maintenance demand of the growth\" fbc:lowerBound=\"budget_lb\" fbc:upperBound=\"budget_ub\">\n  <fbc:listOfUserDefinedConstraintComponents>\n    <fbc:userDefinedConstraintComponent fbc:id=\"budget_v2\" fbc:coefficient=\"c_one\" fbc:variable=\"v2\" fbc:variable2=\"maintenance\" fbc:variableType=\"quadratic\"/>\n  </fbc:listOfUserDefinedConstraintComponents>\n</fbc:userDefinedConstraint>",
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
-                "lowerBound": "ratio_lb",
+                "lowerBound": "budget_lb",
                 "upperBound": "budget_ub",
                 "listOfUserDefinedConstraintComponents": [
                   {
@@ -1098,6 +1118,13 @@
               "sbmlType": "Parameter",
               "id": "ratio_ub",
               "name": "upper bound of the ratio constraint",
+              "model": "fbc_constraints_v3/Model:fbc_constraints_v3"
+            },
+            "fbc_constraints_v3/Parameter:budget_lb": {
+              "pk": "fbc_constraints_v3/Parameter:budget_lb",
+              "sbmlType": "Parameter",
+              "id": "budget_lb",
+              "name": "lower bound of the budget constraint",
               "model": "fbc_constraints_v3/Model:fbc_constraints_v3"
             },
             "fbc_constraints_v3/Parameter:budget_ub": {
@@ -1411,6 +1438,11 @@
               "kind": "units"
             },
             {
+              "source": "fbc_constraints_v3/Parameter:budget_lb",
+              "target": "fbc_constraints_v3/UnitDefinition:mmole_per_hr",
+              "kind": "units"
+            },
+            {
               "source": "fbc_constraints_v3/Parameter:budget_ub",
               "target": "fbc_constraints_v3/UnitDefinition:mmole_per_hr",
               "kind": "units"
@@ -1662,7 +1694,7 @@
             },
             {
               "source": "fbc_constraints_v3/UserDefinedConstraint:budget",
-              "target": "fbc_constraints_v3/Parameter:ratio_lb",
+              "target": "fbc_constraints_v3/Parameter:budget_lb",
               "kind": "lowerBound"
             },
             {
@@ -1694,7 +1726,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.012 [s]"
       }
     }
   }
