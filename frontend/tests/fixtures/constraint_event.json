@@ -1,5 +1,5 @@
 {
-  "uid": "67d1cb0bd27b431992b1df000ee8cf55",
+  "uid": "cc517b9fa44642f3838755b37067ba6f",
   "manifest": {
     "entries": [
       {
@@ -36,6 +36,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 2,
           "packages": [],
@@ -85,6 +86,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <sbml4humans:model xmlns:sbml4humans=\"https://sbml4humans.de/ns/example\" sbml4humans:elements=\"constraint event localParameter unitDefinition\"/>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_constraint_event\">\n      <bqbiol:hasTaxon>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"https://identifiers.org/taxonomy/9606\"/>\n          <bqbiol:isDescribedBy>\n            <rdf:Bag>\n              <rdf:li rdf:resource=\"https://identifiers.org/pubmed/31219795\"/>\n            </rdf:Bag>\n          </bqbiol:isDescribedBy>\n        </rdf:Bag>\n      </bqbiol:hasTaxon>\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mmole",
@@ -116,6 +118,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -140,6 +143,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -164,6 +168,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{l}",
                 "listOfUnits": [
                   {
@@ -194,6 +199,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{min \\cdot l}",
                 "listOfUnits": [
                   {
@@ -240,6 +246,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -271,6 +278,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 8,
@@ -305,6 +313,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -333,6 +342,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 10,
                 "constant": true,
                 "units": "mM",
@@ -353,6 +363,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 5,
                 "constant": true,
                 "units": "mM",
@@ -373,6 +384,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": false,
                 "units": "dimensionless",
@@ -393,6 +405,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 20,
                 "constant": true,
                 "units": "min",
@@ -413,6 +426,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 5,
                 "constant": true,
                 "units": "min",
@@ -445,6 +459,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "math": {
                   "latex": " \\mathit{S1}<\\mathit{S1_{max}}",
                   "formula": "S1 < S1_max"
@@ -475,6 +490,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": null,
                 "compartment": "cell",
@@ -493,6 +509,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -513,6 +530,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -541,6 +559,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{active}\\cdot \\mathit{cell}\\cdot \\frac{\\mathit{Vmax}\\cdot \\mathit{S1}}{\\mathit{Km}+\\mathit{S1}}",
                     "formula": "active * cell * (Vmax * S1 / (Km + S1))"
@@ -569,6 +588,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "value": 1,
                       "units": "mmole_per_min_l",
                       "unitsLatex": "\\frac{mmol}{min \\cdot l}",
@@ -596,6 +616,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "value": 2,
                       "units": "mM",
                       "unitsLatex": "\\frac{mmol}{l}",
@@ -622,6 +643,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "useValuesFromTriggerTime": false,
                 "trigger": {
                   "pk": "constraint_event/Trigger:E1_trigger",
@@ -645,6 +667,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathrm{time}\\ge \\mathit{t_{dose}}",
                     "formula": "time >= t_dose"
@@ -674,6 +697,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " 1",
                     "formula": "1 dimensionless"
@@ -701,6 +725,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{t_{delay}}",
                     "formula": "t_delay"
@@ -721,6 +746,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "S1",
                     "math": {
                       "latex": " \\mathit{S1}+\\mathit{dose}",
@@ -741,6 +767,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "active",
                     "math": {
                       "latex": " 0",
@@ -1193,7 +1220,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.051 [s]"
+        "jsonReportTime": "0.097 [s]"
       }
     }
   }

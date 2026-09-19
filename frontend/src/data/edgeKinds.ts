@@ -37,6 +37,7 @@ export const EDGE_KINDS: readonly EdgeKind[] = [
   "output",
   "functionTerm",
   "defaultTerm",
+  "listOf",
   "uncertainty",
   "uncertParameter",
   "var",

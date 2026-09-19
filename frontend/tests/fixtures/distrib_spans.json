@@ -1,5 +1,5 @@
 {
-  "uid": "5da294574368409788a07fe08d475d6a",
+  "uid": "f31091b3045947eeb8367604827fc3c2",
   "manifest": {
     "entries": [
       {
@@ -36,6 +36,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -61,6 +62,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": "mmole",
@@ -92,6 +94,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -116,6 +119,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "m^2",
                 "listOfUnits": [
                   {
@@ -140,6 +144,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -164,6 +169,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{l}",
                 "listOfUnits": [
                   {
@@ -194,6 +200,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{l \\cdot min}",
                 "listOfUnits": [
                   {
@@ -232,6 +239,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -268,6 +276,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "uncertParameters": [
                       {
                         "pk": "distrib_spans/UncertParameter:u_S.mean",
@@ -283,6 +292,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "mean",
                         "var": null,
                         "value": 0.5,
@@ -305,6 +315,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "confidenceInterval",
                         "var": null,
                         "value": null,
@@ -321,6 +332,7 @@
                   }
                 ],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0.5,
@@ -362,6 +374,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "uncertParameters": [
                       {
                         "pk": "distrib_spans/UncertParameter:Km_purified_mean",
@@ -377,6 +390,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "mean",
                         "var": null,
                         "value": 0.5,
@@ -399,6 +413,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "standardDeviation",
                         "var": null,
                         "value": 0.06,
@@ -421,6 +436,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "sampleSize",
                         "var": null,
                         "value": 12,
@@ -443,6 +459,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "range",
                         "var": null,
                         "value": null,
@@ -471,6 +488,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "uncertParameters": [
                       {
                         "pk": "distrib_spans/UncertParameter:u_Km_lysate.median",
@@ -486,6 +504,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "median",
                         "var": null,
                         "value": 0.59,
@@ -508,6 +527,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "confidenceInterval",
                         "var": null,
                         "value": null,
@@ -524,6 +544,7 @@
                   }
                 ],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.5,
                 "constant": true,
                 "units": "mmole_per_l",
@@ -544,6 +565,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.41,
                 "constant": true,
                 "units": "mmole_per_l",
@@ -564,6 +586,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.77,
                 "constant": true,
                 "units": "mmole_per_l",
@@ -597,6 +620,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "uncertParameters": [
                       {
                         "pk": "distrib_spans/UncertParameter:Vmax_mean_measure",
@@ -612,6 +636,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "mean",
                         "var": "Vmax_mean",
                         "value": null,
@@ -634,6 +659,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "distribution",
                         "var": null,
                         "value": null,
@@ -655,6 +681,7 @@
                             "comp": null,
                             "uncertainties": [],
                             "keyValuePairs": [],
+                            "lists": [],
                             "type": "externalParameter",
                             "var": null,
                             "value": 2,
@@ -677,6 +704,7 @@
                             "comp": null,
                             "uncertainties": [],
                             "keyValuePairs": [],
+                            "lists": [],
                             "type": "externalParameter",
                             "var": null,
                             "value": 5,
@@ -691,6 +719,7 @@
                   }
                 ],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.5,
                 "constant": true,
                 "units": "mmole_per_min_l",
@@ -711,6 +740,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.5,
                 "constant": true,
                 "units": "mmole_per_min_l",
@@ -731,6 +761,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": null,
                 "constant": false,
                 "units": "mmole_per_min_l",
@@ -767,6 +798,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "uncertParameters": [
                       {
                         "pk": "distrib_spans/UncertParameter:u_v.standardDeviation",
@@ -782,6 +814,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "standardDeviation",
                         "var": null,
                         "value": 0.04,
@@ -804,6 +837,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "type": "distribution",
                         "var": null,
                         "value": null,
@@ -819,6 +853,7 @@
                   }
                 ],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "v",
                 "math": {
                   "latex": " \\frac{\\mathit{Vmax}\\cdot \\mathit{S}}{\\mathit{Km}+\\mathit{S}}",
@@ -1377,7 +1412,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.021 [s]"
+        "jsonReportTime": "0.042 [s]"
       }
     }
   }

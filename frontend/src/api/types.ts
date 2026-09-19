@@ -21,6 +21,7 @@ import type {
   InitialAssignment,
   Input,
   KineticLaw,
+  ListOf,
   LocalParameter,
   Model,
   ModifierSpeciesReference,
@@ -104,7 +105,8 @@ export type NestedElement =
   | DefaultTerm
   | Uncertainty
   | UncertParameter
-  | UncertSpan;
+  | UncertSpan
+  | ListOf;
 
 export type SBase = DocumentElement | SbmlElement | NestedElement;
 export type Rule = AssignmentRule | RateRule | AlgebraicRule;

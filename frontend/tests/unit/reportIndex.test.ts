@@ -13,6 +13,7 @@ const distrib = new ReportIndex(loadReport("distrib_uncertainties"));
 const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
 const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
+const listOf = new ReportIndex(loadReport("list_of"));
 
 const FIXTURE_NAMES: FixtureName[] = [
   "repressilator",
@@ -23,6 +24,7 @@ const FIXTURE_NAMES: FixtureName[] = [
   "comp_deletion",
   "distrib_uncertainties",
   "qual_example",
+  "list_of",
 ];
 
 /** Every report entry of every fixture, indexed - `comp_models` alone carries three entries. */
@@ -122,10 +124,15 @@ describe("ReportIndex", () => {
   });
 
   it("resolves a port reference by metaId, not only by id", () => {
-    // no fixture port sets metaIdRef (all are id references), so this exercises only the miss:
-    // an unknown metaId does not resolve, through the id path or the metaId fallback.
+    // an unknown metaId does not resolve, through the id path or the metaId fallback
     const port = icgBody.mainModel!.listOfPorts!.find((p) => p.idRef)!;
     expect(icgBody.resolve(port.pk, "port", "unknown-meta-id")).toBeNull();
+    // the port of the list of species names the list by its meta id, while the list has an id
+    const listPort = listOf.mainModel!.listOfPorts![0]!;
+    expect(listPort.metaIdRef).toBe("meta_species");
+    const target = listOf.resolve(listPort.pk, "port", listPort.metaIdRef);
+    expect(target).not.toBeNull();
+    expect(listOf.get(target!)).toMatchObject({ sbmlType: "ListOf", id: "metabolites" });
   });
 
   it("resolves the species of a reactant from the species reference", () => {
@@ -331,6 +338,73 @@ describe("ReportIndex", () => {
     const species = compDeletion.mainModel!.listOfSpecies![0]!;
     const replaced = species.comp!.replacedElements![0]!;
     expect(elementLabel(compDeletion, replaced.pk)).toBe(`${species.id}.${replaced.submodelRef}`);
+  });
+
+  describe("the lists which state something of their own", () => {
+    const model = listOf.mainModel!;
+    const reaction = model.listOfReactions![0]!;
+    const unitDefinition = model.listOfUnitDefinitions![0]!;
+
+    it("indexes the lists of the model and of its elements by pk, with their model", () => {
+      const owners: SBase[] = [model, reaction, unitDefinition];
+      const lists = owners.flatMap((owner) => owner.lists ?? []);
+      expect(lists.map((list) => list.element)).toEqual([
+        "listOfUnitDefinitions",
+        "listOfSpecies",
+        "listOfRules",
+        "listOfReactants",
+        "listOfUnits",
+      ]);
+      for (const list of lists) {
+        expect(listOf.get(list.pk), list.pk).toBe(list);
+        expect(listOf.modelOf(list.pk), list.pk).toBe("list_of");
+      }
+      // every list of the report is one of these, and a plain list is none
+      const indexed = [...listOf.elements.values()].filter((e) => e.sbmlType === "ListOf");
+      expect(indexed).toHaveLength(lists.length);
+      expect(model.listOfSpecies![0]!.lists).toEqual([]);
+    });
+
+    it("finds the list of an element by the name it has in the file", () => {
+      expect(listOf.list(model.pk, "listOfSpecies")?.id).toBe("metabolites");
+      // an empty list is a list of its owner like every other
+      expect(listOf.list(model.pk, "listOfRules")).toMatchObject({ size: 0 });
+      expect(listOf.list(reaction.pk, "listOfReactants")?.name).toBe("what J0 consumes");
+      // a list which states nothing is no element of the report
+      expect(listOf.list(model.pk, "listOfCompartments")).toBeNull();
+      expect(listOf.list(reaction.pk, "listOfProducts")).toBeNull();
+      expect(listOf.list("nope", "listOfSpecies")).toBeNull();
+    });
+
+    it("names a list by its id, else after its owner and the name it has in the file", () => {
+      const label = (owner: SBase, element: string) =>
+        elementLabel(listOf, listOf.list(owner.pk, element)!.pk);
+      expect(label(model, "listOfSpecies")).toBe("metabolites");
+      // the meta id of a list says nothing about which list it is, and the model is its scope
+      expect(label(model, "listOfRules")).toBe("listOfRules");
+      expect(label(model, "listOfUnitDefinitions")).toBe("listOfUnitDefinitions");
+      expect(label(reaction, "listOfReactants")).toBe("J0.listOfReactants");
+      expect(label(unitDefinition, "listOfUnits")).toBe("per_second.listOfUnits");
+    });
+
+    it("links every owner to its lists and the port to the list it names", () => {
+      const targets = (owner: SBase) =>
+        listOf
+          .references(owner.pk)
+          .filter((edge) => edge.kind === "listOf")
+          .map((edge) => edge.target);
+      for (const owner of [model, reaction, unitDefinition] as SBase[]) {
+        expect(targets(owner), owner.pk).toEqual((owner.lists ?? []).map((list) => list.pk));
+      }
+      const species = listOf.list(model.pk, "listOfSpecies")!;
+      const port = model.listOfPorts![0]!;
+      expect(listOf.referencedBy(species.pk)).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ source: model.pk, kind: "listOf" }),
+          expect.objectContaining({ source: port.pk, kind: "port" }),
+        ]),
+      );
+    });
   });
 
   describe("the entries of an archive", () => {

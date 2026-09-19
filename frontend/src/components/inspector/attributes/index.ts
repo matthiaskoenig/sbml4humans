@@ -23,6 +23,7 @@ import GeneProductRefAttributes from "./GeneProductRefAttributes.vue";
 import InitialAssignmentAttributes from "./InitialAssignmentAttributes.vue";
 import InputAttributes from "./InputAttributes.vue";
 import KineticLawAttributes from "./KineticLawAttributes.vue";
+import ListOfAttributes from "./ListOfAttributes.vue";
 import LocalParameterAttributes from "./LocalParameterAttributes.vue";
 import ModelAttributes from "./ModelAttributes.vue";
 import ModifierSpeciesReferenceAttributes from "./ModifierSpeciesReferenceAttributes.vue";
@@ -101,4 +102,5 @@ export const ATTRIBUTE_COMPONENTS: Readonly<Record<SbmlType, Component>> = {
   ReplacedElement: ReplacedElementAttributes,
   ReplacedBy: ReplacedByAttributes,
   SBaseRef: SBaseRefAttributes,
+  ListOf: ListOfAttributes,
 };

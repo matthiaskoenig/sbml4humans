@@ -93,12 +93,16 @@ describe("sbml types", () => {
 
   it("orders and labels the edge kinds", () => {
     expect(EDGE_KINDS[0]).toBe("compartment");
-    expect(EDGE_KINDS).toHaveLength(48);
+    expect(EDGE_KINDS).toHaveLength(49);
     // a reaction names its kinetic law behind its participants, an event its assignments behind
     // its trigger, its priority and its delay
     expect(EDGE_KINDS.indexOf("kineticLaw")).toBe(EDGE_KINDS.indexOf("modifier") + 1);
     expect(EDGE_KINDS.indexOf("localParameter")).toBe(EDGE_KINDS.indexOf("kineticLaw") + 1);
     expect(EDGE_KINDS.indexOf("eventAssignment")).toBe(EDGE_KINDS.indexOf("delay") + 1);
+    // what every element may own comes behind what its type names: its lists, then its
+    // uncertainties
+    expect(EDGE_KINDS.indexOf("listOf")).toBe(EDGE_KINDS.indexOf("uncertainty") - 1);
+    expect(edgeKindLabel("listOf")).toBe("listOf");
     // an element names its uncertainties and each of them its measures
     expect(EDGE_KINDS.indexOf("uncertainty")).toBe(EDGE_KINDS.indexOf("uncertParameter") - 1);
     expect(edgeKindLabel("kineticLaw")).toBe("kineticLaw");

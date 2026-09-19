@@ -1,5 +1,5 @@
 {
-  "uid": "59e739ccad6544889414b761411219ba",
+  "uid": "96113eace1ff422a984eb5af94798403",
   "manifest": {
     "entries": [
       {
@@ -36,6 +36,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -61,6 +62,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": "mmole",
@@ -92,6 +94,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "hr",
                 "listOfUnits": [
                   {
@@ -116,6 +119,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -140,6 +144,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{hr}",
                 "listOfUnits": [
                   {
@@ -172,6 +177,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -195,6 +201,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 5,
@@ -224,6 +231,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 1,
@@ -253,6 +261,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 1,
@@ -282,6 +291,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -314,6 +324,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "cell",
@@ -332,6 +343,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -350,6 +362,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "adp",
                     "stoichiometry": 2,
                     "constant": true
@@ -370,6 +383,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "atp",
                     "stoichiometry": 2,
                     "constant": true
@@ -388,6 +402,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "biomass",
                     "stoichiometry": 1,
                     "constant": true
@@ -412,6 +427,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -430,6 +446,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -455,6 +472,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -473,6 +491,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "biomass",
                     "stoichiometry": 1,
                     "constant": true
@@ -504,6 +523,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "type": "maximize",
                 "listOfFluxObjectives": [
                   {
@@ -520,6 +540,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "reaction": "EX_biomass",
                     "reaction2": null,
                     "coefficient": 1,
@@ -541,6 +562,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "type": "minimize",
                 "listOfFluxObjectives": [
                   {
@@ -557,6 +579,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "reaction": "EX_glc",
                     "reaction2": null,
                     "coefficient": -1,
@@ -580,6 +603,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reaction": "v1",
                 "operation": "greaterEqual",
                 "value": 0
@@ -598,6 +622,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reaction": "v1",
                 "operation": "lessEqual",
                 "value": "Infinity"
@@ -616,6 +641,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reaction": "EX_glc",
                 "operation": "equal",
                 "value": -10
@@ -1013,7 +1039,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.006 [s]"
+        "jsonReportTime": "0.013 [s]"
       }
     }
   }

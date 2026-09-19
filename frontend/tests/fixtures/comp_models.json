@@ -1,5 +1,5 @@
 {
-  "uid": "c5d11c5407264a389b90f1c1c1ed1b7a",
+  "uid": "3c1b875f630f493abadea924cda2c266",
   "manifest": {
     "entries": [
       {
@@ -51,6 +51,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -93,6 +94,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_omex_minimal\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": null,
@@ -125,6 +127,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -148,6 +151,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 10,
@@ -174,6 +178,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -202,6 +207,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -227,6 +233,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -245,6 +252,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -265,6 +273,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -285,6 +294,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k1}\\cdot \\mathit{S2}",
                     "formula": "k1 * S2"
@@ -321,6 +331,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": "cell",
                 "unitRef": null,
@@ -349,6 +360,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": "S1",
                 "unitRef": null,
@@ -533,7 +545,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.01 [s]"
       }
     },
     "./models/omex_comp.xml": {
@@ -552,6 +564,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -577,6 +590,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": null,
@@ -623,6 +637,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -636,6 +651,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -671,6 +687,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -684,6 +701,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -719,6 +737,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -732,6 +751,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -767,6 +787,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -780,6 +801,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -815,6 +837,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -828,6 +851,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -865,6 +889,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -878,6 +903,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell0",
                 "initialAmount": null,
                 "initialConcentration": 10,
@@ -918,6 +944,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -931,6 +958,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell1",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -971,6 +999,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -984,6 +1013,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell2",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -1024,6 +1054,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -1037,6 +1068,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell3",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -1077,6 +1109,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "S1_port",
                       "idRef": null,
                       "unitRef": null,
@@ -1090,6 +1123,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell4",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -1118,6 +1152,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1143,6 +1178,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1161,6 +1197,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S0",
                     "stoichiometry": 1,
                     "constant": true
@@ -1181,6 +1218,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -1201,6 +1239,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S0}-\\mathit{S1})",
                     "formula": "D * (S0 - S1)"
@@ -1225,6 +1264,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1243,6 +1283,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -1263,6 +1304,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -1283,6 +1325,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S1}-\\mathit{S2})",
                     "formula": "D * (S1 - S2)"
@@ -1307,6 +1350,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1325,6 +1369,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -1345,6 +1390,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -1365,6 +1411,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S2}-\\mathit{S3})",
                     "formula": "D * (S2 - S3)"
@@ -1389,6 +1436,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -1407,6 +1455,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -1427,6 +1476,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S4",
                     "stoichiometry": 1,
                     "constant": true
@@ -1447,6 +1497,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S3}-\\mathit{S4})",
                     "formula": "D * (S3 - S4)"
@@ -1474,6 +1525,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "emd0",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1493,6 +1545,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "emd1",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1512,6 +1565,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "emd2",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1531,6 +1585,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "emd3",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1550,6 +1605,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "emd4",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1581,6 +1637,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null,
@@ -1605,6 +1662,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null,
@@ -1629,6 +1687,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null,
@@ -1653,6 +1712,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null,
@@ -1677,6 +1737,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
             "md5": null,
@@ -2537,7 +2598,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.028 [s]"
+        "jsonReportTime": "0.053 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -2556,6 +2617,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -2581,6 +2643,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": null,
@@ -2613,6 +2676,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2634,6 +2698,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2655,6 +2720,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2676,6 +2742,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2697,6 +2764,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -2720,6 +2788,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell0",
                 "initialAmount": null,
                 "initialConcentration": 10,
@@ -2746,6 +2815,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell1",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2772,6 +2842,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell2",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2798,6 +2869,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell3",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2824,6 +2896,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell4",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2850,6 +2923,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell0",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2876,6 +2950,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell1",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2902,6 +2977,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell2",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2928,6 +3004,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell3",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2954,6 +3031,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell4",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -2982,6 +3060,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -3002,6 +3081,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -3022,6 +3102,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -3042,6 +3123,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -3062,6 +3144,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -3082,6 +3165,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -3107,6 +3191,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3125,6 +3210,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S0",
                     "stoichiometry": 1,
                     "constant": true
@@ -3145,6 +3231,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -3165,6 +3252,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S0}-\\mathit{S1})",
                     "formula": "D * (S0 - S1)"
@@ -3189,6 +3277,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3207,6 +3296,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -3227,6 +3317,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3247,6 +3338,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S1}-\\mathit{S2})",
                     "formula": "D * (S1 - S2)"
@@ -3271,6 +3363,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3289,6 +3382,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3309,6 +3403,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -3329,6 +3424,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S2}-\\mathit{S3})",
                     "formula": "D * (S2 - S3)"
@@ -3353,6 +3449,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3371,6 +3468,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -3391,6 +3489,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S4",
                     "stoichiometry": 1,
                     "constant": true
@@ -3411,6 +3510,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{D}\\cdot (\\mathit{S3}-\\mathit{S4})",
                     "formula": "D * (S3 - S4)"
@@ -3435,6 +3535,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3453,6 +3554,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S0",
                     "stoichiometry": 1,
                     "constant": true
@@ -3473,6 +3575,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "submodel0__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3493,6 +3596,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{submodel0\\_\\_k1}\\cdot \\mathit{submodel0\\_\\_S2}",
                     "formula": "submodel0__k1 * submodel0__S2"
@@ -3517,6 +3621,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3535,6 +3640,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S1",
                     "stoichiometry": 1,
                     "constant": true
@@ -3555,6 +3661,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "submodel1__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3575,6 +3682,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{submodel1\\_\\_k1}\\cdot \\mathit{submodel1\\_\\_S2}",
                     "formula": "submodel1__k1 * submodel1__S2"
@@ -3599,6 +3707,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3617,6 +3726,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3637,6 +3747,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "submodel2__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3657,6 +3768,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{submodel2\\_\\_k1}\\cdot \\mathit{submodel2\\_\\_S2}",
                     "formula": "submodel2__k1 * submodel2__S2"
@@ -3681,6 +3793,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3699,6 +3812,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S3",
                     "stoichiometry": 1,
                     "constant": true
@@ -3719,6 +3833,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "submodel3__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3739,6 +3854,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{submodel3\\_\\_k1}\\cdot \\mathit{submodel3\\_\\_S2}",
                     "formula": "submodel3__k1 * submodel3__S2"
@@ -3763,6 +3879,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3781,6 +3898,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "S4",
                     "stoichiometry": 1,
                     "constant": true
@@ -3801,6 +3919,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "submodel4__S2",
                     "stoichiometry": 1,
                     "constant": true
@@ -3821,6 +3940,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{submodel4\\_\\_k1}\\cdot \\mathit{submodel4\\_\\_S2}",
                     "formula": "submodel4__k1 * submodel4__S2"
@@ -4737,7 +4857,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.039 [s]"
+        "jsonReportTime": "0.148 [s]"
       }
     }
   }

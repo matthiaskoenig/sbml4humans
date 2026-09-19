@@ -31,6 +31,7 @@ The [link kinds](links.md) explain how the elements of a report reference each o
 | [Priority](priority.md) | the formula which orders an event against the other events of the same moment |
 | [Delay](delay.md) | the formula which gives the time between the trigger of an event and its execution |
 | [EventAssignment](eventassignment.md) | the new value an event gives to one element of the model |
+| [ListOf](listof.md) | a list of a model or of an element which states something of its own |
 
 ## Hierarchical models (comp)
 

@@ -7,6 +7,7 @@ import type {
   Event,
   QualitativeSpecies,
   Reaction,
+  SBase,
   Species,
   Submodel,
   Transition,
@@ -20,6 +21,7 @@ import NestedTable from "@/components/inspector/NestedTable.vue";
 import GeneAssociationView from "@/components/misc/GeneAssociationView.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import ExternalModelDefinitionAttributes from "@/components/inspector/attributes/ExternalModelDefinitionAttributes.vue";
+import ListOfAttributes from "@/components/inspector/attributes/ListOfAttributes.vue";
 import ReactionAttributes from "@/components/inspector/attributes/ReactionAttributes.vue";
 import ReplacedElementAttributes from "@/components/inspector/attributes/ReplacedElementAttributes.vue";
 import QualitativeSpeciesAttributes from "@/components/inspector/attributes/QualitativeSpeciesAttributes.vue";
@@ -43,6 +45,7 @@ const fixtures = [
   "fbc_example",
   "distrib_uncertainties",
   "model_definitions",
+  "list_of",
 ] as const;
 const indexes = fixtures.map((name) => new ReportIndex(loadReport(name)));
 const repressilator = indexes[0]!;
@@ -52,6 +55,7 @@ const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
 const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
 const qual = new ReportIndex(loadReport("qual_example"));
 const distribSpans = new ReportIndex(loadReport("distrib_spans"));
+const listOf = new ReportIndex(loadReport("list_of"));
 
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
@@ -989,6 +993,77 @@ describe("inspector", () => {
     expect(link.attributes("rel")).toBe("noopener");
     expect(link.get("svg").classes()).toContain("lucide-external-link");
     expect(link.get("[data-testid=inspector-type]").text()).toBe("Species");
+  });
+
+  describe("the lists which state something of their own", () => {
+    const model = listOf.mainModel!;
+    const reaction = model.listOfReactions![0]!;
+    const unitDefinition = model.listOfUnitDefinitions![0]!;
+
+    /** The names of the links of the row of the lists, null for an element without the row. */
+    function listsRow(element: SBase): string[] | null {
+      const wrapper = mountWith(AttributesColumn, { element }, listOf);
+      const row = wrapper
+        .findAll("[data-testid=attribute-row]")
+        .find((r) => r.get("dt").text() === "lists");
+      return row?.findAll("[data-testid=element-link]").map((link) => link.text()) ?? null;
+    }
+
+    it("links the lists of an element from its attributes", async () => {
+      await router.push("/examples/list_of");
+      // the empty list of rules has no table, so the model is where a reader finds it
+      expect(listsRow(model)).toEqual(["listOfUnitDefinitions", "metabolites", "listOfRules"]);
+      expect(listsRow(reaction)).toEqual(["J0.listOfReactants"]);
+      expect(listsRow(unitDefinition)).toEqual(["per_second.listOfUnits"]);
+    });
+
+    it("links a list by its pk with the mark of its type", async () => {
+      await router.push("/examples/list_of");
+      const wrapper = mountWith(AttributesColumn, { element: reaction }, listOf);
+      const link = wrapper.get("[data-testid=lists] [data-testid=element-link]");
+      expect(link.attributes("data-pk")).toBe(reaction.lists![0]!.pk);
+      expect(link.get("[data-testid=type-mark]").attributes("aria-label")).toBe("ListOf");
+      // the list has no id, the name the report gives it is set apart from one
+      expect(link.find("[data-testid=report-name]").exists()).toBe(true);
+    });
+
+    it("has no row of lists for an element without one", () => {
+      expect(listsRow(model.listOfSpecies![0]!)).toBeNull();
+      expect(listsRow(listOf.document)).toBeNull();
+      expect(listsRow(listOf.list(model.pk, "listOfSpecies")!)).toBeNull();
+    });
+
+    it("shows the name a list has in the file and the number of its elements", () => {
+      const rows = (element: string) =>
+        mountWith(ListOfAttributes, { element: listOf.list(model.pk, element)! }, listOf)
+          .findAll("[data-testid=attribute-row]")
+          .map((row) => [row.get("dt").text(), row.get("dd").text()]);
+      expect(rows("listOfSpecies")).toEqual([
+        ["list", "listOfSpecies"],
+        ["size", "2"],
+      ]);
+      expect(rows("listOfRules")).toEqual([
+        ["list", "listOfRules"],
+        ["size", "0"],
+      ]);
+    });
+
+    it("shows a list in the inspector with its notes and the xml without its elements", async () => {
+      const species = listOf.list(model.pk, "listOfSpecies")!;
+      const wrapper = mountWith(InspectorPanel, { pk: species.pk }, listOf);
+      expect(wrapper.get("[data-testid=inspector-type]").text()).toBe("ListOf");
+      expect(wrapper.get("[data-testid=inspector-id]").text()).toBe("metabolites");
+      expect(wrapper.get("[data-testid=inspector-name]").text()).toBe(species.name);
+      expect(wrapper.get("[data-testid=inspector-type-link]").attributes("href")).toBe(
+        referenceUrl("ListOf"),
+      );
+      expect(wrapper.text()).toContain("The species of this list are the two metabolites");
+      await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
+      const xml = wrapper.get("[data-testid=xml-view] pre").text();
+      expect(xml).toContain("<listOfSpecies");
+      expect(xml).toContain("bqbiol:isPartOf");
+      expect(xml).not.toContain("<species");
+    });
   });
 
   const COLUMNS = [{ key: "id", header: "id" }];

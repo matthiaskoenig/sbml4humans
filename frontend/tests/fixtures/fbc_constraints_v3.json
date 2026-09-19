@@ -1,5 +1,5 @@
 {
-  "uid": "4f05854b86aa4ea48c664e4b6db05f06",
+  "uid": "94c2f406b503464d82ff2c21e3d39335",
   "manifest": {
     "entries": [
       {
@@ -36,6 +36,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -72,6 +73,7 @@
                 "uri": null
               }
             ],
+            "lists": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": "mmole",
@@ -103,6 +105,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "hr",
                 "listOfUnits": [
                   {
@@ -127,6 +130,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -151,6 +155,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{hr}",
                 "listOfUnits": [
                   {
@@ -183,6 +188,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -206,6 +212,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 5,
@@ -235,6 +242,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 1,
@@ -264,6 +272,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "initialAmount": null,
                 "initialConcentration": 0,
@@ -300,6 +309,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": -1000,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -328,6 +338,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1000,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -356,6 +367,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -376,6 +388,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -396,6 +409,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -416,6 +430,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -436,6 +451,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 10,
                 "constant": true,
                 "units": "mmole_per_hr",
@@ -456,6 +472,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": "dimensionless",
@@ -476,6 +493,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 2,
                 "constant": true,
                 "units": "dimensionless",
@@ -502,6 +520,7 @@
                     "uri": "https://sbml.org/fbc/keyvaluepair"
                   }
                 ],
+                "lists": [],
                 "value": 1,
                 "constant": false,
                 "units": "mmole_per_hr",
@@ -527,6 +546,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "cell",
@@ -545,6 +565,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -565,6 +586,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "pi",
                     "stoichiometry": 1,
                     "constant": true
@@ -626,6 +648,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": "cell",
@@ -644,6 +667,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "pi",
                     "stoichiometry": 1,
                     "constant": true
@@ -664,6 +688,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "biomass",
                     "stoichiometry": 1,
                     "constant": true
@@ -700,6 +725,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -719,6 +745,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -747,6 +774,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -765,6 +793,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "biomass",
                     "stoichiometry": 1,
                     "constant": true
@@ -799,6 +828,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "label": "b1101",
                 "associatedSpecies": null
               },
@@ -816,6 +846,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "label": "b2415",
                 "associatedSpecies": null
               },
@@ -833,6 +864,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "label": "b2943",
                 "associatedSpecies": null
               }
@@ -852,6 +884,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "type": "maximize",
                 "listOfFluxObjectives": [
                   {
@@ -868,6 +901,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "reaction": "EX_biomass",
                     "reaction2": null,
                     "coefficient": 1,
@@ -889,6 +923,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "type": "minimize",
                 "listOfFluxObjectives": [
                   {
@@ -905,6 +940,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "reaction": "v1",
                     "reaction2": "v2",
                     "coefficient": 4,
@@ -929,6 +965,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "lowerBound": "ratio_lb",
                 "upperBound": "ratio_ub",
                 "listOfUserDefinedConstraintComponents": [
@@ -946,6 +983,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "v1",
                     "variable2": null,
                     "coefficient": "c_two",
@@ -965,6 +1003,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "v2",
                     "variable2": null,
                     "coefficient": "c_one",
@@ -986,6 +1025,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "lowerBound": "budget_lb",
                 "upperBound": "budget_ub",
                 "listOfUserDefinedConstraintComponents": [
@@ -1003,6 +1043,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "v2",
                     "variable2": "maintenance",
                     "coefficient": "c_one",
@@ -1797,7 +1838,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.029 [s]"
       }
     }
   }

@@ -126,6 +126,19 @@ const replacedElements = computed(() =>
       </AttributeRow>
     </template>
     <component :is="component" v-if="component" :element="element" />
+    <!-- a list which states something of its own is an element, and its owner is where a reader
+    finds it: the empty list of rules of a model has no table which could name it -->
+    <AttributeRow v-if="element.lists?.length" :type="element.sbmlType" field="lists">
+      <div class="flex flex-wrap gap-1" data-testid="lists">
+        <ElementLink
+          v-for="list in element.lists"
+          :key="list.pk"
+          :pk="list.pk"
+          mark
+          class="rounded border border-gray-200 bg-white px-1.5 py-0.5"
+        />
+      </div>
+    </AttributeRow>
     <AttributeRow
       v-if="element.keyValuePairs?.length"
       :type="element.sbmlType"

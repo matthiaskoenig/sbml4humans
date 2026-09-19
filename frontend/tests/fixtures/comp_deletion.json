@@ -1,5 +1,5 @@
 {
-  "uid": "a47eb8a381374f64958599b62a26d9e4",
+  "uid": "23eea35b53844a1ab37125bc319088d8",
   "manifest": {
     "entries": [
       {
@@ -41,6 +41,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -66,6 +67,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": "mole",
@@ -97,6 +99,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -121,6 +124,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{1}{min}",
                 "listOfUnits": [
                   {
@@ -145,6 +149,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mol}{min}",
                 "listOfUnits": [
                   {
@@ -191,6 +196,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -214,6 +220,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "cell_port",
                       "idRef": null,
                       "unitRef": null,
@@ -237,6 +244,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": null,
                       "idRef": "cell_in_tissue",
                       "unitRef": null,
@@ -255,6 +263,7 @@
                         "comp": null,
                         "uncertainties": [],
                         "keyValuePairs": [],
+                        "lists": [],
                         "portRef": "cell_port",
                         "idRef": null,
                         "unitRef": null,
@@ -269,6 +278,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -306,6 +316,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "glc_port",
                       "idRef": null,
                       "unitRef": null,
@@ -329,6 +340,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": "glc_port",
                       "idRef": null,
                       "unitRef": null,
@@ -342,6 +354,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "medium",
                 "initialAmount": null,
                 "initialConcentration": 5,
@@ -384,6 +397,7 @@
                       "comp": null,
                       "uncertainties": [],
                       "keyValuePairs": [],
+                      "lists": [],
                       "portRef": null,
                       "idRef": null,
                       "unitRef": null,
@@ -397,6 +411,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": "per_min",
@@ -429,6 +444,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "portRef": "Vmax_port",
                     "idRef": null,
                     "unitRef": null,
@@ -440,6 +456,7 @@
                 },
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": "mole_per_min",
@@ -460,6 +477,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": "dimensionless",
@@ -480,6 +498,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": "dimensionless",
@@ -500,6 +519,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": "dimensionless",
@@ -520,6 +540,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 5,
                 "constant": false,
                 "units": "mole",
@@ -543,6 +564,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "glc_amount",
                 "math": {
                   "latex": " \\mathit{glc}\\cdot \\mathit{medium}",
@@ -569,6 +591,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "cell",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -595,6 +618,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "portRef": null,
                     "idRef": "k",
                     "unitRef": null,
@@ -615,6 +639,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "portRef": null,
                     "idRef": null,
                     "unitRef": null,
@@ -637,6 +662,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "cell",
                 "timeConversionFactor": "f_time",
                 "extentConversionFactor": "f_extent",
@@ -656,6 +682,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "tissue",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -675,6 +702,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "units",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -693,6 +721,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "portRef": null,
                     "idRef": null,
                     "unitRef": "mg_per_day",
@@ -717,6 +746,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": "medium",
                 "unitRef": null,
@@ -737,6 +767,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": null,
                 "unitRef": "per_min",
@@ -757,6 +788,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": null,
                 "unitRef": null,
@@ -786,6 +818,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "modelDefinition",
             "annotationXml": null,
             "substanceUnits": "mole",
@@ -817,6 +850,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -841,6 +875,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{1}{min}",
                 "listOfUnits": [
                   {
@@ -865,6 +900,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mol}{min}",
                 "listOfUnits": [
                   {
@@ -897,6 +933,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -920,6 +957,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "c",
                 "initialAmount": null,
                 "initialConcentration": 1,
@@ -948,6 +986,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.2,
                 "constant": true,
                 "units": "per_min",
@@ -968,6 +1007,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 2,
                 "constant": true,
                 "units": "mole_per_min",
@@ -993,6 +1033,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -1011,6 +1052,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "glc",
                     "stoichiometry": 1,
                     "constant": true
@@ -1032,6 +1074,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k}\\cdot \\mathit{glc}\\cdot \\mathit{c}",
                     "formula": "k * glc * c"
@@ -1060,6 +1103,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": "c",
                 "unitRef": null,
@@ -1080,6 +1124,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": "glc",
                 "unitRef": null,
@@ -1100,6 +1145,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "portRef": null,
                 "idRef": "Vmax",
                 "unitRef": null,
@@ -1129,6 +1175,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "modelDefinition",
             "annotationXml": null,
             "substanceUnits": "mole",
@@ -1160,6 +1207,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -1186,6 +1234,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -1216,6 +1265,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "modelRef": "cell",
                 "timeConversionFactor": null,
                 "extentConversionFactor": null,
@@ -1247,6 +1297,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "source": "unit_definitions.xml",
             "modelRef": "unit_definitions",
             "md5": "bde1522151d26d8fbca09893ce85ac52",
@@ -2013,7 +2064,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.03 [s]"
+        "jsonReportTime": "0.033 [s]"
       }
     },
     "./unit_definitions.xml": {
@@ -2032,6 +2083,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [],
@@ -2065,6 +2117,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_unit_definitions\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": "mole",
@@ -2096,6 +2149,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "cm",
                 "listOfUnits": [
                   {
@@ -2120,6 +2174,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{g}{mol}",
                 "listOfUnits": [
                   {
@@ -2150,6 +2205,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "hr",
                 "listOfUnits": [
                   {
@@ -2174,6 +2230,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "kg",
                 "listOfUnits": [
                   {
@@ -2198,6 +2255,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{l}{hr}",
                 "listOfUnits": [
                   {
@@ -2228,6 +2286,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{l}{kg}",
                 "listOfUnits": [
                   {
@@ -2258,6 +2317,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{l}{min}",
                 "listOfUnits": [
                   {
@@ -2288,6 +2348,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{l}{ml}",
                 "listOfUnits": [
                   {
@@ -2318,6 +2379,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "m^2",
                 "listOfUnits": [
                   {
@@ -2342,6 +2404,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{m^2}{kg}",
                 "listOfUnits": [
                   {
@@ -2372,6 +2435,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{l}",
                 "listOfUnits": [
                   {
@@ -2402,6 +2466,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "mg",
                 "listOfUnits": [
                   {
@@ -2426,6 +2491,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mg}{day}",
                 "listOfUnits": [
                   {
@@ -2456,6 +2522,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mg}{g}",
                 "listOfUnits": [
                   {
@@ -2486,6 +2553,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mg}{hr}",
                 "listOfUnits": [
                   {
@@ -2516,6 +2584,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mg}{l}",
                 "listOfUnits": [
                   {
@@ -2546,6 +2615,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mg}{min}",
                 "listOfUnits": [
                   {
@@ -2576,6 +2646,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -2600,6 +2671,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{min}{day}",
                 "listOfUnits": [
                   {
@@ -2630,6 +2702,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{min}{hr}",
                 "listOfUnits": [
                   {
@@ -2660,6 +2733,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "ml",
                 "listOfUnits": [
                   {
@@ -2684,6 +2758,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{ml}{l}",
                 "listOfUnits": [
                   {
@@ -2714,6 +2789,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{ml}{s}",
                 "listOfUnits": [
                   {
@@ -2744,6 +2820,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{ml}{s \\cdot kg}",
                 "listOfUnits": [
                   {
@@ -2780,6 +2857,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "mmol",
                 "listOfUnits": [
                   {
@@ -2804,6 +2882,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{hr}",
                 "listOfUnits": [
                   {
@@ -2834,6 +2913,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{hr \\cdot ml}",
                 "listOfUnits": [
                   {
@@ -2870,6 +2950,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{min}",
                 "listOfUnits": [
                   {
@@ -2900,6 +2981,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{min \\cdot kg}",
                 "listOfUnits": [
                   {
@@ -2936,6 +3018,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{mmol}{min \\cdot l}",
                 "listOfUnits": [
                   {
@@ -2972,6 +3055,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{µl}{g}",
                 "listOfUnits": [
                   {
@@ -3002,6 +3086,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{µl}{min \\cdot mg}",
                 "listOfUnits": [
                   {
@@ -3038,6 +3123,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{1}{hr}",
                 "listOfUnits": [
                   {
@@ -3062,6 +3148,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{1}{kg}",
                 "listOfUnits": [
                   {
@@ -3086,6 +3173,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{1}{min}",
                 "listOfUnits": [
                   {
@@ -3110,6 +3198,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "s",
                 "listOfUnits": [
                   {
@@ -3134,6 +3223,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{s}{hr}",
                 "listOfUnits": [
                   {
@@ -3164,6 +3254,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "\\frac{s}{min}",
                 "listOfUnits": [
                   {
@@ -3501,7 +3592,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.011 [s]"
       }
     }
   }

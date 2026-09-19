@@ -1,0 +1,685 @@
+{
+  "uid": "a58a672bb0234f95ba3a5a24211a5b4a",
+  "manifest": {
+    "entries": [
+      {
+        "location": ".",
+        "format": "http://identifiers.org/combine.specifications/omex",
+        "master": false
+      },
+      {
+        "location": "./manifest.xml",
+        "format": "http://identifiers.org/combine.specifications/omex-manifest",
+        "master": false
+      },
+      {
+        "location": "./list_of.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml",
+        "master": true
+      }
+    ]
+  },
+  "reports": {
+    "./list_of.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": null,
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "keyValuePairs": [],
+          "lists": [],
+          "level": 3,
+          "version": 2,
+          "packages": [
+            {
+              "prefix": "comp",
+              "version": 1
+            }
+          ],
+          "annotationXml": null
+        },
+        "models": [
+          {
+            "pk": "list_of/Model:list_of",
+            "sbmlType": "Model",
+            "id": "list_of",
+            "metaId": "meta_list_of",
+            "name": "ListOf containers with attributes of their own",
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Every <code>ListOf</code> container of SBML derives from <code>SBase</code>: a list may carry a metaid, an SBO term, notes and an annotation of its own, and from Level 3 Version 2 on an id and a name. This model states them on several of its lists, and explains a list which is empty.</p>\n  </body>\n</notes>",
+            "cvterms": [],
+            "history": null,
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "lists": [
+              {
+                "pk": "list_of/ListOf:meta_units",
+                "sbmlType": "ListOf",
+                "id": null,
+                "metaId": "meta_units",
+                "name": "the units of the model",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<listOfUnitDefinitions metaid=\"meta_units\" name=\"the units of the model\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "element": "listOfUnitDefinitions",
+                "size": 1
+              },
+              {
+                "pk": "list_of/ListOf:metabolites",
+                "sbmlType": "ListOf",
+                "id": "metabolites",
+                "metaId": "meta_species",
+                "name": "the metabolites of the pathway",
+                "sbo": "SBO:0000247",
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>The species of this list are the two metabolites of the pathway, measured in <a href=\"https://doi.org/10.1000/example\">the study</a> the model is built on.</p>\n  </body>\n</notes>",
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000247"
+                    ],
+                    "nested": []
+                  },
+                  {
+                    "qualifier": "BQB_IS_PART_OF",
+                    "resources": [
+                      "https://identifiers.org/GO:0006096"
+                    ],
+                    "nested": []
+                  }
+                ],
+                "history": null,
+                "xml": "<listOfSpecies metaid=\"meta_species\" sboTerm=\"SBO:0000247\" id=\"metabolites\" name=\"the metabolites of the pathway\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>The species of this list are the two metabolites of the pathway, measured in <a href=\"https://doi.org/10.1000/example\">the study</a> the model is built on.</p>\n    </body>\n  </notes>\n  <annotation>\n    <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n      <rdf:Description rdf:about=\"#meta_species\">\n        <bqbiol:isPartOf>\n          <rdf:Bag>\n            <rdf:li rdf:resource=\"https://identifiers.org/GO:0006096\"/>\n          </rdf:Bag>\n        </bqbiol:isPartOf>\n      </rdf:Description>\n    </rdf:RDF>\n  </annotation>\n</listOfSpecies>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "element": "listOfSpecies",
+                "size": 2
+              },
+              {
+                "pk": "list_of/ListOf:meta_rules",
+                "sbmlType": "ListOf",
+                "id": null,
+                "metaId": "meta_rules",
+                "name": null,
+                "sbo": null,
+                "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>This model has no rules: the list is empty on purpose, which Level 3 Version 2 allows, so that the note can say so.</p>\n  </body>\n</notes>",
+                "cvterms": [],
+                "history": null,
+                "xml": "<listOfRules metaid=\"meta_rules\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>This model has no rules: the list is empty on purpose, which Level 3 Version 2 allows, so that the note can say so.</p>\n    </body>\n  </notes>\n</listOfRules>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "element": "listOfRules",
+                "size": 0
+              }
+            ],
+            "kind": "model",
+            "annotationXml": null,
+            "substanceUnits": null,
+            "substanceUnitsLatex": null,
+            "timeUnits": null,
+            "timeUnitsLatex": null,
+            "volumeUnits": null,
+            "volumeUnitsLatex": null,
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": null,
+            "extentUnitsLatex": null,
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [
+              {
+                "pk": "list_of/UnitDefinition:per_second",
+                "sbmlType": "UnitDefinition",
+                "id": "per_second",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<unitDefinition id=\"per_second\">\n  <listOfUnits metaid=\"meta_per_second_units\">\n    <notes>\n      <body xmlns=\"http://www.w3.org/1999/xhtml\">\n        <p>A single unit, the second, with the exponent -1.</p>\n      </body>\n    </notes>\n    <unit kind=\"second\" exponent=\"-1\" scale=\"0\" multiplier=\"1\"/>\n  </listOfUnits>\n</unitDefinition>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [
+                  {
+                    "pk": "list_of/ListOf:meta_per_second_units",
+                    "sbmlType": "ListOf",
+                    "id": null,
+                    "metaId": "meta_per_second_units",
+                    "name": null,
+                    "sbo": null,
+                    "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>A single unit, the second, with the exponent -1.</p>\n  </body>\n</notes>",
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<listOfUnits metaid=\"meta_per_second_units\">\n  <notes>\n    <body xmlns=\"http://www.w3.org/1999/xhtml\">\n      <p>A single unit, the second, with the exponent -1.</p>\n    </body>\n  </notes>\n</listOfUnits>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "element": "listOfUnits",
+                    "size": 1
+                  }
+                ],
+                "unitsLatex": "\\frac{1}{s}",
+                "listOfUnits": [
+                  {
+                    "kind": "second",
+                    "exponent": -1,
+                    "scale": 0,
+                    "multiplier": 1
+                  }
+                ]
+              }
+            ],
+            "listOfCompartments": [
+              {
+                "pk": "list_of/Compartment:cell",
+                "sbmlType": "Compartment",
+                "id": "cell",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"cell\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": null,
+                "unitsLatex": null,
+                "derivedUnits": "-"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "list_of/Species:S1",
+                "sbmlType": "Species",
+                "id": "S1",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"S1\" compartment=\"cell\" initialConcentration=\"10\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 10,
+                "substanceUnits": null,
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": null,
+                "derivedUnits": "-",
+                "conversionFactor": null,
+                "fbc": null
+              },
+              {
+                "pk": "list_of/Species:S2",
+                "sbmlType": "Species",
+                "id": "S2",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"S2\" compartment=\"cell\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 0,
+                "substanceUnits": null,
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": null,
+                "derivedUnits": "-",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [
+              {
+                "pk": "list_of/Parameter:k1",
+                "sbmlType": "Parameter",
+                "id": "k1",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"k1\" value=\"0.1\" units=\"per_second\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "value": 0.1,
+                "constant": true,
+                "units": "per_second",
+                "unitsLatex": "\\frac{1}{s}",
+                "derivedUnits": "\\frac{1}{s}"
+              }
+            ],
+            "listOfInitialAssignments": [],
+            "listOfRules": [],
+            "listOfConstraints": [],
+            "listOfReactions": [
+              {
+                "pk": "list_of/Reaction:J0",
+                "sbmlType": "Reaction",
+                "id": "J0",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<reaction id=\"J0\" reversible=\"false\">\n  <listOfReactants metaid=\"meta_J0_reactants\" name=\"what J0 consumes\">\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> cell </ci>\n        <ci> k1 </ci>\n        <ci> S1 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [
+                  {
+                    "pk": "list_of/ListOf:meta_J0_reactants",
+                    "sbmlType": "ListOf",
+                    "id": null,
+                    "metaId": "meta_J0_reactants",
+                    "name": "what J0 consumes",
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<listOfReactants metaid=\"meta_J0_reactants\" name=\"what J0 consumes\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "element": "listOfReactants",
+                    "size": 1
+                  }
+                ],
+                "reversible": false,
+                "fast": null,
+                "compartment": null,
+                "listOfReactants": [
+                  {
+                    "pk": "list_of/SpeciesReference:J0.reactant.S1",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "species": "S1",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [
+                  {
+                    "pk": "list_of/SpeciesReference:J0.product.S2",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "species": "S2",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfModifiers": [],
+                "kineticLaw": {
+                  "pk": "list_of/KineticLaw:J0.kineticLaw",
+                  "sbmlType": "KineticLaw",
+                  "id": null,
+                  "metaId": null,
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> cell </ci>\n      <ci> k1 </ci>\n      <ci> S1 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "keyValuePairs": [],
+                  "lists": [],
+                  "math": {
+                    "latex": " \\mathit{cell}\\cdot \\mathit{k1}\\cdot \\mathit{S1}",
+                    "formula": "cell * k1 * S1"
+                  },
+                  "derivedUnits": "\\frac{1}{s}",
+                  "listOfLocalParameters": []
+                },
+                "equation": "S1 ➞ S2",
+                "fbc": null
+              }
+            ],
+            "listOfEvents": [],
+            "listOfSubmodels": [],
+            "listOfPorts": [
+              {
+                "pk": "list_of/Port:metabolites_port",
+                "sbmlType": "Port",
+                "id": "metabolites_port",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<comp:port comp:metaIdRef=\"meta_species\" comp:id=\"metabolites_port\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "portRef": null,
+                "idRef": null,
+                "unitRef": null,
+                "metaIdRef": "meta_species",
+                "sbaseRef": null
+              }
+            ],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
+          }
+        ],
+        "externalModelDefinitions": [],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "list_of/Model:list_of": {
+              "pk": "list_of/Model:list_of",
+              "sbmlType": "Model",
+              "id": "list_of",
+              "name": "ListOf containers with attributes of their own",
+              "model": null
+            },
+            "list_of/ListOf:meta_units": {
+              "pk": "list_of/ListOf:meta_units",
+              "sbmlType": "ListOf",
+              "id": null,
+              "name": "the units of the model",
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/ListOf:metabolites": {
+              "pk": "list_of/ListOf:metabolites",
+              "sbmlType": "ListOf",
+              "id": "metabolites",
+              "name": "the metabolites of the pathway",
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/ListOf:meta_rules": {
+              "pk": "list_of/ListOf:meta_rules",
+              "sbmlType": "ListOf",
+              "id": null,
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/UnitDefinition:per_second": {
+              "pk": "list_of/UnitDefinition:per_second",
+              "sbmlType": "UnitDefinition",
+              "id": "per_second",
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/ListOf:meta_per_second_units": {
+              "pk": "list_of/ListOf:meta_per_second_units",
+              "sbmlType": "ListOf",
+              "id": null,
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/Compartment:cell": {
+              "pk": "list_of/Compartment:cell",
+              "sbmlType": "Compartment",
+              "id": "cell",
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/Species:S1": {
+              "pk": "list_of/Species:S1",
+              "sbmlType": "Species",
+              "id": "S1",
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/Species:S2": {
+              "pk": "list_of/Species:S2",
+              "sbmlType": "Species",
+              "id": "S2",
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/Parameter:k1": {
+              "pk": "list_of/Parameter:k1",
+              "sbmlType": "Parameter",
+              "id": "k1",
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/Reaction:J0": {
+              "pk": "list_of/Reaction:J0",
+              "sbmlType": "Reaction",
+              "id": "J0",
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/ListOf:meta_J0_reactants": {
+              "pk": "list_of/ListOf:meta_J0_reactants",
+              "sbmlType": "ListOf",
+              "id": null,
+              "name": "what J0 consumes",
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/SpeciesReference:J0.reactant.S1": {
+              "pk": "list_of/SpeciesReference:J0.reactant.S1",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/SpeciesReference:J0.product.S2": {
+              "pk": "list_of/SpeciesReference:J0.product.S2",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/KineticLaw:J0.kineticLaw": {
+              "pk": "list_of/KineticLaw:J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "list_of/Model:list_of"
+            },
+            "list_of/Port:metabolites_port": {
+              "pk": "list_of/Port:metabolites_port",
+              "sbmlType": "Port",
+              "id": "metabolites_port",
+              "name": null,
+              "model": "list_of/Model:list_of"
+            }
+          },
+          "edges": [
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "list_of/Model:list_of",
+              "kind": "model",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Model:list_of",
+              "target": "list_of/ListOf:meta_units",
+              "kind": "listOf",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Model:list_of",
+              "target": "list_of/ListOf:metabolites",
+              "kind": "listOf",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Model:list_of",
+              "target": "list_of/ListOf:meta_rules",
+              "kind": "listOf",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/UnitDefinition:per_second",
+              "target": "list_of/ListOf:meta_per_second_units",
+              "kind": "listOf",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Reaction:J0",
+              "target": "list_of/ListOf:meta_J0_reactants",
+              "kind": "listOf",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Species:S1",
+              "target": "list_of/Compartment:cell",
+              "kind": "compartment",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Species:S2",
+              "target": "list_of/Compartment:cell",
+              "kind": "compartment",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Parameter:k1",
+              "target": "list_of/UnitDefinition:per_second",
+              "kind": "units",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Reaction:J0",
+              "target": "list_of/SpeciesReference:J0.reactant.S1",
+              "kind": "reactant",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/SpeciesReference:J0.reactant.S1",
+              "target": "list_of/Species:S1",
+              "kind": "reactant",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Reaction:J0",
+              "target": "list_of/SpeciesReference:J0.product.S2",
+              "kind": "product",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/SpeciesReference:J0.product.S2",
+              "target": "list_of/Species:S2",
+              "kind": "product",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Reaction:J0",
+              "target": "list_of/KineticLaw:J0.kineticLaw",
+              "kind": "kineticLaw",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/KineticLaw:J0.kineticLaw",
+              "target": "list_of/Species:S1",
+              "kind": "math",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/KineticLaw:J0.kineticLaw",
+              "target": "list_of/Compartment:cell",
+              "kind": "math",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/KineticLaw:J0.kineticLaw",
+              "target": "list_of/Parameter:k1",
+              "kind": "math",
+              "targetEntry": null
+            },
+            {
+              "source": "list_of/Port:metabolites_port",
+              "target": "list_of/ListOf:metabolites",
+              "kind": "port",
+              "targetEntry": null
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.018 [s]"
+      }
+    }
+  }
+}
