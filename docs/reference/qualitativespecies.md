@@ -36,6 +36,7 @@ The report shows the flag as a mark in the column "constant" and in the inspecto
 - `3020304` (error): The attribute 'qual:constant' in &lt;qualitativeSpecies&gt; must be of the data type Boolean.
 - `3020310` (error): A &lt;qualitativeSpecies&gt; with attribute 'qual:constant' set to 'true' can only be referred to by an &lt;input&gt;. It cannot be the subject of an &lt;output&gt; in a &lt;transition&gt;.
 - `3020509` (error): An &lt;input&gt; that refers to a &lt;qualitativeSpecies&gt; that has a 'qual:constant' attribute set to 'true' cannot have the attribute 'qual:transitionEffect' set to 'consumption'.
+- `3020608` (error): The &lt;qualitativeSpecies&gt; referred to by the attribute 'qual:qualitativeSpecies' in an &lt;output&gt; object must have the value of its 'qual:constant' attribute set to 'false'.
 
 <span id="initiallevel"></span>**initialLevel**
 

@@ -32,7 +32,7 @@ The number in the [units](uncertspan.md#units) of the span. A file writes either
 
 The report shows it as the left side of the interval.
 
-Default: the lower end is the element var lower names, or the interval is open at the bottom.
+Default: the lower end is the element var lower names, or it is undefined.
 
 - `1520505` (error): The attribute 'distrib:valueLower' on an &lt;uncertSpan&gt; must have a value of data type 'double'.
 
@@ -42,7 +42,7 @@ The number in the [units](uncertspan.md#units) of the span. A file writes either
 
 The report shows it as the right side of the interval.
 
-Default: the upper end is the element var upper names, or the interval is open at the top.
+Default: the upper end is the element var upper names, or it is undefined.
 
 - `1520507` (error): The attribute 'distrib:valueUpper' on an &lt;uncertSpan&gt; must have a value of data type 'double'.
 
@@ -52,7 +52,7 @@ Where the lower end of the interval is a quantity of the model and not a fixed n
 
 The report links the element, and the inspector of that element shows the span under "referenced by".
 
-Default: the lower end is the number in value lower, or the interval is open at the bottom.
+Default: the lower end is the number in value lower, or it is undefined.
 
 - `1520504` (error): The value of the attribute 'distrib:varLower' of an &lt;uncertSpan&gt; object must be the identifier of an existing object derived from the 'SBase' class and defined in the enclosing &lt;model&gt; object.
 
@@ -62,7 +62,7 @@ Where the upper end of the interval is a quantity of the model and not a fixed n
 
 The report links the element, and the inspector of that element shows the span under "referenced by".
 
-Default: the upper end is the number in value upper, or the interval is open at the top.
+Default: the upper end is the number in value upper, or it is undefined.
 
 - `1520506` (error): The value of the attribute 'distrib:varUpper' of an &lt;uncertSpan&gt; object must be the identifier of an existing object derived from the 'SBase' class and defined in the enclosing &lt;model&gt; object.
 
@@ -80,7 +80,7 @@ The units of the two ends of the span, which have to be the same, given as a [un
 
 The report links the unit definition where the units name one.
 
-Default: an end which names an element carries the units of that element.
+Default: an end which names an element may take the units of that element.
 
 - `1520307` (error): The value of the attribute 'distrib:units' on an &lt;uncertParameter&gt; must have a taken from the following: the identifier of a &lt;unitDefinition&gt; object in the enclosing &lt;model,&gt; or one of the base units in SBML.
 
@@ -129,7 +129,7 @@ The report shows every one of them indented below the span it defines.
 
 | field | type | meaning |
 | --- | --- | --- |
-| [interval](#interval) | - | the two ends of the span as the interval they stand for |
+| [interval](#interval) | [`string`](datatypes.md#string) | the two ends of the span as the interval they stand for |
 
 <span id="interval"></span>**interval**
 
@@ -141,7 +141,6 @@ The row is the reading of [value lower](uncertspan.md#valuelower), [value upper]
 
 - `1520501` (error): An &lt;uncertSpan&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an &lt;uncertSpan&gt;.
 - `1520502` (error): An &lt;uncertSpan&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an &lt;uncertSpan&gt;.
-- `1520503` (error): An &lt;uncertSpan&gt; object may have the optional attributes 'distrib:varLower', 'distrib:valueLower', 'distrib:varUpper' and 'distrib:valueUpper'. No other attributes from the SBML Level 3 Distributions namespaces are permitted on an &lt;uncertSpan&gt; object.
 
 ## Related elements
 

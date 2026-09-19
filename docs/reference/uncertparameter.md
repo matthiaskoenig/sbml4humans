@@ -36,7 +36,7 @@ A measure which is a single number carries it here, in the [units](uncertparamet
 
 The report shows the value in the column "value" of the parameters of an uncertainty and in the inspector of the parameter.
 
-Default: a measure which is a single number names the element which holds it in var.
+Default: a measure which is a single number may name the element which holds it in var instead.
 
 - `1520305` (error): The attribute 'distrib:value' on an &lt;uncertParameter&gt; must have a value of data type 'double'.
 
@@ -46,7 +46,7 @@ Where the measure is not a fixed number but a quantity of the model, the paramet
 
 The report links the element the var names, and the inspector of that element shows the measure under "referenced by".
 
-Default: a measure which is a single number writes that number in value.
+Default: a measure which is a single number may write that number in value instead.
 
 - `1520306` (error): The value of the attribute 'distrib:var' of an &lt;uncertParameter&gt; object must be the identifier of an existing object derived from the 'SBase' class and defined in the enclosing &lt;model&gt; object.
 
@@ -64,7 +64,7 @@ A parameter of the type `distribution` may name the distribution it stands for, 
 
 The report shows the last segment of the url as a link in the table of the parameters of an uncertainty.
 
-Default: the type of the measure says completely what it means.
+Default: the type alone says what the measure is, unless it is a distribution, which its math defines.
 
 - `1520309` (error): The attribute 'distrib:definitionURL' on an &lt;uncertParameter&gt; must have a value of data type 'string'.
 
@@ -89,7 +89,6 @@ The report shows every one of them indented below the parameter it defines, in t
 
 - `1520301` (error): An &lt;uncertParameter&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an &lt;uncertParameter&gt;.
 - `1520302` (error): An &lt;uncertParameter&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an &lt;uncertParameter&gt;.
-- `1520303` (error): An &lt;uncertParameter&gt; object may have the optional attributes 'distrib:value', 'distrib:var', 'distrib:units', 'distrib:type' and 'distrib:definitionURL'. No other attributes from the SBML Level 3 Distributions namespaces are permitted on an &lt;uncertParameter&gt; object.
 - `1520304` (error): An &lt;uncertParameter&gt; object may contain one and only one instance of the &lt;listOfUncertParameters&gt; element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an &lt;uncertParameter&gt; object.
 
 ## Related elements

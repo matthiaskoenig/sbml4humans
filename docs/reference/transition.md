@@ -25,7 +25,7 @@ Every [input](input.md) names one [qualitative species](qualitativespecies.md) w
 
 The report shows the species of the inputs with their sign in the column "inputs" and the table of the inputs in the inspector.
 
-Default: the function terms of the transition read no species.
+Default: the transition names no species which regulate it.
 
 - `3020405` (error): A &lt;transition&gt; must have one and only one instance of the &lt;listOfFunctionTerms&gt; objects and may have at most one instance of the &lt;listOfInputs&gt; and &lt;listOfOutputs&gt; objects from the Qualitative Models namespace.
 - `3020406` (error): The &lt;listOfInputs&gt; and &lt;listOfOutputs&gt; subobjects on a &lt;transition&gt; object are optional, but if present, these container object must not be empty.

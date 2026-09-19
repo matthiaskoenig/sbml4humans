@@ -1753,7 +1753,7 @@ The report shows every parameter of an uncertainty as a row of the table in the 
 label = "UncertParameter"
 package = "distrib"
 spec = { doc = "distrib", section = "3.11" }
-rules = [1520301, 1520302, 1520303, 1520304]
+rules = [1520301, 1520302, 1520304]
 summary = "one statistical measure of an uncertainty"
 description = """
 An uncert parameter is one measure of the [uncertainty](uncertainty.md) it belongs to: its mean, its standard deviation, the size of the sample it was measured on, or the distribution the value was drawn from. Its [type](uncertparameter.md#type) says which of the sixteen measures of the package it is, and the number behind that measure is either its [value](uncertparameter.md#value) or the element its [var](uncertparameter.md#var) names.
@@ -1784,7 +1784,7 @@ package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.11.2" }
 required = false
-default = "a measure which is a single number names the element which holds it in var"
+default = "a measure which is a single number may name the element which holds it in var instead"
 rules = [1520305]
 summary = "the number of the measure"
 description = """
@@ -1799,7 +1799,7 @@ package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.11.2" }
 required = false
-default = "a measure which is a single number writes that number in value"
+default = "a measure which is a single number may write that number in value instead"
 rules = [1520306]
 summary = "the element of the model which holds the number of the measure"
 description = """
@@ -1828,7 +1828,7 @@ package = "distrib"
 type = "anyURI"
 spec = { doc = "distrib", section = "3.11.4" }
 required = false
-default = "the type of the measure says completely what it means"
+default = "the type alone says what the measure is, unless it is a distribution, which its math defines"
 rules = [1520309]
 summary = "what a distribution or an external parameter means"
 description = """
@@ -1869,7 +1869,7 @@ The report shows every one of them indented below the parameter it defines, in t
 label = "UncertSpan"
 package = "distrib"
 spec = { doc = "distrib", section = "3.12" }
-rules = [1520501, 1520502, 1520503]
+rules = [1520501, 1520502]
 summary = "a measure of an uncertainty which is an interval"
 description = """
 Four of the sixteen measures of the package are an interval and not a number: the [range](uncertspan.md#type) of a measurement, its 95 percent confidence interval, its 95 percent credible interval and its interquartile range. A span is the [uncert parameter](uncertparameter.md) of such a measure, with the two ends of the interval in the place of the single value of a parameter.
@@ -1883,6 +1883,7 @@ related = ["UncertParameter", "Uncertainty", "distrib"]
 [types.UncertSpan.attributes.interval]
 label = "interval"
 package = "report"
+type = "string"
 summary = "the two ends of the span as the interval they stand for"
 description = """
 The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.
@@ -1896,7 +1897,7 @@ package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.12" }
 required = false
-default = "the lower end is the element var lower names, or the interval is open at the bottom"
+default = "the lower end is the element var lower names, or it is undefined"
 rules = [1520505]
 summary = "the lower end of the interval as a number"
 description = """
@@ -1911,7 +1912,7 @@ package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.12" }
 required = false
-default = "the upper end is the element var upper names, or the interval is open at the top"
+default = "the upper end is the element var upper names, or it is undefined"
 rules = [1520507]
 summary = "the upper end of the interval as a number"
 description = """
@@ -1926,7 +1927,7 @@ package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.12" }
 required = false
-default = "the lower end is the number in value lower, or the interval is open at the bottom"
+default = "the lower end is the number in value lower, or it is undefined"
 rules = [1520504]
 summary = "the element of the model which holds the lower end"
 description = """
@@ -1941,7 +1942,7 @@ package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.12" }
 required = false
-default = "the upper end is the number in value upper, or the interval is open at the top"
+default = "the upper end is the number in value upper, or it is undefined"
 rules = [1520506]
 summary = "the element of the model which holds the upper end"
 description = """
@@ -1970,7 +1971,7 @@ package = "distrib"
 type = "UnitSIdRef"
 spec = { doc = "distrib", section = "3.12" }
 required = false
-default = "an end which names an element carries the units of that element"
+default = "an end which names an element may take the units of that element"
 rules = [1520307]
 summary = "the units both ends of the interval are given in"
 description = """
@@ -2085,7 +2086,7 @@ package = "qual"
 type = "boolean"
 spec = { doc = "qual", section = "3.5" }
 required = true
-rules = [3020304, 3020310, 3020509]
+rules = [3020304, 3020310, 3020509, 3020608]
 summary = "whether no transition may change the level of the species"
 description = """
 A constant qualitative species is an input of the system: transitions read it and none of them is allowed to change it, so its level is a condition of the experiment and not a result of the model. The attribute is required.
@@ -2146,7 +2147,7 @@ package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.6.1" }
 required = false
-default = "the function terms of the transition read no species"
+default = "the transition names no species which regulate it"
 rules = [3020405, 3020406, 3020407]
 summary = "the qualitative species the transition reads"
 description = """

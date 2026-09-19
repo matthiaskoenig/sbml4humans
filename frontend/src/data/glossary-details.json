@@ -6288,6 +6288,12 @@
           "severity": "error",
           "message": "An <input> that refers to a <qualitativeSpecies> that has a 'qual:constant' attribute set to 'true' cannot have the attribute 'qual:transitionEffect' set to 'consumption'.",
           "section": "L3V1 Qual V1 Section 3.6.1"
+        },
+        {
+          "id": 3020608,
+          "severity": "error",
+          "message": "The <qualitativeSpecies> referred to by the attribute 'qual:qualitativeSpecies' in an <output> object must have the value of its 'qual:constant' attribute set to 'false'.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
         }
       ]
     },
@@ -9572,7 +9578,7 @@
         "section": "3.6.1"
       },
       "required": false,
-      "default": "the function terms of the transition read no species",
+      "default": "the transition names no species which regulate it",
       "rules": [
         {
           "id": 3020405,
@@ -9785,12 +9791,6 @@
           "section": "L3V1 Distrib V1 Section"
         },
         {
-          "id": 1520303,
-          "severity": "error",
-          "message": "An <uncertParameter> object may have the optional attributes 'distrib:value', 'distrib:var', 'distrib:units', 'distrib:type' and 'distrib:definitionURL'. No other attributes from the SBML Level 3 Distributions namespaces are permitted on an <uncertParameter> object.",
-          "section": "L3V1 Distrib V1 Section"
-        },
-        {
           "id": 1520304,
           "severity": "error",
           "message": "An <uncertParameter> object may contain one and only one instance of the <listOfUncertParameters> element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an <uncertParameter> object.",
@@ -9831,7 +9831,7 @@
         "section": "3.11.4"
       },
       "required": false,
-      "default": "the type of the measure says completely what it means",
+      "default": "the type alone says what the measure is, unless it is a distribution, which its math defines",
       "rules": [
         {
           "id": 1520309,
@@ -9966,7 +9966,7 @@
         "section": "3.11.2"
       },
       "required": false,
-      "default": "a measure which is a single number names the element which holds it in var",
+      "default": "a measure which is a single number may name the element which holds it in var instead",
       "rules": [
         {
           "id": 1520305,
@@ -9994,7 +9994,7 @@
         "section": "3.11.2"
       },
       "required": false,
-      "default": "a measure which is a single number writes that number in value",
+      "default": "a measure which is a single number may write that number in value instead",
       "rules": [
         {
           "id": 1520306,
@@ -10027,12 +10027,6 @@
           "id": 1520502,
           "severity": "error",
           "message": "An <uncertSpan> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <uncertSpan>.",
-          "section": "L3V1 Distrib V1 Section"
-        },
-        {
-          "id": 1520503,
-          "severity": "error",
-          "message": "An <uncertSpan> object may have the optional attributes 'distrib:varLower', 'distrib:valueLower', 'distrib:varUpper' and 'distrib:valueUpper'. No other attributes from the SBML Level 3 Distributions namespaces are permitted on an <uncertSpan> object.",
           "section": "L3V1 Distrib V1 Section"
         }
       ],
@@ -10091,7 +10085,11 @@
       "description": "The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.\n\nThe row is the reading of [value lower](glossary:types/UncertSpan/valueLower), [value upper](glossary:types/UncertSpan/valueUpper), [var lower](glossary:types/UncertSpan/varLower) and [var upper](glossary:types/UncertSpan/varUpper), each of which the file writes on its own.",
       "package": "report",
       "docs": "reference/uncertspan/#interval",
-      "owner": "types/UncertSpan"
+      "owner": "types/UncertSpan",
+      "type": {
+        "label": "string",
+        "key": "datatypes/string"
+      }
     },
     "types/UncertSpan/math": {
       "kind": "attribute",
@@ -10190,7 +10188,7 @@
         "section": "3.12"
       },
       "required": false,
-      "default": "an end which names an element carries the units of that element",
+      "default": "an end which names an element may take the units of that element",
       "rules": [
         {
           "id": 1520307,
@@ -10246,7 +10244,7 @@
         "section": "3.12"
       },
       "required": false,
-      "default": "the lower end is the element var lower names, or the interval is open at the bottom",
+      "default": "the lower end is the element var lower names, or it is undefined",
       "rules": [
         {
           "id": 1520505,
@@ -10274,7 +10272,7 @@
         "section": "3.12"
       },
       "required": false,
-      "default": "the upper end is the element var upper names, or the interval is open at the top",
+      "default": "the upper end is the element var upper names, or it is undefined",
       "rules": [
         {
           "id": 1520507,
@@ -10330,7 +10328,7 @@
         "section": "3.12"
       },
       "required": false,
-      "default": "the lower end is the number in value lower, or the interval is open at the bottom",
+      "default": "the lower end is the number in value lower, or it is undefined",
       "rules": [
         {
           "id": 1520504,
@@ -10358,7 +10356,7 @@
         "section": "3.12"
       },
       "required": false,
-      "default": "the upper end is the number in value upper, or the interval is open at the top",
+      "default": "the upper end is the number in value upper, or it is undefined",
       "rules": [
         {
           "id": 1520506,
