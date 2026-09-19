@@ -904,6 +904,26 @@ def test_a_link_to_a_page_of_the_site_becomes_absolute(tmp_path: Path) -> None:
     assert f"[the home page]({DOCS_URL})" in entry["description"]
 
 
+def test_a_bare_index_link_becomes_the_directory_url_of_the_reference(
+    tmp_path: Path,
+) -> None:
+    """The index of the reference explains nothing of its own, so it is always absolute.
+
+    `index.md` is not `../index.md`: it is the bare index page of the
+    generated reference itself, which `validate_links` accepts both without
+    and with an anchor of its own content (here the "Core" section every
+    package index carries).
+    """
+    glossary = _species_with(
+        tmp_path,
+        "see the [reference](index.md) and its [core section](index.md#core)",
+    )
+    glossary.validate_links()
+    entry = render_details(glossary)["entries"]["types/Species"]
+    assert f"[reference]({DOCS_URL}reference/)" in entry["description"]
+    assert f"[core section]({DOCS_URL}reference/#core)" in entry["description"]
+
+
 def test_an_external_link_stays(tmp_path: Path) -> None:
     """A link to an external site is left untouched."""
     glossary = _species_with(tmp_path, "see [SBML](https://sbml.org/) for background")

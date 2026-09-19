@@ -1449,12 +1449,16 @@ def _site_url(page: str, fragment: str) -> str:
 
     Args:
         page: the page relative to the root of the documentation, with its
-            `.md` suffix; `index.md` is the root of the site.
+            `.md` suffix; `index.md` is the root of the site, and `index.md`
+            of a directory (`reference/index.md`) is that directory itself,
+            never a trailing `.../index/` segment of its own.
         fragment: the anchor of the page, or an empty string for the page
             itself.
     """
     slug = page.removesuffix(".md")
-    base = DOCS_URL if slug in ("", "index") else f"{DOCS_URL}{slug}/"
+    if slug == "index" or slug.endswith("/index"):
+        slug = slug.removesuffix("index").rstrip("/")
+    base = DOCS_URL if not slug else f"{DOCS_URL}{slug}/"
     return f"{base}#{fragment}" if fragment else base
 
 
@@ -1493,11 +1497,12 @@ def rewrite_links(
         if page.startswith("../"):
             return f"[{text}]({_site_url(page[3:], fragment)})"
         page = page or home
-        key = keys.get(page, {}).get(fragment)
-        if key is not None:
-            return f"[{text}](glossary:{key})"
-        if fragment:
-            raise GlossaryError(f"the link [{text}]({target}) does not resolve")
+        if page != INDEX_PAGE:
+            key = keys.get(page, {}).get(fragment)
+            if key is not None:
+                return f"[{text}](glossary:{key})"
+            if fragment:
+                raise GlossaryError(f"the link [{text}]({target}) does not resolve")
         return f"[{text}]({_site_url(f'{REFERENCE_DIR.name}/{page}', fragment)})"
 
     return _LINK.sub(replace, description)
