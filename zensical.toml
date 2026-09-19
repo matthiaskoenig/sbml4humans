@@ -87,6 +87,7 @@ nav = [
     { "Report concepts" = "reference/concepts.md" },
   ] },
   { "References" = "references.md" },
+  { "Release notes" = "release-notes.md" },
   { "Development" = "development.md" },
 ]
 
