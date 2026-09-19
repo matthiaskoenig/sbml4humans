@@ -101,9 +101,19 @@ function sortable(column: ColumnDef): boolean {
     column.kind !== "math" &&
     column.kind !== "units" &&
     column.kind !== "assignments" &&
+    column.kind !== "terms" &&
+    column.kind !== "elements" &&
     column.kind !== "geneAssociation" &&
     column.kind !== "influence"
   );
+}
+
+/** The tooltip of a header: the summary of the attribute of the column, and for a column which
+ * counts the elements of a list, that it counts them, because the summary describes the list. */
+function headerTooltip(column: ColumnDef): string | undefined {
+  const summary = attributeEntry(props.type, column.field)?.summary;
+  if (!summary || column.kind !== "count") return summary;
+  return `the number of the ${column.header}: ${summary}`;
 }
 
 function toggleSort(column: ColumnDef): void {
@@ -220,7 +230,7 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
           >
             <button
               v-if="sortable(column)"
-              v-tooltip.bottom="attributeEntry(type, column.field)?.summary"
+              v-tooltip.bottom="headerTooltip(column)"
               type="button"
               class="flex w-full cursor-pointer items-center gap-1 rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-link"
               data-testid="sort-button"
@@ -233,12 +243,9 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
                 :stroke-width="SORT_ICON_STROKE"
               />
             </button>
-            <span
-              v-else
-              v-tooltip.bottom="attributeEntry(type, column.field)?.summary"
-              class="flex items-center gap-1"
-              >{{ column.header }}</span
-            >
+            <span v-else v-tooltip.bottom="headerTooltip(column)" class="flex items-center gap-1">{{
+              column.header
+            }}</span>
           </th>
         </tr>
       </thead>

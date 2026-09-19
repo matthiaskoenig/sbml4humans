@@ -29,7 +29,7 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
       kind: "link",
       link: "extentConversionFactor",
     },
-    { field: "listOfDeletions.length", header: "deletions", kind: "count" },
+    { field: "listOfDeletions", header: "deletions", kind: "elements" },
   ],
   Port: [
     ...ID_COLUMNS,
@@ -51,7 +51,8 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
   Objective: [
     ...ID_COLUMNS,
     { field: "type", header: "type", kind: "text" },
-    { field: "listOfFluxObjectives.length", header: "flux objectives", kind: "count" },
+    // the terms of the objective as the sum they are, which is what the objective optimises
+    { field: "listOfFluxObjectives", header: "flux objectives", kind: "terms" },
   ],
   FluxBound: [
     ...ID_COLUMNS,
@@ -63,11 +64,8 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnDef[]>
     ...ID_COLUMNS,
     { field: "lowerBound", header: "lower bound", kind: "link", link: "lowerBound" },
     { field: "upperBound", header: "upper bound", kind: "link", link: "upperBound" },
-    {
-      field: "listOfUserDefinedConstraintComponents.length",
-      header: "components",
-      kind: "count",
-    },
+    // the weighted sum the two bounds keep between them
+    { field: "listOfUserDefinedConstraintComponents", header: "components", kind: "terms" },
   ],
   QualitativeSpecies: [
     ...ID_COLUMNS,

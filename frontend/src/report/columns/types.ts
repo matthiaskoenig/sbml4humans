@@ -10,6 +10,8 @@ export type CellKind =
   | "link"
   | "count"
   | "assignments"
+  | "terms"
+  | "elements"
   | "geneAssociation"
   | "influence"
   | "xhtml";

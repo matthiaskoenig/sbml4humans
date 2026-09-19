@@ -83,6 +83,25 @@ describe("ElementTable", () => {
     );
   });
 
+  it("says in the tooltip of a column of counts that it counts", async () => {
+    // the header of the function terms of a transition explains the terms, the cell counts them
+    const qual = new ReportIndex(loadReport("qual_example"));
+    await router.push("/examples/qual_example");
+    wrapper = mount(ElementTable, {
+      props: { type: "Transition", rows: qual.byType("qual_example").get("Transition")! },
+      attachTo: document.body,
+      global: {
+        plugins: [router],
+        directives: { tooltip: vTooltip },
+        provide: { [ReportIndexKey as symbol]: ref(qual) },
+      },
+    });
+    await header(wrapper, "function terms").get("[data-testid=sort-button]").trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      `the number of the function terms: ${attributeEntry("Transition", "listOfFunctionTerms")!.summary}`,
+    );
+  });
+
   it("sorts by a click on the header and toggles the order", async () => {
     await router.push("/examples/BIOMD0000000012");
     const table = mountTable(species);
@@ -397,6 +416,63 @@ describe("ElementCell", () => {
     expect(name.classes()).toContain("italic");
     // an id the file writes is shown as it is
     expect(mountCell(species[0]!, idColumn).find("[data-testid=report-name]").exists()).toBe(false);
+  });
+
+  it("renders the flux objectives of an objective as the sum of its terms", () => {
+    // the column counted the terms, under a header which promises them
+    const bounds = new ReportIndex(loadReport("fbc_bounds_v1"));
+    const constraints = new ReportIndex(loadReport("fbc_constraints_v3"));
+    const column = columnsOf("Objective").find((c) => c.header === "flux objectives")!;
+    const objective = (reportIndex: ReportIndex, id: string) =>
+      reportIndex.mainModel!.listOfObjectives!.find((o) => o.id === id)!;
+
+    const linear = mountCell(objective(bounds, "glc_min"), column, bounds);
+    expect(linear.get("[data-testid=terms]").text()).toBe("-1 × EX_glc");
+    expect(linear.get("[data-testid=element-link]").attributes("data-pk")).toBe(
+      "fbc_bounds_v1/Reaction:EX_glc",
+    );
+    // a mixed quadratic term multiplies two fluxes (fbc Version 3 §3.7)
+    const mixed = mountCell(objective(constraints, "uptake_min"), column, constraints);
+    expect(mixed.get("[data-testid=terms]").text()).toBe("4 × v1 × v2");
+    expect(mixed.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"))).toEqual(
+      ["fbc_constraints_v3/Reaction:v1", "fbc_constraints_v3/Reaction:v2"],
+    );
+    const fbcExample = new ReportIndex(loadReport("fbc_example"));
+    const sum = mountCell(objective(fbcExample, "biomass_max"), column, fbcExample);
+    expect(sum.get("[data-testid=terms]").text()).toBe("1 × v1 + 1 × v2 + 1 × v3 + 1 × v4");
+    // a list of terms has no order to sort the rows by
+    expect(column.kind).not.toBe("count");
+  });
+
+  it("renders the components of a user defined constraint as the sum they weigh", () => {
+    const constraints = new ReportIndex(loadReport("fbc_constraints_v3"));
+    const column = columnsOf("UserDefinedConstraint").find((c) => c.header === "components")!;
+    const constraint = (id: string) =>
+      constraints.mainModel!.listOfUserDefinedConstraints!.find((c) => c.id === id)!;
+    const ratio = mountCell(constraint("ratio"), column, constraints);
+    expect(ratio.get("[data-testid=terms]").text()).toBe("c_two × v1 + c_one × v2");
+    expect(ratio.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"))).toEqual(
+      [
+        "fbc_constraints_v3/Parameter:c_two",
+        "fbc_constraints_v3/Reaction:v1",
+        "fbc_constraints_v3/Parameter:c_one",
+        "fbc_constraints_v3/Reaction:v2",
+      ],
+    );
+    expect(mountCell(constraint("budget"), column, constraints).text()).toBe(
+      "c_one × v2 × maintenance",
+    );
+  });
+
+  it("links every deletion of a submodel", () => {
+    const deletion = new ReportIndex(loadReport("comp_deletion"));
+    const column = columnsOf("Submodel").find((c) => c.header === "deletions")!;
+    const submodel = (id: string) => deletion.mainModel!.listOfSubmodels!.find((s) => s.id === id)!;
+    const links = mountCell(submodel("cell1"), column, deletion).findAll(
+      "[data-testid=element-link]",
+    );
+    expect(links.map((l) => l.text())).toEqual(["del_k", "del_sink"]);
+    expect(mountCell(submodel("cell2"), column, deletion).text()).toBe("-");
   });
 
   it("renders every assignment of an event as its variable and its formula", () => {

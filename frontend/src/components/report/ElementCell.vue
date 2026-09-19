@@ -3,16 +3,20 @@ import { computed } from "vue";
 
 import type {
   EventAssignment,
+  FluxObjective,
   GeneProductAssociation,
   Input,
   Output,
+  SBase,
   SbmlElement,
   Math,
+  UserDefinedConstraintComponent,
 } from "@/api/types";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
 import QualSignMark from "@/components/misc/QualSignMark.vue";
+import TermsView from "@/components/misc/TermsView.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
@@ -80,6 +84,19 @@ function variablePk(assignment: EventAssignment): string | null {
   return index.value?.resolve(assignment.pk, "variable", assignment.variable) ?? null;
 }
 
+/** Kind "terms": the flux objectives of an objective or the components of a user defined
+ * constraint. Kind "elements": the elements a list of the row holds, the deletions of a
+ * submodel. Both are an empty list where the row has none, which the cell shows as the
+ * placeholder. */
+const terms = computed<(FluxObjective | UserDefinedConstraintComponent)[]>(() =>
+  Array.isArray(value.value)
+    ? (value.value as (FluxObjective | UserDefinedConstraintComponent)[])
+    : [],
+);
+const elements = computed<SBase[]>(() =>
+  Array.isArray(value.value) ? (value.value as SBase[]) : [],
+);
+
 /** Kind "influence": the inputs or the outputs of a transition, an empty list where the
  * transition has none, which the cell shows as the placeholder. */
 const influences = computed<(Input | Output)[]>(() =>
@@ -136,6 +153,14 @@ function signOf(influence: Input | Output): string | null | undefined {
       ><span v-if="i > 0">, </span
       ><ElementLink :pk="variablePk(assignment)" :label="assignment.variable" /><span> = </span
       ><MathView :math="assignment.math"
+    /></template>
+  </span>
+  <TermsView v-else-if="column.kind === 'terms'" :terms="terms" />
+  <!-- the elements of a list of the row as links, separated by a comma and a space -->
+  <ValueText v-else-if="column.kind === 'elements' && !elements.length" :value="null" />
+  <span v-else-if="column.kind === 'elements'" data-testid="elements">
+    <template v-for="(element, i) in elements" :key="element.pk"
+      ><span v-if="i > 0">, </span><ElementLink :pk="element.pk"
     /></template>
   </span>
   <!-- the species of the inputs or of the outputs of a transition, on the one line of the row:
