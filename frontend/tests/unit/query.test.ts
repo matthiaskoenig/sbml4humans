@@ -4,7 +4,14 @@ import { parseQuery, toQuery } from "@/report/query";
 
 describe("view state query", () => {
   it("parses an empty query into the defaults", () => {
-    expect(parseQuery({})).toEqual({ entry: null, model: null, pk: null, q: "", types: null });
+    expect(parseQuery({})).toEqual({
+      entry: null,
+      model: null,
+      pk: null,
+      q: "",
+      types: null,
+      help: null,
+    });
   });
 
   it("parses every parameter", () => {
@@ -15,6 +22,7 @@ describe("view state query", () => {
         pk: "m1/Species:s1",
         q: "laci",
         types: "Species,Reaction",
+        help: "types/Species",
       }),
     ).toEqual({
       entry: "./model.xml",
@@ -22,6 +30,7 @@ describe("view state query", () => {
       pk: "m1/Species:s1",
       q: "laci",
       types: ["Species", "Reaction"],
+      help: "types/Species",
     });
   });
 
@@ -33,14 +42,30 @@ describe("view state query", () => {
     expect(parseQuery({ types: "Nope" }).types).toEqual([]);
   });
 
+  it("treats an empty help like a missing one", () => {
+    expect(parseQuery({ help: "" }).help).toBeNull();
+  });
+
   it("writes only the non default values", () => {
-    expect(toQuery({ entry: null, model: null, pk: null, q: "", types: null })).toEqual({});
-    expect(toQuery({ entry: "./m.xml", model: "m", pk: "p", q: "x", types: ["Species"] })).toEqual({
+    expect(toQuery({ entry: null, model: null, pk: null, q: "", types: null, help: null })).toEqual(
+      {},
+    );
+    expect(
+      toQuery({
+        entry: "./m.xml",
+        model: "m",
+        pk: "p",
+        q: "x",
+        types: ["Species"],
+        help: "types/Species",
+      }),
+    ).toEqual({
       entry: "./m.xml",
       model: "m",
       pk: "p",
       q: "x",
       types: "Species",
+      help: "types/Species",
     });
   });
 
@@ -51,6 +76,7 @@ describe("view state query", () => {
       pk: "m/Species:s 1",
       q: "a&b",
       types: ["Species" as const],
+      help: "types/Species",
     };
     expect(parseQuery(toQuery(state) as Record<string, string>)).toEqual(state);
   });

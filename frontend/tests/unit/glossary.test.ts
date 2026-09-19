@@ -1,6 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join, relative } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -8,43 +7,22 @@ import type { SbmlType } from "@/api/types";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import { COLUMNS } from "@/report/columns";
 import { EDGE_KINDS } from "@/data/edgeKinds";
-import { DOCUMENT_TYPES, ELEMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import {
   DOCS_URL,
   attributeEntry,
+  attributeKey,
   attributeLabel,
+  conceptEntry,
+  conceptKey,
+  entryOfKey,
   linkEntry,
+  linkKey,
   referenceUrl,
   typeEntry,
+  typeKey,
 } from "@/report/glossary";
 
-const TYPES = [...DOCUMENT_TYPES, ...ELEMENT_TYPES, ...NESTED_TYPES];
-
-// tests/unit -> src/components/inspector/attributes, the directory of the 25 components this
-// test reads as plain text, since importing and mounting all of them just to look at their
-// props would be slower and would not see an unused `field` the way a source read does.
-const ATTRIBUTES_DIR = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-  "src",
-  "components",
-  "inspector",
-  "attributes",
-);
-
-/** The static `field="..."` values a component's source passes to `AttributeRow`. A
- * `:field="..."` bound to a variable, not a plain string, is not a field name and is excluded,
- * so a component looping over a local array (see `modelUnitFields`) needs its own extractor. */
-function staticFields(source: string): { field: string; type: SbmlType | null }[] {
-  return [...source.matchAll(/<AttributeRow\b[^>]*>/g)].flatMap((tag) => {
-    const field = tag[0].match(/(?<!:)\bfield="([^"]+)"/)?.[1];
-    // a row names the type of its field where it is not the type of the component: a submodel
-    // shows the model its external model definition resolves to
-    const type = tag[0].match(/(?<!:)\btype="([^"]+)"/)?.[1] as SbmlType | undefined;
-    return field ? [{ field, type: type ?? null }] : [];
-  });
-}
+import { ATTRIBUTES_DIR, TYPES, modelUnitFields, staticFields } from "./glossaryFields";
 
 /** The rows of a component's source which state both a static `field="..."` and a static
  * `label="..."`: the glossary names the field of such a row, and the label overrides that name. */
@@ -69,14 +47,6 @@ const REPORT_COLUMNS: Readonly<Record<string, string>> = {
   unitsLatex: "formula",
   equation: "equation",
 };
-
-/** `ModelAttributes.vue` binds `:field="idKey"` in a `v-for` over its `UNITS` table instead of
- * writing six field props out by hand; this reads the second column of that table ("substance",
- * "substanceUnits", "substanceUnitsLatex" -> "substanceUnits"), the one `staticFields` cannot see. */
-function modelUnitFields(source: string): string[] {
-  const table = source.match(/const UNITS = \[([\s\S]*?)\] as const;/)?.[1] ?? "";
-  return [...table.matchAll(/\[\s*"[^"]*",\s*"([^"]+)"/g)].map((match) => match[1]!);
-}
 
 describe("glossary", () => {
   it("has an entry for every element type", () => {
@@ -202,5 +172,42 @@ describe("glossary", () => {
     expect(linkEntry("compartment")?.summary).toContain("qualitative species");
     expect(linkEntry("lowerBound")?.summary).toContain("user defined constraint");
     expect(linkEntry("lowerBound")?.summary).not.toContain("flux");
+  });
+
+  it("keys a type, a link kind and a concept it has an entry for", () => {
+    expect(typeKey("Species")).toBe("types/Species");
+    expect(linkKey("compartment")).toBe("links/compartment");
+    expect(conceptKey("derivedUnits")).toBe(
+      conceptEntry("derivedUnits") && "concepts/derivedUnits",
+    );
+  });
+
+  it("keys an attribute through the same resolution attributeEntry uses", () => {
+    // Species has its own "compartment" attribute
+    expect(attributeKey("Species", "compartment")).toBe("types/Species/compartment");
+    // Species has no metaId of its own, so the key names the SBase entry it falls back to
+    expect(attributeKey("Species", "metaId")).toBe("types/SBase/metaId");
+    // Submodel has no "listOfDeletions.length" of its own, so the key names the first segment
+    expect(attributeKey("Submodel", "listOfDeletions.length")).toBe(
+      "types/Submodel/listOfDeletions",
+    );
+    // Reaction has its own "kineticLaw.derivedUnits" entry, not the first segment fallback
+    expect(attributeKey("Reaction", "kineticLaw.derivedUnits")).toBe(
+      "types/Reaction/kineticLaw.derivedUnits",
+    );
+    expect(attributeKey("Species", "nope")).toBeUndefined();
+  });
+
+  it("answers entryOfKey with the label and summary a key's own lookup would give", () => {
+    expect(entryOfKey("types/Species")).toEqual(typeEntry("Species"));
+    expect(entryOfKey("types/Species/compartment")).toEqual(
+      attributeEntry("Species", "compartment"),
+    );
+    expect(entryOfKey("types/Species/fbc.charge")).toEqual(attributeEntry("Species", "fbc.charge"));
+    expect(entryOfKey("links/compartment")).toEqual(linkEntry("compartment"));
+    expect(entryOfKey("concepts/derivedUnits")).toEqual(conceptEntry("derivedUnits"));
+    // the eager glossary has no data types, the dialog falls back to the last segment of the key
+    expect(entryOfKey("datatypes/SId")).toBeUndefined();
+    expect(entryOfKey("nope")).toBeUndefined();
   });
 });

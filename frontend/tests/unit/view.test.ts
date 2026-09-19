@@ -73,4 +73,60 @@ describe("useReportView", () => {
     });
     wrapper.unmount();
   });
+
+  it("opens and closes help by pushing it into and out of the query", async () => {
+    const wrapper = mount(Probe, { global: { plugins: [router] } });
+    const push = vi.spyOn(router, "push");
+
+    await view.openHelp("types/Species");
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(router.currentRoute.value.query.help).toBe("types/Species");
+
+    await view.closeHelp();
+    expect(push).toHaveBeenCalledTimes(2);
+    expect(router.currentRoute.value.query.help).toBeUndefined();
+    wrapper.unmount();
+  });
+
+  it("builds the href of a help link, keeping the rest of the route including the source of a local report", async () => {
+    await router.push({
+      path: "/report",
+      query: { local: "token1", pk: "m/Species:a", help: "types/Species" },
+    });
+    const wrapper = mount(Probe, { global: { plugins: [router] } });
+    expect(view.helpRoute("types/Reaction")).toMatchObject({
+      query: { local: "token1", pk: "m/Species:a", help: "types/Reaction" },
+    });
+    wrapper.unmount();
+  });
+
+  it("keeps help open across a search, a selection and a type filter", async () => {
+    await router.push({ path: "/report", query: { help: "types/Species" } });
+    const wrapper = mount(Probe, { global: { plugins: [router] } });
+
+    await view.setSearch("laci");
+    expect(router.currentRoute.value.query.help).toBe("types/Species");
+    await view.select("m/Species:s1");
+    expect(router.currentRoute.value.query.help).toBe("types/Species");
+    await view.setTypes(["Species"]);
+    expect(router.currentRoute.value.query.help).toBe("types/Species");
+    wrapper.unmount();
+  });
+
+  it("closes help when the entry or the model changes, and across a routeFor to another entry", async () => {
+    await router.push({ path: "/report", query: { help: "types/Species" } });
+    const wrapper = mount(Probe, { global: { plugins: [router] } });
+
+    await view.setEntry("./other.xml");
+    expect(router.currentRoute.value.query.help).toBeUndefined();
+
+    await router.push({ path: "/report", query: { help: "types/Species" } });
+    await view.setModel("m2");
+    expect(router.currentRoute.value.query.help).toBeUndefined();
+
+    await router.push({ path: "/report", query: { help: "types/Species" } });
+    const target = view.routeFor("m/Species:a", { entry: "./other.xml", model: "other" });
+    expect((target as { query: Record<string, unknown> }).query.help).toBeUndefined();
+    wrapper.unmount();
+  });
 });
