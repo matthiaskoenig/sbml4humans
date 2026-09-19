@@ -17,10 +17,10 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 | [listOfProducts](#listofproducts) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [listOfModifiers](#listofmodifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [kineticLaw](#kineticlaw) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:upperFluxBound](#fbc-upperfluxbound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:geneProductAssociation](#fbc-geneproductassociation) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://doi.org/10.1515/jib-2026-0006) |
+| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://doi.org/10.1515/jib-2026-0006) |
+| [fbc:upperFluxBound](#fbc-upperfluxbound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://doi.org/10.1515/jib-2026-0006) |
+| [fbc:geneProductAssociation](#fbc-geneproductassociation) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc v3 3.9](https://doi.org/10.1515/jib-2026-0006) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

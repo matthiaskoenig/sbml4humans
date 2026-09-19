@@ -12,9 +12,9 @@ The report shows the user defined constraints of a model in a section of their o
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [lowerBound](#lowerbound) | `SIdRef` | the parameter which holds the smallest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [upperBound](#upperbound) | `SIdRef` | the parameter which holds the largest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [listOfUserDefinedConstraintComponents](#listofuserdefinedconstraintcomponents) | `list` | the weighted variables the constraint is the sum of | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [lowerBound](#lowerbound) | `SIdRef` | the parameter which holds the smallest value the constraint may take | [fbc v3 3.14](https://doi.org/10.1515/jib-2026-0006) |
+| [upperBound](#upperbound) | `SIdRef` | the parameter which holds the largest value the constraint may take | [fbc v3 3.14](https://doi.org/10.1515/jib-2026-0006) |
+| [listOfUserDefinedConstraintComponents](#listofuserdefinedconstraintcomponents) | `list` | the weighted variables the constraint is the sum of | [fbc v3 3.15](https://doi.org/10.1515/jib-2026-0006) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -39,4 +39,4 @@ A constraint which is defined has at least one [component](userdefinedconstraint
 
 ## Specification
 
-[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.14 (Olivier and Bergmann, COMBINE specification).
+[SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://doi.org/10.1515/jib-2026-0006), Section 3.14 (Olivier and Bergmann, COMBINE specification).
