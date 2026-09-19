@@ -43,14 +43,21 @@ function onClick(event: MouseEvent): void {
 <style scoped>
 @reference "@/assets/main.css";
 
+/* the prose of a description is set in the size of the application, which is `text-sm`
+ * everywhere, with the leading a paragraph of several lines needs to be read */
+.help-markdown {
+  @apply text-sm leading-relaxed;
+}
 .help-markdown :deep(p) {
-  @apply mb-3 leading-relaxed;
+  @apply mb-3;
 }
 .help-markdown :deep(p:last-child) {
   @apply mb-0;
 }
+/* the monospace of the application has a larger x-height than its sans serif, so a little less
+ * than the size around it keeps the letters of a name the same height as the words next to it */
 .help-markdown :deep(code) {
-  @apply rounded bg-gray-100 px-1 font-mono text-[0.85em];
+  @apply rounded bg-gray-100 px-1 font-mono text-[0.9em];
 }
 .help-markdown :deep(a) {
   @apply text-link hover:underline;

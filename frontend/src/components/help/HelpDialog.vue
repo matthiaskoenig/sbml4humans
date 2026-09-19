@@ -135,12 +135,16 @@ const hasTechnical = computed(() => {
   if (!current) return false;
   return (
     current.type !== undefined ||
-    (current.values?.length ?? 0) > 0 ||
     current.required !== undefined ||
     current.default !== undefined ||
     current.spec !== undefined
   );
 });
+
+/** The literals of an enumeration, which stand at the end of the overview and not in the
+ * technical list: the description of such a data type ends by announcing them, "the two values
+ * are:", and the list belongs to that sentence, as it does on the reference page. */
+const values = computed(() => entry.value?.values ?? []);
 
 /** The attributes of a type and, behind them, the common attributes of `SBase`, which every
  * element carries and no type repeats. The entry of `SBase` names and explains them itself. */
@@ -207,10 +211,21 @@ function onClose(): void {
   if (help.value) void view.closeHelp();
 }
 
+/** Where the button went down, which a click alone does not say: a click is delivered to the
+ * common ancestor of the element the button went down on and the one it came up on, and for a
+ * selection of the text of the dialog which ends on the backdrop that ancestor is the dialog
+ * itself. Without this, selecting the summary and letting go outside the box would close the
+ * dialog and lose the selection. */
+let pressedOn: EventTarget | null = null;
+function onMouseDown(event: MouseEvent): void {
+  pressedOn = event.target;
+}
+
 /** A click which lands on the dialog element itself landed on the backdrop: everything inside it
- * is in the box the header, the body and the footer fill. */
+ * is in the box the header, the body and the footer fill. Only a press which began there too
+ * closes the dialog. */
 function onClick(event: MouseEvent): void {
-  if (event.target === dialog.value) void view.closeHelp();
+  if (event.target === dialog.value && pressedOn === dialog.value) void view.closeHelp();
 }
 </script>
 
@@ -221,6 +236,7 @@ function onClick(event: MouseEvent): void {
     :aria-labelledby="TITLE_ID"
     data-testid="help-dialog"
     @close="onClose"
+    @mousedown="onMouseDown"
     @click="onClick"
   >
     <div v-if="help" class="flex max-h-[80vh] flex-col">
@@ -247,7 +263,7 @@ function onClick(event: MouseEvent): void {
             :id="TITLE_ID"
             ref="title"
             tabindex="-1"
-            class="flex min-w-0 items-center gap-1.5 font-semibold focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-link"
+            class="flex min-w-0 items-center gap-1.5 font-semibold focus:outline-none"
             data-testid="help-title"
           >
             <TypeMark v-if="!owner && mark" :type="mark" size="md" />
@@ -286,7 +302,12 @@ function onClick(event: MouseEvent): void {
         class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3"
         data-testid="help-body"
       >
-        <p v-if="summary" class="text-sm text-gray-700" data-testid="help-summary">{{ summary }}</p>
+        <!-- the lead of the dialog, the one sentence a tooltip of the report shows as well: the
+        size of everything else of the dialog and a little more weight, so that it leads the
+        explanation below it instead of reading as its caption -->
+        <p v-if="summary" class="text-sm font-medium text-gray-900" data-testid="help-summary">
+          {{ summary }}
+        </p>
         <!-- the details are one dynamic import away, which is quick and is not nothing -->
         <div v-if="loading" class="mt-4 animate-pulse space-y-2" data-testid="help-skeleton">
           <div class="h-3 w-1/3 rounded bg-gray-100"></div>
@@ -298,11 +319,30 @@ function onClick(event: MouseEvent): void {
         </p>
         <template v-else>
           <HelpSection
-            v-if="entry.description"
+            v-if="entry.description || values.length"
             :title="HEADINGS.overview"
             data-testid="help-overview"
           >
-            <HelpMarkdown :markdown="entry.description" @navigate="view.openHelp" />
+            <HelpMarkdown
+              v-if="entry.description"
+              :markdown="entry.description"
+              @navigate="view.openHelp"
+            />
+            <!-- the literals of an enumeration belong to the sentence which announces them, the
+            last one of the description above -->
+            <div
+              v-if="values.length"
+              class="flex flex-wrap gap-1"
+              :class="{ 'mt-3': entry.description }"
+              data-testid="help-values"
+            >
+              <code
+                v-for="value in values"
+                :key="value"
+                class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-800"
+                >{{ value }}</code
+              >
+            </div>
           </HelpSection>
           <HelpSection v-if="hasTechnical" :title="HEADINGS.technical" data-testid="help-technical">
             <HelpTechnical :entry="entry" />

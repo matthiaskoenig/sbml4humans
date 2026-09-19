@@ -239,11 +239,17 @@ describe("HelpDialog", () => {
     expect(text("help-required-badge")).toBe("optional");
     const technical = text("help-technical");
     expect(technical).toContain("double");
-    expect(technical).toContain("optional");
     expect(technical).toContain(
       "the quantity is unknown or set by an initial assignment or a rule",
     );
     expect(technical).toContain("core 4.6.4");
+    // the row is headed "required", so it answers that question instead of repeating the badge:
+    // "required: optional" reads as a contradiction
+    const answers = dialog()
+      .findAll("[data-testid=help-technical] dd")
+      .map((value) => value.text());
+    expect(answers).toContain("no");
+    expect(technical).not.toContain("optional");
     // an attribute is no type: it lists no attributes of its own
     expect(has("help-attributes")).toBe(false);
   });
@@ -258,10 +264,17 @@ describe("HelpDialog", () => {
     expect(has("help-related")).toBe(false);
   });
 
-  it("lists the values of an enumeration", async () => {
+  // the description of such a data type ends by announcing its values, so they belong to it and
+  // not under a heading of their own further down
+  it("lists the values of an enumeration at the end of the overview, not in the technical list", async () => {
     await mountDialog({ help: "datatypes/double" });
-    expect(text("help-technical")).toContain("1.0");
-    expect(text("help-technical")).toContain("2.0");
+    expect(text("help-values")).toContain("1.0");
+    expect(text("help-values")).toContain("2.0");
+    expect(
+      dialog().get("[data-testid=help-overview]").find("[data-testid=help-values]").exists(),
+    ).toBe(true);
+    // the values were the whole technical list of this entry, and it is no part of it any more
+    expect(has("help-technical")).toBe(false);
   });
 
   it("opens the attribute of a row of the attributes table", async () => {
@@ -271,7 +284,7 @@ describe("HelpDialog", () => {
     expect(row.text()).toContain("double");
     expect(row.text()).toContain("optional");
     expect(row.text()).toContain(ENTRIES["types/Species/initialAmount"]!.summary);
-    await click("[data-testid=help-attribute-row]");
+    await click("[data-testid=help-attribute-row] a");
     expect(router.currentRoute.value.query.help).toBe("types/Species/initialAmount");
   });
 
@@ -281,8 +294,26 @@ describe("HelpDialog", () => {
     const last = rows[rows.length - 1]!;
     expect(last.text()).toContain("SBase");
     expect(last.text()).toContain(ENTRIES["types/SBase"]!.summary);
-    await click("[data-testid=help-attributes] a:last-child");
+    await click("[data-testid=help-attribute-row]:last-child a");
     expect(router.currentRoute.value.query.help).toBe("types/SBase");
+  });
+
+  it("shows no attributes at all for a type which lists none", async () => {
+    await mountDialog({ help: "types/Compartment" });
+    expect(has("help-attributes")).toBe(false);
+    expect(has("help-attribute-row")).toBe(false);
+  });
+
+  // the attributes are a table on the reference page and are one here, so that a screen reader
+  // names the column of every cell instead of reading a row as a run of loose words
+  it("names the columns of the attributes table for a screen reader", async () => {
+    await mountDialog({ help: "types/Species" });
+    const headers = dialog()
+      .findAll("[data-testid=help-attributes] th")
+      .map((header) => header.text());
+    expect(headers).toEqual(["attribute", "type", "required", "meaning"]);
+    expect(dialog().get("[data-testid=help-attributes] thead").classes()).toContain("sr-only");
+    expect(dialog().get("[data-testid=help-attribute-row]").element.tagName).toBe("TR");
   });
 
   it("shows no row of common attributes on the entry of SBase itself", async () => {
@@ -387,9 +418,21 @@ describe("HelpDialog", () => {
 
   it("closes on a click on the backdrop, which is the dialog element itself", async () => {
     await mountDialog({ help: "types/Species" });
-    await dialog().get("[data-testid=help-dialog]").trigger("click");
+    const backdrop = dialog().get("[data-testid=help-dialog]");
+    await backdrop.trigger("mousedown");
+    await backdrop.trigger("click");
     await settle();
     expect(router.currentRoute.value.query.help).toBeUndefined();
+  });
+
+  // a selection of the text of the dialog which ends outside of it is delivered as a click on
+  // their common ancestor, the dialog element, and must not be taken for a click on the backdrop
+  it("stays open when a press inside it comes up on the backdrop", async () => {
+    await mountDialog({ help: "types/Species" });
+    await dialog().get("[data-testid=help-summary]").trigger("mousedown");
+    await dialog().get("[data-testid=help-dialog]").trigger("click");
+    await settle();
+    expect(router.currentRoute.value.query.help).toBe("types/Species");
   });
 
   it("keeps the dialog open on a click inside it", async () => {

@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import HelpLink from "@/components/help/HelpLink.vue";
-import { requiredWord } from "@/components/help/words";
+import { requiredAnswer } from "@/components/help/words";
 import type { HelpEntry } from "@/report/glossaryDetails";
 
-/** The low level of one entry: the data type of its value, the literals of an enumeration,
- * whether the specification requires it, what holds when it is absent and the section of the
- * specification which defines it. The dialog renders this part only for an entry which has at
- * least one of them, and every row is left out where the entry says nothing. */
+/** The low level of one entry: the data type of its value, whether the specification requires it,
+ * what holds when it is absent and the section of the specification which defines it. The dialog
+ * renders this part only for an entry which has at least one of them, and every row is left out
+ * where the entry says nothing. The values of an enumeration are no row of this list: the
+ * description of a data type ends by announcing them, and they stand where it does. */
 defineProps<{ entry: HelpEntry }>();
 
 /** The labels of the rows, chrome of the dialog: the words the reference pages of the
- * documentation use for the same thing. */
+ * documentation use for the same thing, in the lower case of every label of the report. */
 const LABELS = {
   type: "data type",
-  values: "values",
   required: "required",
-  default: "Default",
-  spec: "Specification",
+  default: "default",
+  spec: "specification",
 } as const;
 </script>
 
@@ -34,20 +34,9 @@ const LABELS = {
         >
       </dd>
     </template>
-    <template v-if="entry.values?.length">
-      <dt class="text-gray-500">{{ LABELS.values }}</dt>
-      <dd class="flex flex-wrap gap-1">
-        <code
-          v-for="value in entry.values"
-          :key="value"
-          class="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-800"
-          >{{ value }}</code
-        >
-      </dd>
-    </template>
     <template v-if="entry.required !== undefined">
       <dt class="text-gray-500">{{ LABELS.required }}</dt>
-      <dd>{{ requiredWord(entry.required) }}</dd>
+      <dd>{{ requiredAnswer(entry.required) }}</dd>
     </template>
     <template v-if="entry.default">
       <dt class="text-gray-500">{{ LABELS.default }}</dt>
