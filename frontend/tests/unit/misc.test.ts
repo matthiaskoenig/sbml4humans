@@ -39,14 +39,17 @@ describe("misc components", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders booleans as marks", () => {
-    expect(
-      mount(BooleanMark, { props: { value: true } })
-        .find("svg")
-        .exists(),
-    ).toBe(true);
-    expect(mount(BooleanMark, { props: { value: false } }).text()).toBe("-");
-    expect(mount(BooleanMark, { props: { value: null } }).text()).toBe("-");
+  it("renders the three states of a boolean as three marks", () => {
+    // true, false and an attribute the file does not set are three different statements, and
+    // `false` is a value: it reads as a cross and not as the dash of an unset attribute
+    const mark = (value: boolean | null | undefined) => mount(BooleanMark, { props: { value } });
+    expect(mark(true).get("svg").attributes("aria-label")).toBe("true");
+    expect(mark(false).get("svg").attributes("aria-label")).toBe("false");
+    expect(mark(false).text()).not.toBe("-");
+    expect(mark(true).get("svg").html()).not.toBe(mark(false).get("svg").html());
+    expect(mark(null).find("svg").exists()).toBe(false);
+    expect(mark(null).text()).toBe("-");
+    expect(mark(undefined).text()).toBe("-");
   });
 
   it("renders the sign of an input as the glyph of an influence graph", () => {
