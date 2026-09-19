@@ -16,7 +16,7 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 <span id="geneproduct"></span>**geneProduct**
 
-The attribute is required and names a [gene product](geneproduct.md) of the same model. The report shows the label of that gene product, which is the identifier the reconstruction uses, and links the element behind it.
+The attribute is required and names a [gene product](geneproduct.md) of the same model. The report shows the identifier the reference writes and links the gene product behind it.
 
 - `2020904` (error): The attribute 'fbc:geneProduct' on a &lt;GeneProductRef&gt; must be of the data type 'SIdRef'.
 - `2020908` (error): The attribute 'fbc:geneProduct' on a &lt;GeneProductRef&gt; if set, must refer to 'id' of a &lt;GeneProduct&gt; in the &lt;Model&gt;.

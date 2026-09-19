@@ -21,7 +21,7 @@ The report shows these attributes for every element: the id and the name in the 
 | [comp:replacedBy](#comp-replacedby) | [`ReplacedBy`](replacedby.md) | optional | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [comp:listOfReplacedElements](#comp-listofreplacedelements) | [`list`](datatypes.md#list) | optional | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | [`list`](datatypes.md#list) | optional | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [distrib:listOfUncertainties](#distrib-listofuncertainties) | [`list`](datatypes.md#list) | - | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [distrib:listOfUncertainties](#distrib-listofuncertainties) | [`list`](datatypes.md#list) | optional | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
 
@@ -132,6 +132,9 @@ The report lists the pairs of an element in its inspector. libsbml does not read
 Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
 
 The report shows the uncertainties of an element in its inspector, each of them named with a link to it and with the table of the measures it collects, so that how well a value is known is read where the value is. Every [uncertainty](uncertainty.md) is an element of its own, which names the element it describes under "Referenced by", and the search finds an element by the names, the notes and the types of the measures of its uncertainties.
+
+- `1520201` (error): A 'SBase' object may contain one and only one instance of the &lt;listOfUncertainties&gt; element. No other elements from the SBML Level 3 Distributions namespaces are permitted on a 'SBase' object.
+- `1520202` (error): Apart from the general notes and annotations subobjects permitted on all SBML objects, a &lt;listOfUncertainties&gt; container object may only contain &lt;uncertainty&gt; objects.
 
 ## In the report
 

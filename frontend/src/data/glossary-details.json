@@ -314,6 +314,40 @@
         "datatypes/ModelFbc"
       ]
     },
+    "datatypes/UncertKind": {
+      "kind": "datatype",
+      "label": "UncertKind",
+      "summary": "which statistical measure an uncert parameter of an uncertainty is",
+      "description": "`UncertKind` is derived from [string](glossary:datatypes/string) and holds one of sixteen values, the [type](glossary:types/UncertParameter/type) of an [uncert parameter](glossary:types/UncertParameter). Ten of them are a single number, which the parameter writes in its [value](glossary:types/UncertParameter/value) or reads from the element its [var](glossary:types/UncertParameter/var) names: the mean, the median, the mode, the variance, the standard deviation, the standard error, the coefficient of variation, the skewness, the kurtosis and the size of the sample. Four of them are an interval and are written as an [uncert span](glossary:types/UncertSpan), with the two ends of the interval in the place of that single number: the range, the confidence interval, the credible interval and the interquartile range. The last two say where a number comes from rather than what it is: `distribution`, the distribution the value was drawn from, and `externalParameter`, a measure this specification does not define, the only value which may be written as either class and the only one which has to carry a [definition](glossary:types/UncertParameter/definitionUrl).\n\nWhich attributes and which children a measure may carry follows from its value, and the table of Section 3.11.1 of the specification states it per value: a single number carries units and a value or a var, an interval carries units and its two ends, a distribution carries a definition, math and parameters of its own, and an external parameter may carry all of them. The report shows the value in the first column of the measures of an [uncertainty](glossary:types/Uncertainty) and as the name of a measure which carries no identifier of its own. The sixteen values are:",
+      "package": "distrib",
+      "docs": "reference/datatypes/#uncertkind",
+      "spec": {
+        "label": "distrib 3.3.2",
+        "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
+        "section": "3.3.2"
+      },
+      "related": [
+        "datatypes/string"
+      ],
+      "values": [
+        "coefficientOfVariation",
+        "kurtosis",
+        "mean",
+        "median",
+        "mode",
+        "sampleSize",
+        "skewness",
+        "standardDeviation",
+        "standardError",
+        "variance",
+        "confidenceInterval",
+        "credibleInterval",
+        "interquartileRange",
+        "range",
+        "externalParameter",
+        "distribution"
+      ]
+    },
     "datatypes/UnitSIdRef": {
       "kind": "datatype",
       "label": "UnitSIdRef",
@@ -443,6 +477,29 @@
         "datatypes/integer"
       ]
     },
+    "datatypes/sign": {
+      "kind": "datatype",
+      "label": "sign",
+      "summary": "the direction of the influence an input carries within the system",
+      "description": "The [sign](glossary:types/Input/sign) of an [input](glossary:types/Input) says whether the contribution of the species it names is positive, negative, both or not known. It is the arrow and the bar of a regulatory network: an activation, an inhibition, an influence which is one or the other depending on the levels of the other regulators, and one the file does not decide. The package defines the type for visualisation: the mathematics of a [transition](glossary:types/Transition) is in its [function terms](glossary:types/FunctionTerm), and the sign has no impact on it.\n\nThe report shows the sign next to the species of the input, in the column of the inputs of a transition and in the table of the inputs in the inspector. The four values are:",
+      "package": "qual",
+      "docs": "reference/datatypes/#sign",
+      "spec": {
+        "label": "qual 3.2.1",
+        "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
+        "section": "3.2.1"
+      },
+      "related": [
+        "datatypes/transitionInputEffect",
+        "datatypes/transitionOutputEffect"
+      ],
+      "values": [
+        "positive",
+        "negative",
+        "dual",
+        "unknown"
+      ]
+    },
     "datatypes/string": {
       "kind": "datatype",
       "label": "string",
@@ -455,6 +512,48 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
         "section": "3.1.1"
       }
+    },
+    "datatypes/transitionInputEffect": {
+      "kind": "datatype",
+      "label": "transitionInputEffect",
+      "summary": "what a transition does to the level of a species it reads",
+      "description": "The [transition effect](glossary:types/Input/transitionEffect) of an [input](glossary:types/Input) tells a read from a consumption. With `none` the level of the species is not modified by the [transition](glossary:types/Transition), which is what a logical model writes and what a read arc of a Petri net is. With `consumption` the level is decreased by the [result level](glossary:types/FunctionTerm/resultLevel) of the term which applies, multiplied by the [threshold level](glossary:types/Input/thresholdLevel) of the input where it sets one, which is how a Petri net takes the tokens of the place before a transition away.\n\nA species which is [constant](glossary:types/QualitativeSpecies/constant) may only be read, so an input of such a species cannot be consumed. The report shows the effect in the table of the inputs in the inspector of the transition. The two values are:",
+      "package": "qual",
+      "docs": "reference/datatypes/#transitioninputeffect",
+      "spec": {
+        "label": "qual 3.2.2",
+        "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
+        "section": "3.2.2"
+      },
+      "related": [
+        "datatypes/transitionOutputEffect",
+        "datatypes/sign"
+      ],
+      "values": [
+        "none",
+        "consumption"
+      ]
+    },
+    "datatypes/transitionOutputEffect": {
+      "kind": "datatype",
+      "label": "transitionOutputEffect",
+      "summary": "whether a transition adds to the level of a species it changes or sets it",
+      "description": "The [transition effect](glossary:types/Output/transitionEffect) of an [output](glossary:types/Output) is the attribute which says in which of the two formalisms of the package a file is written. With `production` the level of the species is increased by the [result level](glossary:types/FunctionTerm/resultLevel) of the term which applies, multiplied by the [output level](glossary:types/Output/outputLevel) of the output, which is the weight of the arc of a Petri net; an output of this effect has to state its output level, because SBML Level 3 has no default values. With `assignmentLevel` the level of the species becomes that result level, which is how a logical model assigns the value of its rule, and the output level has no meaning.\n\nThe report shows the effect in the table of the outputs in the inspector of the transition. The two values are:",
+      "package": "qual",
+      "docs": "reference/datatypes/#transitionoutputeffect",
+      "spec": {
+        "label": "qual 3.2.3",
+        "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
+        "section": "3.2.3"
+      },
+      "related": [
+        "datatypes/transitionInputEffect",
+        "datatypes/sign"
+      ],
+      "values": [
+        "production",
+        "assignmentLevel"
+      ]
     },
     "links/activeObjective": {
       "kind": "link",
@@ -1484,6 +1583,26 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.4"
       },
+      "rules": [
+        {
+          "id": 3020701,
+          "severity": "error",
+          "message": "A <defaultTerm> object may have the optional 'metaid' and 'sboTerm' defined by SBML Level 3 Core. No other attributes from the SBML Level 3 Core namespace or the Qualitative Models namespace are permitted on a <defaultTerm> object.",
+          "section": "L3V1 Qual V1 Section 3.6.4"
+        },
+        {
+          "id": 3020702,
+          "severity": "error",
+          "message": "A <defaultTerm> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on a <defaultTerm>.",
+          "section": "L3V1 Qual V1 Section 3.6.4"
+        },
+        {
+          "id": 3020703,
+          "severity": "error",
+          "message": "A <defaultTerm> object must have the required attributes 'qual:resultLevel'. No other attributes from the SBML Level 3 Qualitative Models namespace are permitted on a <defaultTerm> object.",
+          "section": "L3V1 Qual V1 Section 3.6.4"
+        }
+      ],
       "attributes": [
         "types/DefaultTerm/resultLevel"
       ],
@@ -1509,7 +1628,22 @@
         "label": "qual 3.6.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.4"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020704,
+          "severity": "error",
+          "message": "The attribute 'qual:resultLevel' in <defaultTerm> must be of the data type 'integer'.",
+          "section": "L3V1 Qual V1 Section 3.6.4"
+        },
+        {
+          "id": 3020705,
+          "severity": "error",
+          "message": "The attribute 'qual:resultLevel' in <defaultTerm> must not be negative.",
+          "section": "L3V1 Qual V1 Section 3.6.4"
+        }
+      ]
     },
     "types/Delay": {
       "kind": "type",
@@ -2929,6 +3063,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.5"
       },
+      "rules": [
+        {
+          "id": 3020801,
+          "severity": "error",
+          "message": "A <functionTerm> object may have the optional 'metaid' and 'sboTerm' defined by SBML Level 3 Core. No other attributes from the SBML Level 3 Core namespace or the Qualitative Models namespace are permitted on a <functionTerm> object.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        },
+        {
+          "id": 3020802,
+          "severity": "error",
+          "message": "A <functionTerm> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on a <functionTerm>.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        },
+        {
+          "id": 3020803,
+          "severity": "error",
+          "message": "A <functionTerm> object must have the required attributes 'qual:resultLevel'. No other attributes from the SBML Level 3 Qualitative Models namespace are permitted on a <functionTerm> object.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        },
+        {
+          "id": 3020804,
+          "severity": "error",
+          "message": "A <functionTerm> object may contain exactly one MathML <math> element. No other elements from the SBML Level 3 Qualitative Models namespace are permitted on a <functionTerm> object.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        }
+      ],
       "attributes": [
         "types/FunctionTerm/resultLevel",
         "types/FunctionTerm/math"
@@ -2956,7 +3116,28 @@
         "label": "qual 3.6.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3010201,
+          "severity": "warning",
+          "message": "The MathML <math> element in a <functionTerm> object should evaluate to a value of type Boolean.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        },
+        {
+          "id": 3010202,
+          "severity": "warning",
+          "message": "The MathML <math> element in a <functionTerm> object should not use the <csymbol> elements 'time' and 'delay' as these explicitly introduce time into the model. As yet time is not considered within the Qualitative Models package specification.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        },
+        {
+          "id": 3020804,
+          "severity": "error",
+          "message": "A <functionTerm> object may contain exactly one MathML <math> element. No other elements from the SBML Level 3 Qualitative Models namespace are permitted on a <functionTerm> object.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        }
+      ]
     },
     "types/FunctionTerm/resultLevel": {
       "kind": "attribute",
@@ -2974,7 +3155,22 @@
         "label": "qual 3.6.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020805,
+          "severity": "error",
+          "message": "The attribute 'qual:resultLevel' in <functionTerm> must be of the data type 'integer'.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        },
+        {
+          "id": 3020806,
+          "severity": "error",
+          "message": "The attribute 'qual:resultLevel' in <functionTerm> must not be negative.",
+          "section": "L3V1 Qual V1 Section 3.6.5"
+        }
+      ]
     },
     "types/GeneProduct": {
       "kind": "type",
@@ -3212,7 +3408,7 @@
       "kind": "attribute",
       "label": "geneProduct",
       "summary": "the gene product this leaf of the association names",
-      "description": "The attribute is required and names a [gene product](glossary:types/GeneProduct) of the same model. The report shows the label of that gene product, which is the identifier the reconstruction uses, and links the element behind it.",
+      "description": "The attribute is required and names a [gene product](glossary:types/GeneProduct) of the same model. The report shows the identifier the reference writes and links the gene product behind it.",
       "package": "fbc",
       "docs": "reference/geneproductref/#geneproduct",
       "owner": "types/GeneProductRef",
@@ -3383,6 +3579,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.1"
       },
+      "rules": [
+        {
+          "id": 3010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> the values of the attributes 'id' and 'qual:id' on every instance of the following classes of objects must be unique across the set of all 'id' and 'qual:id' attribute values of all such objects in a model: the <model> itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <qualitativeSpecies>, <transition>, <input> and <output> objects defined by the Qualitative Models package.",
+          "section": "L3V1 Qual V1 Section 3.7"
+        },
+        {
+          "id": 3020501,
+          "severity": "error",
+          "message": "An <input> object may have the optional 'metaid' and 'sboTerm' defined by SBML Level 3 Core. No other attributes from the SBML Level 3 Core namespace or the Qualitative Models namespace are permitted on an <input> object.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        },
+        {
+          "id": 3020502,
+          "severity": "error",
+          "message": "An <input> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <input>.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        },
+        {
+          "id": 3020503,
+          "severity": "error",
+          "message": "An <input> object must have the required attributes 'qual:qualitativeSpecies' as well as 'qual:transitionEffect' and may have the optional attributes 'qual:id', 'qual:name', 'qual:sign' and 'qual:thresholdLevel'. No other attributes from the SBML Level 3 Qualitative Models namespace are permitted on an <input> object.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        }
+      ],
       "attributes": [
         "types/Input/qualitativeSpecies",
         "types/Input/thresholdLevel",
@@ -3412,7 +3634,16 @@
         "label": "qual 3.6.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020508,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:qualitativeSpecies' in an <input> object must be the identifier of an existing <qualitativeSpecies> object defined in the enclosing <model> object.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        }
+      ]
     },
     "types/Input/sign": {
       "kind": "attribute",
@@ -3423,13 +3654,24 @@
       "docs": "reference/input/#sign",
       "owner": "types/Input",
       "type": {
-        "label": "sign"
+        "label": "sign",
+        "key": "datatypes/sign"
       },
       "spec": {
         "label": "qual 3.6.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.1"
-      }
+      },
+      "required": false,
+      "default": "the model says nothing about the direction of the influence",
+      "rules": [
+        {
+          "id": 3020505,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:sign' of an <input> object must conform to the syntax of the SBML data type 'sign' and may only take on the allowed values of 'sign' defined in SBML; that is, the value must be one of the following: 'positive', 'negative', 'dual' or 'unknown'.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        }
+      ]
     },
     "types/Input/thresholdLevel": {
       "kind": "attribute",
@@ -3447,7 +3689,23 @@
         "label": "qual 3.6.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.1"
-      }
+      },
+      "required": false,
+      "default": "the threshold is written as a number in the math of the function terms",
+      "rules": [
+        {
+          "id": 3020507,
+          "severity": "error",
+          "message": "The attribute 'qual:thresholdLevel' in <input> must be of the data type 'integer'.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        },
+        {
+          "id": 3020510,
+          "severity": "error",
+          "message": "The attribute 'qual:thresholdLevel' in <input> must not be negative.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        }
+      ]
     },
     "types/Input/transitionEffect": {
       "kind": "attribute",
@@ -3458,13 +3716,29 @@
       "docs": "reference/input/#transitioneffect",
       "owner": "types/Input",
       "type": {
-        "label": "transitionInputEffect"
+        "label": "transitionInputEffect",
+        "key": "datatypes/transitionInputEffect"
       },
       "spec": {
         "label": "qual 3.6.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020506,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:transitionEffect' of an <input> object must conform to the syntax of the SBML data type 'transitionInputEffect' and may only take on the allowed values of 'transitionInputEffect' defined in SBML; that is, the value must be one of the following: 'none' or 'consumption'.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        },
+        {
+          "id": 3020509,
+          "severity": "error",
+          "message": "An <input> that refers to a <qualitativeSpecies> that has a 'qual:constant' attribute set to 'true' cannot have the attribute 'qual:transitionEffect' set to 'consumption'.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        }
+      ]
     },
     "types/KineticLaw": {
       "kind": "type",
@@ -4603,7 +4877,28 @@
         "label": "qual 3.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.4"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 3020201,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> object using Qualitative Models: <listOfTransitions> and <listOfQualitativeSpecies>.",
+          "section": "L3V1 Qual V1 Section 3.4"
+        },
+        {
+          "id": 3020202,
+          "severity": "error",
+          "message": "The various ListOf subobjects with a <model> object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the <model>, it must not be empty: <listOfQualitativeSpecies> and <listOfTransitions>.",
+          "section": "L3V1 Qual V1 Section 3.4"
+        },
+        {
+          "id": 3020204,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfQualitativeSpecies> container object may only contain <qualitativeSpecies> objects.",
+          "section": "L3V1 Qual V1 Section 3.4"
+        }
+      ]
     },
     "types/Model/listOfReactions": {
       "kind": "attribute",
@@ -4741,7 +5036,29 @@
         "label": "qual 3.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.4"
-      }
+      },
+      "required": false,
+      "default": "nothing changes the levels of the qualitative species",
+      "rules": [
+        {
+          "id": 3020201,
+          "severity": "error",
+          "message": "There may be at most one instance of each of the following kinds of objects within a <model> object using Qualitative Models: <listOfTransitions> and <listOfQualitativeSpecies>.",
+          "section": "L3V1 Qual V1 Section 3.4"
+        },
+        {
+          "id": 3020202,
+          "severity": "error",
+          "message": "The various ListOf subobjects with a <model> object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the <model>, it must not be empty: <listOfQualitativeSpecies> and <listOfTransitions>.",
+          "section": "L3V1 Qual V1 Section 3.4"
+        },
+        {
+          "id": 3020203,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfTransitions> container object may only contain <transition> objects.",
+          "section": "L3V1 Qual V1 Section 3.4"
+        }
+      ]
     },
     "types/Model/listOfUnitDefinitions": {
       "kind": "attribute",
@@ -5209,6 +5526,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.2"
       },
+      "rules": [
+        {
+          "id": 3010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> the values of the attributes 'id' and 'qual:id' on every instance of the following classes of objects must be unique across the set of all 'id' and 'qual:id' attribute values of all such objects in a model: the <model> itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <qualitativeSpecies>, <transition>, <input> and <output> objects defined by the Qualitative Models package.",
+          "section": "L3V1 Qual V1 Section 3.7"
+        },
+        {
+          "id": 3020601,
+          "severity": "error",
+          "message": "An <output> object may have the optional 'metaid' and 'sboTerm' defined by SBML Level 3 Core. No other attributes from the SBML Level 3 Core namespace or the Qualitative Models namespace are permitted on an <output> object.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        },
+        {
+          "id": 3020602,
+          "severity": "error",
+          "message": "An <output> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <output>.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        },
+        {
+          "id": 3020603,
+          "severity": "error",
+          "message": "An <output> object must have the required attributes 'qual:qualitativeSpecies' as well as 'qual:transitionEffect' and may have the optional attributes 'qual:id', 'qual:name' and 'qual:outputLevel'. No other attributes from the SBML Level 3 Qualitative Models namespace are permitted on an <output> object.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        }
+      ],
       "attributes": [
         "types/Output/qualitativeSpecies",
         "types/Output/outputLevel",
@@ -5237,7 +5580,29 @@
         "label": "qual 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.2"
-      }
+      },
+      "required": false,
+      "default": "the transition effect is assignmentLevel, where the output level has no meaning",
+      "rules": [
+        {
+          "id": 3020606,
+          "severity": "error",
+          "message": "The attribute 'qual:outputLevel' in <output> must be of the data type 'integer'.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        },
+        {
+          "id": 3020609,
+          "severity": "error",
+          "message": "When the value of the attribute 'qual:transitionEffect' of an <output> object is set to the value 'production' the attribute 'qual:outputLevel' for that particular <output> object must have a value set.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        },
+        {
+          "id": 3020610,
+          "severity": "error",
+          "message": "The attribute 'qual:outputLevel' in <output> must not be negative.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        }
+      ]
     },
     "types/Output/qualitativeSpecies": {
       "kind": "attribute",
@@ -5255,7 +5620,28 @@
         "label": "qual 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020311,
+          "severity": "warning",
+          "message": "A <qualitativeSpecies> that is referenced by an <output> with the 'qual:transitionEffect' attribute set to 'assignmentLevel' should not be referenced by any other <output> with the same 'transitionEffect' throughout the set of transitions for the containing model.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        },
+        {
+          "id": 3020607,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:qualitativeSpecies' in an <output> object must be the identifier of an existing <qualitativeSpecies> object defined in the enclosing <model> object.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        },
+        {
+          "id": 3020608,
+          "severity": "error",
+          "message": "The <qualitativeSpecies> referred to by the attribute 'qual:qualitativeSpecies' in an <output> object must have the value of its 'qual:constant' attribute set to 'false'.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        }
+      ]
     },
     "types/Output/transitionEffect": {
       "kind": "attribute",
@@ -5266,13 +5652,35 @@
       "docs": "reference/output/#transitioneffect",
       "owner": "types/Output",
       "type": {
-        "label": "transitionOutputEffect"
+        "label": "transitionOutputEffect",
+        "key": "datatypes/transitionOutputEffect"
       },
       "spec": {
         "label": "qual 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.2"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020311,
+          "severity": "warning",
+          "message": "A <qualitativeSpecies> that is referenced by an <output> with the 'qual:transitionEffect' attribute set to 'assignmentLevel' should not be referenced by any other <output> with the same 'transitionEffect' throughout the set of transitions for the containing model.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        },
+        {
+          "id": 3020605,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:transitionEffect' of an <output> object must conform to the syntax of the SBML data type 'transitionOutputEffect' and may only take on the allowed values of 'transitionOutputEffect' defined in SBML; that is, the value must be one of the following: 'production' or 'assignmentLevel'.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        },
+        {
+          "id": 3020609,
+          "severity": "error",
+          "message": "When the value of the attribute 'qual:transitionEffect' of an <output> object is set to the value 'production' the attribute 'qual:outputLevel' for that particular <output> object must have a value set.",
+          "section": "L3V1 Qual V1 Section 3.6.2"
+        }
+      ]
     },
     "types/Parameter": {
       "kind": "type",
@@ -5777,6 +6185,32 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.5"
       },
+      "rules": [
+        {
+          "id": 3010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> the values of the attributes 'id' and 'qual:id' on every instance of the following classes of objects must be unique across the set of all 'id' and 'qual:id' attribute values of all such objects in a model: the <model> itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <qualitativeSpecies>, <transition>, <input> and <output> objects defined by the Qualitative Models package.",
+          "section": "L3V1 Qual V1 Section 3.7"
+        },
+        {
+          "id": 3020301,
+          "severity": "error",
+          "message": "A <qualitativeSpecies> object may have the optional 'metaid' and 'sboTerm' defined by SBML Level 3 Core. No other attributes from the SBML Level 3 Core namespace or the Qualitative Models namespace are permitted on a <qualitativeSpecies> object.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020302,
+          "severity": "error",
+          "message": "A <qualitativeSpecies> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on a <qualitativeSpecies>.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020303,
+          "severity": "error",
+          "message": "A <qualitativeSpecies> object must have the required attributes 'qual:id', 'qual:compartment' and 'qual:constant', and may have the optional attributes 'qual:name', 'qual:initialLevel' and 'qual:maxLevel'. No other attributes from the SBML Level 3 Qualitative Models namespace are permitted on a <qualitativeSpecies> object.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        }
+      ],
       "attributes": [
         "types/QualitativeSpecies/compartment",
         "types/QualitativeSpecies/constant",
@@ -5807,7 +6241,16 @@
         "label": "qual 3.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020308,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:compartment' in a <qualitativeSpecies> object must be the identifier of an existing <compartment> object defined in the enclosing <model> object.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        }
+      ]
     },
     "types/QualitativeSpecies/constant": {
       "kind": "attribute",
@@ -5825,7 +6268,28 @@
         "label": "qual 3.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.5"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020304,
+          "severity": "error",
+          "message": "The attribute 'qual:constant' in <qualitativeSpecies> must be of the data type Boolean.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020310,
+          "severity": "error",
+          "message": "A <qualitativeSpecies> with attribute 'qual:constant' set to 'true' can only be referred to by an <input>. It cannot be the subject of an <output> in a <transition>.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020509,
+          "severity": "error",
+          "message": "An <input> that refers to a <qualitativeSpecies> that has a 'qual:constant' attribute set to 'true' cannot have the attribute 'qual:transitionEffect' set to 'consumption'.",
+          "section": "L3V1 Qual V1 Section 3.6.1"
+        }
+      ]
     },
     "types/QualitativeSpecies/initialLevel": {
       "kind": "attribute",
@@ -5843,7 +6307,29 @@
         "label": "qual 3.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.5"
-      }
+      },
+      "required": false,
+      "default": "the level the entity starts at is not fixed by the model",
+      "rules": [
+        {
+          "id": 3020306,
+          "severity": "error",
+          "message": "The attribute 'qual:initialLevel' in <qualitativeSpecies> must be of the data type integer.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020309,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:initialLevel' in a <qualitativeSpecies> object cannot be greater than the value of the 'qual:maxLevel' attribute for the given <qualitativeSpecies> object.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020312,
+          "severity": "error",
+          "message": "The attribute 'qual:initialLevel' in <qualitativeSpecies> must not be negative.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        }
+      ]
     },
     "types/QualitativeSpecies/maxLevel": {
       "kind": "attribute",
@@ -5861,7 +6347,35 @@
         "label": "qual 3.5",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.5"
-      }
+      },
+      "required": false,
+      "default": "the levels the species takes follow from the result levels of the transitions alone",
+      "rules": [
+        {
+          "id": 3020307,
+          "severity": "error",
+          "message": "The attribute 'qual:maxLevel' in <qualitativeSpecies> must be of the data type integer.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020309,
+          "severity": "error",
+          "message": "The value of the attribute 'qual:initialLevel' in a <qualitativeSpecies> object cannot be greater than the value of the 'qual:maxLevel' attribute for the given <qualitativeSpecies> object.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020313,
+          "severity": "error",
+          "message": "The attribute 'qual:maxLevel' in <qualitativeSpecies> must not be negative.",
+          "section": "L3V1 Qual V1 Section 3.5"
+        },
+        {
+          "id": 3020413,
+          "severity": "error",
+          "message": "No element of the <listOfFunctionTerms> object may cause the level of a <qualitativeSpecies> to exceed the value 'qual:maxLevel' attribute.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        }
+      ]
     },
     "types/RateRule": {
       "kind": "type",
@@ -6151,7 +6665,7 @@
       "kind": "attribute",
       "label": "fbc:geneProductAssociation",
       "summary": "the genes under which the reaction can run",
-      "description": "The [association](glossary:types/GeneProductAssociation) is a tree of the operators `and` and `or` over the [gene products](glossary:types/GeneProduct) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.\n\nThe report shows the tree in the inspector of the reaction, one line per branch, and links every gene product it names.",
+      "description": "The [association](glossary:types/GeneProductAssociation) is a tree of the operators `and` and `or` over the [gene products](glossary:types/GeneProduct) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.\n\nThe report names the association on a line of its own in the inspector of the reaction and writes the whole expression below it, as one paragraph which wraps, and links every gene product it names.",
       "package": "fbc",
       "docs": "reference/reaction/#fbc-geneproductassociation",
       "owner": "types/Reaction",
@@ -7856,7 +8370,22 @@
         "label": "distrib 3.9",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.9"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1520201,
+          "severity": "error",
+          "message": "A 'SBase' object may contain one and only one instance of the <listOfUncertainties> element. No other elements from the SBML Level 3 Distributions namespaces are permitted on a 'SBase' object.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520202,
+          "severity": "error",
+          "message": "Apart from the general notes and annotations subobjects permitted on all SBML objects, a <listOfUncertainties> container object may only contain <uncertainty> objects.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/SBase/xml": {
       "kind": "attribute",
@@ -8906,6 +9435,38 @@
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6"
       },
+      "rules": [
+        {
+          "id": 3010301,
+          "severity": "error",
+          "message": "(Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a <model> the values of the attributes 'id' and 'qual:id' on every instance of the following classes of objects must be unique across the set of all 'id' and 'qual:id' attribute values of all such objects in a model: the <model> itself, plus all contained <functionDefinition>, <compartment>, <species>, <reaction>, <speciesReference>, <modifierSpeciesReference>, <event>, and <parameter> objects, plus the <qualitativeSpecies>, <transition>, <input> and <output> objects defined by the Qualitative Models package.",
+          "section": "L3V1 Qual V1 Section 3.7"
+        },
+        {
+          "id": 3020401,
+          "severity": "error",
+          "message": "A <transition> object may have the optional 'metaid' and 'sboTerm' defined by SBML Level 3 Core. No other attributes from the SBML Level 3 Core namespace or the Qualitative Models namespace are permitted on a <transition> object.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020402,
+          "severity": "error",
+          "message": "A <transition> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on a <transition>.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020403,
+          "severity": "error",
+          "message": "A <transition> object may have the optional attributes 'qual:name' and 'qual:id'. No other attributes from the SBML Level 3 Qualitative Models namespace are permitted on a <transition> object.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020405,
+          "severity": "error",
+          "message": "A <transition> must have one and only one instance of the <listOfFunctionTerms> objects and may have at most one instance of the <listOfInputs> and <listOfOutputs> objects from the Qualitative Models namespace.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        }
+      ],
       "attributes": [
         "types/Transition/listOfInputs",
         "types/Transition/listOfOutputs",
@@ -8937,7 +9498,16 @@
         "label": "qual 3.6.4",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.4"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020409,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfFunctionTerms> container object must contain one and only one <defaultTerm> object and then may only contain <functionTerm> objects.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        }
+      ]
     },
     "types/Transition/listOfFunctionTerms": {
       "kind": "attribute",
@@ -8955,7 +9525,34 @@
         "label": "qual 3.6.3",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.3"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 3020405,
+          "severity": "error",
+          "message": "A <transition> must have one and only one instance of the <listOfFunctionTerms> objects and may have at most one instance of the <listOfInputs> and <listOfOutputs> objects from the Qualitative Models namespace.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020409,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfFunctionTerms> container object must contain one and only one <defaultTerm> object and then may only contain <functionTerm> objects.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020413,
+          "severity": "error",
+          "message": "No element of the <listOfFunctionTerms> object may cause the level of a <qualitativeSpecies> to exceed the value 'qual:maxLevel' attribute.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020414,
+          "severity": "error",
+          "message": "No element of the <listOfFunctionTerms> object may cause the level of a <qualitativeSpecies> to become negative.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        }
+      ]
     },
     "types/Transition/listOfInputs": {
       "kind": "attribute",
@@ -8973,7 +9570,29 @@
         "label": "qual 3.6.1",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.1"
-      }
+      },
+      "required": false,
+      "default": "the function terms of the transition read no species",
+      "rules": [
+        {
+          "id": 3020405,
+          "severity": "error",
+          "message": "A <transition> must have one and only one instance of the <listOfFunctionTerms> objects and may have at most one instance of the <listOfInputs> and <listOfOutputs> objects from the Qualitative Models namespace.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020406,
+          "severity": "error",
+          "message": "The <listOfInputs> and <listOfOutputs> subobjects on a <transition> object are optional, but if present, these container object must not be empty.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020407,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfInputs> container object may only contain <input> objects.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        }
+      ]
     },
     "types/Transition/listOfOutputs": {
       "kind": "attribute",
@@ -8991,7 +9610,29 @@
         "label": "qual 3.6.2",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/",
         "section": "3.6.2"
-      }
+      },
+      "required": false,
+      "default": "the transition changes no species",
+      "rules": [
+        {
+          "id": 3020405,
+          "severity": "error",
+          "message": "A <transition> must have one and only one instance of the <listOfFunctionTerms> objects and may have at most one instance of the <listOfInputs> and <listOfOutputs> objects from the Qualitative Models namespace.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020406,
+          "severity": "error",
+          "message": "The <listOfInputs> and <listOfOutputs> subobjects on a <transition> object are optional, but if present, these container object must not be empty.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        },
+        {
+          "id": 3020408,
+          "severity": "error",
+          "message": "Apart from the general notes and annotation subobjects permitted on all SBML objects, a <listOfOutputs> container object may only contain <output> objects.",
+          "section": "L3V1 Qual V1 Section 3.6"
+        }
+      ]
     },
     "types/Trigger": {
       "kind": "type",
@@ -9130,6 +9771,32 @@
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11"
       },
+      "rules": [
+        {
+          "id": 1520301,
+          "severity": "error",
+          "message": "An <uncertParameter> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an <uncertParameter>.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520302,
+          "severity": "error",
+          "message": "An <uncertParameter> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <uncertParameter>.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520303,
+          "severity": "error",
+          "message": "An <uncertParameter> object may have the optional attributes 'distrib:value', 'distrib:var', 'distrib:units', 'distrib:type' and 'distrib:definitionURL'. No other attributes from the SBML Level 3 Distributions namespaces are permitted on an <uncertParameter> object.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520304,
+          "severity": "error",
+          "message": "An <uncertParameter> object may contain one and only one instance of the <listOfUncertParameters> element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an <uncertParameter> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ],
       "attributes": [
         "types/UncertParameter/type",
         "types/UncertParameter/value",
@@ -9162,7 +9829,17 @@
         "label": "distrib 3.11.4",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.4"
-      }
+      },
+      "required": false,
+      "default": "the type of the measure says completely what it means",
+      "rules": [
+        {
+          "id": 1520309,
+          "severity": "error",
+          "message": "The attribute 'distrib:definitionURL' on an <uncertParameter> must have a value of data type 'string'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertParameter/math": {
       "kind": "attribute",
@@ -9180,7 +9857,9 @@
         "label": "distrib 3.11.6",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.6"
-      }
+      },
+      "required": false,
+      "default": "a distribution is defined by its definition url and the parameters below it"
     },
     "types/UncertParameter/type": {
       "kind": "attribute",
@@ -9191,13 +9870,23 @@
       "docs": "reference/uncertparameter/#type",
       "owner": "types/UncertParameter",
       "type": {
-        "label": "UncertKind"
+        "label": "UncertKind",
+        "key": "datatypes/UncertKind"
       },
       "spec": {
         "label": "distrib 3.11.1",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 1520308,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:type' of an <uncertParameter> object must conform to the syntax of SBML data type 'UncertType' and may only take on the allowed values of 'UncertType' defined in SBML; that is, the value must be one of the following: 'distribution', 'externalParameter', 'coeffientOfVariation', 'kurtosis', 'mean', 'median', 'mode', 'sampleSize', 'skewness', 'standardDeviation', 'standardError', 'variance', 'confidenceInterval', 'credibleInterval', 'interquartileRange' or 'range'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertParameter/uncertParameters": {
       "kind": "attribute",
@@ -9215,7 +9904,22 @@
         "label": "distrib 3.11.7",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1520304,
+          "severity": "error",
+          "message": "An <uncertParameter> object may contain one and only one instance of the <listOfUncertParameters> element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an <uncertParameter> object.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520310,
+          "severity": "error",
+          "message": "Apart from the general notes and annotations subobjects permitted on all SBML objects, a <listOfUncertParameters> container object may only contain <uncertParameter> objects.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertParameter/units": {
       "kind": "attribute",
@@ -9233,7 +9937,16 @@
         "label": "distrib 3.11.3",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.3"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1520307,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:units' on an <uncertParameter> must have a taken from the following: the identifier of a <unitDefinition> object in the enclosing <model,> or one of the base units in SBML.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertParameter/value": {
       "kind": "attribute",
@@ -9251,7 +9964,17 @@
         "label": "distrib 3.11.2",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.2"
-      }
+      },
+      "required": false,
+      "default": "a measure which is a single number names the element which holds it in var",
+      "rules": [
+        {
+          "id": 1520305,
+          "severity": "error",
+          "message": "The attribute 'distrib:value' on an <uncertParameter> must have a value of data type 'double'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertParameter/var": {
       "kind": "attribute",
@@ -9269,7 +9992,17 @@
         "label": "distrib 3.11.2",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.2"
-      }
+      },
+      "required": false,
+      "default": "a measure which is a single number writes that number in value",
+      "rules": [
+        {
+          "id": 1520306,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:var' of an <uncertParameter> object must be the identifier of an existing object derived from the 'SBase' class and defined in the enclosing <model> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan": {
       "kind": "type",
@@ -9283,6 +10016,26 @@
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.12"
       },
+      "rules": [
+        {
+          "id": 1520501,
+          "severity": "error",
+          "message": "An <uncertSpan> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an <uncertSpan>.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520502,
+          "severity": "error",
+          "message": "An <uncertSpan> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <uncertSpan>.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520503,
+          "severity": "error",
+          "message": "An <uncertSpan> object may have the optional attributes 'distrib:varLower', 'distrib:valueLower', 'distrib:varUpper' and 'distrib:valueUpper'. No other attributes from the SBML Level 3 Distributions namespaces are permitted on an <uncertSpan> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ],
       "attributes": [
         "types/UncertSpan/interval",
         "types/UncertSpan/valueLower",
@@ -9319,7 +10072,17 @@
         "label": "distrib 3.11.4",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.4"
-      }
+      },
+      "required": false,
+      "default": "the four intervals the specification defines say completely what they mean",
+      "rules": [
+        {
+          "id": 1520309,
+          "severity": "error",
+          "message": "The attribute 'distrib:definitionURL' on an <uncertParameter> must have a value of data type 'string'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/interval": {
       "kind": "attribute",
@@ -9328,12 +10091,7 @@
       "description": "The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.\n\nThe row is the reading of [value lower](glossary:types/UncertSpan/valueLower), [value upper](glossary:types/UncertSpan/valueUpper), [var lower](glossary:types/UncertSpan/varLower) and [var upper](glossary:types/UncertSpan/varUpper), each of which the file writes on its own.",
       "package": "report",
       "docs": "reference/uncertspan/#interval",
-      "owner": "types/UncertSpan",
-      "spec": {
-        "label": "distrib 3.12",
-        "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
-        "section": "3.12"
-      }
+      "owner": "types/UncertSpan"
     },
     "types/UncertSpan/math": {
       "kind": "attribute",
@@ -9351,7 +10109,8 @@
         "label": "distrib 3.11.6",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.6"
-      }
+      },
+      "required": false
     },
     "types/UncertSpan/type": {
       "kind": "attribute",
@@ -9362,13 +10121,23 @@
       "docs": "reference/uncertspan/#type",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "UncertKind"
+        "label": "UncertKind",
+        "key": "datatypes/UncertKind"
       },
       "spec": {
         "label": "distrib 3.11.1",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.1"
-      }
+      },
+      "required": true,
+      "rules": [
+        {
+          "id": 1520308,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:type' of an <uncertParameter> object must conform to the syntax of SBML data type 'UncertType' and may only take on the allowed values of 'UncertType' defined in SBML; that is, the value must be one of the following: 'distribution', 'externalParameter', 'coeffientOfVariation', 'kurtosis', 'mean', 'median', 'mode', 'sampleSize', 'skewness', 'standardDeviation', 'standardError', 'variance', 'confidenceInterval', 'credibleInterval', 'interquartileRange' or 'range'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/uncertParameters": {
       "kind": "attribute",
@@ -9386,7 +10155,22 @@
         "label": "distrib 3.11.7",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.7"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1520304,
+          "severity": "error",
+          "message": "An <uncertParameter> object may contain one and only one instance of the <listOfUncertParameters> element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an <uncertParameter> object.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520310,
+          "severity": "error",
+          "message": "Apart from the general notes and annotations subobjects permitted on all SBML objects, a <listOfUncertParameters> container object may only contain <uncertParameter> objects.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/units": {
       "kind": "attribute",
@@ -9404,7 +10188,17 @@
         "label": "distrib 3.12",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.12"
-      }
+      },
+      "required": false,
+      "default": "an end which names an element carries the units of that element",
+      "rules": [
+        {
+          "id": 1520307,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:units' on an <uncertParameter> must have a taken from the following: the identifier of a <unitDefinition> object in the enclosing <model,> or one of the base units in SBML.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/value": {
       "kind": "attribute",
@@ -9422,7 +10216,17 @@
         "label": "distrib 3.11.2",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.2"
-      }
+      },
+      "required": false,
+      "default": "a span carries its numbers in value lower and value upper",
+      "rules": [
+        {
+          "id": 1520305,
+          "severity": "error",
+          "message": "The attribute 'distrib:value' on an <uncertParameter> must have a value of data type 'double'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/valueLower": {
       "kind": "attribute",
@@ -9440,7 +10244,17 @@
         "label": "distrib 3.12",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.12"
-      }
+      },
+      "required": false,
+      "default": "the lower end is the element var lower names, or the interval is open at the bottom",
+      "rules": [
+        {
+          "id": 1520505,
+          "severity": "error",
+          "message": "The attribute 'distrib:valueLower' on an <uncertSpan> must have a value of data type 'double'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/valueUpper": {
       "kind": "attribute",
@@ -9458,7 +10272,17 @@
         "label": "distrib 3.12",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.12"
-      }
+      },
+      "required": false,
+      "default": "the upper end is the element var upper names, or the interval is open at the top",
+      "rules": [
+        {
+          "id": 1520507,
+          "severity": "error",
+          "message": "The attribute 'distrib:valueUpper' on an <uncertSpan> must have a value of data type 'double'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/var": {
       "kind": "attribute",
@@ -9476,7 +10300,17 @@
         "label": "distrib 3.11.2",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11.2"
-      }
+      },
+      "required": false,
+      "default": "a span names the elements of its ends in var lower and var upper",
+      "rules": [
+        {
+          "id": 1520306,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:var' of an <uncertParameter> object must be the identifier of an existing object derived from the 'SBase' class and defined in the enclosing <model> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/varLower": {
       "kind": "attribute",
@@ -9494,7 +10328,17 @@
         "label": "distrib 3.12",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.12"
-      }
+      },
+      "required": false,
+      "default": "the lower end is the number in value lower, or the interval is open at the bottom",
+      "rules": [
+        {
+          "id": 1520504,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:varLower' of an <uncertSpan> object must be the identifier of an existing object derived from the 'SBase' class and defined in the enclosing <model> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UncertSpan/varUpper": {
       "kind": "attribute",
@@ -9512,7 +10356,17 @@
         "label": "distrib 3.12",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.12"
-      }
+      },
+      "required": false,
+      "default": "the upper end is the number in value upper, or the interval is open at the top",
+      "rules": [
+        {
+          "id": 1520506,
+          "severity": "error",
+          "message": "The value of the attribute 'distrib:varUpper' of an <uncertSpan> object must be the identifier of an existing object derived from the 'SBase' class and defined in the enclosing <model> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/Uncertainty": {
       "kind": "type",
@@ -9526,6 +10380,26 @@
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.10"
       },
+      "rules": [
+        {
+          "id": 1520401,
+          "severity": "error",
+          "message": "An <uncertainty> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an <uncertainty>.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520402,
+          "severity": "error",
+          "message": "An <uncertainty> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an <uncertainty>.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520403,
+          "severity": "error",
+          "message": "An <uncertainty> object may contain one and only one instance of the <listOfUncertParameters> element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an <uncertainty> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ],
       "attributes": [
         "types/Uncertainty/uncertParameters"
       ],
@@ -9551,7 +10425,22 @@
         "label": "distrib 3.11",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf",
         "section": "3.11"
-      }
+      },
+      "required": false,
+      "rules": [
+        {
+          "id": 1520310,
+          "severity": "error",
+          "message": "Apart from the general notes and annotations subobjects permitted on all SBML objects, a <listOfUncertParameters> container object may only contain <uncertParameter> objects.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520403,
+          "severity": "error",
+          "message": "An <uncertainty> object may contain one and only one instance of the <listOfUncertParameters> element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an <uncertainty> object.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ]
     },
     "types/UnitDefinition": {
       "kind": "type",
@@ -10028,6 +10917,38 @@
         "label": "distrib",
         "url": "https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf"
       },
+      "rules": [
+        {
+          "id": 1510101,
+          "severity": "error",
+          "message": "To conform to the Distributions Package specification for SBML Level 3 Version 1, an SBML document must declare 'http://www.sbml.org/sbml/level3/version1/distrib/version1' as the XMLNamespace to use for elements of this package.",
+          "section": "L3V1 Distrib V1 Section 3.1"
+        },
+        {
+          "id": 1510102,
+          "severity": "error",
+          "message": "Wherever they appear in an SBML document, elements and attributes from the Distributions Package must use the 'http://www.sbml.org/sbml/level3/version1/distrib/version1' namespace, declaring so either explicitly or implicitly.",
+          "section": "L3V1 Distrib V1 Section 3.1"
+        },
+        {
+          "id": 1520101,
+          "severity": "error",
+          "message": "In all SBML documents using the Distributions Package, the <sbml> object must have the 'distrib:required' attribute.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520102,
+          "severity": "error",
+          "message": "The value of attribute 'distrib:required' on the <sbml> object must be of data type 'boolean'.",
+          "section": "L3V1 Distrib V1 Section"
+        },
+        {
+          "id": 1520103,
+          "severity": "error",
+          "message": "The value of attribute 'distrib:required' on the <sbml> object must be set to 'true'.",
+          "section": "L3V1 Distrib V1 Section"
+        }
+      ],
       "related": [
         "types/Uncertainty",
         "types/Parameter",
@@ -10098,6 +11019,38 @@
         "label": "qual",
         "url": "https://sbml.org/documents/specifications/level-3/version-1/qual/"
       },
+      "rules": [
+        {
+          "id": 3010101,
+          "severity": "error",
+          "message": "To conform to Version 1 of the Qualitative Models package specification for SBML Level 3, an SBML document must declare the use of the following XML Namespace: 'http://www.sbml.org/sbml/level3/version1/qual/version1'",
+          "section": "L3V1 Qual V1 Section 3.1"
+        },
+        {
+          "id": 3010102,
+          "severity": "error",
+          "message": "Wherever they appear in an SBML document, elements and attributes from the Qualitative Models package must be declared either implicitly or explicitly to be in the XML namespace 'http://www.sbml.org/sbml/level3/version1/qual/version1'",
+          "section": "L3V1 Qual V1 Section 3.1"
+        },
+        {
+          "id": 3020101,
+          "severity": "error",
+          "message": "In all SBML documents using the Qualitative Models package, the SBML object must include a value for the attribute 'qual:required' attribute.",
+          "section": "L3V1 Core Section 4.1.2"
+        },
+        {
+          "id": 3020102,
+          "severity": "error",
+          "message": "The value of attribute 'qual:required' on the SBML object must be of the data type Boolean.",
+          "section": "L3V1 Core Section 4.1.2"
+        },
+        {
+          "id": 3020103,
+          "severity": "error",
+          "message": "The value of attribute 'qual:required' on the SBML object must be set to 'true' if if the model contains any <transition> objects.",
+          "section": "L3V1 Qual V1 Section 3.1"
+        }
+      ],
       "related": [
         "types/QualitativeSpecies",
         "types/Transition",

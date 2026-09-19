@@ -195,6 +195,68 @@ related = ["SpeciesFbc", "ModelFbc"]
 
 
 # ----------------------------------------------------------------------------
+# the data types of qual: the three enumerations the package defines, the
+# direction of an influence and what a transition does to a species
+# ----------------------------------------------------------------------------
+[datatypes.sign]
+label = "sign"
+package = "qual"
+spec = { doc = "qual", section = "3.2.1" }
+values = ["positive", "negative", "dual", "unknown"]
+summary = "the direction of the influence an input carries within the system"
+description = """
+The [sign](input.md#sign) of an [input](input.md) says whether the contribution of the species it names is positive, negative, both or not known. It is the arrow and the bar of a regulatory network: an activation, an inhibition, an influence which is one or the other depending on the levels of the other regulators, and one the file does not decide. The package defines the type for visualisation: the mathematics of a [transition](transition.md) is in its [function terms](functionterm.md), and the sign has no impact on it.
+
+The report shows the sign next to the species of the input, in the column of the inputs of a transition and in the table of the inputs in the inspector. The four values are:
+"""
+related = ["transitionInputEffect", "transitionOutputEffect"]
+
+[datatypes.transitionInputEffect]
+label = "transitionInputEffect"
+package = "qual"
+spec = { doc = "qual", section = "3.2.2" }
+values = ["none", "consumption"]
+summary = "what a transition does to the level of a species it reads"
+description = """
+The [transition effect](input.md#transitioneffect) of an [input](input.md) tells a read from a consumption. With `none` the level of the species is not modified by the [transition](transition.md), which is what a logical model writes and what a read arc of a Petri net is. With `consumption` the level is decreased by the [result level](functionterm.md#resultlevel) of the term which applies, multiplied by the [threshold level](input.md#thresholdlevel) of the input where it sets one, which is how a Petri net takes the tokens of the place before a transition away.
+
+A species which is [constant](qualitativespecies.md#constant) may only be read, so an input of such a species cannot be consumed. The report shows the effect in the table of the inputs in the inspector of the transition. The two values are:
+"""
+related = ["transitionOutputEffect", "sign"]
+
+[datatypes.transitionOutputEffect]
+label = "transitionOutputEffect"
+package = "qual"
+spec = { doc = "qual", section = "3.2.3" }
+values = ["production", "assignmentLevel"]
+summary = "whether a transition adds to the level of a species it changes or sets it"
+description = """
+The [transition effect](output.md#transitioneffect) of an [output](output.md) is the attribute which says in which of the two formalisms of the package a file is written. With `production` the level of the species is increased by the [result level](functionterm.md#resultlevel) of the term which applies, multiplied by the [output level](output.md#outputlevel) of the output, which is the weight of the arc of a Petri net; an output of this effect has to state its output level, because SBML Level 3 has no default values. With `assignmentLevel` the level of the species becomes that result level, which is how a logical model assigns the value of its rule, and the output level has no meaning.
+
+The report shows the effect in the table of the outputs in the inspector of the transition. The two values are:
+"""
+related = ["transitionInputEffect", "sign"]
+
+
+# ----------------------------------------------------------------------------
+# the data type of distrib: the statistical measures a parameter of an
+# uncertainty may be
+# ----------------------------------------------------------------------------
+[datatypes.UncertKind]
+label = "UncertKind"
+package = "distrib"
+spec = { doc = "distrib", section = "3.3.2" }
+values = ["coefficientOfVariation", "kurtosis", "mean", "median", "mode", "sampleSize", "skewness", "standardDeviation", "standardError", "variance", "confidenceInterval", "credibleInterval", "interquartileRange", "range", "externalParameter", "distribution"]
+summary = "which statistical measure an uncert parameter of an uncertainty is"
+description = """
+`UncertKind` is derived from [string](#string) and holds one of sixteen values, the [type](uncertparameter.md#type) of an [uncert parameter](uncertparameter.md). Ten of them are a single number, which the parameter writes in its [value](uncertparameter.md#value) or reads from the element its [var](uncertparameter.md#var) names: the mean, the median, the mode, the variance, the standard deviation, the standard error, the coefficient of variation, the skewness, the kurtosis and the size of the sample. Four of them are an interval and are written as an [uncert span](uncertspan.md), with the two ends of the interval in the place of that single number: the range, the confidence interval, the credible interval and the interquartile range. The last two say where a number comes from rather than what it is: `distribution`, the distribution the value was drawn from, and `externalParameter`, a measure this specification does not define, the only value which may be written as either class and the only one which has to carry a [definition](uncertparameter.md#definitionurl).
+
+Which attributes and which children a measure may carry follows from its value, and the table of Section 3.11.1 of the specification states it per value: a single number carries units and a value or a var, an interval carries units and its two ends, a distribution carries a definition, math and parameters of its own, and an external parameter may carry all of them. The report shows the value in the first column of the measures of an [uncertainty](uncertainty.md) and as the name of a measure which carries no identifier of its own. The sixteen values are:
+"""
+related = ["string"]
+
+
+# ----------------------------------------------------------------------------
 # the packages themselves
 # ----------------------------------------------------------------------------
 [types.comp]
@@ -231,6 +293,7 @@ related = ["GeneProduct", "GeneProductAssociation", "Objective", "FluxBound", "U
 label = "Qualitative Models (qual)"
 package = "qual"
 spec = { doc = "qual" }
+rules = [3010101, 3010102, 3020101, 3020102, 3020103]
 summary = "the package which describes a model whose entities carry a level"
 description = """
 A qualitative model does not integrate rate laws over time. Its entities carry a level, a whole number which stands for a range of activity, and a rule says which level an entity takes next given the levels of the entities which act on it. It is how a regulatory network is written down when the kinetics are unknown, which is the usual case for a network of genes, and it covers the logical models of the Boolean school as well as Petri nets.
@@ -245,6 +308,7 @@ related = ["QualitativeSpecies", "Transition", "Input", "Output", "FunctionTerm"
 label = "Distributions (distrib)"
 package = "distrib"
 spec = { doc = "distrib" }
+rules = [1510101, 1510102, 1520101, 1520102, 1520103]
 summary = "the package which records the uncertainty of a value"
 description = """
 The distrib package attaches statistical measures to the elements of a model which have a mathematical meaning: a mean, a standard deviation, a variance, a confidence interval or the distribution a value was drawn from. The measures describe the value at the moment it is computed, not how it changes during a simulation.
@@ -321,6 +385,8 @@ label = "distrib:listOfUncertainties"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.9" }
+required = false
+rules = [1520201, 1520202]
 summary = "the statistical measures of the value of the element"
 description = """
 Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
@@ -472,6 +538,8 @@ label = "qual:listOfQualitativeSpecies"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.4" }
+required = false
+rules = [3020201, 3020202, 3020204]
 summary = "the entities of a qualitative model, which carry a level"
 description = """
 A model which uses the qual package holds its [qualitative species](qualitativespecies.md) in a list of their own, next to the species of the core. The two are not the same thing and a model does not mix them: an entity of a qualitative model has no amount and no concentration, it has a level.
@@ -484,6 +552,9 @@ label = "qual:listOfTransitions"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.4" }
+required = false
+default = "nothing changes the levels of the qualitative species"
+rules = [3020201, 3020202, 3020203]
 summary = "the rules which decide the level of the qualitative species"
 description = """
 The [transitions](transition.md) are the dynamics of a qualitative model, what the reactions with their kinetic laws are to a kinetic one. Every one of them reads some qualitative species and changes others.
@@ -586,7 +657,7 @@ summary = "the genes under which the reaction can run"
 description = """
 The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
 
-The report shows the tree in the inspector of the reaction, one line per branch, and links every gene product it names.
+The report names the association on a line of its own in the inspector of the reaction and writes the whole expression below it, as one paragraph which wraps, and links every gene product it names.
 """
 
 
@@ -1641,7 +1712,7 @@ required = true
 rules = [2020904, 2020908]
 summary = "the gene product this leaf of the association names"
 description = """
-The attribute is required and names a [gene product](geneproduct.md) of the same model. The report shows the label of that gene product, which is the identifier the reconstruction uses, and links the element behind it.
+The attribute is required and names a [gene product](geneproduct.md) of the same model. The report shows the identifier the reference writes and links the gene product behind it.
 """
 
 
@@ -1652,6 +1723,7 @@ The attribute is required and names a [gene product](geneproduct.md) of the same
 label = "Uncertainty"
 package = "distrib"
 spec = { doc = "distrib", section = "3.10" }
+rules = [1520401, 1520402, 1520403]
 summary = "a set of statistical measures of the value of an element"
 description = """
 An uncertainty collects the measures which belong together, for example the mean and the standard deviation of one experiment. Every measure appears at most once in it, so measures from another source belong into another uncertainty of the same element.
@@ -1667,6 +1739,8 @@ label = "uncertParameters"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.11" }
+required = false
+rules = [1520310, 1520403]
 summary = "the statistical measures which make up the uncertainty"
 description = """
 Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
@@ -1679,6 +1753,7 @@ The report shows every parameter of an uncertainty as a row of the table in the 
 label = "UncertParameter"
 package = "distrib"
 spec = { doc = "distrib", section = "3.11" }
+rules = [1520301, 1520302, 1520303, 1520304]
 summary = "one statistical measure of an uncertainty"
 description = """
 An uncert parameter is one measure of the [uncertainty](uncertainty.md) it belongs to: its mean, its standard deviation, the size of the sample it was measured on, or the distribution the value was drawn from. Its [type](uncertparameter.md#type) says which of the sixteen measures of the package it is, and the number behind that measure is either its [value](uncertparameter.md#value) or the element its [var](uncertparameter.md#var) names.
@@ -1694,6 +1769,8 @@ label = "type"
 package = "distrib"
 type = "UncertKind"
 spec = { doc = "distrib", section = "3.11.1" }
+required = true
+rules = [1520308]
 summary = "which statistical measure the parameter is"
 description = """
 The attribute is required and is one of sixteen values. Ten of them are a single number: `mean`, `median`, `mode`, `variance`, `standardDeviation`, `standardError`, `coefficientOfVariation`, `skewness`, `kurtosis` and `sampleSize`. Four of them are an interval and are written as an [uncert span](uncertspan.md): `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, where the confidence and the credible interval are always the 95 percent interval. The last two say where a value comes from: `distribution`, the distribution it was drawn from, and `externalParameter`, a measure this specification does not define, which names what it means in its [definition](uncertparameter.md#definitionurl).
@@ -1706,6 +1783,9 @@ label = "value"
 package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.11.2" }
+required = false
+default = "a measure which is a single number names the element which holds it in var"
+rules = [1520305]
 summary = "the number of the measure"
 description = """
 A measure which is a single number carries it here, in the [units](uncertparameter.md#units) of the parameter. A file writes either the value or the [var](uncertparameter.md#var), never both: the value is the measurement as it was made, the var is the element of the model which holds it.
@@ -1718,6 +1798,9 @@ label = "var"
 package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.11.2" }
+required = false
+default = "a measure which is a single number writes that number in value"
+rules = [1520306]
 summary = "the element of the model which holds the number of the measure"
 description = """
 Where the measure is not a fixed number but a quantity of the model, the parameter names that element instead of writing a value: the standard deviation of a parameter may be a parameter of its own, which a simulation reads and a sampling changes. The identifier of the uncert parameter itself has no mathematical meaning and cannot be used for this, which is why the specification defines the attribute.
@@ -1730,6 +1813,8 @@ label = "units"
 package = "distrib"
 type = "UnitSIdRef"
 spec = { doc = "distrib", section = "3.11.3" }
+required = false
+rules = [1520307]
 summary = "the units the measure is given in"
 description = """
 The units are either a [unit definition](unitdefinition.md) of the model or one of the base units of SBML. They are usually the units of the element the uncertainty belongs to, for a mean or a standard deviation, or dimensionless, for a coefficient of variation or a sample size.
@@ -1742,6 +1827,9 @@ label = "definitionURL"
 package = "distrib"
 type = "anyURI"
 spec = { doc = "distrib", section = "3.11.4" }
+required = false
+default = "the type of the measure says completely what it means"
+rules = [1520309]
 summary = "what a distribution or an external parameter means"
 description = """
 A parameter of the type `distribution` may name the distribution it stands for, and a parameter of the type `externalParameter` has to name what it is: an entry of an ontology such as ProbOnto, the `csymbol` of a distribution of this package, or another definition which says what the number means. No other type of parameter carries it, because the specification defines the others completely.
@@ -1754,6 +1842,8 @@ label = "math"
 package = "distrib"
 type = "Math"
 spec = { doc = "distrib", section = "3.11.6" }
+required = false
+default = "a distribution is defined by its definition url and the parameters below it"
 summary = "the formula which defines a distribution"
 description = """
 Only a parameter of the type `distribution` or `externalParameter` carries math, and for a distribution the formula is the distribution itself, usually one of the `csymbol` distributions the package defines, such as `normal(2, 2)`.
@@ -1766,6 +1856,8 @@ label = "uncertParameters"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.11.7" }
+required = false
+rules = [1520304, 1520310]
 summary = "the parameters which define a distribution or an external parameter"
 description = """
 A distribution is defined by the parameters it takes: a Beta distribution by its alpha and its beta, a zeta distribution by its shape. They are uncert parameters of the parameter which names the distribution, of any type and to any depth, and without them a report shows the name of a distribution and none of its numbers.
@@ -1777,6 +1869,7 @@ The report shows every one of them indented below the parameter it defines, in t
 label = "UncertSpan"
 package = "distrib"
 spec = { doc = "distrib", section = "3.12" }
+rules = [1520501, 1520502, 1520503]
 summary = "a measure of an uncertainty which is an interval"
 description = """
 Four of the sixteen measures of the package are an interval and not a number: the [range](uncertspan.md#type) of a measurement, its 95 percent confidence interval, its 95 percent credible interval and its interquartile range. A span is the [uncert parameter](uncertparameter.md) of such a measure, with the two ends of the interval in the place of the single value of a parameter.
@@ -1790,7 +1883,6 @@ related = ["UncertParameter", "Uncertainty", "distrib"]
 [types.UncertSpan.attributes.interval]
 label = "interval"
 package = "report"
-spec = { doc = "distrib", section = "3.12" }
 summary = "the two ends of the span as the interval they stand for"
 description = """
 The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.
@@ -1803,6 +1895,9 @@ label = "valueLower"
 package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.12" }
+required = false
+default = "the lower end is the element var lower names, or the interval is open at the bottom"
+rules = [1520505]
 summary = "the lower end of the interval as a number"
 description = """
 The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var lower](uncertspan.md#varlower) for the lower end, and where it writes neither the interval is open at the bottom.
@@ -1815,6 +1910,9 @@ label = "valueUpper"
 package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.12" }
+required = false
+default = "the upper end is the element var upper names, or the interval is open at the top"
+rules = [1520507]
 summary = "the upper end of the interval as a number"
 description = """
 The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var upper](uncertspan.md#varupper) for the upper end, and where it writes neither the interval is open at the top.
@@ -1827,6 +1925,9 @@ label = "varLower"
 package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.12" }
+required = false
+default = "the lower end is the number in value lower, or the interval is open at the bottom"
+rules = [1520504]
 summary = "the element of the model which holds the lower end"
 description = """
 Where the lower end of the interval is a quantity of the model and not a fixed number, the span names that element, the way the [var](uncertparameter.md#var) of a parameter names one. Its units are the units of the element it names.
@@ -1839,6 +1940,9 @@ label = "varUpper"
 package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.12" }
+required = false
+default = "the upper end is the number in value upper, or the interval is open at the top"
+rules = [1520506]
 summary = "the element of the model which holds the upper end"
 description = """
 Where the upper end of the interval is a quantity of the model and not a fixed number, the span names that element, the way the [var](uncertparameter.md#var) of a parameter names one. Its units are the units of the element it names.
@@ -1851,6 +1955,8 @@ label = "type"
 package = "distrib"
 type = "UncertKind"
 spec = { doc = "distrib", section = "3.11.1" }
+required = true
+rules = [1520308]
 summary = "which interval the span is"
 description = """
 The attribute is required. A span carries one of the four measures which are an interval, `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, or `externalParameter`, the measure the package does not define, which may be an interval as well. The other eleven values are a single number and belong to an [uncert parameter](uncertparameter.md#type).
@@ -1863,6 +1969,9 @@ label = "units"
 package = "distrib"
 type = "UnitSIdRef"
 spec = { doc = "distrib", section = "3.12" }
+required = false
+default = "an end which names an element carries the units of that element"
+rules = [1520307]
 summary = "the units both ends of the interval are given in"
 description = """
 The units of the two ends of the span, which have to be the same, given as a [unit definition](unitdefinition.md) of the model or as a base unit of SBML. An end which names an element carries the units of that element instead.
@@ -1875,6 +1984,9 @@ label = "value"
 package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.11.2" }
+required = false
+default = "a span carries its numbers in value lower and value upper"
+rules = [1520305]
 summary = "the single number of a measure, which a span does not use"
 description = """
 A span carries its numbers in [value lower](uncertspan.md#valuelower) and [value upper](uncertspan.md#valueupper). The attribute belongs to the [uncert parameter](uncertparameter.md#value) a span derives from and is left unset by every interval, so the report shows the interval in its place.
@@ -1885,6 +1997,9 @@ label = "var"
 package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.11.2" }
+required = false
+default = "a span names the elements of its ends in var lower and var upper"
+rules = [1520306]
 summary = "the element of a single number, which a span does not use"
 description = """
 A span names the elements of its two ends in [var lower](uncertspan.md#varlower) and [var upper](uncertspan.md#varupper). The attribute belongs to the [uncert parameter](uncertparameter.md#var) a span derives from and is left unset by every interval.
@@ -1895,6 +2010,9 @@ label = "definitionURL"
 package = "distrib"
 type = "anyURI"
 spec = { doc = "distrib", section = "3.11.4" }
+required = false
+default = "the four intervals the specification defines say completely what they mean"
+rules = [1520309]
 summary = "what an external parameter which is an interval means"
 description = """
 A span of the type `externalParameter` names what its interval is, an entry of an ontology or another definition which says what the two ends mean, the way an [uncert parameter](uncertparameter.md#definitionurl) does. The four intervals the specification defines carry no definition url.
@@ -1907,6 +2025,7 @@ label = "math"
 package = "distrib"
 type = "Math"
 spec = { doc = "distrib", section = "3.11.6" }
+required = false
 summary = "the formula of an external parameter which is an interval"
 description = """
 Only a span of the type `externalParameter` carries math, the way an [uncert parameter](uncertparameter.md#math) of the type `distribution` does.
@@ -1919,6 +2038,8 @@ label = "uncertParameters"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.11.7" }
+required = false
+rules = [1520304, 1520310]
 summary = "the parameters which define an external parameter"
 description = """
 A span of the type `externalParameter` may be defined by parameters of its own, the way a [distribution](uncertparameter.md#uncertparameters) is. The four intervals the specification defines need none, because their two ends define them.
@@ -1933,6 +2054,7 @@ The report shows every one of them indented below the span it defines.
 label = "QualitativeSpecies"
 package = "qual"
 spec = { doc = "qual", section = "3.5" }
+rules = [3010301, 3020301, 3020302, 3020303]
 summary = "an entity of a qualitative model, which carries a level instead of an amount"
 description = """
 A qualitative species is what a [species](species.md) is to a kinetic model: the thing the model is about. Its state is not a concentration but a level, a whole number between zero and its [maximum level](qualitativespecies.md#maxlevel), which stands for a range of activity, for example "the gene is off" and "the gene is on".
@@ -1948,6 +2070,8 @@ label = "compartment"
 package = "qual"
 type = "SIdRef"
 spec = { doc = "qual", section = "3.5" }
+required = true
+rules = [3020308]
 summary = "the compartment the qualitative species is located in"
 description = """
 The attribute is required and names a [compartment](compartment.md) of the model, the same way a [species](species.md) names one. The compartment of a qualitative model carries no size which enters a formula; it says where in the cell the entity is, which is what tells two copies of one protein in two compartments apart.
@@ -1960,6 +2084,8 @@ label = "constant"
 package = "qual"
 type = "boolean"
 spec = { doc = "qual", section = "3.5" }
+required = true
+rules = [3020304, 3020310, 3020509]
 summary = "whether no transition may change the level of the species"
 description = """
 A constant qualitative species is an input of the system: transitions read it and none of them is allowed to change it, so its level is a condition of the experiment and not a result of the model. The attribute is required.
@@ -1972,6 +2098,9 @@ label = "initialLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.5" }
+required = false
+default = "the level the entity starts at is not fixed by the model"
+rules = [3020306, 3020309, 3020312]
 summary = "the level of the species at the start of a simulation"
 description = """
 The initial level is the state the entity starts in, a whole number which cannot be negative and cannot exceed the maximum level. It is optional: a model which is analysed over all of its states, which is what an attractor analysis of a logical model does, gives no starting state.
@@ -1984,6 +2113,9 @@ label = "maxLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.5" }
+required = false
+default = "the levels the species takes follow from the result levels of the transitions alone"
+rules = [3020307, 3020309, 3020313, 3020413]
 summary = "the highest level the species can take"
 description = """
 The maximum level decides how the whole model is read: with the value one the entity is Boolean, off or on, and every condition over it is a logical one; with a higher value it is multi valued and its levels stand for the thresholds at which it acts differently on the things it regulates.
@@ -1997,6 +2129,7 @@ The report shows the level in the column "max level" and in the inspector.
 label = "Transition"
 package = "qual"
 spec = { doc = "qual", section = "3.6" }
+rules = [3010301, 3020401, 3020402, 3020403, 3020405]
 summary = "what the level of a qualitative species becomes, and under which condition"
 description = """
 A transition is to a qualitative model what a [reaction](reaction.md) with its kinetic law is to a kinetic one: it holds the dynamics. It reads the [qualitative species](qualitativespecies.md) of its [inputs](input.md), it changes those of its [outputs](output.md), and its [function terms](functionterm.md) say which level the outputs take: the result level of the first term whose condition holds, and the level of the [default term](defaultterm.md) where none of them holds.
@@ -2012,6 +2145,9 @@ label = "listOfInputs"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.6.1" }
+required = false
+default = "the function terms of the transition read no species"
+rules = [3020405, 3020406, 3020407]
 summary = "the qualitative species the transition reads"
 description = """
 Every [input](input.md) names one [qualitative species](qualitativespecies.md) whose level the condition of a function term may read, with the threshold at which it matters and the sign of its influence. A transition may list none of them, in which case its terms read no species at all.
@@ -2024,6 +2160,9 @@ label = "listOfOutputs"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.6.2" }
+required = false
+default = "the transition changes no species"
+rules = [3020405, 3020406, 3020408]
 summary = "the qualitative species the transition changes"
 description = """
 Every [output](output.md) names one [qualitative species](qualitativespecies.md) whose level the transition sets or increases. A transition without outputs changes nothing, which is why a model which does something has at least one.
@@ -2036,6 +2175,8 @@ label = "listOfFunctionTerms"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.6.3" }
+required = true
+rules = [3020405, 3020409, 3020413, 3020414]
 summary = "the terms which decide the level, in the order in which they are read"
 description = """
 The list is the transition table of the transition. Its [terms](functionterm.md) are read in the order in which the file writes them and the first one whose condition holds decides the result level, so two terms whose conditions overlap are not a contradiction: the earlier one wins.
@@ -2048,6 +2189,8 @@ label = "defaultTerm"
 package = "qual"
 type = "DefaultTerm"
 spec = { doc = "qual", section = "3.6.4" }
+required = true
+rules = [3020409]
 summary = "the term which holds in every state no function term covers"
 description = """
 Every transition has exactly one [default term](defaultterm.md), which makes the transition table total: whatever the levels of the inputs, some term gives a result level.
@@ -2059,6 +2202,7 @@ The report shows it as the last row of the table of the function terms, under th
 label = "Input"
 package = "qual"
 spec = { doc = "qual", section = "3.6.1" }
+rules = [3010301, 3020501, 3020502, 3020503]
 summary = "a qualitative species a transition reads, with the sign of its influence"
 description = """
 An input names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) reads. Together with the [outputs](output.md) of the transitions the inputs are the influence graph of the model, the picture a reader of a regulatory model actually wants: who acts on whom, and whether the action activates or inhibits.
@@ -2072,6 +2216,8 @@ label = "qualitativeSpecies"
 package = "qual"
 type = "SIdRef"
 spec = { doc = "qual", section = "3.6.1" }
+required = true
+rules = [3020508]
 summary = "the species whose level the transition reads"
 description = """
 The attribute is required and names a [qualitative species](qualitativespecies.md) of the model. The report links it, and the inspector of that species shows the input under "referenced by", which is how the transitions that read an entity are found.
@@ -2082,6 +2228,9 @@ label = "thresholdLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.1" }
+required = false
+default = "the threshold is written as a number in the math of the function terms"
+rules = [3020507, 3020510]
 summary = "the level of the species at which the input acts"
 description = """
 A multi valued species does not act the same way at every level: it acts on one target above one level and on another above a higher one. The threshold level is that level, and the identifier of the input stands for it in the math of a [function term](functionterm.md), so that a condition reads `A >= theta_B_A` instead of a bare number.
@@ -2094,6 +2243,8 @@ label = "transitionEffect"
 package = "qual"
 type = "transitionInputEffect"
 spec = { doc = "qual", section = "3.6.1" }
+required = true
+rules = [3020506, 3020509]
 summary = "whether the transition consumes the level of the species it reads"
 description = """
 The effect is `none`, where the transition only reads the level, which is what a logical model does, or `consumption`, where the firing of the transition takes the level away from the species, which is what a Petri net does with the tokens of the places before a transition. The attribute is required.
@@ -2106,6 +2257,9 @@ label = "sign"
 package = "qual"
 type = "sign"
 spec = { doc = "qual", section = "3.6.1" }
+required = false
+default = "the model says nothing about the direction of the influence"
+rules = [3020505]
 summary = "whether the influence of the species activates or inhibits"
 description = """
 The sign is `positive` for an activation, `negative` for an inhibition, `dual` where the species does both depending on the level of the others, and `unknown` where the file does not say. The specification adds it for visualisation: the mathematics of the model is in the [function terms](functionterm.md), and the sign is what lets a reader, or a drawing of the influence graph, see an arrow and a bar without reading the conditions.
@@ -2117,6 +2271,7 @@ The report shows the sign next to the species of the input in the column "inputs
 label = "Output"
 package = "qual"
 spec = { doc = "qual", section = "3.6.2" }
+rules = [3010301, 3020601, 3020602, 3020603]
 summary = "a qualitative species a transition changes, with the effect it has on it"
 description = """
 An output names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) changes. Its [transition effect](output.md#transitioneffect) is what tells the two formalisms of the package apart: `assignmentLevel` for a logical model, `production` for a Petri net.
@@ -2130,6 +2285,8 @@ label = "qualitativeSpecies"
 package = "qual"
 type = "SIdRef"
 spec = { doc = "qual", section = "3.6.2" }
+required = true
+rules = [3020311, 3020607, 3020608]
 summary = "the species whose level the transition changes"
 description = """
 The attribute is required and names a [qualitative species](qualitativespecies.md) of the model which is not constant, since a constant species is an input of the system which no transition may change. The report links it, and the inspector of that species shows the output under "referenced by", which is how the transitions that decide the level of an entity are found.
@@ -2140,6 +2297,9 @@ label = "outputLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.2" }
+required = false
+default = "the transition effect is assignmentLevel, where the output level has no meaning"
+rules = [3020606, 3020609, 3020610]
 summary = "the level the transition produces per result level"
 description = """
 Where the transition effect is `production`, the level the species gains is the result level of the term which fires multiplied by the output level, which is the weight of the arc of a Petri net. The attribute is required there and has no meaning for an `assignmentLevel` output, where the level is the result level itself.
@@ -2152,6 +2312,8 @@ label = "transitionEffect"
 package = "qual"
 type = "transitionOutputEffect"
 spec = { doc = "qual", section = "3.6.2" }
+required = true
+rules = [3020311, 3020605, 3020609]
 summary = "whether the transition sets the level of the species or adds to it"
 description = """
 The effect is `assignmentLevel`, where the level of the species becomes the result level of the term which fires, which is how a logical model is written, or `production`, where the result level multiplied by the output level is added to it, which is how a Petri net is written. The attribute is required, and it is the attribute which says in which of the two formalisms a file is written.
@@ -2163,6 +2325,7 @@ The report shows the effect in the table of the outputs in the inspector of the 
 label = "FunctionTerm"
 package = "qual"
 spec = { doc = "qual", section = "3.6.5" }
+rules = [3020801, 3020802, 3020803, 3020804]
 summary = "one row of the transition table: a condition and the level it results in"
 description = """
 A function term is a condition and a level. The condition is ordinary MathML which returns a boolean value and reads the levels of the [qualitative species](qualitativespecies.md) of the transition; where it holds, the [outputs](output.md) take the result level of the term.
@@ -2176,6 +2339,8 @@ label = "resultLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.5" }
+required = true
+rules = [3020805, 3020806]
 summary = "the level the outputs take where the condition of the term holds"
 description = """
 The result level is a whole number which cannot be negative. An `assignmentLevel` output takes it as its new level, a `production` output gains it multiplied by its output level. The attribute is required.
@@ -2188,6 +2353,8 @@ label = "math"
 package = "qual"
 type = "Math"
 spec = { doc = "qual", section = "3.6.5" }
+required = true
+rules = [3010201, 3010202, 3020804]
 summary = "the condition under which the term decides the level"
 description = """
 The math is an expression which returns a boolean value, usually a comparison of the level of a species with the threshold of an input combined with `and`, `or` and `not`. A symbol in it is the identifier of a qualitative species, which means its level, of an [input](input.md), which means its threshold level, or of an [output](output.md), which means its output level.
@@ -2199,6 +2366,7 @@ The report renders the condition in the table of the terms in the inspector of t
 label = "DefaultTerm"
 package = "qual"
 spec = { doc = "qual", section = "3.6.4" }
+rules = [3020701, 3020702, 3020703]
 summary = "the level of a transition in every state no function term covers"
 description = """
 The default term carries no condition: it is what makes the transition table of a [transition](transition.md) total, the row "otherwise" behind the [function terms](functionterm.md). Every transition has exactly one of them.
@@ -2212,6 +2380,8 @@ label = "resultLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.4" }
+required = true
+rules = [3020704, 3020705]
 summary = "the level the outputs take where no function term holds"
 description = """
 The result level is a whole number which cannot be negative, and it is required. In most files it is zero, which reads as "the entity is off unless one of the terms switches it on".

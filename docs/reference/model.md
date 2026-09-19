@@ -36,8 +36,8 @@ The report shows the model as the root of the report, its lists as the sections 
 | [fbc:listOfFluxBounds](#fbc-listoffluxbounds) | [`list`](datatypes.md#list) | optional | the constraints of the fluxes of a Version 1 model | [fbc v1 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
 | [fbc:listOfUserDefinedConstraints](#fbc-listofuserdefinedconstraints) | [`list`](datatypes.md#list) | optional | the constraints of the model which the reaction network does not impose | [fbc v3 3.3.3](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [fbc:listOfObjectives](#fbc-listofobjectives) | [`list`](datatypes.md#list) | optional | the objective functions of the constraint based model | [fbc v3 3.3.1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [qual:listOfQualitativeSpecies](#qual-listofqualitativespecies) | [`list`](datatypes.md#list) | - | the entities of a qualitative model, which carry a level | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [qual:listOfTransitions](#qual-listoftransitions) | [`list`](datatypes.md#list) | - | the rules which decide the level of the qualitative species | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [qual:listOfQualitativeSpecies](#qual-listofqualitativespecies) | [`list`](datatypes.md#list) | optional | the entities of a qualitative model, which carry a level | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [qual:listOfTransitions](#qual-listoftransitions) | [`list`](datatypes.md#list) | optional | the rules which decide the level of the qualitative species | [qual 3.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -306,11 +306,21 @@ A model which uses the qual package holds its [qualitative species](qualitatives
 
 The report shows them as a section of their own.
 
+- `3020201` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; object using Qualitative Models: &lt;listOfTransitions&gt; and &lt;listOfQualitativeSpecies&gt;.
+- `3020202` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfQualitativeSpecies&gt; and &lt;listOfTransitions&gt;.
+- `3020204` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfQualitativeSpecies&gt; container object may only contain &lt;qualitativeSpecies&gt; objects.
+
 <span id="qual-listoftransitions"></span>**qual:listOfTransitions**
 
 The [transitions](transition.md) are the dynamics of a qualitative model, what the reactions with their kinetic laws are to a kinetic one. Every one of them reads some qualitative species and changes others.
 
 The report shows them as a section of their own.
+
+Default: nothing changes the levels of the qualitative species.
+
+- `3020201` (error): There may be at most one instance of each of the following kinds of objects within a &lt;model&gt; object using Qualitative Models: &lt;listOfTransitions&gt; and &lt;listOfQualitativeSpecies&gt;.
+- `3020202` (error): The various ListOf subobjects with a &lt;model&gt; object are optional, but if present, these container object must not be empty. Specifically, if any of the following classes of objects are present on the &lt;model&gt;, it must not be empty: &lt;listOfQualitativeSpecies&gt; and &lt;listOfTransitions&gt;.
+- `3020203` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfTransitions&gt; container object may only contain &lt;transition&gt; objects.
 
 ## In the report
 

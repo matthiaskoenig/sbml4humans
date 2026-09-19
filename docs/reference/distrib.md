@@ -8,6 +8,14 @@ They do not affect the mathematics of the model. They are a controlled format fo
 
 The report shows the [uncertainties](uncertainty.md) of an element in its inspector and every uncertainty as an element of its own.
 
+## Validation rules
+
+- `1510101` (error): To conform to the Distributions Package specification for SBML Level 3 Version 1, an SBML document must declare 'http://www.sbml.org/sbml/level3/version1/distrib/version1' as the XMLNamespace to use for elements of this package.
+- `1510102` (error): Wherever they appear in an SBML document, elements and attributes from the Distributions Package must use the 'http://www.sbml.org/sbml/level3/version1/distrib/version1' namespace, declaring so either explicitly or implicitly.
+- `1520101` (error): In all SBML documents using the Distributions Package, the &lt;sbml&gt; object must have the 'distrib:required' attribute.
+- `1520102` (error): The value of attribute 'distrib:required' on the &lt;sbml&gt; object must be of data type 'boolean'.
+- `1520103` (error): The value of attribute 'distrib:required' on the &lt;sbml&gt; object must be set to 'true'.
+
 ## Related elements
 
 - [Uncertainty](uncertainty.md): a set of statistical measures of the value of an element

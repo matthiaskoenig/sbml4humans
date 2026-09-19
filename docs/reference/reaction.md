@@ -132,7 +132,7 @@ Default: only a model which is not strict may leave the bound unset.
 
 The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
 
-The report shows the tree in the inspector of the reaction, one line per branch, and links every gene product it names.
+The report names the association on a line of its own in the inspector of the reaction and writes the whole expression below it, as one paragraph which wraps, and links every gene product it names.
 
 - `2020701` (error): There may be at most one instance of a &lt;GeneProductAssociation&gt; within a &lt;Reaction&gt; object using Flux BalanceConstraints.
 

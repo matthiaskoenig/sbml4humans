@@ -257,3 +257,71 @@ What the fbc package adds to a reaction, its flux bounds and its genes.
 The report keeps the three things which fbc gives a [reaction](reaction.md) in one block: the [parameters](parameter.md) which bound its flux from below and from above, and the [gene product association](geneproductassociation.md) which says under which genes it can run.
 
 The inspector shows the block as three rows of the reaction, [fbc:lowerFluxBound](reaction.md#fbc-lowerfluxbound) and [fbc:upperFluxBound](reaction.md#fbc-upperfluxbound), each a link to the parameter it names, and [fbc:geneProductAssociation](reaction.md#fbc-geneproductassociation), which names the association and renders its tree below it. The two bounds are columns of the table of the reactions as well.
+
+## `sign` {#sign}
+
+The direction of the influence an input carries within the system.
+
+The [sign](input.md#sign) of an [input](input.md) says whether the contribution of the species it names is positive, negative, both or not known. It is the arrow and the bar of a regulatory network: an activation, an inhibition, an influence which is one or the other depending on the levels of the other regulators, and one the file does not decide. The package defines the type for visualisation: the mathematics of a [transition](transition.md) is in its [function terms](functionterm.md), and the sign has no impact on it.
+
+The report shows the sign next to the species of the input, in the column of the inputs of a transition and in the table of the inputs in the inspector. The four values are:
+
+- `positive`
+- `negative`
+- `dual`
+- `unknown`
+
+[SBML Level 3 Package: Qualitative Models, Version 1 Release 1](https://sbml.org/documents/specifications/level-3/version-1/qual/), Section 3.2.1.
+
+## `transitionInputEffect` {#transitioninputeffect}
+
+What a transition does to the level of a species it reads.
+
+The [transition effect](input.md#transitioneffect) of an [input](input.md) tells a read from a consumption. With `none` the level of the species is not modified by the [transition](transition.md), which is what a logical model writes and what a read arc of a Petri net is. With `consumption` the level is decreased by the [result level](functionterm.md#resultlevel) of the term which applies, multiplied by the [threshold level](input.md#thresholdlevel) of the input where it sets one, which is how a Petri net takes the tokens of the place before a transition away.
+
+A species which is [constant](qualitativespecies.md#constant) may only be read, so an input of such a species cannot be consumed. The report shows the effect in the table of the inputs in the inspector of the transition. The two values are:
+
+- `none`
+- `consumption`
+
+[SBML Level 3 Package: Qualitative Models, Version 1 Release 1](https://sbml.org/documents/specifications/level-3/version-1/qual/), Section 3.2.2.
+
+## `transitionOutputEffect` {#transitionoutputeffect}
+
+Whether a transition adds to the level of a species it changes or sets it.
+
+The [transition effect](output.md#transitioneffect) of an [output](output.md) is the attribute which says in which of the two formalisms of the package a file is written. With `production` the level of the species is increased by the [result level](functionterm.md#resultlevel) of the term which applies, multiplied by the [output level](output.md#outputlevel) of the output, which is the weight of the arc of a Petri net; an output of this effect has to state its output level, because SBML Level 3 has no default values. With `assignmentLevel` the level of the species becomes that result level, which is how a logical model assigns the value of its rule, and the output level has no meaning.
+
+The report shows the effect in the table of the outputs in the inspector of the transition. The two values are:
+
+- `production`
+- `assignmentLevel`
+
+[SBML Level 3 Package: Qualitative Models, Version 1 Release 1](https://sbml.org/documents/specifications/level-3/version-1/qual/), Section 3.2.3.
+
+## `UncertKind` {#uncertkind}
+
+Which statistical measure an uncert parameter of an uncertainty is.
+
+`UncertKind` is derived from [string](#string) and holds one of sixteen values, the [type](uncertparameter.md#type) of an [uncert parameter](uncertparameter.md). Ten of them are a single number, which the parameter writes in its [value](uncertparameter.md#value) or reads from the element its [var](uncertparameter.md#var) names: the mean, the median, the mode, the variance, the standard deviation, the standard error, the coefficient of variation, the skewness, the kurtosis and the size of the sample. Four of them are an interval and are written as an [uncert span](uncertspan.md), with the two ends of the interval in the place of that single number: the range, the confidence interval, the credible interval and the interquartile range. The last two say where a number comes from rather than what it is: `distribution`, the distribution the value was drawn from, and `externalParameter`, a measure this specification does not define, the only value which may be written as either class and the only one which has to carry a [definition](uncertparameter.md#definitionurl).
+
+Which attributes and which children a measure may carry follows from its value, and the table of Section 3.11.1 of the specification states it per value: a single number carries units and a value or a var, an interval carries units and its two ends, a distribution carries a definition, math and parameters of its own, and an external parameter may carry all of them. The report shows the value in the first column of the measures of an [uncertainty](uncertainty.md) and as the name of a measure which carries no identifier of its own. The sixteen values are:
+
+- `coefficientOfVariation`
+- `kurtosis`
+- `mean`
+- `median`
+- `mode`
+- `sampleSize`
+- `skewness`
+- `standardDeviation`
+- `standardError`
+- `variance`
+- `confidenceInterval`
+- `credibleInterval`
+- `interquartileRange`
+- `range`
+- `externalParameter`
+- `distribution`
+
+[The Distributions Package for SBML Level 3, Version 1 Release 1](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf), Section 3.3.2.

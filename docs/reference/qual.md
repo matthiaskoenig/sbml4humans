@@ -8,6 +8,14 @@ The qual package holds what such a model needs beyond the core: the [qualitative
 
 The report shows the qualitative species and the transitions of a model as sections of their own, the inputs of a transition with the sign of their influence, and the function terms as the transition table they are.
 
+## Validation rules
+
+- `3010101` (error): To conform to Version 1 of the Qualitative Models package specification for SBML Level 3, an SBML document must declare the use of the following XML Namespace: 'http://www.sbml.org/sbml/level3/version1/qual/version1'
+- `3010102` (error): Wherever they appear in an SBML document, elements and attributes from the Qualitative Models package must be declared either implicitly or explicitly to be in the XML namespace 'http://www.sbml.org/sbml/level3/version1/qual/version1'
+- `3020101` (error): In all SBML documents using the Qualitative Models package, the SBML object must include a value for the attribute 'qual:required' attribute.
+- `3020102` (error): The value of attribute 'qual:required' on the SBML object must be of the data type Boolean.
+- `3020103` (error): The value of attribute 'qual:required' on the SBML object must be set to 'true' if if the model contains any &lt;transition&gt; objects.
+
 ## Related elements
 
 - [QualitativeSpecies](qualitativespecies.md): an entity of a qualitative model, which carries a level instead of an amount
