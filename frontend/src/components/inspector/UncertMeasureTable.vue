@@ -9,6 +9,7 @@ import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
 import UnitsLink from "@/components/misc/UnitsLink.vue";
 import { useReportIndex } from "@/report/context";
+import { attributeLabel } from "@/report/glossary";
 import { formatNumber, toNumber } from "@/report/number";
 import { columnChars, definitionLabel } from "@/report/text";
 
@@ -25,9 +26,9 @@ const index = useReportIndex();
 // (distrib §3.11), so the table stays inside the pane of the inspector with four columns
 const COLUMNS = [
   { key: "measure", header: "measure", field: "type" },
-  { key: "value", header: "value" },
-  { key: "units", header: "units" },
-  { key: "definitionUrl", header: "definition" },
+  { key: "value" },
+  { key: "units" },
+  { key: "definitionUrl" },
 ];
 
 interface MeasureRow {
@@ -102,7 +103,7 @@ const widths = computed(() => {
       all.map(({ measure }) => measure.units),
     ),
     definitionUrl: columnChars(
-      "definition",
+      attributeLabel("UncertParameter", "definitionUrl"),
       all.map(({ measure }) =>
         measure.definitionUrl ? definitionLabel(measure.definitionUrl) : null,
       ),

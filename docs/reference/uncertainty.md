@@ -12,11 +12,11 @@ The report shows every uncertainty as an element of its own, with the table of i
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [uncert parameters](#uncert-parameters) | `list` | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [uncertParameters](#uncertparameters) | `list` | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="uncert-parameters"></span>**uncert parameters**
+<span id="uncertparameters"></span>**uncertParameters**
 
 Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 

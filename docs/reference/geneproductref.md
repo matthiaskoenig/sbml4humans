@@ -1,4 +1,4 @@
-# Gene product reference
+# GeneProductRef
 
 The leaf of an association: one gene product the reaction depends on.
 
@@ -10,18 +10,18 @@ The report makes it an element of its own because the reference is where the fil
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [gene product](#gene-product) | `SIdRef` | the gene product this leaf of the association names | [fbc v3 3.11](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [geneProduct](#geneproduct) | `SIdRef` | the gene product this leaf of the association names | [fbc v3 3.11](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="gene-product"></span>**gene product**
+<span id="geneproduct"></span>**geneProduct**
 
 The attribute is required and names a [gene product](geneproduct.md) of the same model. The report shows the label of that gene product, which is the identifier the reconstruction uses, and links the element behind it.
 
 ## Related elements
 
-- [Gene product](geneproduct.md): a gene or one of its products which the reactions of the model depend on
-- [Gene product association](geneproductassociation.md): the genes a reaction needs, as the tree of operators over them
+- [GeneProduct](geneproduct.md): a gene or one of its products which the reactions of the model depend on
+- [GeneProductAssociation](geneproductassociation.md): the genes a reaction needs, as the tree of operators over them
 - [And](and.md): the associations below it are all needed at once
 - [Or](or.md): one of the associations below it suffices
 

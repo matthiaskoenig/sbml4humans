@@ -10,14 +10,14 @@ The report shows the size of a compartment, the units of that size and the units
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [dimensions](#dimensions) | `double` | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [spatialDimensions](#spatialdimensions) | `double` | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [size](#size) | `double` | the size of the compartment at the start of the simulation | [core 4.5.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [units](#units) | `UnitSIdRef` | the units of the size of the compartment | [core 4.5.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [constant](#constant) | `boolean` | whether the size of the compartment stays fixed during a simulation | [core 4.5.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="dimensions"></span>**dimensions**
+<span id="spatialdimensions"></span>**spatialDimensions**
 
 Three dimensions means the size is a volume, two means an area, one means a length. The value does not enter the mathematics of the model, but it decides which units of the model a compartment inherits when it does not declare its own.
 
@@ -60,7 +60,7 @@ The report derives the units of a compartment from its own units, or from the un
 
 - [Model](model.md): the container of everything a model is made of
 - [Species](species.md): a pool of a chemical entity in a compartment
-- [Unit definition](unitdefinition.md): a named unit built from the base units of SBML
+- [UnitDefinition](unitdefinition.md): a named unit built from the base units of SBML
 
 ## Specification
 

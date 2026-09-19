@@ -10,7 +10,7 @@ The report shows the model definitions of a document next to its main model, the
 
 ## Related elements
 
-- [External model definition](externalmodeldefinition.md): a model of another SBML file which this document can instantiate
+- [ExternalModelDefinition](externalmodeldefinition.md): a model of another SBML file which this document can instantiate
 - [Submodel](submodel.md): the instantiation of another model inside this model
 - [Port](port.md): an element of the model which other models are meant to connect to
 - [Model](model.md): the container of everything a model is made of

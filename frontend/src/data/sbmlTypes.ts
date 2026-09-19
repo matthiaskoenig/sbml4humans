@@ -53,11 +53,11 @@ import type {
 export type SbmlPackage = "core" | "comp" | "fbc" | "qual" | "distrib";
 
 export interface SbmlTypeInfo<T extends SbmlType = SbmlType> {
+  /** The type, which is the name of its class in the specification and the only name the
+   * application has for it: the type bar, the heading of a table and the header of the inspector
+   * write `FunctionDefinition` as the specification and the reference do, not a label of their
+   * own. */
   type: T;
-  /** Singular label. */
-  label: string;
-  /** Plural label, the section header. */
-  plural: string;
   /** Marker colour. */
   color: string;
   /** The icon, a component of `@lucide/vue`. */
@@ -73,24 +73,18 @@ export interface ElementTypeInfo extends SbmlTypeInfo<ElementType> {
 export const DOCUMENT_TYPES: readonly SbmlTypeInfo<DocumentElementType>[] = [
   {
     type: "SBMLDocument",
-    label: "Document",
-    plural: "Documents",
     color: "#fcd090",
     icon: FileIcon,
     pkg: "core",
   },
   {
     type: "Model",
-    label: "Model",
-    plural: "Models",
     color: "#66c2a5",
     icon: NetworkIcon,
     pkg: "core",
   },
   {
     type: "ExternalModelDefinition",
-    label: "External model definition",
-    plural: "External model definitions",
     color: "#66c2a5",
     icon: ExternalLinkIcon,
     pkg: "comp",
@@ -100,8 +94,6 @@ export const DOCUMENT_TYPES: readonly SbmlTypeInfo<DocumentElementType>[] = [
 export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   {
     type: "FunctionDefinition",
-    label: "Function definition",
-    plural: "Function definitions",
     color: "#e6f598",
     icon: CodeIcon,
     pkg: "core",
@@ -109,8 +101,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Compartment",
-    label: "Compartment",
-    plural: "Compartments",
     color: "#92c5de",
     icon: BoxIcon,
     pkg: "core",
@@ -118,8 +108,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Species",
-    label: "Species",
-    plural: "Species",
     color: "#abdda4",
     icon: CircleIcon,
     pkg: "core",
@@ -127,8 +115,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Parameter",
-    label: "Parameter",
-    plural: "Parameters",
     color: "#fdae61",
     icon: SlidersHorizontalIcon,
     pkg: "core",
@@ -136,8 +122,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "InitialAssignment",
-    label: "Initial assignment",
-    plural: "Initial assignments",
     color: "#fee08b",
     icon: CircleArrowLeftIcon,
     pkg: "core",
@@ -145,8 +129,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "AssignmentRule",
-    label: "Assignment rule",
-    plural: "Assignment rules",
     color: "#fb9a99",
     icon: EqualIcon,
     pkg: "core",
@@ -154,8 +136,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "RateRule",
-    label: "Rate rule",
-    plural: "Rate rules",
     color: "#fb9a99",
     icon: ActivityIcon,
     pkg: "core",
@@ -163,8 +143,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "AlgebraicRule",
-    label: "Algebraic rule",
-    plural: "Algebraic rules",
     color: "#fb9a99",
     icon: HashIcon,
     pkg: "core",
@@ -172,8 +150,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Constraint",
-    label: "Constraint",
-    plural: "Constraints",
     color: "#fdae61",
     icon: LockIcon,
     pkg: "core",
@@ -181,8 +157,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Reaction",
-    label: "Reaction",
-    plural: "Reactions",
     color: "#a6cee3",
     icon: ArrowRightLeftIcon,
     pkg: "core",
@@ -190,8 +164,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Event",
-    label: "Event",
-    plural: "Events",
     color: "#fed08b",
     icon: ClockIcon,
     pkg: "core",
@@ -199,8 +171,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Submodel",
-    label: "Submodel",
-    plural: "Submodels",
     color: "#00ccff",
     icon: LayoutGridIcon,
     pkg: "comp",
@@ -208,8 +178,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Port",
-    label: "Port",
-    plural: "Ports",
     color: "#fed9a6",
     icon: LogInIcon,
     pkg: "comp",
@@ -217,8 +185,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "GeneProduct",
-    label: "Gene product",
-    plural: "Gene products",
     color: "#d53e4f",
     icon: TagIcon,
     pkg: "fbc",
@@ -226,8 +192,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Objective",
-    label: "Objective",
-    plural: "Objectives",
     color: "#f46d43",
     icon: TargetIcon,
     pkg: "fbc",
@@ -235,8 +199,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "FluxBound",
-    label: "Flux bound",
-    plural: "Flux bounds",
     color: "#f46d43",
     icon: ChevronsLeftRightEllipsisIcon,
     pkg: "fbc",
@@ -244,8 +206,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "UserDefinedConstraint",
-    label: "User defined constraint",
-    plural: "User defined constraints",
     color: "#f46d43",
     icon: ScaleIcon,
     pkg: "fbc",
@@ -253,8 +213,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "QualitativeSpecies",
-    label: "Qualitative species",
-    plural: "Qualitative species",
     color: "#c2a5cf",
     icon: SignalIcon,
     pkg: "qual",
@@ -262,8 +220,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   },
   {
     type: "Transition",
-    label: "Transition",
-    plural: "Transitions",
     color: "#9970ab",
     icon: WorkflowIcon,
     pkg: "qual",
@@ -274,8 +230,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
   // model is about, and they would push the compartments and the species down the page
   {
     type: "UnitDefinition",
-    label: "Unit definition",
-    plural: "Unit definitions",
     color: "#f1b6da",
     icon: CalculatorIcon,
     pkg: "core",
@@ -286,200 +240,150 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
 export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
   {
     type: "SpeciesReference",
-    label: "Species reference",
-    plural: "Species references",
     color: "#abdda4",
     icon: CircleDotIcon,
     pkg: "core",
   },
   {
     type: "ModifierSpeciesReference",
-    label: "Modifier species reference",
-    plural: "Modifier species references",
     color: "#abdda4",
     icon: CircleIcon,
     pkg: "core",
   },
   {
     type: "KineticLaw",
-    label: "Kinetic law",
-    plural: "Kinetic laws",
     color: "#a6cee3",
     icon: CalculatorIcon,
     pkg: "core",
   },
   {
     type: "LocalParameter",
-    label: "Local parameter",
-    plural: "Local parameters",
     color: "#fdae61",
     icon: SlidersHorizontalIcon,
     pkg: "core",
   },
   {
     type: "Trigger",
-    label: "Trigger",
-    plural: "Triggers",
     color: "#fed08b",
     icon: ZapIcon,
     pkg: "core",
   },
   {
     type: "Priority",
-    label: "Priority",
-    plural: "Priorities",
     color: "#fed08b",
     icon: ChevronsUpIcon,
     pkg: "core",
   },
   {
     type: "Delay",
-    label: "Delay",
-    plural: "Delays",
     color: "#fed08b",
     icon: HourglassIcon,
     pkg: "core",
   },
   {
     type: "EventAssignment",
-    label: "Event assignment",
-    plural: "Event assignments",
     color: "#fed08b",
     icon: EqualIcon,
     pkg: "core",
   },
   {
     type: "Deletion",
-    label: "Deletion",
-    plural: "Deletions",
     color: "#00ccff",
     icon: Trash2Icon,
     pkg: "comp",
   },
   {
     type: "ReplacedElement",
-    label: "Replaced element",
-    plural: "Replaced elements",
     color: "#00ccff",
     icon: ReplaceIcon,
     pkg: "comp",
   },
   {
     type: "ReplacedBy",
-    label: "Replaced by",
-    plural: "Replaced by",
     color: "#00ccff",
     icon: ReplaceIcon,
     pkg: "comp",
   },
   {
     type: "SBaseRef",
-    label: "Reference",
-    plural: "References",
     color: "#fed9a6",
     icon: WaypointsIcon,
     pkg: "comp",
   },
   {
     type: "FluxObjective",
-    label: "Flux objective",
-    plural: "Flux objectives",
     color: "#f46d43",
     icon: TargetIcon,
     pkg: "fbc",
   },
   {
     type: "UserDefinedConstraintComponent",
-    label: "User defined constraint component",
-    plural: "User defined constraint components",
     color: "#f46d43",
     icon: ScaleIcon,
     pkg: "fbc",
   },
   {
     type: "GeneProductAssociation",
-    label: "Gene product association",
-    plural: "Gene product associations",
     color: "#d53e4f",
     icon: ListTreeIcon,
     pkg: "fbc",
   },
   {
     type: "And",
-    label: "And",
-    plural: "Ands",
     color: "#d53e4f",
     icon: AmpersandIcon,
     pkg: "fbc",
   },
   {
     type: "Or",
-    label: "Or",
-    plural: "Ors",
     color: "#d53e4f",
     icon: SplitIcon,
     pkg: "fbc",
   },
   {
     type: "GeneProductRef",
-    label: "Gene product reference",
-    plural: "Gene product references",
     color: "#d53e4f",
     icon: TagIcon,
     pkg: "fbc",
   },
   {
     type: "Input",
-    label: "Input",
-    plural: "Inputs",
     color: "#c2a5cf",
     icon: ArrowRightToLineIcon,
     pkg: "qual",
   },
   {
     type: "Output",
-    label: "Output",
-    plural: "Outputs",
     color: "#c2a5cf",
     icon: ArrowRightFromLineIcon,
     pkg: "qual",
   },
   {
     type: "FunctionTerm",
-    label: "Function term",
-    plural: "Function terms",
     color: "#9970ab",
     icon: Table2Icon,
     pkg: "qual",
   },
   {
     type: "DefaultTerm",
-    label: "Default term",
-    plural: "Default terms",
     color: "#9970ab",
     icon: CornerDownRightIcon,
     pkg: "qual",
   },
   {
     type: "Uncertainty",
-    label: "Uncertainty",
-    plural: "Uncertainties",
     color: "#c7c7c7",
     icon: CircleQuestionMarkIcon,
     pkg: "distrib",
   },
   {
     type: "UncertParameter",
-    label: "Uncert parameter",
-    plural: "Uncert parameters",
     color: "#c7c7c7",
     icon: SigmaIcon,
     pkg: "distrib",
   },
   {
     type: "UncertSpan",
-    label: "Uncert span",
-    plural: "Uncert spans",
     color: "#c7c7c7",
     icon: MoveHorizontalIcon,
     pkg: "distrib",

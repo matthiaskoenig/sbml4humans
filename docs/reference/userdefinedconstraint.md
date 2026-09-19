@@ -1,4 +1,4 @@
-# User defined constraint
+# UserDefinedConstraint
 
 A constraint over a combination of fluxes and parameters, added in Version 3.
 
@@ -12,27 +12,27 @@ The report shows the user defined constraints of a model in a section of their o
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [lower bound](#lower-bound) | `SIdRef` | the parameter which holds the smallest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [upper bound](#upper-bound) | `SIdRef` | the parameter which holds the largest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [components](#components) | `list` | the weighted variables the constraint is the sum of | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [lowerBound](#lowerbound) | `SIdRef` | the parameter which holds the smallest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [upperBound](#upperbound) | `SIdRef` | the parameter which holds the largest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [listOfUserDefinedConstraintComponents](#listofuserdefinedconstraintcomponents) | `list` | the weighted variables the constraint is the sum of | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="lower-bound"></span>**lower bound**
+<span id="lowerbound"></span>**lowerBound**
 
 The attribute is required and names a [parameter](parameter.md) of the model, the way the lower flux bound of a reaction does, so that a scenario is changed in one place. A constraint whose two bounds name the same parameter is an equality.
 
-<span id="upper-bound"></span>**upper bound**
+<span id="upperbound"></span>**upperBound**
 
 The attribute is required and names a [parameter](parameter.md) of the model. Together with the lower bound it reads `lowerBound <= sum of the components <= upperBound`.
 
-<span id="components"></span>**components**
+<span id="listofuserdefinedconstraintcomponents"></span>**listOfUserDefinedConstraintComponents**
 
 A constraint which is defined has at least one [component](userdefinedconstraintcomponent.md). The report shows them as a table of the variable, the coefficient and the type of every term, with a link to each of them.
 
 ## Related elements
 
-- [User defined constraint component](userdefinedconstraintcomponent.md): one weighted variable of a user defined constraint
+- [UserDefinedConstraintComponent](userdefinedconstraintcomponent.md): one weighted variable of a user defined constraint
 - [Parameter](parameter.md): a named value which the mathematics of the model can use
 - [Reaction](reaction.md): a process which changes the quantities of species
 - [Flux Balance Constraints (fbc)](fbc.md): the package which describes a constraint based model

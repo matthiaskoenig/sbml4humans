@@ -25,7 +25,7 @@ function attribute(page: Page, label: string) {
 /** The measures of the uncertainty the inspector shows, as "<name> <type> <value>" per row,
  * where a measure without an identifier of its own is named by its type alone. */
 async function measures(page: Page): Promise<string[]> {
-  const rows = attribute(page, "uncert parameters").getByTestId("nested-table").locator("tbody tr");
+  const rows = attribute(page, "uncertParameters").getByTestId("nested-table").locator("tbody tr");
   return rows.evaluateAll((elements) =>
     elements.map((element) =>
       [
@@ -44,7 +44,10 @@ test.describe("distrib", () => {
   test("shows the range of the shipped example as the interval it is", async ({ page }) => {
     await openExample(page, UNCERTAINTIES);
     await row(page, "Parameter:p1").click();
-    await attribute(page, "uncertainties").getByTestId("element-link").first().click();
+    await attribute(page, "distrib:listOfUncertainties")
+      .getByTestId("element-link")
+      .first()
+      .click();
     const inspector = page.getByTestId("inspector");
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Uncertainty");
     // the report read the span as a plain parameter and showed the word "range" with five
@@ -63,7 +66,7 @@ test.describe("distrib", () => {
     const inspector = page.getByTestId("inspector");
     // a measurement per publication is an uncertainty of its own, and the inspector of the
     // parameter shows the measures of each of them
-    const uncertainties = attribute(page, "uncertainties").getByTestId("uncertainty");
+    const uncertainties = attribute(page, "distrib:listOfUncertainties").getByTestId("uncertainty");
     await expect(uncertainties.getByTestId("uncertainty-name")).toHaveText([
       /^u_Km_purified\s*Wilson 1997, purified enzyme$/,
       /^u_Km_lysate\s*Baker 2012, cell lysate$/,
@@ -106,7 +109,10 @@ test.describe("distrib", () => {
     await openExample(page, SPANS);
     await row(page, "Parameter:Vmax").click();
     const inspector = page.getByTestId("inspector");
-    await attribute(page, "uncertainties").getByTestId("element-link").first().click();
+    await attribute(page, "distrib:listOfUncertainties")
+      .getByTestId("element-link")
+      .first()
+      .click();
     expect(await measures(page)).toEqual([
       "Vmax_mean_measure mean Vmax_mean",
       "Vmax_distribution distribution -",
@@ -114,34 +120,39 @@ test.describe("distrib", () => {
       "Vmax_beta externalParameter 5",
     ]);
     // the two parameters of the Beta distribution sit one level below it
-    const depths = await attribute(page, "uncert parameters")
+    const depths = await attribute(page, "uncertParameters")
       .getByTestId("uncert-measure")
       .evaluateAll((elements) => elements.map((element) => element.getAttribute("data-depth")));
     expect(depths).toEqual(["0", "0", "1", "1"]);
 
     // a parameter is an element of its own, with the definition which says what it means
-    await attribute(page, "uncert parameters")
+    await attribute(page, "uncertParameters")
       .getByTestId("uncert-measure")
       .getByTestId("element-link")
       .nth(2)
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Uncert parameter");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("UncertParameter");
     await expect(attribute(page, "type")).toContainText("externalParameter");
     await expect(attribute(page, "value")).toContainText("2");
-    await expect(attribute(page, "definition").getByTestId("definition-link")).toHaveText("alpha");
+    await expect(attribute(page, "definitionURL").getByTestId("definition-link")).toHaveText(
+      "alpha",
+    );
   });
 
   test("walks a measure to the element and the units it names", async ({ page }) => {
     await openExample(page, SPANS);
     await row(page, "Parameter:Vmax").click();
     const inspector = page.getByTestId("inspector");
-    await attribute(page, "uncertainties").getByTestId("element-link").first().click();
-    await attribute(page, "uncert parameters")
+    await attribute(page, "distrib:listOfUncertainties")
+      .getByTestId("element-link")
+      .first()
+      .click();
+    await attribute(page, "uncertParameters")
       .getByTestId("uncert-measure")
       .getByTestId("element-link")
       .first()
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Uncert parameter");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("UncertParameter");
     // the mean is not a number but the parameter which holds it, and it carries its own units
     await expect(attribute(page, "var").getByTestId("element-link")).toHaveText("Vmax_mean");
     await expect(attribute(page, "units").getByTestId("element-link")).toHaveText(
@@ -155,19 +166,22 @@ test.describe("distrib", () => {
     await openExample(page, SPANS);
     await row(page, "AssignmentRule:v").click();
     const inspector = page.getByTestId("inspector");
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Assignment rule");
-    await attribute(page, "uncertainties").getByTestId("element-link").first().click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("AssignmentRule");
+    await attribute(page, "distrib:listOfUncertainties")
+      .getByTestId("element-link")
+      .first()
+      .click();
     // the math of the uncertainty belongs to the parameter which writes it, not to the
     // uncertainty around it
     await expect(inspector.getByTestId("links-references").getByTestId("links-math")).toHaveCount(
       0,
     );
-    await attribute(page, "uncert parameters")
+    await attribute(page, "uncertParameters")
       .getByTestId("uncert-measure")
       .getByTestId("element-link")
       .nth(1)
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Uncert parameter");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("UncertParameter");
     await expect(inspector.getByTestId("links-references").getByTestId("links-math")).toContainText(
       "Vmax_mean",
     );

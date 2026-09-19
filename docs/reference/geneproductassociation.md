@@ -1,4 +1,4 @@
-# Gene product association
+# GeneProductAssociation
 
 The genes a reaction needs, as the tree of operators over them.
 
@@ -27,8 +27,8 @@ The report renders the node and everything below it as the expression it stands 
 - [Reaction](reaction.md): a process which changes the quantities of species
 - [And](and.md): the associations below it are all needed at once
 - [Or](or.md): one of the associations below it suffices
-- [Gene product reference](geneproductref.md): the leaf of an association: one gene product the reaction depends on
-- [Gene product](geneproduct.md): a gene or one of its products which the reactions of the model depend on
+- [GeneProductRef](geneproductref.md): the leaf of an association: one gene product the reaction depends on
+- [GeneProduct](geneproduct.md): a gene or one of its products which the reactions of the model depend on
 
 ## Specification
 

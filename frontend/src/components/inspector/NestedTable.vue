@@ -1,16 +1,19 @@
 <script setup lang="ts" generic="T extends object">
+import { computed } from "vue";
+
 import type { SbmlType } from "@/api/types";
 import ShowAllButton from "@/components/misc/ShowAllButton.vue";
 import ValueText from "@/components/misc/ValueText.vue";
-import { attributeEntry } from "@/report/glossary";
+import { attributeEntry, attributeLabel } from "@/report/glossary";
 import { useLimitedList } from "@/report/limitedList";
 
 const props = defineProps<{
   rows: T[];
-  /** The columns: the key of the cell and its slot, the header, the attribute of the glossary
-   * which explains the header where the key is not that attribute, and whether the column holds
-   * a double of the report, which an infinite value reaches as a string. */
-  columns: { key: string; header: string; field?: string; double?: boolean }[];
+  /** The columns: the key of the cell and its slot, the attribute of the glossary which names
+   * and explains the column where the key is not that attribute, a header for a column which
+   * is not one attribute of the rows, and whether the column holds a double of the report,
+   * which an infinite value reaches as a string. */
+  columns: { key: string; header?: string; field?: string; double?: boolean }[];
   /** The type of the rows, whose attributes of the glossary explain the headers on hover. */
   type?: SbmlType;
   /** Widths in characters of the monospace font of the columns, for a table whose columns line
@@ -26,6 +29,17 @@ function cell(row: T, key: string): string | number | null {
   const value = (row as Record<string, unknown>)[key];
   return typeof value === "string" || typeof value === "number" ? value : null;
 }
+
+/** The columns under their headers: the name the glossary gives the attribute of the column,
+ * as a row of the inspector and a column of an element table are named. */
+const headed = computed(() =>
+  props.columns.map((column) => ({
+    ...column,
+    header:
+      column.header ??
+      (props.type ? attributeLabel(props.type, column.field ?? column.key) : column.key),
+  })),
+);
 
 /** The header with the explanation of its attribute, the way the label of an attribute row
  * shows it. */
@@ -53,12 +67,12 @@ const { shown, hiddenCount, showAll } = useLimitedList(() => props.rows);
     <div class="overflow-x-auto">
       <table class="w-full text-xs" :class="{ 'table-fixed': widths }" data-testid="nested-table">
         <colgroup v-if="widths">
-          <col v-for="column in columns" :key="column.key" :style="width(column)" />
+          <col v-for="column in headed" :key="column.key" :style="width(column)" />
           <col />
         </colgroup>
         <thead>
           <tr class="border-b border-gray-200 text-left text-gray-500">
-            <th v-for="column in columns" :key="column.key" class="py-1 pr-3 font-medium">
+            <th v-for="column in headed" :key="column.key" class="py-1 pr-3 font-medium">
               <span v-tooltip.bottom="tooltip(column)">{{ column.header }}</span>
             </th>
             <th v-if="widths" aria-hidden="true" />

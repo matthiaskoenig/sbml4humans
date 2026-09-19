@@ -52,8 +52,8 @@ The report resolves the units of the parameter and renders them as a formula. A 
 ## Related elements
 
 - [Model](model.md): the container of everything a model is made of
-- [Unit definition](unitdefinition.md): a named unit built from the base units of SBML
-- [Local parameter](localparameter.md): a named value which only one kinetic law uses
+- [UnitDefinition](unitdefinition.md): a named unit built from the base units of SBML
+- [LocalParameter](localparameter.md): a named value which only one kinetic law uses
 
 ## Specification
 

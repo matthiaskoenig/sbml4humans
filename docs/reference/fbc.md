@@ -10,11 +10,11 @@ The report shows the gene products, the objectives, the flux bounds of Version 1
 
 ## Related elements
 
-- [Gene product](geneproduct.md): a gene or one of its products which the reactions of the model depend on
-- [Gene product association](geneproductassociation.md): the genes a reaction needs, as the tree of operators over them
+- [GeneProduct](geneproduct.md): a gene or one of its products which the reactions of the model depend on
+- [GeneProductAssociation](geneproductassociation.md): the genes a reaction needs, as the tree of operators over them
 - [Objective](objective.md): the function a flux balance analysis maximises or minimises
-- [Flux bound](fluxbound.md): a constraint on the flux of a reaction, as fbc Version 1 writes it
-- [User defined constraint](userdefinedconstraint.md): a constraint over a combination of fluxes and parameters, added in Version 3
+- [FluxBound](fluxbound.md): a constraint on the flux of a reaction, as fbc Version 1 writes it
+- [UserDefinedConstraint](userdefinedconstraint.md): a constraint over a combination of fluxes and parameters, added in Version 3
 - [Species](species.md): a pool of a chemical entity in a compartment
 - [Reaction](reaction.md): a process which changes the quantities of species
 

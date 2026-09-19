@@ -7,7 +7,7 @@ defineProps<{ element: Or }>();
 </script>
 
 <template>
-  <AttributeRow label="associations" :type="element.sbmlType" field="associations">
+  <AttributeRow :type="element.sbmlType" field="associations">
     <GeneAssociationView :node="element" />
   </AttributeRow>
 </template>

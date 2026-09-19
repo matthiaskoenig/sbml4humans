@@ -95,7 +95,9 @@ uv run python -m sbml4humans.glossary           # regenerate both, commit the re
 uv run python -m sbml4humans.glossary --check   # the check of the documentation workflow
 ```
 
-`--check` regenerates into a temporary directory and fails when a committed file is not current, when a type or a field of the report model has no entry, when a type or an attribute entry explains something the report does not have, when a link of a description does not resolve to a page or to an anchor of one, when a page references a missing image, or when the navigation in `zensical.toml` does not list a generated page.
+The glossary names what it explains: the `label` of a type is the name of its class in the specification, the `label` of an attribute which cites a specification is its name there (`initialConcentration`, and `fbc:charge` for an attribute a package adds to a type of the core), the `label` of a link kind is its key, and only what the report adds is labelled in plain words (`derived units`). The application takes the headers of its columns, the labels of the rows of its inspector and the names of its link groups from these labels and states none of its own, so a name is changed in the glossary and nowhere else.
+
+`--check` regenerates into a temporary directory and fails when a committed file is not current, when a type or a field of the report model has no entry, when a label of the specification is not such a name, when a type or an attribute entry explains something the report does not have, when a link of a description does not resolve to a page or to an anchor of one, when a page references a missing image, or when the navigation in `zensical.toml` does not list a generated page.
 
 The [release notes](release-notes.md) page is generated as well, from the files of `release-notes/`, the versions newest first:
 

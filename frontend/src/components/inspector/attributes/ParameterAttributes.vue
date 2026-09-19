@@ -12,20 +12,20 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="value" :type="element.sbmlType" field="value"
+  <AttributeRow :type="element.sbmlType" field="value"
     ><ValueText :value="element.value" double
   /></AttributeRow>
-  <AttributeRow label="units" :type="element.sbmlType" field="units">
+  <AttributeRow :type="element.sbmlType" field="units">
     <UnitsLink
       :pk="index?.resolve(element.pk, 'units', element.units)"
       :label="element.units"
       :latex="element.unitsLatex"
     />
   </AttributeRow>
-  <AttributeRow label="constant" :type="element.sbmlType" field="constant"
+  <AttributeRow :type="element.sbmlType" field="constant"
     ><BooleanMark :value="element.constant"
   /></AttributeRow>
-  <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
+  <AttributeRow :type="element.sbmlType" field="derivedUnits"
     ><UnitsView :latex="element.derivedUnits"
   /></AttributeRow>
 </template>

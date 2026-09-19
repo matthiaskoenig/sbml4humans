@@ -26,7 +26,7 @@ test.describe("external model definitions", () => {
     const inspector = page.getByTestId("inspector");
     const replaced = inspector
       .getByTestId("attribute-row")
-      .filter({ has: page.locator("dt", { hasText: /^replaced elements$/ }) })
+      .filter({ has: page.locator("dt", { hasText: /^comp:listOfReplacedElements$/ }) })
       .getByTestId("nested-table");
     const target = replaced.locator("tbody tr").first().getByTestId("element-link").last();
     await expect(target).toHaveAttribute("data-entry", MINIMAL);
@@ -51,7 +51,7 @@ test.describe("external model definitions", () => {
     await expect(back.first()).toHaveAttribute("data-entry", COMP);
     await back.first().click();
     await expect.poll(() => query(page, "entry")).toBe(COMP);
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Replaced element");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("ReplacedElement");
 
     // the browser goes back over the entries
     await page.goBack();

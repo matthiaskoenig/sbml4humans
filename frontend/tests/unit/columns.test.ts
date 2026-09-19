@@ -71,21 +71,31 @@ describe("columns", () => {
   it("shows the fbc columns only in a table a row of which fills them", () => {
     const headers = (type: "Species" | "Reaction", index: ReportIndex, model: string) =>
       visibleColumns(type, index.byType(model).get(type) ?? []).map((c) => c.header);
-    expect(headers("Species", fbcConstraints, "fbc_constraints_v3")).toContain("formula");
-    expect(headers("Species", fbcConstraints, "fbc_constraints_v3")).toContain("charge");
+    expect(headers("Species", fbcConstraints, "fbc_constraints_v3")).toContain(
+      "fbc:chemicalFormula",
+    );
+    expect(headers("Species", fbcConstraints, "fbc_constraints_v3")).toContain("fbc:charge");
     expect(headers("Reaction", fbcConstraints, "fbc_constraints_v3")).toEqual(
-      expect.arrayContaining(["lower bound", "upper bound", "gene association"]),
+      expect.arrayContaining([
+        "fbc:lowerFluxBound",
+        "fbc:upperFluxBound",
+        "fbc:geneProductAssociation",
+      ]),
     );
     // a model without the package keeps the table it had
-    expect(headers("Species", repressilator, "BIOMD0000000012")).not.toContain("formula");
-    expect(headers("Reaction", repressilator, "BIOMD0000000012")).not.toContain("lower bound");
+    expect(headers("Species", repressilator, "BIOMD0000000012")).not.toContain(
+      "fbc:chemicalFormula",
+    );
+    expect(headers("Reaction", repressilator, "BIOMD0000000012")).not.toContain(
+      "fbc:lowerFluxBound",
+    );
     // and a column no row of a table fills is left out, whichever package it belongs to: a
     // constraint based model has no kinetic law, a model of amounts no concentration
-    expect(headers("Reaction", fbcConstraints, "fbc_constraints_v3")).not.toContain("kinetic law");
+    expect(headers("Reaction", fbcConstraints, "fbc_constraints_v3")).not.toContain("kineticLaw");
     expect(headers("Species", repressilator, "BIOMD0000000012")).not.toContain(
-      "initial concentration",
+      "initialConcentration",
     );
-    expect(headers("Species", repressilator, "BIOMD0000000012")).toContain("initial amount");
+    expect(headers("Species", repressilator, "BIOMD0000000012")).toContain("initialAmount");
   });
 
   it("shows the fast column only in a table which has a fast reaction", () => {
@@ -128,16 +138,16 @@ describe("columns", () => {
       "id",
       "name",
       "compartment",
-      "initial level",
-      "max level",
+      "initialLevel",
+      "maxLevel",
       "constant",
     ]);
     expect(columnsOf("Transition").map((c) => c.header)).toEqual([
       "id",
       "name",
-      "inputs",
-      "outputs",
-      "function terms",
+      "listOfInputs",
+      "listOfOutputs",
+      "listOfFunctionTerms",
     ]);
     // the cell of the inputs holds the objects, not a string: it renders the species of every
     // one of them as a link with the sign of its influence behind it

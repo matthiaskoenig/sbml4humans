@@ -23,10 +23,10 @@ const target = computed(() =>
 </script>
 
 <template>
-  <AttributeRow label="submodel" :type="element.sbmlType" field="submodelRef"
+  <AttributeRow :type="element.sbmlType" field="submodelRef"
     ><ElementLink :pk="submodel" :label="element.submodelRef"
   /></AttributeRow>
-  <AttributeRow label="port ref" :type="element.sbmlType" field="portRef">
+  <AttributeRow :type="element.sbmlType" field="portRef">
     <ElementLink
       v-if="element.portRef"
       :pk="target?.pk"
@@ -35,7 +35,7 @@ const target = computed(() =>
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="id ref" :type="element.sbmlType" field="idRef">
+  <AttributeRow :type="element.sbmlType" field="idRef">
     <ElementLink
       v-if="element.idRef"
       :pk="target?.pk"
@@ -44,7 +44,7 @@ const target = computed(() =>
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="unit ref" :type="element.sbmlType" field="unitRef">
+  <AttributeRow :type="element.sbmlType" field="unitRef">
     <ElementLink
       v-if="element.unitRef"
       :pk="target?.pk"
@@ -53,7 +53,7 @@ const target = computed(() =>
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="meta id ref" :type="element.sbmlType" field="metaIdRef">
+  <AttributeRow :type="element.sbmlType" field="metaIdRef">
     <ElementLink
       v-if="element.metaIdRef"
       :pk="target?.pk"
@@ -62,7 +62,7 @@ const target = computed(() =>
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="deletion" :type="element.sbmlType" field="deletion">
+  <AttributeRow :type="element.sbmlType" field="deletion">
     <ElementLink
       v-if="element.deletion"
       :pk="index?.resolve(element.pk, 'deletion', element.deletion)"
@@ -70,13 +70,13 @@ const target = computed(() =>
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="conversion factor" :type="element.sbmlType" field="conversionFactor">
+  <AttributeRow :type="element.sbmlType" field="conversionFactor">
     <ElementLink
       :pk="index?.resolve(element.pk, 'conversionFactor', element.conversionFactor)"
       :label="element.conversionFactor"
     />
   </AttributeRow>
-  <AttributeRow label="nested reference" :type="element.sbmlType" field="sbaseRef">
+  <AttributeRow :type="element.sbmlType" field="sbaseRef">
     <ElementLink v-if="element.sbaseRef" :pk="element.sbaseRef.pk" mark />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>

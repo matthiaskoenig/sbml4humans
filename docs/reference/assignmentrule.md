@@ -1,4 +1,4 @@
-# Assignment rule
+# AssignmentRule
 
 A formula which holds at every moment of the simulation.
 
@@ -39,9 +39,9 @@ The report derives the units of the formula from the units of the quantities it 
 
 ## Related elements
 
-- [Rate rule](raterule.md): a formula which gives the rate of change of an element
-- [Algebraic rule](algebraicrule.md): an equation which has to hold at every moment of the simulation
-- [Initial assignment](initialassignment.md): a formula which computes the value of an element at the start of the simulation
+- [RateRule](raterule.md): a formula which gives the rate of change of an element
+- [AlgebraicRule](algebraicrule.md): an equation which has to hold at every moment of the simulation
+- [InitialAssignment](initialassignment.md): a formula which computes the value of an element at the start of the simulation
 
 ## Specification
 

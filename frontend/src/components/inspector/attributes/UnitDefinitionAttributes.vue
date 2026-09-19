@@ -7,10 +7,10 @@ import UnitsView from "@/components/misc/UnitsView.vue";
 defineProps<{ element: UnitDefinition }>();
 
 const UNIT_COLUMNS = [
-  { key: "kind", header: "kind" },
-  { key: "exponent", header: "exponent", double: true },
-  { key: "scale", header: "scale" },
-  { key: "multiplier", header: "multiplier", double: true },
+  { key: "kind" },
+  { key: "exponent", double: true },
+  { key: "scale" },
+  { key: "multiplier", double: true },
 ];
 </script>
 
@@ -18,15 +18,10 @@ const UNIT_COLUMNS = [
   <!-- the formula the report renders from the units comes first, it is what the definition
   means; the units below it are what the file writes, so a reader can check one against the
   other -->
-  <AttributeRow label="formula" :type="element.sbmlType" field="unitsLatex"
+  <AttributeRow :type="element.sbmlType" field="unitsLatex"
     ><UnitsView :latex="element.unitsLatex"
   /></AttributeRow>
-  <AttributeRow
-    label="units"
-    :type="element.sbmlType"
-    field="listOfUnits"
-    :wide="!!element.listOfUnits?.length"
-  >
+  <AttributeRow :type="element.sbmlType" field="listOfUnits" :wide="!!element.listOfUnits?.length">
     <NestedTable :rows="element.listOfUnits ?? []" :columns="UNIT_COLUMNS" />
   </AttributeRow>
 </template>

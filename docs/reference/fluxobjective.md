@@ -1,4 +1,4 @@
-# Flux objective
+# FluxObjective
 
 One term of an objective: a reaction weighted by a coefficient.
 
@@ -11,9 +11,9 @@ It is an element of the report and not a row of its objective, because the speci
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
 | [reaction](#reaction) | `SIdRef` | the reaction whose flux this term of the objective weighs | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [second reaction](#second-reaction) | `SIdRef` | the second reaction of a mixed quadratic term, from Version 3 on | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [reaction2](#reaction2) | `SIdRef` | the second reaction of a mixed quadratic term, from Version 3 on | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [coefficient](#coefficient) | `double` | the number the flux of the reaction is multiplied with | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [variable type](#variable-type) | `FbcVariableType` | whether the flux enters the objective linearly or quadratically | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [variableType](#variabletype) | `FbcVariableType` | whether the flux enters the objective linearly or quadratically | [fbc v3 3.7](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -21,7 +21,7 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 The attribute is required and names a [reaction](reaction.md) of the model. The report links it, and the inspector of that reaction shows the flux objective under "referenced by", which is how the reactions an analysis optimises are found.
 
-<span id="second-reaction"></span>**second reaction**
+<span id="reaction2"></span>**reaction2**
 
 A quadratic flux objective which names a second [reaction](reaction.md) weighs the product of the two fluxes, `coefficient * J1 * J2`, instead of the square of one. The attribute exists from Version 3 of the package on and is empty in every earlier document.
 
@@ -33,7 +33,7 @@ The coefficient is a signed number and carries no units, since the term takes th
 
 In a strict model the coefficient has to be a finite number. The report shows it next to the reaction.
 
-<span id="variable-type"></span>**variable type**
+<span id="variabletype"></span>**variableType**
 
 The type is `linear`, the classical case in which the flux appears as it is, or `quadratic`, in which it appears squared or multiplied by the flux of the second reaction. Without it a quadratic term reads like a linear one, and `Minimize: 1 R1 + [4 R2^2]/2` and `Minimize: 1 R1 + 4 R2` cannot be told apart.
 

@@ -11,7 +11,7 @@ The report shows the trigger as an element of its own, and its rendered conditio
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
 | [math](#math) | `Math` | the condition whose change from false to true fires the event | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initial value](#initial-value) | `boolean` | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialValue](#initialvalue) | `boolean` | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [persistent](#persistent) | `boolean` | whether the event is still executed when its condition becomes false again before execution | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
@@ -22,7 +22,7 @@ The math is an expression which returns a boolean value, and the event fires at 
 
 The report renders the condition in the column "trigger" of the events and in the inspector, and links the elements the condition reads.
 
-<span id="initial-value"></span>**initial value**
+<span id="initialvalue"></span>**initialValue**
 
 To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
 
@@ -39,7 +39,7 @@ The report shows the flag as a mark, in the column "persistent" of the events an
 - [Event](event.md): an instantaneous change of the model when a condition becomes true
 - [Priority](priority.md): the formula which orders an event against the other events of the same moment
 - [Delay](delay.md): the formula which gives the time between the trigger of an event and its execution
-- [Event assignment](eventassignment.md): the new value an event gives to one element of the model
+- [EventAssignment](eventassignment.md): the new value an event gives to one element of the model
 
 ## Specification
 

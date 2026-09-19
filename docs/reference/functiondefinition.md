@@ -1,4 +1,4 @@
-# Function definition
+# FunctionDefinition
 
 A named function which the mathematics of the model can call.
 

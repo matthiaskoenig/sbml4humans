@@ -16,7 +16,7 @@ const target = computed(() => referenceTarget(index.value, props.element.pk, "de
 </script>
 
 <template>
-  <AttributeRow label="port ref" :type="element.sbmlType" field="portRef">
+  <AttributeRow :type="element.sbmlType" field="portRef">
     <ElementLink
       v-if="element.portRef"
       :pk="target?.pk"
@@ -25,7 +25,7 @@ const target = computed(() => referenceTarget(index.value, props.element.pk, "de
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="id ref" :type="element.sbmlType" field="idRef">
+  <AttributeRow :type="element.sbmlType" field="idRef">
     <ElementLink
       v-if="element.idRef"
       :pk="target?.pk"
@@ -34,7 +34,7 @@ const target = computed(() => referenceTarget(index.value, props.element.pk, "de
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="unit ref" :type="element.sbmlType" field="unitRef">
+  <AttributeRow :type="element.sbmlType" field="unitRef">
     <ElementLink
       v-if="element.unitRef"
       :pk="target?.pk"
@@ -43,7 +43,7 @@ const target = computed(() => referenceTarget(index.value, props.element.pk, "de
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="meta id ref" :type="element.sbmlType" field="metaIdRef">
+  <AttributeRow :type="element.sbmlType" field="metaIdRef">
     <ElementLink
       v-if="element.metaIdRef"
       :pk="target?.pk"
@@ -52,7 +52,7 @@ const target = computed(() => referenceTarget(index.value, props.element.pk, "de
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="nested reference" :type="element.sbmlType" field="sbaseRef">
+  <AttributeRow :type="element.sbmlType" field="sbaseRef">
     <ElementLink v-if="element.sbaseRef" :pk="element.sbaseRef.pk" mark />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>

@@ -16,10 +16,11 @@ describe("icons", () => {
       const small = mount(TypeMark, { props: { type: info.type } });
       const svg = small.get("svg");
       expect(svg.classes(), info.type).toContain("size-2.5");
-      // the icon itself carries no text, the mark around it is the image and names the type
+      // the icon itself carries no text, the mark around it is the image and names the type by
+      // the name of its class
       expect(svg.attributes("aria-hidden")).toBe("true");
       expect(small.attributes("role"), info.type).toBe("img");
-      expect(small.attributes("aria-label"), info.type).toBe(info.label);
+      expect(small.attributes("aria-label"), info.type).toBe(info.type);
       expect(
         mount(TypeMark, { props: { type: info.type, size: "md" } })
           .get("svg")

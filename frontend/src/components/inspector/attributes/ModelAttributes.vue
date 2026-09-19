@@ -11,12 +11,12 @@ const props = defineProps<{ element: Model }>();
 const index = useReportIndex();
 
 const UNITS = [
-  ["substance", "substanceUnits", "substanceUnitsLatex"],
-  ["time", "timeUnits", "timeUnitsLatex"],
-  ["volume", "volumeUnits", "volumeUnitsLatex"],
-  ["area", "areaUnits", "areaUnitsLatex"],
-  ["length", "lengthUnits", "lengthUnitsLatex"],
-  ["extent", "extentUnits", "extentUnitsLatex"],
+  ["substanceUnits", "substanceUnitsLatex"],
+  ["timeUnits", "timeUnitsLatex"],
+  ["volumeUnits", "volumeUnitsLatex"],
+  ["areaUnits", "areaUnitsLatex"],
+  ["lengthUnits", "lengthUnitsLatex"],
+  ["extentUnits", "extentUnitsLatex"],
 ] as const;
 
 const resolve = (id: string | null | undefined) =>
@@ -24,30 +24,27 @@ const resolve = (id: string | null | undefined) =>
 </script>
 
 <template>
-  <AttributeRow label="kind" :type="element.sbmlType" field="kind">{{
-    element.kind ?? "model"
-  }}</AttributeRow>
+  <AttributeRow :type="element.sbmlType" field="kind">{{ element.kind ?? "model" }}</AttributeRow>
   <AttributeRow
-    v-for="[label, idKey, latexKey] in UNITS"
+    v-for="[idKey, latexKey] in UNITS"
     :key="idKey"
-    :label="`${label} units`"
     :type="element.sbmlType"
     :field="idKey"
   >
     <UnitsLink :pk="resolve(element[idKey])" :label="element[idKey]" :latex="element[latexKey]" />
   </AttributeRow>
   <template v-if="element.fbc">
-    <AttributeRow label="strict" :type="element.sbmlType" field="fbc.strict"
+    <AttributeRow :type="element.sbmlType" field="fbc.strict"
       ><BooleanMark :value="element.fbc.strict"
     /></AttributeRow>
-    <AttributeRow label="active objective" :type="element.sbmlType" field="fbc.activeObjective">
+    <AttributeRow :type="element.sbmlType" field="fbc.activeObjective">
       <ElementLink
         :pk="index?.resolve(element.pk, 'activeObjective', element.fbc.activeObjective)"
         :label="element.fbc.activeObjective"
       />
     </AttributeRow>
   </template>
-  <AttributeRow label="conversion factor" :type="element.sbmlType" field="conversionFactor">
+  <AttributeRow :type="element.sbmlType" field="conversionFactor">
     <template v-if="element.conversionFactor">
       <ElementLink
         :pk="index?.resolve(element.pk, 'conversionFactor', element.conversionFactor.sid)"

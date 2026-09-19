@@ -12,16 +12,16 @@ The report shows these attributes for every element: the id and the name in the 
 | --- | --- | --- | --- |
 | [id](#id) | `SId` | the identifier other elements of the model use to reference the element | [core 3.2.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [name](#name) | `string` | the readable name of the element | [core 3.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [metaId](#metaid) | `ID` | the identifier the annotations of the element point at | [core 3.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [sbo](#sbo) | `SBOTerm` | the term of the Systems Biology Ontology which classifies the element | [core 3.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [metaid](#metaid) | `ID` | the identifier the annotations of the element point at | [core 3.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [sboTerm](#sboterm) | `SBOTerm` | the term of the Systems Biology Ontology which classifies the element | [core 3.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [notes](#notes) | `XHTML` | the free text the model author wrote about the element | [core 3.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [annotations](#annotations) | `list` | the controlled vocabulary terms which link the element to database entries | [core 6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [history](#history) | `ModelHistory` | who created the element and when it was modified | [core 6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [replacements](#replacements) | `CompSBase` | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [replaced by](#replaced-by) | `ReplacedBy` | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [replaced elements](#replaced-elements) | `list` | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [key value pairs](#key-value-pairs) | `list` | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [uncertainties](#uncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [comp:replacedBy](#comp-replacedby) | `ReplacedBy` | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:listOfReplacedElements](#comp-listofreplacedelements) | `list` | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | `list` | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [distrib:listOfUncertainties](#distrib-listofuncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
 
@@ -35,13 +35,13 @@ The name is meant for human readers and has no meaning inside the model: it is n
 
 The report shows the name in the second column of every table, next to the id.
 
-<span id="metaid"></span>**metaId**
+<span id="metaid"></span>**metaid**
 
 The meta id exists so that the RDF metadata in the annotation of an element can name the element it describes. It is unique within the whole file, not only within the model, and it has no meaning for the mathematics of the model.
 
 The report shows the meta id in the attributes of the inspector and uses it as a fallback label when an element has no id.
 
-<span id="sbo"></span>**sbo**
+<span id="sboterm"></span>**sboTerm**
 
 The Systems Biology Ontology is a set of controlled terms for the parts of a model, for example "simple chemical" for a species or "mass action rate law" for a kinetic law. The term makes the intention of the model author explicit for software which understands the ontology, and a model stays interpretable without it.
 
@@ -73,19 +73,19 @@ Replacements are the glue of a composed model. An element may state that it repl
 
 The report shows the rows "replaced by" and "replaced elements" in the inspector of every element which carries them.
 
-<span id="replaced-by"></span>**replaced by**
+<span id="comp-replacedby"></span>**comp:replacedBy**
 
 An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the same four ways a [port](port.md) names an element.
 
 The report links the submodel and shows the named element next to it.
 
-<span id="replaced-elements"></span>**replaced elements**
+<span id="comp-listofreplacedelements"></span>**comp:listOfReplacedElements**
 
 Every entry names a submodel and one element inside it which this element replaces. It is how a species of the containing model is connected to the species of two submodels: the containing species replaces both, and the three become one pool.
 
 The report lists the submodel and the named element of every replacement in the inspector.
 
-<span id="key-value-pairs"></span>**key value pairs**
+<span id="fbc-listofkeyvaluepairs"></span>**fbc:listOfKeyValuePairs**
 
 A key value pair carries metadata for which SBML has no attribute: the tool which produced a number, the database a reaction was taken from, the assumption behind a bound. It is written into the annotation of an element, in a namespace the package defines, so that every tool reads the same format instead of inventing its own.
 
@@ -93,7 +93,7 @@ Every key of one element is unique, the value is a string, and the uri says wher
 
 The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
 
-<span id="uncertainties"></span>**uncertainties**
+<span id="distrib-listofuncertainties"></span>**distrib:listOfUncertainties**
 
 Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
 

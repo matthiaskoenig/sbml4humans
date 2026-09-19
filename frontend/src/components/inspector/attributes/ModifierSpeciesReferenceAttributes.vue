@@ -18,10 +18,10 @@ const speciesPk = computed(
 </script>
 
 <template>
-  <AttributeRow label="reaction" :type="element.sbmlType" field="reaction"
+  <AttributeRow :type="element.sbmlType" field="reaction"
     ><ElementLink :pk="parent?.reaction"
   /></AttributeRow>
-  <AttributeRow label="species" :type="element.sbmlType" field="species"
+  <AttributeRow :type="element.sbmlType" field="species"
     ><ElementLink :pk="speciesPk" :label="element.species"
   /></AttributeRow>
 </template>

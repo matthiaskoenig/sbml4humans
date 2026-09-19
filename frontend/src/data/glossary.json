@@ -1,7 +1,7 @@
 {
   "types": {
     "AlgebraicRule": {
-      "label": "Algebraic rule",
+      "label": "AlgebraicRule",
       "summary": "an equation which has to hold at every moment of the simulation",
       "package": "core",
       "page": "reference/algebraicrule/",
@@ -29,7 +29,7 @@
       }
     },
     "AssignmentRule": {
-      "label": "Assignment rule",
+      "label": "AssignmentRule",
       "summary": "a formula which holds at every moment of the simulation",
       "package": "core",
       "page": "reference/assignmentrule/",
@@ -67,7 +67,7 @@
           "summary": "the size of the compartment at the start of the simulation"
         },
         "spatialDimensions": {
-          "label": "dimensions",
+          "label": "spatialDimensions",
           "summary": "the number of dimensions of the compartment"
         },
         "units": {
@@ -97,13 +97,13 @@
       }
     },
     "DefaultTerm": {
-      "label": "Default term",
+      "label": "DefaultTerm",
       "summary": "the level of a transition in every state no function term covers",
       "package": "qual",
       "page": "reference/defaultterm/",
       "attributes": {
         "resultLevel": {
-          "label": "result level",
+          "label": "resultLevel",
           "summary": "the level the outputs take where no function term holds"
         }
       }
@@ -127,23 +127,23 @@
       "page": "reference/deletion/",
       "attributes": {
         "idRef": {
-          "label": "id ref",
+          "label": "idRef",
           "summary": "the element which is removed, by its identifier"
         },
         "metaIdRef": {
-          "label": "meta id ref",
+          "label": "metaIdRef",
           "summary": "the element which is removed, by its meta id"
         },
         "portRef": {
-          "label": "port ref",
+          "label": "portRef",
           "summary": "the port of the submodel whose element is removed"
         },
         "sbaseRef": {
-          "label": "nested reference",
+          "label": "sBaseRef",
           "summary": "the reference which reaches into a submodel of the submodel"
         },
         "unitRef": {
-          "label": "unit ref",
+          "label": "unitRef",
           "summary": "the unit definition which is removed"
         }
       }
@@ -163,7 +163,7 @@
           "summary": "the formula which gives the time between the trigger and the execution"
         },
         "listOfEventAssignments": {
-          "label": "assignments",
+          "label": "listOfEventAssignments",
           "summary": "the changes the event makes when it is executed"
         },
         "priority": {
@@ -179,7 +179,7 @@
           "summary": "the condition of the event, as an element of its own"
         },
         "trigger.initialValue": {
-          "label": "initial value",
+          "label": "initialValue",
           "summary": "whether the condition is taken to be true just before the simulation starts"
         },
         "trigger.math": {
@@ -191,13 +191,13 @@
           "summary": "whether the event is still executed when its condition becomes false again before execution"
         },
         "useValuesFromTriggerTime": {
-          "label": "values from trigger time",
+          "label": "useValuesFromTriggerTime",
           "summary": "whether the assignments use the values of the moment the event was triggered"
         }
       }
     },
     "EventAssignment": {
-      "label": "Event assignment",
+      "label": "EventAssignment",
       "summary": "the new value an event gives to one element of the model",
       "package": "core",
       "page": "reference/eventassignment/",
@@ -213,7 +213,7 @@
       }
     },
     "ExternalModelDefinition": {
-      "label": "External model definition",
+      "label": "ExternalModelDefinition",
       "summary": "a model of another SBML file which this document can instantiate",
       "package": "comp",
       "page": "reference/externalmodeldefinition/",
@@ -223,7 +223,7 @@
           "summary": "the checksum of the document at the source"
         },
         "modelRef": {
-          "label": "model ref",
+          "label": "modelRef",
           "summary": "the identifier of the model inside the referenced file"
         },
         "resolution.entry": {
@@ -249,7 +249,7 @@
       }
     },
     "FluxBound": {
-      "label": "Flux bound",
+      "label": "FluxBound",
       "summary": "a constraint on the flux of a reaction, as fbc Version 1 writes it",
       "package": "fbc",
       "page": "reference/fluxbound/",
@@ -269,7 +269,7 @@
       }
     },
     "FluxObjective": {
-      "label": "Flux objective",
+      "label": "FluxObjective",
       "summary": "one term of an objective: a reaction weighted by a coefficient",
       "package": "fbc",
       "page": "reference/fluxobjective/",
@@ -283,17 +283,17 @@
           "summary": "the reaction whose flux this term of the objective weighs"
         },
         "reaction2": {
-          "label": "second reaction",
+          "label": "reaction2",
           "summary": "the second reaction of a mixed quadratic term, from Version 3 on"
         },
         "variableType": {
-          "label": "variable type",
+          "label": "variableType",
           "summary": "whether the flux enters the objective linearly or quadratically"
         }
       }
     },
     "FunctionDefinition": {
-      "label": "Function definition",
+      "label": "FunctionDefinition",
       "summary": "a named function which the mathematics of the model can call",
       "package": "core",
       "page": "reference/functiondefinition/",
@@ -305,7 +305,7 @@
       }
     },
     "FunctionTerm": {
-      "label": "Function term",
+      "label": "FunctionTerm",
       "summary": "one row of the transition table: a condition and the level it results in",
       "package": "qual",
       "page": "reference/functionterm/",
@@ -315,19 +315,19 @@
           "summary": "the condition under which the term decides the level"
         },
         "resultLevel": {
-          "label": "result level",
+          "label": "resultLevel",
           "summary": "the level the outputs take where the condition of the term holds"
         }
       }
     },
     "GeneProduct": {
-      "label": "Gene product",
+      "label": "GeneProduct",
       "summary": "a gene or one of its products which the reactions of the model depend on",
       "package": "fbc",
       "page": "reference/geneproduct/",
       "attributes": {
         "associatedSpecies": {
-          "label": "associated species",
+          "label": "associatedSpecies",
           "summary": "the species of the model which stands for this gene product"
         },
         "label": {
@@ -337,7 +337,7 @@
       }
     },
     "GeneProductAssociation": {
-      "label": "Gene product association",
+      "label": "GeneProductAssociation",
       "summary": "the genes a reaction needs, as the tree of operators over them",
       "package": "fbc",
       "page": "reference/geneproductassociation/",
@@ -349,19 +349,19 @@
       }
     },
     "GeneProductRef": {
-      "label": "Gene product reference",
+      "label": "GeneProductRef",
       "summary": "the leaf of an association: one gene product the reaction depends on",
       "package": "fbc",
       "page": "reference/geneproductref/",
       "attributes": {
         "geneProduct": {
-          "label": "gene product",
+          "label": "geneProduct",
           "summary": "the gene product this leaf of the association names"
         }
       }
     },
     "InitialAssignment": {
-      "label": "Initial assignment",
+      "label": "InitialAssignment",
       "summary": "a formula which computes the value of an element at the start of the simulation",
       "package": "core",
       "page": "reference/initialassignment/",
@@ -387,7 +387,7 @@
       "page": "reference/input/",
       "attributes": {
         "qualitativeSpecies": {
-          "label": "qualitative species",
+          "label": "qualitativeSpecies",
           "summary": "the species whose level the transition reads"
         },
         "sign": {
@@ -395,17 +395,17 @@
           "summary": "whether the influence of the species activates or inhibits"
         },
         "thresholdLevel": {
-          "label": "threshold level",
+          "label": "thresholdLevel",
           "summary": "the level of the species at which the input acts"
         },
         "transitionEffect": {
-          "label": "transition effect",
+          "label": "transitionEffect",
           "summary": "whether the transition consumes the level of the species it reads"
         }
       }
     },
     "KineticLaw": {
-      "label": "Kinetic law",
+      "label": "KineticLaw",
       "summary": "the formula which gives the speed of a reaction",
       "package": "core",
       "page": "reference/kineticlaw/",
@@ -415,7 +415,7 @@
           "summary": "the units of the rate formula as the report derives them"
         },
         "listOfLocalParameters": {
-          "label": "local parameters",
+          "label": "listOfLocalParameters",
           "summary": "the parameters which only this kinetic law uses"
         },
         "math": {
@@ -425,7 +425,7 @@
       }
     },
     "LocalParameter": {
-      "label": "Local parameter",
+      "label": "LocalParameter",
       "summary": "a named value which only one kinetic law uses",
       "package": "core",
       "page": "reference/localparameter/",
@@ -459,7 +459,7 @@
           "summary": "the annotation element of the model as the file writes it"
         },
         "areaUnits": {
-          "label": "area units",
+          "label": "areaUnits",
           "summary": "the units of the size of the compartments with two dimensions"
         },
         "areaUnitsLatex": {
@@ -467,11 +467,11 @@
           "summary": "the area units of the model rendered as a formula"
         },
         "conversionFactor": {
-          "label": "conversion factor",
+          "label": "conversionFactor",
           "summary": "the parameter which converts between the units of a species and the extent of a reaction"
         },
         "extentUnits": {
-          "label": "extent units",
+          "label": "extentUnits",
           "summary": "the units in which the extent of a reaction is measured"
         },
         "extentUnitsLatex": {
@@ -483,11 +483,11 @@
           "summary": "what the model says about the constraint based problem it describes"
         },
         "fbc.activeObjective": {
-          "label": "active objective",
+          "label": "fbc:activeObjective",
           "summary": "the objective which is optimised unless an analysis says otherwise"
         },
         "fbc.strict": {
-          "label": "strict",
+          "label": "fbc:strict",
           "summary": "whether the model keeps to the restrictions of a linear or quadratic program"
         },
         "kind": {
@@ -495,7 +495,7 @@
           "summary": "whether the model is the model of the document or a model definition"
         },
         "lengthUnits": {
-          "label": "length units",
+          "label": "lengthUnits",
           "summary": "the units of the size of the compartments with one dimension"
         },
         "lengthUnitsLatex": {
@@ -503,79 +503,79 @@
           "summary": "the length units of the model rendered as a formula"
         },
         "listOfCompartments": {
-          "label": "compartments",
+          "label": "listOfCompartments",
           "summary": "the compartments of the model"
         },
         "listOfConstraints": {
-          "label": "constraints",
+          "label": "listOfConstraints",
           "summary": "the constraints of the model"
         },
         "listOfEvents": {
-          "label": "events",
+          "label": "listOfEvents",
           "summary": "the events of the model"
         },
         "listOfFluxBounds": {
-          "label": "flux bounds",
+          "label": "fbc:listOfFluxBounds",
           "summary": "the constraints of the fluxes of a Version 1 model"
         },
         "listOfFunctionDefinitions": {
-          "label": "function definitions",
+          "label": "listOfFunctionDefinitions",
           "summary": "the user defined functions of the model"
         },
         "listOfGeneProducts": {
-          "label": "gene products",
+          "label": "fbc:listOfGeneProducts",
           "summary": "the genes and gene products the reactions of the model depend on"
         },
         "listOfInitialAssignments": {
-          "label": "initial assignments",
+          "label": "listOfInitialAssignments",
           "summary": "the initial assignments of the model"
         },
         "listOfObjectives": {
-          "label": "objectives",
+          "label": "fbc:listOfObjectives",
           "summary": "the objective functions of the constraint based model"
         },
         "listOfParameters": {
-          "label": "parameters",
+          "label": "listOfParameters",
           "summary": "the global parameters of the model"
         },
         "listOfPorts": {
-          "label": "ports",
+          "label": "comp:listOfPorts",
           "summary": "the elements of the model which are meant to be used from outside"
         },
         "listOfQualitativeSpecies": {
-          "label": "qualitative species",
+          "label": "qual:listOfQualitativeSpecies",
           "summary": "the entities of a qualitative model, which carry a level"
         },
         "listOfReactions": {
-          "label": "reactions",
+          "label": "listOfReactions",
           "summary": "the reactions of the model"
         },
         "listOfRules": {
-          "label": "rules",
+          "label": "listOfRules",
           "summary": "the assignment, rate and algebraic rules of the model"
         },
         "listOfSpecies": {
-          "label": "species",
+          "label": "listOfSpecies",
           "summary": "the species of the model"
         },
         "listOfSubmodels": {
-          "label": "submodels",
+          "label": "comp:listOfSubmodels",
           "summary": "the models which this model instantiates"
         },
         "listOfTransitions": {
-          "label": "transitions",
+          "label": "qual:listOfTransitions",
           "summary": "the rules which decide the level of the qualitative species"
         },
         "listOfUnitDefinitions": {
-          "label": "unit definitions",
+          "label": "listOfUnitDefinitions",
           "summary": "the units the model defines"
         },
         "listOfUserDefinedConstraints": {
-          "label": "user defined constraints",
+          "label": "fbc:listOfUserDefinedConstraints",
           "summary": "the constraints of the model which the reaction network does not impose"
         },
         "substanceUnits": {
-          "label": "substance units",
+          "label": "substanceUnits",
           "summary": "the units of the amounts of the species which do not declare their own"
         },
         "substanceUnitsLatex": {
@@ -583,7 +583,7 @@
           "summary": "the substance units of the model rendered as a formula"
         },
         "timeUnits": {
-          "label": "time units",
+          "label": "timeUnits",
           "summary": "the unit in which time is measured in the model"
         },
         "timeUnitsLatex": {
@@ -591,7 +591,7 @@
           "summary": "the time units of the model rendered as a formula"
         },
         "volumeUnits": {
-          "label": "volume units",
+          "label": "volumeUnits",
           "summary": "the units of the size of the compartments with three dimensions"
         },
         "volumeUnitsLatex": {
@@ -601,7 +601,7 @@
       }
     },
     "ModifierSpeciesReference": {
-      "label": "Modifier species reference",
+      "label": "ModifierSpeciesReference",
       "summary": "the participation of a species in a reaction as a modifier",
       "package": "core",
       "page": "reference/modifierspeciesreference/",
@@ -623,7 +623,7 @@
       "page": "reference/objective/",
       "attributes": {
         "listOfFluxObjectives": {
-          "label": "flux objectives",
+          "label": "listOfFluxObjectives",
           "summary": "the reactions of the objective with their coefficient"
         },
         "type": {
@@ -651,15 +651,15 @@
       "page": "reference/output/",
       "attributes": {
         "outputLevel": {
-          "label": "output level",
+          "label": "outputLevel",
           "summary": "the level the transition produces per result level"
         },
         "qualitativeSpecies": {
-          "label": "qualitative species",
+          "label": "qualitativeSpecies",
           "summary": "the species whose level the transition changes"
         },
         "transitionEffect": {
-          "label": "transition effect",
+          "label": "transitionEffect",
           "summary": "whether the transition sets the level of the species or adds to it"
         }
       }
@@ -699,23 +699,23 @@
       "page": "reference/port/",
       "attributes": {
         "idRef": {
-          "label": "id ref",
+          "label": "idRef",
           "summary": "the element which this port names, by its identifier"
         },
         "metaIdRef": {
-          "label": "meta id ref",
+          "label": "metaIdRef",
           "summary": "the element which this port names, by its meta id"
         },
         "portRef": {
-          "label": "port ref",
+          "label": "portRef",
           "summary": "the port which this reference names"
         },
         "sbaseRef": {
-          "label": "nested reference",
+          "label": "sBaseRef",
           "summary": "the reference which reaches from the named submodel into the model it instantiates"
         },
         "unitRef": {
-          "label": "unit ref",
+          "label": "unitRef",
           "summary": "the unit definition which this port names"
         }
       }
@@ -733,7 +733,7 @@
       }
     },
     "QualitativeSpecies": {
-      "label": "Qualitative species",
+      "label": "QualitativeSpecies",
       "summary": "an entity of a qualitative model, which carries a level instead of an amount",
       "package": "qual",
       "page": "reference/qualitativespecies/",
@@ -747,17 +747,17 @@
           "summary": "whether no transition may change the level of the species"
         },
         "initialLevel": {
-          "label": "initial level",
+          "label": "initialLevel",
           "summary": "the level of the species at the start of a simulation"
         },
         "maxLevel": {
-          "label": "max level",
+          "label": "maxLevel",
           "summary": "the highest level the species can take"
         }
       }
     },
     "RateRule": {
-      "label": "Rate rule",
+      "label": "RateRule",
       "summary": "a formula which gives the rate of change of an element",
       "package": "core",
       "page": "reference/raterule/",
@@ -799,19 +799,19 @@
           "summary": "the flux bounds and the gene association which fbc adds to a reaction"
         },
         "fbc.geneProductAssociation": {
-          "label": "gene product association",
+          "label": "fbc:geneProductAssociation",
           "summary": "the genes under which the reaction can run"
         },
         "fbc.lowerFluxBound": {
-          "label": "lower flux bound",
+          "label": "fbc:lowerFluxBound",
           "summary": "the parameter which holds the smallest flux the reaction may carry"
         },
         "fbc.upperFluxBound": {
-          "label": "upper flux bound",
+          "label": "fbc:upperFluxBound",
           "summary": "the parameter which holds the largest flux the reaction may carry"
         },
         "kineticLaw": {
-          "label": "kinetic law",
+          "label": "kineticLaw",
           "summary": "the formula which gives the speed of the reaction"
         },
         "kineticLaw.derivedUnits": {
@@ -819,19 +819,19 @@
           "summary": "the units the report derives for the rate formula of the kinetic law"
         },
         "kineticLaw.math": {
-          "label": "kinetic law",
+          "label": "kineticLaw",
           "summary": "the rate formula of the reaction's kinetic law, rendered"
         },
         "listOfModifiers": {
-          "label": "modifiers",
+          "label": "listOfModifiers",
           "summary": "the species which influence the reaction without being consumed"
         },
         "listOfProducts": {
-          "label": "products",
+          "label": "listOfProducts",
           "summary": "the species the reaction produces, with their stoichiometry"
         },
         "listOfReactants": {
-          "label": "reactants",
+          "label": "listOfReactants",
           "summary": "the species the reaction consumes, with their stoichiometry"
         },
         "reversible": {
@@ -841,45 +841,45 @@
       }
     },
     "ReplacedBy": {
-      "label": "Replaced by",
+      "label": "ReplacedBy",
       "summary": "the element of a submodel which takes the place of the element carrying it",
       "package": "comp",
       "page": "reference/replacedby/",
       "attributes": {
         "idRef": {
-          "label": "id ref",
+          "label": "idRef",
           "summary": "the element which replaces this element, by its identifier"
         },
         "metaIdRef": {
-          "label": "meta id ref",
+          "label": "metaIdRef",
           "summary": "the element which replaces this element, by its meta id"
         },
         "portRef": {
-          "label": "port ref",
+          "label": "portRef",
           "summary": "the port of the submodel whose element takes the place of this element"
         },
         "sbaseRef": {
-          "label": "nested reference",
+          "label": "sBaseRef",
           "summary": "the reference which reaches into a submodel of the named submodel"
         },
         "submodelRef": {
-          "label": "submodel",
+          "label": "submodelRef",
           "summary": "the submodel which holds the replacing element"
         },
         "unitRef": {
-          "label": "unit ref",
+          "label": "unitRef",
           "summary": "the unit definition which replaces this unit definition"
         }
       }
     },
     "ReplacedElement": {
-      "label": "Replaced element",
+      "label": "ReplacedElement",
       "summary": "an element of a submodel which the element carrying it takes the place of",
       "package": "comp",
       "page": "reference/replacedelement/",
       "attributes": {
         "conversionFactor": {
-          "label": "conversion factor",
+          "label": "conversionFactor",
           "summary": "the parameter which rescales the replaced value to the scale of this element"
         },
         "deletion": {
@@ -887,33 +887,33 @@
           "summary": "the deletion of the submodel whose element this element takes the place of"
         },
         "idRef": {
-          "label": "id ref",
+          "label": "idRef",
           "summary": "the element which is replaced, by its identifier"
         },
         "metaIdRef": {
-          "label": "meta id ref",
+          "label": "metaIdRef",
           "summary": "the element which is replaced, by its meta id"
         },
         "portRef": {
-          "label": "port ref",
+          "label": "portRef",
           "summary": "the port of the submodel whose element is replaced"
         },
         "sbaseRef": {
-          "label": "nested reference",
+          "label": "sBaseRef",
           "summary": "the reference which reaches into a submodel of the named submodel"
         },
         "submodelRef": {
-          "label": "submodel",
+          "label": "submodelRef",
           "summary": "the submodel which holds the replaced element"
         },
         "unitRef": {
-          "label": "unit ref",
+          "label": "unitRef",
           "summary": "the unit definition which is replaced"
         }
       }
     },
     "SBMLDocument": {
-      "label": "Document",
+      "label": "SBMLDocument",
       "summary": "the container of an SBML file, with its level, version and packages",
       "package": "core",
       "page": "reference/sbmldocument/",
@@ -947,11 +947,11 @@
           "summary": "how the element replaces an element of a submodel or is replaced by one"
         },
         "comp.replacedBy": {
-          "label": "replaced by",
+          "label": "comp:replacedBy",
           "summary": "the element of a submodel which takes the place of this element"
         },
         "comp.replacedElements": {
-          "label": "replaced elements",
+          "label": "comp:listOfReplacedElements",
           "summary": "the elements of submodels which this element takes the place of"
         },
         "cvterms": {
@@ -967,11 +967,11 @@
           "summary": "the identifier other elements of the model use to reference the element"
         },
         "keyValuePairs": {
-          "label": "key value pairs",
+          "label": "fbc:listOfKeyValuePairs",
           "summary": "the controlled annotation fbc Version 3 allows on any element"
         },
         "metaId": {
-          "label": "metaId",
+          "label": "metaid",
           "summary": "the identifier the annotations of the element point at"
         },
         "name": {
@@ -983,11 +983,11 @@
           "summary": "the free text the model author wrote about the element"
         },
         "sbo": {
-          "label": "sbo",
+          "label": "sboTerm",
           "summary": "the term of the Systems Biology Ontology which classifies the element"
         },
         "uncertainties": {
-          "label": "uncertainties",
+          "label": "distrib:listOfUncertainties",
           "summary": "the statistical measures of the value of the element"
         },
         "xml": {
@@ -997,29 +997,29 @@
       }
     },
     "SBaseRef": {
-      "label": "Reference",
+      "label": "SBaseRef",
       "summary": "a link of a chain which reaches into a submodel of a submodel",
       "package": "comp",
       "page": "reference/sbaseref/",
       "attributes": {
         "idRef": {
-          "label": "id ref",
+          "label": "idRef",
           "summary": "the element which this link of the chain names, by its identifier"
         },
         "metaIdRef": {
-          "label": "meta id ref",
+          "label": "metaIdRef",
           "summary": "the element which this link of the chain names, by its meta id"
         },
         "portRef": {
-          "label": "port ref",
+          "label": "portRef",
           "summary": "the port of the model which this link of the chain names"
         },
         "sbaseRef": {
-          "label": "nested reference",
+          "label": "sBaseRef",
           "summary": "the next link of the chain, one submodel deeper"
         },
         "unitRef": {
-          "label": "unit ref",
+          "label": "unitRef",
           "summary": "the unit definition which this link of the chain names"
         }
       }
@@ -1031,7 +1031,7 @@
       "page": "reference/species/",
       "attributes": {
         "boundaryCondition": {
-          "label": "boundary condition",
+          "label": "boundaryCondition",
           "summary": "whether the quantity of the species is left unchanged by the reactions"
         },
         "compartment": {
@@ -1043,7 +1043,7 @@
           "summary": "whether the quantity of the species stays fixed during a simulation"
         },
         "conversionFactor": {
-          "label": "conversion factor",
+          "label": "conversionFactor",
           "summary": "the parameter which converts the extent of a reaction into the quantity of the species"
         },
         "derivedUnits": {
@@ -1055,27 +1055,27 @@
           "summary": "the chemical formula and the charge which fbc adds to a species"
         },
         "fbc.charge": {
-          "label": "charge",
+          "label": "fbc:charge",
           "summary": "the charge of the species, counted in electrons"
         },
         "fbc.chemicalFormula": {
-          "label": "chemical formula",
+          "label": "fbc:chemicalFormula",
           "summary": "the elemental composition of the species"
         },
         "hasOnlySubstanceUnits": {
-          "label": "only substance units",
+          "label": "hasOnlySubstanceUnits",
           "summary": "whether the identifier of the species stands for an amount instead of a concentration"
         },
         "initialAmount": {
-          "label": "initial amount",
+          "label": "initialAmount",
           "summary": "the amount of the species when the simulation starts"
         },
         "initialConcentration": {
-          "label": "initial concentration",
+          "label": "initialConcentration",
           "summary": "the concentration of the species when the simulation starts"
         },
         "substanceUnits": {
-          "label": "substance units",
+          "label": "substanceUnits",
           "summary": "the units of the amount of the species"
         },
         "unitsLatex": {
@@ -1085,7 +1085,7 @@
       }
     },
     "SpeciesReference": {
-      "label": "Species reference",
+      "label": "SpeciesReference",
       "summary": "the participation of a species in a reaction as a reactant or a product",
       "package": "core",
       "page": "reference/speciesreference/",
@@ -1119,19 +1119,19 @@
       "page": "reference/submodel/",
       "attributes": {
         "extentConversionFactor": {
-          "label": "extent conversion factor",
+          "label": "extentConversionFactor",
           "summary": "the parameter which converts the reaction extent of the submodel into the extent of this model"
         },
         "listOfDeletions": {
-          "label": "deletions",
+          "label": "listOfDeletions",
           "summary": "the elements which are removed from the model before it is instantiated"
         },
         "modelRef": {
-          "label": "model",
+          "label": "modelRef",
           "summary": "the model which this submodel instantiates"
         },
         "timeConversionFactor": {
-          "label": "time conversion factor",
+          "label": "timeConversionFactor",
           "summary": "the parameter which converts the time of the submodel into the time of this model"
         }
       }
@@ -1143,19 +1143,19 @@
       "page": "reference/transition/",
       "attributes": {
         "defaultTerm": {
-          "label": "default term",
+          "label": "defaultTerm",
           "summary": "the term which holds in every state no function term covers"
         },
         "listOfFunctionTerms": {
-          "label": "function terms",
+          "label": "listOfFunctionTerms",
           "summary": "the terms which decide the level, in the order in which they are read"
         },
         "listOfInputs": {
-          "label": "inputs",
+          "label": "listOfInputs",
           "summary": "the qualitative species the transition reads"
         },
         "listOfOutputs": {
-          "label": "outputs",
+          "label": "listOfOutputs",
           "summary": "the qualitative species the transition changes"
         }
       }
@@ -1167,7 +1167,7 @@
       "page": "reference/trigger/",
       "attributes": {
         "initialValue": {
-          "label": "initial value",
+          "label": "initialValue",
           "summary": "whether the condition is taken to be true just before the simulation starts"
         },
         "math": {
@@ -1181,13 +1181,13 @@
       }
     },
     "UncertParameter": {
-      "label": "Uncert parameter",
+      "label": "UncertParameter",
       "summary": "one statistical measure of an uncertainty",
       "package": "distrib",
       "page": "reference/uncertparameter/",
       "attributes": {
         "definitionUrl": {
-          "label": "definition url",
+          "label": "definitionURL",
           "summary": "what a distribution or an external parameter means"
         },
         "math": {
@@ -1199,7 +1199,7 @@
           "summary": "which statistical measure the parameter is"
         },
         "uncertParameters": {
-          "label": "uncert parameters",
+          "label": "uncertParameters",
           "summary": "the parameters which define a distribution or an external parameter"
         },
         "units": {
@@ -1217,13 +1217,13 @@
       }
     },
     "UncertSpan": {
-      "label": "Uncert span",
+      "label": "UncertSpan",
       "summary": "a measure of an uncertainty which is an interval",
       "package": "distrib",
       "page": "reference/uncertspan/",
       "attributes": {
         "definitionUrl": {
-          "label": "definition url",
+          "label": "definitionURL",
           "summary": "what an external parameter which is an interval means"
         },
         "interval": {
@@ -1239,7 +1239,7 @@
           "summary": "which interval the span is"
         },
         "uncertParameters": {
-          "label": "uncert parameters",
+          "label": "uncertParameters",
           "summary": "the parameters which define an external parameter"
         },
         "units": {
@@ -1251,11 +1251,11 @@
           "summary": "the single number of a measure, which a span does not use"
         },
         "valueLower": {
-          "label": "value lower",
+          "label": "valueLower",
           "summary": "the lower end of the interval as a number"
         },
         "valueUpper": {
-          "label": "value upper",
+          "label": "valueUpper",
           "summary": "the upper end of the interval as a number"
         },
         "var": {
@@ -1263,11 +1263,11 @@
           "summary": "the element of a single number, which a span does not use"
         },
         "varLower": {
-          "label": "var lower",
+          "label": "varLower",
           "summary": "the element of the model which holds the lower end"
         },
         "varUpper": {
-          "label": "var upper",
+          "label": "varUpper",
           "summary": "the element of the model which holds the upper end"
         }
       }
@@ -1279,19 +1279,19 @@
       "page": "reference/uncertainty/",
       "attributes": {
         "uncertParameters": {
-          "label": "uncert parameters",
+          "label": "uncertParameters",
           "summary": "the statistical measures which make up the uncertainty"
         }
       }
     },
     "UnitDefinition": {
-      "label": "Unit definition",
+      "label": "UnitDefinition",
       "summary": "a named unit built from the base units of SBML",
       "package": "core",
       "page": "reference/unitdefinition/",
       "attributes": {
         "listOfUnits": {
-          "label": "units",
+          "label": "listOfUnits",
           "summary": "the units the definition multiplies, each with its exponent, scale and multiplier"
         },
         "unitsLatex": {
@@ -1301,27 +1301,27 @@
       }
     },
     "UserDefinedConstraint": {
-      "label": "User defined constraint",
+      "label": "UserDefinedConstraint",
       "summary": "a constraint over a combination of fluxes and parameters, added in Version 3",
       "package": "fbc",
       "page": "reference/userdefinedconstraint/",
       "attributes": {
         "listOfUserDefinedConstraintComponents": {
-          "label": "components",
+          "label": "listOfUserDefinedConstraintComponents",
           "summary": "the weighted variables the constraint is the sum of"
         },
         "lowerBound": {
-          "label": "lower bound",
+          "label": "lowerBound",
           "summary": "the parameter which holds the smallest value the constraint may take"
         },
         "upperBound": {
-          "label": "upper bound",
+          "label": "upperBound",
           "summary": "the parameter which holds the largest value the constraint may take"
         }
       }
     },
     "UserDefinedConstraintComponent": {
-      "label": "User defined constraint component",
+      "label": "UserDefinedConstraintComponent",
       "summary": "one weighted variable of a user defined constraint",
       "package": "fbc",
       "page": "reference/userdefinedconstraintcomponent/",
@@ -1335,11 +1335,11 @@
           "summary": "the reaction or the parameter this term of the constraint weighs"
         },
         "variable2": {
-          "label": "second variable",
+          "label": "variable2",
           "summary": "the second variable of a mixed quadratic term"
         },
         "variableType": {
-          "label": "variable type",
+          "label": "variableType",
           "summary": "whether the variable enters the constraint linearly or quadratically"
         }
       }
@@ -1375,11 +1375,11 @@
   },
   "links": {
     "activeObjective": {
-      "label": "active objective",
+      "label": "activeObjective",
       "summary": "the objective a model declares as the one which is optimised"
     },
     "associatedSpecies": {
-      "label": "associated species",
+      "label": "associatedSpecies",
       "summary": "the species a gene product stands for"
     },
     "coefficient": {
@@ -1391,15 +1391,15 @@
       "summary": "the compartment a species or a qualitative species is located in, or a reaction takes place in"
     },
     "constraintComponent": {
-      "label": "constraint component",
+      "label": "constraintComponent",
       "summary": "a term of a user defined constraint"
     },
     "conversionFactor": {
-      "label": "conversion factor",
+      "label": "conversionFactor",
       "summary": "the parameter which converts the values of an element"
     },
     "defaultTerm": {
-      "label": "default term",
+      "label": "defaultTerm",
       "summary": "the term of a transition which holds where no other one does"
     },
     "delay": {
@@ -1411,35 +1411,35 @@
       "summary": "an element which a submodel removes, and the deletion which removes it"
     },
     "eventAssignment": {
-      "label": "event assignment",
+      "label": "eventAssignment",
       "summary": "a new value an event gives to an element of the model"
     },
     "extentConversionFactor": {
-      "label": "extent conversion factor",
+      "label": "extentConversionFactor",
       "summary": "the parameter which converts the reaction extent of a submodel"
     },
     "externalModelDefinition": {
-      "label": "external model definition",
+      "label": "externalModelDefinition",
       "summary": "a model of another document which this document refers to"
     },
     "fluxBound": {
-      "label": "flux bound",
+      "label": "fluxBound",
       "summary": "the reaction a flux bound of fbc Version 1 constrains"
     },
     "fluxObjective": {
-      "label": "flux objective",
+      "label": "fluxObjective",
       "summary": "a term of an objective function and the reaction whose flux it weighs"
     },
     "functionTerm": {
-      "label": "function term",
+      "label": "functionTerm",
       "summary": "a row of the transition table of a transition"
     },
     "geneProduct": {
-      "label": "gene product",
+      "label": "geneProduct",
       "summary": "a gene product a reaction needs, named by a reference of its association"
     },
     "geneProductAssociation": {
-      "label": "gene product association",
+      "label": "geneProductAssociation",
       "summary": "a node of the gene association of a reaction, from the reaction down to its genes"
     },
     "input": {
@@ -1447,19 +1447,19 @@
       "summary": "a qualitative species a transition reads"
     },
     "kineticLaw": {
-      "label": "kinetic law",
+      "label": "kineticLaw",
       "summary": "the formula which gives the speed of a reaction"
     },
     "localParameter": {
-      "label": "local parameter",
+      "label": "localParameter",
       "summary": "a parameter which only the formula of one kinetic law can read"
     },
     "lowerBound": {
-      "label": "lower bound",
+      "label": "lowerBound",
       "summary": "the parameter which holds the lowest value of a user defined constraint"
     },
     "lowerFluxBound": {
-      "label": "lower flux bound",
+      "label": "lowerFluxBound",
       "summary": "the parameter which holds the lowest flux of a reaction"
     },
     "math": {
@@ -1471,7 +1471,7 @@
       "summary": "a model the document holds"
     },
     "modelRef": {
-      "label": "model reference",
+      "label": "modelRef",
       "summary": "the model a submodel instantiates"
     },
     "modifier": {
@@ -1499,19 +1499,19 @@
       "summary": "a species a reaction consumes"
     },
     "reaction2": {
-      "label": "second reaction",
+      "label": "reaction2",
       "summary": "the second flux of a quadratic term of an objective"
     },
     "replacedBy": {
-      "label": "replaced by",
+      "label": "replacedBy",
       "summary": "the element of a submodel which replaces this one"
     },
     "replacedElement": {
-      "label": "replaced element",
+      "label": "replacedElement",
       "summary": "the element of a submodel which this one replaces"
     },
     "sBaseRef": {
-      "label": "reference",
+      "label": "sBaseRef",
       "summary": "the next link of a chain of references into a submodel of a submodel"
     },
     "symbol": {
@@ -1519,7 +1519,7 @@
       "summary": "the element whose initial value an initial assignment computes"
     },
     "timeConversionFactor": {
-      "label": "time conversion factor",
+      "label": "timeConversionFactor",
       "summary": "the parameter which converts the time of a submodel"
     },
     "trigger": {
@@ -1527,7 +1527,7 @@
       "summary": "the condition an event fires on"
     },
     "uncertParameter": {
-      "label": "uncert parameter",
+      "label": "uncertParameter",
       "summary": "a measure of an uncertainty"
     },
     "uncertainty": {
@@ -1539,11 +1539,11 @@
       "summary": "the unit definition an element declares its units with"
     },
     "upperBound": {
-      "label": "upper bound",
+      "label": "upperBound",
       "summary": "the parameter which holds the highest value of a user defined constraint"
     },
     "upperFluxBound": {
-      "label": "upper flux bound",
+      "label": "upperFluxBound",
       "summary": "the parameter which holds the highest flux of a reaction"
     },
     "var": {
@@ -1551,11 +1551,11 @@
       "summary": "the element which holds the number of a measure"
     },
     "varLower": {
-      "label": "var lower",
+      "label": "varLower",
       "summary": "the element which holds the lower end of the interval of a measure"
     },
     "varUpper": {
-      "label": "var upper",
+      "label": "varUpper",
       "summary": "the element which holds the upper end of the interval of a measure"
     },
     "variable": {
@@ -1563,7 +1563,7 @@
       "summary": "the element a rule, an event assignment or a constraint component is about"
     },
     "variable2": {
-      "label": "second variable",
+      "label": "variable2",
       "summary": "the second factor of a quadratic term of a user defined constraint"
     }
   },

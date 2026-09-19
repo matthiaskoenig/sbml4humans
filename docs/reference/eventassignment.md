@@ -1,4 +1,4 @@
-# Event assignment
+# EventAssignment
 
 The new value an event gives to one element of the model.
 
@@ -30,7 +30,7 @@ The report renders the formula in the table of the event and in the inspector.
 ## Related elements
 
 - [Event](event.md): an instantaneous change of the model when a condition becomes true
-- [Assignment rule](assignmentrule.md): a formula which holds at every moment of the simulation
+- [AssignmentRule](assignmentrule.md): a formula which holds at every moment of the simulation
 
 ## Specification
 

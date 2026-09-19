@@ -1,4 +1,4 @@
-# Kinetic law
+# KineticLaw
 
 The formula which gives the speed of a reaction.
 
@@ -11,7 +11,7 @@ The report shows the rendered formula, the units it derives for it and the table
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
 | [math](#math) | `Math` | the rate formula of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [local parameters](#local-parameters) | `list` | the parameters which only this kinetic law uses | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfLocalParameters](#listoflocalparameters) | `list` | the parameters which only this kinetic law uses | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -21,7 +21,7 @@ The math is an expression which returns a number, the rate of change of the exte
 
 The report renders the formula in the column "kinetic law" of the reactions and in the inspector.
 
-<span id="local-parameters"></span>**local parameters**
+<span id="listoflocalparameters"></span>**listOfLocalParameters**
 
 The list holds the [local parameters](localparameter.md) of the kinetic law. A local parameter hides a global parameter of the same identifier inside the formula, which is worth knowing when a value looks surprising.
 
@@ -40,7 +40,7 @@ The report derives the units of the formula from the units of the quantities it 
 ## Related elements
 
 - [Reaction](reaction.md): a process which changes the quantities of species
-- [Local parameter](localparameter.md): a named value which only one kinetic law uses
+- [LocalParameter](localparameter.md): a named value which only one kinetic law uses
 - [Parameter](parameter.md): a named value which the mathematics of the model can use
 
 ## Specification

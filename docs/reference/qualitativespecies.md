@@ -1,8 +1,8 @@
-# Qualitative species
+# QualitativeSpecies
 
 An entity of a qualitative model, which carries a level instead of an amount.
 
-A qualitative species is what a [species](species.md) is to a kinetic model: the thing the model is about. Its state is not a concentration but a level, a whole number between zero and its [maximum level](qualitativespecies.md#max-level), which stands for a range of activity, for example "the gene is off" and "the gene is on".
+A qualitative species is what a [species](species.md) is to a kinetic model: the thing the model is about. Its state is not a concentration but a level, a whole number between zero and its [maximum level](qualitativespecies.md#maxlevel), which stands for a range of activity, for example "the gene is off" and "the gene is on".
 
 It is the node of the influence graph of a logical model and the place of a Petri net. Which of the two a file writes is read from the [transitions](transition.md) which change it.
 
@@ -14,8 +14,8 @@ The report shows the qualitative species of a model in a section of their own, w
 | --- | --- | --- | --- |
 | [compartment](#compartment) | `SIdRef` | the compartment the qualitative species is located in | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 | [constant](#constant) | `boolean` | whether no transition may change the level of the species | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [initial level](#initial-level) | `integer` | the level of the species at the start of a simulation | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [max level](#max-level) | `integer` | the highest level the species can take | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [initialLevel](#initiallevel) | `integer` | the level of the species at the start of a simulation | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [maxLevel](#maxlevel) | `integer` | the highest level the species can take | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -31,17 +31,17 @@ A constant qualitative species is an input of the system: transitions read it an
 
 The report shows the flag as a mark in the column "constant" and in the inspector.
 
-<span id="initial-level"></span>**initial level**
+<span id="initiallevel"></span>**initialLevel**
 
 The initial level is the state the entity starts in, a whole number which cannot be negative and cannot exceed the maximum level. It is optional: a model which is analysed over all of its states, which is what an attractor analysis of a logical model does, gives no starting state.
 
 The report shows the level in the column "initial level" and in the inspector, and an unset level as a dash.
 
-<span id="max-level"></span>**max level**
+<span id="maxlevel"></span>**maxLevel**
 
 The maximum level decides how the whole model is read: with the value one the entity is Boolean, off or on, and every condition over it is a logical one; with a higher value it is multi valued and its levels stand for the thresholds at which it acts differently on the things it regulates.
 
-It is optional, because the levels a species actually takes can be derived from the [result levels](functionterm.md#result-level) of the transitions which change it.
+It is optional, because the levels a species actually takes can be derived from the [result levels](functionterm.md#resultlevel) of the transitions which change it.
 
 The report shows the level in the column "max level" and in the inspector.
 

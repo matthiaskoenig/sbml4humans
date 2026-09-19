@@ -9,29 +9,28 @@ defineProps<{ element: UserDefinedConstraint }>();
 const index = useReportIndex();
 
 const COLUMNS = [
-  { key: "id", header: "id" },
-  { key: "variable", header: "variable" },
-  { key: "variable2", header: "second variable" },
-  { key: "coefficient", header: "coefficient" },
-  { key: "variableType", header: "variable type" },
+  { key: "id" },
+  { key: "variable" },
+  { key: "variable2" },
+  { key: "coefficient" },
+  { key: "variableType" },
 ];
 </script>
 
 <template>
-  <AttributeRow label="lower bound" :type="element.sbmlType" field="lowerBound">
+  <AttributeRow :type="element.sbmlType" field="lowerBound">
     <ElementLink
       :pk="index?.resolve(element.pk, 'lowerBound', element.lowerBound)"
       :label="element.lowerBound"
     />
   </AttributeRow>
-  <AttributeRow label="upper bound" :type="element.sbmlType" field="upperBound">
+  <AttributeRow :type="element.sbmlType" field="upperBound">
     <ElementLink
       :pk="index?.resolve(element.pk, 'upperBound', element.upperBound)"
       :label="element.upperBound"
     />
   </AttributeRow>
   <AttributeRow
-    label="components"
     :type="element.sbmlType"
     field="listOfUserDefinedConstraintComponents"
     :wide="!!element.listOfUserDefinedConstraintComponents?.length"

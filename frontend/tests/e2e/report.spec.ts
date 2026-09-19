@@ -62,12 +62,12 @@ test.describe("repressilator", () => {
     // and its species
     await inspector
       .getByTestId("attribute-row")
-      .filter({ hasText: "reactants" })
+      .filter({ hasText: "listOfReactants" })
       .first()
       .getByTestId("element-link")
       .first()
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Species reference");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("SpeciesReference");
     await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction1.X");
 
     // the participation names its reaction, its role and its species
@@ -102,7 +102,7 @@ test.describe("repressilator", () => {
     const references = inspector.getByTestId("links-references");
     await expect(references.getByTestId("links-math")).toContainText("PX");
     await references.getByTestId("links-kineticLaw").getByTestId("element-link").click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Kinetic law");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("KineticLaw");
     await expect(inspector.getByTestId("inspector-id")).toHaveText("Reaction7.kineticLaw");
 
     // the kinetic law keeps its own links
@@ -155,7 +155,7 @@ test.describe("repressilator", () => {
     await expect(idHeader).toHaveAttribute("aria-sort", "descending");
     expect(await ids()).toEqual(["Z", "Y", "X", "PZ", "PY", "PX"]);
     // an order other than the report order: Y has the initial amount 20, the others 0
-    const amount = page.getByRole("button", { name: "initial amount", exact: true });
+    const amount = page.getByRole("button", { name: "initialAmount", exact: true });
     const amountHeader = table.locator("thead th", { has: amount });
     await amountHeader.click();
     await expect(idHeader).toHaveAttribute("aria-sort", "none");
@@ -223,7 +223,12 @@ test("the events table shows the assignments of an event", async ({ page }) => {
   await expect(cell.getByTestId("math")).toHaveCount(2);
   await expect(cell).toHaveText(/^kp = .+, Mass = /);
   // a rendered list has no order to sort by, the header offers none
-  await expect(table.getByRole("button", { name: "assignments", exact: true })).toHaveCount(0);
+  await expect(
+    table.getByRole("columnheader", { name: "listOfEventAssignments", exact: true }),
+  ).toBeVisible();
+  await expect(
+    table.getByRole("button", { name: "listOfEventAssignments", exact: true }),
+  ).toHaveCount(0);
 
   // the variable links the element it sets, the parameter kp of the model
   await cell.getByTestId("element-link").first().click();

@@ -11,19 +11,19 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="compartment" :type="element.sbmlType" field="compartment">
+  <AttributeRow :type="element.sbmlType" field="compartment">
     <ElementLink
       :pk="index?.resolve(element.pk, 'compartment', element.compartment)"
       :label="element.compartment"
     />
   </AttributeRow>
-  <AttributeRow label="initial level" :type="element.sbmlType" field="initialLevel"
+  <AttributeRow :type="element.sbmlType" field="initialLevel"
     ><ValueText :value="element.initialLevel"
   /></AttributeRow>
-  <AttributeRow label="max level" :type="element.sbmlType" field="maxLevel"
+  <AttributeRow :type="element.sbmlType" field="maxLevel"
     ><ValueText :value="element.maxLevel"
   /></AttributeRow>
-  <AttributeRow label="constant" :type="element.sbmlType" field="constant"
+  <AttributeRow :type="element.sbmlType" field="constant"
     ><BooleanMark :value="element.constant"
   /></AttributeRow>
 </template>

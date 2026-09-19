@@ -10,20 +10,20 @@ The report shows the rendered trigger, the priority and the delay of an event, t
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [values from trigger time](#values-from-trigger-time) | `boolean` | whether the assignments use the values of the moment the event was triggered | [core 4.12.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [useValuesFromTriggerTime](#usevaluesfromtriggertime) | `boolean` | whether the assignments use the values of the moment the event was triggered | [core 4.12.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [trigger](#trigger) | `Trigger` | the condition of the event, as an element of its own | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [trigger](#trigger-2) | `Math` | the condition whose change from false to true fires the event | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initial value](#initial-value) | `boolean` | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialValue](#initialvalue) | `boolean` | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [persistent](#persistent) | `boolean` | whether the event is still executed when its condition becomes false again before execution | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [priority](#priority) | `Priority` | the element which orders the event against other events of the same moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [priority](#priority-2) | `Math` | the formula which orders this event against other events of the same moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [delay](#delay) | `Delay` | the element which postpones the execution of the event | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [delay](#delay-2) | `Math` | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [assignments](#assignments) | `list` | the changes the event makes when it is executed | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfEventAssignments](#listofeventassignments) | `list` | the changes the event makes when it is executed | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="values-from-trigger-time"></span>**values from trigger time**
+<span id="usevaluesfromtriggertime"></span>**useValuesFromTriggerTime**
 
 An event which is delayed is triggered at one moment and executed at another, and the two moments can give different values. With "true" the formulas of the assignments are evaluated when the event triggers, with "false" when it is executed.
 
@@ -39,7 +39,7 @@ The trigger holds an expression which returns a boolean value, and the event fir
 
 The report renders the condition in the column "trigger" and in the inspector.
 
-<span id="initial-value"></span>**initial value**
+<span id="initialvalue"></span>**initialValue**
 
 To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
 
@@ -71,7 +71,7 @@ The delay is evaluated at the moment the event triggers and has to be a value wh
 
 The report renders the delay in the column "delay" of the events and in the inspector.
 
-<span id="assignments"></span>**assignments**
+<span id="listofeventassignments"></span>**listOfEventAssignments**
 
 The list holds the [event assignments](eventassignment.md) of the event, each of which sets one element of the model to the value of a formula.
 
@@ -82,7 +82,7 @@ The report shows the assignments in the column "assignments", every one of them 
 - [Trigger](trigger.md): the condition of an event, whose change from false to true fires it
 - [Priority](priority.md): the formula which orders an event against the other events of the same moment
 - [Delay](delay.md): the formula which gives the time between the trigger of an event and its execution
-- [Event assignment](eventassignment.md): the new value an event gives to one element of the model
+- [EventAssignment](eventassignment.md): the new value an event gives to one element of the model
 
 ## Specification
 

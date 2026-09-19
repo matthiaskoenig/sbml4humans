@@ -1,4 +1,4 @@
-# Initial assignment
+# InitialAssignment
 
 A formula which computes the value of an element at the start of the simulation.
 
@@ -39,7 +39,7 @@ The report derives the units of the formula from the units of the quantities it 
 
 ## Related elements
 
-- [Assignment rule](assignmentrule.md): a formula which holds at every moment of the simulation
+- [AssignmentRule](assignmentrule.md): a formula which holds at every moment of the simulation
 - [Parameter](parameter.md): a named value which the mathematics of the model can use
 - [Species](species.md): a pool of a chemical entity in a compartment
 - [Compartment](compartment.md): a bounded space in which species are located

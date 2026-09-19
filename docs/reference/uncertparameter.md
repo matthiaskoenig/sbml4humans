@@ -1,4 +1,4 @@
-# Uncert parameter
+# UncertParameter
 
 One statistical measure of an uncertainty.
 
@@ -6,7 +6,7 @@ An uncert parameter is one measure of the [uncertainty](uncertainty.md) it belon
 
 It is an element of the report and not a row of its uncertainty, because the specification derives it from `SBase` and from the `DistribBase` of the package: it may carry an identifier, a name, an SBO term, notes and annotations, and the notes of a measure are where a file records which paper or which experiment the number comes from, which is what the package exists for.
 
-A measure which is an interval is an [uncert span](uncertspan.md), a class of its own, and a measure of the type `distribution` or `externalParameter` carries the parameters which define it as [uncert parameters](uncertparameter.md#uncert-parameters) of its own.
+A measure which is an interval is an [uncert span](uncertspan.md), a class of its own, and a measure of the type `distribution` or `externalParameter` carries the parameters which define it as [uncert parameters](uncertparameter.md#uncertparameters) of its own.
 
 ## Attributes
 
@@ -16,15 +16,15 @@ A measure which is an interval is an [uncert span](uncertspan.md), a class of it
 | [value](#value) | `double` | the number of the measure | [distrib 3.11.2](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 | [var](#var) | `SIdRef` | the element of the model which holds the number of the measure | [distrib 3.11.2](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 | [units](#units) | `UnitSIdRef` | the units the measure is given in | [distrib 3.11.3](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [definition url](#definition-url) | `anyURI` | what a distribution or an external parameter means | [distrib 3.11.4](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [definitionURL](#definitionurl) | `anyURI` | what a distribution or an external parameter means | [distrib 3.11.4](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 | [math](#math) | `Math` | the formula which defines a distribution | [distrib 3.11.6](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
-| [uncert parameters](#uncert-parameters) | `list` | the parameters which define a distribution or an external parameter | [distrib 3.11.7](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [uncertParameters](#uncertparameters) | `list` | the parameters which define a distribution or an external parameter | [distrib 3.11.7](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
 <span id="type"></span>**type**
 
-The attribute is required and is one of sixteen values. Ten of them are a single number: `mean`, `median`, `mode`, `variance`, `standardDeviation`, `standardError`, `coefficientOfVariation`, `skewness`, `kurtosis` and `sampleSize`. Four of them are an interval and are written as an [uncert span](uncertspan.md): `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, where the confidence and the credible interval are always the 95 percent interval. The last two say where a value comes from: `distribution`, the distribution it was drawn from, and `externalParameter`, a measure this specification does not define, which names what it means in its [definition](uncertparameter.md#definition-url).
+The attribute is required and is one of sixteen values. Ten of them are a single number: `mean`, `median`, `mode`, `variance`, `standardDeviation`, `standardError`, `coefficientOfVariation`, `skewness`, `kurtosis` and `sampleSize`. Four of them are an interval and are written as an [uncert span](uncertspan.md): `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, where the confidence and the credible interval are always the 95 percent interval. The last two say where a value comes from: `distribution`, the distribution it was drawn from, and `externalParameter`, a measure this specification does not define, which names what it means in its [definition](uncertparameter.md#definitionurl).
 
 The report shows the type in the first column of the parameters of an uncertainty and as the name of a parameter which carries no identifier.
 
@@ -46,7 +46,7 @@ The units are either a [unit definition](unitdefinition.md) of the model or one 
 
 The report links the unit definition where the units name one.
 
-<span id="definition-url"></span>**definition url**
+<span id="definitionurl"></span>**definitionURL**
 
 A parameter of the type `distribution` may name the distribution it stands for, and a parameter of the type `externalParameter` has to name what it is: an entry of an ontology such as ProbOnto, the `csymbol` of a distribution of this package, or another definition which says what the number means. No other type of parameter carries it, because the specification defines the others completely.
 
@@ -58,7 +58,7 @@ Only a parameter of the type `distribution` or `externalParameter` carries math,
 
 The report renders the formula and links every element it names, from the parameter which carries the math and not from the uncertainty around it, so that two parameters of one uncertainty stay apart.
 
-<span id="uncert-parameters"></span>**uncert parameters**
+<span id="uncertparameters"></span>**uncertParameters**
 
 A distribution is defined by the parameters it takes: a Beta distribution by its alpha and its beta, a zeta distribution by its shape. They are uncert parameters of the parameter which names the distribution, of any type and to any depth, and without them a report shows the name of a distribution and none of its numbers.
 
@@ -67,7 +67,7 @@ The report shows every one of them indented below the parameter it defines, in t
 ## Related elements
 
 - [Uncertainty](uncertainty.md): a set of statistical measures of the value of an element
-- [Uncert span](uncertspan.md): a measure of an uncertainty which is an interval
+- [UncertSpan](uncertspan.md): a measure of an uncertainty which is an interval
 - [Parameter](parameter.md): a named value which the mathematics of the model can use
 - [Distributions (distrib)](distrib.md): the package which records the uncertainty of a value
 

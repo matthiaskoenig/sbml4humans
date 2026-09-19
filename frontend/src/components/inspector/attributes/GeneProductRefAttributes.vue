@@ -9,7 +9,7 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="gene product" :type="element.sbmlType" field="geneProduct">
+  <AttributeRow :type="element.sbmlType" field="geneProduct">
     <ElementLink
       :pk="index?.resolve(element.pk, 'geneProduct', element.geneProduct)"
       :label="element.geneProduct"

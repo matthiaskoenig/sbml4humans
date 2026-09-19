@@ -1,4 +1,4 @@
-# External model definition
+# ExternalModelDefinition
 
 A model of another SBML file which this document can instantiate.
 
@@ -11,7 +11,7 @@ The report shows the external model definitions of a document next to its models
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
 | [source](#source) | `anyURI` | the location of the SBML file which holds the model | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [model ref](#model-ref) | `SIdRef` | the identifier of the model inside the referenced file | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [modelRef](#modelref) | `SIdRef` | the identifier of the model inside the referenced file | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [md5](#md5) | `string` | the checksum of the document at the source | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
@@ -22,7 +22,7 @@ The source is a URI, which may be a URL, a URN or a location relative to this do
 
 The report shows the source in the inspector of the external model definition. A relative source is resolved against the location of the document which names it, inside the COMBINE archive both are entries of. A source with a scheme, such as a URL, is shown and never fetched.
 
-<span id="model-ref"></span>**model ref**
+<span id="modelref"></span>**modelRef**
 
 The reference names a model or another external model definition of the document at the source. When it is not set, the main model of that file is meant, which is the case a model without an identifier leaves. Following a chain of external model definitions has to end at a model.
 

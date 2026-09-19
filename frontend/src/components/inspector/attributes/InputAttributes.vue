@@ -11,22 +11,22 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="qualitative species" :type="element.sbmlType" field="qualitativeSpecies">
+  <AttributeRow :type="element.sbmlType" field="qualitativeSpecies">
     <ElementLink
       :pk="index?.resolve(element.pk, 'input', element.qualitativeSpecies)"
       :label="element.qualitativeSpecies"
     />
   </AttributeRow>
-  <AttributeRow label="sign" :type="element.sbmlType" field="sign">
+  <AttributeRow :type="element.sbmlType" field="sign">
     <template v-if="element.sign"
       ><QualSignMark :sign="element.sign" /><span class="ml-1.5">{{ element.sign }}</span></template
     >
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="threshold level" :type="element.sbmlType" field="thresholdLevel"
+  <AttributeRow :type="element.sbmlType" field="thresholdLevel"
     ><ValueText :value="element.thresholdLevel"
   /></AttributeRow>
-  <AttributeRow label="transition effect" :type="element.sbmlType" field="transitionEffect"
+  <AttributeRow :type="element.sbmlType" field="transitionEffect"
     ><ValueText :value="element.transitionEffect"
   /></AttributeRow>
 </template>

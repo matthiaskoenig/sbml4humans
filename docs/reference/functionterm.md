@@ -1,4 +1,4 @@
-# Function term
+# FunctionTerm
 
 One row of the transition table: a condition and the level it results in.
 
@@ -10,12 +10,12 @@ The terms of a [transition](transition.md) are read in order and the first one w
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [result level](#result-level) | `integer` | the level the outputs take where the condition of the term holds | [qual 3.6.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [resultLevel](#resultlevel) | `integer` | the level the outputs take where the condition of the term holds | [qual 3.6.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 | [math](#math) | `Math` | the condition under which the term decides the level | [qual 3.6.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="result-level"></span>**result level**
+<span id="resultlevel"></span>**resultLevel**
 
 The result level is a whole number which cannot be negative. An `assignmentLevel` output takes it as its new level, a `production` output gains it multiplied by its output level. The attribute is required.
 
@@ -30,8 +30,8 @@ The report renders the condition in the table of the terms in the inspector of t
 ## Related elements
 
 - [Transition](transition.md): what the level of a qualitative species becomes, and under which condition
-- [Default term](defaultterm.md): the level of a transition in every state no function term covers
-- [Qualitative species](qualitativespecies.md): an entity of a qualitative model, which carries a level instead of an amount
+- [DefaultTerm](defaultterm.md): the level of a transition in every state no function term covers
+- [QualitativeSpecies](qualitativespecies.md): an entity of a qualitative model, which carries a level instead of an amount
 - [Qualitative Models (qual)](qual.md): the package which describes a model whose entities carry a level
 
 ## Specification

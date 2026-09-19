@@ -129,7 +129,7 @@ The report shows the rows "replaced by" and "replaced elements" in the inspector
 """
 
 [types.SBase.attributes."comp.replacedBy"]
-label = "replaced by"
+label = "comp:replacedBy"
 package = "comp"
 type = "ReplacedBy"
 spec = { doc = "comp", section = "3.6.4" }
@@ -141,7 +141,7 @@ The report links the submodel and shows the named element next to it.
 """
 
 [types.SBase.attributes."comp.replacedElements"]
-label = "replaced elements"
+label = "comp:listOfReplacedElements"
 package = "comp"
 type = "list"
 spec = { doc = "comp", section = "3.6.2" }
@@ -153,7 +153,7 @@ The report lists the submodel and the named element of every replacement in the 
 """
 
 [types.SBase.attributes.keyValuePairs]
-label = "key value pairs"
+label = "fbc:listOfKeyValuePairs"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.16" }
@@ -167,7 +167,7 @@ The report lists the pairs of an element in its inspector. libsbml does not read
 """
 
 [types.SBase.attributes.uncertainties]
-label = "uncertainties"
+label = "distrib:listOfUncertainties"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.9" }
@@ -183,7 +183,7 @@ The report shows the uncertainties of an element in its inspector, each of them 
 # what the packages add to the model
 # ----------------------------------------------------------------------------
 [types.Model.attributes.listOfSubmodels]
-label = "submodels"
+label = "comp:listOfSubmodels"
 package = "comp"
 type = "list"
 spec = { doc = "comp", section = "3.4.1" }
@@ -195,7 +195,7 @@ The report shows the submodels of a model as a section of the report.
 """
 
 [types.Model.attributes.listOfPorts]
-label = "ports"
+label = "comp:listOfPorts"
 package = "comp"
 type = "list"
 spec = { doc = "comp", section = "3.4.2" }
@@ -207,7 +207,7 @@ The report shows the ports of a model as a section of the report.
 """
 
 [types.Model.attributes.listOfGeneProducts]
-label = "gene products"
+label = "fbc:listOfGeneProducts"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.3.2" }
@@ -231,7 +231,7 @@ The report shows both in the inspector of a model of a document which uses fbc.
 """
 
 [types.Model.attributes."fbc.strict"]
-label = "strict"
+label = "fbc:strict"
 package = "fbc"
 type = "boolean"
 spec = { doc = "fbc3", section = "3.3" }
@@ -245,7 +245,7 @@ The report shows it in the inspector of the model.
 """
 
 [types.Model.attributes."fbc.activeObjective"]
-label = "active objective"
+label = "fbc:activeObjective"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.3.1" }
@@ -257,7 +257,7 @@ The report links the objective in the inspector of the model, and the inspector 
 """
 
 [types.Model.attributes.listOfFluxBounds]
-label = "flux bounds"
+label = "fbc:listOfFluxBounds"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc1", section = "3.3.1" }
@@ -269,7 +269,7 @@ The report shows the flux bounds of a Version 1 model as a section of the report
 """
 
 [types.Model.attributes.listOfUserDefinedConstraints]
-label = "user defined constraints"
+label = "fbc:listOfUserDefinedConstraints"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.3.3" }
@@ -281,7 +281,7 @@ The report shows the user defined constraints of a model as a section of the rep
 """
 
 [types.Model.attributes.listOfObjectives]
-label = "objectives"
+label = "fbc:listOfObjectives"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.3.1" }
@@ -297,7 +297,7 @@ The report shows the objectives of a model as a section of the report.
 # what fbc adds to a species and to a reaction
 # ----------------------------------------------------------------------------
 [types.Model.attributes.listOfQualitativeSpecies]
-label = "qualitative species"
+label = "qual:listOfQualitativeSpecies"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.4" }
@@ -309,7 +309,7 @@ The report shows them as a section of their own.
 """
 
 [types.Model.attributes.listOfTransitions]
-label = "transitions"
+label = "qual:listOfTransitions"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.4" }
@@ -333,7 +333,7 @@ The report shows them in the inspector of a species of a model which uses fbc.
 """
 
 [types.Species.attributes."fbc.chemicalFormula"]
-label = "chemical formula"
+label = "fbc:chemicalFormula"
 package = "fbc"
 type = "string"
 spec = { doc = "fbc3", section = "3.4" }
@@ -345,7 +345,7 @@ The report shows the formula in the inspector of the species.
 """
 
 [types.Species.attributes."fbc.charge"]
-label = "charge"
+label = "fbc:charge"
 package = "fbc"
 type = "integer"
 spec = { doc = "fbc3", section = "3.4" }
@@ -369,7 +369,7 @@ The report shows the bounds, the association and the gene products it names in t
 """
 
 [types.Reaction.attributes."fbc.lowerFluxBound"]
-label = "lower flux bound"
+label = "fbc:lowerFluxBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.8" }
@@ -381,7 +381,7 @@ The report links the parameter in the inspector of the reaction.
 """
 
 [types.Reaction.attributes."fbc.upperFluxBound"]
-label = "upper flux bound"
+label = "fbc:upperFluxBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.8" }
@@ -393,7 +393,7 @@ The report links the parameter in the inspector of the reaction.
 """
 
 [types.Reaction.attributes."fbc.geneProductAssociation"]
-label = "gene product association"
+label = "fbc:geneProductAssociation"
 package = "fbc"
 type = "GeneProductAssociation"
 spec = { doc = "fbc3", section = "3.9" }
@@ -409,7 +409,7 @@ The report shows the tree in the inspector of the reaction, one line per branch,
 # the elements of comp
 # ----------------------------------------------------------------------------
 [types.ExternalModelDefinition]
-label = "External model definition"
+label = "ExternalModelDefinition"
 package = "comp"
 spec = { doc = "comp", section = "3.3.2" }
 summary = "a model of another SBML file which this document can instantiate"
@@ -433,7 +433,7 @@ The report shows the source in the inspector of the external model definition. A
 """
 
 [types.ExternalModelDefinition.attributes.modelRef]
-label = "model ref"
+label = "modelRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.3.2" }
@@ -459,7 +459,7 @@ The report links the model a submodel instantiates, shows its two conversion fac
 related = ["Model", "ExternalModelDefinition", "Port", "comp"]
 
 [types.Submodel.attributes.modelRef]
-label = "model"
+label = "modelRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.5.1" }
@@ -471,7 +471,7 @@ The report links the model in the column "model" and in the inspector of the sub
 """
 
 [types.Submodel.attributes.timeConversionFactor]
-label = "time conversion factor"
+label = "timeConversionFactor"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.5.1" }
@@ -483,7 +483,7 @@ The report links the parameter in the column "time conversion factor" and in the
 """
 
 [types.Submodel.attributes.extentConversionFactor]
-label = "extent conversion factor"
+label = "extentConversionFactor"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.5.1" }
@@ -495,7 +495,7 @@ The report links the parameter in the column "extent conversion factor" and in t
 """
 
 [types.Submodel.attributes.listOfDeletions]
-label = "deletions"
+label = "listOfDeletions"
 package = "comp"
 type = "list"
 spec = { doc = "comp", section = "3.5.3" }
@@ -521,7 +521,7 @@ The report shows which element a port names, links it, and lists the ports of a 
 related = ["Submodel", "Model", "comp"]
 
 [types.Port.attributes.portRef]
-label = "port ref"
+label = "portRef"
 package = "comp"
 type = "PortSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -533,7 +533,7 @@ The report shows the port reference as text; it does not follow it into another 
 """
 
 [types.Port.attributes.idRef]
-label = "id ref"
+label = "idRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -545,7 +545,7 @@ The report links the element the port names.
 """
 
 [types.Port.attributes.unitRef]
-label = "unit ref"
+label = "unitRef"
 package = "comp"
 type = "UnitSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -557,7 +557,7 @@ The report links the unit definition the port names.
 """
 
 [types.Port.attributes.metaIdRef]
-label = "meta id ref"
+label = "metaIdRef"
 package = "comp"
 type = "IDREF"
 spec = { doc = "comp", section = "3.7.1" }
@@ -569,7 +569,7 @@ The report searches the element with that meta id in the model and links it.
 """
 
 [types.Port.attributes.sbaseRef]
-label = "nested reference"
+label = "sBaseRef"
 package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
@@ -648,7 +648,7 @@ A checksum which does not match says that the file is not the one the composed m
 # the references of comp: the deletions and the replacements
 # ----------------------------------------------------------------------------
 [types.SBaseRef]
-label = "Reference"
+label = "SBaseRef"
 package = "comp"
 spec = { doc = "comp", section = "3.7" }
 summary = "a link of a chain which reaches into a submodel of a submodel"
@@ -662,7 +662,7 @@ The report shows the chain in the inspector of the element which starts it and r
 related = ["Port", "Deletion", "ReplacedElement", "ReplacedBy", "comp"]
 
 [types.SBaseRef.attributes.portRef]
-label = "port ref"
+label = "portRef"
 package = "comp"
 type = "PortSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -672,7 +672,7 @@ The reference names a [port](port.md) of the model the submodel above it instant
 """
 
 [types.SBaseRef.attributes.idRef]
-label = "id ref"
+label = "idRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -682,7 +682,7 @@ The reference names an element of the model the submodel above it instantiates. 
 """
 
 [types.SBaseRef.attributes.unitRef]
-label = "unit ref"
+label = "unitRef"
 package = "comp"
 type = "UnitSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -692,7 +692,7 @@ Unit identifiers live in a namespace of their own, so naming a [unit definition]
 """
 
 [types.SBaseRef.attributes.metaIdRef]
-label = "meta id ref"
+label = "metaIdRef"
 package = "comp"
 type = "IDREF"
 spec = { doc = "comp", section = "3.7.1" }
@@ -702,7 +702,7 @@ Every element of a file may carry a meta id, and this is the way to name an elem
 """
 
 [types.SBaseRef.attributes.sbaseRef]
-label = "nested reference"
+label = "sBaseRef"
 package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
@@ -728,7 +728,7 @@ The report shows the deletions of a submodel in its inspector, links the element
 related = ["Submodel", "ReplacedElement", "Port", "comp"]
 
 [types.Deletion.attributes.portRef]
-label = "port ref"
+label = "portRef"
 package = "comp"
 type = "PortSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -738,7 +738,7 @@ The deletion names a [port](port.md) of the model the submodel instantiates, and
 """
 
 [types.Deletion.attributes.idRef]
-label = "id ref"
+label = "idRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -748,7 +748,7 @@ The identifier is resolved in the model the submodel instantiates, not in the mo
 """
 
 [types.Deletion.attributes.unitRef]
-label = "unit ref"
+label = "unitRef"
 package = "comp"
 type = "UnitSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -758,7 +758,7 @@ Unit identifiers live in a namespace of their own. The units which SBML reserves
 """
 
 [types.Deletion.attributes.metaIdRef]
-label = "meta id ref"
+label = "metaIdRef"
 package = "comp"
 type = "IDREF"
 spec = { doc = "comp", section = "3.7.1" }
@@ -768,7 +768,7 @@ This is the way to delete an element which carries no identifier, for example a 
 """
 
 [types.Deletion.attributes.sbaseRef]
-label = "nested reference"
+label = "sBaseRef"
 package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
@@ -778,7 +778,7 @@ A deletion which names a submodel of the instantiated model carries a [nested re
 """
 
 [types.ReplacedElement]
-label = "Replaced element"
+label = "ReplacedElement"
 package = "comp"
 spec = { doc = "comp", section = "3.6.2" }
 summary = "an element of a submodel which the element carrying it takes the place of"
@@ -792,7 +792,7 @@ The report lists the replacements of an element in its inspector, links the subm
 related = ["Submodel", "ReplacedBy", "Deletion", "comp"]
 
 [types.ReplacedElement.attributes.submodelRef]
-label = "submodel"
+label = "submodelRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.6.2" }
@@ -812,7 +812,7 @@ The reference names a [deletion](deletion.md) of the named submodel and takes th
 """
 
 [types.ReplacedElement.attributes.conversionFactor]
-label = "conversion factor"
+label = "conversionFactor"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.6.2" }
@@ -824,7 +824,7 @@ A replacement cannot carry a conversion factor and a deletion at the same time: 
 """
 
 [types.ReplacedElement.attributes.portRef]
-label = "port ref"
+label = "portRef"
 package = "comp"
 type = "PortSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -834,7 +834,7 @@ The replacement names a [port](port.md) of the model the submodel instantiates, 
 """
 
 [types.ReplacedElement.attributes.idRef]
-label = "id ref"
+label = "idRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -844,7 +844,7 @@ The identifier is resolved in the model the named submodel instantiates. It is t
 """
 
 [types.ReplacedElement.attributes.unitRef]
-label = "unit ref"
+label = "unitRef"
 package = "comp"
 type = "UnitSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -854,7 +854,7 @@ Unit identifiers live in a namespace of their own. The units which SBML reserves
 """
 
 [types.ReplacedElement.attributes.metaIdRef]
-label = "meta id ref"
+label = "metaIdRef"
 package = "comp"
 type = "IDREF"
 spec = { doc = "comp", section = "3.7.1" }
@@ -864,7 +864,7 @@ This is the way to replace an element which carries no identifier of its own.
 """
 
 [types.ReplacedElement.attributes.sbaseRef]
-label = "nested reference"
+label = "sBaseRef"
 package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
@@ -874,7 +874,7 @@ A replacement which names a submodel of the instantiated model carries a [nested
 """
 
 [types.ReplacedBy]
-label = "Replaced by"
+label = "ReplacedBy"
 package = "comp"
 spec = { doc = "comp", section = "3.6.4" }
 summary = "the element of a submodel which takes the place of the element carrying it"
@@ -888,7 +888,7 @@ The report shows the replacement in the inspector of the element, links the subm
 related = ["Submodel", "ReplacedElement", "comp"]
 
 [types.ReplacedBy.attributes.submodelRef]
-label = "submodel"
+label = "submodelRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.6.4" }
@@ -898,7 +898,7 @@ The reference names a [submodel](submodel.md) of the model which carries the rep
 """
 
 [types.ReplacedBy.attributes.portRef]
-label = "port ref"
+label = "portRef"
 package = "comp"
 type = "PortSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -908,7 +908,7 @@ The replacement names a [port](port.md) of the model the submodel instantiates, 
 """
 
 [types.ReplacedBy.attributes.idRef]
-label = "id ref"
+label = "idRef"
 package = "comp"
 type = "SIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -918,7 +918,7 @@ The identifier is resolved in the model the named submodel instantiates.
 """
 
 [types.ReplacedBy.attributes.unitRef]
-label = "unit ref"
+label = "unitRef"
 package = "comp"
 type = "UnitSIdRef"
 spec = { doc = "comp", section = "3.7.1" }
@@ -928,7 +928,7 @@ Unit identifiers live in a namespace of their own. The units which SBML reserves
 """
 
 [types.ReplacedBy.attributes.metaIdRef]
-label = "meta id ref"
+label = "metaIdRef"
 package = "comp"
 type = "IDREF"
 spec = { doc = "comp", section = "3.7.1" }
@@ -938,7 +938,7 @@ This is the way to name a replacing element which carries no identifier of its o
 """
 
 [types.ReplacedBy.attributes.sbaseRef]
-label = "nested reference"
+label = "sBaseRef"
 package = "comp"
 type = "SBaseRef"
 spec = { doc = "comp", section = "3.7.2" }
@@ -952,7 +952,7 @@ A replacement which names a submodel of the instantiated model carries a [nested
 # the elements of fbc
 # ----------------------------------------------------------------------------
 [types.GeneProduct]
-label = "Gene product"
+label = "GeneProduct"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.5" }
 summary = "a gene or one of its products which the reactions of the model depend on"
@@ -978,7 +978,7 @@ The report shows the label in the column "label" and in the inspector.
 """
 
 [types.GeneProduct.attributes.associatedSpecies]
-label = "associated species"
+label = "associatedSpecies"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.5" }
@@ -1016,7 +1016,7 @@ The report shows the type in the column "type" and in the inspector.
 """
 
 [types.Objective.attributes.listOfFluxObjectives]
-label = "flux objectives"
+label = "listOfFluxObjectives"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.7" }
@@ -1028,7 +1028,7 @@ The report shows the number of flux objectives in the column "flux objectives" a
 """
 
 [types.FluxObjective]
-label = "Flux objective"
+label = "FluxObjective"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.7" }
 summary = "one term of an objective: a reaction weighted by a coefficient"
@@ -1050,7 +1050,7 @@ The attribute is required and names a [reaction](reaction.md) of the model. The 
 """
 
 [types.FluxObjective.attributes.reaction2]
-label = "second reaction"
+label = "reaction2"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.7" }
@@ -1074,7 +1074,7 @@ In a strict model the coefficient has to be a finite number. The report shows it
 """
 
 [types.FluxObjective.attributes.variableType]
-label = "variable type"
+label = "variableType"
 package = "fbc"
 type = "FbcVariableType"
 spec = { doc = "fbc3", section = "3.7" }
@@ -1086,7 +1086,7 @@ The attribute is required from Version 3 of the package on and does not exist be
 """
 
 [types.FluxBound]
-label = "Flux bound"
+label = "FluxBound"
 package = "fbc"
 spec = { doc = "fbc1", section = "3.5" }
 summary = "a constraint on the flux of a reaction, as fbc Version 1 writes it"
@@ -1130,7 +1130,7 @@ The value carries the units of a reaction flux, extent per time, which the model
 """
 
 [types.UserDefinedConstraint]
-label = "User defined constraint"
+label = "UserDefinedConstraint"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.14" }
 summary = "a constraint over a combination of fluxes and parameters, added in Version 3"
@@ -1144,7 +1144,7 @@ The report shows the user defined constraints of a model in a section of their o
 related = ["UserDefinedConstraintComponent", "Parameter", "Reaction", "fbc"]
 
 [types.UserDefinedConstraint.attributes.lowerBound]
-label = "lower bound"
+label = "lowerBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.14" }
@@ -1154,7 +1154,7 @@ The attribute is required and names a [parameter](parameter.md) of the model, th
 """
 
 [types.UserDefinedConstraint.attributes.upperBound]
-label = "upper bound"
+label = "upperBound"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.14" }
@@ -1164,7 +1164,7 @@ The attribute is required and names a [parameter](parameter.md) of the model. To
 """
 
 [types.UserDefinedConstraint.attributes.listOfUserDefinedConstraintComponents]
-label = "components"
+label = "listOfUserDefinedConstraintComponents"
 package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.15" }
@@ -1174,7 +1174,7 @@ A constraint which is defined has at least one [component](userdefinedconstraint
 """
 
 [types.UserDefinedConstraintComponent]
-label = "User defined constraint component"
+label = "UserDefinedConstraintComponent"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.15" }
 summary = "one weighted variable of a user defined constraint"
@@ -1196,7 +1196,7 @@ The attribute is required and names either a [reaction](reaction.md), in which c
 """
 
 [types.UserDefinedConstraintComponent.attributes.variable2]
-label = "second variable"
+label = "variable2"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.15" }
@@ -1216,7 +1216,7 @@ Unlike the coefficient of a [flux objective](fluxobjective.md), which is a numbe
 """
 
 [types.UserDefinedConstraintComponent.attributes.variableType]
-label = "variable type"
+label = "variableType"
 package = "fbc"
 type = "FbcVariableType"
 spec = { doc = "fbc3", section = "3.15" }
@@ -1227,7 +1227,7 @@ The type is `linear` or `quadratic`, as in a [flux objective](fluxobjective.md):
 
 
 [types.GeneProductAssociation]
-label = "Gene product association"
+label = "GeneProductAssociation"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.9" }
 summary = "the genes a reaction needs, as the tree of operators over them"
@@ -1297,7 +1297,7 @@ The order of the nodes carries no meaning: an `or` is a set of alternatives of w
 """
 
 [types.GeneProductRef]
-label = "Gene product reference"
+label = "GeneProductRef"
 package = "fbc"
 spec = { doc = "fbc3", section = "3.11" }
 summary = "the leaf of an association: one gene product the reaction depends on"
@@ -1309,7 +1309,7 @@ The report makes it an element of its own because the reference is where the fil
 related = ["GeneProduct", "GeneProductAssociation", "And", "Or"]
 
 [types.GeneProductRef.attributes.geneProduct]
-label = "gene product"
+label = "geneProduct"
 package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.11" }
@@ -1337,7 +1337,7 @@ The report shows every uncertainty as an element of its own, with the table of i
 related = ["Parameter", "Species", "distrib"]
 
 [types.Uncertainty.attributes.uncertParameters]
-label = "uncert parameters"
+label = "uncertParameters"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.11" }
@@ -1350,7 +1350,7 @@ The report shows every parameter of an uncertainty as a row of the table in the 
 
 
 [types.UncertParameter]
-label = "Uncert parameter"
+label = "UncertParameter"
 package = "distrib"
 spec = { doc = "distrib", section = "3.11" }
 summary = "one statistical measure of an uncertainty"
@@ -1359,7 +1359,7 @@ An uncert parameter is one measure of the [uncertainty](uncertainty.md) it belon
 
 It is an element of the report and not a row of its uncertainty, because the specification derives it from `SBase` and from the `DistribBase` of the package: it may carry an identifier, a name, an SBO term, notes and annotations, and the notes of a measure are where a file records which paper or which experiment the number comes from, which is what the package exists for.
 
-A measure which is an interval is an [uncert span](uncertspan.md), a class of its own, and a measure of the type `distribution` or `externalParameter` carries the parameters which define it as [uncert parameters](uncertparameter.md#uncert-parameters) of its own.
+A measure which is an interval is an [uncert span](uncertspan.md), a class of its own, and a measure of the type `distribution` or `externalParameter` carries the parameters which define it as [uncert parameters](uncertparameter.md#uncertparameters) of its own.
 """
 related = ["Uncertainty", "UncertSpan", "Parameter", "distrib"]
 
@@ -1370,7 +1370,7 @@ type = "UncertKind"
 spec = { doc = "distrib", section = "3.11.1" }
 summary = "which statistical measure the parameter is"
 description = """
-The attribute is required and is one of sixteen values. Ten of them are a single number: `mean`, `median`, `mode`, `variance`, `standardDeviation`, `standardError`, `coefficientOfVariation`, `skewness`, `kurtosis` and `sampleSize`. Four of them are an interval and are written as an [uncert span](uncertspan.md): `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, where the confidence and the credible interval are always the 95 percent interval. The last two say where a value comes from: `distribution`, the distribution it was drawn from, and `externalParameter`, a measure this specification does not define, which names what it means in its [definition](uncertparameter.md#definition-url).
+The attribute is required and is one of sixteen values. Ten of them are a single number: `mean`, `median`, `mode`, `variance`, `standardDeviation`, `standardError`, `coefficientOfVariation`, `skewness`, `kurtosis` and `sampleSize`. Four of them are an interval and are written as an [uncert span](uncertspan.md): `range`, `confidenceInterval`, `credibleInterval` and `interquartileRange`, where the confidence and the credible interval are always the 95 percent interval. The last two say where a value comes from: `distribution`, the distribution it was drawn from, and `externalParameter`, a measure this specification does not define, which names what it means in its [definition](uncertparameter.md#definitionurl).
 
 The report shows the type in the first column of the parameters of an uncertainty and as the name of a parameter which carries no identifier.
 """
@@ -1412,7 +1412,7 @@ The report links the unit definition where the units name one.
 """
 
 [types.UncertParameter.attributes.definitionUrl]
-label = "definition url"
+label = "definitionURL"
 package = "distrib"
 type = "anyURI"
 spec = { doc = "distrib", section = "3.11.4" }
@@ -1436,7 +1436,7 @@ The report renders the formula and links every element it names, from the parame
 """
 
 [types.UncertParameter.attributes.uncertParameters]
-label = "uncert parameters"
+label = "uncertParameters"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.11.7" }
@@ -1448,14 +1448,14 @@ The report shows every one of them indented below the parameter it defines, in t
 """
 
 [types.UncertSpan]
-label = "Uncert span"
+label = "UncertSpan"
 package = "distrib"
 spec = { doc = "distrib", section = "3.12" }
 summary = "a measure of an uncertainty which is an interval"
 description = """
 Four of the sixteen measures of the package are an interval and not a number: the [range](uncertspan.md#type) of a measurement, its 95 percent confidence interval, its 95 percent credible interval and its interquartile range. A span is the [uncert parameter](uncertparameter.md) of such a measure, with the two ends of the interval in the place of the single value of a parameter.
 
-Each end is either a number, in [value lower](uncertspan.md#value-lower) and [value upper](uncertspan.md#value-upper), or an element of the model, in [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper). An end which is set by neither is not defined, so a span may be open at one end.
+Each end is either a number, in [value lower](uncertspan.md#valuelower) and [value upper](uncertspan.md#valueupper), or an element of the model, in [var lower](uncertspan.md#varlower) and [var upper](uncertspan.md#varupper). An end which is set by neither is not defined, so a span may be open at one end.
 
 The report shows a span as the interval it is, `1 to 4`, with a link where an end names an element.
 """
@@ -1469,35 +1469,35 @@ summary = "the two ends of the span as the interval they stand for"
 description = """
 The report shows the four attributes of a span as one row, because they are one interval: `1 to 4` where both ends are numbers, the identifier of the element as a link where an end names one, and `from 1` or `to 4` where the file defines one end only.
 
-The row is the reading of [value lower](uncertspan.md#value-lower), [value upper](uncertspan.md#value-upper), [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper), each of which the file writes on its own.
+The row is the reading of [value lower](uncertspan.md#valuelower), [value upper](uncertspan.md#valueupper), [var lower](uncertspan.md#varlower) and [var upper](uncertspan.md#varupper), each of which the file writes on its own.
 """
 
 [types.UncertSpan.attributes.valueLower]
-label = "value lower"
+label = "valueLower"
 package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.12" }
 summary = "the lower end of the interval as a number"
 description = """
-The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var lower](uncertspan.md#var-lower) for the lower end, and where it writes neither the interval is open at the bottom.
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var lower](uncertspan.md#varlower) for the lower end, and where it writes neither the interval is open at the bottom.
 
 The report shows it as the left side of the interval.
 """
 
 [types.UncertSpan.attributes.valueUpper]
-label = "value upper"
+label = "valueUpper"
 package = "distrib"
 type = "double"
 spec = { doc = "distrib", section = "3.12" }
 summary = "the upper end of the interval as a number"
 description = """
-The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var upper](uncertspan.md#var-upper) for the upper end, and where it writes neither the interval is open at the top.
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var upper](uncertspan.md#varupper) for the upper end, and where it writes neither the interval is open at the top.
 
 The report shows it as the right side of the interval.
 """
 
 [types.UncertSpan.attributes.varLower]
-label = "var lower"
+label = "varLower"
 package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.12" }
@@ -1509,7 +1509,7 @@ The report links the element, and the inspector of that element shows the span u
 """
 
 [types.UncertSpan.attributes.varUpper]
-label = "var upper"
+label = "varUpper"
 package = "distrib"
 type = "SIdRef"
 spec = { doc = "distrib", section = "3.12" }
@@ -1551,7 +1551,7 @@ type = "double"
 spec = { doc = "distrib", section = "3.11.2" }
 summary = "the single number of a measure, which a span does not use"
 description = """
-A span carries its numbers in [value lower](uncertspan.md#value-lower) and [value upper](uncertspan.md#value-upper). The attribute belongs to the [uncert parameter](uncertparameter.md#value) a span derives from and is left unset by every interval, so the report shows the interval in its place.
+A span carries its numbers in [value lower](uncertspan.md#valuelower) and [value upper](uncertspan.md#valueupper). The attribute belongs to the [uncert parameter](uncertparameter.md#value) a span derives from and is left unset by every interval, so the report shows the interval in its place.
 """
 
 [types.UncertSpan.attributes.var]
@@ -1561,17 +1561,17 @@ type = "SIdRef"
 spec = { doc = "distrib", section = "3.11.2" }
 summary = "the element of a single number, which a span does not use"
 description = """
-A span names the elements of its two ends in [var lower](uncertspan.md#var-lower) and [var upper](uncertspan.md#var-upper). The attribute belongs to the [uncert parameter](uncertparameter.md#var) a span derives from and is left unset by every interval.
+A span names the elements of its two ends in [var lower](uncertspan.md#varlower) and [var upper](uncertspan.md#varupper). The attribute belongs to the [uncert parameter](uncertparameter.md#var) a span derives from and is left unset by every interval.
 """
 
 [types.UncertSpan.attributes.definitionUrl]
-label = "definition url"
+label = "definitionURL"
 package = "distrib"
 type = "anyURI"
 spec = { doc = "distrib", section = "3.11.4" }
 summary = "what an external parameter which is an interval means"
 description = """
-A span of the type `externalParameter` names what its interval is, an entry of an ontology or another definition which says what the two ends mean, the way an [uncert parameter](uncertparameter.md#definition-url) does. The four intervals the specification defines carry no definition url.
+A span of the type `externalParameter` names what its interval is, an entry of an ontology or another definition which says what the two ends mean, the way an [uncert parameter](uncertparameter.md#definitionurl) does. The four intervals the specification defines carry no definition url.
 
 The report shows the last segment of the url as a link in the table of the parameters of an uncertainty.
 """
@@ -1589,13 +1589,13 @@ The report renders the formula and links every element it names from the span wh
 """
 
 [types.UncertSpan.attributes.uncertParameters]
-label = "uncert parameters"
+label = "uncertParameters"
 package = "distrib"
 type = "list"
 spec = { doc = "distrib", section = "3.11.7" }
 summary = "the parameters which define an external parameter"
 description = """
-A span of the type `externalParameter` may be defined by parameters of its own, the way a [distribution](uncertparameter.md#uncert-parameters) is. The four intervals the specification defines need none, because their two ends define them.
+A span of the type `externalParameter` may be defined by parameters of its own, the way a [distribution](uncertparameter.md#uncertparameters) is. The four intervals the specification defines need none, because their two ends define them.
 
 The report shows every one of them indented below the span it defines.
 """
@@ -1604,12 +1604,12 @@ The report shows every one of them indented below the span it defines.
 # qual
 # ----------------------------------------------------------------------------
 [types.QualitativeSpecies]
-label = "Qualitative species"
+label = "QualitativeSpecies"
 package = "qual"
 spec = { doc = "qual", section = "3.5" }
 summary = "an entity of a qualitative model, which carries a level instead of an amount"
 description = """
-A qualitative species is what a [species](species.md) is to a kinetic model: the thing the model is about. Its state is not a concentration but a level, a whole number between zero and its [maximum level](qualitativespecies.md#max-level), which stands for a range of activity, for example "the gene is off" and "the gene is on".
+A qualitative species is what a [species](species.md) is to a kinetic model: the thing the model is about. Its state is not a concentration but a level, a whole number between zero and its [maximum level](qualitativespecies.md#maxlevel), which stands for a range of activity, for example "the gene is off" and "the gene is on".
 
 It is the node of the influence graph of a logical model and the place of a Petri net. Which of the two a file writes is read from the [transitions](transition.md) which change it.
 
@@ -1642,7 +1642,7 @@ The report shows the flag as a mark in the column "constant" and in the inspecto
 """
 
 [types.QualitativeSpecies.attributes.initialLevel]
-label = "initial level"
+label = "initialLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.5" }
@@ -1654,7 +1654,7 @@ The report shows the level in the column "initial level" and in the inspector, a
 """
 
 [types.QualitativeSpecies.attributes.maxLevel]
-label = "max level"
+label = "maxLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.5" }
@@ -1662,7 +1662,7 @@ summary = "the highest level the species can take"
 description = """
 The maximum level decides how the whole model is read: with the value one the entity is Boolean, off or on, and every condition over it is a logical one; with a higher value it is multi valued and its levels stand for the thresholds at which it acts differently on the things it regulates.
 
-It is optional, because the levels a species actually takes can be derived from the [result levels](functionterm.md#result-level) of the transitions which change it.
+It is optional, because the levels a species actually takes can be derived from the [result levels](functionterm.md#resultlevel) of the transitions which change it.
 
 The report shows the level in the column "max level" and in the inspector.
 """
@@ -1682,7 +1682,7 @@ The report shows the transitions of a model in a section of their own, with the 
 related = ["QualitativeSpecies", "Input", "Output", "FunctionTerm", "DefaultTerm", "qual"]
 
 [types.Transition.attributes.listOfInputs]
-label = "inputs"
+label = "listOfInputs"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.6.1" }
@@ -1694,7 +1694,7 @@ The report shows the species of the inputs with their sign in the column "inputs
 """
 
 [types.Transition.attributes.listOfOutputs]
-label = "outputs"
+label = "listOfOutputs"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.6.2" }
@@ -1706,7 +1706,7 @@ The report shows the species of the outputs in the column "outputs" and the tabl
 """
 
 [types.Transition.attributes.listOfFunctionTerms]
-label = "function terms"
+label = "listOfFunctionTerms"
 package = "qual"
 type = "list"
 spec = { doc = "qual", section = "3.6.3" }
@@ -1718,7 +1718,7 @@ The report shows the terms as a table of condition and result level in the inspe
 """
 
 [types.Transition.attributes.defaultTerm]
-label = "default term"
+label = "defaultTerm"
 package = "qual"
 type = "DefaultTerm"
 spec = { doc = "qual", section = "3.6.4" }
@@ -1742,7 +1742,7 @@ It is an element of the report and not a row of its transition, because the spec
 related = ["Transition", "QualitativeSpecies", "Output", "qual"]
 
 [types.Input.attributes.qualitativeSpecies]
-label = "qualitative species"
+label = "qualitativeSpecies"
 package = "qual"
 type = "SIdRef"
 spec = { doc = "qual", section = "3.6.1" }
@@ -1752,7 +1752,7 @@ The attribute is required and names a [qualitative species](qualitativespecies.m
 """
 
 [types.Input.attributes.thresholdLevel]
-label = "threshold level"
+label = "thresholdLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.1" }
@@ -1764,7 +1764,7 @@ The report shows the threshold in the column "threshold" of the inputs of a tran
 """
 
 [types.Input.attributes.transitionEffect]
-label = "transition effect"
+label = "transitionEffect"
 package = "qual"
 type = "transitionInputEffect"
 spec = { doc = "qual", section = "3.6.1" }
@@ -1793,14 +1793,14 @@ package = "qual"
 spec = { doc = "qual", section = "3.6.2" }
 summary = "a qualitative species a transition changes, with the effect it has on it"
 description = """
-An output names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) changes. Its [transition effect](output.md#transition-effect) is what tells the two formalisms of the package apart: `assignmentLevel` for a logical model, `production` for a Petri net.
+An output names the [qualitative species](qualitativespecies.md) whose level a [transition](transition.md) changes. Its [transition effect](output.md#transitioneffect) is what tells the two formalisms of the package apart: `assignmentLevel` for a logical model, `production` for a Petri net.
 
 It is an element of the report and not a row of its transition, because the specification derives it from `SBase`: it may carry an identifier, a name, an SBO term, notes and annotations, and the reference to its species starts here, not at the transition around it.
 """
 related = ["Transition", "QualitativeSpecies", "Input", "qual"]
 
 [types.Output.attributes.qualitativeSpecies]
-label = "qualitative species"
+label = "qualitativeSpecies"
 package = "qual"
 type = "SIdRef"
 spec = { doc = "qual", section = "3.6.2" }
@@ -1810,7 +1810,7 @@ The attribute is required and names a [qualitative species](qualitativespecies.m
 """
 
 [types.Output.attributes.outputLevel]
-label = "output level"
+label = "outputLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.2" }
@@ -1822,7 +1822,7 @@ The report shows the output level in the table of the outputs in the inspector o
 """
 
 [types.Output.attributes.transitionEffect]
-label = "transition effect"
+label = "transitionEffect"
 package = "qual"
 type = "transitionOutputEffect"
 spec = { doc = "qual", section = "3.6.2" }
@@ -1834,7 +1834,7 @@ The report shows the effect in the table of the outputs in the inspector of the 
 """
 
 [types.FunctionTerm]
-label = "Function term"
+label = "FunctionTerm"
 package = "qual"
 spec = { doc = "qual", section = "3.6.5" }
 summary = "one row of the transition table: a condition and the level it results in"
@@ -1846,7 +1846,7 @@ The terms of a [transition](transition.md) are read in order and the first one w
 related = ["Transition", "DefaultTerm", "QualitativeSpecies", "qual"]
 
 [types.FunctionTerm.attributes.resultLevel]
-label = "result level"
+label = "resultLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.5" }
@@ -1870,7 +1870,7 @@ The report renders the condition in the table of the terms in the inspector of t
 """
 
 [types.DefaultTerm]
-label = "Default term"
+label = "DefaultTerm"
 package = "qual"
 spec = { doc = "qual", section = "3.6.4" }
 summary = "the level of a transition in every state no function term covers"
@@ -1882,7 +1882,7 @@ The specification notes that the class is not derived from `SBase` while libsbml
 related = ["Transition", "FunctionTerm", "qual"]
 
 [types.DefaultTerm.attributes.resultLevel]
-label = "result level"
+label = "resultLevel"
 package = "qual"
 type = "integer"
 spec = { doc = "qual", section = "3.6.4" }

@@ -10,11 +10,11 @@ The report shows the qualitative species and the transitions of a model as secti
 
 ## Related elements
 
-- [Qualitative species](qualitativespecies.md): an entity of a qualitative model, which carries a level instead of an amount
+- [QualitativeSpecies](qualitativespecies.md): an entity of a qualitative model, which carries a level instead of an amount
 - [Transition](transition.md): what the level of a qualitative species becomes, and under which condition
 - [Input](input.md): a qualitative species a transition reads, with the sign of its influence
 - [Output](output.md): a qualitative species a transition changes, with the effect it has on it
-- [Function term](functionterm.md): one row of the transition table: a condition and the level it results in
+- [FunctionTerm](functionterm.md): one row of the transition table: a condition and the level it results in
 
 ## Specification
 

@@ -1,4 +1,4 @@
-# Flux bound
+# FluxBound
 
 A constraint on the flux of a reaction, as fbc Version 1 writes it.
 

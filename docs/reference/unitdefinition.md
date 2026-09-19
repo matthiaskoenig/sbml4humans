@@ -1,4 +1,4 @@
-# Unit definition
+# UnitDefinition
 
 A named unit built from the base units of SBML.
 
@@ -10,11 +10,11 @@ The report renders every unit definition as a formula, in the table and in the i
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [units](#units) | `list` | the units the definition multiplies, each with its exponent, scale and multiplier | [core 4.4.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfUnits](#listofunits) | `list` | the units the definition multiplies, each with its exponent, scale and multiplier | [core 4.4.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="units"></span>**units**
+<span id="listofunits"></span>**listOfUnits**
 
 Every unit of the list is one factor of the definition: a base unit of SBML named by its kind, raised to the exponent, scaled by ten to the power of the scale and multiplied by the multiplier. "millimole per litre" is the mole with scale -3 times the litre with exponent -1, and "minute" is the second with multiplier 60. A definition with an empty list of units is an undefined unit, which is not the same as a dimensionless one.
 

@@ -1,4 +1,4 @@
-# Reference
+# SBaseRef
 
 A link of a chain which reaches into a submodel of a submodel.
 
@@ -12,31 +12,31 @@ The report shows the chain in the inspector of the element which starts it and r
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [port ref](#port-ref) | `PortSIdRef` | the port of the model which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [id ref](#id-ref) | `SIdRef` | the element which this link of the chain names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [unit ref](#unit-ref) | `UnitSIdRef` | the unit definition which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [meta id ref](#meta-id-ref) | `IDREF` | the element which this link of the chain names, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [nested reference](#nested-reference) | `SBaseRef` | the next link of the chain, one submodel deeper | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [portRef](#portref) | `PortSIdRef` | the port of the model which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [idRef](#idref) | `SIdRef` | the element which this link of the chain names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unitRef](#unitref) | `UnitSIdRef` | the unit definition which this link of the chain names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [metaIdRef](#metaidref) | `IDREF` | the element which this link of the chain names, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [sBaseRef](#sbaseref-2) | `SBaseRef` | the next link of the chain, one submodel deeper | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="port-ref"></span>**port ref**
+<span id="portref"></span>**portRef**
 
 The reference names a [port](port.md) of the model the submodel above it instantiates. Port identifiers are a namespace of their own, so a port may carry the identifier of an element of the same model without naming it.
 
-<span id="id-ref"></span>**id ref**
+<span id="idref"></span>**idRef**
 
 The reference names an element of the model the submodel above it instantiates. When that element is a [submodel](submodel.md) again, the next link of the chain reaches into it.
 
-<span id="unit-ref"></span>**unit ref**
+<span id="unitref"></span>**unitRef**
 
 Unit identifiers live in a namespace of their own, so naming a [unit definition](unitdefinition.md) needs an attribute of its own. The units which SBML reserves cannot be named here: they can neither be replaced nor deleted.
 
-<span id="meta-id-ref"></span>**meta id ref**
+<span id="metaidref"></span>**metaIdRef**
 
 Every element of a file may carry a meta id, and this is the way to name an element which has no identifier of its own, for example a rule or a reaction written without one.
 
-<span id="nested-reference"></span>**nested reference**
+<span id="sbaseref-2"></span>**sBaseRef**
 
 A reference which names a [submodel](submodel.md) carries the reference which names the element inside it. There is no limit to the depth of the chain.
 
@@ -44,8 +44,8 @@ A reference which names a [submodel](submodel.md) carries the reference which na
 
 - [Port](port.md): an element of the model which other models are meant to connect to
 - [Deletion](deletion.md): an element which is removed from a submodel before it is instantiated
-- [Replaced element](replacedelement.md): an element of a submodel which the element carrying it takes the place of
-- [Replaced by](replacedby.md): the element of a submodel which takes the place of the element carrying it
+- [ReplacedElement](replacedelement.md): an element of a submodel which the element carrying it takes the place of
+- [ReplacedBy](replacedby.md): the element of a submodel which takes the place of the element carrying it
 - [Hierarchical Model Composition (comp)](comp.md): the package which builds a model out of other models
 
 ## Specification

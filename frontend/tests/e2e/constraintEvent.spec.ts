@@ -18,7 +18,7 @@ test.describe("constraint_event", () => {
       .locator('tbody tr[data-pk$="UnitDefinition:mmole_per_min_l"]')
       .click();
     const inspector = page.getByTestId("inspector");
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Unit definition");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("UnitDefinition");
     const units = inspector.getByTestId("nested-table");
     await expect(units.locator("thead th")).toHaveText(["kind", "exponent", "scale", "multiplier"]);
     await expect(units.locator("tbody tr")).toHaveCount(3);

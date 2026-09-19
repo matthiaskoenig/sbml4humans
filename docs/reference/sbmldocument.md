@@ -1,4 +1,4 @@
-# Document
+# SBMLDocument
 
 The container of an SBML file, with its level, version and packages.
 

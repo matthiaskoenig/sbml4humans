@@ -1,4 +1,4 @@
-# Replaced element
+# ReplacedElement
 
 An element of a submodel which the element carrying it takes the place of.
 
@@ -12,18 +12,18 @@ The report lists the replacements of an element in its inspector, links the subm
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [submodel](#submodel) | `SIdRef` | the submodel which holds the replaced element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [submodelRef](#submodelref) | `SIdRef` | the submodel which holds the replaced element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [deletion](#deletion) | `SIdRef` | the deletion of the submodel whose element this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [conversion factor](#conversion-factor) | `SIdRef` | the parameter which rescales the replaced value to the scale of this element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [port ref](#port-ref) | `PortSIdRef` | the port of the submodel whose element is replaced | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [id ref](#id-ref) | `SIdRef` | the element which is replaced, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [unit ref](#unit-ref) | `UnitSIdRef` | the unit definition which is replaced | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [meta id ref](#meta-id-ref) | `IDREF` | the element which is replaced, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [nested reference](#nested-reference) | `SBaseRef` | the reference which reaches into a submodel of the named submodel | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [conversionFactor](#conversionfactor) | `SIdRef` | the parameter which rescales the replaced value to the scale of this element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [portRef](#portref) | `PortSIdRef` | the port of the submodel whose element is replaced | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [idRef](#idref) | `SIdRef` | the element which is replaced, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unitRef](#unitref) | `UnitSIdRef` | the unit definition which is replaced | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [metaIdRef](#metaidref) | `IDREF` | the element which is replaced, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [sBaseRef](#sbaseref) | `SBaseRef` | the reference which reaches into a submodel of the named submodel | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="submodel"></span>**submodel**
+<span id="submodelref"></span>**submodelRef**
 
 The reference names a [submodel](submodel.md) of the model which carries the replacement. It is required, and it says which model the other references are resolved in: only elements of the model that submodel instantiates can be named.
 
@@ -31,36 +31,36 @@ The reference names a [submodel](submodel.md) of the model which carries the rep
 
 The reference names a [deletion](deletion.md) of the named submodel and takes the place of the four references: instead of an element which is replaced, the replacement names an element which was removed. It changes nothing about the composed model and nothing about its mathematics; it records the decision that this element is what the submodel lost, so that a reader, and a tool which draws the model, can follow it.
 
-<span id="conversion-factor"></span>**conversion factor**
+<span id="conversionfactor"></span>**conversionFactor**
 
 The reference names a [parameter](parameter.md) of the model which carries the replacement. One unit of the replaced element multiplied by the factor is one unit of the replacing element, which is how a submodel written in millimole is used by a model written in mole. The factor applies to every reference to the replaced element, and the factors of nested replacements multiply.
 
 A replacement cannot carry a conversion factor and a deletion at the same time: what is deleted has no value left to convert.
 
-<span id="port-ref"></span>**port ref**
+<span id="portref"></span>**portRef**
 
 The replacement names a [port](port.md) of the model the submodel instantiates, and the element behind that port is what is replaced. It is the first choice of the specification, because the port is the interface the other model offers.
 
-<span id="id-ref"></span>**id ref**
+<span id="idref"></span>**idRef**
 
 The identifier is resolved in the model the named submodel instantiates. It is the choice for an element which no port exposes.
 
-<span id="unit-ref"></span>**unit ref**
+<span id="unitref"></span>**unitRef**
 
 Unit identifiers live in a namespace of their own. The units which SBML reserves cannot be replaced.
 
-<span id="meta-id-ref"></span>**meta id ref**
+<span id="metaidref"></span>**metaIdRef**
 
 This is the way to replace an element which carries no identifier of its own.
 
-<span id="nested-reference"></span>**nested reference**
+<span id="sbaseref"></span>**sBaseRef**
 
 A replacement which names a submodel of the instantiated model carries a [nested reference](sbaseref.md) which names the element inside it, so that an element of a sub-submodel can be replaced.
 
 ## Related elements
 
 - [Submodel](submodel.md): the instantiation of another model inside this model
-- [Replaced by](replacedby.md): the element of a submodel which takes the place of the element carrying it
+- [ReplacedBy](replacedby.md): the element of a submodel which takes the place of the element carrying it
 - [Deletion](deletion.md): an element which is removed from a submodel before it is instantiated
 - [Hierarchical Model Composition (comp)](comp.md): the package which builds a model out of other models
 

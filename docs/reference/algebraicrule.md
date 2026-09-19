@@ -1,4 +1,4 @@
-# Algebraic rule
+# AlgebraicRule
 
 An equation which has to hold at every moment of the simulation.
 
@@ -32,8 +32,8 @@ The report derives the units of the expression from the units of the quantities 
 
 ## Related elements
 
-- [Assignment rule](assignmentrule.md): a formula which holds at every moment of the simulation
-- [Rate rule](raterule.md): a formula which gives the rate of change of an element
+- [AssignmentRule](assignmentrule.md): a formula which holds at every moment of the simulation
+- [RateRule](raterule.md): a formula which gives the rate of change of an element
 
 ## Specification
 

@@ -1,4 +1,4 @@
-# Modifier species reference
+# ModifierSpeciesReference
 
 The participation of a species in a reaction as a modifier.
 
@@ -36,7 +36,7 @@ The reaction is the first row of the inspector of a modifier species reference.
 
 - [Reaction](reaction.md): a process which changes the quantities of species
 - [Species](species.md): a pool of a chemical entity in a compartment
-- [Species reference](speciesreference.md): the participation of a species in a reaction as a reactant or a product
+- [SpeciesReference](speciesreference.md): the participation of a species in a reaction as a reactant or a product
 
 ## Specification
 

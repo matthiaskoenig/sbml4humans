@@ -113,7 +113,7 @@ function sortable(column: ColumnDef): boolean {
 function headerTooltip(column: ColumnDef): string | undefined {
   const summary = attributeEntry(props.type, column.field)?.summary;
   if (!summary || column.kind !== "count") return summary;
-  return `the number of the ${column.header}: ${summary}`;
+  return `the number of elements of ${column.header}: ${summary}`;
 }
 
 function toggleSort(column: ColumnDef): void {

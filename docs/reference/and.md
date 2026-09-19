@@ -20,9 +20,9 @@ The order of the nodes carries no meaning: an `and` is a set of conditions which
 
 ## Related elements
 
-- [Gene product association](geneproductassociation.md): the genes a reaction needs, as the tree of operators over them
+- [GeneProductAssociation](geneproductassociation.md): the genes a reaction needs, as the tree of operators over them
 - [Or](or.md): one of the associations below it suffices
-- [Gene product reference](geneproductref.md): the leaf of an association: one gene product the reaction depends on
+- [GeneProductRef](geneproductref.md): the leaf of an association: one gene product the reaction depends on
 
 ## Specification
 

@@ -8,7 +8,6 @@ defineProps<{ element: Uncertainty }>();
 
 <template>
   <AttributeRow
-    label="uncert parameters"
     :type="element.sbmlType"
     field="uncertParameters"
     :wide="!!element.uncertParameters?.length"

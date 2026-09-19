@@ -118,7 +118,7 @@ def test_renders_the_page_of_a_type() -> None:
     glossary = Glossary.from_directory(FIXTURE)
     page = render_type_page(glossary, glossary.types["Species"])
     assert page.startswith("# Species\n")
-    assert "| [initial amount](#initial-amount) |" in page
+    assert "| [initialAmount](#initialamount) |" in page
     assert "[Compartment](compartment.md)" in page
     assert "SBML Level 3 Version 2 Core" in page
 
@@ -128,10 +128,10 @@ def test_renders_the_description_of_every_attribute() -> None:
     glossary = Glossary.from_directory(FIXTURE)
     page = render_type_page(glossary, glossary.types["Species"])
     initial_amount = glossary.types["Species"].attributes["initialAmount"]
-    assert f'<span id="initial-amount"></span>**{initial_amount.label}**' in page
+    assert f'<span id="initialamount"></span>**{initial_amount.label}**' in page
     assert initial_amount.description in page
     # the anchor of the row is the description block, not the cell of the table
-    assert '| <span id="initial-amount"></span>' not in page
+    assert '| <span id="initialamount"></span>' not in page
     # a field of the report is rendered the same way, below its own table
     assert '<span id="derived-units"></span>**derived units**' in page
 
@@ -159,7 +159,7 @@ def test_renders_the_json_without_the_descriptions() -> None:
     assert "description" not in data["types"]["Species"]
     assert (
         data["types"]["Species"]["attributes"]["initialAmount"]["label"]
-        == "initial amount"
+        == "initialAmount"
     )
     assert data["links"]["compartment"]["summary"]
     assert data["concepts"]["derivedUnits"]["summary"]
@@ -305,7 +305,7 @@ def _species_with(tmp_path: Path, description: str) -> Glossary:
         '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
         f"description = '''{description}'''\n"
         "[types.Species.attributes.initialAmount]\n"
-        'label = "initial amount"\nsummary = "the amount at the start"\n'
+        'label = "initialAmount"\nsummary = "the amount at the start"\n'
         'description = "The amount of the species when the simulation starts."\n',
     )
 
@@ -352,7 +352,7 @@ def test_a_fragment_link_resolves_to_an_anchor_of_the_page(tmp_path: Path) -> No
     """A description may link an anchor of its own page and of another page."""
     glossary = _species_with(
         tmp_path,
-        "see [the amount](#initial-amount) and [it again](species.md#initial-amount)",
+        "see [the amount](#initialamount) and [it again](species.md#initialamount)",
     )
     glossary.validate_links()
 
@@ -385,7 +385,7 @@ def test_coverage_rejects_an_attribute_which_the_report_does_not_have(
         tmp_path,
         extra_glossary=(
             "[types.Species.attributes.initialAmountt]\n"
-            'label = "initial amountt"\nsummary = "a typo"\n'
+            'label = "initialAmountt"\nsummary = "a typo"\n'
             'description = "A field which the report does not have."\n'
         ),
     )
@@ -394,6 +394,63 @@ def test_coverage_rejects_an_attribute_which_the_report_does_not_have(
         GlossaryError, match=r"types\.Species\.attributes\.initialAmountt"
     ):
         glossary.validate_coverage(root)
+
+
+def test_an_attribute_of_a_specification_is_labelled_by_its_name(
+    tmp_path: Path,
+) -> None:
+    """A label in plain words is for what the report adds, not for the specification."""
+    root = _repository(
+        tmp_path,
+        extra_glossary=(
+            "[types.Species.attributes.boundaryCondition]\n"
+            'label = "boundary condition"\nsummary = "a flag"\n'
+            'spec = { doc = "l3v2", section = "4.6.6" }\n'
+            'description = "Whether the reactions leave the species unchanged."\n'
+            '[types.Species.attributes."fbc.charge"]\n'
+            'label = "fbc:charge"\nsummary = "the charge"\n'
+            'spec = { doc = "l3v2" }\n'
+            'description = "An attribute a package adds carries its prefix."\n'
+        ),
+    )
+    glossary = Glossary.from_directory(root / "glossary")
+    with pytest.raises(GlossaryError) as error:
+        glossary.validate_labels()
+    message = str(error.value)
+    assert "types.Species.attributes.boundaryCondition" in message
+    assert "'boundary condition'" in message
+    # the name with the prefix of its package is a name, and so are the words of an
+    # attribute which cites no specification, the derived units of the fixture
+    assert "fbc.charge" not in message
+    assert "derivedUnits" not in message
+
+
+def test_a_type_is_labelled_by_its_name(tmp_path: Path) -> None:
+    """The label of a type is the name of its class."""
+    (tmp_path / "core.toml").write_text(
+        '[types.FunctionDefinition]\nlabel = "Function definition"\n'
+        'summary = "a function"\ndescription = "A named formula."\n',
+        encoding="utf-8",
+    )
+    with pytest.raises(GlossaryError, match="not by its name 'FunctionDefinition'"):
+        Glossary.from_directory(tmp_path).validate_labels()
+
+
+def test_a_link_kind_is_labelled_by_its_key(tmp_path: Path) -> None:
+    """The group of links is named as the attribute which makes the reference."""
+    (tmp_path / "report.toml").write_text(
+        '[links.kineticLaw]\nlabel = "kinetic law"\n'
+        'summary = "the law of a reaction"\ndescription = "A reaction names its law."\n',
+        encoding="utf-8",
+    )
+    with pytest.raises(GlossaryError, match="not by its name 'kineticLaw'"):
+        Glossary.from_directory(tmp_path).validate_labels()
+
+
+def test_the_labels_of_the_repository_are_names() -> None:
+    """The glossary of the repository names what the specification names."""
+    root = glossary_module.REPO_ROOT
+    Glossary.from_directory(root / glossary_module.GLOSSARY_DIR).validate_labels()
 
 
 def test_coverage_accepts_the_glossary_of_the_repository() -> None:

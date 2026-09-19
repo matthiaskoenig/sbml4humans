@@ -144,6 +144,12 @@ try {
     return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
+  /** Closes the inspector a report opens with, for a picture of the tables alone. */
+  async function closeInspector(page) {
+    await page.getByTestId("inspector-close").click();
+    await expect(page.getByTestId("inspector")).toHaveCount(0);
+  }
+
   /** Selects the row of `table` whose id column is exactly `id` and waits for the inspector to
    * show it. The click goes to the id cell of the row rather than to the middle of it, where a
    * wide window puts a cell which holds a link, and a click on a link selects what it points at
@@ -288,10 +294,11 @@ try {
   const report = await newPage(REPORT_VIEWPORT);
 
   // report-tables.png: the repressilator report with nothing selected, so the tables have the
-  // whole width of the window and no inspector shows. The picture is the top of the page, it ends
-  // between two rows of the tables instead of at the footer below them.
+  // whole width of the window and no inspector shows; a report opens with its model selected, so
+  // the inspector is closed first. The picture is the top of the page, it ends between two rows
+  // of the tables instead of at the footer below them.
   await open(report, "BIOMD0000000012");
-  await expect(report.getByTestId("inspector")).toHaveCount(0);
+  await closeInspector(report);
   const tables = await report.getByTestId("tables").boundingBox();
   await restPointer(report);
   await shot("report-tables", report, {
@@ -327,7 +334,7 @@ try {
   // fit that width, and the app bar above them does not.
   const qual = await newPage(PAGE_VIEWPORT);
   await open(qual, "qual_example (qual_example.xml)");
-  await expect(qual.getByTestId("inspector")).toHaveCount(0);
+  await closeInspector(qual);
   await expect(qual.getByTestId("table-QualitativeSpecies")).toBeVisible();
   await expect(qual.getByTestId("table-Transition")).toBeVisible();
   for (const type of ["QualitativeSpecies", "Transition"]) {

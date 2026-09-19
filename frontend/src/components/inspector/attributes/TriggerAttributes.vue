@@ -8,13 +8,13 @@ defineProps<{ element: Trigger }>();
 </script>
 
 <template>
-  <AttributeRow label="math" :type="element.sbmlType" field="math"
+  <AttributeRow :type="element.sbmlType" field="math"
     ><MathView :math="element.math" display
   /></AttributeRow>
-  <AttributeRow label="initial value" :type="element.sbmlType" field="initialValue"
+  <AttributeRow :type="element.sbmlType" field="initialValue"
     ><BooleanMark :value="element.initialValue"
   /></AttributeRow>
-  <AttributeRow label="persistent" :type="element.sbmlType" field="persistent"
+  <AttributeRow :type="element.sbmlType" field="persistent"
     ><BooleanMark :value="element.persistent"
   /></AttributeRow>
 </template>

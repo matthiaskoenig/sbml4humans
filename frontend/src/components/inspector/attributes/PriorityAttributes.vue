@@ -7,7 +7,7 @@ defineProps<{ element: Priority }>();
 </script>
 
 <template>
-  <AttributeRow label="math" :type="element.sbmlType" field="math"
+  <AttributeRow :type="element.sbmlType" field="math"
     ><MathView :math="element.math" display
   /></AttributeRow>
 </template>
