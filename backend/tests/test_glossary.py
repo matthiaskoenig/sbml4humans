@@ -417,6 +417,35 @@ def test_the_docs_anchor_of_a_data_type_is_an_anchor_of_its_page() -> None:
         assert fragment in anchors, f"{key}: '{fragment}' is not an anchor of the page"
 
 
+def test_every_docs_url_of_the_details_resolves() -> None:
+    """Every `docs` url of the repository names a page and an anchor it has.
+
+    The footer of the help dialog is that url, so an entry whose page is not
+    generated, or whose fragment the page does not carry, links into nothing
+    of the documentation site.
+    """
+    root = glossary_module.REPO_ROOT
+    glossary = Glossary.from_directory(root / glossary_module.GLOSSARY_DIR)
+    pages = glossary_module._reference_pages(glossary)
+    anchors = {
+        name: set(glossary_module._anchors_of(page)) for name, page in pages.items()
+    }
+    prefix = f"{glossary_module.REFERENCE_DIR.name}/"
+    problems: list[str] = []
+    for key, entry in render_details(glossary)["entries"].items():
+        docs = entry["docs"]
+        path, _, fragment = docs.partition("#")
+        if not path.startswith(prefix) or not path.endswith("/"):
+            problems.append(f"{key}: '{docs}' is no url of a reference page")
+            continue
+        name = f"{path[len(prefix) : -1]}.md"
+        if name not in pages:
+            problems.append(f"{key}: '{docs}' names no generated page")
+        elif fragment and fragment not in anchors[name]:
+            problems.append(f"{key}: '{fragment}' is not an anchor of {name}")
+    assert problems == []
+
+
 def test_a_fragment_link_resolves_to_an_anchor_of_the_page(tmp_path: Path) -> None:
     """A description may link an anchor of its own page and of another page."""
     glossary = _species_with(
