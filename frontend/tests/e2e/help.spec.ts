@@ -118,6 +118,32 @@ test.describe("the help dialog", () => {
     await expect.poll(() => query(page, "help")).toBe("types/Species/initialAmount");
   });
 
+  // the browser hands the focus back to the label which opened the dialog, and a tooltip on it
+  // would stand on the report while the pointer rests where the dialog was
+  test("leaves no tooltip on the label it returns the focus to, and shows one for the keyboard", async ({
+    page,
+  }) => {
+    const inspector = await selectFirstSpecies(page);
+    const label = attributeRow(inspector, "initialAmount").getByTestId("help-label");
+    const tooltip = page.locator("#app-tooltip");
+
+    await label.click();
+    await expect(page.getByTestId("help-dialog")).toBeVisible();
+    await page.getByTestId("help-close").click();
+    await expect(page.getByTestId("help-dialog")).toBeHidden();
+    await expect(label).toBeFocused();
+    await expect(tooltip).toBeHidden();
+
+    // a reader who reaches the label with Tab is shown its sentence as before: the focus leaves
+    // it and comes back, so that the browser judges the focus as one of the keyboard
+    await label.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(label).toBeFocused();
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toContainText("the amount of the species when the simulation starts");
+  });
+
   test("the header of a column still sorts, and its help opens no sort of its own", async ({
     page,
   }) => {

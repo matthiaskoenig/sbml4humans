@@ -19,6 +19,7 @@ interface TooltipTarget {
   placement: Placement;
   mono: boolean;
   show: () => void;
+  focus: () => void;
   hide: () => void;
 }
 
@@ -89,6 +90,22 @@ function show(el: HTMLElement): void {
   void position(el, target.placement);
 }
 
+/** Show the tooltip for a focus, which only a reader on the keyboard is shown one for: a pointer
+ * and a script focus an element as well, and the browser hands the focus back to the element
+ * which opened a dialog when it closes, where a tooltip would stand next to a pointer that is
+ * somewhere else entirely. `:focus-visible` is the browser's own judgement of this, and the hover
+ * covers the pointer. An engine which does not know the selector throws on it and keeps the
+ * tooltip it showed for every focus. */
+function focus(el: HTMLElement): void {
+  let keyboard: boolean;
+  try {
+    keyboard = el.matches(":focus-visible");
+  } catch {
+    keyboard = true;
+  }
+  if (keyboard) show(el);
+}
+
 /** Hide the tooltip; with an element only when it is shown for that element. */
 function hide(el?: HTMLElement): void {
   if (el && owner !== el) return;
@@ -109,11 +126,12 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
       placement: placementOf(binding),
       mono: binding.modifiers.mono === true,
       show: () => show(el),
+      focus: () => focus(el),
       hide: () => hide(el),
     };
     targets.set(el, target);
     el.addEventListener("mouseenter", target.show);
-    el.addEventListener("focusin", target.show);
+    el.addEventListener("focusin", target.focus);
     el.addEventListener("mouseleave", target.hide);
     el.addEventListener("focusout", target.hide);
   },
@@ -137,7 +155,7 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
     const target = targets.get(el);
     if (target) {
       el.removeEventListener("mouseenter", target.show);
-      el.removeEventListener("focusin", target.show);
+      el.removeEventListener("focusin", target.focus);
       el.removeEventListener("mouseleave", target.hide);
       el.removeEventListener("focusout", target.hide);
       targets.delete(el);
