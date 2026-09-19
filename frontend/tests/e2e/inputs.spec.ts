@@ -16,9 +16,11 @@ test.afterAll(async () => {
 test("uploads a file", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("file-input").setInputFiles(REPRESSILATOR_FILE);
-  await expect(page).toHaveURL(/\/report$/);
+  // the report opens with its model selected, which the url says
+  await expect(page).toHaveURL(/\/report\?pk=BIOMD0000000012\/Model:BIOMD0000000012$/);
   await expect(page.getByTestId("report-page")).toBeVisible();
   await expect(page.getByTestId("bar-model")).toContainText("BIOMD0000000012");
+  await expect(page.getByTestId("inspector-type")).toHaveText("Model");
   await page.reload();
   await expect(page.getByTestId("no-report")).toBeVisible();
 });
@@ -37,7 +39,7 @@ test("loads a url and remembers it", async ({ page }) => {
   await page.getByTestId("home-tab-url").click();
   await page.getByTestId("url-input").fill(url);
   await page.getByTestId("url-submit").click();
-  await expect(page).toHaveURL(/\/report\?url=/);
+  await expect(page).toHaveURL(/\/report\?(.*&)?url=/);
   await expect(page.getByTestId("report-page")).toBeVisible();
   await page.reload();
   await expect(page.getByTestId("report-page")).toBeVisible();

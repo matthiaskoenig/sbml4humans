@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 
 import XhtmlView from "@/components/misc/XhtmlView.vue";
-import { sanitizeNotes } from "@/report/notes";
+import { hasNotes, sanitizeNotes } from "@/report/notes";
 
 /** The tags and attributes the real notes of the examples use, wrapped the way libsbml returns
  * a notes string (a `<notes>` element around an xhtml `<body>`). */
@@ -117,5 +117,25 @@ describe("XhtmlView", () => {
     expect(wrapper.html()).not.toContain("<style");
     expect(wrapper.html()).not.toContain("<script");
     expect(wrapper.html()).not.toContain("onerror");
+  });
+});
+
+describe("hasNotes", () => {
+  const body = (content: string) =>
+    `<notes><body xmlns="http://www.w3.org/1999/xhtml">${content}</body></notes>`;
+
+  it("finds a text and an image", () => {
+    expect(hasNotes(REAL_NOTES)).toBe(true);
+    expect(hasNotes(body("<p>a paragraph</p>"))).toBe(true);
+    expect(hasNotes(body('<img src="https://example.invalid/badge.svg" alt=""/>'))).toBe(true);
+  });
+
+  it("finds nothing in missing notes, an empty body and markup the report removes", () => {
+    expect(hasNotes(null)).toBe(false);
+    expect(hasNotes(undefined)).toBe(false);
+    expect(hasNotes("")).toBe(false);
+    expect(hasNotes(body(""))).toBe(false);
+    expect(hasNotes(body("<p> </p>"))).toBe(false);
+    expect(hasNotes(body("<style>p { color: red; }</style>"))).toBe(false);
   });
 });

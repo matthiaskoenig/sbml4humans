@@ -127,6 +127,23 @@ const emptyMessage = computed(() =>
 );
 
 const selectedPk = computed(() => view.state.value.pk);
+
+/** A report opens with its model in the inspector, and so does the model a reader switches to:
+ * the model says what the report is about, its name, its notes, its units and its annotations,
+ * and a page which opens with the tables alone does not show that there is an inspector. The
+ * route is replaced, so that the way back does not pass a report without a selection, and only a
+ * model which comes into view selects itself: a reader who closes the inspector keeps it closed,
+ * and a url which names an element keeps that element. */
+const defaultPk = computed(() =>
+  showsReport.value && !store.loading && !store.error ? (model.value?.pk ?? null) : null,
+);
+watch(
+  defaultPk,
+  (pk) => {
+    if (pk && !view.state.value.pk) void view.select(pk, "replace");
+  },
+  { immediate: true },
+);
 watch([selectedPk, index], ([pk, current]) => {
   if (pk && current && !current.has(pk)) {
     console.warn(`The selected element ${pk} is not part of the report`);
@@ -162,15 +179,20 @@ watch([selectedPk, index], ([pk, current]) => {
   </div>
   <div v-else-if="index && model" class="flex min-h-0 flex-1 flex-col" data-testid="report-page">
     <TypeBar :index="index" :model="model" :counts="counts" />
+    <!-- the inspector is the first pane: the element which is read stands at the left, where a
+    reader begins, and the tables it was selected in keep the rest of the window -->
     <SplitPane
       direction="horizontal"
       storage-key="inspector-width"
       :initial="INSPECTOR_WIDTH"
       :min="INSPECTOR_MIN"
-      sized-pane="second"
+      sized-pane="first"
       :collapsed="!selectedPk"
     >
       <template #first>
+        <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
+      </template>
+      <template #second>
         <div class="h-full overflow-y-auto px-4 pb-8" data-testid="tables">
           <p
             v-if="visibleSections.length === 0"
@@ -188,9 +210,6 @@ watch([selectedPk, index], ([pk, current]) => {
             :total="section.total"
           />
         </div>
-      </template>
-      <template #second>
-        <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
       </template>
     </SplitPane>
     <AppFooter dense />

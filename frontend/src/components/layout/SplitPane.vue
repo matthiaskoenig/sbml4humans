@@ -108,41 +108,44 @@ const sizedStyle = computed(() => ({
 </script>
 
 <template>
+  <!-- the sized pane is the one which opens and closes: collapsed, it and the separator are left
+  out and the other pane has the whole container -->
   <div
     ref="container"
     class="flex min-h-0 min-w-0 flex-1"
     :class="horizontal ? 'flex-row' : 'flex-col'"
   >
     <div
+      v-if="!(collapsed && sizedPane === 'first')"
       class="flex min-h-0 min-w-0 flex-col overflow-hidden"
       :class="sizedPane === 'first' ? '' : 'flex-1'"
       :style="sizedPane === 'first' ? sizedStyle : undefined"
     >
       <slot name="first" />
     </div>
-    <template v-if="!collapsed">
-      <div
-        class="shrink-0 bg-gray-200 hover:bg-gray-400"
-        :class="horizontal ? 'w-1 cursor-col-resize' : 'h-1 cursor-row-resize'"
-        role="separator"
-        tabindex="0"
-        aria-label="resize the panes"
-        :aria-orientation="horizontal ? 'vertical' : 'horizontal'"
-        :aria-valuenow="valueNow"
-        data-testid="split-handle"
-        @keydown="onKeyDown"
-        @pointerdown="onPointerDown"
-        @pointermove="onPointerMove"
-        @pointerup="onPointerUp"
-        @pointercancel="onPointerUp"
-      />
-      <div
-        class="flex min-h-0 min-w-0 flex-col overflow-hidden"
-        :class="sizedPane === 'second' ? '' : 'flex-1'"
-        :style="sizedPane === 'second' ? sizedStyle : undefined"
-      >
-        <slot name="second" />
-      </div>
-    </template>
+    <div
+      v-if="!collapsed"
+      class="shrink-0 bg-gray-200 hover:bg-gray-400"
+      :class="horizontal ? 'w-1 cursor-col-resize' : 'h-1 cursor-row-resize'"
+      role="separator"
+      tabindex="0"
+      aria-label="resize the panes"
+      :aria-orientation="horizontal ? 'vertical' : 'horizontal'"
+      :aria-valuenow="valueNow"
+      data-testid="split-handle"
+      @keydown="onKeyDown"
+      @pointerdown="onPointerDown"
+      @pointermove="onPointerMove"
+      @pointerup="onPointerUp"
+      @pointercancel="onPointerUp"
+    />
+    <div
+      v-if="!(collapsed && sizedPane === 'second')"
+      class="flex min-h-0 min-w-0 flex-col overflow-hidden"
+      :class="sizedPane === 'second' ? '' : 'flex-1'"
+      :style="sizedPane === 'second' ? sizedStyle : undefined"
+    >
+      <slot name="second" />
+    </div>
   </div>
 </template>

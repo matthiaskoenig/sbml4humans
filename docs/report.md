@@ -1,6 +1,6 @@
 # Reading a report
 
-A report shows one [model](reference/model.md) of one SBML file at a time. The type bar at the top says what the model is made of, the tables under it show the elements of every type, and the inspector at the right shows one element in full. The whole model is on the page, the three parts are three views of it.
+A report shows one [model](reference/model.md) of one SBML file at a time. The type bar at the top says what the model is made of, the tables under it show the elements of every type, and the inspector at the left of them shows one element in full. The whole model is on the page, the three parts are three views of it.
 
 [![The type bar and the element tables of the repressilator report](images/report-tables.png)](images/report-tables.png)
 
@@ -12,7 +12,7 @@ The bar over the tables lists what the file contains, as one row which wraps ont
 
 It begins with the [document](reference/sbmldocument.md) itself, the model which is currently shown, and the [external model definitions](reference/externalmodeldefinition.md) of a file which uses the comp package. A click selects the element and opens it in the inspector, which is how the level, the version, the packages and the units of a model are read.
 
-A separator follows, and after it one entry per element type: a checkbox, the coloured mark of the type, its name in the plural and the number of elements of that type. A type the model has no element of is not in the bar at all, and the types of a package are there only when the file declares that package, so the bar is the answer to what a model is made of.
+A separator follows, and after it one entry per element type: a checkbox, the coloured mark of the type, its name in the plural and the number of elements of that type. The types stand in the order in which the specification lists them in a model, with one exception: the [unit definitions](reference/unitdefinition.md) come last, in the bar and in the tables, because they are what the other tables link to for their units and not what a model is about. A type the model has no element of is not in the bar at all, and the types of a package are there only when the file declares that package, so the bar is the answer to what a model is made of.
 
 Three things can be done with such an entry. The name scrolls the tables to the section of that type, as far as there is one: a type whose checkbox is off or whose elements a search filtered away has no section to scroll to. The checkbox hides that section, which is the filter of types, and the state of the checkboxes is part of the url of the report. The count shows the number of elements, and while a search is active it shows the number of matching elements in front of the total.
 
@@ -59,7 +59,7 @@ While a search is active, every table shows only the matching rows, a type witho
 
 ## The inspector
 
-The inspector opens at the right of the tables for the selected element and shows everything the report has about it.
+The inspector opens at the left of the tables for the selected element and shows everything the report has about it. A report opens with its model selected, so the first thing a reader sees next to the tables is what the model is: its name, its units, its annotations and its notes. The cross of the inspector closes it, and it stays closed until an element is selected.
 
 [![The inspector of a species, with its attributes, its links and its annotations](images/inspector-species.png)](images/inspector-species.png)
 
@@ -83,7 +83,7 @@ An element which the file nests in another is a link in the row which shows it, 
 
 The annotations themselves are the controlled vocabulary terms of the element, one block per term, headed by the qualifier of that term, with its resources below it. An element with two terms of the same qualifier therefore shows two blocks under the same heading, and a term which further terms qualify, which the specification allows at any depth, shows them indented below its resources. Each resource is a link to the entry it identifies, and the report asks its backend what the entry is, so that a resource shows the name of the molecule, of the pathway or of the publication instead of an identifier alone. A term of the Systems Biology Ontology which the element carries is listed here as well. Long lists of terms and of resources are cut off, with one button which shows the rest and one which resolves the rest.
 
-The notes of the element follow, rendered as the XHTML the author wrote, and the history of the SBML encoding last: who created it, with which organization and mail address, when it was created and when it was modified.
+The notes of the element follow where it has any, rendered as the XHTML the author wrote, and the history of the SBML encoding last: who created it, with which organization and mail address, when it was created and when it was modified.
 
 The "XML" button in the header replaces the three sections by the SBML of the element as it stands in the file, with a button which copies it. It is there for what a report cannot show better than the file itself: an annotation in a format the report does not read, an element of a package it does not support, or simply the exact text. The button is there for every element, including the document and the model, whose XML would be the whole file: for those two the view shows their annotation element alone, under a caption which says so, because that is where a tool writes what a file says about itself, and it says that the element carries no annotation where there is none.
 
@@ -95,7 +95,7 @@ The bar at the top says which file and which model the report shows: the entry o
 
 An archive with more than one SBML entry offers its entries for selection, named by their location in the archive. The report opens the master entry of the manifest when that entry has a report of its own, and the first entry otherwise; an archive does not have to mark a master entry, and `CompModels`, one of the example archives, marks none. A file which uses the comp package can hold model definitions next to its model; they are offered in the same way, with "(definition)" behind the id of a model definition, and the report opens the model of the document first. A [submodel](reference/submodel.md) is an element of the model which instantiates it, and the model definition it instantiates is one of the models offered here.
 
-Switching the entry or the model closes the inspector, because the selected element belongs to the model it was selected in. The search and the filter of types stay as they are.
+Switching the entry or the model selects the model which comes into view, because the element which was selected belongs to the model it was selected in. The search and the filter of types stay as they are.
 
 ### Models of other documents
 
@@ -120,4 +120,4 @@ The state of a report is part of its address, so a report can be linked in the s
 | `model` | the id of the model or of the model definition |
 | `url` | the address the model was downloaded from, for a report which was loaded from a url |
 
-Selecting an element adds a step to the history of the browser, so the back button walks back through the elements you looked at. Typing in the search box does not, so the back button does not step through every keystroke.
+Selecting an element adds a step to the history of the browser, so the back button walks back through the elements you looked at. The model a report selects when it opens adds none. Typing in the search box does not, so the back button does not step through every keystroke.

@@ -23,7 +23,8 @@ const packages = computed(
   () => new Set(props.index.document.packages?.map((pkg) => pkg.prefix) ?? []),
 );
 
-/** The types the model has elements of, in the order of the specification: a type of a package
+/** The types the model has elements of, in the order of the specification with the unit
+ * definitions last, which is the order of `ELEMENT_TYPES`: a type of a package
  * the document does not declare, and a type the model states no element of, is not an entry of
  * the bar at all. The count of a type is its number of elements, which a search does not change,
  * so the entries of the bar stay the same while a search runs. */

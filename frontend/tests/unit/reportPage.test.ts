@@ -108,7 +108,7 @@ describe("ReportPage", () => {
     expect(page.find("[data-testid=no-report]").exists()).toBe(false);
   });
 
-  it("opens the inspector at the right of the tables and carries the footer", async () => {
+  it("opens the inspector at the left of the tables and carries the footer", async () => {
     vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
@@ -117,15 +117,53 @@ describe("ReportPage", () => {
 
     const reportPage = page.get("[data-testid=report-page]");
     expect(reportPage.find("[data-testid=type-bar]").exists()).toBe(true);
-    // the tables and the inspector are the two panes of one horizontal split, the tables first
+    // the inspector and the tables are the two panes of one horizontal split, the inspector first
     const split = reportPage.get("[data-testid=split-handle]").element.parentElement!;
     expect(split.className).toContain("flex-row");
     const panes = [...split.querySelectorAll("[data-testid=tables], [data-testid=inspector]")].map(
       (pane) => pane.getAttribute("data-testid"),
     );
-    expect(panes).toEqual(["tables", "inspector"]);
+    expect(panes).toEqual(["inspector", "tables"]);
     // the footer sits under the split, not inside the pane which scrolls with the tables
     const footer = reportPage.get("[data-testid=app-footer]");
     expect(split.contains(footer.element)).toBe(false);
+  });
+
+  it("opens with the model in the inspector, which a reader can close", async () => {
+    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    const store = useReportStore();
+    await store.loadContent("<sbml/>");
+    const model = store.indexFor(store.defaultEntry!)!.mainModel!;
+    const page = await mountReport();
+
+    expect(router.currentRoute.value.query.pk).toBe(model.pk);
+    expect(page.get("[data-testid=inspector-type]").text()).toBe("Model");
+    // the selection replaced the route the report was opened with, the way back leaves the report
+    expect((window.history.state as { replaced: boolean }).replaced).toBe(true);
+
+    await page.get("[data-testid=inspector-close]").trigger("click");
+    await flushPromises();
+    expect(router.currentRoute.value.query.pk).toBeUndefined();
+    expect(page.find("[data-testid=inspector]").exists()).toBe(false);
+  });
+
+  it("keeps the element a url names", async () => {
+    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    const store = useReportStore();
+    await store.loadContent("<sbml/>");
+    const index = store.indexFor(store.defaultEntry!)!;
+    const species = index.byType(index.mainModel!.id!).get("Species")![0]!;
+    const page = await mountReport({ pk: species.pk });
+
+    expect(router.currentRoute.value.query.pk).toBe(species.pk);
+    expect(page.get("[data-testid=inspector-type]").text()).toBe("Species");
+  });
+
+  it("selects nothing on a route which shows no report", async () => {
+    vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
+    const store = useReportStore();
+    await store.loadExample("BIOMD0000000012");
+    await mountReport();
+    expect(router.currentRoute.value.query.pk).toBeUndefined();
   });
 });

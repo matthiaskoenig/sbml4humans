@@ -165,7 +165,7 @@ test("the type bar wraps its entries instead of cutting them off or scrolling", 
   ).toBeLessThanOrEqual(0);
 });
 
-test("the type bar lists the types the model uses and the tables are left of the inspector", async ({
+test("the type bar lists the types the model uses and the inspector is left of the tables", async ({
   page,
 }) => {
   await openExample(page, "BIOMD0000000012");
@@ -175,11 +175,12 @@ test("the type bar lists the types the model uses and the tables are left of the
   await expect(bar.getByTestId("bar-type-FunctionDefinition")).toHaveCount(0);
   await expect(bar.getByTestId("bar-type-Event")).toHaveCount(0);
 
-  // the inspector opens at the right of the tables, at about a third of the window
+  // the inspector opens at the left of the tables, at about a third of the window
   await page.getByTestId("table-Species").locator("tbody tr[data-pk]").first().click();
   const tables = (await page.getByTestId("tables").boundingBox())!;
   const inspector = (await page.getByTestId("inspector").boundingBox())!;
-  expect(inspector.x).toBeGreaterThanOrEqual(tables.x + tables.width);
+  expect(inspector.x).toBe(0);
+  expect(tables.x).toBeGreaterThanOrEqual(inspector.x + inspector.width);
   const window = page.viewportSize()!;
   expect(inspector.width).toBeGreaterThan(window.width / 4);
   expect(inspector.width).toBeLessThan(window.width / 2);

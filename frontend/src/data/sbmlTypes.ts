@@ -108,15 +108,6 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
     listKey: "listOfFunctionDefinitions",
   },
   {
-    type: "UnitDefinition",
-    label: "Unit definition",
-    plural: "Unit definitions",
-    color: "#f1b6da",
-    icon: CalculatorIcon,
-    pkg: "core",
-    listKey: "listOfUnitDefinitions",
-  },
-  {
     type: "Compartment",
     label: "Compartment",
     plural: "Compartments",
@@ -277,6 +268,18 @@ export const ELEMENT_TYPES: readonly ElementTypeInfo[] = [
     icon: WorkflowIcon,
     pkg: "qual",
     listKey: "listOfTransitions",
+  },
+  // the unit definitions are the last table of a report and not the second one, where the
+  // specification lists them: they are what the other tables link to for their units, not what a
+  // model is about, and they would push the compartments and the species down the page
+  {
+    type: "UnitDefinition",
+    label: "Unit definition",
+    plural: "Unit definitions",
+    color: "#f1b6da",
+    icon: CalculatorIcon,
+    pkg: "core",
+    listKey: "listOfUnitDefinitions",
   },
 ];
 

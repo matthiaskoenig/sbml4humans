@@ -254,6 +254,50 @@ test("the model dropdown switches to a model definition", async ({ page }) => {
   await page.getByRole("combobox", { name: "model", exact: true }).selectOption("m1");
   await expect(page.getByTestId("bar-model")).toContainText("m1");
   expect(query(page, "model")).toBe("m1");
+  // the model which comes into view is the one the inspector shows
+  await expect(page.getByTestId("inspector-id")).toHaveText("m1");
+  expect(query(page, "pk")).toBe("m1/Model:m1");
+});
+
+test("a report opens with its model in the inspector, which stays closed once it is closed", async ({
+  page,
+}) => {
+  await openExample(page, "BIOMD0000000012");
+  const inspector = page.getByTestId("inspector");
+  await expect(inspector.getByTestId("inspector-type")).toHaveText("Model");
+  await expect(inspector.getByTestId("inspector-id")).toHaveText("BIOMD0000000012");
+  expect(query(page, "pk")).toBe("BIOMD0000000012/Model:BIOMD0000000012");
+  await expect(page.getByTestId("bar-model")).toHaveClass(/bg-selected/);
+
+  await inspector.getByTestId("inspector-close").click();
+  await expect(inspector).toHaveCount(0);
+  // a search changes the route and not the model, so the inspector stays closed
+  await page.getByTestId("search-input").fill("laci");
+  await expect(page.getByTestId("bar-count-Species")).toHaveText("2 / 6");
+  await expect(inspector).toHaveCount(0);
+  expect(query(page, "pk")).toBeNull();
+});
+
+test("the unit definitions are the last table and the last entry of the type bar", async ({
+  page,
+}) => {
+  await openExample(page, "BIOMD0000000012");
+  const entries = page.getByTestId("type-bar").locator("[data-testid^=bar-type-]");
+  await expect(entries.last()).toHaveAttribute("data-testid", "bar-type-UnitDefinition");
+  const sections = page.getByTestId("tables").locator("section");
+  await expect(sections.last()).toHaveAttribute("data-testid", "section-UnitDefinition");
+});
+
+test("the inspector has a notes section for an element with notes only", async ({ page }) => {
+  await openExample(page, "BIOMD0000000012");
+  // the model of the repressilator carries the notes of BioModels, its compartment carries none
+  const inspector = page.getByTestId("inspector");
+  await expect(inspector.getByTestId("notes-section")).toBeVisible();
+  await expect(inspector.getByTestId("notes")).not.toBeEmpty();
+  await page.getByTestId("table-Compartment").locator("tbody tr[data-pk]").first().click();
+  await expect(inspector.getByTestId("inspector-type")).toHaveText("Compartment");
+  await expect(inspector.getByTestId("annotations-column")).toBeVisible();
+  await expect(inspector.getByTestId("notes-section")).toHaveCount(0);
 });
 
 test.describe("a windowed table", () => {
