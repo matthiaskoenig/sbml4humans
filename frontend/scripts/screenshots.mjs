@@ -11,7 +11,8 @@
 // whole needs its type bar, its tables and its inspector at once, which no window that narrow
 // shows: it is captured in REPORT_VIEWPORT, the narrowest window in which the layout is honest,
 // and the documentation links those images to their file, so that a click opens them at full
-// size. The two tables of a qualitative model fit the column and are captured at its width.
+// size. The tables of a qualitative model are captured at the width of the column and the few
+// pixels its widest table needs beyond it.
 import { chromium, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -38,6 +39,9 @@ const INSPECTOR_WIDTH = COLUMN_WIDTH;
 // the window the parts of the report are captured in. It is taller than any of them, the picture
 // of the inspector shrinks it to the height its three sections need.
 const PARTS_VIEWPORT = { width: 1200, height: 1600 };
+// how much of the report is left around the help dialog: the dialog is painted over the report,
+// which its backdrop darkens, and this much of it says so in the picture
+const HELP_MARGIN = 40;
 // the window the strip of the app bar is captured in: wide enough for a strip of COLUMN_WIDTH
 // which starts at the context of the report to end before the links at the right of the bar
 const ARCHIVE_WIDTH = 1600;
@@ -124,6 +128,25 @@ try {
     await shot(name, page, { clip: { x: box.x, y: box.y, width: box.width, height } });
   }
 
+  /** Screenshots the open help dialog of `page` with HELP_MARGIN of the report around it. The
+   * dialog is centred in the window and narrower than it, so the margin holds the report the
+   * dialog was opened from, and the clip is kept inside the window where the dialog is as tall
+   * as the window allows it to be. */
+  async function shotDialog(name, page) {
+    const box = await page.getByTestId("help-dialog").boundingBox();
+    const view = page.viewportSize();
+    const x = Math.max(0, box.x - HELP_MARGIN);
+    const y = Math.max(0, box.y - HELP_MARGIN);
+    await shot(name, page, {
+      clip: {
+        x,
+        y,
+        width: Math.min(box.width + 2 * HELP_MARGIN, view.width - x),
+        height: Math.min(box.height + 2 * HELP_MARGIN, view.height - y),
+      },
+    });
+  }
+
   /** Moves the pointer out of the way and waits for the tooltip it may have opened to go: a
    * pointer left on a link or on a column header by a click would otherwise put a tooltip into
    * the next screenshot, and a different one on every run. */
@@ -202,6 +225,26 @@ try {
     if (overflow <= 0) throw new Error(`the inspector already fits a window of ${height} px`);
     await page.setViewportSize({ width, height: height + Math.ceil(overflow) });
     await expect.poll(() => inspectorOverflow(page)).toBeLessThanOrEqual(0);
+  }
+
+  /** How much the widest table of the page reaches beyond the pane it is in, in px. */
+  function tablesOverflow(page) {
+    return page.getByTestId("tables").evaluate((pane) => {
+      const tables = [...pane.querySelectorAll("[data-testid^='table-']")];
+      return Math.max(0, ...tables.map((table) => table.scrollWidth - table.clientWidth));
+    });
+  }
+
+  /** Grows the window by exactly that, so that no table of the picture is cut at its right. A
+   * table which is wider than its pane scrolls inside its section for a reader, which a picture
+   * cannot show and which reads as a picture that was cropped too narrow. */
+  async function fitTables(page) {
+    const overflow = await tablesOverflow(page);
+    if (overflow === 0) return;
+    const { width, height } = page.viewportSize();
+    await page.setViewportSize({ width: width + overflow, height });
+    const left = await tablesOverflow(page);
+    if (left > 0) throw new Error(`a table is still ${left} px wider than the window it is in`);
   }
 
   /** The heights at which the tables can be cut without cutting a row in half, measured from the
@@ -331,7 +374,9 @@ try {
   // that both tables have the whole width of the window. The signs of the influences are the
   // point of the picture, so it is taken in a window as wide as the column of the site, where
   // they are drawn at the size of the text next to them, from the type bar down: the two tables
-  // fit that width, and the app bar above them does not.
+  // fit that width, and the app bar above them does not. The compartment of the model stands
+  // above them in a table which is a little wider than the column, so the window is grown by what
+  // it overflows and the picture is that much wider than the column it is shown in.
   const qual = await newPage(PAGE_VIEWPORT);
   await open(qual, "qual_example (qual_example.xml)");
   await closeInspector(qual);
@@ -342,6 +387,7 @@ try {
     const fits = await table.evaluate((element) => element.scrollWidth <= element.clientWidth);
     if (!fits) throw new Error(`the table of the ${type} is wider than the column of the site`);
   }
+  await fitTables(qual);
   const typeBar = await qual.getByTestId("type-bar").boundingBox();
   const qualTables = await qual.getByTestId("tables").boundingBox();
   await restPointer(qual);
@@ -349,7 +395,7 @@ try {
     clip: {
       x: 0,
       y: typeBar.y,
-      width: PAGE_VIEWPORT.width,
+      width: qual.viewportSize().width,
       height: qualTables.y - typeBar.y + (await cutWithin(qual, qualTables.height)),
     },
   });
@@ -375,6 +421,43 @@ try {
   await restPointer(overview);
   await shot("report-overview", overview);
   await overview.close();
+
+  // the explanations, in the window a report is read in: what the dialog covers is a report with
+  // an element in its inspector, which is where the labels that open it are
+  const help = await newPage(REPORT_VIEWPORT);
+  await open(help, "BIOMD0000000012");
+  await selectRow(help, help.getByTestId("table-Species"), "PX");
+  await expect(help.getByTestId("attributes-column")).toBeVisible();
+
+  // help-dialog.png: the explanation of one attribute, opened by a click on the label of the row
+  // which shows it. The entry of an attribute carries every part of the dialog at once: the
+  // breadcrumb of the type it belongs to, the badges of its data type and of whether the
+  // specification requires it, the summary, the overview, the technical list, the validation
+  // rules of the specification and the link into the documentation.
+  await help.getByTestId("attributes-column").getByText("initialAmount", { exact: true }).click();
+  // the rendered description is the last part of the dialog to arrive, behind the import of the
+  // markdown renderer, and the dialog grows by its height: without the wait the picture is
+  // measured for a dialog which is a paragraph shorter than the one it captures
+  await expect(help.getByTestId("help-markdown")).toBeVisible();
+  await expect(help.getByTestId("help-rules")).toBeVisible();
+  await restPointer(help);
+  await shotDialog("help-dialog", help);
+
+  // help-type.png: the explanation of a type, reached from the attribute by its breadcrumb. A
+  // type lists its attributes, each of them a row which opens it, and the last row leads to the
+  // attributes every element carries. The description and the rules of a type fill the dialog, so
+  // the body is scrolled to the heading of that table.
+  await help.getByTestId("help-owner").click();
+  await expect(help.getByTestId("help-attributes")).toBeVisible();
+  await help.getByTestId("help-body").evaluate((body) => {
+    const attributes = body.querySelector('[data-testid="help-attributes"]');
+    // the heading of the table stands 8 px below the top of the body, the rest of the margin
+    // which parts it from the section above it is scrolled away with that section
+    body.scrollTop += attributes.getBoundingClientRect().top - body.getBoundingClientRect().top - 8;
+  });
+  await restPointer(help);
+  await shotDialog("help-type", help);
+  await help.close();
 
   // the parts of the report which are read on their own, with the inspector dragged to the width
   // of the article column and a window which holds all of it
