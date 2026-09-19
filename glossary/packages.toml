@@ -157,7 +157,7 @@ summary = "one node of the gene association of a reaction, of the three kinds th
 description = """
 `Association` is the abstract class of the nodes a [gene product association](geneproductassociation.md) is built from. It is never written as an element of its own: every node is one of its three subclasses, an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md), and the name of the element is the name of that class with a small first letter. An `and` and an `or` hold two or more associations of their own, which is what makes the class recursive and the association of a reaction a tree of any depth.
 
-The report gives every node an element of its own and renders the tree as the expression it stands for, `((b3670 and b3671) or (b0077 and b0078))`, with a link at every gene product.
+The report gives every node an element of its own and renders the tree as the expression it stands for, with a link at every gene product it names: the association of the example of Section 3.9 reads `((g_b3670 and g_b3671) or (g_b0077 and g_b0078))`, written with the identifiers the references hold and not with the labels the reconstruction knows the genes by.
 """
 
 [datatypes.ModelFbc]
@@ -306,7 +306,7 @@ package = "fbc"
 type = "list"
 spec = { doc = "fbc3", section = "3.16" }
 required = false
-rules = [2021503, 2021504, 2021506, 2021507, 2021508]
+rules = [2021501, 2021502, 2021503, 2021504, 2021506, 2021507, 2021508]
 summary = "the controlled annotation fbc Version 3 allows on any element"
 description = """
 A key value pair carries metadata for which SBML has no attribute: the tool which produced a number, the database a reaction was taken from, the assumption behind a bound. It is written into the annotation of an element, in a namespace the package defines, so that every tool reads the same format instead of inventing its own.
@@ -380,7 +380,7 @@ label = "fbc"
 package = "fbc"
 type = "ModelFbc"
 spec = { doc = "fbc3", section = "3.3" }
-required = true
+required = false
 summary = "what the model says about the constraint based problem it describes"
 description = """
 The block holds the two attributes which belong to the model as a whole: whether it keeps to the restrictions of a strict problem, and which of its objectives is the active one.
@@ -410,7 +410,7 @@ package = "fbc"
 type = "SIdRef"
 spec = { doc = "fbc3", section = "3.3.1" }
 required = true
-rules = [2020207, 2020208]
+rules = [2020206, 2020207, 2020208]
 summary = "the objective which is optimised unless an analysis says otherwise"
 description = """
 A model may carry several [objectives](objective.md), for example the growth it was published with next to the alternatives it was studied with, and this attribute names the one which describes the published simulation. It is an attribute of the list of objectives, which the report does not carry as an object of its own, so it sits next to `strict` in the fbc block of the model.
@@ -424,7 +424,7 @@ package = "fbc"
 type = "list"
 spec = { doc = "fbc1", section = "3.3.1" }
 required = false
-default = "the bounds of a reaction are inferred from its reversibility"
+default = "the bounds of a reaction may be inferred from its reversibility"
 rules = [2020201, 2020202, 2020203]
 summary = "the constraints of the fluxes of a Version 1 model"
 description = """

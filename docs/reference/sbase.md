@@ -119,6 +119,8 @@ Every key of one element is unique, the value is a string, and the uri says wher
 
 The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
 
+- `2021501` (error): A &lt;keyValuePair&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on a &lt;keyValuePair&gt;.
+- `2021502` (error): A &lt;keyValuePair&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on a &lt;keyValuePair&gt;.
 - `2021503` (error): A &lt;keyValuePair&gt; object must have the required attribute 'fbc:key', and may have the optional attributes 'fbc:id', 'fbc:name', 'fbc:value' and 'fbc:uri'. No other attributes from the SBML Level 3 Flux Balance Constraints namespaces are permitted on a &lt;keyValuePair&gt; object.
 - `2021504` (error): The attribute 'fbc:key' on a &lt;keyValuePair&gt; must have a value of data type 'string'.
 - `2021506` (error): The attribute 'fbc:value' on a &lt;keyValuePair&gt; must have a value of data type 'string'.

@@ -230,7 +230,7 @@ One node of the gene association of a reaction, of the three kinds the package d
 
 `Association` is the abstract class of the nodes a [gene product association](geneproductassociation.md) is built from. It is never written as an element of its own: every node is one of its three subclasses, an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md), and the name of the element is the name of that class with a small first letter. An `and` and an `or` hold two or more associations of their own, which is what makes the class recursive and the association of a reaction a tree of any depth.
 
-The report gives every node an element of its own and renders the tree as the expression it stands for, `((b3670 and b3671) or (b0077 and b0078))`, with a link at every gene product.
+The report gives every node an element of its own and renders the tree as the expression it stands for, with a link at every gene product it names: the association of the example of Section 3.9 reads `((g_b3670 and g_b3671) or (g_b0077 and g_b0078))`, written with the identifiers the references hold and not with the labels the reconstruction knows the genes by.
 
 [SBML Level 3 Package: Flux Balance Constraints, Version 3 Release 1](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1), Section 3.10.
 

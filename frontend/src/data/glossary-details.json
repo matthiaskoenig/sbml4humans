@@ -84,7 +84,7 @@
       "kind": "datatype",
       "label": "Association",
       "summary": "one node of the gene association of a reaction, of the three kinds the package defines",
-      "description": "`Association` is the abstract class of the nodes a [gene product association](glossary:types/GeneProductAssociation) is built from. It is never written as an element of its own: every node is one of its three subclasses, an [and](glossary:types/And), an [or](glossary:types/Or) or a [gene product reference](glossary:types/GeneProductRef), and the name of the element is the name of that class with a small first letter. An `and` and an `or` hold two or more associations of their own, which is what makes the class recursive and the association of a reaction a tree of any depth.\n\nThe report gives every node an element of its own and renders the tree as the expression it stands for, `((b3670 and b3671) or (b0077 and b0078))`, with a link at every gene product.",
+      "description": "`Association` is the abstract class of the nodes a [gene product association](glossary:types/GeneProductAssociation) is built from. It is never written as an element of its own: every node is one of its three subclasses, an [and](glossary:types/And), an [or](glossary:types/Or) or a [gene product reference](glossary:types/GeneProductRef), and the name of the element is the name of that class with a small first letter. An `and` and an `or` hold two or more associations of their own, which is what makes the class recursive and the association of a reaction a tree of any depth.\n\nThe report gives every node an element of its own and renders the tree as the expression it stands for, with a link at every gene product it names: the association of the example of Section 3.9 reads `((g_b3670 and g_b3671) or (g_b0077 and g_b0078))`, written with the identifiers the references hold and not with the labels the reconstruction knows the genes by.",
       "package": "fbc",
       "docs": "reference/datatypes/#association",
       "spec": {
@@ -4067,7 +4067,7 @@
         "url": "https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1",
         "section": "3.3"
       },
-      "required": true
+      "required": false
     },
     "types/Model/fbc.activeObjective": {
       "kind": "attribute",
@@ -4088,6 +4088,12 @@
       },
       "required": true,
       "rules": [
+        {
+          "id": 2020206,
+          "severity": "error",
+          "message": "A <listOfObjectives> object may have the optional attributes 'metaid' and 'sboTerm' defined by SBML Level 3 Core. Additionally the <listOfObjectives> must contain the attribute 'activeObjective'. No other attributes from the SBML Level 3 Core namespace or the Flux Balance Constraints namespace are permitted on a <listOfFluxBounds> object.",
+          "section": "L3V1 Fbc V3 Section 3.3"
+        },
         {
           "id": 2020207,
           "severity": "error",
@@ -4360,7 +4366,7 @@
         "section": "3.3.1"
       },
       "required": false,
-      "default": "the bounds of a reaction are inferred from its reversibility",
+      "default": "the bounds of a reaction may be inferred from its reversibility",
       "rules": [
         {
           "id": 2020201,
@@ -7654,6 +7660,16 @@
       },
       "required": false,
       "rules": [
+        {
+          "id": 2021501,
+          "severity": "error",
+          "message": "A <keyValuePair> object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on a <keyValuePair>."
+        },
+        {
+          "id": 2021502,
+          "severity": "error",
+          "message": "A <keyValuePair> object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on a <keyValuePair>."
+        },
         {
           "id": 2021503,
           "severity": "error",
