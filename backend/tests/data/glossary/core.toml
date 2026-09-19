@@ -111,7 +111,7 @@ package = "core"
 spec = { doc = "l3v2", section = "4.6" }
 summary = "a pool of a chemical entity in a compartment"
 description = """
-A species is a pool of entities which the model treats as indistinguishable, for example a metabolite or a protein. Every species is located in a [Compartment](compartment.md).
+A species is a pool of entities which the model treats as indistinguishable, for example a metabolite or a protein. Every species is located in a [Compartment](compartment.md) and starts from its [initial amount](#initialamount).
 """
 related = ["Compartment"]
 rules = [20601]

@@ -4,4 +4,5 @@ package-lock.json
 playwright-report/
 test-results/
 src/schema/report.schema.json
+src/data/glossary-details.json
 tests/fixtures/

@@ -2,10 +2,12 @@
 
 `glossary/*.toml` in the repository root is the only place where an element
 type, an attribute, a link kind or a concept of the report is explained. This
-module reads the glossary and writes the two generated artefacts:
+module reads the glossary and writes the three generated artefacts:
 
 * `frontend/src/data/glossary.json`, the labels and the summaries the
   application shows as tooltips,
+* `frontend/src/data/glossary-details.json`, the description and the
+  technical details of every entry, for the help dialog of the report,
 * `docs/reference/*.md`, the reference pages of the documentation site.
 
 Run `uv run python -m sbml4humans.glossary` from `backend/` after a change of
@@ -36,15 +38,25 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 GLOSSARY_DIR = Path("glossary")
 JSON_PATH = Path("frontend/src/data/glossary.json")
+DETAILS_PATH = Path("frontend/src/data/glossary-details.json")
 REFERENCE_DIR = Path("docs/reference")
 DOCS_DIR = Path("docs")
 SCHEMA_PATH = Path("frontend/src/schema/report.schema.json")
 EDGE_KINDS_PATH = Path("frontend/src/data/edgeKinds.ts")
 SITE_PATH = Path("zensical.toml")
 
+# the `site_url` of `zensical.toml`; `render_details` rewrites a link of a
+# description into an absolute url of the site and cannot read the
+# configuration itself without the repository root, so it is a constant,
+# checked against `zensical.toml` by a test of the repository
+DOCS_URL = "https://matthiaskoenig.github.io/sbml4humans/"
+
 INDEX_PAGE = "index.md"
 LINKS_PAGE = "links.md"
 CONCEPTS_PAGE = "concepts.md"
+# the page of the data types, rendered by a later change; the details already
+# need its name and the anchors of its entries to rewrite a link into one
+DATATYPES_PAGE = "datatypes.md"
 
 # the headings of a generated type page below its title; their anchors are
 # taken before the attributes of the page get theirs
@@ -343,7 +355,11 @@ class Glossary:
         section, _, rest = key.partition(".")
         if section == "types":
             return f"{self.types[rest.split('.', 1)[0]].slug}.md"
-        return LINKS_PAGE if section == "links" else CONCEPTS_PAGE
+        if section == "links":
+            return LINKS_PAGE
+        if section == "concepts":
+            return CONCEPTS_PAGE
+        return DATATYPES_PAGE
 
     def validate_links(self, root: Path | None = None) -> None:
         """Check that every link of a description and every image resolves.
@@ -1097,18 +1113,22 @@ def _cell(text: str | None) -> str:
     return (text or "-").replace("|", "\\|")
 
 
-def _spec_link(glossary: Glossary, spec: SpecRef | None) -> str:
-    """The specification section of an entry as a link into the document.
+def _spec_label(document: SpecDocument, spec: SpecRef) -> str:
+    """The label of a section of a specification, for example `core 4.6.3`.
 
-    The label names the document and the section, for example `core 4.6.3` or
-    `comp 3.4`, so that a table of a type which mixes the core specification
-    with a package says which document a section belongs to.
+    It names the document and the section, so that a table of a type which
+    mixes the core specification with a package says which document a section
+    belongs to.
     """
+    return f"{document.short} {spec.section}" if spec.section else document.short
+
+
+def _spec_link(glossary: Glossary, spec: SpecRef | None) -> str:
+    """The specification section of an entry as a link into the document."""
     if spec is None:
         return "-"
     document = glossary.specs[spec.doc]
-    label = f"{document.short} {spec.section}" if spec.section else document.short
-    return f"[{label}]({document.url})"
+    return f"[{_spec_label(document, spec)}]({document.url})"
 
 
 def _table_rows(header: Iterable[str], rows: Iterable[Iterable[str]]) -> list[str]:
@@ -1165,6 +1185,25 @@ def _attribute_details(
     return lines
 
 
+def _type_page_anchors(entry: Entry) -> dict[str, str]:
+    """The anchor of every attribute and report field of a type page, by attribute key.
+
+    The headings of the page are reserved first, so that an attribute never
+    collides with `## Attributes`, `## In the report`, `## Related elements` or
+    `## Specification`, and two attributes of one type which share a label
+    still get an anchor of their own each.
+
+    Args:
+        entry: the type entry.
+    """
+    attributes = [a for a in entry.attributes.values() if a.package != "report"]
+    report_fields = [a for a in entry.attributes.values() if a.package == "report"]
+    return _entry_anchors(
+        [*attributes, *report_fields],
+        [anchor(entry.label), *(anchor(heading) for heading in PAGE_HEADINGS)],
+    )
+
+
 def render_type_page(glossary: Glossary, entry: Entry) -> str:
     """The reference page of one element type.
 
@@ -1186,12 +1225,7 @@ def render_type_page(glossary: Glossary, entry: Entry) -> str:
 
     attributes = [a for a in entry.attributes.values() if a.package != "report"]
     report_fields = [a for a in entry.attributes.values() if a.package == "report"]
-    # the anchors of the page, the headings first: two attributes of one type
-    # may share a label, and every block of the page needs an id of its own
-    anchors = _entry_anchors(
-        [*attributes, *report_fields],
-        [anchor(entry.label), *(anchor(heading) for heading in PAGE_HEADINGS)],
-    )
+    anchors = _type_page_anchors(entry)
 
     rows = _attribute_rows(glossary, attributes, anchors, with_spec=True)
     if rows:
@@ -1346,6 +1380,260 @@ def _render_json_entries(entries: Mapping[str, Entry]) -> dict[str, Any]:
     }
 
 
+def entry_key(dotted: str) -> str:
+    """The key of an entry in `frontend/src/data/glossary-details.json`.
+
+    Args:
+        dotted: the key of the entry as `Glossary.entries()` yields it, for
+            example `types.Species.attributes.initialAmount`.
+
+    Returns:
+        `types/Species/initialAmount`, `links/compartment`,
+        `concepts/derivedUnits` or `datatypes/double`. An attribute key may
+        carry a dot of its own (`fbc.charge`), so the split happens on the
+        literal `.attributes.` and on the first dot only, never on every dot.
+    """
+    section, _, rest = dotted.partition(".")
+    type_name, separator, attribute_name = rest.partition(".attributes.")
+    if separator:
+        return f"{section}/{type_name}/{attribute_name}"
+    return f"{section}/{rest}"
+
+
+_KIND_OF_SECTION: Mapping[str, str] = {
+    "links": "link",
+    "concepts": "concept",
+    "datatypes": "datatype",
+}
+
+
+def _link_keys(glossary: Glossary) -> dict[str, dict[str, str]]:
+    """The key every anchor of every reference page resolves to, by page name.
+
+    The empty string is the anchor of the page itself. `links.md`,
+    `concepts.md` and `datatypes.md` carry no such empty key, because none of
+    the three explains anything of its own: `rewrite_links` turns a bare link
+    to one of them into the absolute url of the site instead of a `glossary:`
+    key, exactly as it does for `index.md`, which is not a page of this map at
+    all.
+
+    Args:
+        glossary: the glossary to build the map from.
+    """
+    keys: dict[str, dict[str, str]] = {}
+    for entry in glossary.types.values():
+        page = f"{entry.slug}.md"
+        type_key = f"types/{entry.key}"
+        anchors: dict[str, str] = {"": type_key}
+        for heading in (anchor(entry.label), *(anchor(h) for h in PAGE_HEADINGS)):
+            anchors[heading] = type_key
+        for name, attribute_anchor in _type_page_anchors(entry).items():
+            anchors[attribute_anchor] = f"types/{entry.key}/{name}"
+        keys[page] = anchors
+    keys[LINKS_PAGE] = {
+        anchor(entry.label): f"links/{entry.key}" for entry in glossary.links.values()
+    }
+    keys[CONCEPTS_PAGE] = {
+        anchor(entry.label): f"concepts/{entry.key}"
+        for entry in glossary.concepts.values()
+    }
+    keys[DATATYPES_PAGE] = {
+        anchor(entry.label): f"datatypes/{entry.key}"
+        for entry in glossary.datatypes.values()
+    }
+    return keys
+
+
+def _site_url(page: str, fragment: str) -> str:
+    """The absolute url of a page of the site, in its directory url form.
+
+    Args:
+        page: the page relative to the root of the documentation, with its
+            `.md` suffix; `index.md` is the root of the site.
+        fragment: the anchor of the page, or an empty string for the page
+            itself.
+    """
+    slug = page.removesuffix(".md")
+    base = DOCS_URL if slug in ("", "index") else f"{DOCS_URL}{slug}/"
+    return f"{base}#{fragment}" if fragment else base
+
+
+def rewrite_links(
+    description: str, home: str, keys: Mapping[str, Mapping[str, str]]
+) -> str:
+    """Rewrite every link of a description for the help dialog.
+
+    A link into the generated reference becomes a `glossary:<key>` link, which
+    the frontend resolves by opening the entry of that key instead of
+    following it; a link to a page of the site outside the reference, written
+    `../page.md`, and a link to a page of the reference which explains nothing
+    of its own become the absolute url of that page on the documentation site.
+    An external link and an image are left untouched.
+
+    Args:
+        description: the markdown of one entry.
+        home: the page the entry is rendered on, the page a bare `#anchor`
+            link points into.
+        keys: the key of every anchor of every reference page, from
+            `_link_keys`.
+
+    Returns:
+        The description with every link target rewritten.
+
+    Raises:
+        GlossaryError: a link does not resolve through `keys` or through a
+            page of the site outside the reference.
+    """
+
+    def replace(match: re.Match[str]) -> str:
+        text, target = match.group(1), match.group(2)
+        page, _, fragment = target.partition("#")
+        if page and _EXTERNAL.match(page):
+            return match.group(0)
+        if page.startswith("../"):
+            return f"[{text}]({_site_url(page[3:], fragment)})"
+        page = page or home
+        key = keys.get(page, {}).get(fragment)
+        if key is not None:
+            return f"[{text}](glossary:{key})"
+        if fragment:
+            raise GlossaryError(f"the link [{text}]({target}) does not resolve")
+        return f"[{text}]({_site_url(f'{REFERENCE_DIR.name}/{page}', fragment)})"
+
+    return _LINK.sub(replace, description)
+
+
+def _spec_detail(glossary: Glossary, spec: SpecRef) -> dict[str, str]:
+    """The `spec` field of a details entry."""
+    document = glossary.specs[spec.doc]
+    detail: dict[str, str] = {"label": _spec_label(document, spec), "url": document.url}
+    if spec.section:
+        detail["section"] = spec.section
+    return detail
+
+
+def _rule_detail(rule: Rule) -> dict[str, Any]:
+    """One rule of the `rules` field of a details entry."""
+    detail: dict[str, Any] = {
+        "id": rule.id,
+        "severity": rule.severity,
+        "message": rule.message,
+    }
+    if rule.section:
+        detail["section"] = rule.section
+    return detail
+
+
+def _render_detail(
+    dotted: str,
+    entry: Entry,
+    glossary: Glossary,
+    keys: Mapping[str, Mapping[str, str]],
+) -> dict[str, Any]:
+    """One entry of `frontend/src/data/glossary-details.json`.
+
+    Args:
+        dotted: the key of the entry as `Glossary.entries()` yields it.
+        entry: the entry itself.
+        glossary: the glossary the entry belongs to, to resolve its `spec`,
+            its `type` and the links of its description.
+        keys: the key of every anchor of every reference page, from
+            `_link_keys`.
+
+    Returns:
+        The entry of the `entries` map of the details, a field left out when
+        the entry does not state it.
+
+    Raises:
+        GlossaryError: a link of the description does not resolve.
+    """
+    section, _, rest = dotted.partition(".")
+    type_name, separator, attribute_name = rest.partition(".attributes.")
+    is_attribute = bool(separator)
+    home = glossary.page_of(dotted)
+    try:
+        description = rewrite_links(entry.description, home, keys)
+    except GlossaryError as error:
+        raise GlossaryError(f"{entry_key(dotted)}: {error}") from error
+
+    if is_attribute:
+        owner = glossary.types[type_name]
+        kind = "attribute"
+        docs = (
+            f"{REFERENCE_DIR.name}/{owner.slug}/"
+            f"#{_type_page_anchors(owner)[attribute_name]}"
+        )
+    elif section == "types":
+        kind = "type"
+        docs = f"{REFERENCE_DIR.name}/{entry.slug}/"
+    else:
+        kind = _KIND_OF_SECTION[section]
+        docs = f"{REFERENCE_DIR.name}/{section}/#{anchor(entry.label)}"
+
+    detail: dict[str, Any] = {
+        "kind": kind,
+        "label": entry.label,
+        "summary": entry.summary,
+        "description": description,
+        "package": entry.package,
+        "docs": docs,
+    }
+    if is_attribute:
+        detail["owner"] = f"types/{type_name}"
+    if entry.type is not None:
+        type_detail: dict[str, str] = {"label": entry.type}
+        type_key = glossary.type_key(entry.type)
+        if type_key is not None:
+            type_detail["key"] = type_key
+        detail["type"] = type_detail
+    if entry.spec is not None:
+        detail["spec"] = _spec_detail(glossary, entry.spec)
+    if entry.required is not None:
+        detail["required"] = entry.required
+    if entry.default is not None:
+        detail["default"] = entry.default
+    rules = glossary.resolved_rules(entry)
+    if rules:
+        detail["rules"] = [_rule_detail(rule) for rule in rules]
+    if kind == "type":
+        if entry.attributes:
+            detail["attributes"] = [
+                entry_key(f"types.{entry.key}.attributes.{name}")
+                for name in entry.attributes
+            ]
+        if entry.related:
+            detail["related"] = [f"types/{name}" for name in entry.related]
+    if kind == "datatype":
+        if entry.related:
+            detail["related"] = [f"datatypes/{name}" for name in entry.related]
+        if entry.values:
+            detail["values"] = list(entry.values)
+    return detail
+
+
+def render_details(glossary: Glossary) -> dict[str, Any]:
+    """The description and the technical details of every entry, for the help dialog.
+
+    Args:
+        glossary: the glossary to render.
+
+    Returns:
+        The content of `frontend/src/data/glossary-details.json`: one entry
+        per key of `Glossary.entries()`, sorted by key, a field left out when
+        the entry does not state it.
+
+    Raises:
+        GlossaryError: a link of a description does not resolve to a
+            `glossary:` key or to a page of the site outside the reference.
+    """
+    keys = _link_keys(glossary)
+    entries = {
+        entry_key(dotted): _render_detail(dotted, entry, glossary, keys)
+        for dotted, entry in glossary.entries()
+    }
+    return {"entries": dict(sorted(entries.items()))}
+
+
 def _reference_pages(glossary: Glossary) -> dict[str, str]:
     """Every generated reference page with its markdown, by file name."""
     pages = {
@@ -1362,6 +1650,8 @@ def _files(glossary: Glossary) -> dict[Path, str]:
     """Every generated file with its content, relative to the repository root."""
     files: dict[Path, str] = {
         JSON_PATH: json.dumps(render_json(glossary), indent=2, ensure_ascii=False)
+        + "\n",
+        DETAILS_PATH: json.dumps(render_details(glossary), indent=2, ensure_ascii=False)
         + "\n",
     }
     for name, page in _reference_pages(glossary).items():

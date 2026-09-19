@@ -1,7 +1,9 @@
 """Tests of the glossary generator."""
 
 import json
+import re
 import shutil
+import tomllib
 from pathlib import Path
 from types import UnionType
 from typing import Annotated, Any, Union, get_args, get_origin
@@ -10,14 +12,17 @@ import pytest
 
 from sbml4humans import glossary as glossary_module
 from sbml4humans.glossary import (
+    DOCS_URL,
     Glossary,
     GlossaryError,
     check,
     main,
+    render_details,
     render_json,
     render_type_page,
     write,
 )
+from sbml4humans.glossaryrules import resolve_rule
 from sbml4humans.model import Model
 
 
@@ -810,3 +815,163 @@ def test_an_unknown_key_of_a_data_type_is_an_error(tmp_path: Path) -> None:
             '[datatypes.double]\nlabel = "double"\nsummary = "a number"\n'
             'description = "A floating point number."\nsummry = "a typo"\n',
         )
+
+
+def test_the_details_carry_the_technical_details() -> None:
+    """An attribute with every technical field renders each of them."""
+    glossary = Glossary.from_directory(FIXTURE)
+    initial_amount = glossary.types["Species"].attributes["initialAmount"]
+    rule = resolve_rule(20609)
+    entry = render_details(glossary)["entries"]["types/Species/initialAmount"]
+    assert entry["kind"] == "attribute"
+    assert entry["label"] == "initialAmount"
+    assert entry["summary"] == initial_amount.summary
+    assert entry["description"] == initial_amount.description
+    assert entry["package"] == "core"
+    assert entry["docs"] == "reference/species/#initialamount"
+    assert entry["owner"] == "types/Species"
+    assert entry["type"] == {"label": "double", "key": "datatypes/double"}
+    assert entry["spec"] == {
+        "label": "core 4.6.4",
+        "section": "4.6.4",
+        "url": glossary.specs["l3v2"].url,
+    }
+    assert entry["required"] is False
+    assert entry["default"] == "set by an initial assignment or a rule"
+    expected_rule = {"id": rule.id, "severity": rule.severity, "message": rule.message}
+    if rule.section:
+        expected_rule["section"] = rule.section
+    assert entry["rules"] == [expected_rule]
+
+
+def test_a_type_lists_its_attributes_and_related_types() -> None:
+    """A type entry lists its attributes in the order of the glossary and its related types."""
+    glossary = Glossary.from_directory(FIXTURE)
+    entry = render_details(glossary)["entries"]["types/Species"]
+    assert entry["kind"] == "type"
+    assert entry["docs"] == "reference/species/"
+    assert entry["attributes"] == [
+        "types/Species/initialAmount",
+        "types/Species/derivedUnits",
+    ]
+    assert entry["related"] == ["types/Compartment"]
+
+
+def test_the_details_leave_out_what_an_entry_does_not_state() -> None:
+    """An entry without a technical detail carries none of those fields."""
+    glossary = Glossary.from_directory(FIXTURE)
+    entry = render_details(glossary)["entries"]["types/Compartment"]
+    for absent in (
+        "owner",
+        "type",
+        "required",
+        "default",
+        "rules",
+        "related",
+        "attributes",
+        "values",
+    ):
+        assert absent not in entry
+    concept = render_details(glossary)["entries"]["concepts/pk"]
+    for absent in ("owner", "type", "required", "default", "rules", "related"):
+        assert absent not in concept
+
+
+def test_a_page_link_becomes_a_glossary_link() -> None:
+    """A link to a whole page of the reference becomes the key of its entry."""
+    glossary = Glossary.from_directory(FIXTURE)
+    entry = render_details(glossary)["entries"]["types/Species"]
+    assert "[Compartment](glossary:types/Compartment)" in entry["description"]
+
+
+def test_an_anchor_link_becomes_the_key_of_the_attribute() -> None:
+    """A fragment link to an attribute of the page becomes the key of that attribute."""
+    glossary = Glossary.from_directory(FIXTURE)
+    entry = render_details(glossary)["entries"]["types/Species"]
+    assert (
+        "[initial amount](glossary:types/Species/initialAmount)" in entry["description"]
+    )
+
+
+def test_a_link_to_a_page_of_the_site_becomes_absolute(tmp_path: Path) -> None:
+    """A link to a page of the site outside the reference becomes its absolute url."""
+    glossary = _species_with(
+        tmp_path,
+        "see [the inspector](../report.md#inspector) and [the home page](../index.md)",
+    )
+    entry = render_details(glossary)["entries"]["types/Species"]
+    assert f"[the inspector]({DOCS_URL}report/#inspector)" in entry["description"]
+    assert f"[the home page]({DOCS_URL})" in entry["description"]
+
+
+def test_an_external_link_stays(tmp_path: Path) -> None:
+    """A link to an external site is left untouched."""
+    glossary = _species_with(tmp_path, "see [SBML](https://sbml.org/) for background")
+    entry = render_details(glossary)["entries"]["types/Species"]
+    assert "[SBML](https://sbml.org/)" in entry["description"]
+
+
+def test_every_key_of_the_details_resolves() -> None:
+    """Every key the details of the repository glossary reference is itself an entry."""
+    root = glossary_module.REPO_ROOT
+    glossary = Glossary.from_directory(root / glossary_module.GLOSSARY_DIR)
+    entries = render_details(glossary)["entries"]
+    problems: list[str] = []
+    for key, entry in entries.items():
+        candidates: list[str] = []
+        if "owner" in entry:
+            candidates.append(entry["owner"])
+        type_key = entry.get("type", {}).get("key")
+        if type_key is not None:
+            candidates.append(type_key)
+        candidates += entry.get("related", [])
+        candidates += entry.get("attributes", [])
+        candidates += re.findall(r"\(glossary:([^)]+)\)", entry["description"])
+        for candidate in candidates:
+            if candidate not in entries:
+                problems.append(f"{key}: '{candidate}' has no entry")
+    assert problems == []
+
+
+def test_the_details_are_deterministic() -> None:
+    """Two renders of the same glossary produce the same json."""
+    glossary = Glossary.from_directory(FIXTURE)
+    first = json.dumps(render_details(glossary), indent=2, ensure_ascii=False)
+    second = json.dumps(render_details(glossary), indent=2, ensure_ascii=False)
+    assert first == second
+
+
+def test_check_reports_stale_details(tmp_path: Path) -> None:
+    """The details json is stale when the glossary changed without regenerating."""
+    root = _repository(tmp_path)
+    glossary = Glossary.from_directory(root / "glossary")
+    write(glossary, root)
+    check(root, glossary)
+    data = root / "frontend" / "src" / "data" / "glossary-details.json"
+    data.write_text(data.read_text(encoding="utf-8").replace("Species", "Spezies"))
+    with pytest.raises(
+        GlossaryError, match=r"frontend/src/data/glossary-details\.json"
+    ):
+        check(root, glossary)
+
+
+def test_the_json_of_the_tooltips_is_unchanged() -> None:
+    """`render_json` gains no field now that `render_details` renders the third output."""
+    glossary = Glossary.from_directory(FIXTURE)
+    data = render_json(glossary)
+    assert set(data["types"]["Species"]) == {
+        "label",
+        "summary",
+        "package",
+        "page",
+        "attributes",
+    }
+
+
+def test_the_docs_url_is_the_url_of_the_site() -> None:
+    """`DOCS_URL` is the `site_url` of `zensical.toml`, which the generator cannot read."""
+    root = glossary_module.REPO_ROOT
+    configuration = tomllib.loads(
+        (root / glossary_module.SITE_PATH).read_text(encoding="utf-8")
+    )
+    assert configuration["project"]["site_url"] == DOCS_URL
