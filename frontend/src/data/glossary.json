@@ -1372,7 +1372,7 @@
     },
     "compartment": {
       "label": "compartment",
-      "summary": "the compartment a species is located in or a reaction takes place in"
+      "summary": "the compartment a species or a qualitative species is located in, or a reaction takes place in"
     },
     "constraintComponent": {
       "label": "constraint component",

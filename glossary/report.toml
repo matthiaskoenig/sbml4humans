@@ -14,11 +14,11 @@
 # ----------------------------------------------------------------------------
 [links.compartment]
 label = "compartment"
-summary = "the compartment a species is located in or a reaction takes place in"
+summary = "the compartment a species or a qualitative species is located in, or a reaction takes place in"
 description = """
-Every [species](species.md) names the compartment it is located in, and a [reaction](reaction.md) may name the compartment it takes place in.
+Every [species](species.md) and every [qualitative species](qualitativespecies.md) names the compartment it is located in, and a [reaction](reaction.md) may name the compartment it takes place in.
 
-The link is shown under "References" of the species or of the reaction, and under "Referenced by" of the compartment, which is where every species of a compartment can be seen at once.
+The link is shown under "References" of the species, of the qualitative species or of the reaction, and under "Referenced by" of the compartment, which is where every species of a compartment can be seen at once.
 """
 
 [links.reactant]
