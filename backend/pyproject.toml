@@ -9,6 +9,9 @@ description = "Interactive, human readable reports of SBML models, in the browse
 readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
+# a copy of the LICENSE of the repository: a build only sees this directory, and the
+# license has to travel with the wheel and the sdist (tests/test_package.py compares them)
+license-files = ["LICENSE"]
 keywords = ["SBML", "systems biology", "computational modelling", "report", "COMBINE archive"]
 classifiers = [
     "Development Status :: 4 - Beta",

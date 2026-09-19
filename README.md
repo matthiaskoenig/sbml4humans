@@ -1,6 +1,8 @@
 # SBML4Humans
 
 [![CI/CD](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/matthiaskoenig/sbml4humans/actions/workflows/ci-cd.yml)
+[![PyPI version](https://img.shields.io/pypi/v/sbml4humans.svg)](https://pypi.org/project/sbml4humans/)
+[![Python versions](https://img.shields.io/pypi/pyversions/sbml4humans.svg)](https://pypi.org/project/sbml4humans/)
 [![Documentation](https://img.shields.io/badge/docs-sbml4humans-008080.svg)](https://matthiaskoenig.github.io/sbml4humans/)
 [![MIT License](https://img.shields.io/github/license/matthiaskoenig/sbml4humans.svg)](https://opensource.org/license/MIT)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22827237.svg)](https://doi.org/10.5281/zenodo.22827237)

@@ -20,6 +20,7 @@ cd sbml4humans
 | `Dockerfile`, `docker-compose-*.yml` | the containers of the backend, the frontend and the proxy |
 | `deploy.sh`, `docker-purge.sh`, `deploy.md` | the deployment of sbml4humans.de on its server |
 | `CITATION.cff` | how to cite SBML4Humans, the same citation as the README |
+| `LICENSE`, `backend/LICENSE` | the MIT license, and the copy of it which the wheel and the sdist of the package ship; a test keeps the two identical |
 
 ## Frontend and backend with docker compose
 
