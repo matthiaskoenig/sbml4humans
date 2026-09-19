@@ -1,6 +1,7 @@
 import type { EdgeKind, SbmlType } from "@/api/types";
 import type { ReportIndex } from "@/report/index";
 import { pkKey } from "@/report/pk";
+import { definitionLabel } from "@/report/text";
 
 /** The elements a file nests in another one which are named after that element and their place
  * in it, with the link kind which leads from that element to them: the kinetic law of a
@@ -134,6 +135,16 @@ function label(
   if (element.sbmlType === "SBaseRef") {
     const name = element.portRef ?? element.idRef ?? element.unitRef ?? element.metaIdRef;
     if (name) return name;
+  }
+  // an external parameter of a distribution is keyed by its definition, whose url a link would
+  // spell out: it is named after its owner and the local name of the term the url names
+  if (
+    element.sbmlType === "UncertParameter" &&
+    element.type === "externalParameter" &&
+    element.definitionUrl
+  ) {
+    const name = owner("uncertParameter")?.name;
+    if (name) return `${name}.${definitionLabel(element.definitionUrl)}`;
   }
   const influenceKind = element.sbmlType ? INFLUENCE_KINDS[element.sbmlType] : undefined;
   if (influenceKind && "qualitativeSpecies" in element) {

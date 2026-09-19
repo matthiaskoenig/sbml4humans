@@ -307,6 +307,26 @@ describe("ReportIndex", () => {
     expect(elementLabel(fake, "m/FluxObjective:q")).toBe("obj.R1.R2");
   });
 
+  it("names an external parameter without an id by the last segment of its definition", () => {
+    // its key carries the whole url, which a link would spell out
+    const pk =
+      "m/UncertParameter:u.externalParameter.https://en.wikipedia.org/wiki/Beta_distribution#alpha";
+    const fake = {
+      get: (key: string) =>
+        key === pk
+          ? {
+              pk,
+              sbmlType: "UncertParameter",
+              type: "externalParameter",
+              definitionUrl: "https://en.wikipedia.org/wiki/Beta_distribution#alpha",
+            }
+          : { pk: key, sbmlType: "Uncertainty", id: "u_Vmax" },
+      referencedBy: (key: string) =>
+        key === pk ? [{ source: "m/Uncertainty:u", target: pk, kind: "uncertParameter" }] : [],
+    } as unknown as ReportIndex;
+    expect(elementLabel(fake, pk)).toBe("u_Vmax.alpha");
+  });
+
   it("names a replacement after its element and the submodel it reaches into", () => {
     const species = compDeletion.mainModel!.listOfSpecies![0]!;
     const replaced = species.comp!.replacedElements![0]!;
