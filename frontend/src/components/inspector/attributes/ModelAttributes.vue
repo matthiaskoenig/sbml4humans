@@ -53,7 +53,7 @@ const resolve = (id: string | null | undefined) =>
         :pk="index?.resolve(element.pk, 'conversionFactor', element.conversionFactor.sid)"
         :label="element.conversionFactor.sid"
       />
-      <ValueText :value="element.conversionFactor.value" />
+      <ValueText :value="element.conversionFactor.value" double />
       <ValueText :value="element.conversionFactor.units" />
     </template>
     <span v-else class="text-gray-400">-</span>

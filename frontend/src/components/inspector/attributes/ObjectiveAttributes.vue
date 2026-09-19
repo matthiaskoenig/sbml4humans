@@ -13,7 +13,7 @@ const COLUMNS = [
   { key: "id", header: "id" },
   { key: "reaction", header: "reaction" },
   { key: "reaction2", header: "second reaction" },
-  { key: "coefficient", header: "coefficient" },
+  { key: "coefficient", header: "coefficient", double: true },
   { key: "variableType", header: "variable type" },
 ];
 </script>

@@ -135,7 +135,11 @@ function signOf(influence: Input | Output): string | null | undefined {
     <ValueText v-else :value="null" mono />
   </span>
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
-  <ValueText v-else-if="column.kind === 'number' || column.kind === 'count'" :value="numberValue" />
+  <ValueText
+    v-else-if="column.kind === 'number' || column.kind === 'count'"
+    :value="numberValue"
+    double
+  />
   <MathView v-else-if="column.kind === 'math'" :math="mathValue" />
   <!-- the message of a constraint is XHTML, not text: it is rendered with the markup the notes
   are rendered with -->

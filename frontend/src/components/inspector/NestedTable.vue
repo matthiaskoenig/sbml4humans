@@ -7,9 +7,10 @@ import { useLimitedList } from "@/report/limitedList";
 
 const props = defineProps<{
   rows: T[];
-  /** The columns: the key of the cell and its slot, the header, and the attribute of the
-   * glossary which explains the header where the key is not that attribute. */
-  columns: { key: string; header: string; field?: string }[];
+  /** The columns: the key of the cell and its slot, the header, the attribute of the glossary
+   * which explains the header where the key is not that attribute, and whether the column holds
+   * a double of the report, which an infinite value reaches as a string. */
+  columns: { key: string; header: string; field?: string; double?: boolean }[];
   /** The type of the rows, whose attributes of the glossary explain the headers on hover. */
   type?: SbmlType;
   /** Widths in characters of the monospace font of the columns, for a table whose columns line
@@ -71,7 +72,7 @@ const { shown, hiddenCount, showAll } = useLimitedList(() => props.rows);
           `M_atp_c` into `M_at` and `p_c`. -->
             <td v-for="column in columns" :key="column.key" class="py-1 pr-3 break-words">
               <slot :name="`cell-${column.key}`" :row="row">
-                <ValueText :value="cell(row, column.key)" />
+                <ValueText :value="cell(row, column.key)" :double="column.double" />
               </slot>
             </td>
             <td v-if="widths" aria-hidden="true" />

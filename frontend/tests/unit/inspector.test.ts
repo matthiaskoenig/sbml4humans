@@ -381,6 +381,16 @@ describe("inspector", () => {
     expect(row.find("dd").text()).toContain("source");
     expect(row.find("dd").text()).toContain("measured");
     expect(row.find("dd").find("a").attributes("href")).toBe("https://sbml.org/fbc/keyvaluepair");
+
+    // the value of a pair is text, which reads as the word it is and not as a number
+    const infinite = { ...parameter, keyValuePairs: [{ key: "bound", value: "Infinity" }] };
+    const text = mountWith(AttributesColumn, { element: infinite }, fbcConstraints)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "key value pairs")!
+      .find("tbody")
+      .text();
+    expect(text).toContain("Infinity");
+    expect(text).not.toContain("\u221e");
   });
 
   it("renders the gene product association of a reaction as its tree", async () => {
@@ -669,6 +679,34 @@ describe("inspector", () => {
     expect(lysate!.get("[data-testid=uncert-span]").text()).toBe("Km_lower to Km_upper");
     // the count of the measures is gone, the measures are there
     expect(wrapper.text()).not.toContain("parameters");
+  });
+
+  it("shows the value and the math of an external parameter which carries both", () => {
+    // distrib §3.11 lets an external parameter be a value, a span, a math or any combination
+    const distrib = distribSpans;
+    const uncertainty = [...distrib.elements.values()].find(
+      (element) => element.sbmlType === "Uncertainty",
+    ) as Uncertainty;
+    const both: Uncertainty = {
+      ...uncertainty,
+      uncertParameters: [
+        {
+          pk: "both/UncertParameter:both",
+          sbmlType: "UncertParameter",
+          type: "externalParameter",
+          value: 7,
+          math: { latex: "k", formula: "k" },
+          var: null,
+          units: null,
+          definitionUrl: null,
+        },
+      ],
+    };
+    const value = mountWith(UncertaintyAttributes, { element: both }, distrib).get(
+      "[data-testid=uncert-value]",
+    );
+    expect(value.text()).toContain("7");
+    expect(value.find(".katex").exists()).toBe(true);
   });
 
   it("lets an uncertainty name the element whose value it describes", () => {

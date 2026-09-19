@@ -20,7 +20,7 @@ const index = useReportIndex();
 const PARTICIPANT_COLUMNS = [
   { key: "id", header: "id" },
   { key: "species", header: "species" },
-  { key: "stoichiometry", header: "stoichiometry" },
+  { key: "stoichiometry", header: "stoichiometry", double: true },
   { key: "constant", header: "constant" },
 ];
 const MODIFIER_COLUMNS = PARTICIPANT_COLUMNS.slice(0, 2);

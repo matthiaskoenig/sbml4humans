@@ -20,9 +20,9 @@ const props = defineProps<{
 }>();
 const index = useReportIndex();
 
-// the math of a measure stands in the place of its value: only a distribution and an external
-// parameter carry math, and neither of them carries a value or a var next to it (distrib
-// §3.11.6), so the table stays inside the pane of the inspector with four columns
+// the math of a measure stands in the column of its value: only a distribution and an external
+// parameter carry math, and only an external parameter may carry a value or a span next to it
+// (distrib §3.11), so the table stays inside the pane of the inspector with four columns
 const COLUMNS = [
   { key: "measure", header: "measure", field: "type" },
   { key: "value", header: "value" },
@@ -46,22 +46,38 @@ function flatten(measures: UncertMeasure[], depth = 0): MeasureRow[] {
 
 const rows = computed<MeasureRow[]>(() => flatten(props.measures));
 
+/** Whether the measure sets a value: a number, an element or an end of an interval. */
+function hasValue(measure: UncertMeasure): boolean {
+  if (measure.value != null || measure.var) return true;
+  return (
+    measure.sbmlType === "UncertSpan" &&
+    (measure.valueLower != null ||
+      measure.valueUpper != null ||
+      !!measure.varLower ||
+      !!measure.varUpper)
+  );
+}
+
 /** The text a value cell shows, as long as the cell is wide: the interval of a span, the element
  * a value names, the number, or the formula of a distribution. */
 function valueText(measure: UncertMeasure): string {
-  if (measure.math) return measure.math.formula;
+  const formula = measure.math?.formula ?? "";
+  if (!hasValue(measure)) return formula || "-";
+  let value: string;
   if (measure.sbmlType === "UncertSpan") {
-    const end = (value: unknown, id: string | null | undefined) => {
-      const number = toNumber(value);
-      return id ?? (number === null ? "" : formatNumber(number));
+    const end = (number: unknown, id: string | null | undefined) => {
+      const double = toNumber(number);
+      return id ?? (double === null ? "" : formatNumber(double));
     };
     const lower = end(measure.valueLower, measure.varLower);
     const upper = end(measure.valueUpper, measure.varUpper);
-    if (lower && upper) return `${lower} to ${upper}`;
-    return lower ? `from ${lower}` : `to ${upper}`;
+    value = lower && upper ? `${lower} to ${upper}` : lower ? `from ${lower}` : `to ${upper}`;
+  } else {
+    const double = toNumber(measure.value);
+    value = measure.var ?? (double === null ? "-" : formatNumber(double));
   }
-  const number = toNumber(measure.value);
-  return measure.var ?? (number === null ? "-" : formatNumber(number));
+  // the math of a measure which also sets a value is shown below the value
+  return formula.length > value.length ? formula : value;
 }
 
 /** The widths of the measure, the value and the units, from every table the table stands with,
@@ -120,8 +136,10 @@ function unitsPk(measure: UncertMeasure): string | null {
     </template>
     <template #cell-value="{ row }">
       <span data-testid="uncert-value">
+        <!-- an external parameter may carry a value or a span and a math at once (distrib
+        §3.11), so the value is shown where it is set and the math below it -->
+        <UncertValue v-if="hasValue(row.measure) || !row.measure.math" :measure="row.measure" />
         <MathView v-if="row.measure.math" :math="row.measure.math" />
-        <UncertValue v-else :measure="row.measure" />
       </span>
     </template>
     <template #cell-units="{ row }">

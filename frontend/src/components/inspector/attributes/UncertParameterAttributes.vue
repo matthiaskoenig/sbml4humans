@@ -18,7 +18,7 @@ const index = useReportIndex();
     ><ValueText :value="element.type"
   /></AttributeRow>
   <AttributeRow label="value" :type="element.sbmlType" field="value"
-    ><ValueText :value="element.value"
+    ><ValueText :value="element.value" double
   /></AttributeRow>
   <AttributeRow label="var" :type="element.sbmlType" field="var">
     <ElementLink :pk="index?.resolve(element.pk, 'var', element.var)" :label="element.var" />

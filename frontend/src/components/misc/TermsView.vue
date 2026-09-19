@@ -68,7 +68,7 @@ function squared(term: FluxObjective | UserDefinedConstraintComponent): boolean 
         :pk="resolve(term.pk, 'coefficient', coefficientId(term))"
         :label="coefficientId(term)"
       />
-      <ValueText v-else :value="coefficientValue(term)" />
+      <ValueText v-else :value="coefficientValue(term)" double />
       <span class="text-gray-500">{{ TIMES }}</span>
       <ElementLink
         :pk="resolve(term.pk, factors(term)[0].kind, factors(term)[0].id)"

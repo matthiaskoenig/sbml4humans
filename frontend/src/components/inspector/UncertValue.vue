@@ -39,7 +39,7 @@ function varPk(kind: EdgeKind, id: string | null | undefined): string | null {
           :pk="varPk('varLower', span.varLower)"
           :label="span.varLower"
         />
-        <ValueText v-else :value="span.valueLower" />
+        <ValueText v-else :value="span.valueLower" double />
       </template>
       <span v-if="hasLower && hasUpper" class="text-gray-500"> to </span>
       <template v-if="hasUpper">
@@ -48,11 +48,11 @@ function varPk(kind: EdgeKind, id: string | null | undefined): string | null {
           :pk="varPk('varUpper', span.varUpper)"
           :label="span.varUpper"
         />
-        <ValueText v-else :value="span.valueUpper" />
+        <ValueText v-else :value="span.valueUpper" double />
       </template>
     </template>
     <ValueText v-else :value="null" />
   </span>
   <ElementLink v-else-if="measure.var" :pk="varPk('var', measure.var)" :label="measure.var" />
-  <ValueText v-else :value="measure.value" />
+  <ValueText v-else :value="measure.value" double />
 </template>

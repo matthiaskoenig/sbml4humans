@@ -33,7 +33,7 @@ const speciesPk = computed(() =>
     ><ElementLink :pk="speciesPk" :label="element.species"
   /></AttributeRow>
   <AttributeRow label="stoichiometry" :type="element.sbmlType" field="stoichiometry"
-    ><ValueText :value="element.stoichiometry"
+    ><ValueText :value="element.stoichiometry" double
   /></AttributeRow>
   <AttributeRow label="constant" :type="element.sbmlType" field="constant"
     ><BooleanMark :value="element.constant"

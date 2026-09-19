@@ -28,7 +28,7 @@ const index = useReportIndex();
     />
   </AttributeRow>
   <AttributeRow label="coefficient" :type="element.sbmlType" field="coefficient"
-    ><ValueText :value="element.coefficient"
+    ><ValueText :value="element.coefficient" double
   /></AttributeRow>
   <AttributeRow label="variable type" :type="element.sbmlType" field="variableType"
     ><ValueText :value="element.variableType"

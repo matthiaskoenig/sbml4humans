@@ -10,7 +10,7 @@ defineProps<{ element: KineticLaw }>();
 
 const COLUMNS = [
   { key: "id", header: "id" },
-  { key: "value", header: "value" },
+  { key: "value", header: "value", double: true },
   { key: "unitsLatex", header: "units" },
   { key: "derivedUnits", header: "derived units" },
 ];

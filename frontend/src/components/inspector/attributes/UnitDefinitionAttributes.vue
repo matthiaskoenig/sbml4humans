@@ -8,9 +8,9 @@ defineProps<{ element: UnitDefinition }>();
 
 const UNIT_COLUMNS = [
   { key: "kind", header: "kind" },
-  { key: "exponent", header: "exponent" },
+  { key: "exponent", header: "exponent", double: true },
   { key: "scale", header: "scale" },
-  { key: "multiplier", header: "multiplier" },
+  { key: "multiplier", header: "multiplier", double: true },
 ];
 </script>
 

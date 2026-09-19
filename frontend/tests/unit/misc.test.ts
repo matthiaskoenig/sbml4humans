@@ -81,13 +81,26 @@ describe("misc components", () => {
     // JSON has no literal for them, so the report sends the three constants as strings; the
     // report used to show `null` for all of them, which reads as an unset attribute
     const render = (value: string | number) =>
-      mount(ValueText, { props: { value }, global: { directives: { tooltip } } }).text();
+      mount(ValueText, {
+        props: { value, double: true },
+        global: { directives: { tooltip } },
+      }).text();
     expect(render("Infinity")).toBe("\u221e");
     expect(render("-Infinity")).toBe("-\u221e");
     expect(render("NaN")).toBe("NaN");
     expect(render(Infinity)).toBe("\u221e");
     expect(render(-Infinity)).toBe("-\u221e");
     expect(render(NaN)).toBe("NaN");
+  });
+
+  it("renders the word Infinity of a text as the word it is", () => {
+    // only a double of the report arrives as one of the three strings; a name, a meta id or the
+    // value of a key value pair which reads "Infinity" is text
+    const render = (value: string) =>
+      mount(ValueText, { props: { value }, global: { directives: { tooltip } } }).text();
+    expect(render("Infinity")).toBe("Infinity");
+    expect(render("-Infinity")).toBe("-Infinity");
+    expect(render("NaN")).toBe("NaN");
   });
 
   it("renders the latex of a math with KaTeX", () => {

@@ -3,11 +3,21 @@ import { computed } from "vue";
 
 import { formatNumber, numberTooltip, toNumber } from "@/report/number";
 
-const props = defineProps<{ value: string | number | null | undefined; mono?: boolean }>();
+const props = defineProps<{
+  value: string | number | null | undefined;
+  mono?: boolean;
+  /** The value is a double of the report, whose infinite values and value which is not a number
+   * arrive as the strings `Infinity`, `-Infinity` and `NaN`. A text which reads like one of them,
+   * a name or the value of a key value pair, stays the text it is. */
+  double?: boolean;
+}>();
 
 /** The double the value stands for, `null` where it is text or nothing at all. An infinite
- * value and a NaN reach the frontend as the constants JSON has no literal for. */
-const numeric = computed(() => toNumber(props.value));
+ * value and a NaN reach the frontend as the constants JSON has no literal for, which only a
+ * double reads as a number. */
+const numeric = computed(() =>
+  typeof props.value === "number" || props.double ? toNumber(props.value) : null,
+);
 
 const text = computed(() => {
   const { value } = props;

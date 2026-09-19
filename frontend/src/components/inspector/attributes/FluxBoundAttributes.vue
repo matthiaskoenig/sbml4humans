@@ -20,6 +20,6 @@ const index = useReportIndex();
     ><ValueText :value="element.operation" mono
   /></AttributeRow>
   <AttributeRow label="value" :type="element.sbmlType" field="value"
-    ><ValueText :value="element.value"
+    ><ValueText :value="element.value" double
   /></AttributeRow>
 </template>
