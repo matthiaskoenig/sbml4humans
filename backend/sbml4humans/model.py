@@ -530,6 +530,38 @@ class Port(SBaseRefFields):
     sbml_type: Literal["Port"] = "Port"
 
 
+class ResolutionStatus(StrEnum):
+    """How far an external model definition could be followed.
+
+    The report reads the documents it was given and never fetches one: the
+    other entries of a COMBINE archive, or the files next to a single file
+    which was read from a trusted directory.
+    """
+
+    RESOLVED = "resolved"
+    REMOTE_SOURCE = "remoteSource"
+    NOT_FOUND = "notFound"
+    NOT_SBML = "notSbml"
+    MODEL_NOT_FOUND = "modelNotFound"
+    CIRCULAR = "circular"
+
+
+class ExternalModelResolution(ReportModel):
+    """The model an external model definition names, as far as it is known.
+
+    `entry` is the manifest location of the entry the source names and `model`
+    the pk of the model inside the report of that entry, at the end of a chain
+    of external model definitions where the `modelRef` names another one (comp
+    §3.3.2). `md5_matches` compares the `md5` of the definition with the entry
+    and is unset where one of the two is missing.
+    """
+
+    status: ResolutionStatus = ResolutionStatus.NOT_FOUND
+    entry: str | None = None
+    model: str | None = None
+    md5_matches: bool | None = None
+
+
 class ExternalModelDefinition(SBase):
     """A comp reference to a model in another document."""
 
@@ -537,6 +569,7 @@ class ExternalModelDefinition(SBase):
     source: str
     model_ref: str | None = None
     md5: str | None = None
+    resolution: ExternalModelResolution = Field(default_factory=ExternalModelResolution)
 
 
 # -------------------------------------------------------------------------------------
@@ -870,6 +903,10 @@ class EdgeKind(StrEnum):
 class Edge(ReportModel):
     """A directed reference from one object to another.
 
+    An edge stays inside the report of one entry of an archive, unless it
+    follows an external model definition into another one: then `target_entry`
+    is the manifest location of the entry whose link graph holds the target.
+
     Edges are immutable values, so that they can be used in sets and as keys.
     """
 
@@ -880,6 +917,7 @@ class Edge(ReportModel):
     source: str
     target: str
     kind: EdgeKind
+    target_entry: str | None = None
 
 
 class LinkGraph(ReportModel):
