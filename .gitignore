@@ -10,6 +10,8 @@ __pycache__/
 # node
 node_modules/
 frontend/dist/
+# the build of the frontend which ships with the python package (npm run build:package)
+backend/sbml4humans/resources/frontend/
 frontend/playwright-report/
 frontend/test-results/
 

@@ -61,4 +61,16 @@ describe("useReportView", () => {
     expect(router.currentRoute.value.query.q).toBe("laci");
     wrapper.unmount();
   });
+
+  it("keeps the token of a local report out of the view state", async () => {
+    await router.push({ path: "/report", query: { local: "token1" } });
+    const wrapper = mount(Probe, { global: { plugins: [router] } });
+    await view.setSearch("laci");
+    expect(router.currentRoute.value.query.local).toBe("token1");
+    expect(view.routeFor("m/Species:a")).toMatchObject({ query: { local: "token1" } });
+    expect(view.routeFor("m/Species:a", { entry: "./other.xml", model: "other" })).toMatchObject({
+      query: { local: "token1", entry: "./other.xml" },
+    });
+    wrapper.unmount();
+  });
 });

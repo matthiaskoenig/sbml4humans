@@ -42,6 +42,8 @@ uv run uvicorn sbml4humans.api:api --reload --port 1444
 
 `uv sync` creates `backend/.venv` with the pinned dependencies of `uv.lock` and installs `sbml4humans` editable. The api answers on port 1444, e.g. <http://localhost:1444/api/examples>, the OpenAPI documentation on <http://localhost:1444/docs>. With `--reload` the server restarts on changes in `backend/`. A dependency change goes through `uv add`/`uv lock`, commit the updated `uv.lock` with it, the CI installs from the lock. The JSON schema of the api response is generated from the pydantic model into `frontend/src/schema/report.schema.json` with `uv run python -m sbml4humans.schema`.
 
+`sbml4humans.show` and the command `sbml4humans` ([Reports from python](python.md)) serve the built frontend from inside the package, `backend/sbml4humans/resources/frontend/`, which is git ignored and created by `npm run build:package` in `frontend/`: a production build with the api at the relative address `/api` and without analytics (`frontend/.env.package`). Without it `show` fails with that command. The environment variable `SBML4HUMANS_FRONTEND` serves another build instead, and `SBML4HUMANS_STATE_DIR` moves the state file and the log of the local server out of the cache directory of the user, which is what the tests do.
+
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every pull request (see [Branches and pull requests](#branches-and-pull-requests)):
 
 ```bash
@@ -165,6 +167,8 @@ The version of SBML4Humans is the version of the backend package in `backend/sbm
     git push origin x.y.z
     ```
 
-    This starts the `CI` workflow, which runs the checks, creates the [GitHub release](https://github.com/matthiaskoenig/sbml4humans/releases) from `release-notes/x.y.z.md` and fast-forwards `main` to the tagged commit. Check the version before pushing, a tag cannot be moved or deleted afterwards.
+    This starts the `CI` workflow, which runs the checks, creates the [GitHub release](https://github.com/matthiaskoenig/sbml4humans/releases) from `release-notes/x.y.z.md`, fast-forwards `main` to the tagged commit and publishes the package to [PyPI](https://pypi.org/project/sbml4humans/). Check the version before pushing, a tag cannot be moved or deleted afterwards.
+
+The package on PyPI is the wheel and the sdist which the `package` job builds on every pull request, with the frontend built into them, and which it installs into a fresh environment to open a report with. The `publish` job uploads them by [trusted publishing](https://docs.pypi.org/trusted-publishers/), which needs no token and is set up once: the project `sbml4humans` on PyPI names the repository `matthiaskoenig/sbml4humans`, the workflow `ci.yml` and the environment `pypi` as its publisher (for the first release as a [pending publisher](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/)), and the repository has an environment `pypi`. The job runs next to the GitHub release, so a failed upload leaves the release and `main` as they are and can be run again.
 
 The release is archived on [Zenodo](https://zenodo.org/), which mints a DOI for it. Update the citation afterwards: the version and the DOI of the release in the "How to cite" section of `README.md` and of `docs/index.md` and in `CITATION.cff`. The badge and the "archived software" link carry the concept DOI `10.5281/zenodo.22827237`, which always resolves to the newest version and does not change; the citation itself names the DOI of the version.

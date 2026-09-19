@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, provide, watch } from "vue";
+import { computed, onUnmounted, provide, watch } from "vue";
 import { useRoute } from "vue-router";
 
+import { pingLocal } from "@/api/client";
 import type { SbmlElement, ElementType } from "@/api/types";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import AppBar from "@/components/layout/AppBar.vue";
@@ -17,7 +18,7 @@ import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 import { ReportIndexKey } from "@/report/context";
 import { matches } from "@/report/search";
 import { useReportView } from "@/report/view";
-import { useReportStore } from "@/stores/report";
+import { LOCAL_PING_INTERVAL, useReportStore } from "@/stores/report";
 
 const route = useRoute();
 const store = useReportStore();
@@ -33,21 +34,43 @@ const INSPECTOR_WIDTH = Math.round(window.innerWidth / 3);
 const INSPECTOR_MIN = 360;
 
 watch(
-  () => [route.name, route.params.id, route.query.url] as const,
-  ([name, id, url]) => {
+  () => [route.name, route.params.id, route.query.url, route.query.local] as const,
+  ([name, id, url, local]) => {
     if (name === "example" && typeof id === "string") void store.loadExample(id);
-    else if (name === "report" && typeof url === "string" && url) void store.loadUrl(url);
+    else if (name !== "report") return;
+    else if (typeof local === "string" && local) void store.loadLocal(local);
+    else if (typeof url === "string" && url) void store.loadUrl(url);
   },
   { immediate: true },
 );
+
+/** The local server of `sbml4humans.show` ends itself when nobody asks it anything, and a report
+ * which is read asks nothing for a long time, so an open local report says that it is still
+ * open. A ping which fails says that the server is gone, which the next request will say too. */
+let ping: ReturnType<typeof setInterval> | null = null;
+watch(
+  () => store.source?.kind === "local" && store.response !== null,
+  (local) => {
+    if (ping !== null) clearInterval(ping);
+    ping = local
+      ? setInterval(() => void pingLocal().catch(() => undefined), LOCAL_PING_INTERVAL)
+      : null;
+  },
+  { immediate: true },
+);
+onUnmounted(() => {
+  if (ping !== null) clearInterval(ping);
+});
 
 /** `/report` holds the report of an upload or of pasted content, which only lives in the store:
  * after a reload, or when the route is entered with the report of an example still loaded, the
  * page shows the empty state instead of a report that does not belong to the route. */
 const showsReport = computed(() => {
-  // an empty `url=` loads nothing, the watcher above skips it too
-  const url = route.query.url;
-  if (route.name !== "report" || (typeof url === "string" && url !== "")) return true;
+  // an empty `url=` or `local=` loads nothing, the watcher above skips it too
+  const named = [route.query.url, route.query.local].some(
+    (value) => typeof value === "string" && value !== "",
+  );
+  if (route.name !== "report" || named) return true;
   const kind = store.source?.kind;
   return kind === "file" || kind === "content";
 });
