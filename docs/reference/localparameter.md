@@ -51,6 +51,7 @@ The report resolves the units of the local parameter and renders them as a formu
 
 ## Validation rules
 
+- `10216` (error): The 'id' value of a &lt;parameter&gt; or &lt;localParameter&gt; defined within a &lt;kineticLaw&gt; can only be used in &lt;ci&gt; elements within the MathML content of that same &lt;kineticLaw&gt;; the identifier is not visible to other parts of the model.
 - `10303` (error): The value of the 'id' field of each parameter defined locally within a &lt;kineticLaw&gt; must be unique across the set of all such parameter definitions in that &lt;kineticLaw&gt;.
 - `10718` (warning): The value of the 'sboTerm' attribute on a &lt;localParameter&gt; is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a quantitative parameter (i.e., terms derived from SBO:0000002, "quantitive systems description parameter").
 - `21124` (error): The 'constant' attribute on a &lt;parameter&gt; local to a &lt;kineticLaw&gt; cannot have a value other than 'true'. The values of parameters local to &lt;kineticLaw&gt; definitions cannot be changed, and therefore they are always constant.

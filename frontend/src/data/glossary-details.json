@@ -1110,6 +1110,24 @@
           "section": "L2V5 Section 4.7.5"
         },
         {
+          "id": 20511,
+          "severity": "warning",
+          "message": "If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '1' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'lengthUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'lengthUnits' attributes are set, the unit of compartment size is undefined.",
+          "section": "L3V2 Section 4.5.4"
+        },
+        {
+          "id": 20512,
+          "severity": "warning",
+          "message": "If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '2' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'areaUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'areaUnits' attributes are set, the unit of compartment size is undefined.",
+          "section": "L3V2 Section 4.5.4"
+        },
+        {
+          "id": 20513,
+          "severity": "warning",
+          "message": "If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '3' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'volumeUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'volumeUnits' attributes are set, the unit of compartment size is undefined.",
+          "section": "L3V2 Section 4.5.4"
+        },
+        {
           "id": 20518,
           "severity": "warning",
           "message": "If neither the attribute 'units' nor the attribute 'spatialDimensions' on a Compartment object is set, the unit associated with that compartment's size is undefined.",
@@ -1544,6 +1562,12 @@
       "required": false,
       "default": "the event is executed at the moment it triggers",
       "rules": [
+        {
+          "id": 21206,
+          "severity": "error",
+          "message": "If an <event>'s 'useValuesFromTriggerTime' attribute has the value 'false', then the <event> must contain a <delay> element. The implication of 'useValuesFromTriggerTime=false' is that there is a delay between the time of trigger and the time of value assignments performed by the <event>.",
+          "section": "L2V5 Section 4.14"
+        },
         {
           "id": 21221,
           "severity": "error",
@@ -2820,12 +2844,6 @@
       "default": "the formula uses the global elements of the model alone",
       "rules": [
         {
-          "id": 10216,
-          "severity": "error",
-          "message": "The 'id' value of a <parameter> or <localParameter> defined within a <kineticLaw> can only be used in <ci> elements within the MathML content of that same <kineticLaw>; the identifier is not visible to other parts of the model.",
-          "section": "L3V2 Sections 3.3.1, 3.4.3 and 4.11.5"
-        },
-        {
           "id": 21123,
           "severity": "error",
           "message": "If present, the <listOfParameters> in a <kineticLaw> must not be an empty list.",
@@ -2941,6 +2959,12 @@
         "section": "4.11.6"
       },
       "rules": [
+        {
+          "id": 10216,
+          "severity": "error",
+          "message": "The 'id' value of a <parameter> or <localParameter> defined within a <kineticLaw> can only be used in <ci> elements within the MathML content of that same <kineticLaw>; the identifier is not visible to other parts of the model.",
+          "section": "L3V2 Sections 3.3.1, 3.4.3 and 4.11.5"
+        },
         {
           "id": 10303,
           "severity": "error",
@@ -3224,6 +3248,12 @@
           "severity": "warning",
           "message": "The value of the attribute 'areaUnits' on a Model object should be either 'dimensionless' or the identifier of a UnitDefinition object based on 'dimensionless' or a unit derived from 'metre'.",
           "section": "L3V2 Section 4.2.4"
+        },
+        {
+          "id": 20512,
+          "severity": "warning",
+          "message": "If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '2' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'areaUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'areaUnits' attributes are set, the unit of compartment size is undefined.",
+          "section": "L3V2 Section 4.5.4"
         }
       ]
     },
@@ -3265,6 +3295,12 @@
           "severity": "error",
           "message": "The value of the attribute 'conversionFactor' on a Model object must be the identifier of an existing Parameter object defined in the Model object's ListOfParameters.",
           "section": "L3V2 Section 4.2"
+        },
+        {
+          "id": 20705,
+          "severity": "error",
+          "message": "A Parameter object referenced by the attribute 'conversionFactor' on a Species or Model object must have a value of 'true' for its attribute 'constant'.",
+          "section": "L3V2 Section 4.6.7"
         }
       ]
     },
@@ -3400,6 +3436,12 @@
           "severity": "warning",
           "message": "The value of the attribute 'lengthUnits' on a Model object should be either the units 'metre', 'dimensionless', or the identifier of a UnitDefinition object based on these units.",
           "section": "L3V2 Section 4.2.4"
+        },
+        {
+          "id": 20511,
+          "severity": "warning",
+          "message": "If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '1' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'lengthUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'lengthUnits' attributes are set, the unit of compartment size is undefined.",
+          "section": "L3V2 Section 4.5.4"
         }
       ]
     },
@@ -3937,6 +3979,12 @@
           "severity": "warning",
           "message": "The value of the attribute 'volumeUnits' on a Model object should be either the units 'litre', 'dimensionless', or the identifier of a UnitDefinition object based on these units or a unit derived from 'metre'.",
           "section": "L3V2 Section 4.2.4"
+        },
+        {
+          "id": 20513,
+          "severity": "warning",
+          "message": "If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '3' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'volumeUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'volumeUnits' attributes are set, the unit of compartment size is undefined.",
+          "section": "L3V2 Section 4.5.4"
         }
       ]
     },
@@ -4889,7 +4937,7 @@
         "section": "4.11.1"
       },
       "required": false,
-      "default": "in Level 3 Version 2 the attribute is removed, and every reaction is equivalent to one with false",
+      "default": "the attribute exists up to Level 3 Version 1, where it is required, and Level 3 Version 2 removed it: every reaction is equivalent to one with false",
       "rules": [
         {
           "id": 21152,
@@ -5778,6 +5826,7 @@
         "section": "3.2.1"
       },
       "required": false,
+      "default": "nothing can reference the element; the types which exist to be referenced, for example a species, a compartment or a parameter, require it",
       "rules": [
         {
           "id": 10301,

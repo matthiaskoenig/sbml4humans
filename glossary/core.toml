@@ -215,6 +215,7 @@ label = "id"
 type = "SId"
 spec = { doc = "l3v2", section = "3.2.1" }
 required = false
+default = "nothing can reference the element; the types which exist to be referenced, for example a species, a compartment or a parameter, require it"
 rules = [10301, 10310]
 summary = "the identifier other elements of the model use to reference the element"
 description = """
@@ -488,7 +489,7 @@ type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.4" }
 required = false
 default = "a three dimensional compartment which declares none has no declared units"
-rules = [20218]
+rules = [20218, 20513]
 summary = "the units of the size of the compartments with three dimensions"
 description = """
 A compartment which does not declare its own units inherits its units from the model, and which of the three attributes applies depends on the spatial dimensions of the compartment: volume for three, area for two, length for one.
@@ -513,7 +514,7 @@ type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.4" }
 required = false
 default = "a two dimensional compartment which declares none has no declared units"
-rules = [20219]
+rules = [20219, 20512]
 summary = "the units of the size of the compartments with two dimensions"
 description = """
 A two dimensional compartment, a membrane for example, which does not declare its own units inherits them from this attribute of the model.
@@ -538,7 +539,7 @@ type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.4" }
 required = false
 default = "a one dimensional compartment which declares none has no declared units"
-rules = [20220]
+rules = [20220, 20511]
 summary = "the units of the size of the compartments with one dimension"
 description = """
 A one dimensional compartment which does not declare its own units inherits them from this attribute of the model.
@@ -588,7 +589,7 @@ type = "SIdRef"
 spec = { doc = "l3v2", section = "4.2.6" }
 required = false
 default = "a species which names none has no conversion factor"
-rules = [20216]
+rules = [20216, 20705]
 summary = "the parameter which converts between the units of a species and the extent of a reaction"
 description = """
 A species whose amount is not measured in the extent units of the reactions needs a factor to convert between the two, and SBML makes that conversion explicit instead of guessing it. The model can name a constant parameter which every species inherits when it does not name its own.
@@ -842,7 +843,7 @@ type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.5.4" }
 required = false
 default = "the volume, area or length units of the model, according to the dimensions of the compartment"
-rules = [10311, 10313, 20502, 20518]
+rules = [10311, 10313, 20502, 20511, 20512, 20513, 20518]
 summary = "the units of the size of the compartment"
 description = """
 The units are either a unit definition of the model or one of the base units. When they are not declared, the compartment inherits the volume, area or length units of the model according to its dimensions, and when the model does not declare those either, the size has no units.
@@ -1353,7 +1354,7 @@ label = "fast"
 type = "boolean"
 spec = { doc = "l3v2", section = "4.11.1" }
 required = false
-default = "in Level 3 Version 2 the attribute is removed, and every reaction is equivalent to one with false"
+default = "the attribute exists up to Level 3 Version 1, where it is required, and Level 3 Version 2 removed it: every reaction is equivalent to one with false"
 rules = [21152]
 summary = "whether the reaction was declared to be much faster than the others"
 description = """
@@ -1571,7 +1572,7 @@ type = "Delay"
 spec = { doc = "l3v2", section = "4.12.4" }
 required = false
 default = "the event is executed at the moment it triggers"
-rules = [21221]
+rules = [21206, 21221]
 summary = "the element which postpones the execution of the event"
 description = """
 An event may carry a [delay](delay.md), the element whose formula gives the time between the trigger and the execution. An event without a delay is executed immediately.
@@ -1763,7 +1764,7 @@ type = "list"
 spec = { doc = "l3v2", section = "4.11.6" }
 required = false
 default = "the formula uses the global elements of the model alone"
-rules = [10216, 21123, 21127, 21128]
+rules = [21123, 21127, 21128]
 summary = "the parameters which only this kinetic law uses"
 description = """
 The list holds the [local parameters](localparameter.md) of the kinetic law. A local parameter hides a global parameter of the same identifier inside the formula, which is worth knowing when a value looks surprising.
@@ -1775,7 +1776,7 @@ The report shows the local parameters as a table in the inspector of the kinetic
 label = "LocalParameter"
 package = "core"
 spec = { doc = "l3v2", section = "4.11.6" }
-rules = [10303, 10718, 21124, 21172, 21173]
+rules = [10216, 10303, 10718, 21124, 21172, 21173]
 summary = "a named value which only one kinetic law uses"
 description = """
 A local parameter is defined inside a kinetic law, which keeps a constant that belongs to one reaction out of the global parameters. Its identifier is scoped to the whole reaction: within that reaction it shadows an element of the model with the same identifier, and in SBML core the math of the kinetic law is the only place which can read it. It can never be the target of an initial assignment, of a rule or of an event assignment.

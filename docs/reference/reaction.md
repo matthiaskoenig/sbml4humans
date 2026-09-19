@@ -36,7 +36,7 @@ In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a
 
 The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written. Level 1 and Level 2 from Version 2 on make a reaction slow unless the file says otherwise, so a reaction of those levels which does not write the flag is shown with the cross of `false`; Level 2 Version 1 gave the flag no default, and a reaction of that version which does not write it is shown with the dash of an attribute which is not set.
 
-Default: in Level 3 Version 2 the attribute is removed, and every reaction is equivalent to one with false.
+Default: the attribute exists up to Level 3 Version 1, where it is required, and Level 3 Version 2 removed it: every reaction is equivalent to one with false.
 
 - `21152` (warning): The value of the 'fast' attribute should be 'false', as the attribute has been deprecated.
 

@@ -34,7 +34,6 @@ The report shows the local parameters as a table in the inspector of the kinetic
 
 Default: the formula uses the global elements of the model alone.
 
-- `10216` (error): The 'id' value of a &lt;parameter&gt; or &lt;localParameter&gt; defined within a &lt;kineticLaw&gt; can only be used in &lt;ci&gt; elements within the MathML content of that same &lt;kineticLaw&gt;; the identifier is not visible to other parts of the model.
 - `21123` (error): If present, the &lt;listOfParameters&gt; in a &lt;kineticLaw&gt; must not be an empty list.
 - `21127` (error): A KineticLaw object may contain at most one ListOfLocalParameters container object.
 - `21128` (error): Apart from the general Notes and Annotation subobjects permitted on all SBML components, a ListOfLocalParameters container object may only contain LocalParameter objects.

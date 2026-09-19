@@ -70,6 +70,7 @@ The report shows the volume units in the attributes of the model.
 Default: a three dimensional compartment which declares none has no declared units.
 
 - `20218` (warning): The value of the attribute 'volumeUnits' on a Model object should be either the units 'litre', 'dimensionless', or the identifier of a UnitDefinition object based on these units or a unit derived from 'metre'.
+- `20513` (warning): If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '3' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'volumeUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'volumeUnits' attributes are set, the unit of compartment size is undefined.
 
 <span id="areaunits"></span>**areaUnits**
 
@@ -80,6 +81,7 @@ The report shows the area units in the attributes of the model.
 Default: a two dimensional compartment which declares none has no declared units.
 
 - `20219` (warning): The value of the attribute 'areaUnits' on a Model object should be either 'dimensionless' or the identifier of a UnitDefinition object based on 'dimensionless' or a unit derived from 'metre'.
+- `20512` (warning): If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '2' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'areaUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'areaUnits' attributes are set, the unit of compartment size is undefined.
 
 <span id="lengthunits"></span>**lengthUnits**
 
@@ -90,6 +92,7 @@ The report shows the length units in the attributes of the model.
 Default: a one dimensional compartment which declares none has no declared units.
 
 - `20220` (warning): The value of the attribute 'lengthUnits' on a Model object should be either the units 'metre', 'dimensionless', or the identifier of a UnitDefinition object based on these units.
+- `20511` (warning): If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '1' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'lengthUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'lengthUnits' attributes are set, the unit of compartment size is undefined.
 
 <span id="extentunits"></span>**extentUnits**
 
@@ -110,6 +113,7 @@ The report shows the referenced parameter with its value and its units in the at
 Default: a species which names none has no conversion factor.
 
 - `20216` (error): The value of the attribute 'conversionFactor' on a Model object must be the identifier of an existing Parameter object defined in the Model object's ListOfParameters.
+- `20705` (error): A Parameter object referenced by the attribute 'conversionFactor' on a Species or Model object must have a value of 'true' for its attribute 'constant'.
 
 <span id="listoffunctiondefinitions"></span>**listOfFunctionDefinitions**
 

@@ -90,6 +90,7 @@ An event may carry a [delay](delay.md), the element whose formula gives the time
 
 Default: the event is executed at the moment it triggers.
 
+- `21206` (error): If an &lt;event&gt;'s 'useValuesFromTriggerTime' attribute has the value 'false', then the &lt;event&gt; must contain a &lt;delay&gt; element. The implication of 'useValuesFromTriggerTime=false' is that there is a delay between the time of trigger and the time of value assignments performed by the &lt;event&gt;.
 - `21221` (error): An Event object may contain at most one Delay object.
 
 <span id="delay-2"></span>**delay**

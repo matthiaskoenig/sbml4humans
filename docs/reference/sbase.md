@@ -29,6 +29,8 @@ The id is the name of the element inside the model. It is unique within a model 
 
 The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element. An element without an id is named by the key of its [primary key](concepts.md) instead, and an element which the file nests in another one after that element.
 
+Default: nothing can reference the element; the types which exist to be referenced, for example a species, a compartment or a parameter, require it.
+
 - `10301` (error): The value of the 'id' field on every instance of the following type of object in a model must be unique: &lt;model&gt;, &lt;functionDefinition&gt;, &lt;compartmentType&gt;, &lt;compartment&gt;, &lt;speciesType&gt;, &lt;species&gt;, &lt;reaction&gt;, &lt;speciesReference&gt;, &lt;modifierSpeciesReference&gt;, &lt;event&gt;, and model-wide &lt;parameter&gt;s. Note that &lt;unitDefinition&gt; and parameters defined inside a reaction are treated separately.
 - `10310` (error): The syntax of 'id' attribute values must conform to the syntax of the SBML type 'SId'.
 
