@@ -196,11 +196,11 @@ It is shown under "References" of the reaction and under "Referenced by" of the 
 
 [links.geneProduct]
 label = "gene product"
-summary = "the gene product a reference of an association names"
+summary = "a gene product a reaction needs, named by a reference of its association"
 description = """
 The link goes from a [gene product reference](geneproductref.md), the leaf of the gene product association of a reaction, to the [gene product](geneproduct.md) it names. It starts at the reference and not at the [reaction](reaction.md) because that is where the file writes the identifier, and because a reaction may name one gene in several branches of its association.
 
-It is shown under "References" of the reference and under "Referenced by" of the gene product; the reaction of a gene is one hop further, over the gene product association.
+It is shown under "References" of the reference and under "Referenced by" of the gene product. The inspector looks across the tree of the association, which is the question a reader asks: a reaction lists the gene products it needs under this kind, and a gene product lists the reactions which need it, each of them once.
 """
 
 [links.geneProductAssociation]

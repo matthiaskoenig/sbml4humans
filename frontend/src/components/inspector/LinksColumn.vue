@@ -35,8 +35,21 @@ function mathOwner(pk: string): string | null {
   return index.value?.referencedBy(pk).find((edge) => edge.kind === kind)?.source ?? null;
 }
 
-/** The edges from the element as its links show them: its own, and the math of the kinetic law
- * or of the function terms it names. */
+/** The genes a reaction needs are the leaves of its gene product association, a tree the graph
+ * walks from the reaction over its operators to a reference which names the gene product. A
+ * reader asks "which genes does this reaction need" and "which reactions need this gene", so the
+ * gene products of the tree are shown as links of the reaction and the reaction as a link of
+ * every gene product, the way a species reference is looked across below. The association keeps
+ * its link from the reaction, and the nodes of the tree keep their own links. */
+function geneProductEdges(pk: string): Edge[] {
+  if (index.value?.get(pk)?.sbmlType !== "Reaction") return [];
+  return index.value
+    .geneProducts(pk)
+    .map((target) => ({ source: pk, target, kind: "geneProduct" as const }));
+}
+
+/** The edges from the element as its links show them: its own, the math of the kinetic law or of
+ * the function terms it names, and the gene products its association names. */
 function outgoing(pk: string): Edge[] {
   const own = index.value?.references(pk) ?? [];
   const math = own
@@ -44,14 +57,20 @@ function outgoing(pk: string): Edge[] {
     .flatMap((edge) => index.value?.references(edge.target) ?? [])
     .filter((edge) => edge.kind === "math")
     .map((edge) => ({ ...edge, source: pk }));
-  return [...own, ...math];
+  return [...own, ...math, ...geneProductEdges(pk)];
 }
 
 /** The edges to the element as its links show them: the math of a kinetic law or of a function
- * term comes from the element they belong to. */
+ * term comes from the element they belong to, and a gene product is named by the reaction whose
+ * association holds the reference which names it. */
 function incoming(pk: string): Edge[] {
   return (index.value?.referencedBy(pk) ?? []).map((edge) => {
-    const owner = edge.kind === "math" ? mathOwner(edge.source) : null;
+    const owner =
+      edge.kind === "math"
+        ? mathOwner(edge.source)
+        : edge.kind === "geneProduct"
+          ? (index.value?.associationReaction(edge.source) ?? null)
+          : null;
     return owner ? { ...edge, source: owner } : edge;
   });
 }

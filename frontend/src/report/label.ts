@@ -44,9 +44,11 @@ const MAX_DEPTH = 8;
  * where it sits: a species reference by its reaction and its species, which is what the inspector
  * of a species asks, the kinetic law of a reaction and the trigger, the priority and the delay of
  * an event by their owner and what they are, an event assignment by its event and the element it
- * sets, a term of a transition by its transition and its place in the table, and a replacement of
- * the comp package by the element it belongs to and the submodel it reaches into. The owner is
- * named by the same rule, so an event without an id lends its key to its trigger. */
+ * sets, a term of a transition by its transition and its place in the table, a replacement of
+ * the comp package by the element it belongs to and the submodel it reaches into, a reference of
+ * a gene product association by its reaction and its gene product, and a flux objective by its
+ * objective and its reactions. The owner is named by the same rule, so an event without an id
+ * lends its key to its trigger. */
 export function elementLabel(
   index: ReportIndex | null | undefined,
   pk: string | null | undefined,
@@ -98,12 +100,22 @@ function label(
     const name = owner(replacementKind)?.name;
     if (name) return `${name}.${element.submodelRef}`;
   }
-  // a leaf of a gene product association is named by the gene product it names, the way a link
-  // of a comp reference chain is named by what it names
-  if (element.sbmlType === "GeneProductRef") return element.geneProduct;
-  // a flux objective is named by the reaction it weighs, which is what its objective lists and
-  // what its key would otherwise spell out behind the identifier of that objective
-  if (element.sbmlType === "FluxObjective") return element.reaction;
+  // a leaf of a gene product association is named after the reaction whose tree holds it and
+  // the gene product it names, the way a species reference is named after its reaction and its
+  // species: named by its gene alone, it read as the gene product itself
+  if (element.sbmlType === "GeneProductRef") {
+    const reaction = index.associationReaction(pk);
+    const name = reaction ? label(index, reaction, depth + 1) : null;
+    if (name) return `${name}.${element.geneProduct}`;
+  }
+  // a flux objective is named after its objective and the reactions whose fluxes it multiplies,
+  // one for a linear term and two for a product: named by its reaction alone, it read as the
+  // reaction it weighs
+  if (element.sbmlType === "FluxObjective") {
+    const name = owner("fluxObjective")?.name;
+    const reactions = [element.reaction, element.reaction2].filter((id) => !!id).join(".");
+    if (name && reactions) return `${name}.${reactions}`;
+  }
   // a link of a reference chain is named by what it names, which is what the file writes and
   // what its key would otherwise spell out as the key of its parent and the word sBaseRef
   if (element.sbmlType === "SBaseRef") {

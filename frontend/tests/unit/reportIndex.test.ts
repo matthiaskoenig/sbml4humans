@@ -11,6 +11,8 @@ const icgBody = new ReportIndex(loadReport("icg_body"));
 const definitions = new ReportIndex(loadReport("model_definitions"));
 const distrib = new ReportIndex(loadReport("distrib_uncertainties"));
 const compDeletion = new ReportIndex(loadReport("comp_deletion"));
+const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
+const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
 
 const FIXTURE_NAMES: FixtureName[] = [
   "repressilator",
@@ -252,6 +254,57 @@ describe("ReportIndex", () => {
     } as unknown as ReportIndex;
     expect(elementLabel(fake, trigger.pk)).toBe("metaid_1.trigger");
     expect(elementLabel(fake, term.pk)).toBe("tr.functionTerm.1");
+  });
+
+  it("tells the reaction a node of a gene product association belongs to, and its genes", () => {
+    const model = fbcConstraints.mainModel!;
+    const v1 = model.listOfReactions!.find((r) => r.id === "v1")!;
+    const or = v1.fbc!.geneProductAssociation!.association!;
+    const and = or.sbmlType === "Or" ? or.associations![0]! : null;
+    const leaf = and?.sbmlType === "And" ? and.associations![0]! : null;
+    for (const node of [v1.fbc!.geneProductAssociation!, or, and!, leaf!]) {
+      expect(fbcConstraints.associationReaction(node.pk)).toBe(v1.pk);
+    }
+    expect(fbcConstraints.associationReaction(v1.pk)).toBeNull();
+    expect(fbcConstraints.geneProducts(v1.pk)).toEqual([
+      "fbc_constraints_v3/GeneProduct:g_ptsG",
+      "fbc_constraints_v3/GeneProduct:g_ptsH",
+      "fbc_constraints_v3/GeneProduct:g_galP",
+    ]);
+    const exchange = model.listOfReactions!.find((r) => r.id === "EX_glc")!;
+    expect(fbcConstraints.geneProducts(exchange.pk)).toEqual([]);
+  });
+
+  it("names a gene product reference after its reaction and its gene", () => {
+    // a reference without an id named by its gene alone read as the gene product itself, so
+    // the gene product listed its own id once for every reaction which needs it
+    const v2 = fbcConstraints.mainModel!.listOfReactions!.find((r) => r.id === "v2")!;
+    const leaf = v2.fbc!.geneProductAssociation!.association!;
+    expect(leaf.sbmlType).toBe("GeneProductRef");
+    expect(elementLabel(fbcConstraints, leaf.pk)).toBe("v2.g_galP");
+    // a reference with an id keeps it
+    expect(elementLabel(fbcConstraints, "fbc_constraints_v3/GeneProductRef:ref_galP")).toBe(
+      "ref_galP",
+    );
+  });
+
+  it("names a flux objective after its objective and the reactions it multiplies", () => {
+    // named by its reaction alone, a flux objective read as the reaction it weighs
+    const objective = fbcBounds.mainModel!.listOfObjectives!.find((o) => o.id === "biomass_max")!;
+    const term = objective.listOfFluxObjectives![0]!;
+    expect(term.id ?? null).toBeNull();
+    expect(elementLabel(fbcBounds, term.pk)).toBe("biomass_max.EX_biomass");
+    const fake = {
+      get: (pk: string) =>
+        pk === "m/FluxObjective:q"
+          ? { pk, sbmlType: "FluxObjective", reaction: "R1", reaction2: "R2" }
+          : { pk, sbmlType: "Objective", id: "obj" },
+      referencedBy: (pk: string) =>
+        pk === "m/FluxObjective:q"
+          ? [{ source: "m/Objective:obj", target: pk, kind: "fluxObjective" }]
+          : [],
+    } as unknown as ReportIndex;
+    expect(elementLabel(fake, "m/FluxObjective:q")).toBe("obj.R1.R2");
   });
 
   it("names a replacement after its element and the submodel it reaches into", () => {

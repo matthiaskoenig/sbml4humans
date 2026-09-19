@@ -20,6 +20,11 @@ import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 export const PARTICIPATION_KINDS = ["reactant", "product", "modifier"] as const;
 export type ParticipationKind = (typeof PARTICIPATION_KINDS)[number];
 
+/** How deep a gene product association is followed: the tree of a reaction of Recon3D is a
+ * few operators deep, and the limit only keeps a graph which is not a tree from recursing
+ * without end. */
+const MAX_ASSOCIATION_DEPTH = 64;
+
 function push<K, V>(map: Map<K, V[]>, key: K, value: V): void {
   const list = map.get(key);
   if (list) list.push(value);
@@ -112,6 +117,38 @@ export class ReportIndex {
       }
     }
     return null;
+  }
+
+  /** The reaction whose gene product association holds the node, read upwards over the edges
+   * of the association tree, which lead from the reaction to its association and from every
+   * node to the nodes below it (fbc §3.9 to §3.13). Null for anything which is no node of a
+   * tree. */
+  associationReaction(pk: string): string | null {
+    let current = pk;
+    for (let depth = 0; depth < MAX_ASSOCIATION_DEPTH; depth++) {
+      const parent = this.referencedBy(current).find(
+        (edge) => edge.kind === "geneProductAssociation",
+      )?.source;
+      if (!parent) return null;
+      if (this.nodes.get(parent)?.sbmlType === "Reaction") return parent;
+      current = parent;
+    }
+    return null;
+  }
+
+  /** The gene products the association of a reaction names, once each, in the order in which
+   * the tree names them. */
+  geneProducts(reactionPk: string): string[] {
+    const products = new Set<string>();
+    const walk = (pk: string, depth: number): void => {
+      if (depth > MAX_ASSOCIATION_DEPTH) return;
+      for (const edge of this.references(pk)) {
+        if (edge.kind === "geneProductAssociation") walk(edge.target, depth + 1);
+        else if (edge.kind === "geneProduct") products.add(edge.target);
+      }
+    };
+    walk(reactionPk, 0);
+    return [...products];
   }
 
   /** The pk of the element with the id, or failing that the metaId, referenced by the source

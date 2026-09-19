@@ -142,21 +142,34 @@ test.describe("fbc", () => {
     await expect(page).toHaveURL(/pk=fbc_constraints_v3\/GeneProduct:g_ptsG$/);
     await expect(attribute(page, "label")).toContainText("b1101");
 
-    // the gene names the reference which reads it, and the reference its association
-    await inspector
+    // the gene names the reactions which need it, across the tree of their association, and
+    // the reaction names the genes it needs
+    const reactions = inspector
       .getByTestId("links-referenced-by")
       .getByTestId("links-geneProduct")
-      .getByTestId("element-link")
-      .first()
-      .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Gene product reference");
-    await inspector
-      .getByTestId("links-referenced-by")
+      .getByTestId("element-link");
+    await expect(reactions).toHaveText(["v1"]);
+    await reactions.first().click();
+    await expect(page).toHaveURL(/pk=fbc_constraints_v3\/Reaction:v1$/);
+    const references = inspector.getByTestId("links-references");
+    await expect(
+      references.getByTestId("links-geneProduct").getByTestId("element-link"),
+    ).toHaveText(["g_ptsG", "g_ptsH", "g_galP"]);
+
+    // the association stays a link of the reaction, and a node of its tree keeps its own links
+    await references
       .getByTestId("links-geneProductAssociation")
       .getByTestId("element-link")
       .first()
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("And");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Gene product association");
+    await inspector
+      .getByTestId("links-references")
+      .getByTestId("links-geneProductAssociation")
+      .getByTestId("element-link")
+      .first()
+      .click();
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("Or");
   });
 
   test("gives the tables of a genome scale model their fbc columns", async ({ page }) => {

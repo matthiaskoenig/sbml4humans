@@ -526,6 +526,56 @@ describe("inspector", () => {
     );
   });
 
+  it("names the reactions a gene product is needed by and the genes a reaction needs", () => {
+    // the graph runs from the reaction over its association tree to a reference of the gene
+    // product; the links of the inspector ask over those steps, the way they ask over a species
+    // reference, so a gene product lists its reactions and not the references which name it
+    const model = fbcConstraints.mainModel!;
+    const product = model.listOfGeneProducts!.find((g) => g.id === "g_galP")!;
+    const group = mountWith(LinksColumn, { pk: product.pk }, fbcConstraints).get(
+      "[data-testid=links-referenced-by] [data-testid=links-geneProduct]",
+    );
+    const links = group.findAll("[data-testid=element-link]");
+    expect(links.map((link) => link.text())).toEqual(["v1", "v2"]);
+    for (const link of links) {
+      expect(fbcConstraints.get(link.attributes("data-pk")!)?.sbmlType).toBe("Reaction");
+    }
+
+    const reaction = model.listOfReactions!.find((r) => r.id === "v1")!;
+    const references = mountWith(LinksColumn, { pk: reaction.pk }, fbcConstraints).get(
+      "[data-testid=links-references]",
+    );
+    expect(
+      references
+        .get("[data-testid=links-geneProduct]")
+        .findAll("[data-testid=element-link]")
+        .map((link) => link.text()),
+    ).toEqual(["g_ptsG", "g_ptsH", "g_galP"]);
+    // the association stays a link of the reaction, and its nodes keep their own links
+    expect(references.get("[data-testid=links-geneProductAssociation]").text()).toContain("gpa_v1");
+    const leaf = mountWith(
+      LinksColumn,
+      { pk: "fbc_constraints_v3/GeneProductRef:ref_galP" },
+      fbcConstraints,
+    );
+    expect(
+      leaf
+        .get("[data-testid=links-references] [data-testid=links-geneProduct]")
+        .findAll("[data-testid=element-link]")
+        .map((link) => link.text()),
+    ).toEqual(["g_galP"]);
+  });
+
+  it("names a flux objective so that it does not read as the reaction it weighs", () => {
+    const reaction = fbcBounds.mainModel!.listOfReactions!.find((r) => r.id === "EX_biomass")!;
+    const group = mountWith(LinksColumn, { pk: reaction.pk }, fbcBounds).get(
+      "[data-testid=links-referenced-by] [data-testid=links-fluxObjective]",
+    );
+    expect(group.findAll("[data-testid=element-link]").map((link) => link.text())).toEqual([
+      "biomass_max.EX_biomass",
+    ]);
+  });
+
   it("shows none for an element without edges", () => {
     const wrapper = mountWith(LinksColumn, { pk: "nope" }, repressilator);
     expect(wrapper.text()).toContain("none");

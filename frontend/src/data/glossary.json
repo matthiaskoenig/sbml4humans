@@ -1420,7 +1420,7 @@
     },
     "geneProduct": {
       "label": "gene product",
-      "summary": "the gene product a reference of an association names"
+      "summary": "a gene product a reaction needs, named by a reference of its association"
     },
     "geneProductAssociation": {
       "label": "gene product association",
