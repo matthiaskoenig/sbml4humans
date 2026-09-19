@@ -182,26 +182,46 @@ test.describe("the help dialog", () => {
     await expect(header).toHaveAttribute("aria-sort", "ascending");
   });
 
-  // the icon lies in the padding which parts the columns of a table, so a dense table is as wide
-  // as it is without it and no name of a header gives way to it
-  test("the help of a header lies in the padding of its cell and answers a click next to it", async ({
+  // the icon takes no width from the column: it stands a step after the name of its own column,
+  // in the padding which parts that name from the name of the next one, and the icon of the last
+  // column stands inside the cell, where it cannot make the table scroll
+  test("the help of a header stands after its name and reaches neither the next column nor past the table", async ({
     page,
   }) => {
     const table = page.getByTestId("table-Species");
+    const headers = table.locator("thead th");
     const header = table.locator("thead th", {
       has: page.getByRole("button", { name: "compartment", exact: true }),
     });
     await header.hover();
-    const cell = (await header.boundingBox())!;
-    // the box of the name and the arrows, which is the content box of the cell
-    const name = (await header.locator("div").first().boundingBox())!;
+    // the button of the header, which carries the name and the arrows
+    const name = (await header.getByTestId("sort-button").boundingBox())!;
     const help = (await header.getByTestId("help-button").boundingBox())!;
+    const next = (await header.locator("xpath=following-sibling::th[1]//div").boundingBox())!;
 
-    expect(help.x).toBeGreaterThanOrEqual(name.x + name.width - 1);
-    expect(help.x + help.width).toBeLessThanOrEqual(cell.x + cell.width + 0.5);
+    expect(help.x).toBeGreaterThanOrEqual(name.x + name.width);
+    expect(help.x + help.width).toBeLessThanOrEqual(next.x);
+
+    // a column whose cell is much wider than its header keeps the icon next to the name and not
+    // at the far edge of the cell, where it would stand next to the name of the column after it
+    const wide = page.getByTestId("table-Parameter").locator("thead th", {
+      has: page.getByRole("button", { name: "name", exact: true }),
+    });
+    await wide.hover();
+    const wideName = (await wide.getByTestId("sort-button").boundingBox())!;
+    const wideHelp = (await wide.getByTestId("help-button").boundingBox())!;
+    expect((await wide.boundingBox())!.width).toBeGreaterThan(wideName.width + 60);
+    expect(wideHelp.x - (wideName.x + wideName.width)).toBeLessThanOrEqual(8);
+
+    const last = headers.last();
+    await last.hover();
+    const lastHelp = (await last.getByTestId("help-button").boundingBox())!;
+    const tableBox = (await table.locator("table").boundingBox())!;
+    expect(lastHelp.x + lastHelp.width).toBeLessThanOrEqual(tableBox.x + tableBox.width);
 
     // the square around the icon is the target of a click which lands next to it, and that click
     // explains the column instead of sorting it
+    await header.hover();
     await page.mouse.click(help.x - 5, help.y + help.height / 2 + 5);
     await expect(page.getByTestId("help-dialog")).toBeVisible();
     await expect.poll(() => query(page, "help")).toBe("types/Species/compartment");

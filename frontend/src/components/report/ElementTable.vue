@@ -239,7 +239,7 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
             v-for="column in columns"
             :key="column.field"
             scope="col"
-            class="group/th relative px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600 select-none"
+            class="group/th px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600 select-none"
             :class="{ 'cursor-pointer': sortable(column) }"
             :style="column.width ? { width: column.width } : undefined"
             :aria-sort="ariaSort(column)"
@@ -250,7 +250,10 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
             carries it, so that the click which explains the column does not sort it and the
             keyboard reaches the two one after the other. The cell names itself, since the name of
             the help would otherwise be read out with the header of every cell of the column -->
-            <div class="flex items-center gap-1">
+            <!-- the row of the header is as wide as the name and the arrows, so that the help
+            below stands after them wherever the column is wider than its header; in the last
+            column it is the whole cell, so that the help ends at the edge of the table -->
+            <div class="relative flex w-fit items-center gap-1 group-last/th:w-full">
               <button
                 v-if="sortable(column)"
                 v-tooltip.bottom="headerTooltip(column)"
@@ -271,21 +274,23 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
                 class="flex items-center gap-1"
                 >{{ column.header }}</span
               >
+              <!-- the help costs the column no width: it is out of the flow, a step after the
+              name of the column, in the 12 px of padding which part that name from the name of
+              the next column, so that it covers neither of them and a dense table is as wide as
+              it is without it. In the last column it stands at the edge of the cell instead, one
+              step further left, since a step beyond it would be a step beyond the table, which
+              would make the table scroll. It is shown when the cell is hovered or carries the
+              focus, and always where there is no pointer which could hover it; the hit area
+              around it is the square a finger needs, and it reaches to the left, over the cell,
+              and never past the icon -->
+              <HelpButton
+                v-if="helpKey(column)"
+                :help-key="helpKey(column)!"
+                :label="column.header"
+                size="sm"
+                class="absolute top-1/2 left-full ml-1 -translate-y-1/2 opacity-0 before:absolute before:-inset-y-1 before:right-0 before:-left-2 group-last/th:ml-0 group-focus-within/th:opacity-100 group-hover/th:opacity-100 pointer-coarse:opacity-100"
+              />
             </div>
-            <!-- the help costs the column no width: it lies in the right padding of the cell,
-            the 12 px which part the name of this column from the name of the next one, so it
-            covers neither of them and a dense table is as wide as it is without it. It is shown
-            when the cell is hovered or carries the focus, and always where there is no pointer
-            which could hover it; the hit area around it is the square a finger needs, and it
-            reaches to the left, where the cell is, and never past the cell, whose last column
-            would otherwise be a table which scrolls -->
-            <HelpButton
-              v-if="helpKey(column)"
-              :help-key="helpKey(column)!"
-              :label="column.header"
-              size="sm"
-              class="absolute top-1/2 right-0 -translate-y-1/2 opacity-0 before:absolute before:-inset-y-1 before:right-0 before:-left-2 group-focus-within/th:opacity-100 group-hover/th:opacity-100 pointer-coarse:opacity-100"
-            />
           </th>
         </tr>
       </thead>
