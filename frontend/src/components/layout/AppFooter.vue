@@ -2,14 +2,13 @@
 import { computed } from "vue";
 
 import { APP_COMMIT, APP_VERSION } from "@/build";
+import { commitUrl, releaseUrl, REPOSITORY_URL } from "@/repository";
 import { DOCS_URL } from "@/report/glossary";
 
 /** The report page is a full height workspace and puts the footer under its split, where the
  * padding which lifts the footer off the content of a scrolling page would take height from the
  * tables and the inspector. The dense footer carries the same text in the same order. */
 const props = withDefaults(defineProps<{ dense?: boolean }>(), { dense: false });
-
-const REPOSITORY_URL = "https://github.com/matthiaskoenig/sbml4humans";
 
 /** The concept DOI of the archive on Zenodo, which always resolves to the newest release. */
 const DOI_URL = "https://doi.org/10.5281/zenodo.22827237";
@@ -18,7 +17,8 @@ const PRIVACY_URL = `${REPOSITORY_URL}/blob/main/frontend/privacy_notice.md`;
 
 /** The commit in the short form git itself prints. */
 const shortCommit = computed(() => APP_COMMIT.slice(0, 7));
-const commitUrl = computed(() => `${REPOSITORY_URL}/commit/${APP_COMMIT}`);
+const commit = computed(() => commitUrl(APP_COMMIT));
+const release = computed(() => releaseUrl(APP_VERSION));
 </script>
 
 <template>
@@ -32,9 +32,12 @@ const commitUrl = computed(() => `${REPOSITORY_URL}/commit/${APP_COMMIT}`);
   >
     <div class="border-t border-gray-200" :class="props.dense ? 'py-2' : 'pt-6'">
       <p>
-        SBML4Humans {{ APP_VERSION
-        }}<template v-if="APP_COMMIT">
-          (<a :href="commitUrl" class="text-link hover:underline" data-testid="footer-commit">{{
+        SBML4Humans
+        <a :href="release" class="text-link hover:underline" data-testid="footer-release">{{
+          APP_VERSION
+        }}</a
+        ><template v-if="APP_COMMIT">
+          (<a :href="commit" class="text-link hover:underline" data-testid="footer-commit">{{
             shortCommit
           }}</a
           >)</template

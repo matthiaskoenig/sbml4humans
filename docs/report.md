@@ -121,3 +121,9 @@ The state of a report is part of its address, so a report can be linked in the s
 | `url` | the address the model was downloaded from, for a report which was loaded from a url |
 
 Selecting an element adds a step to the history of the browser, so the back button walks back through the elements you looked at. The model a report selects when it opens adds none. Typing in the search box does not, so the back button does not step through every keystroke.
+
+## Feedback
+
+"Feedback" in the bar at the top opens a new issue of the [repository](https://github.com/matthiaskoenig/sbml4humans/issues) on GitHub, with what a maintainer asks first already written: the version and the commit of the application, the page and the browser. For an example and for a model which was loaded from a url the issue names the model and the state of the report, so that whoever reads it opens what you saw. For a file of your own it names neither the file nor the selected element; nothing is sent before you submit the issue, and the text can be changed before that.
+
+The footer of every page says which build is running: the version, which links the release on GitHub with its release notes, and the commit it was built from.
