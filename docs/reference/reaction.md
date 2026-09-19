@@ -10,16 +10,16 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [reversible](#reversible) | `boolean` | - | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fast](#fast) | `boolean` | - | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [compartment](#compartment) | `SIdRef` | - | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfReactants](#listofreactants) | `list` | - | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfProducts](#listofproducts) | `list` | - | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfModifiers](#listofmodifiers) | `list` | - | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [reversible](#reversible) | [`boolean`](datatypes.md#boolean) | - | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [fast](#fast) | [`boolean`](datatypes.md#boolean) | - | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [compartment](#compartment) | [`SIdRef`](datatypes.md#sidref) | - | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfReactants](#listofreactants) | [`list`](datatypes.md#list) | - | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfProducts](#listofproducts) | [`list`](datatypes.md#list) | - | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfModifiers](#listofmodifiers) | [`list`](datatypes.md#list) | - | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [kineticLaw](#kineticlaw) | [`KineticLaw`](kineticlaw.md) | - | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [fbc](#fbc) | `ReactionFbc` | - | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | `SIdRef` | - | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:upperFluxBound](#fbc-upperfluxbound) | `SIdRef` | - | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:upperFluxBound](#fbc-upperfluxbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [fbc:geneProductAssociation](#fbc-geneproductassociation) | [`GeneProductAssociation`](geneproductassociation.md) | - | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
@@ -94,9 +94,9 @@ The report shows the tree in the inspector of the reaction, one line per branch,
 
 | field | type | meaning |
 | --- | --- | --- |
-| [kineticLaw](#kineticlaw-2) | `Math` | the rate formula of the reaction's kinetic law, rendered |
-| [derived units](#derived-units) | `latex` | the units the report derives for the rate formula of the kinetic law |
-| [equation](#equation) | `string` | the reaction written as a chemical equation |
+| [kineticLaw](#kineticlaw-2) | [`Math`](datatypes.md#math) | the rate formula of the reaction's kinetic law, rendered |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units the report derives for the rate formula of the kinetic law |
+| [equation](#equation) | [`string`](datatypes.md#string) | the reaction written as a chemical equation |
 
 <span id="kineticlaw-2"></span>**kineticLaw**
 

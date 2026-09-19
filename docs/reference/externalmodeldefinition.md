@@ -11,8 +11,8 @@ The report shows the external model definitions of a document next to its models
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
 | [source](#source) | `anyURI` | - | the location of the SBML file which holds the model | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [modelRef](#modelref) | `SIdRef` | - | the identifier of the model inside the referenced file | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [md5](#md5) | `string` | - | the checksum of the document at the source | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [modelRef](#modelref) | [`SIdRef`](datatypes.md#sidref) | - | the identifier of the model inside the referenced file | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [md5](#md5) | [`string`](datatypes.md#string) | - | the checksum of the document at the source | [comp 3.3.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -38,10 +38,10 @@ The report shows the checksum in the inspector of the external model definition 
 
 | field | type | meaning |
 | --- | --- | --- |
-| [status](#status) | `string` | how far the report could follow the external model definition |
-| [document](#document) | `string` | the entry of the archive which the source names |
-| [model](#model) | `string` | the model the external model definition names |
-| [md5 check](#md5-check) | `boolean` | whether the document at the source has the checksum the definition states |
+| [status](#status) | [`string`](datatypes.md#string) | how far the report could follow the external model definition |
+| [document](#document) | [`string`](datatypes.md#string) | the entry of the archive which the source names |
+| [model](#model) | [`string`](datatypes.md#string) | the model the external model definition names |
+| [md5 check](#md5-check) | [`boolean`](datatypes.md#boolean) | whether the document at the source has the checksum the definition states |
 
 <span id="status"></span>**status**
 

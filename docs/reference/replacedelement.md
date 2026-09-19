@@ -12,12 +12,12 @@ The report lists the replacements of an element in its inspector, links the subm
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [submodelRef](#submodelref) | `SIdRef` | - | the submodel which holds the replaced element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [deletion](#deletion) | `SIdRef` | - | the deletion of the submodel whose element this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [conversionFactor](#conversionfactor) | `SIdRef` | - | the parameter which rescales the replaced value to the scale of this element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [submodelRef](#submodelref) | [`SIdRef`](datatypes.md#sidref) | - | the submodel which holds the replaced element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [deletion](#deletion) | [`SIdRef`](datatypes.md#sidref) | - | the deletion of the submodel whose element this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [conversionFactor](#conversionfactor) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which rescales the replaced value to the scale of this element | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [portRef](#portref) | `PortSIdRef` | - | the port of the submodel whose element is replaced | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [idRef](#idref) | `SIdRef` | - | the element which is replaced, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [unitRef](#unitref) | `UnitSIdRef` | - | the unit definition which is replaced | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [idRef](#idref) | [`SIdRef`](datatypes.md#sidref) | - | the element which is replaced, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unitRef](#unitref) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the unit definition which is replaced | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [metaIdRef](#metaidref) | `IDREF` | - | the element which is replaced, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [sBaseRef](#sbaseref) | [`SBaseRef`](sbaseref.md) | - | the reference which reaches into a submodel of the named submodel | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 

@@ -10,8 +10,8 @@ It is an element of the report and not a row of its transition, because the spec
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [qualitativeSpecies](#qualitativespecies) | `SIdRef` | - | the species whose level the transition changes | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [outputLevel](#outputlevel) | `integer` | - | the level the transition produces per result level | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [qualitativeSpecies](#qualitativespecies) | [`SIdRef`](datatypes.md#sidref) | - | the species whose level the transition changes | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [outputLevel](#outputlevel) | [`integer`](datatypes.md#integer) | - | the level the transition produces per result level | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 | [transitionEffect](#transitioneffect) | `transitionOutputEffect` | - | whether the transition sets the level of the species or adds to it | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.

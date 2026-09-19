@@ -10,8 +10,8 @@ It is an element of the report and not a row of its transition, because the spec
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [qualitativeSpecies](#qualitativespecies) | `SIdRef` | - | the species whose level the transition reads | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [thresholdLevel](#thresholdlevel) | `integer` | - | the level of the species at which the input acts | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [qualitativeSpecies](#qualitativespecies) | [`SIdRef`](datatypes.md#sidref) | - | the species whose level the transition reads | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [thresholdLevel](#thresholdlevel) | [`integer`](datatypes.md#integer) | - | the level of the species at which the input acts | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 | [transitionEffect](#transitioneffect) | `transitionInputEffect` | - | whether the transition consumes the level of the species it reads | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 | [sign](#sign) | `sign` | - | whether the influence of the species activates or inhibits | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 

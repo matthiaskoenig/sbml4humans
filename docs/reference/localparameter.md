@@ -10,8 +10,8 @@ The report shows a local parameter as an element of its own, with its value, its
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [value](#value) | `double` | - | the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [units](#units) | `UnitSIdRef` | - | the units of the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [value](#value) | [`double`](datatypes.md#double) | - | the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [units](#units) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the value of the local parameter | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -31,8 +31,8 @@ The report links the referenced unit definition and renders it as a formula.
 
 | field | type | meaning |
 | --- | --- | --- |
-| [rendered units](#rendered-units) | `latex` | the units of the local parameter rendered as a formula |
-| [derived units](#derived-units) | `latex` | the units of the value as the report derives them |
+| [rendered units](#rendered-units) | [`latex`](datatypes.md#latex) | the units of the local parameter rendered as a formula |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the value as the report derives them |
 
 <span id="rendered-units"></span>**rendered units**
 

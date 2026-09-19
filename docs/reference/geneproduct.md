@@ -12,8 +12,8 @@ The report shows the gene products of a model in a section of their own, with a 
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [label](#label) | `string` | - | the identifier under which the source of the model knows the gene | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [associatedSpecies](#associatedspecies) | `SIdRef` | - | the species of the model which stands for this gene product | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [label](#label) | [`string`](datatypes.md#string) | - | the identifier under which the source of the model knows the gene | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [associatedSpecies](#associatedspecies) | [`SIdRef`](datatypes.md#sidref) | - | the species of the model which stands for this gene product | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

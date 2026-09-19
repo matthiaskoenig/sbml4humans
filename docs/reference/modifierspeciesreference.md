@@ -10,7 +10,7 @@ The report shows a modifier species reference with a link to its reaction and to
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [species](#species) | `SIdRef` | - | the species which modifies the reaction | [core 4.11.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [species](#species) | [`SIdRef`](datatypes.md#sidref) | - | the species which modifies the reaction | [core 4.11.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

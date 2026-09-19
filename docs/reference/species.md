@@ -10,17 +10,17 @@ The report shows the initial quantity of a species, its units, the flags which s
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [compartment](#compartment) | `SIdRef` | - | the compartment the species is located in | [core 4.6.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initialAmount](#initialamount) | `double` | - | the amount of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initialConcentration](#initialconcentration) | `double` | - | the concentration of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [substanceUnits](#substanceunits) | `UnitSIdRef` | - | the units of the amount of the species | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [hasOnlySubstanceUnits](#hasonlysubstanceunits) | `boolean` | - | whether the identifier of the species stands for an amount instead of a concentration | [core 4.6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [boundaryCondition](#boundarycondition) | `boolean` | - | whether the quantity of the species is left unchanged by the reactions | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [constant](#constant) | `boolean` | - | whether the quantity of the species stays fixed during a simulation | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [conversionFactor](#conversionfactor) | `SIdRef` | - | the parameter which converts the extent of a reaction into the quantity of the species | [core 4.6.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [compartment](#compartment) | [`SIdRef`](datatypes.md#sidref) | - | the compartment the species is located in | [core 4.6.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialAmount](#initialamount) | [`double`](datatypes.md#double) | - | the amount of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialConcentration](#initialconcentration) | [`double`](datatypes.md#double) | - | the concentration of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [substanceUnits](#substanceunits) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the amount of the species | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [hasOnlySubstanceUnits](#hasonlysubstanceunits) | [`boolean`](datatypes.md#boolean) | - | whether the identifier of the species stands for an amount instead of a concentration | [core 4.6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [boundaryCondition](#boundarycondition) | [`boolean`](datatypes.md#boolean) | - | whether the quantity of the species is left unchanged by the reactions | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [constant](#constant) | [`boolean`](datatypes.md#boolean) | - | whether the quantity of the species stays fixed during a simulation | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [conversionFactor](#conversionfactor) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which converts the extent of a reaction into the quantity of the species | [core 4.6.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [fbc](#fbc) | `SpeciesFbc` | - | the chemical formula and the charge which fbc adds to a species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:chemicalFormula](#fbc-chemicalformula) | `string` | - | the elemental composition of the species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:charge](#fbc-charge) | `integer` | - | the charge of the species, counted in electrons | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:chemicalFormula](#fbc-chemicalformula) | [`string`](datatypes.md#string) | - | the elemental composition of the species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:charge](#fbc-charge) | [`integer`](datatypes.md#integer) | - | the charge of the species, counted in electrons | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -94,8 +94,8 @@ The report shows the charge in the inspector of the species.
 
 | field | type | meaning |
 | --- | --- | --- |
-| [rendered substance units](#rendered-substance-units) | `latex` | the substance units of the species rendered as a formula |
-| [derived units](#derived-units) | `latex` | the units of the quantity of the species as the report derives them |
+| [rendered substance units](#rendered-substance-units) | [`latex`](datatypes.md#latex) | the substance units of the species rendered as a formula |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the quantity of the species as the report derives them |
 
 <span id="rendered-substance-units"></span>**rendered substance units**
 

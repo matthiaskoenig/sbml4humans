@@ -12,10 +12,10 @@ The report links the model a submodel instantiates, shows its two conversion fac
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [modelRef](#modelref) | `SIdRef` | - | the model which this submodel instantiates | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [timeConversionFactor](#timeconversionfactor) | `SIdRef` | - | the parameter which converts the time of the submodel into the time of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [extentConversionFactor](#extentconversionfactor) | `SIdRef` | - | the parameter which converts the reaction extent of the submodel into the extent of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [listOfDeletions](#listofdeletions) | `list` | - | the elements which are removed from the model before it is instantiated | [comp 3.5.3](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [modelRef](#modelref) | [`SIdRef`](datatypes.md#sidref) | - | the model which this submodel instantiates | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [timeConversionFactor](#timeconversionfactor) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which converts the time of the submodel into the time of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [extentConversionFactor](#extentconversionfactor) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which converts the reaction extent of the submodel into the extent of this model | [comp 3.5.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [listOfDeletions](#listofdeletions) | [`list`](datatypes.md#list) | - | the elements which are removed from the model before it is instantiated | [comp 3.5.3](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

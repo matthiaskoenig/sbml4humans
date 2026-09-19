@@ -12,10 +12,10 @@ The report shows the qualitative species of a model in a section of their own, w
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [compartment](#compartment) | `SIdRef` | - | the compartment the qualitative species is located in | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [constant](#constant) | `boolean` | - | whether no transition may change the level of the species | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [initialLevel](#initiallevel) | `integer` | - | the level of the species at the start of a simulation | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [maxLevel](#maxlevel) | `integer` | - | the highest level the species can take | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [compartment](#compartment) | [`SIdRef`](datatypes.md#sidref) | - | the compartment the qualitative species is located in | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [constant](#constant) | [`boolean`](datatypes.md#boolean) | - | whether no transition may change the level of the species | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [initialLevel](#initiallevel) | [`integer`](datatypes.md#integer) | - | the level of the species at the start of a simulation | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [maxLevel](#maxlevel) | [`integer`](datatypes.md#integer) | - | the highest level the species can take | [qual 3.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

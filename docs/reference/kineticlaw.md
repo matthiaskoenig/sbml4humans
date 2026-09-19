@@ -10,8 +10,8 @@ The report shows the rendered formula, the units it derives for it and the table
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [math](#math) | `Math` | - | the rate formula of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfLocalParameters](#listoflocalparameters) | `list` | - | the parameters which only this kinetic law uses | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | [`Math`](datatypes.md#math) | - | the rate formula of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfLocalParameters](#listoflocalparameters) | [`list`](datatypes.md#list) | - | the parameters which only this kinetic law uses | [core 4.11.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -31,7 +31,7 @@ The report shows the local parameters as a table in the inspector of the kinetic
 
 | field | type | meaning |
 | --- | --- | --- |
-| [derived units](#derived-units) | `latex` | the units of the rate formula as the report derives them |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the rate formula as the report derives them |
 
 <span id="derived-units"></span>**derived units**
 

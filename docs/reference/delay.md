@@ -10,7 +10,7 @@ The report shows the delay as an element of its own and its rendered formula in 
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [math](#math) | `Math` | - | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | [`Math`](datatypes.md#math) | - | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

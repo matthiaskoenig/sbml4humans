@@ -12,10 +12,10 @@ The report shows the replacement in the inspector of the element, links the subm
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [submodelRef](#submodelref) | `SIdRef` | - | the submodel which holds the replacing element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [submodelRef](#submodelref) | [`SIdRef`](datatypes.md#sidref) | - | the submodel which holds the replacing element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [portRef](#portref) | `PortSIdRef` | - | the port of the submodel whose element takes the place of this element | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [idRef](#idref) | `SIdRef` | - | the element which replaces this element, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [unitRef](#unitref) | `UnitSIdRef` | - | the unit definition which replaces this unit definition | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [idRef](#idref) | [`SIdRef`](datatypes.md#sidref) | - | the element which replaces this element, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unitRef](#unitref) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the unit definition which replaces this unit definition | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [metaIdRef](#metaidref) | `IDREF` | - | the element which replaces this element, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [sBaseRef](#sbaseref) | [`SBaseRef`](sbaseref.md) | - | the reference which reaches into a submodel of the named submodel | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 

@@ -13,8 +13,8 @@ The report shows which element a port names, links it, and lists the ports of a 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
 | [portRef](#portref) | `PortSIdRef` | - | the port which this reference names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [idRef](#idref) | `SIdRef` | - | the element which this port names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [unitRef](#unitref) | `UnitSIdRef` | - | the unit definition which this port names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [idRef](#idref) | [`SIdRef`](datatypes.md#sidref) | - | the element which this port names, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unitRef](#unitref) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the unit definition which this port names | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [metaIdRef](#metaidref) | `IDREF` | - | the element which this port names, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [sBaseRef](#sbaseref) | [`SBaseRef`](sbaseref.md) | - | the reference which reaches from the named submodel into the model it instantiates | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 

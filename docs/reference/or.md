@@ -10,7 +10,7 @@ The report shows it as the branches of the tree in the inspector of a reaction a
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [associations](#associations) | `list` | - | the alternative nodes, two or more of them | [fbc v3 3.13](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [associations](#associations) | [`list`](datatypes.md#list) | - | the alternative nodes, two or more of them | [fbc v3 3.13](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

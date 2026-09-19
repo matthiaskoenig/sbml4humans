@@ -10,7 +10,7 @@ The report shows the priority as an element of its own and its rendered formula 
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [math](#math) | `Math` | - | the formula whose value orders the events of one moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | [`Math`](datatypes.md#math) | - | the formula whose value orders the events of one moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

@@ -12,7 +12,7 @@ The report shows every uncertainty as an element of its own, with the table of i
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [uncertParameters](#uncertparameters) | `list` | - | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| [uncertParameters](#uncertparameters) | [`list`](datatypes.md#list) | - | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

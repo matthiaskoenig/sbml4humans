@@ -10,9 +10,9 @@ The report shows one document per file of a submission, and a [Model](model.md) 
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [level](#level) | `positiveInteger` | - | the level of SBML the file is written in | [core 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [version](#version) | `positiveInteger` | - | the version of the level the file is written in | [core 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [packages](#packages) | `list` | - | the Level 3 packages the file uses, with their version | [core 4.1.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [level](#level) | [`positiveInteger`](datatypes.md#positiveinteger) | - | the level of SBML the file is written in | [core 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [version](#version) | [`positiveInteger`](datatypes.md#positiveinteger) | - | the version of the level the file is written in | [core 4.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [packages](#packages) | [`list`](datatypes.md#list) | - | the Level 3 packages the file uses, with their version | [core 4.1.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -38,7 +38,7 @@ The report lists the prefix and the version of every declared package in the att
 
 | field | type | meaning |
 | --- | --- | --- |
-| [annotation](#annotation) | `string` | the annotation element of the document as the file writes it |
+| [annotation](#annotation) | [`string`](datatypes.md#string) | the annotation element of the document as the file writes it |
 
 <span id="annotation"></span>**annotation**
 

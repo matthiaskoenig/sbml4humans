@@ -10,7 +10,7 @@ The report renders every unit definition as a formula, in the table and in the i
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [listOfUnits](#listofunits) | `list` | - | the units the definition multiplies, each with its exponent, scale and multiplier | [core 4.4.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfUnits](#listofunits) | [`list`](datatypes.md#list) | - | the units the definition multiplies, each with its exponent, scale and multiplier | [core 4.4.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -24,7 +24,7 @@ The inspector of a unit definition shows the units as a table of kind, exponent,
 
 | field | type | meaning |
 | --- | --- | --- |
-| [formula](#formula) | `latex` | the composed unit rendered as a formula |
+| [formula](#formula) | [`latex`](datatypes.md#latex) | the composed unit rendered as a formula |
 
 <span id="formula"></span>**formula**
 

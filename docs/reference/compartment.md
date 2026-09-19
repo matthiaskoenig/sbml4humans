@@ -10,10 +10,10 @@ The report shows the size of a compartment, the units of that size and the units
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [spatialDimensions](#spatialdimensions) | `double` | - | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [size](#size) | `double` | - | the size of the compartment at the start of the simulation | [core 4.5.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [units](#units) | `UnitSIdRef` | - | the units of the size of the compartment | [core 4.5.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [constant](#constant) | `boolean` | - | whether the size of the compartment stays fixed during a simulation | [core 4.5.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [spatialDimensions](#spatialdimensions) | [`double`](datatypes.md#double) | - | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [size](#size) | [`double`](datatypes.md#double) | - | the size of the compartment at the start of the simulation | [core 4.5.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [units](#units) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the size of the compartment | [core 4.5.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [constant](#constant) | [`boolean`](datatypes.md#boolean) | - | whether the size of the compartment stays fixed during a simulation | [core 4.5.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -45,8 +45,8 @@ The report shows the flag as a mark in the column "constant".
 
 | field | type | meaning |
 | --- | --- | --- |
-| [rendered units](#rendered-units) | `latex` | the units of the size rendered as a formula |
-| [derived units](#derived-units) | `latex` | the units of the size as the report derives them |
+| [rendered units](#rendered-units) | [`latex`](datatypes.md#latex) | the units of the size rendered as a formula |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the size as the report derives them |
 
 <span id="rendered-units"></span>**rendered units**
 

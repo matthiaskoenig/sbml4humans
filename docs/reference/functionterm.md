@@ -10,8 +10,8 @@ The terms of a [transition](transition.md) are read in order and the first one w
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [resultLevel](#resultlevel) | `integer` | - | the level the outputs take where the condition of the term holds | [qual 3.6.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [math](#math) | `Math` | - | the condition under which the term decides the level | [qual 3.6.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [resultLevel](#resultlevel) | [`integer`](datatypes.md#integer) | - | the level the outputs take where the condition of the term holds | [qual 3.6.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [math](#math) | [`Math`](datatypes.md#math) | - | the condition under which the term decides the level | [qual 3.6.5](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

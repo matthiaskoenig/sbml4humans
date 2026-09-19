@@ -15,8 +15,8 @@ The report shows the deletions of a submodel in its inspector, links the element
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
 | [portRef](#portref) | `PortSIdRef` | - | the port of the submodel whose element is removed | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [idRef](#idref) | `SIdRef` | - | the element which is removed, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [unitRef](#unitref) | `UnitSIdRef` | - | the unit definition which is removed | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [idRef](#idref) | [`SIdRef`](datatypes.md#sidref) | - | the element which is removed, by its identifier | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [unitRef](#unitref) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the unit definition which is removed | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [metaIdRef](#metaidref) | `IDREF` | - | the element which is removed, by its meta id | [comp 3.7.1](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 | [sBaseRef](#sbaseref) | [`SBaseRef`](sbaseref.md) | - | the reference which reaches into a submodel of the submodel | [comp 3.7.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
 

@@ -10,8 +10,8 @@ The report shows the variable, the rendered formula and the units the formula pr
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [variable](#variable) | `SIdRef` | - | the element whose rate of change the rule gives | [core 4.9.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [math](#math) | `Math` | - | the formula which computes the rate of change | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [variable](#variable) | [`SIdRef`](datatypes.md#sidref) | - | the element whose rate of change the rule gives | [core 4.9.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | [`Math`](datatypes.md#math) | - | the formula which computes the rate of change | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -31,7 +31,7 @@ The report renders the formula in the column "math" and in the inspector.
 
 | field | type | meaning |
 | --- | --- | --- |
-| [derived units](#derived-units) | `latex` | the units of the formula as the report derives them |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the formula as the report derives them |
 
 <span id="derived-units"></span>**derived units**
 

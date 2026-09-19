@@ -80,6 +80,214 @@
       "package": "core",
       "docs": "reference/concepts/#rendered-units"
     },
+    "datatypes/ID": {
+      "kind": "datatype",
+      "label": "ID",
+      "summary": "an identifier which is unique in the whole file",
+      "description": "`ID` is the identifier type of XML 1.0, which SBML takes over unchanged: `ID ::= ( letter | '_' | ':' ) NameChar*`, where a `NameChar` is a letter, a digit, `.`, `-`, `_` or `:`, and where a letter may be any letter of Unicode and not only a Latin one. Every value of this type lives in one namespace which spans the whole document, whatever element carries it and however deeply that element is nested, so no two elements of a file may carry the same one.\n\nThe [metaid](glossary:types/SBase/metaId) of an element is the only attribute of the core with this type, and the RDF of an [annotation](glossary:types/SBase/cvterms) names the element it describes by it. A meta id which is used twice makes the file invalid, and an annotation which names a meta id no element carries describes nothing. The report shows the meta id in the attributes of the inspector and falls back to it to name an element which has no id.",
+      "package": "core",
+      "docs": "reference/datatypes/#id",
+      "spec": {
+        "label": "core 3.1.6",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.6"
+      },
+      "related": [
+        "datatypes/SId"
+      ]
+    },
+    "datatypes/Math": {
+      "kind": "datatype",
+      "label": "Math",
+      "summary": "a formula of the model in the two renderings the report gives it",
+      "description": "SBML writes every formula as content MathML, which is exact and unreadable. The report converts each formula once and keeps two renderings of it: the latex which the page typesets the way a textbook prints a formula, and the same expression in the infix notation of Level 3, `k1 * S1 - k2 * S2`, which is one line of text and can be copied into another tool.\n\nEvery formula the report shows is of this kind: the kinetic law of a reaction, the formula of a rule, of an initial assignment, of a constraint and of a function definition, and the trigger, the delay and the priority of an event. A table and the inspector show the typeset formula, the infix formula is its tooltip and what a click copies, and a formula too long to typeset is shown as text until a click renders it. [Rendered math](glossary:concepts/math) describes this, and every element a formula names becomes a link of the kind [math](glossary:links/math).",
+      "package": "report",
+      "docs": "reference/datatypes/#math",
+      "related": [
+        "datatypes/latex"
+      ]
+    },
+    "datatypes/ModelHistory": {
+      "kind": "datatype",
+      "label": "ModelHistory",
+      "summary": "who created an element and when it was changed",
+      "description": "The standard annotation of an element may carry its history, written in RDF with the terms of Dublin Core: the creators with their name, their organisation and their electronic mail address, the date the element was created and one date for every time it was changed. The report reads that block out of the annotation and keeps it as one value of the element, instead of leaving it in the XML for a reader to decipher.\n\nMost files carry a history on the model alone, where it is the closest thing a model has to an author line. The report shows the creators with their organisation and their address, the date of creation and every date of modification, below the annotations in the inspector of the element.",
+      "package": "report",
+      "docs": "reference/datatypes/#modelhistory"
+    },
+    "datatypes/SBOTerm": {
+      "kind": "datatype",
+      "label": "SBOTerm",
+      "summary": "the identifier of a term of the Systems Biology Ontology",
+      "description": "The pattern is fixed: `SBO:` followed by exactly seven digits, for example `SBO:0000014`. The value names a term of the Systems Biology Ontology, a controlled vocabulary of the entities, the roles, the processes and the modelling frameworks a model is built from, and it states in that vocabulary what the class of an element alone does not: that a modifier is a catalyst, that a kinetic law is Michaelis-Menten kinetics, that a parameter is a Michaelis constant. Section 5 of the specification describes how the terms are meant to be used.\n\nThe report shows the term in the attributes of the inspector and links it to its page at identifiers.org, where the label and the definition of the term are read.",
+      "package": "core",
+      "docs": "reference/datatypes/#sboterm",
+      "spec": {
+        "label": "core 3.1.12",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.12"
+      }
+    },
+    "datatypes/SId": {
+      "kind": "datatype",
+      "label": "SId",
+      "summary": "the identifier of an element inside a model",
+      "description": "The type of the [id](glossary:types/SBase/id) every element may carry: `SId ::= ( letter | '_' ) idChar*`, where an `idChar` is a letter, a digit or an underscore. The letters are the plain Latin ones, `a` to `z` and `A` to `Z`, so an identifier holds no accent, no space and no dot, and two identifiers are equal only when they match character by character: `S1` and `s1` are two different elements.\n\nAn identifier is unique within one model and not within the file, so a reaction and a species of one model cannot share one, while two models of a file may each have a species `S1`. Two further spaces of identifiers sit next to this one: the units of a model, whose identifiers are compared only against each other and against the base units of SBML and which are named by a [UnitSIdRef](glossary:datatypes/UnitSIdRef), and the local parameters of a reaction, whose identifiers are private to that reaction and hide an identifier of the model inside its kinetic law. A package may narrow a space further, as the comp package does for its ports, whose identifiers have to be unique only among the ports of their model.\n\nThe report shows the id in the first column of every table, uses it as the label of every link to the element, and builds the [primary key](glossary:concepts/pk) of the element from it.",
+      "package": "core",
+      "docs": "reference/datatypes/#sid",
+      "spec": {
+        "label": "core 3.1.7",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.7"
+      },
+      "related": [
+        "datatypes/SIdRef",
+        "datatypes/ID"
+      ]
+    },
+    "datatypes/SIdRef": {
+      "kind": "datatype",
+      "label": "SIdRef",
+      "summary": "a reference to an element of the same model by its identifier",
+      "description": "An attribute of type `SIdRef` holds the [SId](glossary:datatypes/SId) of an element of the model it is written in: the compartment of a species names a compartment, the variable of a rule names the element the rule computes, the conversion factor of a species names a parameter. Which kind of element a given attribute may name is no part of the type but of the attribute, and the entry of the attribute says it. The value is compared character by character like an identifier, and it has to be an identifier the model defines: a reference to an identifier which is defined nowhere is a dangling reference, which makes the file invalid and leaves a simulation without a quantity it needs.\n\nThe report resolves every reference of a model against the elements of that model and shows a resolved one as a link to the element it names, while the element at the other end lists the reference under \"Referenced by\", so that a reference can be followed in both directions. A reference the report cannot resolve stays the text the file writes, without a link.",
+      "package": "core",
+      "docs": "reference/datatypes/#sidref",
+      "spec": {
+        "label": "core 3.1.8",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.8"
+      },
+      "related": [
+        "datatypes/SId",
+        "datatypes/UnitSIdRef"
+      ]
+    },
+    "datatypes/UnitSIdRef": {
+      "kind": "datatype",
+      "label": "UnitSIdRef",
+      "summary": "a reference to a unit by its identifier",
+      "description": "The identifiers of units live in a space of their own: the id of a [unit definition](glossary:types/UnitDefinition) is of the type `UnitSId`, which has the syntax of an [SId](glossary:datatypes/SId) but is compared only against the other unit identifiers of the model and against the base unit names SBML reserves, `mole`, `litre`, `second`, `kilogram` and the other base units of Table 2 of the specification. An attribute of type `UnitSIdRef`, the units of a compartment, of a parameter or of a species, must name one of the two, a unit definition of the model or a base unit, and anything else is a dangling reference. Because the space is separate from the identifiers of the model, a parameter `volume` and a unit definition `volume` can exist side by side.\n\nThe report links a value which names a unit definition to that definition and renders the unit next to the identifier as a formula, the [rendered units](glossary:concepts/unitsLatex); a base unit is no element of the model, so it stays text and only its rendering is added. The units an element ends up with, declared here or inherited from the model, are the [derived units](glossary:concepts/derivedUnits) the report computes on top of this.",
+      "package": "core",
+      "docs": "reference/datatypes/#unitsidref",
+      "spec": {
+        "label": "core 3.1.10",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.10"
+      },
+      "related": [
+        "datatypes/SIdRef"
+      ]
+    },
+    "datatypes/XHTML": {
+      "kind": "datatype",
+      "label": "XHTML",
+      "summary": "a fragment of markup written for human readers",
+      "description": "The [notes](glossary:types/SBase/notes) of an element and the [message](glossary:types/Constraint/message) of a constraint hold XHTML 1.0 in the namespace `http://www.w3.org/1999/xhtml`, which is declared either on the content itself, `<body xmlns=\"http://www.w3.org/1999/xhtml\">`, or with a prefix on the `sbml` element of the file. The specification asks for no particular element, any well formed XHTML content is allowed, with the single restriction that it carries neither an XML declaration nor a DOCTYPE. This is where the documentation of a published model is written: paragraphs, headings, tables, links to the paper it comes from.\n\nThe report renders the markup which notes really use, among it paragraphs, lists, tables, images and links, and drops everything else, so that nothing a file brings with it can act on the page.",
+      "package": "core",
+      "docs": "reference/datatypes/#xhtml",
+      "spec": {
+        "label": "core 3.2.5",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.2.5"
+      },
+      "related": [
+        "datatypes/string"
+      ]
+    },
+    "datatypes/boolean": {
+      "kind": "datatype",
+      "label": "boolean",
+      "summary": "a flag which is either true or false",
+      "description": "The XML Schema type `boolean` is the type of the flags of SBML: whether a species is [constant](glossary:types/Species/constant), whether a reaction is [reversible](glossary:types/Reaction/reversible), whether an event uses the values of the moment its trigger fired. An attribute writes `true` or `false`, and `1` and `0` are legal spellings of the same two values. In a MathML formula they are not: there `0` and `1` are numbers, and a Boolean value is the element `<true/>` or `<false/>`.\n\nA flag the file leaves out is not the same as a flag set to false, and what an absent flag means is written in the entry of the attribute. The report keeps the two apart: a true flag is a check mark, a false flag a cross, and an attribute the file does not set the dash every empty value of the report shows.",
+      "package": "core",
+      "docs": "reference/datatypes/#boolean",
+      "spec": {
+        "label": "core 3.1.2",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.2"
+      }
+    },
+    "datatypes/double": {
+      "kind": "datatype",
+      "label": "double",
+      "summary": "a floating point number, which may be infinite or not a number",
+      "description": "The XML Schema type `double` is the type of every numerical quantity of SBML: the size of a compartment, the initial amount of a species, the value of a parameter, the stoichiometry of a reactant. It is an IEEE 754 double precision number written as a mantissa with an optional exponent, `2`, `-0.3`, `234.234e3`, `6.02E-23`. Its value space holds three values which are no ordinary number: positive infinity, negative infinity and the value which is not a number, written `INF`, `-INF` and `NaN`.\n\nThese three are values like any other and say something a reader has to see: the upper flux bound of an unbounded reaction is `INF`, and a `NaN` is a quantity which is declared but whose number is not known. None of them is what an attribute the file leaves out means. The report shows a number with six significant digits and the unrounded value as its tooltip, an infinite value as the sign of infinity with its direction and a `NaN` as itself; [number](glossary:concepts/number) describes the three of them.",
+      "package": "core",
+      "docs": "reference/datatypes/#double",
+      "spec": {
+        "label": "core 3.1.5",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.5"
+      },
+      "related": [
+        "datatypes/integer"
+      ]
+    },
+    "datatypes/integer": {
+      "kind": "datatype",
+      "label": "integer",
+      "summary": "a whole number",
+      "description": "Decimal digits with an optional leading sign and nothing after them. The core specification calls this type `int` and holds it to the range of a signed 32 bit number, from -2147483648 to 2147483647; the packages write `integer` for a value of the same kind, the initial level of a [qualitative species](glossary:types/QualitativeSpecies) or the result level of a [function term](glossary:types/FunctionTerm). A whole number is exact and, unlike a [double](glossary:datatypes/double), carries neither a fractional part nor an exponent, which is what makes it the type of a count and of a level.\n\nThe report shows a whole number as the file writes it, and what the report counts itself, the number of elements of a [list](glossary:types/ListOf), is a whole number as well.",
+      "package": "core",
+      "docs": "reference/datatypes/#integer",
+      "spec": {
+        "label": "core 3.1.3",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.3"
+      },
+      "related": [
+        "datatypes/double",
+        "datatypes/positiveInteger"
+      ]
+    },
+    "datatypes/latex": {
+      "kind": "datatype",
+      "label": "latex",
+      "summary": "units the report has rendered as a formula",
+      "description": "A field of this kind holds the latex of a unit which the page typesets with KaTeX: the units an element declares, resolved from the unit definition it names ([rendered units](glossary:concepts/unitsLatex)), and the units the report derives for an element or for a formula ([derived units](glossary:concepts/derivedUnits)). Both are a product of base units with their exponent, so that millimole over litre is shown as that fraction and not as the identifier `mmol_per_l` a file happens to give it.\n\nA dash stands where a model declares no units and where the report cannot derive any. A units attribute which names `dimensionless` shows its identifier alone, because a quantity without a dimension has no symbol which is shorter than the word.",
+      "package": "report",
+      "docs": "reference/datatypes/#latex",
+      "related": [
+        "datatypes/Math"
+      ]
+    },
+    "datatypes/list": {
+      "kind": "datatype",
+      "label": "list",
+      "summary": "a field which holds as many values as the element has",
+      "description": "A field of this kind holds every value of an attribute which is not a single one, in the order the file writes them: the species of a model, the reactants of a reaction, the units of a unit definition, the annotations of any element. What the entries are is what the entry of the field says.\n\nWhere they are shown depends on the field: the elements of a list of the model are the rows of the table of their type, the elements a list of an element holds are a table in the inspector of that element, and a list without entries is the dash of an empty value. The `listOf` element of the file is not part of what such a field holds: where it states something of its own, a meta id, an SBO term, notes, an annotation, an id or a name, the report keeps it as a [ListOf](glossary:types/ListOf) element of its own, which the element owning the list points at.",
+      "package": "report",
+      "docs": "reference/datatypes/#list"
+    },
+    "datatypes/positiveInteger": {
+      "kind": "datatype",
+      "label": "positiveInteger",
+      "summary": "a whole number greater than zero",
+      "description": "The XML Schema type `positiveInteger` holds 1, 2, 3 and so on, decimal digits with an optional leading plus, and neither zero nor a negative value. XML Schema sets no upper bound on it, but SBML uses the type only where the numbers are small: the [level](glossary:types/SBMLDocument/level) and the [version](glossary:types/SBMLDocument/version) of a file, which say which edition of the language the file is written in, are of this type.\n\nThe report shows both in the attributes of the document, which is where reading an unfamiliar file starts.",
+      "package": "core",
+      "docs": "reference/datatypes/#positiveinteger",
+      "spec": {
+        "label": "core 3.1.4",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.4"
+      },
+      "related": [
+        "datatypes/integer"
+      ]
+    },
+    "datatypes/string": {
+      "kind": "datatype",
+      "label": "string",
+      "summary": "a sequence of characters with no further restriction",
+      "description": "The XML Schema type `string` holds any finite sequence of characters, Unicode included, and the only rules are those of XML itself: an ampersand is written `&amp;`, and an apostrophe or a quotation mark which would end the value is written `&apos;` or `&quot;`. Nothing else is asked of it and nothing references it: a string is read by a person, not by the model. The [name](glossary:types/SBase/name) of an element is the string every type carries.\n\nThe report shows a string as the text the file writes and a dash where the file writes nothing. Several of the fields the report adds are strings as well, the [equation](glossary:concepts/equation) of a reaction or the XML of an element, and the entry of the field says what they hold.",
+      "package": "core",
+      "docs": "reference/datatypes/#string",
+      "spec": {
+        "label": "core 3.1.1",
+        "url": "https://sbml.org/documents/specifications/level-3/version-2/core/",
+        "section": "3.1.1"
+      }
+    },
     "links/activeObjective": {
       "kind": "link",
       "label": "activeObjective",
@@ -502,7 +710,8 @@
       "docs": "reference/algebraicrule/#derived-units",
       "owner": "types/AlgebraicRule",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/AlgebraicRule/math": {
@@ -514,7 +723,8 @@
       "docs": "reference/algebraicrule/#math",
       "owner": "types/AlgebraicRule",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.9.1",
@@ -552,7 +762,8 @@
       "docs": "reference/and/#associations",
       "owner": "types/And",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.12",
@@ -592,7 +803,8 @@
       "docs": "reference/assignmentrule/#derived-units",
       "owner": "types/AssignmentRule",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/AssignmentRule/math": {
@@ -604,7 +816,8 @@
       "docs": "reference/assignmentrule/#math",
       "owner": "types/AssignmentRule",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.9.1",
@@ -621,7 +834,8 @@
       "docs": "reference/assignmentrule/#variable",
       "owner": "types/AssignmentRule",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.9.3",
@@ -664,7 +878,8 @@
       "docs": "reference/compartment/#constant",
       "owner": "types/Compartment",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.5.5",
@@ -681,7 +896,8 @@
       "docs": "reference/compartment/#derived-units",
       "owner": "types/Compartment",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Compartment/size": {
@@ -693,7 +909,8 @@
       "docs": "reference/compartment/#size",
       "owner": "types/Compartment",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "core 4.5.3",
@@ -710,7 +927,8 @@
       "docs": "reference/compartment/#spatialdimensions",
       "owner": "types/Compartment",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "core 4.5.2",
@@ -727,7 +945,8 @@
       "docs": "reference/compartment/#units",
       "owner": "types/Compartment",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.5.4",
@@ -744,7 +963,8 @@
       "docs": "reference/compartment/#rendered-units",
       "owner": "types/Compartment",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Constraint": {
@@ -777,7 +997,8 @@
       "docs": "reference/constraint/#math",
       "owner": "types/Constraint",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.10.1",
@@ -794,7 +1015,8 @@
       "docs": "reference/constraint/#message",
       "owner": "types/Constraint",
       "type": {
-        "label": "XHTML"
+        "label": "XHTML",
+        "key": "datatypes/XHTML"
       },
       "spec": {
         "label": "core 4.10.2",
@@ -832,7 +1054,8 @@
       "docs": "reference/defaultterm/#resultlevel",
       "owner": "types/DefaultTerm",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       },
       "spec": {
         "label": "qual 3.6.4",
@@ -870,7 +1093,8 @@
       "docs": "reference/delay/#math",
       "owner": "types/Delay",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.12.4",
@@ -913,7 +1137,8 @@
       "docs": "reference/deletion/#idref",
       "owner": "types/Deletion",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -982,7 +1207,8 @@
       "docs": "reference/deletion/#unitref",
       "owner": "types/Deletion",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -1048,7 +1274,8 @@
       "docs": "reference/event/#delay-2",
       "owner": "types/Event",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.12.4",
@@ -1065,7 +1292,8 @@
       "docs": "reference/event/#listofeventassignments",
       "owner": "types/Event",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.12.5",
@@ -1100,7 +1328,8 @@
       "docs": "reference/event/#priority-2",
       "owner": "types/Event",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.12.3",
@@ -1135,7 +1364,8 @@
       "docs": "reference/event/#initialvalue",
       "owner": "types/Event",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.12.2",
@@ -1152,7 +1382,8 @@
       "docs": "reference/event/#trigger-2",
       "owner": "types/Event",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.12.2",
@@ -1169,7 +1400,8 @@
       "docs": "reference/event/#persistent",
       "owner": "types/Event",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.12.2",
@@ -1186,7 +1418,8 @@
       "docs": "reference/event/#usevaluesfromtriggertime",
       "owner": "types/Event",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.12.1",
@@ -1224,7 +1457,8 @@
       "docs": "reference/eventassignment/#math",
       "owner": "types/EventAssignment",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.12.5",
@@ -1241,7 +1475,8 @@
       "docs": "reference/eventassignment/#variable",
       "owner": "types/EventAssignment",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.12.5",
@@ -1285,7 +1520,8 @@
       "docs": "reference/externalmodeldefinition/#md5",
       "owner": "types/ExternalModelDefinition",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       },
       "spec": {
         "label": "comp 3.3.2",
@@ -1302,7 +1538,8 @@
       "docs": "reference/externalmodeldefinition/#modelref",
       "owner": "types/ExternalModelDefinition",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.3.2",
@@ -1319,7 +1556,8 @@
       "docs": "reference/externalmodeldefinition/#document",
       "owner": "types/ExternalModelDefinition",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/ExternalModelDefinition/resolution.md5Matches": {
@@ -1331,7 +1569,8 @@
       "docs": "reference/externalmodeldefinition/#md5-check",
       "owner": "types/ExternalModelDefinition",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       }
     },
     "types/ExternalModelDefinition/resolution.model": {
@@ -1343,7 +1582,8 @@
       "docs": "reference/externalmodeldefinition/#model",
       "owner": "types/ExternalModelDefinition",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/ExternalModelDefinition/resolution.status": {
@@ -1355,7 +1595,8 @@
       "docs": "reference/externalmodeldefinition/#status",
       "owner": "types/ExternalModelDefinition",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/ExternalModelDefinition/source": {
@@ -1424,7 +1665,8 @@
       "docs": "reference/fluxbound/#reaction",
       "owner": "types/FluxBound",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v1 3.5",
@@ -1441,7 +1683,8 @@
       "docs": "reference/fluxbound/#value",
       "owner": "types/FluxBound",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "fbc v1 3.5",
@@ -1482,7 +1725,8 @@
       "docs": "reference/fluxobjective/#coefficient",
       "owner": "types/FluxObjective",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "fbc v3 3.7",
@@ -1499,7 +1743,8 @@
       "docs": "reference/fluxobjective/#reaction",
       "owner": "types/FluxObjective",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.7",
@@ -1516,7 +1761,8 @@
       "docs": "reference/fluxobjective/#reaction2",
       "owner": "types/FluxObjective",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.7",
@@ -1569,7 +1815,8 @@
       "docs": "reference/functiondefinition/#math",
       "owner": "types/FunctionDefinition",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.3.2",
@@ -1609,7 +1856,8 @@
       "docs": "reference/functionterm/#math",
       "owner": "types/FunctionTerm",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "qual 3.6.5",
@@ -1626,7 +1874,8 @@
       "docs": "reference/functionterm/#resultlevel",
       "owner": "types/FunctionTerm",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       },
       "spec": {
         "label": "qual 3.6.5",
@@ -1665,7 +1914,8 @@
       "docs": "reference/geneproduct/#associatedspecies",
       "owner": "types/GeneProduct",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.5",
@@ -1682,7 +1932,8 @@
       "docs": "reference/geneproduct/#label",
       "owner": "types/GeneProduct",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       },
       "spec": {
         "label": "fbc v3 3.5",
@@ -1761,7 +2012,8 @@
       "docs": "reference/geneproductref/#geneproduct",
       "owner": "types/GeneProductRef",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.11",
@@ -1802,7 +2054,8 @@
       "docs": "reference/initialassignment/#derived-units",
       "owner": "types/InitialAssignment",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/InitialAssignment/math": {
@@ -1814,7 +2067,8 @@
       "docs": "reference/initialassignment/#math",
       "owner": "types/InitialAssignment",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.8.3",
@@ -1831,7 +2085,8 @@
       "docs": "reference/initialassignment/#symbol",
       "owner": "types/InitialAssignment",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.8.2",
@@ -1873,7 +2128,8 @@
       "docs": "reference/input/#qualitativespecies",
       "owner": "types/Input",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "qual 3.6.1",
@@ -1907,7 +2163,8 @@
       "docs": "reference/input/#thresholdlevel",
       "owner": "types/Input",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       },
       "spec": {
         "label": "qual 3.6.1",
@@ -1964,7 +2221,8 @@
       "docs": "reference/kineticlaw/#derived-units",
       "owner": "types/KineticLaw",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/KineticLaw/listOfLocalParameters": {
@@ -1976,7 +2234,8 @@
       "docs": "reference/kineticlaw/#listoflocalparameters",
       "owner": "types/KineticLaw",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.11.6",
@@ -1993,7 +2252,8 @@
       "docs": "reference/kineticlaw/#math",
       "owner": "types/KineticLaw",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.11.5",
@@ -2033,7 +2293,8 @@
       "docs": "reference/listof/#list",
       "owner": "types/ListOf",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/ListOf/size": {
@@ -2045,7 +2306,8 @@
       "docs": "reference/listof/#size",
       "owner": "types/ListOf",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       }
     },
     "types/LocalParameter": {
@@ -2081,7 +2343,8 @@
       "docs": "reference/localparameter/#derived-units",
       "owner": "types/LocalParameter",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/LocalParameter/units": {
@@ -2093,7 +2356,8 @@
       "docs": "reference/localparameter/#units",
       "owner": "types/LocalParameter",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.11.6",
@@ -2110,7 +2374,8 @@
       "docs": "reference/localparameter/#rendered-units",
       "owner": "types/LocalParameter",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/LocalParameter/value": {
@@ -2122,7 +2387,8 @@
       "docs": "reference/localparameter/#value",
       "owner": "types/LocalParameter",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "core 4.11.6",
@@ -2197,7 +2463,8 @@
       "docs": "reference/model/#annotation",
       "owner": "types/Model",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       },
       "spec": {
         "label": "core 3.2.6",
@@ -2214,7 +2481,8 @@
       "docs": "reference/model/#areaunits",
       "owner": "types/Model",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.2.4",
@@ -2231,7 +2499,8 @@
       "docs": "reference/model/#rendered-area-units",
       "owner": "types/Model",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Model/conversionFactor": {
@@ -2243,7 +2512,8 @@
       "docs": "reference/model/#conversionfactor",
       "owner": "types/Model",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.2.6",
@@ -2260,7 +2530,8 @@
       "docs": "reference/model/#extentunits",
       "owner": "types/Model",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.2.5",
@@ -2277,7 +2548,8 @@
       "docs": "reference/model/#rendered-extent-units",
       "owner": "types/Model",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Model/fbc": {
@@ -2306,7 +2578,8 @@
       "docs": "reference/model/#fbc-activeobjective",
       "owner": "types/Model",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.3.1",
@@ -2323,7 +2596,8 @@
       "docs": "reference/model/#fbc-strict",
       "owner": "types/Model",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "fbc v3 3.3",
@@ -2340,7 +2614,8 @@
       "docs": "reference/model/#kind",
       "owner": "types/Model",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/Model/lengthUnits": {
@@ -2352,7 +2627,8 @@
       "docs": "reference/model/#lengthunits",
       "owner": "types/Model",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.2.4",
@@ -2369,7 +2645,8 @@
       "docs": "reference/model/#rendered-length-units",
       "owner": "types/Model",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Model/listOfCompartments": {
@@ -2381,7 +2658,8 @@
       "docs": "reference/model/#listofcompartments",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2398,7 +2676,8 @@
       "docs": "reference/model/#listofconstraints",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2415,7 +2694,8 @@
       "docs": "reference/model/#listofevents",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2432,7 +2712,8 @@
       "docs": "reference/model/#fbc-listoffluxbounds",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v1 3.3.1",
@@ -2449,7 +2730,8 @@
       "docs": "reference/model/#listoffunctiondefinitions",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2466,7 +2748,8 @@
       "docs": "reference/model/#fbc-listofgeneproducts",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.3.2",
@@ -2483,7 +2766,8 @@
       "docs": "reference/model/#listofinitialassignments",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2500,7 +2784,8 @@
       "docs": "reference/model/#fbc-listofobjectives",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.3.1",
@@ -2517,7 +2802,8 @@
       "docs": "reference/model/#listofparameters",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2534,7 +2820,8 @@
       "docs": "reference/model/#comp-listofports",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "comp 3.4.2",
@@ -2551,7 +2838,8 @@
       "docs": "reference/model/#qual-listofqualitativespecies",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "qual 3.4",
@@ -2568,7 +2856,8 @@
       "docs": "reference/model/#listofreactions",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2585,7 +2874,8 @@
       "docs": "reference/model/#listofrules",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2602,7 +2892,8 @@
       "docs": "reference/model/#listofspecies",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2619,7 +2910,8 @@
       "docs": "reference/model/#comp-listofsubmodels",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "comp 3.4.1",
@@ -2636,7 +2928,8 @@
       "docs": "reference/model/#qual-listoftransitions",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "qual 3.4",
@@ -2653,7 +2946,8 @@
       "docs": "reference/model/#listofunitdefinitions",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.2.7",
@@ -2670,7 +2964,8 @@
       "docs": "reference/model/#fbc-listofuserdefinedconstraints",
       "owner": "types/Model",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.3.3",
@@ -2687,7 +2982,8 @@
       "docs": "reference/model/#substanceunits",
       "owner": "types/Model",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.2.2",
@@ -2704,7 +3000,8 @@
       "docs": "reference/model/#rendered-substance-units",
       "owner": "types/Model",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Model/timeUnits": {
@@ -2716,7 +3013,8 @@
       "docs": "reference/model/#timeunits",
       "owner": "types/Model",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.2.3",
@@ -2733,7 +3031,8 @@
       "docs": "reference/model/#rendered-time-units",
       "owner": "types/Model",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Model/volumeUnits": {
@@ -2745,7 +3044,8 @@
       "docs": "reference/model/#volumeunits",
       "owner": "types/Model",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.2.4",
@@ -2762,7 +3062,8 @@
       "docs": "reference/model/#rendered-volume-units",
       "owner": "types/Model",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/ModifierSpeciesReference": {
@@ -2809,7 +3110,8 @@
       "docs": "reference/modifierspeciesreference/#species",
       "owner": "types/ModifierSpeciesReference",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.11.2",
@@ -2848,7 +3150,8 @@
       "docs": "reference/objective/#listoffluxobjectives",
       "owner": "types/Objective",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.7",
@@ -2903,7 +3206,8 @@
       "docs": "reference/or/#associations",
       "owner": "types/Or",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.13",
@@ -2944,7 +3248,8 @@
       "docs": "reference/output/#outputlevel",
       "owner": "types/Output",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       },
       "spec": {
         "label": "qual 3.6.2",
@@ -2961,7 +3266,8 @@
       "docs": "reference/output/#qualitativespecies",
       "owner": "types/Output",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "qual 3.6.2",
@@ -3020,7 +3326,8 @@
       "docs": "reference/parameter/#constant",
       "owner": "types/Parameter",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.7.4",
@@ -3037,7 +3344,8 @@
       "docs": "reference/parameter/#derived-units",
       "owner": "types/Parameter",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Parameter/units": {
@@ -3049,7 +3357,8 @@
       "docs": "reference/parameter/#units",
       "owner": "types/Parameter",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.7.3",
@@ -3066,7 +3375,8 @@
       "docs": "reference/parameter/#rendered-units",
       "owner": "types/Parameter",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Parameter/value": {
@@ -3078,7 +3388,8 @@
       "docs": "reference/parameter/#value",
       "owner": "types/Parameter",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "core 4.7.2",
@@ -3120,7 +3431,8 @@
       "docs": "reference/port/#idref",
       "owner": "types/Port",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -3189,7 +3501,8 @@
       "docs": "reference/port/#unitref",
       "owner": "types/Port",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -3227,7 +3540,8 @@
       "docs": "reference/priority/#math",
       "owner": "types/Priority",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.12.3",
@@ -3270,7 +3584,8 @@
       "docs": "reference/qualitativespecies/#compartment",
       "owner": "types/QualitativeSpecies",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "qual 3.5",
@@ -3287,7 +3602,8 @@
       "docs": "reference/qualitativespecies/#constant",
       "owner": "types/QualitativeSpecies",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "qual 3.5",
@@ -3304,7 +3620,8 @@
       "docs": "reference/qualitativespecies/#initiallevel",
       "owner": "types/QualitativeSpecies",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       },
       "spec": {
         "label": "qual 3.5",
@@ -3321,7 +3638,8 @@
       "docs": "reference/qualitativespecies/#maxlevel",
       "owner": "types/QualitativeSpecies",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       },
       "spec": {
         "label": "qual 3.5",
@@ -3361,7 +3679,8 @@
       "docs": "reference/raterule/#derived-units",
       "owner": "types/RateRule",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/RateRule/math": {
@@ -3373,7 +3692,8 @@
       "docs": "reference/raterule/#math",
       "owner": "types/RateRule",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.9.1",
@@ -3390,7 +3710,8 @@
       "docs": "reference/raterule/#variable",
       "owner": "types/RateRule",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.9.4",
@@ -3443,7 +3764,8 @@
       "docs": "reference/reaction/#compartment",
       "owner": "types/Reaction",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.11.1",
@@ -3460,7 +3782,8 @@
       "docs": "reference/reaction/#equation",
       "owner": "types/Reaction",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/Reaction/fast": {
@@ -3472,7 +3795,8 @@
       "docs": "reference/reaction/#fast",
       "owner": "types/Reaction",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.11.1",
@@ -3524,7 +3848,8 @@
       "docs": "reference/reaction/#fbc-lowerfluxbound",
       "owner": "types/Reaction",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.8",
@@ -3541,7 +3866,8 @@
       "docs": "reference/reaction/#fbc-upperfluxbound",
       "owner": "types/Reaction",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.8",
@@ -3576,7 +3902,8 @@
       "docs": "reference/reaction/#derived-units",
       "owner": "types/Reaction",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Reaction/kineticLaw.math": {
@@ -3588,7 +3915,8 @@
       "docs": "reference/reaction/#kineticlaw-2",
       "owner": "types/Reaction",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       }
     },
     "types/Reaction/listOfModifiers": {
@@ -3600,7 +3928,8 @@
       "docs": "reference/reaction/#listofmodifiers",
       "owner": "types/Reaction",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.11.1",
@@ -3617,7 +3946,8 @@
       "docs": "reference/reaction/#listofproducts",
       "owner": "types/Reaction",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.11.1",
@@ -3634,7 +3964,8 @@
       "docs": "reference/reaction/#listofreactants",
       "owner": "types/Reaction",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.11.1",
@@ -3651,7 +3982,8 @@
       "docs": "reference/reaction/#reversible",
       "owner": "types/Reaction",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.11.1",
@@ -3694,7 +4026,8 @@
       "docs": "reference/replacedby/#idref",
       "owner": "types/ReplacedBy",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -3763,7 +4096,8 @@
       "docs": "reference/replacedby/#submodelref",
       "owner": "types/ReplacedBy",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.6.4",
@@ -3780,7 +4114,8 @@
       "docs": "reference/replacedby/#unitref",
       "owner": "types/ReplacedBy",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -3826,7 +4161,8 @@
       "docs": "reference/replacedelement/#conversionfactor",
       "owner": "types/ReplacedElement",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.6.2",
@@ -3843,7 +4179,8 @@
       "docs": "reference/replacedelement/#deletion",
       "owner": "types/ReplacedElement",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.6.2",
@@ -3860,7 +4197,8 @@
       "docs": "reference/replacedelement/#idref",
       "owner": "types/ReplacedElement",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -3929,7 +4267,8 @@
       "docs": "reference/replacedelement/#submodelref",
       "owner": "types/ReplacedElement",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.6.2",
@@ -3946,7 +4285,8 @@
       "docs": "reference/replacedelement/#unitref",
       "owner": "types/ReplacedElement",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -3985,7 +4325,8 @@
       "docs": "reference/sbmldocument/#annotation",
       "owner": "types/SBMLDocument",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       },
       "spec": {
         "label": "core 3.2.6",
@@ -4002,7 +4343,8 @@
       "docs": "reference/sbmldocument/#level",
       "owner": "types/SBMLDocument",
       "type": {
-        "label": "positiveInteger"
+        "label": "positiveInteger",
+        "key": "datatypes/positiveInteger"
       },
       "spec": {
         "label": "core 4.1",
@@ -4019,7 +4361,8 @@
       "docs": "reference/sbmldocument/#packages",
       "owner": "types/SBMLDocument",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.1.3",
@@ -4036,7 +4379,8 @@
       "docs": "reference/sbmldocument/#version",
       "owner": "types/SBMLDocument",
       "type": {
-        "label": "positiveInteger"
+        "label": "positiveInteger",
+        "key": "datatypes/positiveInteger"
       },
       "spec": {
         "label": "core 4.1",
@@ -4117,7 +4461,8 @@
       "docs": "reference/sbase/#comp-listofreplacedelements",
       "owner": "types/SBase",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "comp 3.6.2",
@@ -4134,7 +4479,8 @@
       "docs": "reference/sbase/#annotations",
       "owner": "types/SBase",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 6.5",
@@ -4151,7 +4497,8 @@
       "docs": "reference/sbase/#history",
       "owner": "types/SBase",
       "type": {
-        "label": "ModelHistory"
+        "label": "ModelHistory",
+        "key": "datatypes/ModelHistory"
       },
       "spec": {
         "label": "core 6.6",
@@ -4168,7 +4515,8 @@
       "docs": "reference/sbase/#id",
       "owner": "types/SBase",
       "type": {
-        "label": "SId"
+        "label": "SId",
+        "key": "datatypes/SId"
       },
       "spec": {
         "label": "core 3.2.1",
@@ -4185,7 +4533,8 @@
       "docs": "reference/sbase/#fbc-listofkeyvaluepairs",
       "owner": "types/SBase",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.16",
@@ -4202,7 +4551,8 @@
       "docs": "reference/sbase/#lists",
       "owner": "types/SBase",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       }
     },
     "types/SBase/metaId": {
@@ -4214,7 +4564,8 @@
       "docs": "reference/sbase/#metaid",
       "owner": "types/SBase",
       "type": {
-        "label": "ID"
+        "label": "ID",
+        "key": "datatypes/ID"
       },
       "spec": {
         "label": "core 3.2.3",
@@ -4231,7 +4582,8 @@
       "docs": "reference/sbase/#name",
       "owner": "types/SBase",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       },
       "spec": {
         "label": "core 3.2.2",
@@ -4248,7 +4600,8 @@
       "docs": "reference/sbase/#notes",
       "owner": "types/SBase",
       "type": {
-        "label": "XHTML"
+        "label": "XHTML",
+        "key": "datatypes/XHTML"
       },
       "spec": {
         "label": "core 3.2.5",
@@ -4265,7 +4618,8 @@
       "docs": "reference/sbase/#sboterm",
       "owner": "types/SBase",
       "type": {
-        "label": "SBOTerm"
+        "label": "SBOTerm",
+        "key": "datatypes/SBOTerm"
       },
       "spec": {
         "label": "core 3.2.4",
@@ -4282,7 +4636,8 @@
       "docs": "reference/sbase/#distrib-listofuncertainties",
       "owner": "types/SBase",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "distrib 3.9",
@@ -4299,7 +4654,8 @@
       "docs": "reference/sbase/#xml",
       "owner": "types/SBase",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/SBaseRef": {
@@ -4338,7 +4694,8 @@
       "docs": "reference/sbaseref/#idref",
       "owner": "types/SBaseRef",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -4407,7 +4764,8 @@
       "docs": "reference/sbaseref/#unitref",
       "owner": "types/SBaseRef",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "comp 3.7.1",
@@ -4458,7 +4816,8 @@
       "docs": "reference/species/#boundarycondition",
       "owner": "types/Species",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.6.6",
@@ -4475,7 +4834,8 @@
       "docs": "reference/species/#compartment",
       "owner": "types/Species",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.6.3",
@@ -4492,7 +4852,8 @@
       "docs": "reference/species/#constant",
       "owner": "types/Species",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.6.6",
@@ -4509,7 +4870,8 @@
       "docs": "reference/species/#conversionfactor",
       "owner": "types/Species",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.6.7",
@@ -4526,7 +4888,8 @@
       "docs": "reference/species/#derived-units",
       "owner": "types/Species",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/Species/fbc": {
@@ -4555,7 +4918,8 @@
       "docs": "reference/species/#fbc-charge",
       "owner": "types/Species",
       "type": {
-        "label": "integer"
+        "label": "integer",
+        "key": "datatypes/integer"
       },
       "spec": {
         "label": "fbc v3 3.4",
@@ -4572,7 +4936,8 @@
       "docs": "reference/species/#fbc-chemicalformula",
       "owner": "types/Species",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       },
       "spec": {
         "label": "fbc v3 3.4",
@@ -4589,7 +4954,8 @@
       "docs": "reference/species/#hasonlysubstanceunits",
       "owner": "types/Species",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.6.5",
@@ -4606,7 +4972,8 @@
       "docs": "reference/species/#initialamount",
       "owner": "types/Species",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "core 4.6.4",
@@ -4623,7 +4990,8 @@
       "docs": "reference/species/#initialconcentration",
       "owner": "types/Species",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "core 4.6.4",
@@ -4640,7 +5008,8 @@
       "docs": "reference/species/#substanceunits",
       "owner": "types/Species",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "core 4.6.4",
@@ -4657,7 +5026,8 @@
       "docs": "reference/species/#rendered-substance-units",
       "owner": "types/Species",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/SpeciesReference": {
@@ -4694,7 +5064,8 @@
       "docs": "reference/speciesreference/#constant",
       "owner": "types/SpeciesReference",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.11.3",
@@ -4724,7 +5095,8 @@
       "docs": "reference/speciesreference/#role",
       "owner": "types/SpeciesReference",
       "type": {
-        "label": "string"
+        "label": "string",
+        "key": "datatypes/string"
       }
     },
     "types/SpeciesReference/species": {
@@ -4736,7 +5108,8 @@
       "docs": "reference/speciesreference/#species",
       "owner": "types/SpeciesReference",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "core 4.11.2",
@@ -4753,7 +5126,8 @@
       "docs": "reference/speciesreference/#stoichiometry",
       "owner": "types/SpeciesReference",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "core 4.11.3",
@@ -4795,7 +5169,8 @@
       "docs": "reference/submodel/#extentconversionfactor",
       "owner": "types/Submodel",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.5.1",
@@ -4812,7 +5187,8 @@
       "docs": "reference/submodel/#listofdeletions",
       "owner": "types/Submodel",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "comp 3.5.3",
@@ -4829,7 +5205,8 @@
       "docs": "reference/submodel/#modelref",
       "owner": "types/Submodel",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.5.1",
@@ -4846,7 +5223,8 @@
       "docs": "reference/submodel/#timeconversionfactor",
       "owner": "types/Submodel",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "comp 3.5.1",
@@ -4908,7 +5286,8 @@
       "docs": "reference/transition/#listoffunctionterms",
       "owner": "types/Transition",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "qual 3.6.3",
@@ -4925,7 +5304,8 @@
       "docs": "reference/transition/#listofinputs",
       "owner": "types/Transition",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "qual 3.6.1",
@@ -4942,7 +5322,8 @@
       "docs": "reference/transition/#listofoutputs",
       "owner": "types/Transition",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "qual 3.6.2",
@@ -4983,7 +5364,8 @@
       "docs": "reference/trigger/#initialvalue",
       "owner": "types/Trigger",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.12.2",
@@ -5000,7 +5382,8 @@
       "docs": "reference/trigger/#math",
       "owner": "types/Trigger",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "core 4.12.2",
@@ -5017,7 +5400,8 @@
       "docs": "reference/trigger/#persistent",
       "owner": "types/Trigger",
       "type": {
-        "label": "boolean"
+        "label": "boolean",
+        "key": "datatypes/boolean"
       },
       "spec": {
         "label": "core 4.12.2",
@@ -5079,7 +5463,8 @@
       "docs": "reference/uncertparameter/#math",
       "owner": "types/UncertParameter",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "distrib 3.11.6",
@@ -5113,7 +5498,8 @@
       "docs": "reference/uncertparameter/#uncertparameters",
       "owner": "types/UncertParameter",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "distrib 3.11.7",
@@ -5130,7 +5516,8 @@
       "docs": "reference/uncertparameter/#units",
       "owner": "types/UncertParameter",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "distrib 3.11.3",
@@ -5147,7 +5534,8 @@
       "docs": "reference/uncertparameter/#value",
       "owner": "types/UncertParameter",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "distrib 3.11.2",
@@ -5164,7 +5552,8 @@
       "docs": "reference/uncertparameter/#var",
       "owner": "types/UncertParameter",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "distrib 3.11.2",
@@ -5244,7 +5633,8 @@
       "docs": "reference/uncertspan/#math",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "Math"
+        "label": "Math",
+        "key": "datatypes/Math"
       },
       "spec": {
         "label": "distrib 3.11.6",
@@ -5278,7 +5668,8 @@
       "docs": "reference/uncertspan/#uncertparameters",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "distrib 3.11.7",
@@ -5295,7 +5686,8 @@
       "docs": "reference/uncertspan/#units",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "UnitSIdRef"
+        "label": "UnitSIdRef",
+        "key": "datatypes/UnitSIdRef"
       },
       "spec": {
         "label": "distrib 3.12",
@@ -5312,7 +5704,8 @@
       "docs": "reference/uncertspan/#value",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "distrib 3.11.2",
@@ -5329,7 +5722,8 @@
       "docs": "reference/uncertspan/#valuelower",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "distrib 3.12",
@@ -5346,7 +5740,8 @@
       "docs": "reference/uncertspan/#valueupper",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "double"
+        "label": "double",
+        "key": "datatypes/double"
       },
       "spec": {
         "label": "distrib 3.12",
@@ -5363,7 +5758,8 @@
       "docs": "reference/uncertspan/#var",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "distrib 3.11.2",
@@ -5380,7 +5776,8 @@
       "docs": "reference/uncertspan/#varlower",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "distrib 3.12",
@@ -5397,7 +5794,8 @@
       "docs": "reference/uncertspan/#varupper",
       "owner": "types/UncertSpan",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "distrib 3.12",
@@ -5435,7 +5833,8 @@
       "docs": "reference/uncertainty/#uncertparameters",
       "owner": "types/Uncertainty",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "distrib 3.11",
@@ -5475,7 +5874,8 @@
       "docs": "reference/unitdefinition/#listofunits",
       "owner": "types/UnitDefinition",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "core 4.4.2",
@@ -5492,7 +5892,8 @@
       "docs": "reference/unitdefinition/#formula",
       "owner": "types/UnitDefinition",
       "type": {
-        "label": "latex"
+        "label": "latex",
+        "key": "datatypes/latex"
       }
     },
     "types/UserDefinedConstraint": {
@@ -5528,7 +5929,8 @@
       "docs": "reference/userdefinedconstraint/#listofuserdefinedconstraintcomponents",
       "owner": "types/UserDefinedConstraint",
       "type": {
-        "label": "list"
+        "label": "list",
+        "key": "datatypes/list"
       },
       "spec": {
         "label": "fbc v3 3.15",
@@ -5545,7 +5947,8 @@
       "docs": "reference/userdefinedconstraint/#lowerbound",
       "owner": "types/UserDefinedConstraint",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.14",
@@ -5562,7 +5965,8 @@
       "docs": "reference/userdefinedconstraint/#upperbound",
       "owner": "types/UserDefinedConstraint",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.14",
@@ -5604,7 +6008,8 @@
       "docs": "reference/userdefinedconstraintcomponent/#coefficient",
       "owner": "types/UserDefinedConstraintComponent",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.15",
@@ -5621,7 +6026,8 @@
       "docs": "reference/userdefinedconstraintcomponent/#variable",
       "owner": "types/UserDefinedConstraintComponent",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.15",
@@ -5638,7 +6044,8 @@
       "docs": "reference/userdefinedconstraintcomponent/#variable2",
       "owner": "types/UserDefinedConstraintComponent",
       "type": {
-        "label": "SIdRef"
+        "label": "SIdRef",
+        "key": "datatypes/SIdRef"
       },
       "spec": {
         "label": "fbc v3 3.15",

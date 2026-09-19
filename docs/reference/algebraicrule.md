@@ -10,7 +10,7 @@ The report shows the rendered equation and the units it produces; which element 
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [math](#math) | `Math` | - | the expression which has to be zero | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | [`Math`](datatypes.md#math) | - | the expression which has to be zero | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -24,7 +24,7 @@ The report renders the expression in the column "math" and in the inspector.
 
 | field | type | meaning |
 | --- | --- | --- |
-| [derived units](#derived-units) | `latex` | the units of the expression as the report derives them |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the expression as the report derives them |
 
 <span id="derived-units"></span>**derived units**
 

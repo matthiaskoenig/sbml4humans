@@ -10,9 +10,9 @@ The report shows the value of a parameter, its units and the units it derives, a
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [value](#value) | `double` | - | the value of the parameter at the start of the simulation | [core 4.7.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [units](#units) | `UnitSIdRef` | - | the units of the value of the parameter | [core 4.7.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [constant](#constant) | `boolean` | - | whether the value of the parameter stays fixed during a simulation | [core 4.7.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [value](#value) | [`double`](datatypes.md#double) | - | the value of the parameter at the start of the simulation | [core 4.7.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [units](#units) | [`UnitSIdRef`](datatypes.md#unitsidref) | - | the units of the value of the parameter | [core 4.7.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [constant](#constant) | [`boolean`](datatypes.md#boolean) | - | whether the value of the parameter stays fixed during a simulation | [core 4.7.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -38,8 +38,8 @@ The report shows the flag as a mark in the column "constant".
 
 | field | type | meaning |
 | --- | --- | --- |
-| [rendered units](#rendered-units) | `latex` | the units of the parameter rendered as a formula |
-| [derived units](#derived-units) | `latex` | the units of the value as the report derives them |
+| [rendered units](#rendered-units) | [`latex`](datatypes.md#latex) | the units of the parameter rendered as a formula |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the value as the report derives them |
 
 <span id="rendered-units"></span>**rendered units**
 

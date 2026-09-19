@@ -12,9 +12,9 @@ The report shows the user defined constraints of a model in a section of their o
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [lowerBound](#lowerbound) | `SIdRef` | - | the parameter which holds the smallest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [upperBound](#upperbound) | `SIdRef` | - | the parameter which holds the largest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [listOfUserDefinedConstraintComponents](#listofuserdefinedconstraintcomponents) | `list` | - | the weighted variables the constraint is the sum of | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [lowerBound](#lowerbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the smallest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [upperBound](#upperbound) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the largest value the constraint may take | [fbc v3 3.14](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [listOfUserDefinedConstraintComponents](#listofuserdefinedconstraintcomponents) | [`list`](datatypes.md#list) | - | the weighted variables the constraint is the sum of | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

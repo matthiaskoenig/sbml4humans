@@ -10,8 +10,8 @@ The report shows the element which is assigned, the rendered formula and the uni
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [symbol](#symbol) | `SIdRef` | - | the element whose initial value the assignment computes | [core 4.8.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [math](#math) | `Math` | - | the formula which computes the initial value | [core 4.8.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [symbol](#symbol) | [`SIdRef`](datatypes.md#sidref) | - | the element whose initial value the assignment computes | [core 4.8.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [math](#math) | [`Math`](datatypes.md#math) | - | the formula which computes the initial value | [core 4.8.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -31,7 +31,7 @@ The report renders the formula in the column "math" and in the inspector.
 
 | field | type | meaning |
 | --- | --- | --- |
-| [derived units](#derived-units) | `latex` | the units of the formula as the report derives them |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the formula as the report derives them |
 
 <span id="derived-units"></span>**derived units**
 

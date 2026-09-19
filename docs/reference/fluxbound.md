@@ -10,9 +10,9 @@ Version 2 removed the construct: a [reaction](reaction.md) names the [parameters
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [reaction](#reaction) | `SIdRef` | - | the reaction whose flux the bound constrains | [fbc v1 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
+| [reaction](#reaction) | [`SIdRef`](datatypes.md#sidref) | - | the reaction whose flux the bound constrains | [fbc v1 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
 | [operation](#operation) | `FbcOperation` | - | how the flux is related to the value: greaterEqual, lessEqual or equal | [fbc v1 3.2.2](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
-| [value](#value) | `double` | - | the number the flux is compared with | [fbc v1 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
+| [value](#value) | [`double`](datatypes.md#double) | - | the number the flux is compared with | [fbc v1 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-1.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 

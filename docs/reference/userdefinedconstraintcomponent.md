@@ -10,9 +10,9 @@ The variable is either a [reaction](reaction.md), whose flux is meant, or a para
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [variable](#variable) | `SIdRef` | - | the reaction or the parameter this term of the constraint weighs | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [variable2](#variable2) | `SIdRef` | - | the second variable of a mixed quadratic term | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [coefficient](#coefficient) | `SIdRef` | - | the parameter which holds the number the variable is multiplied with | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [variable](#variable) | [`SIdRef`](datatypes.md#sidref) | - | the reaction or the parameter this term of the constraint weighs | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [variable2](#variable2) | [`SIdRef`](datatypes.md#sidref) | - | the second variable of a mixed quadratic term | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [coefficient](#coefficient) | [`SIdRef`](datatypes.md#sidref) | - | the parameter which holds the number the variable is multiplied with | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 | [variableType](#variabletype) | `FbcVariableType` | - | whether the variable enters the constraint linearly or quadratically | [fbc v3 3.15](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.

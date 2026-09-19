@@ -10,16 +10,16 @@ The report shows the rendered trigger, the priority and the delay of an event, t
 
 | attribute | type | required | meaning | specification |
 | --- | --- | --- | --- | --- |
-| [useValuesFromTriggerTime](#usevaluesfromtriggertime) | `boolean` | - | whether the assignments use the values of the moment the event was triggered | [core 4.12.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [useValuesFromTriggerTime](#usevaluesfromtriggertime) | [`boolean`](datatypes.md#boolean) | - | whether the assignments use the values of the moment the event was triggered | [core 4.12.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [trigger](#trigger) | [`Trigger`](trigger.md) | - | the condition of the event, as an element of its own | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [trigger](#trigger-2) | `Math` | - | the condition whose change from false to true fires the event | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initialValue](#initialvalue) | `boolean` | - | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [persistent](#persistent) | `boolean` | - | whether the event is still executed when its condition becomes false again before execution | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [trigger](#trigger-2) | [`Math`](datatypes.md#math) | - | the condition whose change from false to true fires the event | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialValue](#initialvalue) | [`boolean`](datatypes.md#boolean) | - | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [persistent](#persistent) | [`boolean`](datatypes.md#boolean) | - | whether the event is still executed when its condition becomes false again before execution | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [priority](#priority) | [`Priority`](priority.md) | - | the element which orders the event against other events of the same moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [priority](#priority-2) | `Math` | - | the formula which orders this event against other events of the same moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [priority](#priority-2) | [`Math`](datatypes.md#math) | - | the formula which orders this event against other events of the same moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [delay](#delay) | [`Delay`](delay.md) | - | the element which postpones the execution of the event | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [delay](#delay-2) | `Math` | - | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfEventAssignments](#listofeventassignments) | `list` | - | the changes the event makes when it is executed | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [delay](#delay-2) | [`Math`](datatypes.md#math) | - | the formula which gives the time between the trigger and the execution | [core 4.12.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfEventAssignments](#listofeventassignments) | [`list`](datatypes.md#list) | - | the changes the event makes when it is executed | [core 4.12.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
