@@ -114,6 +114,7 @@ description = """
 A species is a pool of entities which the model treats as indistinguishable, for example a metabolite or a protein. Every species is located in a [Compartment](compartment.md).
 """
 related = ["Compartment"]
+rules = [20601]
 
 [types.Species.attributes.initialAmount]
 label = "initialAmount"
@@ -123,6 +124,9 @@ summary = "the amount of the species when the simulation starts"
 description = """
 The initial amount is the quantity of the species at the start of a simulation, in the substance units of the species.
 """
+required = false
+default = "set by an initial assignment or a rule"
+rules = [20609]
 
 [types.Species.attributes.derivedUnits]
 label = "derived units"
@@ -168,4 +172,68 @@ label = "sbml type"
 summary = "the kind of element, which decides how the report shows it"
 description = """
 Every element of a report carries the name of its SBML class.
+"""
+
+[datatypes.double]
+label = "double"
+summary = "a floating point number"
+description = """
+A double is a number written in decimal notation, with an optional fractional part.
+"""
+
+[datatypes.SId]
+label = "SId"
+summary = "the identifier of an element of a model"
+description = """
+An SId is a name which starts with a letter or an underscore and holds only letters, digits and underscores after that.
+"""
+
+[datatypes.SIdRef]
+label = "SIdRef"
+summary = "a reference to the identifier of an element of a model"
+description = """
+An SIdRef holds the value of an SId defined somewhere in the same model, the reference it makes is resolved by that value.
+"""
+
+[datatypes.string]
+label = "string"
+summary = "an arbitrary sequence of characters"
+description = """
+A string carries no further restriction beyond what XML allows in an attribute value.
+"""
+
+[datatypes.ID]
+label = "ID"
+summary = "an identifier unique within the whole SBML file"
+description = """
+An ID follows the same rules as an SId, but is unique across every element of the file, not only within a model.
+"""
+
+[datatypes.SBOTerm]
+label = "SBOTerm"
+summary = "the identifier of a term of the Systems Biology Ontology"
+description = """
+An SBOTerm names a term of the Systems Biology Ontology, usually below one of its few root branches, for example an entity, a participant role or a modeling framework.
+"""
+values = ["entity", "participant role", "modeling framework"]
+
+[datatypes.XHTML]
+label = "XHTML"
+summary = "a fragment of XHTML markup"
+description = """
+XHTML holds the markup the notes of an element carry, sanitised before the report renders it.
+"""
+
+[datatypes.list]
+label = "list"
+summary = "an ordered collection of values"
+description = """
+A list holds every entry of an attribute which is not a single value, in the order the model gives them.
+"""
+
+[datatypes.units]
+label = "units"
+summary = "a formula of units the report renders"
+description = """
+The report derives units as a formula of the base units of SBML, rendered the same way as a mathematical formula.
 """

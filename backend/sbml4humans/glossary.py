@@ -27,7 +27,9 @@ from collections.abc import Callable, Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Any, Self
+from typing import Any, Literal, Self
+
+from sbml4humans.glossaryrules import Rule, UnknownRuleError, resolve_rule
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -96,14 +98,28 @@ _ENTRY_KEYS = frozenset(
         "type",
         "related",
         "attributes",
+        "rules",
     }
 )
 _ATTRIBUTE_KEYS = frozenset(
-    {"label", "summary", "description", "package", "spec", "type"}
+    {
+        "label",
+        "summary",
+        "description",
+        "package",
+        "spec",
+        "type",
+        "required",
+        "default",
+        "rules",
+    }
+)
+_DATATYPE_KEYS = frozenset(
+    {"label", "summary", "description", "package", "spec", "related", "values"}
 )
 _SPEC_KEYS = frozenset({"doc", "section"})
 _SPEC_DOCUMENT_KEYS = frozenset({"label", "short", "citation", "url"})
-_SECTIONS = ("specs", "types", "links", "concepts")
+_SECTIONS = ("specs", "types", "links", "concepts", "datatypes")
 
 _LINK = re.compile(r"(?<!!)\[([^\]]*)\]\(([^)\s]+)\)")
 _IMAGE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)\)")
@@ -139,7 +155,7 @@ class SpecRef:
 
 @dataclass(frozen=True, slots=True)
 class Entry:
-    """One explanation of the glossary: a type, an attribute, a link or a concept."""
+    """One explanation of the glossary: a type, an attribute, a link, a concept or a data type."""
 
     key: str
     label: str
@@ -150,6 +166,10 @@ class Entry:
     type: str | None = None
     related: tuple[str, ...] = ()
     attributes: Mapping[str, Entry] = field(default_factory=dict)
+    required: bool | None = None
+    default: str | None = None
+    rules: tuple[int, ...] = ()
+    values: tuple[str, ...] = ()
 
     @property
     def slug(self) -> str:
@@ -222,6 +242,7 @@ class Glossary:
     types: Mapping[str, Entry]
     links: Mapping[str, Entry]
     concepts: Mapping[str, Entry]
+    datatypes: Mapping[str, Entry]
     # the file every key was read from, for the messages of the checks
     owners: Mapping[str, Path] = field(default_factory=dict)
 
@@ -265,19 +286,28 @@ class Glossary:
             for key, table in data.get("specs", {}).items()
         }
         types = {
-            key: _entry(key, table, f"types.{key}", owners, nested=False)
+            key: _entry(key, table, f"types.{key}", owners, kind="type")
             for key, table in data.get("types", {}).items()
         }
         links = {
-            key: _entry(key, table, f"links.{key}", owners, nested=True)
+            key: _entry(key, table, f"links.{key}", owners, kind="nested")
             for key, table in data.get("links", {}).items()
         }
         concepts = {
-            key: _entry(key, table, f"concepts.{key}", owners, nested=True)
+            key: _entry(key, table, f"concepts.{key}", owners, kind="nested")
             for key, table in data.get("concepts", {}).items()
         }
+        datatypes = {
+            key: _entry(key, table, f"datatypes.{key}", owners, kind="datatype")
+            for key, table in data.get("datatypes", {}).items()
+        }
         glossary = cls(
-            specs=specs, types=types, links=links, concepts=concepts, owners=owners
+            specs=specs,
+            types=types,
+            links=links,
+            concepts=concepts,
+            datatypes=datatypes,
+            owners=owners,
         )
         glossary._validate_references()
         return glossary
@@ -288,6 +318,7 @@ class Glossary:
             ("types", self.types),
             ("links", self.links),
             ("concepts", self.concepts),
+            ("datatypes", self.datatypes),
         ):
             for key, entry in entries.items():
                 yield f"{section}.{key}", entry
@@ -518,8 +549,157 @@ class Glossary:
         if problems:
             raise GlossaryError("\n".join(["labels:", *problems]))
 
+    def type_key(self, name: str) -> str | None:
+        """The entry a `type` value of an attribute names, for a link into its page.
+
+        Args:
+            name: the `type` of an attribute, as written; a list notation
+                `Foo[]` is stripped to `Foo` before the lookup.
+
+        Returns:
+            `"datatypes/<name>"` when the stripped name is a data type,
+            `"types/<name>"` when it is a type of the glossary, `None` when it
+            is neither.
+        """
+        stripped = name.removesuffix("[]")
+        if stripped in self.datatypes:
+            return f"datatypes/{stripped}"
+        if stripped in self.types:
+            return f"types/{stripped}"
+        return None
+
+    def resolved_rules(self, entry: Entry) -> list[Rule]:
+        """The validation rules an entry cites, resolved with libsbml.
+
+        Args:
+            entry: a type or an attribute of the glossary.
+
+        Returns:
+            The `Rule` of every number of `entry.rules`, in the order they are
+            cited.
+
+        Raises:
+            UnknownRuleError: a number of `entry.rules` is not a validation
+                rule of libsbml.
+        """
+        return [resolve_rule(code) for code in entry.rules]
+
+    def validate_technical(self) -> None:
+        """Check the technical details an entry states about itself.
+
+        An attribute which the report adds, rather than one of the
+        specification, cites no `spec` and therefore cannot be `required` by
+        one. A rule cited by `rules` has to resolve with libsbml and has to
+        belong to the package of the entry which cites it: `core`, because
+        every package error is a further condition on top of the core rules,
+        or the package of the citing entry, which for an attribute is the
+        package of the attribute when it states one, else the package of its
+        type.
+
+        Raises:
+            GlossaryError: with every attribute which the report adds and
+                which still states `required`, with every rule which is no
+                validation rule of libsbml, and with every rule which belongs
+                to a package foreign to the entry which cites it.
+        """
+        problems: list[str] = []
+        for key, entry in self.entries():
+            section, _, rest = key.partition(".")
+            is_attribute = section == "types" and ".attributes." in rest
+            if is_attribute and entry.spec is None and entry.required is not None:
+                problems.append(
+                    f"{_where(key, self.owners)}: the report adds the attribute, "
+                    f"it cannot be required"
+                )
+            owner = self.types.get(rest.split(".", 1)[0]) if is_attribute else None
+            for code in entry.rules:
+                try:
+                    package = resolve_rule(code).package
+                except UnknownRuleError:
+                    problems.append(
+                        f"{_where(key, self.owners)}: the rule {code} is not a "
+                        f"rule of libsbml"
+                    )
+                    continue
+                allowed = {"core", entry.package}
+                if owner is not None:
+                    allowed.add(owner.package)
+                if package not in allowed:
+                    expected = (
+                        entry.package
+                        if entry.package != "core"
+                        else (owner.package if owner is not None else entry.package)
+                    )
+                    problems.append(
+                        f"{_where(key, self.owners)}: the rule {code} is a rule "
+                        f"of {package}, the entry belongs to {expected}"
+                    )
+        if problems:
+            raise GlossaryError("\n".join(["technical details:", *problems]))
+
+    def validate_types(self) -> None:
+        """Check that every `type` resolves and that every data type is used.
+
+        Raises:
+            GlossaryError: with every `type` of an entry which resolves to
+                neither a data type nor a type of the glossary, with every
+                `type` which resolves to both, and with every data type which
+                no attribute names as its `type` and no data type relates to.
+        """
+        problems: list[str] = []
+        used: set[str] = set()
+        for key, entry in self.entries():
+            if entry.type is None:
+                continue
+            stripped = entry.type.removesuffix("[]")
+            in_datatypes = stripped in self.datatypes
+            in_types = stripped in self.types
+            if in_datatypes and in_types:
+                problems.append(
+                    f"{_where(key, self.owners)}: the type '{entry.type}' is "
+                    f"both a data type and a type of the glossary"
+                )
+            elif not in_datatypes and not in_types:
+                problems.append(
+                    f"{_where(key, self.owners)}: the type '{entry.type}' is "
+                    f"neither a data type nor a type of the glossary"
+                )
+            elif in_datatypes:
+                used.add(stripped)
+        for entry in self.datatypes.values():
+            used.update(name for name in entry.related if name in self.datatypes)
+        problems += [
+            f"{_where(f'datatypes.{key}', self.owners)}: the data type is not used"
+            for key in self.datatypes
+            if key not in used
+        ]
+        if problems:
+            raise GlossaryError("\n".join(["data types:", *problems]))
+
+    def validate_required(self) -> None:
+        """Check that every attribute of a specification states `required`.
+
+        Raises:
+            GlossaryError: with every attribute which cites a `spec` and does
+                not state whether it is `required`.
+        """
+        problems = [
+            f"{_where(key, self.owners)}: the attribute cites a specification "
+            f"and does not state whether it is required"
+            for key, entry in self.entries()
+            if ".attributes." in key
+            and entry.spec is not None
+            and entry.required is None
+        ]
+        if problems:
+            raise GlossaryError("\n".join(["required:", *problems]))
+
     def _validate_references(self) -> None:
-        """Check that every `spec` and every `related` entry exists."""
+        """Check that every `spec` and every `related` entry exists.
+
+        A `related` type of a type entry names a type, a `related` type of a
+        data type names a data type.
+        """
         for key, entry in self.entries():
             if entry.spec is not None and entry.spec.doc not in self.specs:
                 raise GlossaryError(
@@ -527,8 +707,10 @@ class Glossary:
                     f"'{entry.spec.doc}' is not defined, known documents are "
                     f"{', '.join(sorted(self.specs)) or 'none'}"
                 )
+            section = key.split(".", 1)[0]
+            related_entries = self.datatypes if section == "datatypes" else self.types
             for name in entry.related:
-                if name not in self.types:
+                if name not in related_entries:
                     raise GlossaryError(
                         f"{_where(key, self.owners)}: the related type '{name}' has "
                         f"no entry"
@@ -605,6 +787,54 @@ def _optional_string(
     return value.strip()
 
 
+def _optional_bool(
+    path: str, table: Mapping[str, Any], key: str, owners: Mapping[str, Path]
+) -> bool | None:
+    """One optional boolean of an entry, absent or `true`/`false`."""
+    value = table.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, bool):
+        raise GlossaryError(f"{_where(path, owners)}: '{key}' is not a boolean")
+    return value
+
+
+def _string_list(
+    path: str, table: Mapping[str, Any], key: str, owners: Mapping[str, Path]
+) -> tuple[str, ...]:
+    """One optional list of strings of an entry, `values` of a data type."""
+    value = table.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise GlossaryError(f"{_where(path, owners)}: '{key}' is not a list of strings")
+    return tuple(value)
+
+
+def _rules(
+    path: str, table: Mapping[str, Any], owners: Mapping[str, Path]
+) -> tuple[int, ...]:
+    """The `rules` of an entry: the numbers of the validation rules it cites.
+
+    The numbers are read as written, not resolved against libsbml here;
+    `Glossary.validate_technical` resolves them and reports a number which is
+    no rule of libsbml or belongs to a foreign package.
+    """
+    value = table.get("rules", [])
+    if not isinstance(value, list) or not all(
+        isinstance(item, int) and not isinstance(item, bool) for item in value
+    ):
+        raise GlossaryError(
+            f"{_where(path, owners)}: 'rules' is not a list of rule numbers"
+        )
+    seen: set[int] = set()
+    for code in value:
+        if code in seen:
+            raise GlossaryError(
+                f"{_where(path, owners)}: the rule {code} is listed twice"
+            )
+        seen.add(code)
+    return tuple(value)
+
+
 def _known_keys(
     path: str,
     table: Mapping[str, Any],
@@ -646,21 +876,38 @@ def _spec_ref(value: Any, path: str, owners: Mapping[str, Path]) -> SpecRef:
     return SpecRef(doc=_string(path, table, "doc", owners), section=section)
 
 
+_ENTRY_KEYS_OF_KIND: Mapping[str, frozenset[str]] = {
+    "type": _ENTRY_KEYS,
+    "nested": _ATTRIBUTE_KEYS,
+    "datatype": _DATATYPE_KEYS,
+}
+
+
 def _entry(
-    key: str, value: Any, path: str, owners: Mapping[str, Path], *, nested: bool
+    key: str,
+    value: Any,
+    path: str,
+    owners: Mapping[str, Path],
+    *,
+    kind: Literal["type", "nested", "datatype"],
 ) -> Entry:
     """One entry of the glossary, with its attributes when it is a type.
 
     Args:
-        key: the key of the entry, the name of the type or of the field.
+        key: the key of the entry, the name of the type, of the field or of the
+            data type.
         value: the table of the entry.
         path: the dotted path of the entry, for the error messages.
         owners: the file every key was read from.
-        nested: an attribute, a link kind or a concept, which has neither
-            attributes nor related types.
+        kind: `"type"` for a type, which may carry attributes and related
+            types; `"nested"` for an attribute, a link kind or a concept,
+            which may state whether it is required and which rules apply to
+            it, but carries neither attributes nor related types; `"datatype"`
+            for a data type, which may carry related data types and the closed
+            set of `values` it takes, but neither attributes nor rules.
     """
     table = _table(path, value, owners)
-    _known_keys(path, table, _ATTRIBUTE_KEYS if nested else _ENTRY_KEYS, owners)
+    _known_keys(path, table, _ENTRY_KEYS_OF_KIND[kind], owners)
     summary = _string(path, table, "summary", owners)
     if summary.endswith("."):
         raise GlossaryError(
@@ -674,6 +921,16 @@ def _entry(
         raise GlossaryError(f"{_where(path, owners)}: 'related' is not a list of names")
     spec = table.get("spec")
     attributes = table.get("attributes", {})
+    required = (
+        _optional_bool(path, table, "required", owners) if kind == "nested" else None
+    )
+    default = (
+        _optional_string(path, table, "default", owners) if kind == "nested" else None
+    )
+    if required and default is not None:
+        raise GlossaryError(
+            f"{_where(path, owners)}: 'default' is given for a required attribute"
+        )
     return Entry(
         key=key,
         label=_string(path, table, "label", owners),
@@ -685,12 +942,18 @@ def _entry(
         related=tuple(related),
         attributes={
             name: _entry(
-                name, attribute, f"{path}.attributes.{name}", owners, nested=True
+                name, attribute, f"{path}.attributes.{name}", owners, kind="nested"
             )
             for name, attribute in _table(
                 f"{path}.attributes", attributes, owners
             ).items()
         },
+        required=required,
+        default=default,
+        rules=_rules(path, table, owners) if kind in ("type", "nested") else (),
+        values=_string_list(path, table, "values", owners)
+        if kind == "datatype"
+        else (),
     )
 
 
@@ -1184,6 +1447,7 @@ def main(argv: list[str]) -> int:
             lambda: check(root, glossary),
             lambda: glossary.validate_coverage(root),
             lambda: glossary.validate_labels(),
+            lambda: glossary.validate_technical(),
             lambda: glossary.validate_links(root),
             lambda: glossary.validate_navigation(root),
         )

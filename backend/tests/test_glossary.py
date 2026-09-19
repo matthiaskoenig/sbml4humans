@@ -298,6 +298,25 @@ def _glossary_file(tmp_path: Path, content: str) -> Glossary:
     return Glossary.from_directory(tmp_path)
 
 
+def _attribute(type_name: str, name: str, body: str) -> str:
+    """A complete attribute table added to an existing type, plus the body under test.
+
+    Used by the tests of the technical checks, which only care about the keys
+    `body` adds: `rules`, `required` or `package`. `label`, `type`, `spec`,
+    `summary` and `description` are filled in so the attribute is otherwise a
+    valid one.
+    """
+    return (
+        f"[types.{type_name}.attributes.{name}]\n"
+        f'label = "{name}"\n'
+        'type = "string"\n'
+        'spec = { doc = "l3v2", section = "4.6" }\n'
+        'summary = "a technical detail for the tests"\n'
+        'description = "An attribute added only to exercise the technical checks."\n'
+        f"{body}\n"
+    )
+
+
 def _species_with(tmp_path: Path, description: str) -> Glossary:
     """A glossary of one type with one attribute, and the description to check."""
     return _glossary_file(
@@ -618,3 +637,176 @@ def test_check_reports_a_generated_page_the_navigation_does_not_list(
     )
     with pytest.raises(GlossaryError, match=r"reference/species\.md"):
         glossary.validate_navigation(root)
+
+
+def test_reads_the_technical_details() -> None:
+    """`required`, `default`, `rules` and the `datatypes` section are read."""
+    glossary = Glossary.from_directory(FIXTURE)
+    initial_amount = glossary.types["Species"].attributes["initialAmount"]
+    assert initial_amount.required is False
+    assert initial_amount.default == "set by an initial assignment or a rule"
+    assert initial_amount.rules == (20609,)
+    assert glossary.types["Species"].rules == (20601,)
+    assert glossary.datatypes["double"].label == "double"
+    assert glossary.datatypes["SBOTerm"].values == (
+        "entity",
+        "participant role",
+        "modeling framework",
+    )
+    assert glossary.type_key("double") == "datatypes/double"
+    assert glossary.type_key("Species") == "types/Species"
+    assert glossary.type_key("nothing") is None
+    assert [rule.id for rule in glossary.resolved_rules(initial_amount)] == [20609]
+    # the fixture states nothing which validate_technical rejects
+    glossary.validate_technical()
+
+
+def test_required_is_a_boolean(tmp_path: Path) -> None:
+    """`required` is read as a boolean, not as a string a reader might write."""
+    with pytest.raises(GlossaryError, match="'required' is not a boolean"):
+        _glossary_file(
+            tmp_path,
+            '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+            'description = "A pool of a chemical entity."\n'
+            "[types.Species.attributes.initialAmount]\n"
+            'label = "initialAmount"\nsummary = "the amount at the start"\n'
+            'description = "The amount of the species when the simulation starts."\n'
+            'required = "yes"\n',
+        )
+
+
+def test_a_default_of_a_required_attribute_is_an_error(tmp_path: Path) -> None:
+    """A required attribute is always present, so a default makes no sense."""
+    with pytest.raises(
+        GlossaryError, match="'default' is given for a required attribute"
+    ):
+        _glossary_file(
+            tmp_path,
+            '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+            'description = "A pool of a chemical entity."\n'
+            "[types.Species.attributes.initialAmount]\n"
+            'label = "initialAmount"\nsummary = "the amount at the start"\n'
+            'description = "The amount of the species when the simulation starts."\n'
+            'required = true\ndefault = "0"\n',
+        )
+
+
+def test_a_rule_listed_twice_is_an_error(tmp_path: Path) -> None:
+    """A rule cited twice in the same list is most likely a copy-paste mistake."""
+    with pytest.raises(GlossaryError, match="the rule 20609 is listed twice"):
+        _glossary_file(
+            tmp_path,
+            '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+            'description = "A pool of a chemical entity."\n'
+            "[types.Species.attributes.initialAmount]\n"
+            'label = "initialAmount"\nsummary = "the amount at the start"\n'
+            'description = "The amount of the species when the simulation starts."\n'
+            "rules = [20609, 20609]\n",
+        )
+
+
+def test_an_unknown_rule_is_an_error(tmp_path: Path) -> None:
+    """A rule number has to resolve against the validation rules of libsbml."""
+    root = _repository(
+        tmp_path,
+        extra_glossary=_attribute(
+            "Species", "extra", "required = false\nrules = [99999]"
+        ),
+    )
+    glossary = Glossary.from_directory(root / "glossary")
+    with pytest.raises(
+        GlossaryError, match=r"extra\.toml: types\.Species\.attributes\.extra.*99999"
+    ):
+        glossary.validate_technical()
+
+
+def test_a_rule_of_a_foreign_package_is_an_error(tmp_path: Path) -> None:
+    """A rule cited by an entry belongs to core or to the package of the entry."""
+    root = _repository(
+        tmp_path,
+        extra_glossary=_attribute(
+            "Species", "extra", 'package = "fbc"\nrules = [1020101]'
+        ),
+    )
+    glossary = Glossary.from_directory(root / "glossary")
+    with pytest.raises(
+        GlossaryError,
+        match=r"the rule 1020101 is a rule of comp, the entry belongs to fbc",
+    ):
+        glossary.validate_technical()
+
+
+def test_an_attribute_of_the_report_cannot_be_required(tmp_path: Path) -> None:
+    """An attribute the report adds cites no specification, so it is never required."""
+    root = _repository(
+        tmp_path,
+        extra_glossary=(
+            '[types.Species.attributes.extra]\nlabel = "extra"\n'
+            'package = "report"\ntype = "string"\n'
+            'summary = "a field the report adds"\n'
+            'description = "A field which cites no specification."\n'
+            "required = false\n"
+        ),
+    )
+    glossary = Glossary.from_directory(root / "glossary")
+    with pytest.raises(
+        GlossaryError,
+        match=r"extra\.toml: types\.Species\.attributes\.extra.*cannot be required",
+    ):
+        glossary.validate_technical()
+
+
+def test_a_type_which_names_nothing_is_an_error(tmp_path: Path) -> None:
+    """The `type` of an entry has to be a data type or a type of the glossary."""
+    root = _repository(
+        tmp_path,
+        extra_glossary=(
+            '[types.Species.attributes.extra]\nlabel = "extra"\n'
+            'type = "Foo"\nsummary = "a technical detail for the tests"\n'
+            'description = "An attribute added only to exercise the technical checks."\n'
+        ),
+    )
+    glossary = Glossary.from_directory(root / "glossary")
+    with pytest.raises(
+        GlossaryError,
+        match=r"the type 'Foo' is neither a data type nor a type of the glossary",
+    ):
+        glossary.validate_types()
+
+
+def test_an_unused_data_type_is_an_error(tmp_path: Path) -> None:
+    """A data type no attribute names and no data type relates to is unused."""
+    root = _repository(tmp_path)
+    glossary = Glossary.from_directory(root / "glossary")
+    with pytest.raises(
+        GlossaryError, match=r"datatypes\.SIdRef: the data type is not used"
+    ):
+        glossary.validate_types()
+
+
+def test_required_is_demanded_for_an_attribute_of_a_specification(
+    tmp_path: Path,
+) -> None:
+    """Every attribute which cites a specification has to state `required`."""
+    root = _repository(
+        tmp_path,
+        extra_glossary=(
+            '[types.Species.attributes.extra]\nlabel = "extra"\n'
+            'spec = { doc = "l3v2", section = "4.6" }\n'
+            'summary = "a technical detail for the tests"\n'
+            'description = "An attribute added only to exercise the technical checks."\n'
+        ),
+    )
+    glossary = Glossary.from_directory(root / "glossary")
+    with pytest.raises(GlossaryError, match=r"does not state whether it is required"):
+        glossary.validate_required()
+
+
+def test_an_unknown_key_of_a_data_type_is_an_error(tmp_path: Path) -> None:
+    """A key the format of a data type does not define is most likely a typo."""
+    with pytest.raises(GlossaryError, match="summry"):
+        _glossary_file(
+            tmp_path,
+            '[datatypes.double]\nlabel = "double"\nsummary = "a number"\n'
+            'description = "A floating point number."\nsummry = "a typo"\n',
+        )
