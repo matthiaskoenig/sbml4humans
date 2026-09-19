@@ -168,6 +168,32 @@ test.describe("the help dialog", () => {
     await expect(header).toHaveAttribute("aria-sort", "ascending");
   });
 
+  // the icon lies in the padding which parts the columns of a table, so a dense table is as wide
+  // as it is without it and no name of a header gives way to it
+  test("the help of a header lies in the padding of its cell and answers a click next to it", async ({
+    page,
+  }) => {
+    const table = page.getByTestId("table-Species");
+    const header = table.locator("thead th", {
+      has: page.getByRole("button", { name: "compartment", exact: true }),
+    });
+    await header.hover();
+    const cell = (await header.boundingBox())!;
+    // the box of the name and the arrows, which is the content box of the cell
+    const name = (await header.locator("div").first().boundingBox())!;
+    const help = (await header.getByTestId("help-button").boundingBox())!;
+
+    expect(help.x).toBeGreaterThanOrEqual(name.x + name.width - 1);
+    expect(help.x + help.width).toBeLessThanOrEqual(cell.x + cell.width + 0.5);
+
+    // the square around the icon is the target of a click which lands next to it, and that click
+    // explains the column instead of sorting it
+    await page.mouse.click(help.x - 5, help.y + help.height / 2 + 5);
+    await expect(page.getByTestId("help-dialog")).toBeVisible();
+    await expect.poll(() => query(page, "help")).toBe("types/Species/compartment");
+    await expect(header).toHaveAttribute("aria-sort", "none");
+  });
+
   test("the type badge and a link of the prose open their own entry", async ({ page }) => {
     const inspector = await selectFirstSpecies(page);
     await attributeRow(inspector, "initialAmount").getByTestId("help-label").click();

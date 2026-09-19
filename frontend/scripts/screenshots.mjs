@@ -11,8 +11,8 @@
 // whole needs its type bar, its tables and its inspector at once, which no window that narrow
 // shows: it is captured in REPORT_VIEWPORT, the narrowest window in which the layout is honest,
 // and the documentation links those images to their file, so that a click opens them at full
-// size. The tables of a qualitative model are captured at the width of the column and the few
-// pixels its widest table needs beyond it.
+// size. The tables of a qualitative model are captured at the width of the column, which every
+// one of them fits.
 import { chromium, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -227,24 +227,20 @@ try {
     await expect.poll(() => inspectorOverflow(page)).toBeLessThanOrEqual(0);
   }
 
-  /** How much the widest table of the page reaches beyond the pane it is in, in px. */
-  function tablesOverflow(page) {
-    return page.getByTestId("tables").evaluate((pane) => {
-      const tables = [...pane.querySelectorAll("[data-testid^='table-']")];
-      return Math.max(0, ...tables.map((table) => table.scrollWidth - table.clientWidth));
-    });
-  }
-
-  /** Grows the window by exactly that, so that no table of the picture is cut at its right. A
-   * table which is wider than its pane scrolls inside its section for a reader, which a picture
-   * cannot show and which reads as a picture that was cropped too narrow. */
-  async function fitTables(page) {
-    const overflow = await tablesOverflow(page);
-    if (overflow === 0) return;
-    const { width, height } = page.viewportSize();
-    await page.setViewportSize({ width: width + overflow, height });
-    const left = await tablesOverflow(page);
-    if (left > 0) throw new Error(`a table is still ${left} px wider than the window it is in`);
+  /** Fails, naming them, when a table of the page is wider than the pane it is in. Such a table
+   * scrolls inside its section for a reader, which a picture cannot show and which reads as a
+   * picture that was cropped too narrow. */
+  async function tablesFit(page) {
+    const wider = await page
+      .getByTestId("tables")
+      .evaluate((pane) =>
+        [...pane.querySelectorAll("[data-testid^='table-']")]
+          .filter((table) => table.scrollWidth > table.clientWidth)
+          .map((table) => table.dataset.testid),
+      );
+    if (wider.length > 0) {
+      throw new Error(`wider than the window they are in: ${wider.join(", ")}`);
+    }
   }
 
   /** The heights at which the tables can be cut without cutting a row in half, measured from the
@@ -373,21 +369,14 @@ try {
   // graph, which is what the columns of a qualitative report are for, and nothing is selected so
   // that both tables have the whole width of the window. The signs of the influences are the
   // point of the picture, so it is taken in a window as wide as the column of the site, where
-  // they are drawn at the size of the text next to them, from the type bar down: the two tables
-  // fit that width, and the app bar above them does not. The compartment of the model stands
-  // above them in a table which is a little wider than the column, so the window is grown by what
-  // it overflows and the picture is that much wider than the column it is shown in.
+  // they are drawn at the size of the text next to them, from the type bar down: every table of
+  // the model fits that width, and the app bar above them does not.
   const qual = await newPage(PAGE_VIEWPORT);
   await open(qual, "qual_example (qual_example.xml)");
   await closeInspector(qual);
   await expect(qual.getByTestId("table-QualitativeSpecies")).toBeVisible();
   await expect(qual.getByTestId("table-Transition")).toBeVisible();
-  for (const type of ["QualitativeSpecies", "Transition"]) {
-    const table = qual.getByTestId(`table-${type}`);
-    const fits = await table.evaluate((element) => element.scrollWidth <= element.clientWidth);
-    if (!fits) throw new Error(`the table of the ${type} is wider than the column of the site`);
-  }
-  await fitTables(qual);
+  await tablesFit(qual);
   const typeBar = await qual.getByTestId("type-bar").boundingBox();
   const qualTables = await qual.getByTestId("tables").boundingBox();
   await restPointer(qual);

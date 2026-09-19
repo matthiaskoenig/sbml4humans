@@ -11,8 +11,12 @@ import { explainName } from "@/components/help/words";
  * stands next to neither sorts nor selects.
  *
  * It is the same link as a `HelpLabel`, and since it shows no words of its own it carries a name
- * for a reader who does not see it. */
-const props = defineProps<{ helpKey: string; label: string }>();
+ * for a reader who does not see it. `sm` is the icon of a header of a column, which lies in the
+ * 12 px of padding that part the columns of a table: the icon of a heading is the size of the
+ * words next to it, this one is the size of the space it has. */
+const props = withDefaults(defineProps<{ helpKey: string; label: string; size?: "sm" | "md" }>(), {
+  size: "md",
+});
 
 const name = computed(() => explainName(props.label));
 </script>
@@ -25,6 +29,6 @@ const name = computed(() => explainName(props.label));
     data-testid="help-button"
     @click.stop
   >
-    <CircleHelpIcon class="size-3.5" />
+    <CircleHelpIcon :class="size === 'sm' ? 'size-3' : 'size-3.5'" />
   </HelpLink>
 </template>
