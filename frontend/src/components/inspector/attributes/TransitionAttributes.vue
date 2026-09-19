@@ -61,8 +61,13 @@ const widths = computed(() => {
 /** The inputs have the sign and the threshold where the outputs have their level, so the effect,
  * which both have, lines up where the output level is as wide as the two of them with the
  * padding of the second cell, 0.75rem of text of 0.75rem whose characters are 0.61 of it wide. */
-const inputWidths = computed(() => ({ ...widths.value, sign: 4, thresholdLevel: 9 }));
-const outputWidths = computed(() => ({ ...widths.value, outputLevel: 4 + 9 + 1 / 0.61 }));
+const SIGN = columnChars("sign", []);
+const THRESHOLD = columnChars("threshold", []);
+const inputWidths = computed(() => ({ ...widths.value, sign: SIGN, thresholdLevel: THRESHOLD }));
+const outputWidths = computed(() => ({
+  ...widths.value,
+  outputLevel: SIGN + THRESHOLD + 1 / 0.61,
+}));
 
 interface TermRow {
   pk: string;
