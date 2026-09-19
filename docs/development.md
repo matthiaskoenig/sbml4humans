@@ -154,7 +154,7 @@ The version of SBML4Humans is the version of the backend package in `backend/sbm
 
 1. branch off `develop`: `git switch -c release/x.y.z origin/develop`
 2. write the release notes for the version in `release-notes/x.y.z.md`
-3. bump the version from the `backend` directory: `uv run bump-my-version bump [major|minor|patch]`, which updates `backend/sbml4humans/__init__.py` and `frontend/package.json` and commits. It does not create the tag; a squash or rebase merge would rewrite the commit and leave the tag behind on a commit which is not part of `develop`
+3. bump the version from the `backend` directory: `uv run bump-my-version bump [major|minor|patch]`, which updates `backend/pyproject.toml`, `backend/sbml4humans/__init__.py`, `frontend/package.json` and the version of the package in `frontend/package-lock.json` and commits. It does not create the tag; a squash or rebase merge would rewrite the commit and leave the tag behind on a commit which is not part of `develop`
 4. push the branch, open the pull request against `develop` and merge it once the checks are green
 5. tag the merged commit on `develop` and push the tag:
 
