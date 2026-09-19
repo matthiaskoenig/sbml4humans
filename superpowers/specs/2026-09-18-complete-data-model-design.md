@@ -69,7 +69,7 @@ Three example models are added to `backend/sbml4humans/resources/examples/`, wri
 - `fbc_bounds_v1.xml`: a Version 1 document with `fluxBound` objects, the only shape of fbc the report cannot read at all today.
 - `distrib_spans.xml`: an uncertainty whose span is defined by `varLower` and `varUpper`, an uncert parameter with a `var` and `units`, a distribution with child parameters, two uncertainties on one parameter with different notes, and an uncertainty on a species and on a rule.
 
-`comp_deletion.xml` covers `comp:deletion`, `comp:replacedBy`, the recursive `sBaseRef` and `md5`, none of which any shipped model contains, and the core example `constraint_event.xml` covers `<constraint>`, `<message>`, `<priority>` and a Level 2 kinetic law with local parameters.
+`comp_deletion.xml` covers `comp:deletion`, `comp:replacedBy`, the recursive `sBaseRef` and `md5`, none of which any shipped model contains, and the core example `constraint_event.xml`, a Level 3 Version 2 model, covers `<constraint>`, `<message>`, `<priority>` and a kinetic law with local parameters.
 
 ## Testing
 
