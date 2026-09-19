@@ -99,37 +99,41 @@ def error_response(request: Request, exc: Exception) -> JSONResponse:
     )
 
 
-@api.middleware("http")
-async def error_response_middleware(
-    request: Request, call_next: RequestResponseEndpoint
-) -> Response:
-    """Turn an exception of any endpoint into an error response.
+def add_error_contract(app: FastAPI) -> None:
+    """Make every failure of the app an error response with status 200.
 
     Starlette's own exception handling runs in the outermost
-    `ServerErrorMiddleware`, outside the `CORSMiddleware` added below, so its
-    responses carry no CORS headers. This middleware is added before the
+    `ServerErrorMiddleware`, outside a `CORSMiddleware`, so its responses carry
+    no CORS headers. The middleware of the contract has to be added before the
     `CORSMiddleware`, which makes it the innermost one (Starlette wraps
     middleware in the order they are added, most recent outermost), so the
     `CORSMiddleware` wraps it and adds its headers to the error response as it
     would to any other response.
     """
-    try:
-        return await call_next(request)
-    except Exception as exc:
-        return error_response(request, exc)
+
+    @app.middleware("http")
+    async def error_response_middleware(
+        request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        """Turn an exception of any endpoint into an error response."""
+        try:
+            return await call_next(request)
+        except Exception as exc:
+            return error_response(request, exc)
+
+    # Safety net for exceptions raised outside the middleware stack above, for
+    # example during request parsing before `error_response_middleware` runs.
+    app.add_exception_handler(Exception, error_response)
+    app.add_exception_handler(RequestValidationError, error_response)
 
 
+add_error_contract(api)
 api.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Safety net for exceptions raised outside the middleware stack above, for
-# example during request parsing before `error_response_middleware` runs.
-api.add_exception_handler(Exception, error_response)
-api.add_exception_handler(RequestValidationError, error_response)
 
 
 def download(url: str) -> bytes:

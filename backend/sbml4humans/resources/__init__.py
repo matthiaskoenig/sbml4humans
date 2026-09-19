@@ -9,6 +9,10 @@ from pathlib import Path
 
 RESOURCES_DIR = Path(__file__).parent
 
+# the built frontend, which `npm run build:package` writes and the wheel ships;
+# it is not part of the repository
+FRONTEND_DIR = RESOURCES_DIR / "frontend"
+
 # stylesheets of the content MathML -> presentation MathML -> latex conversion
 XSLT_DIR = RESOURCES_DIR / "xslt"
 
