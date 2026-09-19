@@ -1,5 +1,5 @@
 {
-  "uid": "46eb2df9240b4a299331c22ec329a61a",
+  "uid": "5423886c9fc345a0ab87f942ce7cc89b",
   "manifest": {
     "entries": [
       {
@@ -36,6 +36,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 2,
           "version": 3,
           "packages": [
@@ -142,6 +143,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\">\n    <rdf:Description rdf:about=\"#_000001\">\n      <dc:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Le Novère</vCard:Family>\n              <vCard:Given>Nicolas</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>lenov@ebi.ac.uk</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>EMBL-EBI</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>Shapiro</vCard:Family>\n              <vCard:Given>Bruce</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>bshapiro@jpl.nasa.gov</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>NASA Jet Propulsion Laboratory</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dc:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2009-10-15T13:21:50Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>2014-03-26T14:20:21Z</dcterms:W3CDTF>\n      </dcterms:modified>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/MODEL6614787694\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:is>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/biomodels.db/BIOMD0000000007\"/>\n        </rdf:Bag>\n      </bqmodel:is>\n      <bqmodel:isDescribedBy>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/pubmed/9256450\"/>\n        </rdf:Bag>\n      </bqmodel:isDescribedBy>\n      <bqmodel:isDerivedFrom>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/pubmed/10395816\"/>\n        </rdf:Bag>\n      </bqmodel:isDerivedFrom>\n      <bqbiol:hasTaxon>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/taxonomy/4896\"/>\n        </rdf:Bag>\n      </bqbiol:hasTaxon>\n      <bqbiol:isVersionOf>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/kegg.pathway/ko04110\"/>\n          <rdf:li rdf:resource=\"http://identifiers.org/go/GO:0000278\"/>\n        </rdf:Bag>\n      </bqbiol:isVersionOf>\n      <bqbiol:isHomologTo>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/reactome/REACT_152\"/>\n        </rdf:Bag>\n      </bqbiol:isHomologTo>\n      <bqbiol:hasProperty>\n        <rdf:Bag>\n          <rdf:li rdf:resource=\"http://identifiers.org/mamo/MAMO_0000046\"/>\n        </rdf:Bag>\n      </bqbiol:hasProperty>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
             "substanceUnits": null,
@@ -173,6 +175,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "unitsLatex": "min",
                 "listOfUnits": [
                   {
@@ -207,6 +210,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -238,6 +242,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0.11,
                 "initialConcentration": null,
@@ -272,6 +277,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -307,6 +313,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -341,6 +348,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -376,6 +384,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -410,6 +419,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0.4,
                 "initialConcentration": null,
@@ -445,6 +455,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -471,6 +482,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -506,6 +518,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -542,6 +555,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -578,6 +592,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -614,6 +629,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -650,6 +666,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -685,6 +702,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -711,6 +729,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -745,6 +764,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -779,6 +799,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -814,6 +835,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -848,6 +870,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": 0,
                 "initialConcentration": null,
@@ -882,6 +905,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": null,
                 "initialConcentration": null,
@@ -916,6 +940,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": null,
                 "initialConcentration": null,
@@ -950,6 +975,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "Cell",
                 "initialAmount": null,
                 "initialConcentration": null,
@@ -978,6 +1004,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.00495,
                 "constant": true,
                 "units": null,
@@ -998,6 +1025,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.49,
                 "constant": false,
                 "units": null,
@@ -1018,6 +1046,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.015,
                 "constant": true,
                 "units": null,
@@ -1038,6 +1067,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1058,6 +1088,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.09375,
                 "constant": true,
                 "units": null,
@@ -1078,6 +1109,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1875,
                 "constant": true,
                 "units": null,
@@ -1098,6 +1130,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.00175,
                 "constant": true,
                 "units": null,
@@ -1118,6 +1151,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0,
                 "constant": true,
                 "units": null,
@@ -1138,6 +1172,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 100,
                 "constant": true,
                 "units": null,
@@ -1158,6 +1193,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1178,6 +1214,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 10,
                 "constant": true,
                 "units": null,
@@ -1198,6 +1235,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1218,6 +1256,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": null,
@@ -1238,6 +1277,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1258,6 +1298,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.4,
                 "constant": true,
                 "units": null,
@@ -1278,6 +1319,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1298,6 +1340,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 3.25,
                 "constant": false,
                 "units": null,
@@ -1318,6 +1361,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.2,
                 "constant": true,
                 "units": null,
@@ -1338,6 +1382,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1358,6 +1403,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": null,
@@ -1378,6 +1424,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.3,
                 "constant": true,
                 "units": null,
@@ -1398,6 +1445,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 1,
                 "constant": true,
                 "units": null,
@@ -1418,6 +1466,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1438,6 +1487,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1458,6 +1508,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.0075,
                 "constant": true,
                 "units": null,
@@ -1478,6 +1529,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 7.5,
                 "constant": true,
                 "units": null,
@@ -1498,6 +1550,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.0375,
                 "constant": true,
                 "units": null,
@@ -1518,6 +1571,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.5,
                 "constant": true,
                 "units": null,
@@ -1538,6 +1592,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.025,
                 "constant": true,
                 "units": null,
@@ -1558,6 +1613,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.35,
                 "constant": true,
                 "units": null,
@@ -1578,6 +1634,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.035,
                 "constant": true,
                 "units": null,
@@ -1598,6 +1655,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1618,6 +1676,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1638,6 +1697,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1658,6 +1718,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1678,6 +1739,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.001,
                 "constant": true,
                 "units": null,
@@ -1698,6 +1760,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1718,6 +1781,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.01,
                 "constant": true,
                 "units": null,
@@ -1738,6 +1802,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1758,6 +1823,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1778,6 +1844,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1798,6 +1865,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.1,
                 "constant": true,
                 "units": null,
@@ -1818,6 +1886,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.25,
                 "constant": true,
                 "units": null,
@@ -1838,6 +1907,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0.05,
                 "constant": true,
                 "units": null,
@@ -1858,6 +1928,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": 0,
                 "constant": true,
                 "units": null,
@@ -1878,6 +1949,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1898,6 +1970,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1918,6 +1991,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1938,6 +2012,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "value": null,
                 "constant": false,
                 "units": null,
@@ -1961,6 +2036,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "Mass",
                 "math": {
                   "latex": " \\mathit{Mass}\\cdot \\mathit{\\mu}",
@@ -1982,6 +2058,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "IEB",
                 "math": {
                   "latex": " 1-\\mathit{IE}",
@@ -2003,6 +2080,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "UbEB",
                 "math": {
                   "latex": " 1-\\mathit{UbE}",
@@ -2024,6 +2102,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "UbE2B",
                 "math": {
                   "latex": " 1-\\mathit{UbE2}",
@@ -2045,6 +2124,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "Wee1B",
                 "math": {
                   "latex": " 1-\\mathit{Wee1}",
@@ -2066,6 +2146,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "Cdc25B",
                 "math": {
                   "latex": " 1-\\mathit{Cdc25}",
@@ -2087,6 +2168,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "Rum1Total",
                 "math": {
                   "latex": " \\mathit{G1R}+\\mathit{G2R}+\\mathit{PG2R}+\\mathit{R}",
@@ -2108,6 +2190,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "Cdc13Total",
                 "math": {
                   "latex": " \\mathit{G2K}+\\mathit{G2R}+\\mathit{PG2}+\\mathit{PG2R}",
@@ -2129,6 +2212,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "Cig2Total",
                 "math": {
                   "latex": " \\mathit{G1K}+\\mathit{G1R}",
@@ -2150,6 +2234,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "k2",
                 "math": {
                   "latex": " \\mathit{UbE}\\cdot \\mathit{V2}+(1-\\mathit{UbE})\\cdot \\mathit{V2prime}",
@@ -2171,6 +2256,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "k6",
                 "math": {
                   "latex": " \\mathit{UbE2}\\cdot \\mathit{V6}+(1-\\mathit{UbE2})\\cdot \\mathit{V6prime}",
@@ -2192,6 +2278,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "kwee",
                 "math": {
                   "latex": " \\mathit{Vwprime}\\cdot (1-\\mathit{Wee1})+\\mathit{Vw}\\cdot \\mathit{Wee1}",
@@ -2213,6 +2300,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "k25",
                 "math": {
                   "latex": " \\mathit{Cdc25}\\cdot \\mathit{V25}+(1-\\mathit{Cdc25})\\cdot \\mathit{V25prime}",
@@ -2234,6 +2322,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "MPF",
                 "math": {
                   "latex": " \\mathit{G2K}+\\mathit{\\beta}\\cdot \\mathit{PG2}",
@@ -2255,6 +2344,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "variable": "SPF",
                 "math": {
                   "latex": " \\mathit{Cig1}+\\mathit{\\alpha}\\cdot \\mathit{G1K}+\\mathit{MPF}",
@@ -2279,6 +2369,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2298,6 +2389,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2K",
                     "stoichiometry": 1,
                     "constant": null
@@ -2318,6 +2410,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k1}",
                     "formula": "k1"
@@ -2342,6 +2435,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2361,6 +2455,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G1K",
                     "stoichiometry": 1,
                     "constant": null
@@ -2381,6 +2476,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k5}",
                     "formula": "k5"
@@ -2430,6 +2526,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2448,6 +2545,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2K",
                     "stoichiometry": 1,
                     "constant": null
@@ -2468,6 +2566,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2",
                     "stoichiometry": 1,
                     "constant": null
@@ -2488,6 +2587,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "Wee1"
                   },
                   {
@@ -2504,6 +2604,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "Cdc25"
                   }
                 ],
@@ -2521,6 +2622,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G2K}\\cdot \\mathit{kwee}-\\mathit{k25}\\cdot \\mathit{PG2}",
                     "formula": "G2K * kwee - k25 * PG2"
@@ -2553,6 +2655,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2571,6 +2674,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2K",
                     "stoichiometry": 1,
                     "constant": null
@@ -2589,6 +2693,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -2609,6 +2714,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -2629,6 +2735,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G2K}\\cdot \\mathit{k7}\\cdot \\mathit{R}-\\mathit{G2R}\\cdot \\mathit{k7r}",
                     "formula": "G2K * k7 * R - G2R * k7r"
@@ -2661,6 +2768,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -2679,6 +2787,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2",
                     "stoichiometry": 1,
                     "constant": null
@@ -2697,6 +2806,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -2717,6 +2827,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -2737,6 +2848,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k7}\\cdot \\mathit{PG2}\\cdot \\mathit{R}-\\mathit{k7r}\\cdot \\mathit{PG2R}",
                     "formula": "k7 * PG2 * R - k7r * PG2R"
@@ -2769,6 +2881,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2787,6 +2900,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -2807,6 +2921,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2K",
                     "stoichiometry": 1,
                     "constant": null
@@ -2827,6 +2942,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G2R}\\cdot \\mathit{k4}",
                     "formula": "G2R * k4"
@@ -2859,6 +2975,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2877,6 +2994,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -2898,6 +3016,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k4}\\cdot \\mathit{R}",
                     "formula": "k4 * R"
@@ -2930,6 +3049,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -2948,6 +3068,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -2968,6 +3089,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2",
                     "stoichiometry": 1,
                     "constant": null
@@ -2988,6 +3110,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k4}\\cdot \\mathit{PG2R}",
                     "formula": "k4 * PG2R"
@@ -3020,6 +3143,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3038,6 +3162,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G1R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3058,6 +3183,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G1K",
                     "stoichiometry": 1,
                     "constant": null
@@ -3078,6 +3204,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G1R}\\cdot \\mathit{k4}",
                     "formula": "G1R * k4"
@@ -3110,6 +3237,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3128,6 +3256,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2K",
                     "stoichiometry": 1,
                     "constant": null
@@ -3149,6 +3278,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE"
                   }
                 ],
@@ -3166,6 +3296,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G2K}\\cdot \\mathit{k2}",
                     "formula": "G2K * k2"
@@ -3198,6 +3329,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3216,6 +3348,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2",
                     "stoichiometry": 1,
                     "constant": null
@@ -3237,6 +3370,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE"
                   }
                 ],
@@ -3254,6 +3388,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k2}\\cdot \\mathit{PG2}",
                     "formula": "k2 * PG2"
@@ -3286,6 +3421,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3304,6 +3440,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G1K",
                     "stoichiometry": 1,
                     "constant": null
@@ -3325,6 +3462,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE2"
                   }
                 ],
@@ -3342,6 +3480,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G1K}\\cdot \\mathit{k6}",
                     "formula": "G1K * k6"
@@ -3374,6 +3513,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3392,6 +3532,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3412,6 +3553,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3432,6 +3574,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k2prime}\\cdot \\mathit{PG2R}",
                     "formula": "k2prime * PG2R"
@@ -3464,6 +3607,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3482,6 +3626,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3502,6 +3647,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3522,6 +3668,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G2R}\\cdot \\mathit{k2prime}",
                     "formula": "G2R * k2prime"
@@ -3554,6 +3701,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3572,6 +3720,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G1R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3592,6 +3741,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3612,6 +3762,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G1R}\\cdot \\mathit{k6prime}",
                     "formula": "G1R * k6prime"
@@ -3644,6 +3795,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -3662,6 +3814,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G1K",
                     "stoichiometry": 1,
                     "constant": null
@@ -3680,6 +3833,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3700,6 +3854,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G1R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3720,6 +3875,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G1K}\\cdot \\mathit{k8}\\cdot \\mathit{R}-\\mathit{G1R}\\cdot \\mathit{k8r}",
                     "formula": "G1K * k8 * R - G1R * k8r"
@@ -3753,6 +3909,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3771,6 +3928,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "G2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3791,6 +3949,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3811,6 +3970,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE"
                   }
                 ],
@@ -3828,6 +3988,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{G2R}\\cdot \\mathit{k2}",
                     "formula": "G2R * k2"
@@ -3861,6 +4022,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3879,6 +4041,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "PG2R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3899,6 +4062,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3919,6 +4083,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE"
                   }
                 ],
@@ -3936,6 +4101,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k2}\\cdot \\mathit{PG2R}",
                     "formula": "k2 * PG2R"
@@ -3960,6 +4126,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -3979,6 +4146,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -3999,6 +4167,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{k3}",
                     "formula": "k3"
@@ -4031,6 +4200,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": false,
                 "fast": false,
                 "compartment": null,
@@ -4049,6 +4219,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "R",
                     "stoichiometry": 1,
                     "constant": null
@@ -4070,6 +4241,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "SPF"
                   }
                 ],
@@ -4087,6 +4259,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\frac{\\mathit{kp}\\cdot \\mathit{Mass}\\cdot \\mathit{R}\\cdot \\mathit{SPF}}{\\mathit{Kmp}+\\mathit{R}}",
                     "formula": "kp * Mass * R * SPF / (Kmp + R)"
@@ -4111,6 +4284,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4129,6 +4303,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "IEB",
                     "stoichiometry": 1,
                     "constant": null
@@ -4149,6 +4324,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "IE",
                     "stoichiometry": 1,
                     "constant": null
@@ -4169,6 +4345,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "MPF"
                   }
                 ],
@@ -4186,6 +4363,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\frac{\\mathit{IEB}\\cdot \\mathit{ki}\\cdot \\mathit{MPF}}{\\mathit{IEB}+\\mathit{Kmi}}-\\frac{\\mathit{IE}\\cdot \\mathit{kir}}{\\mathit{IE}+\\mathit{Kmir}}",
                     "formula": "IEB * ki * MPF / (IEB + Kmi) - IE * kir / (IE + Kmir)"
@@ -4210,6 +4388,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4228,6 +4407,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbEB",
                     "stoichiometry": 1,
                     "constant": null
@@ -4248,6 +4428,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE",
                     "stoichiometry": 1,
                     "constant": null
@@ -4268,6 +4449,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "IE"
                   }
                 ],
@@ -4285,6 +4467,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\frac{\\mathit{IE}\\cdot \\mathit{ku}\\cdot \\mathit{UbEB}}{\\mathit{Kmu}+\\mathit{UbEB}}-\\frac{\\mathit{kur}\\cdot \\mathit{UbE}}{\\mathit{Kmur}+\\mathit{UbE}}",
                     "formula": "IE * ku * UbEB / (Kmu + UbEB) - kur * UbE / (Kmur + UbE)"
@@ -4309,6 +4492,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4327,6 +4511,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE2B",
                     "stoichiometry": 1,
                     "constant": null
@@ -4347,6 +4532,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "UbE2",
                     "stoichiometry": 1,
                     "constant": null
@@ -4367,6 +4553,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "MPF"
                   }
                 ],
@@ -4384,6 +4571,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\frac{\\mathit{ku2}\\cdot \\mathit{MPF}\\cdot \\mathit{UbE2B}}{\\mathit{Kmu2}+\\mathit{UbE2B}}-\\frac{\\mathit{kur2}\\cdot \\mathit{UbE2}}{\\mathit{Kmur2}+\\mathit{UbE2}}",
                     "formula": "ku2 * MPF * UbE2B / (Kmu2 + UbE2B) - kur2 * UbE2 / (Kmur2 + UbE2)"
@@ -4408,6 +4596,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4426,6 +4615,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "Wee1B",
                     "stoichiometry": 1,
                     "constant": null
@@ -4446,6 +4636,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "Wee1",
                     "stoichiometry": 1,
                     "constant": null
@@ -4466,6 +4657,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "MPF"
                   }
                 ],
@@ -4483,6 +4675,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\frac{\\mathit{kwr}\\cdot \\mathit{Wee1B}}{\\mathit{Kmwr}+\\mathit{Wee1B}}-\\frac{\\mathit{kw}\\cdot \\mathit{MPF}\\cdot \\mathit{Wee1}}{\\mathit{Kmw}+\\mathit{Wee1}}",
                     "formula": "kwr * Wee1B / (Kmwr + Wee1B) - kw * MPF * Wee1 / (Kmw + Wee1)"
@@ -4507,6 +4700,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "reversible": true,
                 "fast": false,
                 "compartment": null,
@@ -4525,6 +4719,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "Cdc25B",
                     "stoichiometry": 1,
                     "constant": null
@@ -4545,6 +4740,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "Cdc25",
                     "stoichiometry": 1,
                     "constant": null
@@ -4565,6 +4761,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "species": "MPF"
                   }
                 ],
@@ -4582,6 +4779,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\frac{\\mathit{Cdc25B}\\cdot \\mathit{kc}\\cdot \\mathit{MPF}}{\\mathit{Cdc25B}+\\mathit{Kmc}}-\\frac{\\mathit{Cdc25}\\cdot \\mathit{kcr}}{\\mathit{Cdc25}+\\mathit{Kmcr}}",
                     "formula": "Cdc25B * kc * MPF / (Cdc25B + Kmc) - Cdc25 * kcr / (Cdc25 + Kmcr)"
@@ -4616,6 +4814,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "useValuesFromTriggerTime": true,
                 "trigger": {
                   "pk": "BIOMD0000000007/Trigger:_378785",
@@ -4631,6 +4830,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{SPF}\\ge 0.1",
                     "formula": "SPF >= 0.1"
@@ -4653,6 +4853,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " 60",
                     "formula": "60"
@@ -4673,6 +4874,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "kp",
                     "math": {
                       "latex": " \\frac{\\mathit{kp}}{2}",
@@ -4703,6 +4905,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "useValuesFromTriggerTime": true,
                 "trigger": {
                   "pk": "BIOMD0000000007/Trigger:_378821",
@@ -4718,6 +4921,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "math": {
                     "latex": " \\mathit{UbE}\\le 0.1",
                     "formula": "UbE <= 0.1"
@@ -4742,6 +4946,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "kp",
                     "math": {
                       "latex": " 2\\cdot \\mathit{kp}",
@@ -4762,6 +4967,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "variable": "Mass",
                     "math": {
                       "latex": " \\frac{\\mathit{Mass}}{2}",
@@ -8129,7 +8335,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.32 [s]"
+        "jsonReportTime": "0.404 [s]"
       }
     }
   }

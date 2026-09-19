@@ -24,6 +24,7 @@ const EXAMPLES = {
   distrib_spans: "distrib_spans (distrib_spans.xml)",
   qual_example: "qual_example (qual_example.xml)",
   constraint_event: "constraint_event (constraint_event.xml)",
+  list_of: "list_of (list_of.xml)",
 };
 
 const requested = process.argv.slice(2);

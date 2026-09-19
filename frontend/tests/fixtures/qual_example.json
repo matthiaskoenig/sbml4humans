@@ -1,5 +1,5 @@
 {
-  "uid": "50092e0ac4c141b59ce1a6a385674910",
+  "uid": "e96d3e7d4199420b947bddbde5bf3977",
   "manifest": {
     "entries": [
       {
@@ -36,6 +36,7 @@
           "comp": null,
           "uncertainties": [],
           "keyValuePairs": [],
+          "lists": [],
           "level": 3,
           "version": 1,
           "packages": [
@@ -61,6 +62,7 @@
             "comp": null,
             "uncertainties": [],
             "keyValuePairs": [],
+            "lists": [],
             "kind": "model",
             "annotationXml": null,
             "substanceUnits": null,
@@ -93,6 +95,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "spatialDimensions": 3,
                 "size": 1,
                 "constant": true,
@@ -144,6 +147,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "constant": true,
                 "initialLevel": null,
@@ -163,6 +167,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "constant": false,
                 "initialLevel": 0,
@@ -182,6 +187,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "compartment": "cell",
                 "constant": false,
                 "initialLevel": 1,
@@ -211,6 +217,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "listOfInputs": [
                   {
                     "pk": "qual_example/Input:theta_G_S",
@@ -226,6 +233,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "qualitativeSpecies": "S",
                     "thresholdLevel": 1,
                     "transitionEffect": "none",
@@ -245,6 +253,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "qualitativeSpecies": "P",
                     "thresholdLevel": 2,
                     "transitionEffect": "none",
@@ -264,6 +273,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "qualitativeSpecies": "G",
                     "thresholdLevel": 1,
                     "transitionEffect": "none",
@@ -285,6 +295,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "qualitativeSpecies": "G",
                     "outputLevel": null,
                     "transitionEffect": "assignmentLevel"
@@ -305,6 +316,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "resultLevel": 1,
                     "math": {
                       "latex": " (\\mathit{S}\\ge \\mathit{theta\\_G\\_S})\\wedge (\\mathit{P}<\\mathit{theta\\_G\\_P})",
@@ -325,6 +337,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "resultLevel": 1,
                     "math": {
                       "latex": " (\\mathit{G}\\ge \\mathit{theta\\_G\\_G})\\wedge (\\mathit{P}<\\mathit{theta\\_G\\_P})",
@@ -346,6 +359,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "resultLevel": 0
                 }
               },
@@ -363,6 +377,7 @@
                 "comp": null,
                 "uncertainties": [],
                 "keyValuePairs": [],
+                "lists": [],
                 "listOfInputs": [
                   {
                     "pk": "qual_example/Input:w_P_G",
@@ -378,6 +393,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "qualitativeSpecies": "G",
                     "thresholdLevel": 1,
                     "transitionEffect": "consumption",
@@ -397,6 +413,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "qualitativeSpecies": "P",
                     "thresholdLevel": 2,
                     "transitionEffect": "none",
@@ -418,6 +435,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "qualitativeSpecies": "P",
                     "outputLevel": 1,
                     "transitionEffect": "production"
@@ -438,6 +456,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "resultLevel": 2,
                     "math": {
                       "latex": " (\\mathit{G}\\ge \\mathit{w\\_P\\_G})\\wedge (\\mathit{P}=0)",
@@ -458,6 +477,7 @@
                     "comp": null,
                     "uncertainties": [],
                     "keyValuePairs": [],
+                    "lists": [],
                     "resultLevel": 1,
                     "math": {
                       "latex": " (\\mathit{G}\\ge \\mathit{w\\_P\\_G})\\wedge (\\mathit{P}<\\mathit{theta\\_P\\_P})",
@@ -479,6 +499,7 @@
                   "comp": null,
                   "uncertainties": [],
                   "keyValuePairs": [],
+                  "lists": [],
                   "resultLevel": 0
                 }
               }
@@ -876,7 +897,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.03 [s]"
+        "jsonReportTime": "0.055 [s]"
       }
     }
   }

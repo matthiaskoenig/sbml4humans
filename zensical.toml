@@ -44,6 +44,7 @@ nav = [
       { "KineticLaw" = "reference/kineticlaw.md" },
       { "LocalParameter" = "reference/localparameter.md" },
       { "EventAssignment" = "reference/eventassignment.md" },
+      { "ListOf" = "reference/listof.md" },
     ] },
     { "Hierarchical Model Composition (comp)" = [
       { "Hierarchical Model Composition (comp)" = "reference/comp.md" },

@@ -61,8 +61,8 @@ const MAX_DEPTH = 8;
  * sets, a term of a transition by its transition and its place in the table, a replacement of
  * the comp package by the element it belongs to and the submodel it reaches into, a reference of
  * a gene product association by its reaction and its gene product, and a flux objective by its
- * objective and its reactions. The owner is named by the same rule, so an event without an id
- * lends its key to its trigger. */
+ * objective and its reactions, and a list by its owner and the name it has in the file. The
+ * owner is named by the same rule, so an event without an id lends its key to its trigger. */
 export function elementLabel(
   index: ReportIndex | null | undefined,
   pk: string | null | undefined,
@@ -145,6 +145,16 @@ function label(
   ) {
     const name = owner("uncertParameter")?.name;
     if (name) return `${name}.${definitionLabel(element.definitionUrl)}`;
+  }
+  // a list is named after its owner and the name it has in the file, the way its key names it
+  // where the file gives it no meta id; a meta id says nothing about which list it is. A list
+  // of the model or of the document is named by its name in the file alone: the context bar
+  // already names the model, and there is one such list in it
+  if (element.sbmlType === "ListOf") {
+    const parent = owner("listOf");
+    const parentType = parent ? index.get(parent.pk)?.sbmlType : undefined;
+    if (parentType === "Model" || parentType === "SBMLDocument") return element.element;
+    if (parent?.name) return `${parent.name}.${element.element}`;
   }
   const influenceKind = element.sbmlType ? INFLUENCE_KINDS[element.sbmlType] : undefined;
   if (influenceKind && "qualitativeSpecies" in element) {

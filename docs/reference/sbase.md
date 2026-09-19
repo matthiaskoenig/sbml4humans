@@ -2,7 +2,7 @@
 
 The attributes every element of an SBML model carries.
 
-Almost every object of an SBML model derives from the abstract type `SBase`, which carries the identifier, the name, the term of the Systems Biology Ontology and the two places for annotation: the notes for human readers and the annotation for machine readable metadata. An element type adds its own attributes on top of these, and may make an inherited attribute required, for example the identifier of a species.
+Almost every object of an SBML model derives from the abstract type `SBase`, which carries the identifier, the name, the term of the Systems Biology Ontology and the two places for annotation: the notes for human readers and the annotation for machine readable metadata. An element type adds its own attributes on top of these, and may make an inherited attribute required, for example the identifier of a species. The lists which hold the elements derive from `SBase` as well, and a [list](listof.md) which states one of these attributes is an element of the report.
 
 The report shows these attributes for every element: the id and the name in the first two columns of every table, the meta id and the SBO term in the attributes of the inspector, the notes, the annotations and the history in its last section, and the XML behind the button of its header.
 
@@ -104,12 +104,19 @@ The report shows the uncertainties of an element in its inspector, each of them 
 | field | type | meaning |
 | --- | --- | --- |
 | [xml](#xml) | `string` | the element as it is written in the SBML file |
+| [lists](#lists) | `list` | the lists of the element which state something of their own |
 
 <span id="xml"></span>**xml**
 
 The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display. The document and the model are the exception: their XML is the whole file, so the report carries their annotation element instead. The nodes of a [gene product association](geneproductassociation.md) carry none either, because the XML of their [reaction](reaction.md) contains the whole association and every node of a deep tree would repeat the part below it.
 
 The "XML" button in the header of the inspector puts the XML view in the place of its sections.
+
+<span id="lists"></span>**lists**
+
+The lists of an element, the `listOfSpecies` of a model or the `listOfReactants` of a reaction, derive from `SBase` themselves and may carry a meta id, an SBO term, notes and an annotation, and from Level 3 Version 2 on an id and a name. The report collects the lists of an element which state at least one of these, each as a [list](listof.md) which is an element of its own. A list which states nothing is not part of the report, so most elements have none.
+
+The report shows the lists of an element as links in the attributes of its inspector, and the row is left out where there are none.
 
 ## Specification
 

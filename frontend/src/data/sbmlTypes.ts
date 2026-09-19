@@ -21,6 +21,7 @@ import {
   HashIcon,
   HourglassIcon,
   LayoutGridIcon,
+  ListIcon,
   ListTreeIcon,
   LockIcon,
   LogInIcon,
@@ -387,6 +388,14 @@ export const NESTED_TYPES: readonly SbmlTypeInfo<NestedElementType>[] = [
     color: "#c7c7c7",
     icon: MoveHorizontalIcon,
     pkg: "distrib",
+  },
+  // a list of any type and of any package is of the one type ListOf, which the core defines:
+  // its colour is a neutral one and not the colour of what a list holds
+  {
+    type: "ListOf",
+    color: "#e5d8bd",
+    icon: ListIcon,
+    pkg: "core",
   },
 ];
 

@@ -38,7 +38,7 @@ package = "core"
 spec = { doc = "l3v2", section = "3.2" }
 summary = "the attributes every element of an SBML model carries"
 description = """
-Almost every object of an SBML model derives from the abstract type `SBase`, which carries the identifier, the name, the term of the Systems Biology Ontology and the two places for annotation: the notes for human readers and the annotation for machine readable metadata. An element type adds its own attributes on top of these, and may make an inherited attribute required, for example the identifier of a species.
+Almost every object of an SBML model derives from the abstract type `SBase`, which carries the identifier, the name, the term of the Systems Biology Ontology and the two places for annotation: the notes for human readers and the annotation for machine readable metadata. An element type adds its own attributes on top of these, and may make an inherited attribute required, for example the identifier of a species. The lists which hold the elements derive from `SBase` as well, and a [list](listof.md) which states one of these attributes is an element of the report.
 
 The report shows these attributes for every element: the id and the name in the first two columns of every table, the meta id and the SBO term in the attributes of the inspector, the notes, the annotations and the history in its last section, and the XML behind the button of its header.
 """
@@ -131,6 +131,17 @@ description = """
 The report keeps the XML of every element so that a modeller can see what the file actually contains, including the parts of a package the report does not display. The document and the model are the exception: their XML is the whole file, so the report carries their annotation element instead. The nodes of a [gene product association](geneproductassociation.md) carry none either, because the XML of their [reaction](reaction.md) contains the whole association and every node of a deep tree would repeat the part below it.
 
 The "XML" button in the header of the inspector puts the XML view in the place of its sections.
+"""
+
+[types.SBase.attributes.lists]
+label = "lists"
+package = "report"
+type = "list"
+summary = "the lists of the element which state something of their own"
+description = """
+The lists of an element, the `listOfSpecies` of a model or the `listOfReactants` of a reaction, derive from `SBase` themselves and may carry a meta id, an SBO term, notes and an annotation, and from Level 3 Version 2 on an id and a name. The report collects the lists of an element which state at least one of these, each as a [list](listof.md) which is an element of its own. A list which states nothing is not part of the report, so most elements have none.
+
+The report shows the lists of an element as links in the attributes of its inspector, and the row is left out where there are none.
 """
 
 
@@ -1564,4 +1575,40 @@ description = """
 The math is an arbitrary expression over the elements of the model. Whether it is evaluated when the event triggers or when it is executed is decided by the flag "values from trigger time" of the event.
 
 The report renders the formula in the table of the event and in the inspector.
+"""
+
+[types.ListOf]
+label = "ListOf"
+package = "core"
+spec = { doc = "l3v2", section = "4.2.7" }
+summary = "a list of a model or of an element which states something of its own"
+description = """
+SBML groups the elements of one type in a list: the species of a model in its `listOfSpecies`, the reactants of a reaction in its `listOfReactants`, the units of a unit definition in its `listOfUnits`. Every such list is an object of a class of its own which derives from [SBase](sbase.md), so a list may carry a meta id, an SBO term, notes and an annotation, and from Level 3 Version 2 on an id and a name. A note which says where the species of a model come from, or an annotation which relates all of them to one pathway, is written on the list and on none of its elements. A list has no attributes besides these, and what it states has no effect on the mathematics of the model.
+
+Up to Level 3 Version 1 a list had to hold at least one element. Level 3 Version 2 allows an empty list, so that a file can keep what it says about the list, for example a note which explains why a model has no rules.
+
+The lists of most models state nothing, and the report does not show them: the elements of a list are the rows of their table, or the rows of their owner in the inspector. A list which states at least one of the above is an element of the report. The report has one type for the lists of every class and of every package, which the name of the list in the file tells apart. Such a list is linked from the heading of the table of its elements and from the row "lists" in the inspector of the element which owns it, the model for a `listOfSpecies` and the reaction for a `listOfReactants`; an empty list has no table, so its owner is where it is found. The inspector of a list shows its name in the file and the number of its elements next to the shared attributes, its notes and its annotations, and its XML is the list without its elements. A list without an id is named after its owner and its name in the file, `J0.listOfReactants`, and a list of the model by that name alone.
+"""
+related = ["Model", "Reaction", "UnitDefinition", "Port"]
+
+[types.ListOf.attributes.element]
+label = "list"
+package = "report"
+type = "string"
+summary = "the name the list has in the file, which says what it lists"
+description = """
+Every list of SBML is an XML element with a name of its own, `listOfSpecies`, `listOfReactants` or `listOfPorts`, and that name is all which tells the lists of a file apart: a list needs neither an id nor a meta id. The name is written without the prefix of its package.
+
+The report shows the name in the attributes of the inspector of the list, and names a list without an id by it.
+"""
+
+[types.ListOf.attributes.size]
+label = "size"
+package = "report"
+type = "integer"
+summary = "the number of elements the list holds"
+description = """
+The report keeps the elements of a list where it shows them, as the rows of their table or in the inspector of their owner, and the list carries their number alone. The number is zero for an empty list, which Level 3 Version 2 allows and which a file writes to say something about it.
+
+The report shows the number in the attributes of the inspector of the list.
 """

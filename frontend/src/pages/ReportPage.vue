@@ -107,6 +107,7 @@ const sections = computed(() => {
       rows,
       all,
       total: all.length,
+      list: current.list(currentModel.pk, info.listKey)?.pk ?? null,
       visible: types === null || types.includes(info.type),
     };
   });
@@ -208,6 +209,7 @@ watch([selectedPk, index], ([pk, current]) => {
             :rows="section.rows as SbmlElement[]"
             :all-rows="section.all as SbmlElement[]"
             :total="section.total"
+            :list="section.list"
           />
         </div>
       </template>

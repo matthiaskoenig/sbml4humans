@@ -5,6 +5,7 @@ import type {
   SbmlElement,
   ElementType,
   ExternalModelDefinition,
+  ListOf,
   Model,
   Node,
   Report,
@@ -167,6 +168,13 @@ export class ReportIndex {
     return this.modelOf(pk);
   }
 
+  /** The list of an element with the name the list has in the file, `listOfSpecies` of a model
+   * or `listOfReactants` of a reaction, where it states something of its own: a plain list is
+   * no element of the report. The three tables of the rules share the one `listOfRules`. */
+  list(pk: string, element: string): ListOf | null {
+    return this.elements.get(pk)?.lists?.find((list) => list.element === element) ?? null;
+  }
+
   /** The edges from the element to the elements of its entry it references. */
   references(pk: string): Edge[] {
     return this.outgoing.get(pk) ?? [];
@@ -248,9 +256,12 @@ export class ReportIndex {
   }
 
   /** An element and everything nested in it which carries a pk of its own: its uncertainties,
-   * the replacements of the comp package it carries and the chain of references below one. */
+   * the replacements of the comp package it carries, the chain of references below one and its
+   * lists which state something of their own. Every element of the report passes through here,
+   * so the lists of the document, of a model and of a nested element are found alike. */
   private add(element: SBase): void {
     this.elements.set(element.pk, element);
+    for (const list of element.lists ?? []) this.add(list);
     for (const uncertainty of element.uncertainties ?? []) this.addUncertainty(uncertainty);
     if (element.comp?.replacedBy) this.add(element.comp.replacedBy);
     for (const replaced of element.comp?.replacedElements ?? []) this.add(replaced);

@@ -23,7 +23,8 @@ export type FixtureName =
   | "distrib_uncertainties"
   | "distrib_spans"
   | "constraint_event"
-  | "qual_example";
+  | "qual_example"
+  | "list_of";
 
 export function loadFixture(name: FixtureName): ReportResponse {
   const path = join(FIXTURES_DIR, `${name}.json`);

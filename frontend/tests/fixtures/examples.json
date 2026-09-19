@@ -293,6 +293,14 @@
     ]
   },
   {
+    "id": "list_of (list_of.xml)",
+    "name": "ListOf containers with attributes of their own",
+    "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Every <code>ListOf</code> container of SBML derives from <code>SBase</code>: a list may carry a metaid, an SBO term, notes and an annotation of its own, and from Level 3 Version 2 on an id and a name. This model states them on several of its lists, and explains a list which is empty.</p>\n  </body>\n</notes>",
+    "packages": [
+      "comp"
+    ]
+  },
+  {
     "id": "minimal_model (minimal_model.xml)",
     "name": null,
     "description": null,

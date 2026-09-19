@@ -278,6 +278,14 @@ A [transition](transition.md) has exactly one [default term](defaultterm.md), wh
 
 It is shown under "References" of the transition and under "Referenced by" of the term.
 
+## listOf
+
+A list of the element which states something of its own.
+
+An element names every [list](listof.md) it owns which carries a meta id, an SBO term, notes, an annotation, an id or a name: a model its `listOfSpecies`, a reaction its `listOfReactants`, a unit definition its `listOfUnits`. A list which states nothing is no element of the report and has no link. A [port](port.md), a [deletion](deletion.md) or a replacement of the comp package which names a list by its meta id or its id ends at the list with a link of its own kind.
+
+It is shown under "References" of the element which owns the list and under "Referenced by" of the list, which is how a reader gets from a list back to its owner.
+
 ## uncertainty
 
 A set of measures of how well the value of an element is known.

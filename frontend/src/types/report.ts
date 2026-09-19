@@ -48,6 +48,7 @@ export type EdgeKind =
   | "output"
   | "functionTerm"
   | "defaultTerm"
+  | "listOf"
   | "uncertainty"
   | "uncertParameter"
   | "var"
@@ -124,6 +125,7 @@ export interface SBMLDocument {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   level: number;
   version: number;
   packages?: Package[];
@@ -181,6 +183,7 @@ export interface ReplacedBy {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -205,6 +208,7 @@ export interface Uncertainty {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   uncertParameters?: (UncertSpan | UncertParameter)[];
 }
 /**
@@ -220,6 +224,37 @@ export interface KeyValuePair {
   key?: string | null;
   value?: string | null;
   uri?: string | null;
+}
+/**
+ * A ListOf container of an element which carries something of its own.
+ *
+ * Every `ListOf` class of SBML derives from `SBase` (core §4.2.7): a
+ * `listOfSpecies` or a `listOfReactants` may carry a metaid, an SBO term,
+ * notes and an annotation, and from Level 3 Version 2 on an id and a name.
+ * The report has one type for all of them, which `element` tells apart by the
+ * name the list has in the file, and carries a list only where it states one
+ * of these, in the `lists` of the element which owns it. The elements of the
+ * list stay where the report has them, in the `list_of_species` of the model,
+ * so the list carries their number alone and its `xml` is the list without
+ * them.
+ */
+export interface ListOf {
+  pk: string;
+  sbmlType?: "ListOf";
+  id?: string | null;
+  metaId?: string | null;
+  name?: string | null;
+  sbo?: string | null;
+  notes?: string | null;
+  cvterms?: CVTerm[];
+  history?: ModelHistory | null;
+  xml?: string | null;
+  comp?: CompSBase | null;
+  uncertainties?: Uncertainty[];
+  keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
+  element: string;
+  size: number;
 }
 /**
  * An uncertainty which is an interval (distrib §3.12).
@@ -243,6 +278,7 @@ export interface UncertSpan {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   type?: string | null;
   var?: string | null;
   value?: number | "Infinity" | "-Infinity" | "NaN" | null;
@@ -284,6 +320,7 @@ export interface UncertParameter {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   type?: string | null;
   var?: string | null;
   value?: number | "Infinity" | "-Infinity" | "NaN" | null;
@@ -313,6 +350,7 @@ export interface SBaseRef {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -336,6 +374,7 @@ export interface ReplacedElement {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -373,6 +412,7 @@ export interface Model {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   kind?: "model" | "modelDefinition";
   annotationXml?: string | null;
   substanceUnits?: string | null;
@@ -433,6 +473,7 @@ export interface FunctionDefinition {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   math?: Math | null;
 }
 /**
@@ -452,6 +493,7 @@ export interface UnitDefinition {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   unitsLatex?: string | null;
   listOfUnits?: Unit[];
 }
@@ -485,6 +527,7 @@ export interface Compartment {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   spatialDimensions?: number | "Infinity" | "-Infinity" | "NaN" | null;
   size?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
@@ -509,6 +552,7 @@ export interface Species {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   compartment: string;
   initialAmount?: number | "Infinity" | "-Infinity" | "NaN" | null;
   initialConcentration?: number | "Infinity" | "-Infinity" | "NaN" | null;
@@ -548,6 +592,7 @@ export interface Parameter {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
   units?: string | null;
@@ -571,6 +616,7 @@ export interface InitialAssignment {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   symbol: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -592,6 +638,7 @@ export interface AssignmentRule {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   variable: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -613,6 +660,7 @@ export interface RateRule {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   variable: string;
   math?: Math | null;
   derivedUnits?: string | null;
@@ -634,6 +682,7 @@ export interface AlgebraicRule {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   math?: Math | null;
   derivedUnits?: string | null;
 }
@@ -654,6 +703,7 @@ export interface Constraint {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   math?: Math | null;
   message?: string | null;
 }
@@ -678,6 +728,7 @@ export interface Reaction {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   reversible?: boolean | null;
   fast?: boolean | null;
   compartment?: string | null;
@@ -705,6 +756,7 @@ export interface SpeciesReference {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   species: string;
   stoichiometry?: number | "Infinity" | "-Infinity" | "NaN" | null;
   constant?: boolean | null;
@@ -726,6 +778,7 @@ export interface ModifierSpeciesReference {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   species: string;
 }
 /**
@@ -745,6 +798,7 @@ export interface KineticLaw {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   math?: Math | null;
   derivedUnits?: string | null;
   listOfLocalParameters?: LocalParameter[];
@@ -766,6 +820,7 @@ export interface LocalParameter {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   value?: number | "Infinity" | "-Infinity" | "NaN" | null;
   units?: string | null;
   unitsLatex?: string | null;
@@ -796,6 +851,7 @@ export interface GeneProductAssociation {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   association?: GeneProductRef | And | Or | null;
 }
 /**
@@ -815,6 +871,7 @@ export interface GeneProductRef {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   geneProduct: string;
 }
 /**
@@ -834,6 +891,7 @@ export interface And {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   associations?: (GeneProductRef | And | Or)[];
 }
 /**
@@ -853,6 +911,7 @@ export interface Or {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   associations?: (GeneProductRef | And | Or)[];
 }
 /**
@@ -872,6 +931,7 @@ export interface Event {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   useValuesFromTriggerTime?: boolean | null;
   trigger?: Trigger | null;
   priority?: Priority | null;
@@ -895,6 +955,7 @@ export interface Trigger {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   math?: Math | null;
   initialValue?: boolean | null;
   persistent?: boolean | null;
@@ -916,6 +977,7 @@ export interface Priority {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   math?: Math | null;
 }
 /**
@@ -935,6 +997,7 @@ export interface Delay {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   math?: Math | null;
 }
 /**
@@ -954,6 +1017,7 @@ export interface EventAssignment {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   variable: string;
   math?: Math | null;
 }
@@ -974,6 +1038,7 @@ export interface Submodel {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   modelRef: string;
   timeConversionFactor?: string | null;
   extentConversionFactor?: string | null;
@@ -996,6 +1061,7 @@ export interface Deletion {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -1019,6 +1085,7 @@ export interface Port {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   portRef?: string | null;
   idRef?: string | null;
   unitRef?: string | null;
@@ -1042,6 +1109,7 @@ export interface GeneProduct {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   label?: string | null;
   associatedSpecies?: string | null;
 }
@@ -1062,6 +1130,7 @@ export interface Objective {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   type?: string | null;
   listOfFluxObjectives?: FluxObjective[];
 }
@@ -1082,6 +1151,7 @@ export interface FluxObjective {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   reaction: string;
   reaction2?: string | null;
   coefficient?: number | "Infinity" | "-Infinity" | "NaN" | null;
@@ -1109,6 +1179,7 @@ export interface FluxBound {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   reaction?: string | null;
   operation?: string | null;
   value?: number | "Infinity" | "-Infinity" | "NaN" | null;
@@ -1130,6 +1201,7 @@ export interface UserDefinedConstraint {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   lowerBound?: string | null;
   upperBound?: string | null;
   listOfUserDefinedConstraintComponents?: UserDefinedConstraintComponent[];
@@ -1151,6 +1223,7 @@ export interface UserDefinedConstraintComponent {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   variable?: string | null;
   variable2?: string | null;
   coefficient?: string | null;
@@ -1176,6 +1249,7 @@ export interface QualitativeSpecies {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   compartment: string;
   constant?: boolean | null;
   initialLevel?: number | null;
@@ -1202,6 +1276,7 @@ export interface Transition {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   listOfInputs?: Input[];
   listOfOutputs?: Output[];
   listOfFunctionTerms?: FunctionTerm[];
@@ -1224,6 +1299,7 @@ export interface Input {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   qualitativeSpecies: string;
   thresholdLevel?: number | null;
   transitionEffect?: string | null;
@@ -1246,6 +1322,7 @@ export interface Output {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   qualitativeSpecies: string;
   outputLevel?: number | null;
   transitionEffect?: string | null;
@@ -1267,6 +1344,7 @@ export interface FunctionTerm {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   resultLevel?: number | null;
   math?: Math | null;
 }
@@ -1287,14 +1365,15 @@ export interface DefaultTerm {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   resultLevel?: number | null;
 }
 /**
  * The fbc extension of a model.
  *
  * `strict` exists from Version 2 on and `active_objective` is the attribute
- * of the `listOfObjectives`, which the report does not carry as an object of
- * its own (fbc §3.3, §3.3.1).
+ * of the `listOfObjectives`, which the report carries as an object of its own
+ * only where the list states something an `SBase` does (fbc §3.3, §3.3.1).
  */
 export interface ModelFbc {
   strict?: boolean | null;
@@ -1317,6 +1396,7 @@ export interface ExternalModelDefinition {
   comp?: CompSBase | null;
   uncertainties?: Uncertainty[];
   keyValuePairs?: KeyValuePair[];
+  lists?: ListOf[];
   source: string;
   modelRef?: string | null;
   md5?: string | null;

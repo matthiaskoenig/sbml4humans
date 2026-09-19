@@ -147,6 +147,32 @@ describe("ReportPage", () => {
     expect(page.find("[data-testid=inspector]").exists()).toBe(false);
   });
 
+  it("links the list of a table from its heading where the list states something", async () => {
+    vi.mocked(client.postContent).mockResolvedValue(loadFixture("list_of"));
+    const store = useReportStore();
+    await store.loadContent("<sbml/>");
+    const index = store.indexFor(store.defaultEntry!)!;
+    const page = await mountReport();
+
+    const link = (type: string) =>
+      page.find(`[data-testid=section-${type}] h2 [data-testid=section-list] a`);
+    expect(link("Species").text()).toBe("metabolites");
+    expect(link("Species").attributes("data-pk")).toBe(
+      index.list(index.mainModel!.pk, "listOfSpecies")!.pk,
+    );
+    // a list without an id is named by the name it has in the file
+    expect(link("UnitDefinition").text()).toBe("listOfUnitDefinitions");
+    // the list of the compartments states nothing, and is no element of the report
+    expect(page.find("[data-testid=section-Compartment] h2").exists()).toBe(true);
+    expect(link("Compartment").exists()).toBe(false);
+
+    // the link selects the list like every link to an element
+    await link("Species").trigger("click");
+    await flushPromises();
+    expect(router.currentRoute.value.query.pk).toBe(link("Species").attributes("data-pk"));
+    expect(page.get("[data-testid=inspector-type]").text()).toBe("ListOf");
+  });
+
   it("keeps the element a url names", async () => {
     vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();

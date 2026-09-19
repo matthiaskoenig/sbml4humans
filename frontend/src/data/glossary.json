@@ -424,6 +424,22 @@
         }
       }
     },
+    "ListOf": {
+      "label": "ListOf",
+      "summary": "a list of a model or of an element which states something of its own",
+      "package": "core",
+      "page": "reference/listof/",
+      "attributes": {
+        "element": {
+          "label": "list",
+          "summary": "the name the list has in the file, which says what it lists"
+        },
+        "size": {
+          "label": "size",
+          "summary": "the number of elements the list holds"
+        }
+      }
+    },
     "LocalParameter": {
       "label": "LocalParameter",
       "summary": "a named value which only one kinetic law uses",
@@ -970,6 +986,10 @@
           "label": "fbc:listOfKeyValuePairs",
           "summary": "the controlled annotation fbc Version 3 allows on any element"
         },
+        "lists": {
+          "label": "lists",
+          "summary": "the lists of the element which state something of their own"
+        },
         "metaId": {
           "label": "metaid",
           "summary": "the identifier the annotations of the element point at"
@@ -1449,6 +1469,10 @@
     "kineticLaw": {
       "label": "kineticLaw",
       "summary": "the formula which gives the speed of a reaction"
+    },
+    "listOf": {
+      "label": "listOf",
+      "summary": "a list of the element which states something of its own"
     },
     "localParameter": {
       "label": "localParameter",
