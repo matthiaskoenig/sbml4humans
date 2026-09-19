@@ -26,7 +26,7 @@ defineProps<{
     v-if="helpKey"
     v-tooltip.bottom="tooltip"
     :help-key="helpKey"
-    class="cursor-help decoration-dotted underline-offset-2 hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:outline-link"
+    class="cursor-help decoration-dotted underline-offset-2 hover:underline focus-visible:underline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-link"
     data-testid="help-label"
     ><slot
   /></HelpLink>

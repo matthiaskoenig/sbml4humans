@@ -144,6 +144,20 @@ test.describe("the help dialog", () => {
     await expect(tooltip).toContainText("the amount of the species when the simulation starts");
   });
 
+  // the cell of a label truncates it, which clips whatever is painted outside its box: an
+  // outline around the label would be cut at the left edge of the column, and one inside it is
+  // whole wherever the label stands
+  test("the focus outline of a label is painted inside the label", async ({ page }) => {
+    const inspector = await selectFirstSpecies(page);
+    const label = attributeRow(inspector, "initialAmount").getByTestId("help-label");
+    await label.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(label).toBeFocused();
+    await expect(label).toHaveCSS("outline-style", "solid");
+    await expect(label).toHaveCSS("outline-offset", "-2px");
+  });
+
   test("the header of a column still sorts, and its help opens no sort of its own", async ({
     page,
   }) => {
