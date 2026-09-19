@@ -6,7 +6,8 @@ import { openExample } from "./helpers";
 function wrappedCells(column: Locator): Promise<string[]> {
   return column.evaluate((element) => {
     const view = element.ownerDocument.defaultView;
-    return [...element.querySelectorAll('[data-testid="nested-table"] tbody td')]
+    // the empty cell which closes a table of aligned columns holds nothing to wrap
+    return [...element.querySelectorAll('[data-testid="nested-table"] tbody td:not([aria-hidden])')]
       .filter((cell) => {
         // the box of a cell is stretched to the height of its row, so the element inside it is
         // what says how many lines the content of this cell covers

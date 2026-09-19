@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import type { EdgeKind, Reaction } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
@@ -8,8 +10,11 @@ import GeneAssociationView from "@/components/misc/GeneAssociationView.vue";
 import MathView from "@/components/misc/MathView.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import { useReportIndex } from "@/report/context";
+import { elementLabel } from "@/report/label";
+import { formatNumber, toNumber } from "@/report/number";
+import { columnChars } from "@/report/text";
 
-defineProps<{ element: Reaction }>();
+const props = defineProps<{ element: Reaction }>();
 const index = useReportIndex();
 
 const PARTICIPANT_COLUMNS = [
@@ -19,6 +24,35 @@ const PARTICIPANT_COLUMNS = [
   { key: "constant", header: "constant" },
 ];
 const MODIFIER_COLUMNS = PARTICIPANT_COLUMNS.slice(0, 2);
+
+/** The widths of the columns the reactants, the products and the modifiers share, from the rows
+ * of all three, so that the three tables line up; the last column of each takes the rest. */
+const widths = computed(() => {
+  const references = [
+    ...(props.element.listOfReactants ?? []),
+    ...(props.element.listOfProducts ?? []),
+    ...(props.element.listOfModifiers ?? []),
+  ];
+  const stoichiometries = [
+    ...(props.element.listOfReactants ?? []),
+    ...(props.element.listOfProducts ?? []),
+  ].map((reference) => {
+    const value = toNumber(reference.stoichiometry);
+    return value === null ? null : formatNumber(value);
+  });
+  return {
+    id: columnChars(
+      "id",
+      references.map((reference) => elementLabel(index.value, reference.pk)),
+    ),
+    species: columnChars(
+      "species",
+      references.map((reference) => reference.species),
+    ),
+    stoichiometry: columnChars("stoichiometry", stoichiometries),
+  };
+});
+const modifierWidths = computed(() => ({ id: widths.value.id }));
 
 /** The species a participant of the reaction names, resolved through the edge of the species
  * reference itself, which is where the reference to the species is. */
@@ -48,7 +82,12 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     field="listOfReactants"
     :wide="!!element.listOfReactants?.length"
   >
-    <NestedTable :rows="element.listOfReactants ?? []" :columns="PARTICIPANT_COLUMNS">
+    <NestedTable
+      :rows="element.listOfReactants ?? []"
+      :columns="PARTICIPANT_COLUMNS"
+      type="SpeciesReference"
+      :widths="widths"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-species="{ row }"
         ><ElementLink :pk="species(row.pk, 'reactant', row.species)" :label="row.species"
@@ -62,7 +101,12 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     field="listOfProducts"
     :wide="!!element.listOfProducts?.length"
   >
-    <NestedTable :rows="element.listOfProducts ?? []" :columns="PARTICIPANT_COLUMNS">
+    <NestedTable
+      :rows="element.listOfProducts ?? []"
+      :columns="PARTICIPANT_COLUMNS"
+      type="SpeciesReference"
+      :widths="widths"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-species="{ row }"
         ><ElementLink :pk="species(row.pk, 'product', row.species)" :label="row.species"
@@ -76,7 +120,12 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     field="listOfModifiers"
     :wide="!!element.listOfModifiers?.length"
   >
-    <NestedTable :rows="element.listOfModifiers ?? []" :columns="MODIFIER_COLUMNS">
+    <NestedTable
+      :rows="element.listOfModifiers ?? []"
+      :columns="MODIFIER_COLUMNS"
+      type="ModifierSpeciesReference"
+      :widths="modifierWidths"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-species="{ row }"
         ><ElementLink :pk="species(row.pk, 'modifier', row.species)" :label="row.species"

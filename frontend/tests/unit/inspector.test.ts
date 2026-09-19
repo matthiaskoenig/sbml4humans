@@ -798,7 +798,7 @@ describe("inspector", () => {
 
     // the inputs with the species they read and the sign of their influence
     const inputs = tables[0]!;
-    expect(inputs.findAll("thead th").map((th) => th.text())).toEqual([
+    expect(inputs.findAll("thead th:not([aria-hidden])").map((th) => th.text())).toEqual([
       "id",
       "species",
       "sign",
@@ -926,6 +926,52 @@ describe("inspector", () => {
       props: { rows, columns: COLUMNS },
       global: { directives: { tooltip: vTooltip } },
     });
+
+  it("explains every header of a nested table on hover", async () => {
+    // the headers of the tables of an input, an output and a measure explained nothing
+    const transition = qual.mainModel!.listOfTransitions!.find((t) => t.id === "tr_G")!;
+    const wrapper = mountWith(TransitionAttributes, { element: transition }, qual);
+    const headers = wrapper.findAll("[data-testid=nested-table] thead th");
+    const sign = headers.find((th) => th.text() === "sign")!;
+    await sign.get("span").trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      `sign: ${attributeEntry("Input", "sign")!.summary}`,
+    );
+    const level = headers.find((th) => th.text() === "output level")!;
+    await level.get("span").trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toBe(
+      `output level: ${attributeEntry("Output", "outputLevel")!.summary}`,
+    );
+    wrapper.unmount();
+  });
+
+  it("gives the columns of the tables one element shows in a row the same widths", () => {
+    // the reactants and the products of a reaction, and the inputs and the outputs of a
+    // transition, each sized their columns on their own, so that "species" jumped between two
+    // tables stacked under each other
+    const widths = (wrapper: ReturnType<typeof mountWith>) =>
+      wrapper
+        .findAll("[data-testid=nested-table]")
+        .map((table) => table.findAll("col").map((col) => col.attributes("style") ?? ""));
+    const reaction = constraintEvent.mainModel!.listOfReactions!.find((r) => r.id === "R1")!;
+    const [reactants, products] = widths(
+      mountWith(ReactionAttributes, { element: reaction }, constraintEvent),
+    );
+    expect(reactants!.slice(0, 3).every((style) => style.includes("width"))).toBe(true);
+    expect(reactants).toEqual(products);
+
+    const transition = qual.mainModel!.listOfTransitions!.find((t) => t.id === "tr_G")!;
+    const [inputs, outputs] = widths(
+      mountWith(TransitionAttributes, { element: transition }, qual),
+    );
+    expect(inputs!.slice(0, 2)).toEqual(outputs!.slice(0, 2));
+    expect(inputs![1]).toContain("width");
+
+    const km = distribSpans.mainModel!.listOfParameters!.find((p) => p.id === "Km")!;
+    const [purified, lysate] = widths(mountWith(AttributesColumn, { element: km }, distribSpans));
+    expect(purified!.slice(0, 3)).toEqual(lysate!.slice(0, 3));
+    expect(purified![0]).toContain("width");
+  });
 
   it("shows the first 50 rows of a nested table and the rest after show all, which then disappears", async () => {
     const wrapper = mountTable(rowsOf(60, "r"));

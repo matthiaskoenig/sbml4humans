@@ -59,7 +59,7 @@ test.describe("qual", () => {
     const inspector = page.getByTestId("inspector");
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Transition");
     const inputs = attribute(page, "inputs").getByTestId("nested-table");
-    await expect(inputs.locator("thead th")).toHaveText([
+    await expect(inputs.locator("thead th:not([aria-hidden])")).toHaveText([
       "id",
       "species",
       "sign",

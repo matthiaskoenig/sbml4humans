@@ -18,6 +18,8 @@ const target = computed(() => (props.pk ? index.value?.get(props.pk) : undefined
 const text = computed(() => props.label ?? elementLabel(index.value, props.pk) ?? "-");
 /** The link names an element the file gives no id by the name the report gives it, which is
  * set apart from an id; a label the caller passes is what the file writes. */
+/** The name cut after every dot, where a name the report gives may wrap in a narrow column. */
+const parts = computed(() => text.value.split(/(?<=\.)/));
 const reportName = computed(
   () => !props.label && !!target.value && !hasFileId(index.value, props.pk),
 );
@@ -33,12 +35,13 @@ const reportName = computed(
     @click.stop
   >
     <TypeMark v-if="mark && target.sbmlType" :type="target.sbmlType" />
+    <!-- the name the report gives may break after a dot, between the owner and its part -->
     <span
       v-if="reportName"
       v-tooltip.bottom="REPORT_NAME_HINT"
       class="italic"
       data-testid="report-name"
-      >{{ text }}</span
+      ><template v-for="(part, i) in parts" :key="i"><wbr v-if="i > 0" />{{ part }}</template></span
     >
     <span v-else>{{ text }}</span>
   </RouterLink>

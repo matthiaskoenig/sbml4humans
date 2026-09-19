@@ -9,6 +9,8 @@ import MathView from "@/components/misc/MathView.vue";
 import QualSignMark from "@/components/misc/QualSignMark.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
+import { elementLabel } from "@/report/label";
+import { columnChars } from "@/report/text";
 
 const props = defineProps<{ element: Transition }>();
 const index = useReportIndex();
@@ -29,10 +31,38 @@ const OUTPUT_COLUMNS = [
 ];
 
 const TERM_COLUMNS = [
-  { key: "term", header: "term" },
-  { key: "condition", header: "condition" },
+  { key: "term", header: "term", field: "id" },
+  { key: "condition", header: "condition", field: "math" },
   { key: "resultLevel", header: "result level" },
 ];
+
+/** The widths of the two columns the inputs and the outputs share, from the rows of both, so
+ * that the two tables line up. */
+const widths = computed(() => {
+  const influences = [
+    ...(props.element.listOfInputs ?? []),
+    ...(props.element.listOfOutputs ?? []),
+  ];
+  return {
+    id: columnChars(
+      "id",
+      influences.map((influence) => elementLabel(index.value, influence.pk)),
+    ),
+    qualitativeSpecies: columnChars(
+      "species",
+      influences.map((influence) => influence.qualitativeSpecies),
+    ),
+    transitionEffect: columnChars(
+      "effect",
+      influences.map((influence) => influence.transitionEffect),
+    ),
+  };
+});
+/** The inputs have the sign and the threshold where the outputs have their level, so the effect,
+ * which both have, lines up where the output level is as wide as the two of them with the
+ * padding of the second cell, 0.75rem of text of 0.75rem whose characters are 0.61 of it wide. */
+const inputWidths = computed(() => ({ ...widths.value, sign: 4, thresholdLevel: 9 }));
+const outputWidths = computed(() => ({ ...widths.value, outputLevel: 4 + 9 + 1 / 0.61 }));
 
 interface TermRow {
   pk: string;
@@ -72,7 +102,12 @@ const terms = computed<TermRow[]>(() => {
     field="listOfInputs"
     :wide="!!element.listOfInputs?.length"
   >
-    <NestedTable :rows="element.listOfInputs ?? []" :columns="INPUT_COLUMNS">
+    <NestedTable
+      :rows="element.listOfInputs ?? []"
+      :columns="INPUT_COLUMNS"
+      type="Input"
+      :widths="inputWidths"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-qualitativeSpecies="{ row }">
         <ElementLink
@@ -90,7 +125,12 @@ const terms = computed<TermRow[]>(() => {
     field="listOfOutputs"
     :wide="!!element.listOfOutputs?.length"
   >
-    <NestedTable :rows="element.listOfOutputs ?? []" :columns="OUTPUT_COLUMNS">
+    <NestedTable
+      :rows="element.listOfOutputs ?? []"
+      :columns="OUTPUT_COLUMNS"
+      type="Output"
+      :widths="outputWidths"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-qualitativeSpecies="{ row }">
         <ElementLink
@@ -107,7 +147,7 @@ const terms = computed<TermRow[]>(() => {
     field="listOfFunctionTerms"
     :wide="!!terms.length"
   >
-    <NestedTable :rows="terms" :columns="TERM_COLUMNS">
+    <NestedTable :rows="terms" :columns="TERM_COLUMNS" type="FunctionTerm">
       <template #cell-term="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-condition="{ row }">
         <span v-if="row.isDefault" class="text-gray-500 italic">otherwise</span>

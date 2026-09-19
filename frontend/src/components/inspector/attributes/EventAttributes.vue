@@ -60,7 +60,11 @@ const ASSIGNMENT_COLUMNS = [
     field="listOfEventAssignments"
     :wide="!!element.listOfEventAssignments?.length"
   >
-    <NestedTable :rows="element.listOfEventAssignments ?? []" :columns="ASSIGNMENT_COLUMNS">
+    <NestedTable
+      :rows="element.listOfEventAssignments ?? []"
+      :columns="ASSIGNMENT_COLUMNS"
+      type="EventAssignment"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-variable="{ row }"
         ><ElementLink :pk="index?.resolve(row.pk, 'variable', row.variable)" :label="row.variable"

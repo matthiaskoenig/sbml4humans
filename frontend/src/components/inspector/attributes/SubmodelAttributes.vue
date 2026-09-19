@@ -12,7 +12,7 @@ const props = defineProps<{ element: Submodel }>();
 const index = useReportIndex();
 
 const DELETION_COLUMNS = [
-  { key: "pk", header: "deletion" },
+  { key: "pk", header: "deletion", field: "id" },
   { key: "name", header: "element" },
 ];
 /** Every deletion with the element it removes, which a deletion of an external model, whose
@@ -60,7 +60,7 @@ const deletions = computed(() =>
     field="listOfDeletions"
     :wide="!!element.listOfDeletions?.length"
   >
-    <NestedTable :rows="deletions" :columns="DELETION_COLUMNS">
+    <NestedTable :rows="deletions" :columns="DELETION_COLUMNS" type="Deletion">
       <template #cell-pk="{ row }"><ElementLink :pk="row.pk" mark /></template>
       <template #cell-name="{ row }"><ElementLink :pk="row.target" :label="row.name" /></template>
     </NestedTable>

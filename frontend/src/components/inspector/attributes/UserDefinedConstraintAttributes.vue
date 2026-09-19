@@ -36,7 +36,11 @@ const COLUMNS = [
     field="listOfUserDefinedConstraintComponents"
     :wide="!!element.listOfUserDefinedConstraintComponents?.length"
   >
-    <NestedTable :rows="element.listOfUserDefinedConstraintComponents ?? []" :columns="COLUMNS">
+    <NestedTable
+      :rows="element.listOfUserDefinedConstraintComponents ?? []"
+      :columns="COLUMNS"
+      type="UserDefinedConstraintComponent"
+    >
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-variable="{ row }">
         <ElementLink :pk="index?.resolve(row.pk, 'variable', row.variable)" :label="row.variable" />

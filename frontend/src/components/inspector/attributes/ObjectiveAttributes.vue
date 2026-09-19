@@ -28,7 +28,7 @@ const COLUMNS = [
     field="listOfFluxObjectives"
     :wide="!!element.listOfFluxObjectives?.length"
   >
-    <NestedTable :rows="element.listOfFluxObjectives ?? []" :columns="COLUMNS">
+    <NestedTable :rows="element.listOfFluxObjectives ?? []" :columns="COLUMNS" type="FluxObjective">
       <template #cell-id="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-reaction="{ row }">
         <ElementLink

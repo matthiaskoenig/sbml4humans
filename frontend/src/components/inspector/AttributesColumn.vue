@@ -26,6 +26,11 @@ const keyValueColumns = [
   { key: "uri", header: "uri" },
 ];
 
+/** The measures of every uncertainty of the element, whose tables line up with each other. */
+const allMeasures = computed(() =>
+  (props.element.uncertainties ?? []).flatMap((uncertainty) => uncertainty.uncertParameters ?? []),
+);
+
 /** One row of a replacement: the submodel it names, and the element inside it which it replaces
  * or which replaces this element. A replacement scoped to a deletion names that deletion in the
  * place of an element, and a reference into an external model, whose document the report does
@@ -102,6 +107,7 @@ const replacedElements = computed(() =>
       >
         <NestedTable
           :rows="replacedElements"
+          type="ReplacedElement"
           :columns="[
             { key: 'submodelRef', header: 'submodel' },
             { key: 'name', header: 'element' },
@@ -158,7 +164,10 @@ const replacedElements = computed(() =>
           <ElementLink :pk="uncertainty.pk" />
           <span v-if="uncertainty.name" class="ml-1.5 text-gray-700">{{ uncertainty.name }}</span>
         </p>
-        <UncertMeasureTable :measures="uncertainty.uncertParameters ?? []" />
+        <UncertMeasureTable
+          :measures="uncertainty.uncertParameters ?? []"
+          :align-with="allMeasures"
+        />
       </div>
     </AttributeRow>
   </dl>
