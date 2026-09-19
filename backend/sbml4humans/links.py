@@ -5,17 +5,25 @@ an edge from the referencing to the referenced object. References are SIds
 resolved within the containing model, unit definitions and local parameters in
 their own namespaces, model references against the model definitions of the
 document. An unresolvable reference is logged and produces no edge.
+
+The reports of the entries of one archive are linked together: a reference into
+a submodel which instantiates an external model definition goes on in the report
+of the entry that definition names (`external.py`), and the edge names the entry
+of its target.
 """
 
 import logging
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
+from dataclasses import dataclass, field
 
+from sbml4humans.external import ExternalModels
 from sbml4humans.model import (
     And,
     Association,
     Edge,
     EdgeKind,
     Event,
+    ExternalModelDefinition,
     GeneProductAssociation,
     GeneProductRef,
     LinkGraph,
@@ -59,9 +67,15 @@ class ModelIndex:
     which of them it means, so each has its own index.
     """
 
-    def __init__(self, model: Model) -> None:
-        """Index the elements of the model by their identifiers."""
+    def __init__(self, model: Model, entry: EntryIndex | None = None) -> None:
+        """Index the elements of the model by their identifiers.
+
+        Args:
+            model: the model.
+            entry: the index of the report which holds the model.
+        """
         self.model = model
+        self.entry = entry
         self.sids: dict[str, str] = {}
         self.units: dict[str, str] = {}
         self.ports: dict[str, str] = {}
@@ -309,23 +323,86 @@ def _transition_terms(transition: Transition) -> Iterator[SBase]:
         yield transition.default_term
 
 
+class EntryIndex:
+    """The models of one report, which is the report of one entry of an archive.
+
+    It is what the builder of another entry needs to follow a reference into
+    this one: the index of every model, and the models and external model
+    definitions a `modelRef` may name, which share one namespace of the
+    document (comp §3.3).
+    """
+
+    def __init__(self, report: Report, location: str | None = None) -> None:
+        """Index the models of the report of the entry at the manifest location."""
+        self.report = report
+        self.location = location
+        self.indices: dict[str, ModelIndex] = {}
+        self.model_refs: dict[str, str] = {}
+        self.external: dict[str, ExternalModelDefinition] = {}
+        for emd in report.external_model_definitions:
+            self.external[emd.pk] = emd
+            if emd.id is not None:
+                self.model_refs[emd.id] = emd.pk
+        for model in report.models:
+            if model.id is not None:
+                self.model_refs[model.id] = model.pk
+            self.indices[model.pk] = ModelIndex(model, self)
+
+
+@dataclass(frozen=True)
+class Target:
+    """The element a reference ends at, with the index of the model which holds it."""
+
+    pk: str
+    index: ModelIndex
+
+    @property
+    def entry(self) -> str | None:
+        """The manifest location of the entry which holds the element."""
+        return self.index.entry.location if self.index.entry is not None else None
+
+
+@dataclass
+class LinkSource:
+    """What the link graph of one report is built from.
+
+    Attributes:
+        report: the report with its models, without link graph.
+        symbols: the symbols of every math, keyed by the pk of its owner.
+        units: the units the numbers of every math name, keyed the same way.
+    """
+
+    report: Report
+    symbols: dict[str, set[str]]
+    units: dict[str, set[str]] = field(default_factory=dict)
+
+
 class LinkGraphBuilder:
     """Collects the nodes and edges of a report."""
 
     def __init__(
         self,
-        report: Report,
-        symbols: dict[str, set[str]],
-        units: dict[str, set[str]] | None = None,
+        source: LinkSource,
+        entry: EntryIndex,
+        entries: Mapping[str, EntryIndex] | None = None,
+        external: ExternalModels | None = None,
     ) -> None:
-        """Prepare the build for the report and the symbols and units of its maths."""
-        self.report = report
-        self.symbols = symbols
-        self.units = units or {}
+        """Prepare the build of the graph of one report.
+
+        Args:
+            source: the report and the symbols and units of its maths.
+            entry: the index of the report.
+            entries: the indices of all entries of the archive by location.
+            external: the resolution of the external model definitions of them.
+        """
+        self.report = source.report
+        self.symbols = source.symbols
+        self.units = source.units
+        self.entry = entry
+        self.entries = entries or {}
+        self.external = external
         self.nodes: dict[str, Node] = {}
         self.edges: list[Edge] = []
-        self.indices: dict[str, ModelIndex] = {}
-        self.model_refs: dict[str, str] = {}
 
     def build(self) -> LinkGraph:
         """Build the graph."""
@@ -356,13 +433,8 @@ class LinkGraphBuilder:
         self._add_node(self.report.document, None)
         for emd in self.report.external_model_definitions:
             self._add_node(emd, None)
-            if emd.id is not None:
-                self.model_refs[emd.id] = emd.pk
         for model in self.report.models:
             self._add_node(model, None)
-            if model.id is not None:
-                self.model_refs[model.id] = model.pk
-            self.indices[model.pk] = ModelIndex(model)
             for element in _nested(model):
                 self._add_node(element, model.pk)
 
@@ -475,32 +547,64 @@ class LinkGraphBuilder:
     # ---------------------------------------------------------------------------------
     # comp: the references which reach into a submodel
     # ---------------------------------------------------------------------------------
-    def _submodel_index(self, submodel: Submodel) -> ModelIndex | None:
-        """The index of the model a submodel instantiates, None for an external one.
+    def _target_edge(self, source: SBase, target: Target, kind: EdgeKind) -> None:
+        """The edge to a target, which names its entry where it is another one."""
+        entry = target.entry if target.entry != self.entry.location else None
+        self.edges.append(
+            Edge(source=source.pk, target=target.pk, kind=kind, target_entry=entry)
+        )
 
-        A submodel instantiates a model definition of the document or an
-        external model definition (comp §3.5.1). The document of an external
-        one is not read, so the report has no model to resolve a reference in.
+    def _external_index(
+        self, home: EntryIndex, emd: ExternalModelDefinition
+    ) -> ModelIndex | None:
+        """The index of the model an external model definition of `home` names.
+
+        The model is one of another entry of the archive (comp §3.3.2). None
+        where the definition is not resolved, which `ExternalModels` logs.
         """
-        model_pk = self.model_refs.get(submodel.model_ref)
-        return self.indices.get(model_pk) if model_pk is not None else None
+        if self.external is None or home.location is None:
+            return None
+        named = self.external.model(home.location, emd)
+        if named is None:
+            return None
+        entry = self.entries.get(named.location)
+        return entry.indices.get(named.model.pk) if entry is not None else None
+
+    def _submodel_index(
+        self, submodel: Submodel, home: EntryIndex
+    ) -> ModelIndex | None:
+        """The index of the model a submodel of the entry `home` instantiates.
+
+        A submodel instantiates a model definition of its document or an
+        external model definition (comp §3.5.1), whose model is part of the
+        report where its document is another entry of the archive.
+        """
+        model_pk = home.model_refs.get(submodel.model_ref)
+        if model_pk is None:
+            return None
+        emd = home.external.get(model_pk)
+        if emd is not None:
+            return self._external_index(home, emd)
+        return home.indices.get(model_pk)
 
     def _resolve_into(
         self,
         source: SBase,
         ref: SBaseRefFields,
         submodel: Submodel,
-        ports: frozenset[str] = frozenset(),
-    ) -> str | None:
-        """The pk of the element a reference names inside a submodel.
+        home: EntryIndex,
+        ports: frozenset[tuple[str | None, str]] = frozenset(),
+    ) -> Target | None:
+        """The element a reference names inside a submodel of the entry `home`.
 
         The reference is resolved in the model the submodel instantiates, and a
         reference which carries a reference of its own names a submodel of that
-        model and goes on inside it (comp §3.7.2). Every step which does not
-        resolve is logged and ends the chain. `ports` are the pks of the ports
-        the resolution passes through, which end it where it runs in a circle.
+        model and goes on inside it (comp §3.7.2), in whichever entry that model
+        is. Every step which does not resolve is logged and ends the chain.
+        `ports` are the ports the resolution passes through, which end it where
+        it runs in a circle.
         """
-        index = self._submodel_index(submodel)
+        index = self._submodel_index(submodel, home)
         if index is None:
             logger.warning(
                 "reference of '%s' stops at submodel '%s': the model '%s' it "
@@ -515,23 +619,33 @@ class LinkGraphBuilder:
             return None
         if ref.sbase_ref is None:
             return target
-        nested_submodel = index.submodels.get(target)
-        if nested_submodel is None:
+        return self._resolve_nested(source, ref.sbase_ref, target, ports)
+
+    def _resolve_nested(
+        self,
+        source: SBase,
+        ref: SBaseRefFields,
+        target: Target,
+        ports: frozenset[tuple[str | None, str]],
+    ) -> Target | None:
+        """Go on with the nested reference inside the submodel a reference named."""
+        submodel = target.index.submodels.get(target.pk)
+        if submodel is None or target.index.entry is None:
             logger.warning(
                 "nested reference of '%s' names '%s', which is no submodel",
                 source.pk,
-                target,
+                target.pk,
             )
             return None
-        return self._resolve_into(source, ref.sbase_ref, nested_submodel, ports)
+        return self._resolve_into(source, ref, submodel, target.index.entry, ports)
 
     def _resolve_element(
         self,
         source: SBase,
         ref: SBaseRefFields,
         index: ModelIndex,
-        ports: frozenset[str] = frozenset(),
-    ) -> str | None:
+        ports: frozenset[tuple[str | None, str]] = frozenset(),
+    ) -> Target | None:
         """The element a reference names in one model, a port being one name of one.
 
         A reference by port names the element the port stands for, so the edge
@@ -548,11 +662,16 @@ class LinkGraphBuilder:
                 )
             return None
         port = index.port_objects.get(target)
-        return self._port_target(port, index, ports) if port is not None else target
+        if port is not None:
+            return self._port_target(port, index, ports)
+        return Target(pk=target, index=index)
 
     def _port_target(
-        self, port: Port, index: ModelIndex, ports: frozenset[str] = frozenset()
-    ) -> str | None:
+        self,
+        port: Port,
+        index: ModelIndex,
+        ports: frozenset[tuple[str | None, str]] = frozenset(),
+    ) -> Target | None:
         """The element a port names, through its nested reference where it has one.
 
         A port which reaches into a submodel may name a port of that submodel
@@ -560,22 +679,15 @@ class LinkGraphBuilder:
         its validation rejects, lets that chain come back to a port it already
         passed, so the resolution stops there and says so.
         """
-        if port.pk in ports:
+        key = (index.entry.location if index.entry is not None else None, port.pk)
+        if key in ports:
             logger.warning("reference runs in a circle through port '%s'", port.pk)
             return None
-        ports = ports | {port.pk}
+        ports = ports | {key}
         target = self._resolve_element(port, port, index, ports)
         if target is None or port.sbase_ref is None:
             return target
-        submodel = index.submodels.get(target)
-        if submodel is None:
-            logger.warning(
-                "nested reference of '%s' names '%s', which is no submodel",
-                port.pk,
-                target,
-            )
-            return None
-        return self._resolve_into(port, port.sbase_ref, submodel, ports)
+        return self._resolve_nested(port, port.sbase_ref, target, ports)
 
     def _comp_edges(self, source: SBase, index: ModelIndex) -> None:
         """Add the replacement edges of an element.
@@ -640,9 +752,9 @@ class LinkGraphBuilder:
             self.edges.append(
                 Edge(source=replacement.pk, target=submodel.pk, kind=kind)
             )
-            target = self._resolve_into(replacement, replacement, submodel)
+            target = self._resolve_into(replacement, replacement, submodel, self.entry)
             if target is not None:
-                self.edges.append(Edge(source=replacement.pk, target=target, kind=kind))
+                self._target_edge(replacement, target, kind)
             if isinstance(replacement, ReplacedElement):
                 self._deletion_edge(replacement, submodel.pk, index)
         if isinstance(replacement, ReplacedElement):
@@ -709,7 +821,7 @@ class LinkGraphBuilder:
         every deletion names the element of the instantiated model which it
         removes (comp §3.5.3).
         """
-        target = self.model_refs.get(submodel.model_ref)
+        target = self.entry.model_refs.get(submodel.model_ref)
         if target is None:
             logger.warning(
                 "modelRef of '%s' references unknown '%s'",
@@ -736,11 +848,9 @@ class LinkGraphBuilder:
             self.edges.append(
                 Edge(source=submodel.pk, target=deletion.pk, kind=EdgeKind.DELETION)
             )
-            deleted = self._resolve_into(deletion, deletion, submodel)
+            deleted = self._resolve_into(deletion, deletion, submodel, self.entry)
             if deleted is not None:
-                self.edges.append(
-                    Edge(source=deletion.pk, target=deleted, kind=EdgeKind.DELETION)
-                )
+                self._target_edge(deletion, deleted, EdgeKind.DELETION)
 
     def _document_edges(self) -> None:
         """The edges of the document: the models and the external models it lists.
@@ -762,10 +872,17 @@ class LinkGraphBuilder:
                     kind=EdgeKind.EXTERNAL_MODEL_DEFINITION,
                 )
             )
+            # the definition names its model the way a submodel names its
+            # model definition, only that the model is one of another entry
+            index = self._external_index(self.entry, emd)
+            if index is not None:
+                self._target_edge(
+                    emd, Target(pk=index.model.pk, index=index), EdgeKind.MODEL_REF
+                )
 
     def _model_edges(self, model: Model) -> None:
         """The edges of all elements of a model."""
-        index = self.indices[model.pk]
+        index = self.entry.indices[model.pk]
         # every element carries the comp and distrib extensions, the model itself
         # can be replaced as well, and so can the objects the extensions nest
         for element in [model, *_nested(model)]:
@@ -858,7 +975,7 @@ class LinkGraphBuilder:
         target = self._port_target(port, index)
         if target is None:
             return
-        self.edges.append(Edge(source=port.pk, target=target, kind=EdgeKind.PORT))
+        self._target_edge(port, target, EdgeKind.PORT)
 
     def _reaction_edges(self, reaction: Reaction, index: ModelIndex) -> None:
         """The edges of a reaction, its participants and its kinetic law.
@@ -1058,11 +1175,30 @@ def build_link_graph(
     symbols: dict[str, set[str]],
     units: dict[str, set[str]] | None = None,
 ) -> LinkGraph:
-    """The nodes and edges of a report.
+    """The nodes and edges of one report on its own.
 
     Args:
         report: the report with its models, without link graph.
         symbols: the symbols of every math, keyed by the pk of its owner.
         units: the units the numbers of every math name, keyed the same way.
     """
-    return LinkGraphBuilder(report, symbols, units).build()
+    source = LinkSource(report=report, symbols=symbols, units=units or {})
+    return LinkGraphBuilder(source, EntryIndex(report)).build()
+
+
+def build_link_graphs(
+    sources: Mapping[str, LinkSource], external: ExternalModels
+) -> None:
+    """Build the link graph of every report of the entries of one archive.
+
+    Args:
+        sources: what the graph of every entry is built from, by manifest location.
+        external: the resolution of the external model definitions of the reports.
+    """
+    entries = {
+        location: EntryIndex(source.report, location)
+        for location, source in sources.items()
+    }
+    for location, source in sources.items():
+        builder = LinkGraphBuilder(source, entries[location], entries, external)
+        source.report.link_graph = builder.build()

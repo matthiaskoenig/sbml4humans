@@ -330,7 +330,7 @@ It is shown under "References" of the document and under "Referenced by" of the 
 
 A model of another document which this document refers to.
 
-The [document](sbmldocument.md) names every [external model definition](externalmodeldefinition.md) of its list. The model behind it lives in another file, which the report does not read, and a [submodel](submodel.md) instantiates it with a [model reference](links.md#model-reference) link.
+The [document](sbmldocument.md) names every [external model definition](externalmodeldefinition.md) of its list. The model behind it lives in another file, which the report follows where it has that file, and a [submodel](submodel.md) instantiates it with a [model reference](links.md#model-reference) link.
 
 It is shown under "References" of the document and under "Referenced by" of the external model definition.
 
@@ -338,7 +338,7 @@ It is shown under "References" of the document and under "Referenced by" of the 
 
 The model a submodel instantiates.
 
-A [submodel](submodel.md) names the model it instantiates, which is either a [model](model.md) definition of the document or an [external model definition](externalmodeldefinition.md). The reference is resolved against the models of the document, not within one model, because model identifiers live in a namespace of the document.
+A [submodel](submodel.md) names the model it instantiates, which is either a [model](model.md) definition of the document or an [external model definition](externalmodeldefinition.md). The reference is resolved against the models of the document, not within one model, because model identifiers live in a namespace of the document. An external model definition names a model in turn, the one of another document, and carries the same link to it where the report has that document.
 
 The link is shown under "References" of the submodel and under "Referenced by" of the model, where it shows who uses it.
 
@@ -356,7 +356,7 @@ An element which a submodel removes, and the deletion which removes it.
 
 A [submodel](submodel.md) names every [deletion](deletion.md) it carries, and each deletion names the element of the instantiated model which it removes, so the link leads from the submodel over the deletion to the element which the composed model does not contain. The same kind leads from a [replaced element](replacedelement.md) to the deletion it stands for, which is how a model records that an element of its own takes the place of something a submodel lost.
 
-Where the model of the submodel is an external one, which the report does not read, the deletion has no element to name and the link ends at the deletion.
+Where the model of the submodel is one of another document, the link ends at the element of [that document](concepts.md#link-into-another-document) when it is part of the report, as another entry of the same archive. When it is not, the deletion has no element to name and the link ends at the deletion.
 
 The link is shown under "References" of the submodel and of the deletion, and under "Referenced by" of the element which is removed.
 
@@ -366,7 +366,7 @@ The element of a submodel which replaces this one.
 
 An element which is replaced names the [replacement](replacedby.md) it carries, and the replacement names the element of the [submodel](submodel.md) which takes the place of the element, so the link leads from the replaced element over the replacement to the element which stays in the composed model.
 
-Where the reference cannot be resolved, because the model of the submodel is an external one which the report does not read or because the named element is not part of it, the link ends at the submodel, which is as far as the report can follow it.
+Where the model of the submodel is one of another document, the link ends at the element of [that document](concepts.md#link-into-another-document) when it is part of the report. Where the reference cannot be resolved, because the report does not have the document of an external model or because the named element is not part of it, the link ends at the submodel, which is as far as the report can follow it.
 
 The link is shown under "References" of the replaced element and of the replacement, and under "Referenced by" of the element which replaces it.
 
@@ -376,7 +376,7 @@ The element of a submodel which this one replaces.
 
 An element may replace elements of submodels. It names every [replacement](replacedelement.md) it carries, and each replacement names the [submodel](submodel.md) it reaches into and the element inside it which disappears from the composed model. It is the opposite direction of "replaced by" and the usual way a composed model connects its parts.
 
-Where the reference cannot be resolved, because the model of the submodel is an external one which the report does not read or because the named element is not part of it, the link ends at the submodel.
+Where the model of the submodel is one of another document, the link ends at the element of [that document](concepts.md#link-into-another-document) when it is part of the report. Where the reference cannot be resolved, because the report does not have the document of an external model or because the named element is not part of it, the link ends at the submodel.
 
 The link is shown under "References" of the replacing element and of the replacement, and under "Referenced by" of the element which is replaced.
 

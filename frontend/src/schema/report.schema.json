@@ -1398,7 +1398,7 @@
       "type": "object"
     },
     "Edge": {
-      "description": "A directed reference from one object to another.\n\nEdges are immutable values, so that they can be used in sets and as keys.",
+      "description": "A directed reference from one object to another.\n\nAn edge stays inside the report of one entry of an archive, unless it\nfollows an external model definition into another one: then `target_entry`\nis the manifest location of the entry whose link graph holds the target.\n\nEdges are immutable values, so that they can be used in sets and as keys.",
       "properties": {
         "source": {
           "type": "string"
@@ -1408,6 +1408,17 @@
         },
         "kind": {
           "$ref": "#/$defs/EdgeKind"
+        },
+        "targetEntry": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -1927,6 +1938,9 @@
             }
           ],
           "default": null
+        },
+        "resolution": {
+          "$ref": "#/$defs/ExternalModelResolution"
         }
       },
       "required": [
@@ -1934,6 +1948,50 @@
         "source"
       ],
       "title": "ExternalModelDefinition",
+      "type": "object"
+    },
+    "ExternalModelResolution": {
+      "description": "The model an external model definition names, as far as it is known.\n\n`entry` is the manifest location of the entry the source names and `model`\nthe pk of the model inside the report of that entry, at the end of a chain\nof external model definitions where the `modelRef` names another one (comp\n§3.3.2). `md5_matches` compares the `md5` of the definition with the entry\nand is unset where one of the two is missing.",
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/ResolutionStatus",
+          "default": "notFound"
+        },
+        "entry": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "md5Matches": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "ExternalModelResolution",
       "type": "object"
     },
     "FluxBound": {
@@ -6312,6 +6370,19 @@
       ],
       "title": "ReportEntry",
       "type": "object"
+    },
+    "ResolutionStatus": {
+      "description": "How far an external model definition could be followed.\n\nThe report reads the documents it was given and never fetches one: the\nother entries of a COMBINE archive, or the files next to a single file\nwhich was read from a trusted directory.",
+      "enum": [
+        "resolved",
+        "remoteSource",
+        "notFound",
+        "notSbml",
+        "modelNotFound",
+        "circular"
+      ],
+      "title": "ResolutionStatus",
+      "type": "string"
     },
     "SBMLDocument": {
       "description": "The document: level, version and the packages it uses.\n\n`annotation_xml` takes the place of the `xml` of every other element, which\nis not part of the report for the document and the model because it is the\nwhole file.",

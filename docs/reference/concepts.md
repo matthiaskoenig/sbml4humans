@@ -73,3 +73,11 @@ The entries of the COMBINE archive a report was built from.
 A COMBINE archive holds the files of a modelling study with a manifest which names every entry, its format and whether it is a master file. The report is built for every SBML entry of the archive, and a plain SBML file which is submitted on its own is wrapped in an archive with one master entry, so that a report always comes with a manifest.
 
 The manifest decides which report is shown first: the master entry when that entry has a report, and the first entry otherwise, because an archive does not have to mark one. It is also what the report offers when an archive holds more than one model.
+
+## link into another document
+
+A link which ends at an element of another entry of the archive.
+
+The links of a report stay inside one SBML document, with one exception: a model of the comp package may instantiate a model of another document through an [external model definition](externalmodeldefinition.md), and its [replacements](replacedelement.md), [deletions](deletion.md) and [ports](port.md) then name elements of that document. Where the other document is part of the report, as another entry of the same COMBINE archive, the link ends at the element inside it.
+
+Such a link shows the file name of the other entry next to the element, and following it opens the report of that entry. The element lists the link under "Referenced by" with the file name of the entry it comes from.

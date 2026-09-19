@@ -226,6 +226,22 @@
           "label": "model ref",
           "summary": "the identifier of the model inside the referenced file"
         },
+        "resolution.entry": {
+          "label": "document",
+          "summary": "the entry of the archive which the source names"
+        },
+        "resolution.md5Matches": {
+          "label": "md5 check",
+          "summary": "whether the document at the source has the checksum the definition states"
+        },
+        "resolution.model": {
+          "label": "model",
+          "summary": "the model the external model definition names"
+        },
+        "resolution.status": {
+          "label": "status",
+          "summary": "how far the report could follow the external model definition"
+        },
         "source": {
           "label": "source",
           "summary": "the location of the SBML file which holds the model"
@@ -1583,6 +1599,10 @@
     "sbmlType": {
       "label": "sbml type",
       "summary": "the kind of element, which decides how the report shows it"
+    },
+    "targetEntry": {
+      "label": "link into another document",
+      "summary": "a link which ends at an element of another entry of the archive"
     },
     "unitsLatex": {
       "label": "rendered units",

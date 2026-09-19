@@ -258,7 +258,19 @@ class SBMLDocumentInfo:
         return cls(doc).build()
 
     def build(self) -> Report:
-        """Build the report with its link graph."""
+        """Build the report with its link graph, as the report of one document."""
+        self.build_report()
+        self.report.link_graph = build_link_graph(
+            self.report, self.symbols, self.units_of_math
+        )
+        return self.report
+
+    def build_report(self) -> Report:
+        """Build the report without its link graph.
+
+        The graph of the report of an archive is built over all of its entries,
+        once the report of every entry is there (`report.link_reports`).
+        """
         models: list[Model] = []
         if self.doc.isSetModel():
             models.append(self.model(self.doc.getModel(), kind="model"))
@@ -276,9 +288,6 @@ class SBMLDocumentInfo:
             document=self.document(),
             models=models,
             external_model_definitions=external,
-        )
-        self.report.link_graph = build_link_graph(
-            self.report, self.symbols, self.units_of_math
         )
         return self.report
 

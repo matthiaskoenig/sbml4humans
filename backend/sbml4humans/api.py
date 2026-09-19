@@ -160,7 +160,7 @@ def example(example_id: str) -> ReportResponse:
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    return report_for_path(example.file)
+    return report_for_path(example.file, trusted=True)
 
 
 @api.post(

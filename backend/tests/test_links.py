@@ -1,11 +1,13 @@
 """Tests of the link graph."""
 
 import logging
+from pathlib import Path
 
 import libsbml
 import pytest
 
-from sbml4humans.links import ModelIndex
+from sbml4humans.external import ExternalModels
+from sbml4humans.links import LinkSource, ModelIndex, build_link_graphs
 from sbml4humans.model import Edge, EdgeKind, Report
 from sbml4humans.report import report_for_path
 from sbml4humans.resources import (
@@ -1477,3 +1479,203 @@ def test_math_of_a_function_term_reaches_species_and_inputs(
         (term, f"{m}/Input:theta_G_S", "math"),
         (term, f"{m}/Input:theta_G_P", "math"),
     }
+
+
+# -------------------------------------------------------------------------------------
+# references which follow an external model definition into another entry
+# -------------------------------------------------------------------------------------
+def _linked(sources: dict[str, Path | str]) -> dict[str, Report]:
+    """The reports of the documents by location, linked as the entries of one archive."""
+    infos = {
+        location: SBMLDocumentInfo(SBMLDocumentInfo.read(source))
+        for location, source in sources.items()
+    }
+    reports = {location: info.build_report() for location, info in infos.items()}
+    external = ExternalModels(reports)
+    external.resolve_all()
+    build_link_graphs(
+        {
+            location: LinkSource(info.report, info.symbols, info.units_of_math)
+            for location, info in infos.items()
+        },
+        external,
+    )
+    return reports
+
+
+def _edges_across(report: Report, source: str) -> set[tuple[str, str | None, str]]:
+    """The target, the entry of the target and the kind of the edges of a source."""
+    return {
+        (e.target, e.target_entry, e.kind.value)
+        for e in report.link_graph.edges
+        if e.source == source
+    }
+
+
+@pytest.fixture(scope="module")
+def minimal_comp() -> dict[str, Report]:
+    """`minimal_model_comp.xml` and the document its five submodels instantiate."""
+    return _linked(
+        {
+            "./models/comp.xml": EXAMPLES_DIR / "minimal_model_comp.xml",
+            "./models/minimal_model.xml": EXAMPLES_DIR / "minimal_model.xml",
+        }
+    )
+
+
+def test_replaced_element_ends_at_the_element_of_the_other_entry(
+    minimal_comp: dict[str, Report],
+) -> None:
+    """The port of the external model names the species, which is where it ends."""
+    report = minimal_comp["./models/comp.xml"]
+    m = "minimal_model_comp"
+    assert _edges_across(report, f"{m}/ReplacedElement:S0_RE") == {
+        (f"{m}/Submodel:submodel0", None, "replacedElement"),
+        ("minimal_model/Species:S1", "./models/minimal_model.xml", "replacedElement"),
+    }
+
+
+def test_external_model_definition_names_its_model(
+    minimal_comp: dict[str, Report],
+) -> None:
+    """The definition links the model it resolves to, in the other entry."""
+    report = minimal_comp["./models/comp.xml"]
+    assert _edges_across(report, "document/ExternalModelDefinition:emd0") == {
+        ("minimal_model/Model:minimal_model", "./models/minimal_model.xml", "modelRef")
+    }
+
+
+def test_the_target_of_every_edge_is_a_node_of_its_entry(
+    minimal_comp: dict[str, Report],
+) -> None:
+    """An edge which leaves its entry names a node of the graph of the other one."""
+    across = 0
+    for location, report in minimal_comp.items():
+        for edge in report.link_graph.edges:
+            assert edge.source in report.link_graph.nodes
+            assert edge.target_entry != location
+            entry = minimal_comp[edge.target_entry or location]
+            assert edge.target in entry.link_graph.nodes
+            across += edge.target_entry is not None
+    # ten replaced elements and five external model definitions
+    assert across == 15
+
+
+def test_deletion_and_md5_of_an_external_model() -> None:
+    """The deletion of a unit of the other document ends at that unit definition."""
+    reports = _linked(
+        {
+            "./comp_deletion.xml": EXAMPLES_DIR / "comp_deletion.xml",
+            "./unit_definitions.xml": EXAMPLES_DIR / "unit_definitions.xml",
+        }
+    )
+    report = reports["./comp_deletion.xml"]
+    assert _edges_across(report, "comp_deletion/Deletion:del_external_unit") == {
+        (
+            "unit_definitions/UnitDefinition:mg_per_day",
+            "./unit_definitions.xml",
+            "deletion",
+        )
+    }
+    # the references into the model definitions of the document stay where they were
+    assert _edges_across(report, "comp_deletion/ReplacedBy:meta_Vmax_shared") == {
+        ("comp_deletion/Submodel:cell2", None, "replacedBy"),
+        ("cell/Parameter:Vmax", None, "replacedBy"),
+    }
+
+
+def _comp_document(model: str, body: str, emds: str = "") -> str:
+    """A comp document with one model."""
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      level="3" version="1" comp:required="true">
+  <model id="{model}">{body}</model>
+  <comp:listOfExternalModelDefinitions>{emds}</comp:listOfExternalModelDefinitions>
+</sbml>
+"""
+
+
+CHAIN_BODY = _comp_document(
+    "body",
+    """
+    <listOfParameters>
+      <parameter id="k" constant="true">
+        <comp:listOfReplacedElements>
+          <comp:replacedElement comp:submodelRef="liver" comp:idRef="cell">
+            <comp:sBaseRef comp:portRef="k_port"/>
+          </comp:replacedElement>
+        </comp:listOfReplacedElements>
+      </parameter>
+    </listOfParameters>
+    <comp:listOfSubmodels>
+      <comp:submodel comp:id="liver" comp:modelRef="liver_emd"/>
+    </comp:listOfSubmodels>
+    <comp:listOfPorts>
+      <comp:port comp:id="cell_k_port" comp:idRef="liver">
+        <comp:sBaseRef comp:idRef="cell">
+          <comp:sBaseRef comp:idRef="k"/>
+        </comp:sBaseRef>
+      </comp:port>
+    </comp:listOfPorts>""",
+    """<comp:externalModelDefinition comp:id="liver_emd" comp:source="liver.xml"/>""",
+)
+CHAIN_LIVER = _comp_document(
+    "liver",
+    """
+    <comp:listOfSubmodels>
+      <comp:submodel comp:id="cell" comp:modelRef="cell_emd"/>
+    </comp:listOfSubmodels>""",
+    """<comp:externalModelDefinition comp:id="cell_emd"
+        comp:source="cells/cell.xml" comp:modelRef="cell"/>""",
+)
+CHAIN_CELL = _comp_document(
+    "cell",
+    """
+    <listOfParameters><parameter id="k" constant="true"/></listOfParameters>
+    <comp:listOfPorts><comp:port comp:id="k_port" comp:idRef="k"/></comp:listOfPorts>""",
+)
+
+
+def test_a_chain_goes_on_through_the_entries() -> None:
+    """A reference into a submodel of an external model enters a third entry."""
+    reports = _linked(
+        {
+            "./body.xml": CHAIN_BODY,
+            "./liver.xml": CHAIN_LIVER,
+            "./cells/cell.xml": CHAIN_CELL,
+        }
+    )
+    body = reports["./body.xml"]
+    replaced = "body/ReplacedElement:k.replacedElement.liver.cell.k_port"
+    assert replaced in body.link_graph.nodes
+    assert ("cell/Parameter:k", "./cells/cell.xml", "replacedElement") in (
+        _edges_across(body, replaced)
+    )
+    # a port which reaches through both submodels
+    assert _edges_across(body, "body/Port:cell_k_port") == {
+        ("body/SBaseRef:cell_k_port.sBaseRef", None, "sBaseRef"),
+        ("cell/Parameter:k", "./cells/cell.xml", "port"),
+    }
+    # the entry in between resolves its own definition against its own directory
+    assert _edges_across(
+        reports["./liver.xml"], "document/ExternalModelDefinition:cell_emd"
+    ) == {("cell/Model:cell", "./cells/cell.xml", "modelRef")}
+
+
+def test_an_entry_which_is_missing_ends_the_chain_at_the_submodel(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Without the third document the reference ends where the report ends."""
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.links"):
+        reports = _linked({"./body.xml": CHAIN_BODY, "./liver.xml": CHAIN_LIVER})
+    body = reports["./body.xml"]
+    key = "k.replacedElement.liver.cell.k_port"
+    assert _edges_across(body, f"body/ReplacedElement:{key}") == {
+        ("body/Submodel:liver", None, "replacedElement"),
+        (f"body/SBaseRef:{key}.sBaseRef", None, "sBaseRef"),
+    }
+    assert _edges_across(body, "body/Port:cell_k_port") == {
+        ("body/SBaseRef:cell_k_port.sBaseRef", None, "sBaseRef")
+    }
+    assert "not part of the report" in caplog.text

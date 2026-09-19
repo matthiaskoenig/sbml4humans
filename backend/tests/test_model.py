@@ -172,7 +172,7 @@ def test_an_edge_stays_in_its_entry_unless_it_names_another() -> None:
 def test_an_external_model_definition_carries_its_resolution() -> None:
     """The resolution is unresolved until the entries of the archive are known."""
     emd = ExternalModelDefinition(
-        pk="_/ExternalModelDefinition:emd", id="emd", source="sub.xml"
+        pk="document/ExternalModelDefinition:emd", id="emd", source="sub.xml"
     )
     assert emd.resolution == ExternalModelResolution(status=ResolutionStatus.NOT_FOUND)
     emd.resolution = ExternalModelResolution(

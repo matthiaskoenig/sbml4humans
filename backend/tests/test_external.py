@@ -65,7 +65,7 @@ def _report(
 ) -> Report:
     """A report with the models of the ids, the first one being the main model."""
     return Report(
-        document=SBMLDocument(pk="_/SBMLDocument:_", level=3, version=1),
+        document=SBMLDocument(pk="document/SBMLDocument:document", level=3, version=1),
         models=[
             Model(
                 pk=f"{model}/Model:{model}",
@@ -83,7 +83,7 @@ def _emd(
 ) -> ExternalModelDefinition:
     """An external model definition."""
     return ExternalModelDefinition(
-        pk=f"_/ExternalModelDefinition:{id_}",
+        pk=f"document/ExternalModelDefinition:{id_}",
         id=id_,
         source=source,
         model_ref=model_ref,

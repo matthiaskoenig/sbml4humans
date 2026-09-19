@@ -16,6 +16,18 @@ from sbml4humans.examples import (
     main_sbml_entry,
     omex_description,
 )
+from sbml4humans.links import _names_an_element, _nested, _with_extensions
+from sbml4humans.model import (
+    Deletion,
+    EdgeKind,
+    Port,
+    ReplacedBy,
+    ReplacedElement,
+    Report,
+    ResolutionStatus,
+    SBaseRefFields,
+)
+from sbml4humans.report import report_for_path
 from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
     EXAMPLES_DIR,
@@ -214,3 +226,74 @@ def test_written_examples_are_valid_sbml(name: str) -> None:
     doc.checkConsistency()
     messages = [doc.getError(k).getMessage().strip() for k in range(doc.getNumErrors())]
     assert messages == []
+
+
+# -------------------------------------------------------------------------------------
+# the comp references of the examples end at the element they name
+# -------------------------------------------------------------------------------------
+REFERENCE_KINDS = {
+    ReplacedBy: EdgeKind.REPLACED_BY,
+    ReplacedElement: EdgeKind.REPLACED_ELEMENT,
+    Deletion: EdgeKind.DELETION,
+    Port: EdgeKind.PORT,
+}
+
+
+def _comp_references(report: Report) -> tuple[int, int]:
+    """How many comp references of a report name an element, and how many reach it.
+
+    A replacement has an edge of its kind to its submodel as well, which is as
+    far as a reference goes which is not resolved, so that edge does not count.
+    """
+    nodes = report.link_graph.nodes
+    reached = {
+        (edge.source, edge.kind)
+        for edge in report.link_graph.edges
+        if edge.target_entry is not None
+        or nodes[edge.target].sbml_type != "Submodel"
+        or nodes[edge.source].sbml_type == "Port"
+    }
+    named = resolved = 0
+    for model in report.models:
+        for element in [model, *_nested(model)]:
+            for carrier in _with_extensions(element):
+                if not isinstance(carrier, SBaseRefFields):
+                    continue
+                kind = REFERENCE_KINDS.get(type(carrier))
+                if kind is None or not _names_an_element(carrier):
+                    continue
+                named += 1
+                resolved += (carrier.pk, kind) in reached
+    return named, resolved
+
+
+def test_comp_references_reach_elements() -> None:
+    """Every replacement, deletion and port of the examples ends at its element.
+
+    Every submodel of the comp models which ship with the backend instantiates
+    an external model definition, whose document is another entry of the archive
+    or a file next to the example, so every reference can be followed (#36).
+    """
+    named = resolved = across = 0
+    for example in load_examples().values():
+        response = report_for_path(example.file, trusted=True)
+        for entry in response.reports.values():
+            for emd in entry.report.external_model_definitions:
+                assert emd.resolution.status == ResolutionStatus.RESOLVED, example.id
+            counts = _comp_references(entry.report)
+            assert counts[0] == counts[1], example.id
+            named += counts[0]
+            resolved += counts[1]
+            across += sum(
+                edge.target_entry is not None for edge in entry.report.link_graph.edges
+            )
+    assert named == resolved > 300
+    assert across > 100
+
+
+def test_comp_references_of_an_upload_end_at_the_submodel() -> None:
+    """Without the other documents the references stop where they did before."""
+    report = next(
+        iter(report_for_path(EXAMPLES_DIR / "minimal_model_comp.xml").reports.values())
+    ).report
+    assert _comp_references(report) == (10, 0)
