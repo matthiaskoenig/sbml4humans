@@ -2,10 +2,11 @@
 import { computed } from "vue";
 
 import type { Edge, EdgeKind, SbmlType } from "@/api/types";
+import HelpLabel from "@/components/help/HelpLabel.vue";
 import LinksGroup from "@/components/inspector/LinksGroup.vue";
 import { EDGE_KINDS, edgeKindLabel } from "@/data/edgeKinds";
 import { useReportIndex } from "@/report/context";
-import { linkEntry } from "@/report/glossary";
+import { linkEntry, linkKey } from "@/report/glossary";
 import type { CrossEdge, ElementRef } from "@/report/index";
 
 const props = defineProps<{ pk: string }>();
@@ -127,8 +128,10 @@ const referencedBy = computed(() =>
       <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">References</h3>
       <p v-if="references.length === 0" class="text-gray-400">none</p>
       <dl v-for="g in references" :key="g.kind" class="mb-2" :data-testid="`links-${g.kind}`">
-        <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
-          {{ g.label }}
+        <dt class="text-xs text-gray-500">
+          <HelpLabel :help-key="linkKey(g.kind)" :tooltip="linkEntry(g.kind)?.summary">{{
+            g.label
+          }}</HelpLabel>
         </dt>
         <LinksGroup :refs="g.refs" />
       </dl>
@@ -139,8 +142,10 @@ const referencedBy = computed(() =>
       </h3>
       <p v-if="referencedBy.length === 0" class="text-gray-400">none</p>
       <dl v-for="g in referencedBy" :key="g.kind" class="mb-2" :data-testid="`links-${g.kind}`">
-        <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
-          {{ g.label }}
+        <dt class="text-xs text-gray-500">
+          <HelpLabel :help-key="linkKey(g.kind)" :tooltip="linkEntry(g.kind)?.summary">{{
+            g.label
+          }}</HelpLabel>
         </dt>
         <LinksGroup :refs="g.refs" />
       </dl>

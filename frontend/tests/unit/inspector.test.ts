@@ -14,6 +14,7 @@ import type {
   Uncertainty,
   UnitDefinition,
 } from "@/api/types";
+import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
@@ -31,12 +32,13 @@ import UncertaintyAttributes from "@/components/inspector/attributes/Uncertainty
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
-import { attributeEntry, linkEntry, referenceUrl } from "@/report/glossary";
+import { attributeEntry, linkEntry } from "@/report/glossary";
 import { ASSOCIATION_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
 import { loadFixture, loadReport } from "./fixtures";
+import { helpKeyOf } from "./help";
 import { summaryOf } from "./summary";
 
 const fixtures = [
@@ -125,11 +127,38 @@ describe("inspector", () => {
     const row = wrapper
       .findAll("[data-testid=attribute-row]")
       .find((r) => r.find("dt").text() === "compartment")!;
-    await row.get("dt").trigger("mouseenter");
+    await row.get("dt [data-testid=help-label]").trigger("mouseenter");
     // the tooltip names the truncated label of the row before it explains it
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
       `compartment: ${summaryOf(attributeEntry("Species", "compartment"), "Species.compartment")}`,
     );
+  });
+
+  it("opens the attribute of a row from its label", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const species = repressilator.mainModel!.listOfSpecies![0] as Species;
+    const wrapper = mountWith(AttributesColumn, { element: species }, repressilator);
+    const keyOfRow = (label: string) =>
+      helpKeyOf(
+        wrapper
+          .findAll("[data-testid=attribute-row]")
+          .find((r) => r.find("dt").text() === label)!
+          .get("dt [data-testid=help-label]")
+          .attributes("href"),
+      );
+    expect(keyOfRow("initialConcentration")).toBe("types/Species/initialConcentration");
+    // the attributes every element carries are explained by the entry of `SBase`, not by one
+    // entry per type which repeats it
+    expect(keyOfRow("metaid")).toBe("types/SBase/metaId");
+  });
+
+  it("leaves a row which the glossary does not name plain text", () => {
+    const wrapper = mount(AttributeRow, {
+      props: { label: "external model" },
+      global: { plugins: [router], directives: { tooltip: vTooltip } },
+    });
+    expect(wrapper.get("dt").text()).toBe("external model");
+    expect(wrapper.find("[data-testid=help-label]").exists()).toBe(false);
   });
 
   it("shows the summary of the link kind as the tooltip of a link group's label", async () => {
@@ -147,9 +176,20 @@ describe("inspector", () => {
       .get("[data-testid=links-references]")
       .findAll("dt")
       .find((d) => d.text() === "compartment")!;
-    await dt.trigger("mouseenter");
+    const label = dt.get("[data-testid=help-label]");
+    await label.trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
       summaryOf(linkEntry("compartment"), "the link kind compartment"),
+    );
+    // and the heading of the group opens the entry of the kind of link it gathers, in both
+    // directions
+    expect(helpKeyOf(label.attributes("href"))).toBe("links/compartment");
+    const back = wrapper
+      .get("[data-testid=links-referenced-by]")
+      .findAll("dt")
+      .find((d) => d.text() === "reactant")!;
+    expect(helpKeyOf(back.get("[data-testid=help-label]").attributes("href"))).toBe(
+      "links/reactant",
     );
   });
 
@@ -281,7 +321,8 @@ describe("inspector", () => {
     const row = wrapper
       .findAll("[data-testid=attribute-row]")
       .find((r) => r.find("dt").text() === "timeConversionFactor")!;
-    expect(row.find("a").exists()).toBe(false);
+    // the label of every row is a link into the glossary, so the value alone is what is asked
+    expect(row.find("dd a").exists()).toBe(false);
     expect(row.find("dd").text()).toBe("-");
   });
 
@@ -777,7 +818,10 @@ describe("inspector", () => {
       ],
     };
     const wrapper = mountWith(UncertaintyAttributes, { element: unsafe }, distrib);
-    expect(wrapper.find("a").exists()).toBe(false);
+    // the label of a row and the header of a nested table link the glossary, and nothing else
+    // of this element is a link
+    const links = wrapper.findAll("a").filter((a) => a.attributes("data-testid") !== "help-label");
+    expect(links).toHaveLength(0);
     expect(wrapper.text()).toContain("javascript:alert(1)");
   });
 
@@ -984,15 +1028,18 @@ describe("inspector", () => {
     expect(wrapper.find("[data-testid=inspector-close]").exists()).toBe(true);
   });
 
-  it("links the type of the header to its reference page", async () => {
+  it("explains the type of the header", async () => {
+    // the header linked the reference page of the type; the dialog the type opens now carries
+    // that link in its footer, for every entry and not for a type alone
+    await router.push("/examples/BIOMD0000000012");
     const species = repressilator.mainModel!.listOfSpecies![0] as Species;
     const wrapper = mountWith(InspectorPanel, { pk: species.pk }, repressilator);
-    const link = wrapper.get("[data-testid=inspector-type-link]");
-    expect(link.attributes("href")).toBe(referenceUrl("Species"));
-    expect(link.attributes("target")).toBe("_blank");
-    expect(link.attributes("rel")).toBe("noopener");
-    expect(link.get("svg").classes()).toContain("lucide-external-link");
-    expect(link.get("[data-testid=inspector-type]").text()).toBe("Species");
+    const type = wrapper.get("[data-testid=inspector-type]");
+    expect(type.text()).toBe("Species");
+    expect(helpKeyOf(type.get("[data-testid=help-label]").attributes("href"))).toBe(
+      "types/Species",
+    );
+    expect(wrapper.find("[data-testid=inspector-type-link]").exists()).toBe(false);
   });
 
   describe("the lists which state something of their own", () => {
@@ -1054,9 +1101,11 @@ describe("inspector", () => {
       expect(wrapper.get("[data-testid=inspector-type]").text()).toBe("ListOf");
       expect(wrapper.get("[data-testid=inspector-id]").text()).toBe("metabolites");
       expect(wrapper.get("[data-testid=inspector-name]").text()).toBe(species.name);
-      expect(wrapper.get("[data-testid=inspector-type-link]").attributes("href")).toBe(
-        referenceUrl("ListOf"),
-      );
+      expect(
+        helpKeyOf(
+          wrapper.get("[data-testid=inspector-type] [data-testid=help-label]").attributes("href"),
+        ),
+      ).toBe("types/ListOf");
       expect(wrapper.text()).toContain("The species of this list are the two metabolites");
       await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
       const xml = wrapper.get("[data-testid=xml-view] pre").text();
@@ -1080,16 +1129,28 @@ describe("inspector", () => {
     const transition = qual.mainModel!.listOfTransitions!.find((t) => t.id === "tr_G")!;
     const wrapper = mountWith(TransitionAttributes, { element: transition }, qual);
     const headers = wrapper.findAll("[data-testid=nested-table] thead th");
-    const sign = headers.find((th) => th.text() === "sign")!;
-    await sign.get("span").trigger("mouseenter");
+    const sign = headers.find((th) => th.text() === "sign")!.get("[data-testid=help-label]");
+    await sign.trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
       `sign: ${attributeEntry("Input", "sign")!.summary}`,
     );
-    const level = headers.find((th) => th.text() === "outputLevel")!;
-    await level.get("span").trigger("mouseenter");
+    const level = headers
+      .find((th) => th.text() === "outputLevel")!
+      .get("[data-testid=help-label]");
+    await level.trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
       `outputLevel: ${attributeEntry("Output", "outputLevel")!.summary}`,
     );
+    // and the header opens the attribute it names, as the label of a row of the inspector does
+    expect(helpKeyOf(sign.attributes("href"))).toBe("types/Input/sign");
+    expect(helpKeyOf(level.attributes("href"))).toBe("types/Output/outputLevel");
+    wrapper.unmount();
+  });
+
+  it("leaves the header of a nested table without a type plain text", () => {
+    const wrapper = mountTable(rowsOf(2, "p"));
+    expect(wrapper.get("thead th").text()).toBe("id");
+    expect(wrapper.find("[data-testid=help-label]").exists()).toBe(false);
     wrapper.unmount();
   });
 

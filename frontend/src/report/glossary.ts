@@ -136,8 +136,3 @@ export function entryOfKey(key: string): GlossaryEntry | undefined {
       return undefined;
   }
 }
-
-/** The url of the reference page of a type, which the inspector links from its header. */
-export function referenceUrl(type: SbmlType): string {
-  return `${DOCS_URL}${glossary.types[type]?.page ?? ""}`;
-}

@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 import type { SbmlElement, ElementType } from "@/api/types";
+import HelpButton from "@/components/help/HelpButton.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
+import { typeKey } from "@/report/glossary";
 
-defineProps<{
+const props = defineProps<{
   type: ElementType;
   rows: SbmlElement[];
   allRows: SbmlElement[];
@@ -13,13 +17,21 @@ defineProps<{
    * states something of its own and so is an element of the report. */
   list?: string | null;
 }>();
+
+const helpKey = computed(() => typeKey(props.type));
 </script>
 
 <template>
   <section :id="`section-${type}`" class="scroll-mt-2" :data-testid="`section-${type}`">
     <h2 class="flex items-center gap-2 px-1 pt-4 pb-2 text-sm font-semibold text-gray-800">
       <TypeMark :type="type" size="md" />
-      {{ type }}
+      <!-- the heading is the one place of the report where the type is named in full and has the
+      room to say so: the help of the type stands next to it and is always there, unlike the one
+      of a column header, which a header as dense as a table row shows on hover -->
+      <span class="flex items-center gap-1">
+        {{ type }}
+        <HelpButton v-if="helpKey" :help-key="helpKey" :label="type" />
+      </span>
       <span class="font-mono text-xs font-normal text-gray-500" data-testid="section-count">
         {{ rows.length === total ? total : `${rows.length} / ${total}` }}
       </span>

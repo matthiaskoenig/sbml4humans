@@ -8,7 +8,6 @@ import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import { COLUMNS } from "@/report/columns";
 import { EDGE_KINDS } from "@/data/edgeKinds";
 import {
-  DOCS_URL,
   attributeEntry,
   attributeKey,
   attributeLabel,
@@ -17,7 +16,6 @@ import {
   entryOfKey,
   linkEntry,
   linkKey,
-  referenceUrl,
   typeEntry,
   typeKey,
 } from "@/report/glossary";
@@ -157,13 +155,6 @@ describe("glossary", () => {
     expect(COLUMNS.Species.map((column) => column.header)).toEqual(
       expect.arrayContaining(["initialConcentration", "hasOnlySubstanceUnits", "fbc:charge"]),
     );
-  });
-
-  it("builds the url of a reference page", () => {
-    // the page of the type, which the inspector links; the anchors of the attributes are used
-    // by the links inside the site, not by the application
-    expect(referenceUrl("Species")).toBe(`${DOCS_URL}reference/species/`);
-    expect(referenceUrl("Reaction")).toBe(`${DOCS_URL}reference/reaction/`);
   });
 
   it("explains a link kind in every context in which a group of it is shown", () => {

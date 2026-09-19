@@ -14,6 +14,7 @@ import { elementLabel } from "@/report/label";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
+import { helpKeyOf } from "./help";
 import { summaryOf } from "./summary";
 
 // jsdom does not implement scrollIntoView.
@@ -72,6 +73,38 @@ describe("ElementTable", () => {
     expect(link.exists()).toBe(true);
     expect(link.text()).toBe(species[0]!.compartment);
     expect(table.findAll("thead th").map((th) => th.text())).toContain("compartment");
+  });
+
+  it("explains the attribute of every column from its header, without sorting the table", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(species);
+    // every column of the table is an attribute of the glossary, the two the report starts with
+    // (`id` and `name`) the ones every element carries
+    const keys = table
+      .findAll("thead th")
+      .map((th) => helpKeyOf(th.get("[data-testid=help-button]").attributes("href")));
+    expect(keys.slice(0, 2)).toEqual(["types/SBase/id", "types/SBase/name"]);
+    expect(keys).toContain("types/Species/initialAmount");
+
+    const help = header(table, "id").get("[data-testid=help-button]");
+    expect(help.attributes("aria-label")).toBe(`explain ${attributeEntry("Species", "id")!.label}`);
+
+    const before = ids(table);
+    help.element.addEventListener("click", (event) => event.preventDefault(), { once: true });
+    await help.trigger("click", { button: 0 });
+    await flushPromises();
+    expect(router.currentRoute.value.query.help).toBe("types/SBase/id");
+    expect(header(table, "id").attributes("aria-sort")).toBe("none");
+    expect(ids(table)).toEqual(before);
+  });
+
+  it("sorts without opening the dialog when the header itself is clicked", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    const table = mountTable(species);
+    await header(table, "id").get("[data-testid=sort-button]").trigger("click");
+    await flushPromises();
+    expect(header(table, "id").attributes("aria-sort")).toBe("ascending");
+    expect(router.currentRoute.value.query.help).toBeUndefined();
   });
 
   it("shows the summary of the column's attribute as the tooltip of its header", async () => {
