@@ -10,7 +10,7 @@ import { useReportView } from "@/report/view";
  * the help dialog for the entry it currently shows. A `glossary:<key>` link of the description
  * becomes a real href of the report so a reader can middle-click or ctrl-click it open in a new
  * tab, but a plain click instead emits `navigate` and never leaves the page: `HelpDialog.vue`
- * (the next task) catches it and shows that entry in the same dialog. */
+ * catches it and shows that entry in the same dialog. */
 const props = defineProps<{ markdown: string }>();
 const emit = defineEmits<{ navigate: [key: string] }>();
 

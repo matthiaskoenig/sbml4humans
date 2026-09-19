@@ -11,7 +11,7 @@ module reads the glossary and writes the three generated artefacts:
 * `docs/reference/*.md`, the reference pages of the documentation site.
 
 Run `uv run python -m sbml4humans.glossary` from `backend/` after a change of
-the glossary or of the report model and commit both outputs.
+the glossary or of the report model and commit all three outputs.
 `uv run python -m sbml4humans.glossary --check` regenerates into a temporary
 directory and fails when a committed file is stale, when a type or a field of
 the report model has no entry, when a type or an attribute entry of the
@@ -59,8 +59,8 @@ DOCS_URL = "https://matthiaskoenig.github.io/sbml4humans/"
 INDEX_PAGE = "index.md"
 LINKS_PAGE = "links.md"
 CONCEPTS_PAGE = "concepts.md"
-# the page of the data types, rendered by a later change; the details already
-# need its name and the anchors of its entries to rewrite a link into one
+# the page of the data types, whose name and anchors the details need as well,
+# to rewrite a link into one of its entries
 DATATYPES_PAGE = "datatypes.md"
 
 # the headings of a generated type page below its title; their anchors are

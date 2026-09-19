@@ -87,7 +87,7 @@ uv run --project backend zensical build --clean --strict   # build into site/
 
 `--strict` aborts the build on a warning, i.e. on a link or an anchor of a page which does not resolve; the `documentation` workflow builds the site the same way, so a broken link fails the check instead of reaching the published page.
 
-`site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. Three files are generated, not written by hand, from the glossary in `glossary/`: the reference pages under `docs/reference/`, the tooltips of the application (`frontend/src/data/glossary.json`) and the explanations of its help dialog (`frontend/src/data/glossary-details.json`). All three are committed.
+`site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. Three outputs are generated, not written by hand, from the glossary in `glossary/`: the reference pages under `docs/reference/`, the tooltips of the application (`frontend/src/data/glossary.json`) and the explanations of its help dialog (`frontend/src/data/glossary-details.json`). All three are committed.
 
 ```bash
 cd backend

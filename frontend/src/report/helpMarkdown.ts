@@ -46,8 +46,7 @@ interface RenderEnv extends Env {
 
 // `validateLink` above already refused every link that is not a `glossary:` link with a key, or
 // an `https:`, `http:` or `mailto:` link: markdown-it never creates a `link_open` token for
-// anything else, so this rule needs no state of its own and no matching `link_close` override,
-// unlike an earlier version of this module which tracked a dropped link across the two rules.
+// anything else, so this rule needs no state of its own and no matching `link_close` override.
 const linkOpen: RendererRule = (tokens, idx, options, env, self) => {
   const token = tokens[idx]!;
   // `attrGet` answers `string | number | null` (a numeric attribute value, a table cell's
