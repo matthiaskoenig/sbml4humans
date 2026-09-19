@@ -489,3 +489,33 @@ describe("HelpDialog", () => {
     expect(router.currentRoute.value.query.help).toBeUndefined();
   });
 });
+
+// this block comes last: Vue keeps an async component which failed to load failed, and the
+// dialog holds one for the whole module, so every dialog mounted after this one shows the text
+// of a description instead of its markdown
+describe("HelpDialog without the renderer of the descriptions", () => {
+  beforeEach(() => {
+    stubDialogElement();
+    load.mockReset().mockResolvedValue(DETAILS);
+    vi.doMock("@/components/help/HelpMarkdown.vue", () => {
+      throw new Error("the chunk of the renderer is gone");
+    });
+  });
+
+  afterEach(() => {
+    wrapper?.unmount();
+    wrapper = null;
+    vi.doUnmock("@/components/help/HelpMarkdown.vue");
+    vi.restoreAllMocks();
+  });
+
+  it("shows the description as its text, with everything else of the entry", async () => {
+    await mountDialog({ help: "types/Species" });
+    expect(has("help-markdown")).toBe(false);
+    expect(text("help-description-text")).toContain(ENTRIES["types/Species"]!.description);
+    // the rest of the dialog is what it is with the renderer
+    expect(text("help-summary")).toBe(ENTRIES["types/Species"]!.summary);
+    expect(dialog().findAll("[data-testid=help-rule]")).toHaveLength(2);
+    expect(has("help-fallback")).toBe(false);
+  });
+});

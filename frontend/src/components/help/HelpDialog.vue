@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ChevronRightIcon, ExternalLinkIcon, XIcon } from "@lucide/vue";
-import { computed, defineAsyncComponent, nextTick, ref, watch } from "vue";
+import { computed, defineAsyncComponent, nextTick, ref, watch, type Component } from "vue";
 
 import type { SbmlType } from "@/api/types";
 import HelpAttributes from "@/components/help/HelpAttributes.vue";
 import HelpLink from "@/components/help/HelpLink.vue";
+import HelpDescriptionText from "@/components/help/HelpDescriptionText.vue";
 import HelpRules from "@/components/help/HelpRules.vue";
 import HelpSection from "@/components/help/HelpSection.vue";
 import HelpTechnical from "@/components/help/HelpTechnical.vue";
@@ -38,9 +39,28 @@ const details = ref<GlossaryDetails | null>(null);
 const failed = ref(false);
 let pending = false;
 
-/** The markdown of a description and with it `markdown-it`, the second half of what a dialog
- * costs and the other thing no page which shows no dialog should pay for. */
-const HelpMarkdown = defineAsyncComponent(() => import("@/components/help/HelpMarkdown.vue"));
+/** The import of the renderer of the descriptions, and with it `markdown-it`, the second half of
+ * what a dialog costs and the other thing no page which shows no dialog should pay for. It is
+ * started next to the details and shared with the async component below, so that the two halves
+ * of a dialog are loaded at once instead of one after the other. */
+let markdown: Promise<Component> | undefined;
+function loadMarkdown(): Promise<Component> {
+  if (!markdown) {
+    markdown = import("@/components/help/HelpMarkdown.vue").then((module) => module.default);
+    // the import is started before anything renders it, and a rejection which nothing waits for
+    // yet is an unhandled one; the dialog answers it with the text of the description below
+    markdown.catch(() => undefined);
+  }
+  return markdown;
+}
+
+/** The renderer, with the description as the text it is written in where its chunk cannot be
+ * loaded: Vue keeps an async component which failed to load failed for the rest of the session,
+ * so the alternative is an overview which is an empty heading. */
+const HelpMarkdown = defineAsyncComponent({
+  loader: loadMarkdown,
+  errorComponent: HelpDescriptionText,
+});
 
 /** The key of the entry a type's attributes end with, the attributes every element carries. */
 const SBASE_KEY = "types/SBase";
@@ -69,6 +89,7 @@ function loadDetails(): void {
   if (details.value || pending) return;
   pending = true;
   failed.value = false;
+  void loadMarkdown();
   void loadGlossaryDetails().then(
     (loaded) => {
       details.value = loaded;
