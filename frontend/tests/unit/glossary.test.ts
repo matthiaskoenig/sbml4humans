@@ -12,7 +12,6 @@ import {
   attributeKey,
   attributeLabel,
   conceptEntry,
-  conceptKey,
   entryOfKey,
   linkEntry,
   linkKey,
@@ -165,12 +164,9 @@ describe("glossary", () => {
     expect(linkEntry("lowerBound")?.summary).not.toContain("flux");
   });
 
-  it("keys a type, a link kind and a concept it has an entry for", () => {
+  it("keys a type and a link kind it has an entry for", () => {
     expect(typeKey("Species")).toBe("types/Species");
     expect(linkKey("compartment")).toBe("links/compartment");
-    expect(conceptKey("derivedUnits")).toBe(
-      conceptEntry("derivedUnits") && "concepts/derivedUnits",
-    );
   });
 
   it("keys an attribute through the same resolution attributeEntry uses", () => {
