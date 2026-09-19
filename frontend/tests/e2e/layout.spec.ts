@@ -233,3 +233,42 @@ test("the header of the inspector keeps a long type on one line at a laptop widt
     if (width >= 1440) expect(boxes.type.clipped).toBe(false);
   }
 });
+
+test("the sections of the inspector are as high as what they hold in a tall window", async ({
+  page,
+}) => {
+  // in a window taller than the inspector the three sections stretched to a third each, with
+  // gaps as high as the sections below their content
+  await page.setViewportSize({ width: 1440, height: 1800 });
+  await page.goto(
+    "/examples/constraint_event%20(constraint_event.xml)?pk=constraint_event/Species:S2",
+  );
+  const body = page.getByTestId("inspector-body");
+  await expect(body.getByTestId("attributes-column")).toBeVisible();
+  const gaps = await body.evaluate((element) =>
+    [...element.firstElementChild!.children].map((section) => {
+      const content = [...section.children].reduce(
+        (height, child) => height + child.getBoundingClientRect().height,
+        0,
+      );
+      // the padding of a section is 0.75rem above and below
+      return Math.round(section.getBoundingClientRect().height - content - 24);
+    }),
+  );
+  for (const gap of gaps) expect(gap).toBeLessThanOrEqual(8);
+});
+
+test("the attributes of the inspector carry their heading in the three columns as well", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.addInitScript(() => localStorage.setItem("sbml4humans.split.inspector-width", "1100"));
+  await page.goto(
+    "/examples/constraint_event%20(constraint_event.xml)?pk=constraint_event/Species:S2",
+  );
+  const heading = page.getByTestId("inspector-body").getByRole("heading", { name: "Attributes" });
+  await expect(heading).toBeVisible();
+  const references = page.getByTestId("links-references").getByRole("heading");
+  // the headings of the three columns stand on one line
+  expect((await heading.boundingBox())!.y).toBe((await references.boundingBox())!.y);
+});

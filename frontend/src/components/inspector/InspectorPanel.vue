@@ -124,14 +124,15 @@ const xmlEmptyMessage = computed(() =>
       <XmlView :xml="xml" :caption="xmlCaption" :empty-message="xmlEmptyMessage" />
     </div>
     <!-- the inspector is a column of the report page, a third of the window wide, and its three
-    sections are one under the other in one scroll; a reader who drags it wider than `@4xl` gets
-    the three columns next to each other, each with a scroll of its own -->
+    sections are one under the other in one scroll, each as high as what it holds; a reader who
+    drags it wider than `@4xl` gets the three columns next to each other, each with a scroll of
+    its own and the whole height, and each under its heading -->
     <div v-else class="@container min-h-0 flex-1 overflow-hidden" data-testid="inspector-body">
       <div
-        class="grid h-full grid-cols-1 divide-y divide-gray-200 overflow-y-auto @4xl:grid-cols-3 @4xl:divide-x @4xl:divide-y-0 @4xl:overflow-hidden"
+        class="grid h-full grid-cols-1 content-start divide-y divide-gray-200 overflow-y-auto @4xl:grid-cols-3 @4xl:content-stretch @4xl:divide-x @4xl:divide-y-0 @4xl:overflow-hidden"
       >
         <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
-          <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase @4xl:hidden">
+          <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             Attributes
           </h3>
           <AttributesColumn :element="element" />
