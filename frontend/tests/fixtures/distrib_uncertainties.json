@@ -1,5 +1,5 @@
 {
-  "uid": "19b478d15d504dedac947ad72da50600",
+  "uid": "aa48ebcdc17947b1b4c166005fcf254a",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./distrib_uncertainties.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./distrib_uncertainties.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -375,48 +375,56 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "distrib_uncertainties/Model:distrib_uncertainties",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "distrib_uncertainties/Parameter:p1",
               "target": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
-              "kind": "uncertainty"
+              "kind": "uncertainty",
+              "targetEntry": null
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
               "target": "distrib_uncertainties/UncertSpan:p1.uncertainty.0.range",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
               "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.mean",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
               "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.standardDeviation",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_uncertainties/Uncertainty:p1.uncertainty.0",
               "target": "distrib_uncertainties/UncertParameter:p1.uncertainty.0.distribution",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_uncertainties/Model:distrib_uncertainties",
               "target": "distrib_uncertainties/UnitDefinition:hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_uncertainties/Model:distrib_uncertainties",
               "target": "distrib_uncertainties/UnitDefinition:m2",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.011 [s]"
       }
     }
   }

@@ -10,10 +10,12 @@ from pydantic import BaseModel
 from pymetadata.omex import Omex
 
 from sbml4humans.examples import ExampleMetaData, load_examples
-from sbml4humans.model import ReportResponse, SBase
+from sbml4humans.model import ReportResponse, ResolutionStatus, SBase
 from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
 from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
+    EXAMPLES_DIR,
+    OMEX_COMPMODELS,
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
 )
@@ -188,3 +190,124 @@ def test_uid_differs_between_reports() -> None:
     uid1 = report_for_path(REPRESSILATOR_SBML).uid
     uid2 = report_for_path(REPRESSILATOR_SBML).uid
     assert uid1 != uid2
+
+
+# -------------------------------------------------------------------------------------
+# external model definitions: the entries of an archive, the files of a trusted directory
+# -------------------------------------------------------------------------------------
+def _across(response: ReportResponse, location: str) -> set[tuple[str, str]]:
+    """The entry and the target of every edge of an entry which leaves it."""
+    graph = response.reports[location].report.link_graph
+    return {
+        (edge.target_entry, edge.target)
+        for edge in graph.edges
+        if edge.target_entry is not None
+    }
+
+
+def test_an_archive_is_linked_across_its_entries() -> None:
+    """The replaced elements of `omex_comp.xml` end in `omex_minimal.xml`."""
+    response = report_for_path(OMEX_COMPMODELS)
+    comp = response.reports["./models/omex_comp.xml"].report
+    for emd in comp.external_model_definitions:
+        assert emd.resolution.status == ResolutionStatus.RESOLVED
+        assert emd.resolution.entry == "./models/omex_minimal.xml"
+        assert emd.resolution.model == "omex_minimal/Model:omex_minimal"
+        assert emd.resolution.md5_matches is None
+    across = _across(response, "./models/omex_comp.xml")
+    assert ("./models/omex_minimal.xml", "omex_minimal/Species:S1") in across
+    assert {entry for entry, _ in across} == {"./models/omex_minimal.xml"}
+    # every target is a node of the graph of its entry
+    nodes = response.reports["./models/omex_minimal.xml"].report.link_graph.nodes
+    assert {target for _, target in across} <= set(nodes)
+
+
+def test_a_trusted_file_reads_the_files_next_to_it() -> None:
+    """The documents a single file names become further entries of its archive."""
+    response = report_for_path(EXAMPLES_DIR / "comp_deletion.xml", trusted=True)
+    assert [(e.location, e.master) for e in response.manifest.entries if e.master] == [
+        ("./comp_deletion.xml", True)
+    ]
+    assert list(response.reports) == ["./comp_deletion.xml", "./unit_definitions.xml"]
+    emd = response.reports["./comp_deletion.xml"].report.external_model_definitions[0]
+    assert emd.resolution.status == ResolutionStatus.RESOLVED
+    assert emd.resolution.entry == "./unit_definitions.xml"
+    # the md5 of the file is the one the definition states
+    assert emd.resolution.md5_matches is True
+    assert _across(response, "./comp_deletion.xml") == {
+        ("./unit_definitions.xml", "unit_definitions/Model:unit_definitions"),
+        ("./unit_definitions.xml", "unit_definitions/UnitDefinition:mg_per_day"),
+    }
+
+
+def test_an_untrusted_file_reads_nothing_else() -> None:
+    """An upload has no directory, whatever lies next to its temporary file."""
+    for response in (
+        report_for_path(EXAMPLES_DIR / "comp_deletion.xml"),
+        report_for_bytes((EXAMPLES_DIR / "comp_deletion.xml").read_bytes()),
+    ):
+        assert list(response.reports) == ["./model.xml"]
+        emd = response.reports["./model.xml"].report.external_model_definitions[0]
+        assert emd.resolution.status == ResolutionStatus.NOT_FOUND
+        assert _across(response, "./model.xml") == set()
+
+
+def _body(source: str) -> str:
+    """A comp document whose external model definition names the source."""
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      level="3" version="1" comp:required="true">
+  <model id="body"/>
+  <comp:listOfExternalModelDefinitions>
+    <comp:externalModelDefinition comp:id="emd" comp:source="{source}"/>
+  </comp:listOfExternalModelDefinitions>
+</sbml>
+"""
+
+
+def test_trusted_files_are_read_transitively(tmp_path: Path) -> None:
+    """A file which is read names files of its own, relative to where it is."""
+    (tmp_path / "body.xml").write_text(_body("organs/liver.xml"))
+    (tmp_path / "organs").mkdir()
+    (tmp_path / "organs" / "liver.xml").write_text(_body("../cell.xml"))
+    (tmp_path / "cell.xml").write_text(_body("https://example.org/remote.xml"))
+    response = report_for_path(tmp_path / "body.xml", trusted=True)
+    assert list(response.reports) == ["./body.xml", "./organs/liver.xml", "./cell.xml"]
+    statuses = {
+        location: entry.report.external_model_definitions[0].resolution.status
+        for location, entry in response.reports.items()
+    }
+    assert statuses == {
+        "./body.xml": ResolutionStatus.RESOLVED,
+        "./organs/liver.xml": ResolutionStatus.RESOLVED,
+        "./cell.xml": ResolutionStatus.REMOTE_SOURCE,
+    }
+
+
+@pytest.mark.parametrize("source", ["../secret.xml", "{absolute}", "missing.xml"])
+def test_nothing_outside_of_the_trusted_directory_is_read(
+    tmp_path: Path, source: str
+) -> None:
+    """Neither a file above the directory, nor an absolute path, nor a missing one."""
+    secret = tmp_path / "secret.xml"
+    secret.write_text(_body("unused.xml"))
+    directory = tmp_path / "models"
+    directory.mkdir()
+    (directory / "body.xml").write_text(_body(source.format(absolute=secret)))
+    response = report_for_path(directory / "body.xml", trusted=True)
+    assert list(response.reports) == ["./body.xml"]
+    emd = response.reports["./body.xml"].report.external_model_definitions[0]
+    assert emd.resolution.status == ResolutionStatus.NOT_FOUND
+
+
+def test_a_link_out_of_the_trusted_directory_is_not_followed(tmp_path: Path) -> None:
+    """A symbolic link does not make a file outside of the directory a part of it."""
+    secret = tmp_path / "secret.xml"
+    secret.write_text(_body("unused.xml"))
+    directory = tmp_path / "models"
+    directory.mkdir()
+    (directory / "liver.xml").symlink_to(secret)
+    (directory / "body.xml").write_text(_body("liver.xml"))
+    response = report_for_path(directory / "body.xml", trusted=True)
+    assert list(response.reports) == ["./body.xml"]

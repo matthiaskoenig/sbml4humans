@@ -13,6 +13,8 @@ from sbml4humans.model import (
     CVTerm,
     Edge,
     EdgeKind,
+    ExternalModelDefinition,
+    ExternalModelResolution,
     LinkGraph,
     Math,
     Model,
@@ -21,6 +23,7 @@ from sbml4humans.model import (
     RateRule,
     Report,
     ReportResponse,
+    ResolutionStatus,
     SBase,
     SBMLDocument,
     Species,
@@ -147,6 +150,52 @@ def _model() -> Model:
             AlgebraicRule(pk="m/AlgebraicRule:r3", math=None),
         ],
     )
+
+
+def test_an_edge_stays_in_its_entry_unless_it_names_another() -> None:
+    """The entry of the target is part of the JSON and unset for a local edge."""
+    local = Edge(source="m/Species:a", target="m/Compartment:c", kind=EdgeKind.UNITS)
+    assert local.model_dump(mode="json", by_alias=True)["targetEntry"] is None
+    across = Edge(
+        source="m/ReplacedElement:a.replacedElement.0",
+        target="sub/Species:a",
+        kind=EdgeKind.REPLACED_ELEMENT,
+        target_entry="./models/sub.xml",
+    )
+    assert across.model_dump(mode="json", by_alias=True)["targetEntry"] == (
+        "./models/sub.xml"
+    )
+    # the entry is part of the identity of an edge: two entries may hold one pk
+    assert across != Edge(source=across.source, target=across.target, kind=across.kind)
+
+
+def test_an_external_model_definition_carries_its_resolution() -> None:
+    """The resolution is unresolved until the entries of the archive are known."""
+    emd = ExternalModelDefinition(
+        pk="document/ExternalModelDefinition:emd", id="emd", source="sub.xml"
+    )
+    assert emd.resolution == ExternalModelResolution(status=ResolutionStatus.NOT_FOUND)
+    emd.resolution = ExternalModelResolution(
+        status=ResolutionStatus.RESOLVED,
+        entry="./sub.xml",
+        model="sub/Model:sub",
+        md5_matches=True,
+    )
+    data = emd.model_dump(mode="json", by_alias=True)["resolution"]
+    assert data == {
+        "status": "resolved",
+        "entry": "./sub.xml",
+        "model": "sub/Model:sub",
+        "md5Matches": True,
+    }
+    assert {status.value for status in ResolutionStatus} == {
+        "resolved",
+        "remoteSource",
+        "notFound",
+        "notSbml",
+        "modelNotFound",
+        "circular",
+    }
 
 
 def test_sbml_type_is_fixed_per_class() -> None:

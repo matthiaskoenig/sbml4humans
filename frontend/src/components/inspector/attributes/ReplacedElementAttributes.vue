@@ -14,8 +14,9 @@ const submodel = computed(
   () =>
     index.value?.resolve(props.element.pk, "replacedElement", props.element.submodelRef) ?? null,
 );
-/** The replaced element inside the submodel; a reference into an external model, whose document
- * the report does not read, resolves to none and is shown as the name it carries. */
+/** The replaced element inside the submodel, which is an element of another entry where the
+ * submodel instantiates an external model; a reference into a document the report does not have
+ * resolves to none and is shown as the name it carries. */
 const target = computed(() =>
   referenceTarget(index.value, props.element.pk, "replacedElement", submodel.value),
 );
@@ -26,19 +27,39 @@ const target = computed(() =>
     ><ElementLink :pk="submodel" :label="element.submodelRef"
   /></AttributeRow>
   <AttributeRow label="port ref" :type="element.sbmlType" field="portRef">
-    <ElementLink v-if="element.portRef" :pk="target" :label="element.portRef" />
+    <ElementLink
+      v-if="element.portRef"
+      :pk="target?.pk"
+      :entry="target?.entry"
+      :label="element.portRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="id ref" :type="element.sbmlType" field="idRef">
-    <ElementLink v-if="element.idRef" :pk="target" :label="element.idRef" />
+    <ElementLink
+      v-if="element.idRef"
+      :pk="target?.pk"
+      :entry="target?.entry"
+      :label="element.idRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="unit ref" :type="element.sbmlType" field="unitRef">
-    <ElementLink v-if="element.unitRef" :pk="target" :label="element.unitRef" />
+    <ElementLink
+      v-if="element.unitRef"
+      :pk="target?.pk"
+      :entry="target?.entry"
+      :label="element.unitRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="meta id ref" :type="element.sbmlType" field="metaIdRef">
-    <ElementLink v-if="element.metaIdRef" :pk="target" :label="element.metaIdRef" />
+    <ElementLink
+      v-if="element.metaIdRef"
+      :pk="target?.pk"
+      :entry="target?.entry"
+      :label="element.metaIdRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="deletion" :type="element.sbmlType" field="deletion">

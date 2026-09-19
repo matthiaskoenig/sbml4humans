@@ -30,3 +30,10 @@ export function columnChars(header: string, texts: Iterable<string | null | unde
   for (const text of texts) chars = Math.max(chars, text?.length ?? 1);
   return Math.min(chars, Math.max(header.length, MAX_COLUMN_CHARS));
 }
+
+/** The file name of a manifest location, `omex_minimal.xml` of `./models/omex_minimal.xml`:
+ * what a link into another entry shows of it, where the whole location would not fit. */
+export function fileName(location: string): string {
+  const name = location.slice(location.lastIndexOf("/") + 1);
+  return name || location;
+}

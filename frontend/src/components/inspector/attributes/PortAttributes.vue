@@ -2,31 +2,52 @@
 import type { Port } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
+import { referenceTarget } from "@/report/comp";
 import { useReportIndex } from "@/report/context";
 
 const props = defineProps<{ element: Port }>();
 const index = useReportIndex();
 
-/** The one port edge of the port; ports reference exactly one element. */
-const target = () =>
-  index.value?.references(props.element.pk).find((edge) => edge.kind === "port")?.target ?? null;
+/** The one port edge of the port; ports reference exactly one element, which a port with a
+ * nested reference may name inside a submodel, and with it in another entry of the archive. */
+const target = () => referenceTarget(index.value, props.element.pk, "port");
 </script>
 
 <template>
   <AttributeRow label="port ref" :type="element.sbmlType" field="portRef">
-    <ElementLink v-if="element.portRef" :pk="target()" :label="element.portRef" />
+    <ElementLink
+      v-if="element.portRef"
+      :pk="target()?.pk"
+      :entry="target()?.entry"
+      :label="element.portRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="id ref" :type="element.sbmlType" field="idRef">
-    <ElementLink v-if="element.idRef" :pk="target()" :label="element.idRef" />
+    <ElementLink
+      v-if="element.idRef"
+      :pk="target()?.pk"
+      :entry="target()?.entry"
+      :label="element.idRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="unit ref" :type="element.sbmlType" field="unitRef">
-    <ElementLink v-if="element.unitRef" :pk="target()" :label="element.unitRef" />
+    <ElementLink
+      v-if="element.unitRef"
+      :pk="target()?.pk"
+      :entry="target()?.entry"
+      :label="element.unitRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="meta id ref" :type="element.sbmlType" field="metaIdRef">
-    <ElementLink v-if="element.metaIdRef" :pk="target()" :label="element.metaIdRef" />
+    <ElementLink
+      v-if="element.metaIdRef"
+      :pk="target()?.pk"
+      :entry="target()?.entry"
+      :label="element.metaIdRef"
+    />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <AttributeRow label="nested reference" :type="element.sbmlType" field="sbaseRef">

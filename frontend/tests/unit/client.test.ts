@@ -133,7 +133,7 @@ describe("api client", () => {
   it("fixtures carry the report response shape", () => {
     const response = loadFixture("repressilator");
     expect(response.manifest.entries?.some((entry) => entry.master)).toBe(true);
-    const report = response.reports["./model.xml"]?.report;
+    const report = response.reports["./BIOMD0000000012_url.xml"]?.report;
     expect(report?.document.sbmlType).toBe("SBMLDocument");
     expect(report?.models?.[0]?.id).toBe("BIOMD0000000012");
     expect(report?.linkGraph?.edges?.length).toBeGreaterThan(0);

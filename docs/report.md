@@ -97,6 +97,16 @@ An archive with more than one SBML entry offers its entries for selection, named
 
 Switching the entry or the model closes the inspector, because the selected element belongs to the model it was selected in. The search and the filter of types stay as they are.
 
+### Models of other documents
+
+A model of the comp package can instantiate a model of another file through an [external model definition](reference/externalmodeldefinition.md), which names that file by its `source`. The report follows the definition when it was given the file: when the source is a relative location and the file is another entry of the same COMBINE archive, as in the example archives `CompModels`, `icg_model` and `omeprazole_model`. The [replacements](reference/replacedelement.md), the [deletions](reference/deletion.md) and the [ports](reference/port.md) which reach into such a submodel then end at the element they name in the other entry. A link into another entry shows the file name of that entry behind the element, and following it opens the report of that entry with the element selected; the element lists the link under "Referenced by", with the file name of the entry it comes from.
+
+![The inspector of the species S0 of omex_comp.xml: its replaced element names the submodel and the species S1 of the entry omex_minimal.xml, whose file name stands behind the link](images/inspector-external-model.png)
+
+The inspector of an external model definition says how far it was followed: the status, the entry and the model it resolves to, and whether the md5 checksum of the definition is the checksum of the entry. A checksum which does not match is stated and the definition is still followed, because the file in the archive is the one the model is used with. A [submodel](reference/submodel.md) which instantiates an external model definition links the model behind it, or says why there is none.
+
+The report never fetches a file. A source which is a URL is shown as it is and marked as a remote source, so that the time a report takes does not depend on another server and a model cannot make the server request an address. An SBML file which is uploaded on its own has no file next to it, so its external model definitions are not followed and its references end at the submodel; put the files into one COMBINE archive to see them resolved. The examples which are single files are read from their directory on the server, which is why `comp_deletion` and `icg_body` show the files they name as further entries.
+
 ## The url of a report
 
 The state of a report is part of its address, so a report can be linked in the state it is in: a selected element, a search, a filter of types, one entry of an archive and one model of a document.

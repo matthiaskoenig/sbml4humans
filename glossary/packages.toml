@@ -416,7 +416,7 @@ summary = "a model of another SBML file which this document can instantiate"
 description = """
 An external model definition makes a model of another file available under an identifier of this document, so that a [submodel](submodel.md) can instantiate it. It is a declaration, not a use: it says where the file is and which model inside it is meant. The identifier belongs to this document and is not the identifier of the model it points at.
 
-The report shows the external model definitions of a document next to its models. It does not open the file they point at, so what it shows is the declaration, not the model behind it.
+The report shows the external model definitions of a document next to its models, and it follows one to the model it names where it was given the document at its source: another entry of the same COMBINE archive, or a file next to a model which was read from a directory, as the examples are. The references of the [submodels](submodel.md) which instantiate it, the [replacements](replacedelement.md), the [deletions](deletion.md) and the [ports](port.md), then end at the element they name inside that model. The report never fetches a document, and the [status](externalmodeldefinition.md) of the definition says how far it could be followed.
 """
 related = ["Submodel", "Model", "comp"]
 
@@ -429,7 +429,7 @@ summary = "the location of the SBML file which holds the model"
 description = """
 The source is a URI, which may be a URL, a URN or a location relative to this document. The whole file at that location is referenced and it has to be an SBML Level 3 Version 1 document; earlier levels and versions are not supported by the package.
 
-The report shows the source in the inspector of the external model definition.
+The report shows the source in the inspector of the external model definition. A relative source is resolved against the location of the document which names it, inside the COMBINE archive both are entries of. A source with a scheme, such as a URL, is shown and never fetched.
 """
 
 [types.ExternalModelDefinition.attributes.modelRef]
@@ -441,7 +441,7 @@ summary = "the identifier of the model inside the referenced file"
 description = """
 The reference names a model or another external model definition of the document at the source. When it is not set, the main model of that file is meant, which is the case a model without an identifier leaves. Following a chain of external model definitions has to end at a model.
 
-The report shows the reference in the inspector; it is not resolved to an element, the referenced file is not read.
+The report shows the reference in the inspector and follows it where it has the document at the source, through a chain of external model definitions to the model at its end.
 """
 
 [types.Submodel]
@@ -589,7 +589,58 @@ summary = "the checksum of the document at the source"
 description = """
 The checksum is optional and is the md5 sum of the whole file at the source, as it was when the model was written. It is how a reader tells whether the file they reach is the file the composed model was built against, which matters when the source is a URL that somebody else maintains.
 
-The report shows the checksum in the inspector of the external model definition; it does not fetch the file and cannot check it.
+The report shows the checksum in the inspector of the external model definition and compares it with the document it has at the source. It does not fetch a file, so the checksum of a remote source is not checked.
+"""
+
+[types.ExternalModelDefinition.attributes."resolution.status"]
+label = "status"
+package = "report"
+type = "string"
+summary = "how far the report could follow the external model definition"
+description = """
+The report reads the documents it was given and never fetches one, so whether it can follow an external model definition depends on where its source points. The status is one of six:
+
+- `resolved`: the document at the source is part of the report and holds the model. The references into the [submodels](submodel.md) of this definition end at the element they name.
+- `remoteSource`: the source is a URI with a scheme, such as a URL. The report does not fetch it, so that the time of a report does not depend on another server and a model cannot make the server request an address.
+- `notFound`: the source is a relative location and the report has no document there. This is the status of every external model definition of an SBML file which is uploaded on its own; a COMBINE archive which holds both files resolves it.
+- `notSbml`: there is a file at the source, but it holds no SBML model the report could read.
+- `modelNotFound`: the document at the source has no model with the identifier the model reference names, or no model at all.
+- `circular`: the model reference names an external model definition of the other document, and following the chain comes back to where it started.
+
+Unless the status is `resolved`, the references into the submodels end at the submodel.
+"""
+
+[types.ExternalModelDefinition.attributes."resolution.entry"]
+label = "document"
+package = "report"
+type = "string"
+summary = "the entry of the archive which the source names"
+description = """
+The location of the entry in the [manifest](concepts.md#manifest) of the COMBINE archive, as soon as there is an entry at the source, whether or not the model could be found in it. For a chain of external model definitions it is the entry of the last document which was found.
+
+The inspector links the entry when the report has a model of it.
+"""
+
+[types.ExternalModelDefinition.attributes."resolution.model"]
+label = "model"
+package = "report"
+type = "string"
+summary = "the model the external model definition names"
+description = """
+The [model](model.md) or model definition of the other document which the model reference names, the main model of that document where no model reference is set, and the model at the end of the chain where the reference names another external model definition.
+
+The inspector links the model, which opens the report of the other entry, and the link is shown under "References" of the definition and under "Referenced by" of the model.
+"""
+
+[types.ExternalModelDefinition.attributes."resolution.md5Matches"]
+label = "md5 check"
+package = "report"
+type = "boolean"
+summary = "whether the document at the source has the checksum the definition states"
+description = """
+The report computes the md5 sum of the document it has at the source and compares it with the md5 of the definition. It is not set when the definition states no checksum or when the report has no document to compare with.
+
+A checksum which does not match says that the file is not the one the composed model was written against. The report states the mismatch and still follows the definition, because the document in the archive is the one the model will be run with.
 """
 
 

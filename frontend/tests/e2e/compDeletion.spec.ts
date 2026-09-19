@@ -100,19 +100,20 @@ test.describe("comp_deletion", () => {
     await expect(page).toHaveURL(/pk=cell\/Compartment:c$/);
   });
 
-  test("keeps a reference into an external document as the name the file writes", async ({
-    page,
-  }) => {
+  test("follows a deletion into the document of an external model definition", async ({ page }) => {
     await row(page, "Submodel:unit_library").click();
     const inspector = page.getByTestId("inspector");
     const deletions = attribute(page, "deletions").getByTestId("nested-table");
     const cells = deletions.locator("tbody tr").first().locator("td");
-    await expect(cells).toHaveText(["del_external_unit", "mg_per_day"]);
-    // the document of the external model definition is not read, so the unit definition it
-    // removes is a name and not a link
-    await expect(cells.nth(1).getByTestId("element-link")).toHaveCount(0);
+    // the example is read from its directory, where the document of the external model
+    // definition lies next to it: the unit definition it removes is a link into that document
+    await expect(cells.nth(0)).toHaveText("del_external_unit");
+    const removed = cells.nth(1).getByTestId("element-link");
+    await expect(removed).toHaveAttribute("data-entry", "./unit_definitions.xml");
+    await expect(removed.getByTestId("element-link-entry")).toHaveText("unit_definitions.xml");
 
-    // the external model definition carries the checksum of the document it names
+    // the external model definition carries the checksum of the document it names, and the
+    // document which was read has that checksum
     await inspector
       .getByTestId("links-references")
       .getByTestId("links-modelRef")
@@ -120,5 +121,7 @@ test.describe("comp_deletion", () => {
       .click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("External model definition");
     await expect(attribute(page, "md5")).toContainText("bde1522151d26d8fbca09893ce85ac52");
+    await expect(inspector.getByTestId("resolution-status")).toHaveText("resolved");
+    await expect(inspector.getByTestId("resolution-md5")).toHaveText("matches the document");
   });
 });

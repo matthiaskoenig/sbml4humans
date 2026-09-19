@@ -33,8 +33,9 @@ const allMeasures = computed(() =>
 
 /** One row of a replacement: the submodel it names, and the element inside it which it replaces
  * or which replaces this element. A replacement scoped to a deletion names that deletion in the
- * place of an element, and a reference into an external model, whose document the report does
- * not read, keeps its name without a link. */
+ * place of an element, a reference into an external model ends at the element of another entry
+ * of the archive, and one into a document the report does not have keeps its name without a
+ * link. */
 function replacementRow(
   replacement: ReplacedElement | ReplacedBy,
   kind: "replacedElement" | "replacedBy",
@@ -44,7 +45,9 @@ function replacementRow(
     "deletion" in replacement && replacement.deletion
       ? (index.value?.resolve(replacement.pk, "deletion", replacement.deletion) ?? null)
       : null;
-  const target = referenceTarget(index.value, replacement.pk, kind, submodel) ?? deletion;
+  const target =
+    referenceTarget(index.value, replacement.pk, kind, submodel) ??
+    (deletion ? { pk: deletion, entry: null } : null);
   const name =
     referenceName(replacement) ??
     ("deletion" in replacement ? (replacement.deletion ?? null) : null);
@@ -96,7 +99,11 @@ const replacedElements = computed(() =>
       >
         <ElementLink :pk="replacedBy.submodel" :label="replacedBy.submodelRef" />
         <span class="mx-1 text-gray-400">/</span>
-        <ElementLink :pk="replacedBy.target" :label="replacedBy.name" />
+        <ElementLink
+          :pk="replacedBy.target?.pk"
+          :entry="replacedBy.target?.entry"
+          :label="replacedBy.name"
+        />
       </AttributeRow>
       <AttributeRow
         v-if="replacedElements.length"
@@ -117,7 +124,7 @@ const replacedElements = computed(() =>
             ><ElementLink :pk="row.submodel" :label="row.submodelRef"
           /></template>
           <template #cell-name="{ row }"
-            ><ElementLink :pk="row.target" :label="row.name"
+            ><ElementLink :pk="row.target?.pk" :entry="row.target?.entry" :label="row.name"
           /></template>
         </NestedTable>
       </AttributeRow>

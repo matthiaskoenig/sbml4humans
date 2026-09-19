@@ -1,5 +1,5 @@
 {
-  "uid": "3a6d4f3203224edba3b120cd3e95b380",
+  "uid": "67d1cb0bd27b431992b1df000ee8cf55",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./constraint_event.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./constraint_event.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -958,203 +958,242 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "constraint_event/Model:constraint_event",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Model:constraint_event",
               "target": "constraint_event/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Model:constraint_event",
               "target": "constraint_event/UnitDefinition:min",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Species:S1",
               "target": "constraint_event/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Species:S1",
               "target": "constraint_event/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Species:S2",
               "target": "constraint_event/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Species:S2",
               "target": "constraint_event/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Parameter:S1_max",
               "target": "constraint_event/UnitDefinition:mM",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Parameter:dose",
               "target": "constraint_event/UnitDefinition:mM",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Parameter:t_dose",
               "target": "constraint_event/UnitDefinition:min",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Parameter:t_delay",
               "target": "constraint_event/UnitDefinition:min",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Constraint:meta_constraint_S1",
               "target": "constraint_event/Species:S1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Constraint:meta_constraint_S1",
               "target": "constraint_event/Parameter:S1_max",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Reaction:R1",
               "target": "constraint_event/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Reaction:R1",
               "target": "constraint_event/SpeciesReference:R1_S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/SpeciesReference:R1_S1",
               "target": "constraint_event/Species:S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Reaction:R1",
               "target": "constraint_event/SpeciesReference:R1_S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/SpeciesReference:R1_S2",
               "target": "constraint_event/Species:S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Reaction:R1",
               "target": "constraint_event/KineticLaw:meta_R1_kinetic_law",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/LocalParameter:R1.kineticLaw.Km",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/Species:S1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/Parameter:active",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/Compartment:cell",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
-              "kind": "localParameter"
+              "kind": "localParameter",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/LocalParameter:R1.kineticLaw.Vmax",
               "target": "constraint_event/UnitDefinition:mmole_per_min_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/KineticLaw:meta_R1_kinetic_law",
               "target": "constraint_event/LocalParameter:R1.kineticLaw.Km",
-              "kind": "localParameter"
+              "kind": "localParameter",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/LocalParameter:R1.kineticLaw.Km",
               "target": "constraint_event/UnitDefinition:mM",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Event:E1",
               "target": "constraint_event/Trigger:E1_trigger",
-              "kind": "trigger"
+              "kind": "trigger",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Event:E1",
               "target": "constraint_event/Priority:E1_priority",
-              "kind": "priority"
+              "kind": "priority",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Event:E1",
               "target": "constraint_event/Delay:E1_delay",
-              "kind": "delay"
+              "kind": "delay",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Trigger:E1_trigger",
               "target": "constraint_event/Parameter:t_dose",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Delay:E1_delay",
               "target": "constraint_event/Parameter:t_delay",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Event:E1",
               "target": "constraint_event/EventAssignment:E1_dose",
-              "kind": "eventAssignment"
+              "kind": "eventAssignment",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/EventAssignment:E1_dose",
               "target": "constraint_event/Species:S1",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/EventAssignment:E1_dose",
               "target": "constraint_event/Species:S1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/EventAssignment:E1_dose",
               "target": "constraint_event/Parameter:dose",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/Event:E1",
               "target": "constraint_event/EventAssignment:E1_switch",
-              "kind": "eventAssignment"
+              "kind": "eventAssignment",
+              "targetEntry": null
             },
             {
               "source": "constraint_event/EventAssignment:E1_switch",
               "target": "constraint_event/Parameter:active",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.052 [s]"
+        "jsonReportTime": "0.051 [s]"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "uid": "d9120c398a4f484ea3b0d57052bb958d",
+  "uid": "59e739ccad6544889414b761411219ba",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./fbc_bounds_v1.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./fbc_bounds_v1.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -820,168 +820,200 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "fbc_bounds_v1/Model:fbc_bounds_v1",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
               "target": "fbc_bounds_v1/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
               "target": "fbc_bounds_v1/UnitDefinition:hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:glc",
               "target": "fbc_bounds_v1/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:glc",
               "target": "fbc_bounds_v1/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:atp",
               "target": "fbc_bounds_v1/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:atp",
               "target": "fbc_bounds_v1/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:adp",
               "target": "fbc_bounds_v1/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:adp",
               "target": "fbc_bounds_v1/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:biomass",
               "target": "fbc_bounds_v1/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Species:biomass",
               "target": "fbc_bounds_v1/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Reaction:v1",
               "target": "fbc_bounds_v1/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Reaction:v1",
               "target": "fbc_bounds_v1/SpeciesReference:v1.reactant.glc",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/SpeciesReference:v1.reactant.glc",
               "target": "fbc_bounds_v1/Species:glc",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Reaction:v1",
               "target": "fbc_bounds_v1/SpeciesReference:v1.reactant.adp",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/SpeciesReference:v1.reactant.adp",
               "target": "fbc_bounds_v1/Species:adp",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Reaction:v1",
               "target": "fbc_bounds_v1/SpeciesReference:v1.product.atp",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/SpeciesReference:v1.product.atp",
               "target": "fbc_bounds_v1/Species:atp",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Reaction:v1",
               "target": "fbc_bounds_v1/SpeciesReference:v1.product.biomass",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/SpeciesReference:v1.product.biomass",
               "target": "fbc_bounds_v1/Species:biomass",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Reaction:EX_glc",
               "target": "fbc_bounds_v1/SpeciesReference:EX_glc.reactant.glc",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/SpeciesReference:EX_glc.reactant.glc",
               "target": "fbc_bounds_v1/Species:glc",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Reaction:EX_biomass",
               "target": "fbc_bounds_v1/SpeciesReference:EX_biomass.reactant.biomass",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/SpeciesReference:EX_biomass.reactant.biomass",
               "target": "fbc_bounds_v1/Species:biomass",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Model:fbc_bounds_v1",
               "target": "fbc_bounds_v1/Objective:biomass_max",
-              "kind": "activeObjective"
+              "kind": "activeObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Objective:biomass_max",
               "target": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/FluxObjective:biomass_max.fluxObjective.EX_biomass",
               "target": "fbc_bounds_v1/Reaction:EX_biomass",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/Objective:glc_min",
               "target": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/FluxObjective:glc_min.fluxObjective.EX_glc",
               "target": "fbc_bounds_v1/Reaction:EX_glc",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/FluxBound:v1_lb",
               "target": "fbc_bounds_v1/Reaction:v1",
-              "kind": "fluxBound"
+              "kind": "fluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/FluxBound:v1_ub",
               "target": "fbc_bounds_v1/Reaction:v1",
-              "kind": "fluxBound"
+              "kind": "fluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_bounds_v1/FluxBound:EX_glc_fixed",
               "target": "fbc_bounds_v1/Reaction:EX_glc",
-              "kind": "fluxBound"
+              "kind": "fluxBound",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.004 [s]"
+        "jsonReportTime": "0.006 [s]"
       }
     }
   }

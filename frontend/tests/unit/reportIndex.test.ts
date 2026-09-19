@@ -332,4 +332,66 @@ describe("ReportIndex", () => {
     const replaced = species.comp!.replacedElements![0]!;
     expect(elementLabel(compDeletion, replaced.pk)).toBe(`${species.id}.${replaced.submodelRef}`);
   });
+
+  describe("the entries of an archive", () => {
+    const COMP = "./models/omex_comp.xml";
+    const MINIMAL = "./models/omex_minimal.xml";
+    const indexes = ReportIndex.forEntries(loadFixture("comp_models").reports);
+    const comp = indexes.get(COMP)!;
+    const minimal = indexes.get(MINIMAL)!;
+    const replaced = [...comp.elements.values()].find(
+      (element) => element.sbmlType === "ReplacedElement" && element.metaId === "S0_RE",
+    )!;
+
+    it("knows its location and the other entries", () => {
+      expect(comp.location).toBe(COMP);
+      expect(comp.entry(null)).toBe(comp);
+      expect(comp.entry(COMP)).toBe(comp);
+      expect(comp.entry(MINIMAL)).toBe(minimal);
+      expect(comp.entry("./missing.xml")).toBeNull();
+    });
+
+    it("keeps an edge into another entry apart from the edges of its own", () => {
+      expect(comp.referencesAcross(replaced.pk)).toEqual([
+        {
+          source: replaced.pk,
+          sourceEntry: COMP,
+          target: "omex_minimal/Species:S1",
+          targetEntry: MINIMAL,
+          kind: "replacedElement",
+        },
+      ]);
+      // the edge to the submodel stays an edge of the entry, the one across is none of them
+      expect(comp.references(replaced.pk).map((edge) => edge.target)).toEqual([
+        "omex_comp/Submodel:submodel0",
+      ]);
+      for (const index of indexes.values()) {
+        for (const pk of index.elements.keys()) {
+          for (const edge of [...index.references(pk), ...index.referencedBy(pk)]) {
+            expect(edge.targetEntry ?? null).toBeNull();
+            expect(index.nodes.has(edge.target)).toBe(true);
+          }
+        }
+      }
+    });
+
+    it("tells an element who names it from another entry", () => {
+      const across = minimal.referencedAcross("omex_minimal/Species:S1");
+      expect(across).toHaveLength(5);
+      expect(new Set(across.map((edge) => edge.sourceEntry))).toEqual(new Set([COMP]));
+      expect(across.map((edge) => edge.source)).toContain(replaced.pk);
+      // the model is named by the five external model definitions which instantiate it
+      const model = minimal.referencedAcross(minimal.mainModel!.pk);
+      expect(model.map((edge) => edge.kind)).toEqual(Array(5).fill("modelRef"));
+      expect(minimal.modelIdOf(minimal.mainModel!.pk)).toBe("omex_minimal");
+      expect(minimal.modelIdOf("omex_minimal/Species:S1")).toBe("omex_minimal");
+    });
+
+    it("drops the edges into another entry from a report on its own", () => {
+      const alone = new ReportIndex(loadReport("comp_models", COMP));
+      expect(alone.location).toBeNull();
+      expect(alone.referencesAcross(replaced.pk)).toEqual([]);
+      expect(alone.references(replaced.pk)).toHaveLength(1);
+    });
+  });
 });
