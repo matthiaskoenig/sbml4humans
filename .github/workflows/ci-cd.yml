@@ -168,6 +168,10 @@ jobs:
       - name: Build the wheel and the sdist
         working-directory: backend
         run: uv build --out-dir ../dist
+      - name: Check that the wheel and the sdist carry the license
+        run: |
+          unzip -l dist/*.whl | grep --quiet 'dist-info/licenses/LICENSE$'
+          tar --list --file dist/*.tar.gz | grep --quiet '^sbml4humans-[^/]*/LICENSE$'
       - name: Open a report with the installed wheel
         run: |
           uv venv --python 3.14 "$RUNNER_TEMP/venv"
