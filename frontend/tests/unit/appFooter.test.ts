@@ -19,6 +19,12 @@ describe("AppFooter", () => {
   it("names the version and links the commit the build was made from", () => {
     const wrapper = mount(AppFooter);
     expect(wrapper.get("[data-testid=app-footer]").text()).toContain("SBML4Humans 1.2.3");
+    // the version is the link to its release, whose body are the release notes
+    const release = wrapper.get("[data-testid=footer-release]");
+    expect(release.text()).toBe("1.2.3");
+    expect(release.attributes("href")).toBe(
+      "https://github.com/matthiaskoenig/sbml4humans/releases/tag/1.2.3",
+    );
     const commit = wrapper.get("[data-testid=footer-commit]");
     expect(commit.text()).toBe("0f1e2d3");
     expect(commit.attributes("href")).toBe(

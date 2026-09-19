@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { openExample } from "./helpers";
+import { openExample, REPRESSILATOR_FILE } from "./helpers";
 
 const REPOSITORY_URL = "https://github.com/matthiaskoenig/sbml4humans";
 
@@ -39,6 +39,13 @@ test("the home page says which build it is and how to cite it", async ({ page })
   // the development build runs from the repository, so it knows its commit
   const footer = page.getByTestId("app-footer");
   await expect(footer).toContainText(/SBML4Humans \d+\.\d+\.\d+ \([0-9a-f]{7}\)/);
+  // the version is the link to its release on GitHub, whose body are the release notes
+  const release = footer.getByTestId("footer-release");
+  await expect(release).toHaveText(/^\d+\.\d+\.\d+$/);
+  await expect(release).toHaveAttribute(
+    "href",
+    new RegExp(`^${REPOSITORY_URL}/releases/tag/\\d+\\.\\d+\\.\\d+$`),
+  );
   const commit = footer.getByTestId("footer-commit");
   await expect(commit).toHaveAttribute(
     "href",
@@ -66,4 +73,35 @@ test("the report page carries the same footer under its split", async ({ page })
     (node) => node.ownerDocument.documentElement.scrollHeight,
   );
   expect(pageHeight).toBe(viewport.height);
+});
+
+test("the feedback link of the bar opens an issue which names the build and the report", async ({
+  page,
+}) => {
+  await openExample(page, "BIOMD0000000012");
+  await page.getByTestId("table-Species").locator("tbody tr[data-pk]").first().click();
+  const link = page.getByTestId("app-bar-feedback");
+  await expect(link).toHaveText("Feedback");
+  await expect(link).toHaveAttribute("target", "_blank");
+  const href = (await link.getAttribute("href"))!;
+  expect(href.startsWith(`${REPOSITORY_URL}/issues/new?body=`)).toBe(true);
+  const body = new URL(href).searchParams.get("body")!;
+  expect(body).toMatch(/- SBML4Humans \d+\.\d+\.\d+ \([0-9a-f]{7}\)/);
+  expect(body).toContain("- model: the example `BIOMD0000000012`");
+  // the view of the report is part of the page, so a maintainer opens what the reader saw
+  expect(body).toMatch(/- page: `\/examples\/BIOMD0000000012\?pk=.*Species.*`/);
+});
+
+test("the feedback of an uploaded file names neither the file nor its elements", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByTestId("file-input").setInputFiles(REPRESSILATOR_FILE);
+  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expect(page).toHaveURL(/pk=/);
+  const href = (await page.getByTestId("app-bar-feedback").getAttribute("href"))!;
+  const body = new URL(href).searchParams.get("body")!;
+  expect(body).toContain("- page: `/report`");
+  expect(body).toContain("- model: a file of my own");
+  expect(body).not.toContain("BIOMD0000000012");
 });
