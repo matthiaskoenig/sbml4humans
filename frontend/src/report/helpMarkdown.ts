@@ -14,21 +14,29 @@ import MarkdownIt, {
 /** The scheme a description uses to link to another entry of the glossary, `glossary:<key>`. */
 const GLOSSARY_SCHEME = "glossary:";
 
+/** The only schemes a link of a description may use. markdown-it's own `validateLink` is a
+ * denylist (it refuses `vbscript:`, `javascript:`, `file:` and most `data:` urls and nothing
+ * else), so every other scheme, and a relative url with no scheme at all (`page.md`, `#anchor`,
+ * `/path`), would otherwise pass through unchanged. The generator that writes the glossary always
+ * rewrites a description's links to `glossary:<key>` or to an absolute `https:` url; a relative
+ * url in the details json is therefore a generator bug, not a link this module should ever turn
+ * into a live href of its own app. `validateLink` below replaces the denylist with this allowlist,
+ * so a link of any other scheme, and a relative url, render as their own source text instead. */
+const ALLOWED_SCHEMES = [GLOSSARY_SCHEME, "https:", "http:", "mailto:"] as const;
+
 const md: MarkdownItInstance = new MarkdownIt({ html: false, linkify: false, typographer: false });
 
-// markdown-it's default `validateLink` refuses a scheme it does not know (it already allows
-// `https:`, `http:` and `mailto:`); accept `glossary:` too, so a description can link to another
-// entry of the glossary. `html: false` above is the first line of defence against raw html in a
-// description, escaping it to text; the DOMPurify pass below is the second.
-const validatesKnownScheme = md.validateLink.bind(md);
-md.validateLink = (url: string): boolean =>
-  url.startsWith(GLOSSARY_SCHEME) || validatesKnownScheme(url);
-
-/** Whether the link a `link_open` token about to render is a `glossary:` link with no key, so its
- * matching `link_close` drops the closing tag too and only the link text is left. One instance
- * renders one description at a time, synchronously, so a plain stack shared by the two rules is
- * enough: markdown forbids a link inside a link, so opens and closes always nest correctly. */
-const droppedLinks: boolean[] = [];
+md.validateLink = (url: string): boolean => {
+  const trimmed = url.trim();
+  const lower = trimmed.toLowerCase();
+  const scheme = ALLOWED_SCHEMES.find((candidate) => lower.startsWith(candidate));
+  if (scheme === undefined) return false;
+  // a `glossary:` link with nothing after the scheme names no entry; refusing it here, rather
+  // than in `linkOpen` below, means markdown-it never creates a token for it in the first place,
+  // so no state has to track which link was refused across the `link_open`/`link_close` pair.
+  if (scheme === GLOSSARY_SCHEME && trimmed.length === scheme.length) return false;
+  return true;
+};
 
 interface RenderEnv extends Env {
   /** The href of the entry a `glossary:<key>` link of the description being rendered points at,
@@ -36,6 +44,10 @@ interface RenderEnv extends Env {
   hrefOf: (key: string) => string;
 }
 
+// `validateLink` above already refused every link that is not a `glossary:` link with a key, or
+// an `https:`, `http:` or `mailto:` link: markdown-it never creates a `link_open` token for
+// anything else, so this rule needs no state of its own and no matching `link_close` override,
+// unlike an earlier version of this module which tracked a dropped link across the two rules.
 const linkOpen: RendererRule = (tokens, idx, options, env, self) => {
   const token = tokens[idx]!;
   // `attrGet` answers `string | number | null` (a numeric attribute value, a table cell's
@@ -44,29 +56,19 @@ const linkOpen: RendererRule = (tokens, idx, options, env, self) => {
   const href = String(token.attrGet("href") ?? "");
   if (href.startsWith(GLOSSARY_SCHEME)) {
     const key = href.slice(GLOSSARY_SCHEME.length);
-    if (!key) {
-      droppedLinks.push(true);
-      return "";
-    }
     token.attrSet("href", (env as RenderEnv).hrefOf(key));
     token.attrSet("data-help-key", key);
     token.attrSet("class", "help-link");
-    droppedLinks.push(false);
     return self.renderToken(tokens, idx, options);
   }
-  // an external link (the specification, the documentation site, ...) opens in a new tab, so a
-  // reader never loses the report behind it
+  // an https:, http: or mailto: link (the specification, the documentation site, ...) opens in a
+  // new tab, so a reader never loses the report behind it
   token.attrSet("target", "_blank");
   token.attrSet("rel", "noopener");
-  droppedLinks.push(false);
   return self.renderToken(tokens, idx, options);
 };
 
-const linkClose: RendererRule = (tokens, idx, options, _env, self) =>
-  droppedLinks.pop() ? "" : self.renderToken(tokens, idx, options);
-
 md.renderer.rules.link_open = linkOpen;
-md.renderer.rules.link_close = linkClose;
 
 /** This module's own DOMPurify instance, restricted to the markup real descriptions use. */
 const purifier = DOMPurify(window);
@@ -80,6 +82,10 @@ const purifier = DOMPurify(window);
 export function renderHelpMarkdown(markdown: string, hrefOf: (key: string) => string): string {
   const html = md.render(markdown, { hrefOf } satisfies RenderEnv);
   return purifier.sanitize(html, {
+    // no description carries an image (the survey of the real glossary found none), so `img` is
+    // left out on purpose, not merely forgotten: markdown-it would otherwise turn `![x](url)` into
+    // one, `src` is not in `ALLOWED_ATTR` below, and an `img` without a `src` is still an element
+    // worth not having in a dialog whose only job is explaining text.
     ALLOWED_TAGS: [
       "p",
       "em",

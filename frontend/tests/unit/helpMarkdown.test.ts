@@ -24,12 +24,26 @@ describe("renderHelpMarkdown", () => {
     expect(html).not.toContain("glossary:");
   });
 
-  it("opens an external link in a new tab without leaking a referrer through target alone", () => {
+  it("opens an https link in a new tab, marked noopener", () => {
     const html = renderHelpMarkdown(
       "see the [specification](https://example.invalid/spec)",
       hrefOf,
     );
     expect(html).toContain('href="https://example.invalid/spec"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener"');
+  });
+
+  it("opens an http link in a new tab, marked noopener", () => {
+    const html = renderHelpMarkdown("see the [specification](http://example.invalid/spec)", hrefOf);
+    expect(html).toContain('href="http://example.invalid/spec"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener"');
+  });
+
+  it("opens a mailto link in a new tab, marked noopener", () => {
+    const html = renderHelpMarkdown("write to [us](mailto:info@example.invalid)", hrefOf);
+    expect(html).toContain('href="mailto:info@example.invalid"');
     expect(html).toContain('target="_blank"');
     expect(html).toContain('rel="noopener"');
   });
@@ -60,10 +74,28 @@ describe("renderHelpMarkdown", () => {
     expect(html).toContain("<li>b</li>");
   });
 
-  it("drops a link whose scheme is neither glossary, https, http nor mailto, keeping its text", () => {
-    const html = renderHelpMarkdown("a [bad](javascript:alert(1)) link", hrefOf);
+  // markdown-it's own `validateLink` is a denylist (`javascript:`, `vbscript:`, `file:`, most
+  // `data:` urls); this module replaces it with an allowlist of `glossary:`, `https:`, `http:`
+  // and `mailto:`, so every other scheme, and a relative url with no scheme at all, must render
+  // as their own source text instead of becoming a live link.
+  it.each([
+    ["javascript:", "a [bad](javascript:alert(1)) link"],
+    [
+      "a mixed case scheme markdown-it's own denylist would also refuse",
+      "a [bad](JavaScript:alert(1)) link",
+    ],
+    ["ftp:, which markdown-it's own denylist would allow", "a [bad](ftp://example.invalid/f) link"],
+    ["tel:, which markdown-it's own denylist would allow", "a [bad](tel:+1234567) link"],
+    ["a made up foo:, which markdown-it's own denylist would allow", "a [bad](foo:whatever) link"],
+    [
+      "a data: url, mostly allowed by markdown-it's own denylist",
+      "a [bad](data:text/html,alert%281%29) link",
+    ],
+    ["a relative url with no scheme", "a [bad](page.md) link"],
+    ["a bare fragment", "a [bad](#anchor) link"],
+  ])("renders %s as plain text, not a link", (_description, markdown) => {
+    const html = renderHelpMarkdown(markdown, hrefOf);
     expect(html).not.toContain("<a");
-    expect(html).not.toContain('href="javascript:');
     expect(html).toContain("bad");
   });
 
@@ -72,6 +104,14 @@ describe("renderHelpMarkdown", () => {
     expect(html).not.toContain("<a");
     expect(html).not.toContain("data-help-key");
     expect(html).toContain("empty");
+  });
+
+  it("never lets an image of a description become an element, whatever its url's scheme", () => {
+    const html = renderHelpMarkdown(
+      "![x](https://example.invalid/a.png) and ![x](glossary:types/Species)",
+      hrefOf,
+    );
+    expect(html).not.toContain("<img");
   });
 });
 
@@ -149,6 +189,13 @@ describe("HelpMarkdown", () => {
     const event = click(link, { button: 0 }, { keepDefault: true });
     expect(wrapper.emitted("navigate")).toEqual([["types/Compartment"]]);
     expect(event.defaultPrevented).toBe(true);
+  });
+
+  it("emits navigate on a click of a child element of a glossary link", async () => {
+    const wrapper = await mountMarkdown("a [`compartment`](glossary:types/Compartment) link");
+    const child = wrapper.get("a[data-help-key] code");
+    click(child, { button: 0 }, { keepDefault: true });
+    expect(wrapper.emitted("navigate")).toEqual([["types/Compartment"]]);
   });
 
   it("does not emit navigate on a ctrl-click, leaving the browser free to open a new tab", async () => {
