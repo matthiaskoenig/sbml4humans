@@ -4,7 +4,7 @@ A measure of an uncertainty which is an interval.
 
 Four of the sixteen measures of the package are an interval and not a number: the [range](uncertspan.md#type) of a measurement, its 95 percent confidence interval, its 95 percent credible interval and its interquartile range. A span is the [uncert parameter](uncertparameter.md) of such a measure, with the two ends of the interval in the place of the single value of a parameter.
 
-Each end is either a number, in [value lower](uncertspan.md#valuelower) and [value upper](uncertspan.md#valueupper), or an element of the model, in [var lower](uncertspan.md#varlower) and [var upper](uncertspan.md#varupper). An end which is set by neither is not defined, so a span may be open at one end.
+Each end is either a number, in [value lower](uncertspan.md#valuelower) and [value upper](uncertspan.md#valueupper), or an element of the model, in [var lower](uncertspan.md#varlower) and [var upper](uncertspan.md#varupper). An end which is set by neither is undefined, and a span is fully defined only where both of its ends are.
 
 The report shows a span as the interval it is, `1 to 4`, with a link where an end names an element.
 
@@ -28,7 +28,7 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 <span id="valuelower"></span>**valueLower**
 
-The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var lower](uncertspan.md#varlower) for the lower end, and where it writes neither the interval is open at the bottom.
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var lower](uncertspan.md#varlower) for the lower end, and where it writes neither the lower end is undefined.
 
 The report shows it as the left side of the interval.
 
@@ -38,7 +38,7 @@ Default: the lower end is the element var lower names, or it is undefined.
 
 <span id="valueupper"></span>**valueUpper**
 
-The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var upper](uncertspan.md#varupper) for the upper end, and where it writes neither the interval is open at the top.
+The number in the [units](uncertspan.md#units) of the span. A file writes either this attribute or [var upper](uncertspan.md#varupper) for the upper end, and where it writes neither the upper end is undefined.
 
 The report shows it as the right side of the interval.
 
