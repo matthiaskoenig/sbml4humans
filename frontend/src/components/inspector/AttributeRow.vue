@@ -29,12 +29,14 @@ const tooltip = computed(() =>
 </script>
 
 <template>
-  <!-- the label column holds the longest label of any type next to its value,
-  `fbc:geneProductAssociation` of a reaction of an fbc model, which does not fit into 11rem; a
-  longer one, the name of a list, labels a wide row and has the whole line -->
+  <!-- a row is a row of the grid of the attributes column: the label column of that grid is as
+  wide as the longest label of the element, whatever the font is, so that no label is cut, neither
+  `constant` nor `fbc:geneProductAssociation`, and the values of all rows start at one line. A wide
+  row has the whole width for its label and for the table below it, and its label, the name of a
+  list, does not widen the label column of the other rows -->
   <div
-    class="grid gap-x-3 border-b border-gray-100 py-1 text-sm"
-    :class="wide ? 'grid-cols-1' : 'grid-cols-[12rem_minmax(0,1fr)]'"
+    class="col-span-2 grid gap-x-3 border-b border-gray-100 py-1 text-sm"
+    :class="wide ? 'grid-cols-1' : 'grid-cols-subgrid'"
     data-testid="attribute-row"
   >
     <dt v-tooltip.bottom="tooltip" class="truncate text-gray-500">{{ name }}</dt>

@@ -75,7 +75,12 @@ const replacedElements = computed(() =>
 </script>
 
 <template>
-  <dl data-testid="attributes-column">
+  <!-- the two columns of every row: the labels, as wide as the longest of them and never more
+  than half of the pane, and the values with the rest -->
+  <dl
+    class="grid grid-cols-[fit-content(50%)_minmax(0,1fr)] gap-x-3"
+    data-testid="attributes-column"
+  >
     <AttributeRow :type="element.sbmlType" field="metaId"
       ><ValueText :value="element.metaId" mono
     /></AttributeRow>
