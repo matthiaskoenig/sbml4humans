@@ -1,5 +1,5 @@
 {
-  "uid": "5ba6e3eb0c6b4247ab9fc052eca72922",
+  "uid": "c5d11c5407264a389b90f1c1c1ed1b7a",
   "manifest": {
     "entries": [
       {
@@ -460,68 +460,80 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "omex_minimal/Model:omex_minimal",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/Species:S1",
               "target": "omex_minimal/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/Species:S2",
               "target": "omex_minimal/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/Reaction:J0",
               "target": "omex_minimal/SpeciesReference:J0.reactant.S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/SpeciesReference:J0.reactant.S1",
               "target": "omex_minimal/Species:S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/Reaction:J0",
               "target": "omex_minimal/SpeciesReference:J0.product.S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/SpeciesReference:J0.product.S2",
               "target": "omex_minimal/Species:S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/Reaction:J0",
               "target": "omex_minimal/KineticLaw:J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/KineticLaw:J0.kineticLaw",
               "target": "omex_minimal/Species:S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/KineticLaw:J0.kineticLaw",
               "target": "omex_minimal/Parameter:k1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/Port:cell_port",
               "target": "omex_minimal/Compartment:cell",
-              "kind": "port"
+              "kind": "port",
+              "targetEntry": null
             },
             {
               "source": "omex_minimal/Port:S1_port",
               "target": "omex_minimal/Species:S1",
-              "kind": "port"
+              "kind": "port",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.009 [s]"
+        "jsonReportTime": "0.008 [s]"
       }
     },
     "./models/omex_comp.xml": {
@@ -1571,7 +1583,13 @@
             "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
-            "md5": null
+            "md5": null,
+            "resolution": {
+              "status": "resolved",
+              "entry": "./models/omex_minimal.xml",
+              "model": "omex_minimal/Model:omex_minimal",
+              "md5Matches": null
+            }
           },
           {
             "pk": "document/ExternalModelDefinition:emd1",
@@ -1589,7 +1607,13 @@
             "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
-            "md5": null
+            "md5": null,
+            "resolution": {
+              "status": "resolved",
+              "entry": "./models/omex_minimal.xml",
+              "model": "omex_minimal/Model:omex_minimal",
+              "md5Matches": null
+            }
           },
           {
             "pk": "document/ExternalModelDefinition:emd2",
@@ -1607,7 +1631,13 @@
             "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
-            "md5": null
+            "md5": null,
+            "resolution": {
+              "status": "resolved",
+              "entry": "./models/omex_minimal.xml",
+              "model": "omex_minimal/Model:omex_minimal",
+              "md5Matches": null
+            }
           },
           {
             "pk": "document/ExternalModelDefinition:emd3",
@@ -1625,7 +1655,13 @@
             "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
-            "md5": null
+            "md5": null,
+            "resolution": {
+              "status": "resolved",
+              "entry": "./models/omex_minimal.xml",
+              "model": "omex_minimal/Model:omex_minimal",
+              "md5Matches": null
+            }
           },
           {
             "pk": "document/ExternalModelDefinition:emd4",
@@ -1643,7 +1679,13 @@
             "keyValuePairs": [],
             "source": "omex_minimal.xml",
             "modelRef": "omex_minimal",
-            "md5": null
+            "md5": null,
+            "resolution": {
+              "status": "resolved",
+              "entry": "./models/omex_minimal.xml",
+              "model": "omex_minimal/Model:omex_minimal",
+              "md5Matches": null
+            }
           }
         ],
         "linkGraph": {
@@ -1996,348 +2038,506 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "omex_comp/Model:omex_comp",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "document/SBMLDocument:document",
               "target": "document/ExternalModelDefinition:emd0",
-              "kind": "externalModelDefinition"
+              "kind": "externalModelDefinition",
+              "targetEntry": null
+            },
+            {
+              "source": "document/ExternalModelDefinition:emd0",
+              "target": "omex_minimal/Model:omex_minimal",
+              "kind": "modelRef",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "document/SBMLDocument:document",
               "target": "document/ExternalModelDefinition:emd1",
-              "kind": "externalModelDefinition"
+              "kind": "externalModelDefinition",
+              "targetEntry": null
+            },
+            {
+              "source": "document/ExternalModelDefinition:emd1",
+              "target": "omex_minimal/Model:omex_minimal",
+              "kind": "modelRef",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "document/SBMLDocument:document",
               "target": "document/ExternalModelDefinition:emd2",
-              "kind": "externalModelDefinition"
+              "kind": "externalModelDefinition",
+              "targetEntry": null
+            },
+            {
+              "source": "document/ExternalModelDefinition:emd2",
+              "target": "omex_minimal/Model:omex_minimal",
+              "kind": "modelRef",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "document/SBMLDocument:document",
               "target": "document/ExternalModelDefinition:emd3",
-              "kind": "externalModelDefinition"
+              "kind": "externalModelDefinition",
+              "targetEntry": null
+            },
+            {
+              "source": "document/ExternalModelDefinition:emd3",
+              "target": "omex_minimal/Model:omex_minimal",
+              "kind": "modelRef",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "document/SBMLDocument:document",
               "target": "document/ExternalModelDefinition:emd4",
-              "kind": "externalModelDefinition"
+              "kind": "externalModelDefinition",
+              "targetEntry": null
+            },
+            {
+              "source": "document/ExternalModelDefinition:emd4",
+              "target": "omex_minimal/Model:omex_minimal",
+              "kind": "modelRef",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Compartment:cell0",
               "target": "omex_comp/ReplacedElement:cell0_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:cell0_RE",
               "target": "omex_comp/Submodel:submodel0",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell0_RE",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Compartment:cell1",
               "target": "omex_comp/ReplacedElement:cell1_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:cell1_RE",
               "target": "omex_comp/Submodel:submodel1",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell1_RE",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Compartment:cell2",
               "target": "omex_comp/ReplacedElement:cell2_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:cell2_RE",
               "target": "omex_comp/Submodel:submodel2",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell2_RE",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Compartment:cell3",
               "target": "omex_comp/ReplacedElement:cell3_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:cell3_RE",
               "target": "omex_comp/Submodel:submodel3",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell3_RE",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Compartment:cell4",
               "target": "omex_comp/ReplacedElement:cell4_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:cell4_RE",
               "target": "omex_comp/Submodel:submodel4",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:cell4_RE",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Species:S0",
               "target": "omex_comp/ReplacedElement:S0_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:S0_RE",
               "target": "omex_comp/Submodel:submodel0",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S0_RE",
+              "target": "omex_minimal/Species:S1",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Species:S1",
               "target": "omex_comp/ReplacedElement:S1_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:S1_RE",
               "target": "omex_comp/Submodel:submodel1",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S1_RE",
+              "target": "omex_minimal/Species:S1",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Species:S2",
               "target": "omex_comp/ReplacedElement:S2_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:S2_RE",
               "target": "omex_comp/Submodel:submodel2",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S2_RE",
+              "target": "omex_minimal/Species:S1",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Species:S3",
               "target": "omex_comp/ReplacedElement:S3_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:S3_RE",
               "target": "omex_comp/Submodel:submodel3",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S3_RE",
+              "target": "omex_minimal/Species:S1",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Species:S4",
               "target": "omex_comp/ReplacedElement:S4_RE",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/ReplacedElement:S4_RE",
               "target": "omex_comp/Submodel:submodel4",
-              "kind": "replacedElement"
+              "kind": "replacedElement",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_comp/ReplacedElement:S4_RE",
+              "target": "omex_minimal/Species:S1",
+              "kind": "replacedElement",
+              "targetEntry": "./models/omex_minimal.xml"
             },
             {
               "source": "omex_comp/Species:S0",
               "target": "omex_comp/Compartment:cell0",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S1",
               "target": "omex_comp/Compartment:cell1",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S2",
               "target": "omex_comp/Compartment:cell2",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S3",
               "target": "omex_comp/Compartment:cell3",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S4",
               "target": "omex_comp/Compartment:cell4",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J0",
               "target": "omex_comp/SpeciesReference:J0.reactant.S0",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J0.reactant.S0",
               "target": "omex_comp/Species:S0",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J0",
               "target": "omex_comp/SpeciesReference:J0.product.S1",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J0.product.S1",
               "target": "omex_comp/Species:S1",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J0",
               "target": "omex_comp/KineticLaw:J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S0",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J1",
               "target": "omex_comp/SpeciesReference:J1.reactant.S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J1.reactant.S1",
               "target": "omex_comp/Species:S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J1",
               "target": "omex_comp/SpeciesReference:J1.product.S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J1.product.S2",
               "target": "omex_comp/Species:S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J1",
               "target": "omex_comp/KineticLaw:J1.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J2",
               "target": "omex_comp/SpeciesReference:J2.reactant.S2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J2.reactant.S2",
               "target": "omex_comp/Species:S2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J2",
               "target": "omex_comp/SpeciesReference:J2.product.S3",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J2.product.S3",
               "target": "omex_comp/Species:S3",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J2",
               "target": "omex_comp/KineticLaw:J2.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S3",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J3",
               "target": "omex_comp/SpeciesReference:J3.reactant.S3",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J3.reactant.S3",
               "target": "omex_comp/Species:S3",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J3",
               "target": "omex_comp/SpeciesReference:J3.product.S4",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J3.product.S4",
               "target": "omex_comp/Species:S4",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J3",
               "target": "omex_comp/KineticLaw:J3.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S3",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S4",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Submodel:submodel0",
               "target": "document/ExternalModelDefinition:emd0",
-              "kind": "modelRef"
+              "kind": "modelRef",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Submodel:submodel1",
               "target": "document/ExternalModelDefinition:emd1",
-              "kind": "modelRef"
+              "kind": "modelRef",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Submodel:submodel2",
               "target": "document/ExternalModelDefinition:emd2",
-              "kind": "modelRef"
+              "kind": "modelRef",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Submodel:submodel3",
               "target": "document/ExternalModelDefinition:emd3",
-              "kind": "modelRef"
+              "kind": "modelRef",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Submodel:submodel4",
               "target": "document/ExternalModelDefinition:emd4",
-              "kind": "modelRef"
+              "kind": "modelRef",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.03 [s]"
+        "jsonReportTime": "0.028 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -4068,392 +4268,470 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "omex_comp/Model:omex_comp",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S0",
               "target": "omex_comp/Compartment:cell0",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S1",
               "target": "omex_comp/Compartment:cell1",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S2",
               "target": "omex_comp/Compartment:cell2",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S3",
               "target": "omex_comp/Compartment:cell3",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:S4",
               "target": "omex_comp/Compartment:cell4",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:submodel0__S2",
               "target": "omex_comp/Compartment:cell0",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:submodel1__S2",
               "target": "omex_comp/Compartment:cell1",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:submodel2__S2",
               "target": "omex_comp/Compartment:cell2",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:submodel3__S2",
               "target": "omex_comp/Compartment:cell3",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Species:submodel4__S2",
               "target": "omex_comp/Compartment:cell4",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J0",
               "target": "omex_comp/SpeciesReference:J0.reactant.S0",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J0.reactant.S0",
               "target": "omex_comp/Species:S0",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J0",
               "target": "omex_comp/SpeciesReference:J0.product.S1",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J0.product.S1",
               "target": "omex_comp/Species:S1",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J0",
               "target": "omex_comp/KineticLaw:J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S0",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J0.kineticLaw",
               "target": "omex_comp/Species:S1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J1",
               "target": "omex_comp/SpeciesReference:J1.reactant.S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J1.reactant.S1",
               "target": "omex_comp/Species:S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J1",
               "target": "omex_comp/SpeciesReference:J1.product.S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J1.product.S2",
               "target": "omex_comp/Species:S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J1",
               "target": "omex_comp/KineticLaw:J1.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J1.kineticLaw",
               "target": "omex_comp/Species:S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J2",
               "target": "omex_comp/SpeciesReference:J2.reactant.S2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J2.reactant.S2",
               "target": "omex_comp/Species:S2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J2",
               "target": "omex_comp/SpeciesReference:J2.product.S3",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J2.product.S3",
               "target": "omex_comp/Species:S3",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J2",
               "target": "omex_comp/KineticLaw:J2.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J2.kineticLaw",
               "target": "omex_comp/Species:S3",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J3",
               "target": "omex_comp/SpeciesReference:J3.reactant.S3",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J3.reactant.S3",
               "target": "omex_comp/Species:S3",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J3",
               "target": "omex_comp/SpeciesReference:J3.product.S4",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:J3.product.S4",
               "target": "omex_comp/Species:S4",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:J3",
               "target": "omex_comp/KineticLaw:J3.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Parameter:D",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S3",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:J3.kineticLaw",
               "target": "omex_comp/Species:S4",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel0__J0",
               "target": "omex_comp/SpeciesReference:submodel0__J0.reactant.S0",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel0__J0.reactant.S0",
               "target": "omex_comp/Species:S0",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel0__J0",
               "target": "omex_comp/SpeciesReference:submodel0__J0.product.submodel0__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel0__J0.product.submodel0__S2",
               "target": "omex_comp/Species:submodel0__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel0__J0",
               "target": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
               "target": "omex_comp/Species:submodel0__S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel0__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel0__k1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel1__J0",
               "target": "omex_comp/SpeciesReference:submodel1__J0.reactant.S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel1__J0.reactant.S1",
               "target": "omex_comp/Species:S1",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel1__J0",
               "target": "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel1__J0.product.submodel1__S2",
               "target": "omex_comp/Species:submodel1__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel1__J0",
               "target": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
               "target": "omex_comp/Species:submodel1__S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel1__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel1__k1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel2__J0",
               "target": "omex_comp/SpeciesReference:submodel2__J0.reactant.S2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel2__J0.reactant.S2",
               "target": "omex_comp/Species:S2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel2__J0",
               "target": "omex_comp/SpeciesReference:submodel2__J0.product.submodel2__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel2__J0.product.submodel2__S2",
               "target": "omex_comp/Species:submodel2__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel2__J0",
               "target": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
               "target": "omex_comp/Species:submodel2__S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel2__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel2__k1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel3__J0",
               "target": "omex_comp/SpeciesReference:submodel3__J0.reactant.S3",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel3__J0.reactant.S3",
               "target": "omex_comp/Species:S3",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel3__J0",
               "target": "omex_comp/SpeciesReference:submodel3__J0.product.submodel3__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel3__J0.product.submodel3__S2",
               "target": "omex_comp/Species:submodel3__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel3__J0",
               "target": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
               "target": "omex_comp/Species:submodel3__S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel3__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel3__k1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel4__J0",
               "target": "omex_comp/SpeciesReference:submodel4__J0.reactant.S4",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel4__J0.reactant.S4",
               "target": "omex_comp/Species:S4",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel4__J0",
               "target": "omex_comp/SpeciesReference:submodel4__J0.product.submodel4__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/SpeciesReference:submodel4__J0.product.submodel4__S2",
               "target": "omex_comp/Species:submodel4__S2",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/Reaction:submodel4__J0",
               "target": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
               "target": "omex_comp/Species:submodel4__S2",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "omex_comp/KineticLaw:submodel4__J0.kineticLaw",
               "target": "omex_comp/Parameter:submodel4__k1",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             }
           ]
         }

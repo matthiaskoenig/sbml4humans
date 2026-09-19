@@ -54,12 +54,9 @@ export const useReportStore = defineStore("report", () => {
     source.value = next;
     try {
       const result = await request();
-      indexes.value = new Map(
-        Object.entries(result.reports).map(([location, entry]) => [
-          location,
-          markRaw(new ReportIndex(entry.report)),
-        ]),
-      );
+      const connected = ReportIndex.forEntries(result.reports);
+      for (const index of connected.values()) markRaw(index);
+      indexes.value = connected;
       response.value = result;
     } catch (caught) {
       error.value = toApiError(caught);

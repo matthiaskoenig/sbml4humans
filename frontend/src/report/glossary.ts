@@ -57,6 +57,11 @@ export function linkEntry(kind: EdgeKind): GlossaryEntry | undefined {
   return glossary.links[kind];
 }
 
+/** The entry of a concept the report adds, by its key in `glossary/report.toml`. */
+export function conceptEntry(key: string): GlossaryEntry | undefined {
+  return glossary.concepts[key];
+}
+
 /** The url of the reference page of a type, which the inspector links from its header. */
 export function referenceUrl(type: SbmlType): string {
   return `${DOCS_URL}${glossary.types[type]?.page ?? ""}`;

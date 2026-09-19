@@ -438,6 +438,20 @@ try {
     },
   });
 
+  // inspector-external-model.png: a species of a comp model whose replaced element ends in
+  // another entry of the archive, the link carrying the file name of that entry. The entry is
+  // named in the address, since the archive marks no master entry and opens on either one.
+  await parts.goto(
+    `${BASE_URL}/examples/CompModels?entry=${encodeURIComponent("./models/omex_comp.xml")}`,
+  );
+  await expect(parts.getByTestId("report-page")).toBeVisible();
+  await selectRow(parts, parts.getByTestId("table-Species"), "S0");
+  await expect(parts.getByTestId("element-link-entry").first()).toBeVisible();
+  await fitInspector(parts);
+  await restPointer(parts);
+  await shotFitted("inspector-external-model", parts, parts.getByTestId("inspector"));
+  await parts.setViewportSize(PARTS_VIEWPORT);
+
   // archive-entries.png: the context of a COMBINE archive report in the app bar, a strip of the
   // bar from the select of the entries on, as wide as the article column. The bar from the logo
   // on is wider than that since the search box sits between the logo and the context, and the

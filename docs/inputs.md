@@ -24,7 +24,7 @@ The backend recognises three kinds of input, and it recognises them by their con
 | gzipped SBML | the same file compressed with gzip, which is how large models are usually shipped |
 | COMBINE archive | a zip file with a manifest, usually with the extension `.omex`, holding one or more SBML files next to the other files of a study |
 
-An SBML file is read as a single [document](reference/sbmldocument.md) with one [model](reference/model.md) in it. A COMBINE archive is read entry by entry: the report holds one report per SBML entry of the archive, and the context bar of the report switches between them, as [Reading a report](report.md#archives-and-models) describes. A file which is not an archive is read the same way; [COMBINE archives](sbml.md#combine-archives) says why.
+An SBML file is read as a single [document](reference/sbmldocument.md) with one [model](reference/model.md) in it. A COMBINE archive is read entry by entry: the report holds one report per SBML entry of the archive, and the context bar of the report switches between them, as [Reading a report](report.md#archives-and-models) describes. A file which is not an archive is read the same way; [COMBINE archives](sbml.md#combine-archives) says why. An archive is also what lets the report follow a model of the comp package into the other files it is built from: an external model definition is resolved against the other entries of its archive and never fetched, as [Models of other documents](report.md#models-of-other-documents) describes.
 
 ## The examples
 

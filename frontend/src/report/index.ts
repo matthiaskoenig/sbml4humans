@@ -31,25 +31,91 @@ function push<K, V>(map: Map<K, V[]>, key: K, value: V): void {
   else map.set(key, [value]);
 }
 
+/** An element of the report of an archive: its pk and the manifest location of its entry, null
+ * for the entry which is shown. A pk alone names an element of one entry only, two entries may
+ * hold the same one. */
+export interface ElementRef {
+  pk: string;
+  entry: string | null;
+}
+
+/** An edge which leaves its entry, with the entries of both of its ends: a reference of a comp
+ * model which follows an external model definition into the document it names. */
+export interface CrossEdge {
+  source: string;
+  sourceEntry: string;
+  target: string;
+  targetEntry: string;
+  kind: EdgeKind;
+}
+
 /** Lookups over one report: every element by pk, the elements of a model by type, the edges in both directions. */
 export class ReportIndex {
   readonly report: Report;
+  /** The manifest location of the entry of the report, null for a report on its own. */
+  readonly location: string | null;
   readonly elements = new Map<string, SBase>();
   readonly nodes = new Map<string, Node>();
   private readonly outgoing = new Map<string, Edge[]>();
   private readonly incoming = new Map<string, Edge[]>();
+  private readonly outgoingAcross = new Map<string, CrossEdge[]>();
+  private readonly incomingAcross = new Map<string, CrossEdge[]>();
+  private entries: ReadonlyMap<string, ReportIndex> = new Map();
   private readonly byModel = new Map<string, Map<ElementType, SbmlElement[]>>();
 
-  constructor(report: Report) {
+  constructor(report: Report, location: string | null = null) {
     this.report = report;
+    this.location = location;
     this.add(report.document);
     for (const definition of report.externalModelDefinitions ?? []) this.add(definition);
     for (const model of report.models ?? []) this.addModel(model);
     for (const node of Object.values(report.linkGraph?.nodes ?? {})) this.nodes.set(node.pk, node);
     for (const edge of report.linkGraph?.edges ?? []) {
+      // an edge into another entry names a pk of that entry, which may be a pk of this one as
+      // well: it is kept apart, so that every lookup by pk stays inside the entry
+      if (edge.targetEntry && edge.targetEntry !== location) {
+        if (location === null) continue;
+        const { source, target, kind, targetEntry } = edge;
+        push(this.outgoingAcross, source, {
+          source,
+          sourceEntry: location,
+          target,
+          targetEntry,
+          kind,
+        });
+        continue;
+      }
       push(this.outgoing, edge.source, edge);
       push(this.incoming, edge.target, edge);
     }
+  }
+
+  /** The indexes of the entries of one archive by location, connected: every edge which leaves
+   * its entry is known to the entry it ends in, so that an element lists who names it from
+   * another document. */
+  static forEntries(reports: Record<string, { report: Report }>): Map<string, ReportIndex> {
+    const indexes = new Map(
+      Object.entries(reports).map(([location, entry]) => [
+        location,
+        new ReportIndex(entry.report, location),
+      ]),
+    );
+    for (const index of indexes.values()) {
+      index.entries = indexes;
+      for (const edges of index.outgoingAcross.values()) {
+        for (const edge of edges) {
+          const target = indexes.get(edge.targetEntry);
+          if (target) push(target.incomingAcross, edge.target, edge);
+        }
+      }
+    }
+    return indexes;
+  }
+
+  /** The index of another entry of the archive, this one for null and for its own location. */
+  entry(location: string | null | undefined): ReportIndex | null {
+    if (!location || location === this.location) return this;
+    return this.entries.get(location) ?? null;
   }
 
   get document(): SBMLDocument {
@@ -94,14 +160,31 @@ export class ReportIndex {
     return this.nodes.get(modelPk)?.id ?? this.elements.get(modelPk)?.id ?? null;
   }
 
-  /** The edges from the element to the elements it references. */
+  /** The id of the model which holds the element, the id of a model for the model itself. */
+  modelIdOf(pk: string): string | null {
+    const element = this.elements.get(pk);
+    if (element?.sbmlType === "Model") return element.id ?? null;
+    return this.modelOf(pk);
+  }
+
+  /** The edges from the element to the elements of its entry it references. */
   references(pk: string): Edge[] {
     return this.outgoing.get(pk) ?? [];
   }
 
-  /** The edges from the elements referencing the element. */
+  /** The edges from the elements of its entry referencing the element. */
   referencedBy(pk: string): Edge[] {
     return this.incoming.get(pk) ?? [];
+  }
+
+  /** The edges from the element to the elements of other entries it references. */
+  referencesAcross(pk: string): CrossEdge[] {
+    return this.outgoingAcross.get(pk) ?? [];
+  }
+
+  /** The edges from the elements of other entries referencing the element. */
+  referencedAcross(pk: string): CrossEdge[] {
+    return this.incomingAcross.get(pk) ?? [];
   }
 
   /** The reaction which lists a species or modifier reference and the role the reference plays

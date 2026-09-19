@@ -1,5 +1,5 @@
 {
-  "uid": "d67e8378f5bd4199b5114f0ca955dfe4",
+  "uid": "5da294574368409788a07fe08d475d6a",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./distrib_spans.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./distrib_spans.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -1094,243 +1094,290 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "distrib_spans/Model:distrib_spans",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Species:S",
               "target": "distrib_spans/Uncertainty:u_S",
-              "kind": "uncertainty"
+              "kind": "uncertainty",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_S",
               "target": "distrib_spans/UncertParameter:u_S.mean",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:u_S.mean",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_S",
               "target": "distrib_spans/UncertSpan:u_S.confidenceInterval",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertSpan:u_S.confidenceInterval",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Km",
               "target": "distrib_spans/Uncertainty:u_Km_purified",
-              "kind": "uncertainty"
+              "kind": "uncertainty",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_purified",
               "target": "distrib_spans/UncertParameter:Km_purified_mean",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:Km_purified_mean",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_purified",
               "target": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:u_Km_purified.standardDeviation",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_purified",
               "target": "distrib_spans/UncertParameter:u_Km_purified.sampleSize",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_purified",
               "target": "distrib_spans/UncertSpan:Km_purified_range",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertSpan:Km_purified_range",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Km",
               "target": "distrib_spans/Uncertainty:u_Km_lysate",
-              "kind": "uncertainty"
+              "kind": "uncertainty",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_lysate",
               "target": "distrib_spans/UncertParameter:u_Km_lysate.median",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:u_Km_lysate.median",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Km_lysate",
               "target": "distrib_spans/UncertSpan:Km_lysate_ci",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertSpan:Km_lysate_ci",
               "target": "distrib_spans/Parameter:Km_lower",
-              "kind": "varLower"
+              "kind": "varLower",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertSpan:Km_lysate_ci",
               "target": "distrib_spans/Parameter:Km_upper",
-              "kind": "varUpper"
+              "kind": "varUpper",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Vmax",
               "target": "distrib_spans/Uncertainty:u_Vmax",
-              "kind": "uncertainty"
+              "kind": "uncertainty",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Vmax",
               "target": "distrib_spans/UncertParameter:Vmax_mean_measure",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:Vmax_mean_measure",
               "target": "distrib_spans/Parameter:Vmax_mean",
-              "kind": "var"
+              "kind": "var",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:Vmax_mean_measure",
               "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_Vmax",
               "target": "distrib_spans/UncertParameter:Vmax_distribution",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:Vmax_distribution",
               "target": "distrib_spans/UncertParameter:Vmax_alpha",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:Vmax_distribution",
               "target": "distrib_spans/UncertParameter:Vmax_beta",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/AssignmentRule:v",
               "target": "distrib_spans/Uncertainty:u_v",
-              "kind": "uncertainty"
+              "kind": "uncertainty",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_v",
               "target": "distrib_spans/UncertParameter:u_v.standardDeviation",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:u_v.standardDeviation",
               "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Uncertainty:u_v",
               "target": "distrib_spans/UncertParameter:v_distribution",
-              "kind": "uncertParameter"
+              "kind": "uncertParameter",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/UncertParameter:v_distribution",
               "target": "distrib_spans/Parameter:Vmax_mean",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Model:distrib_spans",
               "target": "distrib_spans/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Model:distrib_spans",
               "target": "distrib_spans/UnitDefinition:min",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Model:distrib_spans",
               "target": "distrib_spans/UnitDefinition:m2",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Species:S",
               "target": "distrib_spans/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Species:S",
               "target": "distrib_spans/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Km",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Km_lower",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Km_upper",
               "target": "distrib_spans/UnitDefinition:mmole_per_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Vmax",
               "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:Vmax_mean",
               "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/Parameter:v",
               "target": "distrib_spans/UnitDefinition:mmole_per_min_l",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/AssignmentRule:v",
               "target": "distrib_spans/Parameter:v",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/AssignmentRule:v",
               "target": "distrib_spans/Parameter:Km",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/AssignmentRule:v",
               "target": "distrib_spans/Species:S",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "distrib_spans/AssignmentRule:v",
               "target": "distrib_spans/Parameter:Vmax",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.024 [s]"
+        "jsonReportTime": "0.021 [s]"
       }
     }
   }

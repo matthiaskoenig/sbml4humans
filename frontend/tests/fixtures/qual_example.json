@@ -1,5 +1,5 @@
 {
-  "uid": "ed6c4ffbe6294fada52491b742668b19",
+  "uid": "50092e0ac4c141b59ce1a6a385674910",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./qual_example.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./qual_example.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -641,203 +641,242 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "qual_example/Model:qual_example",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "qual_example/QualitativeSpecies:S",
               "target": "qual_example/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "qual_example/QualitativeSpecies:G",
               "target": "qual_example/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "qual_example/QualitativeSpecies:P",
               "target": "qual_example/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_G",
               "target": "qual_example/Input:theta_G_S",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Input:theta_G_S",
               "target": "qual_example/QualitativeSpecies:S",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_G",
               "target": "qual_example/Input:theta_G_P",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Input:theta_G_P",
               "target": "qual_example/QualitativeSpecies:P",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_G",
               "target": "qual_example/Input:theta_G_G",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Input:theta_G_G",
               "target": "qual_example/QualitativeSpecies:G",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_G",
               "target": "qual_example/Output:out_G",
-              "kind": "output"
+              "kind": "output",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Output:out_G",
               "target": "qual_example/QualitativeSpecies:G",
-              "kind": "output"
+              "kind": "output",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_G",
               "target": "qual_example/FunctionTerm:tr_G.functionTerm.0",
-              "kind": "functionTerm"
+              "kind": "functionTerm",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
               "target": "qual_example/QualitativeSpecies:P",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
               "target": "qual_example/QualitativeSpecies:S",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
               "target": "qual_example/Input:theta_G_P",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.0",
               "target": "qual_example/Input:theta_G_S",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_G",
               "target": "qual_example/FunctionTerm:tr_G.functionTerm.1",
-              "kind": "functionTerm"
+              "kind": "functionTerm",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
               "target": "qual_example/QualitativeSpecies:G",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
               "target": "qual_example/QualitativeSpecies:P",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
               "target": "qual_example/Input:theta_G_G",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_G.functionTerm.1",
               "target": "qual_example/Input:theta_G_P",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_G",
               "target": "qual_example/DefaultTerm:tr_G.defaultTerm",
-              "kind": "defaultTerm"
+              "kind": "defaultTerm",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_P",
               "target": "qual_example/Input:w_P_G",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Input:w_P_G",
               "target": "qual_example/QualitativeSpecies:G",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_P",
               "target": "qual_example/Input:theta_P_P",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Input:theta_P_P",
               "target": "qual_example/QualitativeSpecies:P",
-              "kind": "input"
+              "kind": "input",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_P",
               "target": "qual_example/Output:out_P",
-              "kind": "output"
+              "kind": "output",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Output:out_P",
               "target": "qual_example/QualitativeSpecies:P",
-              "kind": "output"
+              "kind": "output",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_P",
               "target": "qual_example/FunctionTerm:tr_P.functionTerm.0",
-              "kind": "functionTerm"
+              "kind": "functionTerm",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_P.functionTerm.0",
               "target": "qual_example/QualitativeSpecies:G",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_P.functionTerm.0",
               "target": "qual_example/QualitativeSpecies:P",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_P.functionTerm.0",
               "target": "qual_example/Input:w_P_G",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_P",
               "target": "qual_example/FunctionTerm:tr_P.functionTerm.1",
-              "kind": "functionTerm"
+              "kind": "functionTerm",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
               "target": "qual_example/QualitativeSpecies:G",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
               "target": "qual_example/QualitativeSpecies:P",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
               "target": "qual_example/Input:theta_P_P",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/FunctionTerm:tr_P.functionTerm.1",
               "target": "qual_example/Input:w_P_G",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "qual_example/Transition:tr_P",
               "target": "qual_example/DefaultTerm:tr_P.defaultTerm",
-              "kind": "defaultTerm"
+              "kind": "defaultTerm",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.036 [s]"
+        "jsonReportTime": "0.03 [s]"
       }
     }
   }

@@ -19,6 +19,7 @@ import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import GeneAssociationView from "@/components/misc/GeneAssociationView.vue";
 import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
+import ExternalModelDefinitionAttributes from "@/components/inspector/attributes/ExternalModelDefinitionAttributes.vue";
 import ReactionAttributes from "@/components/inspector/attributes/ReactionAttributes.vue";
 import ReplacedElementAttributes from "@/components/inspector/attributes/ReplacedElementAttributes.vue";
 import QualitativeSpeciesAttributes from "@/components/inspector/attributes/QualitativeSpeciesAttributes.vue";
@@ -33,7 +34,7 @@ import { ASSOCIATION_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
-import { loadReport } from "./fixtures";
+import { loadFixture, loadReport } from "./fixtures";
 import { summaryOf } from "./summary";
 
 const fixtures = [
@@ -55,12 +56,16 @@ const distribSpans = new ReportIndex(loadReport("distrib_spans"));
 /** A minimal index for the links list size tests: one "compartment" edge per target pk out of
  * the given source, nothing else, so the numbers stay exact and independent of the fixtures. */
 function fakeLinksIndex(bySource: Record<string, string[]>): ReportIndex {
-  return {
+  const index = {
     references: (pk: string) =>
       (bySource[pk] ?? []).map((target) => ({ source: pk, target, kind: "compartment" as const })),
     referencedBy: () => [],
+    referencesAcross: () => [],
+    referencedAcross: () => [],
+    entry: () => index,
     get: (pk: string) => ({ pk, id: pk, metaId: null, sbmlType: undefined }),
   } as unknown as ReportIndex;
+  return index;
 }
 
 function mountWith(component: unknown, props: Record<string, unknown>, index: ReportIndex) {
@@ -1062,5 +1067,117 @@ describe("inspector", () => {
     await wrapper.setProps({ rows: rowsOf(60, "b") });
     expect(wrapper.findAll("tbody tr")).toHaveLength(50);
     expect(wrapper.get("[data-testid=show-all]").text()).toBe("show all (10)");
+  });
+
+  describe("an external model definition and the entry it names", () => {
+    const COMP = "./models/omex_comp.xml";
+    const MINIMAL = "./models/omex_minimal.xml";
+    const archive = ReportIndex.forEntries(loadFixture("comp_models").reports);
+    const comp = archive.get(COMP)!;
+    const minimal = archive.get(MINIMAL)!;
+    const replaced = [...comp.elements.values()].find((e) => e.metaId === "S0_RE")!;
+
+    it("links the element of the other entry and names its document", async () => {
+      await router.push("/examples/CompModels?q=S0&types=Species");
+      const wrapper = mountWith(LinksColumn, { pk: replaced.pk }, comp);
+      const links = wrapper
+        .get("[data-testid=links-references]")
+        .findAll("[data-testid=element-link]");
+      const across = links.filter((link) => link.attributes("data-entry") === MINIMAL);
+      expect(across).toHaveLength(1);
+      expect(across[0]!.attributes("data-pk")).toBe("omex_minimal/Species:S1");
+      expect(across[0]!.get("[data-testid=element-link-entry]").text()).toBe("omex_minimal.xml");
+      // the link opens the other entry on the model of the element, without the search and
+      // the type filter of this one
+      const href = new URL(across[0]!.attributes("href")!, "http://localhost");
+      expect(Object.fromEntries(href.searchParams)).toEqual({
+        entry: MINIMAL,
+        model: "omex_minimal",
+        pk: "omex_minimal/Species:S1",
+      });
+      // the submodel is an element of the entry which is shown, and names no document
+      const local = links.filter((link) => !link.attributes("data-entry"));
+      expect(local.map((link) => link.attributes("data-pk"))).toEqual([
+        "omex_comp/Submodel:submodel0",
+      ]);
+      expect(local[0]!.find("[data-testid=element-link-entry]").exists()).toBe(false);
+    });
+
+    it("lists who names an element from another entry", () => {
+      const wrapper = mountWith(LinksColumn, { pk: "omex_minimal/Species:S1" }, minimal);
+      const group = wrapper
+        .get("[data-testid=links-referenced-by]")
+        .get("[data-testid=links-replacedElement]");
+      const links = group.findAll("[data-testid=element-link]");
+      expect(links).toHaveLength(5);
+      for (const link of links) expect(link.attributes("data-entry")).toBe(COMP);
+      // a replacement is named after the element it belongs to and its submodel, in its entry
+      expect(links[0]!.text()).toContain("S0.submodel0");
+      expect(links[0]!.text()).toContain("omex_comp.xml");
+    });
+
+    it("shows the replaced element of the other entry in the attributes", () => {
+      const wrapper = mountWith(ReplacedElementAttributes, { element: replaced }, comp);
+      const link = wrapper
+        .findAll("[data-testid=element-link]")
+        .find((l) => l.attributes("data-entry") === MINIMAL);
+      expect(link?.text()).toContain("S1_port");
+    });
+
+    it("shows how far the definition was followed", () => {
+      const emd = comp.externalModelDefinitions[0]!;
+      const wrapper = mountWith(ExternalModelDefinitionAttributes, { element: emd }, comp);
+      expect(wrapper.get("[data-testid=resolution-status]").text()).toBe("resolved");
+      expect(wrapper.get("[data-testid=resolution-entry]").text()).toBe(MINIMAL);
+      const model = wrapper.get("[data-testid=resolution-model]");
+      expect(model.attributes("data-pk")).toBe("omex_minimal/Model:omex_minimal");
+      expect(model.attributes("data-entry")).toBe(MINIMAL);
+      expect(wrapper.find("[data-testid=resolution-md5]").exists()).toBe(false);
+    });
+
+    it("states the result of the md5 check", () => {
+      const deletion = ReportIndex.forEntries(loadFixture("comp_deletion").reports).get(
+        "./comp_deletion.xml",
+      )!;
+      const emd = deletion.externalModelDefinitions[0]!;
+      const wrapper = mountWith(ExternalModelDefinitionAttributes, { element: emd }, deletion);
+      expect(wrapper.get("[data-testid=resolution-md5]").text()).toBe("matches the document");
+      const changed = { ...emd, resolution: { ...emd.resolution, md5Matches: false } };
+      const mismatch = mountWith(ExternalModelDefinitionAttributes, { element: changed }, deletion);
+      expect(mismatch.get("[data-testid=resolution-md5]").text()).toBe(
+        "does not match the document",
+      );
+    });
+
+    it("says why a definition is not followed, at the definition and at its submodel", () => {
+      // the report of an upload of the file alone: no other entry, nothing resolved
+      const report = structuredClone(loadReport("comp_models", COMP));
+      for (const emd of report.externalModelDefinitions ?? []) {
+        emd.resolution = { status: "notFound", entry: null, model: null, md5Matches: null };
+      }
+      report.linkGraph!.edges = report.linkGraph!.edges!.filter((edge) => !edge.targetEntry);
+      const alone = new ReportIndex(report, "./model.xml");
+      const emd = alone.externalModelDefinitions[0]!;
+      const wrapper = mountWith(ExternalModelDefinitionAttributes, { element: emd }, alone);
+      const status = wrapper.get("[data-testid=resolution-status]");
+      expect(status.text()).toBe("no document at the source");
+      expect(status.attributes("data-status")).toBe("notFound");
+      expect(wrapper.find("[data-testid=resolution-model]").exists()).toBe(false);
+
+      const submodel = alone.mainModel!.listOfSubmodels![0]!;
+      const submodelWrapper = mountWith(SubmodelAttributes, { element: submodel }, alone);
+      expect(submodelWrapper.get("[data-testid=resolution-status]").text()).toBe(
+        "no document at the source",
+      );
+    });
+
+    it("links the external model at a submodel which instantiates it", () => {
+      const submodel = comp.mainModel!.listOfSubmodels![0]!;
+      const wrapper = mountWith(SubmodelAttributes, { element: submodel }, comp);
+      const link = wrapper
+        .findAll("[data-testid=element-link]")
+        .find((l) => l.attributes("data-entry") === MINIMAL);
+      expect(link?.attributes("data-pk")).toBe("omex_minimal/Model:omex_minimal");
+    });
   });
 });

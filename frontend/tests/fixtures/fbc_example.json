@@ -1,5 +1,5 @@
 {
-  "uid": "b75fd163759a406e83dc91cb8d57bb9d",
+  "uid": "485d277edc5840a2b6a15b0537362869",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./fbc_example.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./fbc_example.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -1525,402 +1525,482 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "fbc_example/Model:fbc_example",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Model:fbc_example",
               "target": "fbc_example/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Model:fbc_example",
               "target": "fbc_example/UnitDefinition:hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Model:fbc_example",
               "target": "fbc_example/UnitDefinition:m2",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:Glcxt",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:Glcxt",
               "target": "fbc_example/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:Ac",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:Ac",
               "target": "fbc_example/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:O2",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:O2",
               "target": "fbc_example/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:X",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Species:X",
               "target": "fbc_example/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Parameter:zero",
               "target": "fbc_example/UnitDefinition:mmole_per_hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Parameter:ub_inf",
               "target": "fbc_example/UnitDefinition:mmole_per_hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Parameter:lb_inf",
               "target": "fbc_example/UnitDefinition:mmole_per_hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Parameter:glc_import",
               "target": "fbc_example/UnitDefinition:mmole_per_hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Parameter:o2_import",
               "target": "fbc_example/UnitDefinition:mmole_per_hr",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/SpeciesReference:v1.reactant.Ac",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v1.reactant.Ac",
               "target": "fbc_example/Species:Ac",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/SpeciesReference:v1.reactant.O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v1.reactant.O2",
               "target": "fbc_example/Species:O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/SpeciesReference:v1.product.X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v1.product.X",
               "target": "fbc_example/Species:X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/Parameter:zero",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v1",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/SpeciesReference:v2.reactant.Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v2.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/SpeciesReference:v2.reactant.O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v2.reactant.O2",
               "target": "fbc_example/Species:O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/SpeciesReference:v2.product.X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v2.product.X",
               "target": "fbc_example/Species:X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/Parameter:zero",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v2",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/SpeciesReference:v3.reactant.Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v3.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/SpeciesReference:v3.reactant.O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v3.reactant.O2",
               "target": "fbc_example/Species:O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/SpeciesReference:v3.product.Ac",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v3.product.Ac",
               "target": "fbc_example/Species:Ac",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/SpeciesReference:v3.product.X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v3.product.X",
               "target": "fbc_example/Species:X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/Parameter:zero",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v3",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/Compartment:bioreactor",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/SpeciesReference:v4.reactant.Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v4.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/SpeciesReference:v4.product.Ac",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v4.product.Ac",
               "target": "fbc_example/Species:Ac",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/SpeciesReference:v4.product.X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:v4.product.X",
               "target": "fbc_example/Species:X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/Parameter:zero",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:v4",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_Ac",
               "target": "fbc_example/SpeciesReference:EX_Ac.reactant.Ac",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:EX_Ac.reactant.Ac",
               "target": "fbc_example/Species:Ac",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_Ac",
               "target": "fbc_example/Parameter:lb_inf",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_Ac",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_O2",
               "target": "fbc_example/SpeciesReference:EX_O2.reactant.O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:EX_O2.reactant.O2",
               "target": "fbc_example/Species:O2",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_O2",
               "target": "fbc_example/Parameter:o2_import",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_O2",
               "target": "fbc_example/Parameter:zero",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_Glcxt",
               "target": "fbc_example/SpeciesReference:EX_Glcxt.reactant.Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:EX_Glcxt.reactant.Glcxt",
               "target": "fbc_example/Species:Glcxt",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_Glcxt",
               "target": "fbc_example/Parameter:glc_import",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_Glcxt",
               "target": "fbc_example/Parameter:zero",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_X",
               "target": "fbc_example/SpeciesReference:EX_X.reactant.X",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/SpeciesReference:EX_X.reactant.X",
               "target": "fbc_example/Species:X",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_X",
               "target": "fbc_example/Parameter:lb_inf",
-              "kind": "lowerFluxBound"
+              "kind": "lowerFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Reaction:EX_X",
               "target": "fbc_example/Parameter:ub_inf",
-              "kind": "upperFluxBound"
+              "kind": "upperFluxBound",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Model:fbc_example",
               "target": "fbc_example/Objective:biomass_max",
-              "kind": "activeObjective"
+              "kind": "activeObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Objective:biomass_max",
               "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v1",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v1",
               "target": "fbc_example/Reaction:v1",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Objective:biomass_max",
               "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v2",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v2",
               "target": "fbc_example/Reaction:v2",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Objective:biomass_max",
               "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v3",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v3",
               "target": "fbc_example/Reaction:v3",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/Objective:biomass_max",
               "target": "fbc_example/FluxObjective:biomass_max.fluxObjective.v4",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             },
             {
               "source": "fbc_example/FluxObjective:biomass_max.fluxObjective.v4",
               "target": "fbc_example/Reaction:v4",
-              "kind": "fluxObjective"
+              "kind": "fluxObjective",
+              "targetEntry": null
             }
           ]
         }

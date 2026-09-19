@@ -14,7 +14,7 @@ export function useReportView(): {
   setTypes(types: ElementType[] | null): Promise<unknown>;
   setEntry(entry: string | null): Promise<unknown>;
   setModel(model: string | null): Promise<unknown>;
-  routeFor(pk: string): RouteLocationRaw;
+  routeFor(pk: string, across?: { entry: string; model: string | null }): RouteLocationRaw;
 } {
   const route = useRoute();
   const router = useRouter();
@@ -34,8 +34,13 @@ export function useReportView(): {
     setTypes: (types) => update({ types }),
     setEntry: (entry) => update({ entry, model: null, pk: null }),
     setModel: (model) => update({ model, pk: null }),
-    routeFor: (pk) => {
-      const query = { ...toQuery({ ...state.value, pk }) };
+    // an element of another entry is shown in the report of that entry and in its model, and
+    // neither the search nor the type filter of this entry says anything about that one
+    routeFor: (pk, across) => {
+      const next = across
+        ? { entry: across.entry, model: across.model, pk, q: "", types: null }
+        : { ...state.value, pk };
+      const query = { ...toQuery(next) };
       if (typeof route.query.url === "string") query.url = route.query.url;
       return { path: route.path, query };
     },

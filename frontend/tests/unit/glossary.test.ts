@@ -29,8 +29,14 @@ const ATTRIBUTES_DIR = join(
 /** The static `field="..."` values a component's source passes to `AttributeRow`. A
  * `:field="..."` bound to a variable, not a plain string, is not a field name and is excluded,
  * so a component looping over a local array (see `modelUnitFields`) needs its own extractor. */
-function staticFields(source: string): string[] {
-  return [...source.matchAll(/(?<!:)\bfield="([^"]+)"/g)].map((match) => match[1]!);
+function staticFields(source: string): { field: string; type: SbmlType | null }[] {
+  return [...source.matchAll(/<AttributeRow\b[^>]*>/g)].flatMap((tag) => {
+    const field = tag[0].match(/(?<!:)\bfield="([^"]+)"/)?.[1];
+    // a row names the type of its field where it is not the type of the component: a submodel
+    // shows the model its external model definition resolves to
+    const type = tag[0].match(/(?<!:)\btype="([^"]+)"/)?.[1] as SbmlType | undefined;
+    return field ? [{ field, type: type ?? null }] : [];
+  });
 }
 
 /** `ModelAttributes.vue` binds `:field="idKey"` in a `v-for` over its `UNITS` table instead of
@@ -89,11 +95,14 @@ describe("glossary", () => {
     const types = Object.keys(ATTRIBUTE_COMPONENTS) as SbmlType[];
     for (const type of types) {
       const source = readFileSync(join(ATTRIBUTES_DIR, `${type}Attributes.vue`), "utf8");
-      const fields = staticFields(source).concat(type === "Model" ? modelUnitFields(source) : []);
+      const fields = staticFields(source).concat(
+        (type === "Model" ? modelUnitFields(source) : []).map((field) => ({ field, type: null })),
+      );
       // fails just as loudly when a component's fields cannot be extracted at all
       expect(fields.length, `${type}Attributes.vue`).toBeGreaterThan(0);
-      for (const fieldName of fields) {
-        expect(attributeEntry(type, fieldName), `${type}.${fieldName}`).toBeDefined();
+      for (const { field, type: rowType } of fields) {
+        const owner = rowType ?? type;
+        expect(attributeEntry(owner, field), `${owner}.${field}`).toBeDefined();
       }
     }
 
@@ -104,11 +113,8 @@ describe("glossary", () => {
     );
     expect(shared.length).toBeGreaterThan(0);
     for (const type of types) {
-      for (const fieldName of shared) {
-        expect(
-          attributeEntry(type, fieldName),
-          `${type}.${fieldName} (AttributesColumn)`,
-        ).toBeDefined();
+      for (const { field } of shared) {
+        expect(attributeEntry(type, field), `${type}.${field} (AttributesColumn)`).toBeDefined();
       }
     }
   });

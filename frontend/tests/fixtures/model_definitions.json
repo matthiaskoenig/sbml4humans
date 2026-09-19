@@ -1,5 +1,5 @@
 {
-  "uid": "d96f7b64a85c43baaab3446e00f451b6",
+  "uid": "64915a118f7c407ba52de616a68b88b6",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./model_definitions.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./model_definitions.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -408,42 +408,50 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "model_definitions/Model:model_definitions",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "document/SBMLDocument:document",
               "target": "m1/Model:m1",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "model_definitions/Model:model_definitions",
               "target": "model_definitions/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "model_definitions/Model:model_definitions",
               "target": "model_definitions/UnitDefinition:min",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "model_definitions/Model:model_definitions",
               "target": "model_definitions/UnitDefinition:m2",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "model_definitions/Species:A1",
               "target": "model_definitions/Compartment:c",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "model_definitions/Species:A1",
               "target": "model_definitions/UnitDefinition:mmole",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "m1/Species:A",
               "target": "m1/Compartment:d",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             }
           ]
         }

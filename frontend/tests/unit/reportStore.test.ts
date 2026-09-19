@@ -39,7 +39,7 @@ describe("report store", () => {
     vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadExample("BIOMD0000000012");
-    expect(store.defaultEntry).toBe("./model.xml");
+    expect(store.defaultEntry).toBe("./BIOMD0000000012_url.xml");
   });
 
   it("does not reload the loaded example", async () => {

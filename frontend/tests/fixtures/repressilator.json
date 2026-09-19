@@ -1,5 +1,5 @@
 {
-  "uid": "39dd3ba67709423f89ee62c3f721ccec",
+  "uid": "715bb72d96744c5cab66f19b2d7b5e78",
   "manifest": {
     "entries": [
       {
@@ -13,14 +13,14 @@
         "master": false
       },
       {
-        "location": "./model.xml",
+        "location": "./BIOMD0000000012_url.xml",
         "format": "http://identifiers.org/combine.specifications/sbml",
         "master": true
       }
     ]
   },
   "reports": {
-    "./model.xml": {
+    "./BIOMD0000000012_url.xml": {
       "report": {
         "document": {
           "pk": "document/SBMLDocument:document",
@@ -2905,598 +2905,716 @@
             {
               "source": "document/SBMLDocument:document",
               "target": "BIOMD0000000012/Model:BIOMD0000000012",
-              "kind": "model"
+              "kind": "model",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Model:BIOMD0000000012",
               "target": "BIOMD0000000012/UnitDefinition:substance",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Model:BIOMD0000000012",
               "target": "BIOMD0000000012/UnitDefinition:time",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Model:BIOMD0000000012",
               "target": "BIOMD0000000012/UnitDefinition:volume",
-              "kind": "units"
+              "kind": "units",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Species:PX",
               "target": "BIOMD0000000012/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Species:PY",
               "target": "BIOMD0000000012/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Species:PZ",
               "target": "BIOMD0000000012/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Species:X",
               "target": "BIOMD0000000012/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Species:Y",
               "target": "BIOMD0000000012/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Species:Z",
               "target": "BIOMD0000000012/Compartment:cell",
-              "kind": "compartment"
+              "kind": "compartment",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:t_ave",
               "target": "BIOMD0000000012/Parameter:t_ave",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:t_ave",
               "target": "BIOMD0000000012/Parameter:tau_mRNA",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:beta",
               "target": "BIOMD0000000012/Parameter:beta",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:beta",
               "target": "BIOMD0000000012/Parameter:tau_mRNA",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:beta",
               "target": "BIOMD0000000012/Parameter:tau_prot",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:k_tl",
               "target": "BIOMD0000000012/Parameter:k_tl",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:k_tl",
               "target": "BIOMD0000000012/Parameter:eff",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:k_tl",
               "target": "BIOMD0000000012/Parameter:t_ave",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:a_tr",
               "target": "BIOMD0000000012/Parameter:a_tr",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:a_tr",
               "target": "BIOMD0000000012/Parameter:ps_0",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:a_tr",
               "target": "BIOMD0000000012/Parameter:ps_a",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:a0_tr",
               "target": "BIOMD0000000012/Parameter:a0_tr",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:a0_tr",
               "target": "BIOMD0000000012/Parameter:ps_0",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:kd_prot",
               "target": "BIOMD0000000012/Parameter:kd_prot",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:kd_prot",
               "target": "BIOMD0000000012/Parameter:tau_prot",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:kd_mRNA",
               "target": "BIOMD0000000012/Parameter:kd_mRNA",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:kd_mRNA",
               "target": "BIOMD0000000012/Parameter:tau_mRNA",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha",
               "target": "BIOMD0000000012/Parameter:alpha",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha",
               "target": "BIOMD0000000012/Parameter:KM",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha",
               "target": "BIOMD0000000012/Parameter:a_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha",
               "target": "BIOMD0000000012/Parameter:eff",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha",
               "target": "BIOMD0000000012/Parameter:tau_prot",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha0",
               "target": "BIOMD0000000012/Parameter:alpha0",
-              "kind": "variable"
+              "kind": "variable",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha0",
               "target": "BIOMD0000000012/Parameter:KM",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha0",
               "target": "BIOMD0000000012/Parameter:a0_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha0",
               "target": "BIOMD0000000012/Parameter:eff",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/AssignmentRule:alpha0",
               "target": "BIOMD0000000012/Parameter:tau_prot",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction1",
               "target": "BIOMD0000000012/SpeciesReference:_420973",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_420973",
               "target": "BIOMD0000000012/Species:X",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction1",
               "target": "BIOMD0000000012/KineticLaw:_420986",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_420986",
               "target": "BIOMD0000000012/Species:X",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_420986",
               "target": "BIOMD0000000012/Parameter:kd_mRNA",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction2",
               "target": "BIOMD0000000012/SpeciesReference:_420999",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_420999",
               "target": "BIOMD0000000012/Species:Y",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction2",
               "target": "BIOMD0000000012/KineticLaw:_421012",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421012",
               "target": "BIOMD0000000012/Species:Y",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421012",
               "target": "BIOMD0000000012/Parameter:kd_mRNA",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction3",
               "target": "BIOMD0000000012/SpeciesReference:_421025",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421025",
               "target": "BIOMD0000000012/Species:Z",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction3",
               "target": "BIOMD0000000012/KineticLaw:_421038",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421038",
               "target": "BIOMD0000000012/Species:Z",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421038",
               "target": "BIOMD0000000012/Parameter:kd_mRNA",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction4",
               "target": "BIOMD0000000012/SpeciesReference:_421051",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421051",
               "target": "BIOMD0000000012/Species:PX",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction4",
               "target": "BIOMD0000000012/ModifierSpeciesReference:_421064",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421064",
               "target": "BIOMD0000000012/Species:X",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction4",
               "target": "BIOMD0000000012/KineticLaw:_421076",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421076",
               "target": "BIOMD0000000012/Species:X",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421076",
               "target": "BIOMD0000000012/Parameter:k_tl",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction5",
               "target": "BIOMD0000000012/SpeciesReference:_421088",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421088",
               "target": "BIOMD0000000012/Species:PY",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction5",
               "target": "BIOMD0000000012/ModifierSpeciesReference:_421100",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421100",
               "target": "BIOMD0000000012/Species:Y",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction5",
               "target": "BIOMD0000000012/KineticLaw:_421112",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421112",
               "target": "BIOMD0000000012/Species:Y",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421112",
               "target": "BIOMD0000000012/Parameter:k_tl",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction6",
               "target": "BIOMD0000000012/SpeciesReference:_421124",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421124",
               "target": "BIOMD0000000012/Species:PZ",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction6",
               "target": "BIOMD0000000012/ModifierSpeciesReference:_421136",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421136",
               "target": "BIOMD0000000012/Species:Z",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction6",
               "target": "BIOMD0000000012/KineticLaw:_421148",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421148",
               "target": "BIOMD0000000012/Species:Z",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421148",
               "target": "BIOMD0000000012/Parameter:k_tl",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction7",
               "target": "BIOMD0000000012/SpeciesReference:_421160",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421160",
               "target": "BIOMD0000000012/Species:PX",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction7",
               "target": "BIOMD0000000012/KineticLaw:_421172",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421172",
               "target": "BIOMD0000000012/Species:PX",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421172",
               "target": "BIOMD0000000012/Parameter:kd_prot",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction8",
               "target": "BIOMD0000000012/SpeciesReference:_421184",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421184",
               "target": "BIOMD0000000012/Species:PY",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction8",
               "target": "BIOMD0000000012/KineticLaw:_421196",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421196",
               "target": "BIOMD0000000012/Species:PY",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421196",
               "target": "BIOMD0000000012/Parameter:kd_prot",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction9",
               "target": "BIOMD0000000012/SpeciesReference:_421208",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421208",
               "target": "BIOMD0000000012/Species:PZ",
-              "kind": "reactant"
+              "kind": "reactant",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction9",
               "target": "BIOMD0000000012/KineticLaw:_421220",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421220",
               "target": "BIOMD0000000012/Species:PZ",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421220",
               "target": "BIOMD0000000012/Parameter:kd_prot",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction10",
               "target": "BIOMD0000000012/SpeciesReference:_421232",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421232",
               "target": "BIOMD0000000012/Species:X",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction10",
               "target": "BIOMD0000000012/ModifierSpeciesReference:_421244",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421244",
               "target": "BIOMD0000000012/Species:PZ",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction10",
               "target": "BIOMD0000000012/KineticLaw:_421256",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421256",
               "target": "BIOMD0000000012/Parameter:KM",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421256",
               "target": "BIOMD0000000012/Species:PZ",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421256",
               "target": "BIOMD0000000012/Parameter:a0_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421256",
               "target": "BIOMD0000000012/Parameter:a_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421256",
               "target": "BIOMD0000000012/Parameter:n",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction11",
               "target": "BIOMD0000000012/SpeciesReference:_421268",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421268",
               "target": "BIOMD0000000012/Species:Y",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction11",
               "target": "BIOMD0000000012/ModifierSpeciesReference:_421280",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421280",
               "target": "BIOMD0000000012/Species:PX",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction11",
               "target": "BIOMD0000000012/KineticLaw:_421292",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421292",
               "target": "BIOMD0000000012/Parameter:KM",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421292",
               "target": "BIOMD0000000012/Species:PX",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421292",
               "target": "BIOMD0000000012/Parameter:a0_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421292",
               "target": "BIOMD0000000012/Parameter:a_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421292",
               "target": "BIOMD0000000012/Parameter:n",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction12",
               "target": "BIOMD0000000012/SpeciesReference:_421304",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/SpeciesReference:_421304",
               "target": "BIOMD0000000012/Species:Z",
-              "kind": "product"
+              "kind": "product",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction12",
               "target": "BIOMD0000000012/ModifierSpeciesReference:_421317",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/ModifierSpeciesReference:_421317",
               "target": "BIOMD0000000012/Species:PY",
-              "kind": "modifier"
+              "kind": "modifier",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/Reaction:Reaction12",
               "target": "BIOMD0000000012/KineticLaw:_421329",
-              "kind": "kineticLaw"
+              "kind": "kineticLaw",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421329",
               "target": "BIOMD0000000012/Parameter:KM",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421329",
               "target": "BIOMD0000000012/Species:PY",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421329",
               "target": "BIOMD0000000012/Parameter:a0_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421329",
               "target": "BIOMD0000000012/Parameter:a_tr",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             },
             {
               "source": "BIOMD0000000012/KineticLaw:_421329",
               "target": "BIOMD0000000012/Parameter:n",
-              "kind": "math"
+              "kind": "math",
+              "targetEntry": null
             }
           ]
         }
       },
       "debug": {
-        "jsonReportTime": "0.015 [s]"
+        "jsonReportTime": "0.153 [s]"
       }
     }
   }

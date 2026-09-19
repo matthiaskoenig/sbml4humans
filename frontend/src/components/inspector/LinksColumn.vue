@@ -6,6 +6,7 @@ import LinksGroup from "@/components/inspector/LinksGroup.vue";
 import { EDGE_KINDS, edgeKindLabel } from "@/data/edgeKinds";
 import { useReportIndex } from "@/report/context";
 import { linkEntry } from "@/report/glossary";
+import type { CrossEdge, ElementRef } from "@/report/index";
 
 const props = defineProps<{ pk: string }>();
 const index = useReportIndex();
@@ -13,7 +14,7 @@ const index = useReportIndex();
 interface Group {
   kind: EdgeKind;
   label: string;
-  pks: string[];
+  refs: ElementRef[];
 }
 
 /** A kinetic law holds the formula of the speed of its reaction and a function term a row of the
@@ -91,24 +92,33 @@ function farEnd(pk: string, kind: EdgeKind, end: "source" | "target"): string {
   return index.value?.participation(pk)?.reaction ?? pk;
 }
 
-function group(edges: Edge[], end: "source" | "target"): Group[] {
+/** The groups of the links of one direction: the elements of the entry at the far end of its
+ * edges, and behind them the elements of other entries, which a reference of a comp model
+ * reaches through an external model definition. */
+function group(edges: Edge[], across: CrossEdge[], end: "source" | "target"): Group[] {
   const inspected = index.value?.get(props.pk)?.sbmlType;
   const hop = inspected !== "SpeciesReference" && inspected !== "ModifierSpeciesReference";
-  return EDGE_KINDS.map((kind) => ({
-    kind,
-    label: edgeKindLabel(kind),
-    pks: [
-      ...new Set(
-        edges
-          .filter((edge) => edge.kind === kind)
-          .map((edge) => (hop ? farEnd(edge[end], kind, end) : edge[end])),
-      ),
-    ],
-  })).filter((g) => g.pks.length > 0);
+  return EDGE_KINDS.map((kind) => {
+    const pks = new Set(
+      edges
+        .filter((edge) => edge.kind === kind)
+        .map((edge) => (hop ? farEnd(edge[end], kind, end) : edge[end])),
+    );
+    const refs: ElementRef[] = [...pks].map((pk) => ({ pk, entry: null }));
+    for (const edge of across) {
+      if (edge.kind !== kind) continue;
+      refs.push({ pk: edge[end], entry: end === "target" ? edge.targetEntry : edge.sourceEntry });
+    }
+    return { kind, label: edgeKindLabel(kind), refs };
+  }).filter((g) => g.refs.length > 0);
 }
 
-const references = computed(() => group(outgoing(props.pk), "target"));
-const referencedBy = computed(() => group(incoming(props.pk), "source"));
+const references = computed(() =>
+  group(outgoing(props.pk), index.value?.referencesAcross(props.pk) ?? [], "target"),
+);
+const referencedBy = computed(() =>
+  group(incoming(props.pk), index.value?.referencedAcross(props.pk) ?? [], "source"),
+);
 </script>
 
 <template>
@@ -120,7 +130,7 @@ const referencedBy = computed(() => group(incoming(props.pk), "source"));
         <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
           {{ g.label }}
         </dt>
-        <LinksGroup :pks="g.pks" />
+        <LinksGroup :refs="g.refs" />
       </dl>
     </section>
     <section data-testid="links-referenced-by">
@@ -132,7 +142,7 @@ const referencedBy = computed(() => group(incoming(props.pk), "source"));
         <dt v-tooltip.bottom="linkEntry(g.kind)?.summary" class="text-xs text-gray-500">
           {{ g.label }}
         </dt>
-        <LinksGroup :pks="g.pks" />
+        <LinksGroup :refs="g.refs" />
       </dl>
     </section>
   </div>
