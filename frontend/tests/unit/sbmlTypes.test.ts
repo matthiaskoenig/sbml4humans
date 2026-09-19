@@ -11,10 +11,9 @@ import {
 } from "@/data/sbmlTypes";
 
 describe("sbml types", () => {
-  it("lists the element types in specification order", () => {
+  it("lists the element types in specification order, the unit definitions last", () => {
     expect(ELEMENT_TYPES.map((t) => t.type)).toEqual([
       "FunctionDefinition",
-      "UnitDefinition",
       "Compartment",
       "Species",
       "Parameter",
@@ -33,6 +32,7 @@ describe("sbml types", () => {
       "UserDefinedConstraint",
       "QualitativeSpecies",
       "Transition",
+      "UnitDefinition",
     ]);
   });
 

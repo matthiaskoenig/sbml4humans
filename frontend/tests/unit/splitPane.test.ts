@@ -82,4 +82,26 @@ describe("SplitPane", () => {
     }
     expect(localStorage.getItem(KEY)).toBe("160");
   });
+
+  it.each(["first", "second"] as const)(
+    "leaves out the sized %s pane and the separator when it is collapsed",
+    (sizedPane) => {
+      const other = sizedPane === "first" ? "second" : "first";
+      const wrapper = mount(SplitPane, {
+        props: {
+          direction: "horizontal",
+          storageKey: "test",
+          initial: 240,
+          sizedPane,
+          collapsed: true,
+        },
+        slots: { first: "<p data-testid='first' />", second: "<p data-testid='second' />" },
+      });
+      expect(wrapper.find(`[data-testid=${sizedPane}]`).exists()).toBe(false);
+      expect(wrapper.find("[data-testid=split-handle]").exists()).toBe(false);
+      expect(wrapper.get(`[data-testid=${other}]`).element.parentElement?.className).toContain(
+        "flex-1",
+      );
+    },
+  );
 });

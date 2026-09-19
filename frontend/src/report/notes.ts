@@ -51,3 +51,15 @@ export function sanitizeNotes(html: string): string {
     ],
   });
 }
+
+/** Whether the notes of an element show a reader anything once they are sanitised: a text or an
+ * image. Notes which hold an empty body, or nothing but markup the report does not allow, are
+ * as empty as no notes, and the inspector gives them no section. */
+export function hasNotes(html: string | null | undefined): boolean {
+  if (!html) return false;
+  const holder = document.createElement("template");
+  holder.innerHTML = sanitizeNotes(html);
+  return (
+    (holder.content.textContent ?? "").trim() !== "" || holder.content.querySelector("img") !== null
+  );
+}
