@@ -12,7 +12,7 @@ import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
 import { loadReport } from "./fixtures";
-import { helpKeyOf } from "./help";
+import { accessibleName, helpKeyOf } from "./help";
 
 const index = new ReportIndex(loadReport("repressilator"));
 const species = index.byType("BIOMD0000000012").get("Species")!;
@@ -119,7 +119,7 @@ describe("HelpButton", () => {
 });
 
 describe("ElementSection", () => {
-  it("explains the type of its heading", async () => {
+  it("explains its type next to the heading, not inside it", async () => {
     await router.push("/examples/BIOMD0000000012");
     wrapper = mount(ElementSection, {
       props: { type: "Species", rows: species, allRows: species, total: species.length },
@@ -130,8 +130,27 @@ describe("ElementSection", () => {
         provide: { [ReportIndexKey as symbol]: ref(index) },
       },
     }) as VueWrapper;
-    const link = wrapper.get("h2 [data-testid=help-button]");
+    const link = wrapper.get("[data-testid=help-button]");
     expect(helpKeyOf(link.attributes("href"))).toBe("types/Species");
     expect(link.attributes("aria-label")).toBe(`explain ${typeEntry("Species")!.label}`);
+    // the button explains the type and stands next to the heading, but the heading is not what
+    // announces it: a screen reader names the heading by the type and the count alone
+    expect(wrapper.find("h2 [data-testid=help-button]").exists()).toBe(false);
+  });
+
+  it("names the heading by the type alone, not by the help which explains it", async () => {
+    await router.push("/examples/BIOMD0000000012");
+    wrapper = mount(ElementSection, {
+      props: { type: "Species", rows: species, allRows: species, total: species.length },
+      attachTo: document.body,
+      global: {
+        plugins: [router],
+        directives: { tooltip: vTooltip },
+        provide: { [ReportIndexKey as symbol]: ref(index) },
+      },
+    }) as VueWrapper;
+    const name = accessibleName(wrapper.get("h2").element);
+    expect(name).not.toContain("explain");
+    expect(name).toContain("Species");
   });
 });

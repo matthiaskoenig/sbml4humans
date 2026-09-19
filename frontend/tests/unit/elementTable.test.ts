@@ -1,5 +1,5 @@
 import { flushPromises, mount } from "@vue/test-utils";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
 import type { Event, Parameter, Reaction, SbmlElement, Species } from "@/api/types";
@@ -8,6 +8,7 @@ import ElementTable from "@/components/report/ElementTable.vue";
 import { vTooltip } from "@/directives/tooltip";
 import { columnsOf, type ColumnDef } from "@/report/columns";
 import { attributeEntry } from "@/report/glossary";
+import type * as Glossary from "@/report/glossary";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { elementLabel } from "@/report/label";
@@ -16,6 +17,21 @@ import { router } from "@/router";
 import { loadReport } from "./fixtures";
 import { helpKeyOf } from "./help";
 import { summaryOf } from "./summary";
+
+// a field a test below withholds the key of, to pin that the column of a field the glossary
+// cannot resolve renders no help button; every field of the report does resolve in fact (the
+// glossary check enforces it), so a real column never exercises this, and the mock stands in for
+// one which would not. `vi.hoisted` gives the factory of the mock, which is itself hoisted above
+// this import, a variable it can read at call time.
+const noHelp = vi.hoisted(() => ({ field: null as string | null }));
+vi.mock("@/report/glossary", async (importOriginal) => {
+  const actual = await importOriginal<typeof Glossary>();
+  return {
+    ...actual,
+    attributeKey: (type: Parameters<typeof actual.attributeKey>[0], field: string) =>
+      field === noHelp.field ? undefined : actual.attributeKey(type, field),
+  };
+});
 
 // jsdom does not implement scrollIntoView.
 Element.prototype.scrollIntoView ??= function () {};
@@ -96,6 +112,20 @@ describe("ElementTable", () => {
     expect(router.currentRoute.value.query.help).toBe("types/SBase/id");
     expect(header(table, "id").attributes("aria-sort")).toBe("none");
     expect(ids(table)).toEqual(before);
+  });
+
+  it("renders no help button for a column the glossary gives no key to", async () => {
+    noHelp.field = "id";
+    try {
+      await router.push("/examples/BIOMD0000000012");
+      const table = mountTable(species);
+      const idHeader = header(table, "id");
+      expect(idHeader.find("[data-testid=help-button]").exists()).toBe(false);
+      // the column still sorts: the missing key withholds the help alone
+      expect(idHeader.find("[data-testid=sort-button]").exists()).toBe(true);
+    } finally {
+      noHelp.field = null;
+    }
   });
 
   it("sorts without opening the dialog when the header itself is clicked", async () => {

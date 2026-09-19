@@ -155,7 +155,7 @@ describe("ReportPage", () => {
     const page = await mountReport();
 
     const link = (type: string) =>
-      page.find(`[data-testid=section-${type}] h2 [data-testid=section-list] a`);
+      page.find(`[data-testid=section-${type}] [data-testid=section-list] a`);
     expect(link("Species").text()).toBe("metabolites");
     expect(link("Species").attributes("data-pk")).toBe(
       index.list(index.mainModel!.pk, "listOfSpecies")!.pk,
