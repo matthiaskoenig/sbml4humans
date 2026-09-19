@@ -1,4 +1,4 @@
-# Rate rule
+# RateRule
 
 A formula which gives the rate of change of an element.
 
@@ -39,8 +39,8 @@ The report derives the units of the formula from the units of the quantities it 
 
 ## Related elements
 
-- [Assignment rule](assignmentrule.md): a formula which holds at every moment of the simulation
-- [Algebraic rule](algebraicrule.md): an equation which has to hold at every moment of the simulation
+- [AssignmentRule](assignmentrule.md): a formula which holds at every moment of the simulation
+- [AlgebraicRule](algebraicrule.md): an equation which has to hold at every moment of the simulation
 - [Reaction](reaction.md): a process which changes the quantities of species
 
 ## Specification

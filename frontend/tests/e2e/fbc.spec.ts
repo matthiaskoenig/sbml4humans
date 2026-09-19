@@ -43,7 +43,7 @@ test.describe("fbc", () => {
     ]);
     await row(page, "FluxBound:v1_lb").click();
     const inspector = page.getByTestId("inspector");
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Flux bound");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("FluxBound");
     await expect(attribute(page, "operation")).toContainText("greaterEqual");
     await expect(attribute(page, "value")).toContainText("0");
 
@@ -54,7 +54,7 @@ test.describe("fbc", () => {
       inspector.getByTestId("links-referenced-by").getByTestId("links-fluxBound"),
     ).toContainText("v1_ub");
     // a reaction of a Version 1 document has no fbc attributes of its own
-    await expect(attribute(page, "lower flux bound")).toHaveCount(0);
+    await expect(attribute(page, "fbc:lowerFluxBound")).toHaveCount(0);
   });
 
   test("shows an unbounded flux as the sign of infinity", async ({ page }) => {
@@ -80,16 +80,16 @@ test.describe("fbc", () => {
     await page.getByTestId("bar-model").click();
     const inspector = page.getByTestId("inspector");
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Model");
-    await expect(attribute(page, "strict")).toContainText("-");
-    await attribute(page, "active objective").getByTestId("element-link").click();
+    await expect(attribute(page, "fbc:strict")).toContainText("-");
+    await attribute(page, "fbc:activeObjective").getByTestId("element-link").click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Objective");
     await expect(inspector.getByTestId("inspector-id")).toHaveText("biomass_max");
 
     // the objective lists its terms, and every term is an element with its own reaction
-    const terms = attribute(page, "flux objectives").getByTestId("nested-table");
+    const terms = attribute(page, "listOfFluxObjectives").getByTestId("nested-table");
     await expect(terms.locator("tbody tr").first().locator("td").nth(1)).toHaveText("EX_biomass");
     await terms.getByTestId("element-link").first().click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Flux objective");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("FluxObjective");
     await expect(attribute(page, "coefficient")).toContainText("1");
   });
 
@@ -99,16 +99,18 @@ test.describe("fbc", () => {
     await openExample(page, V3);
     await row(page, "UserDefinedConstraint:ratio").click();
     const inspector = page.getByTestId("inspector");
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("User defined constraint");
-    await expect(attribute(page, "lower bound")).toContainText("ratio_lb");
-    const components = attribute(page, "components").getByTestId("nested-table");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("UserDefinedConstraint");
+    await expect(attribute(page, "lowerBound")).toContainText("ratio_lb");
+    const components = attribute(page, "listOfUserDefinedConstraintComponents").getByTestId(
+      "nested-table",
+    );
     await expect(components.locator("tbody tr")).toHaveCount(2);
     await expect(components.locator("tbody tr").first().locator("td").nth(1)).toHaveText("v1");
 
     // the component is an element of its own and links the parameter of its coefficient
     await components.getByTestId("element-link").first().click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText(
-      "User defined constraint component",
+      "UserDefinedConstraintComponent",
     );
     await attribute(page, "coefficient").getByTestId("element-link").click();
     await expect(page).toHaveURL(/pk=fbc_constraints_v3\/Parameter:c_two$/);
@@ -121,7 +123,7 @@ test.describe("fbc", () => {
   test("shows the key value pairs an element of a Version 3 model carries", async ({ page }) => {
     await openExample(page, V3);
     await row(page, "Parameter:maintenance").click();
-    const pairs = attribute(page, "key value pairs").getByTestId("nested-table");
+    const pairs = attribute(page, "fbc:listOfKeyValuePairs").getByTestId("nested-table");
     await expect(pairs.locator("thead th")).toHaveText(["key", "value", "uri"]);
     await expect(pairs.locator("tbody tr").first().locator("td")).toHaveText([
       "source",
@@ -134,7 +136,7 @@ test.describe("fbc", () => {
     await openExample(page, V3);
     await row(page, "Reaction:v1").click();
     const inspector = page.getByTestId("inspector");
-    const association = attribute(page, "gene product association");
+    const association = attribute(page, "fbc:geneProductAssociation");
     await expect(association).toContainText("((g_ptsG and g_ptsH) or g_galP)");
 
     // every gene of the tree is a link to its gene product
@@ -162,7 +164,7 @@ test.describe("fbc", () => {
       .getByTestId("element-link")
       .first()
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Gene product association");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("GeneProductAssociation");
     await inspector
       .getByTestId("links-references")
       .getByTestId("links-geneProductAssociation")
@@ -175,21 +177,21 @@ test.describe("fbc", () => {
   test("gives the tables of a genome scale model their fbc columns", async ({ page }) => {
     await openExample(page, ECOLI, 60_000);
     // the chemical formula and the charge of a species, next to its compartment
-    await expect(headers(page, "Species")).toContainText(["formula", "charge"]);
+    await expect(headers(page, "Species")).toContainText(["fbc:chemicalFormula", "fbc:charge"]);
     await expect(
       page.getByTestId("table-Species").locator("tbody tr").first().locator("td").nth(3),
     ).toHaveText("C6H12O6");
 
     // the bounds and the gene association of a reaction, one line per reaction
     await expect(headers(page, "Reaction")).toContainText([
-      "lower bound",
-      "upper bound",
-      "gene association",
+      "fbc:lowerFluxBound",
+      "fbc:upperFluxBound",
+      "fbc:geneProductAssociation",
     ]);
     const reaction = page.locator('tbody tr[data-pk$="Reaction:R_PFK"]');
     await expect(reaction.getByTestId("gene-cell")).toHaveText("(G_b3916 or G_b1723)");
     // a model without the package keeps the columns it had
     await openExample(page, "BIOMD0000000012 (BIOMD0000000012_urn.xml)");
-    await expect(headers(page, "Species")).not.toContainText(["formula"]);
+    await expect(headers(page, "Species")).not.toContainText(["fbc:chemicalFormula"]);
   });
 });

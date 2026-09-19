@@ -118,11 +118,11 @@ test("the local parameters of a kinetic law keep an identifier on one line", asy
   await page.getByTestId("table-Reaction").locator("tbody tr[data-pk]").first().click();
   await page
     .getByTestId("attribute-row")
-    .filter({ hasText: "kinetic law" })
+    .filter({ hasText: "kineticLaw" })
     .getByTestId("element-link")
     .first()
     .click();
-  await expect(page.getByTestId("inspector-type")).toHaveText("Kinetic law");
+  await expect(page.getByTestId("inspector-type")).toHaveText("KineticLaw");
   const column = page.getByTestId("attributes-column");
   await expect(column.getByTestId("nested-table")).toContainText("Km_glucose_cytosol");
   expect(await wrappedCells(column)).toEqual([]);
@@ -133,9 +133,9 @@ test("every label of the inspector fits its column", async ({ page }) => {
   await page.getByTestId("search-input").fill("R_BIOMASS_Ecoli_core_w_GAM");
   await page.getByTestId("table-Reaction").locator("tbody tr[data-pk]").first().click();
   const column = page.getByTestId("attributes-column");
-  // `gene product association` is the longest label of any type
+  // `fbc:geneProductAssociation` is the longest label of a row which has its value next to it
   await expect(
-    column.getByTestId("attribute-row").filter({ hasText: "gene product association" }),
+    column.getByTestId("attribute-row").filter({ hasText: "fbc:geneProductAssociation" }),
   ).toBeVisible();
   expect(await truncatedLabels(column)).toEqual([]);
 });
@@ -146,9 +146,9 @@ test("the type bar wraps its entries instead of cutting them off or scrolling", 
   // a model of eight types, whose entries do not fit on one line of the viewport of the tests
   await openExample(page, "Hepatic_glucose_3 (Hepatic_glucose_3.xml)", 60_000);
   const bar = page.getByTestId("type-bar");
-  // `Function definitions` is the longest type name, and the count of a type is at its widest
+  // `FunctionDefinition` is the longest type name, and the count of a type is at its widest
   // while a search is active, which puts the matches in front of the total
-  await expect(bar).toContainText("Function definitions");
+  await expect(bar).toContainText("FunctionDefinition");
   expect(await clippedEntries(bar)).toEqual([]);
   // the row wraps onto as many lines as the model needs, it never scrolls sideways
   expect(
@@ -196,7 +196,7 @@ test("the type bar lists the types the model uses and the inspector is left of t
 test("the header of the inspector keeps a long type on one line at a laptop width", async ({
   page,
 }) => {
-  // "User defined constraint component" wrapped onto three lines of the 40 px header at 1280 px
+  // "UserDefinedConstraintComponent" wrapped onto three lines of the 40 px header at 1280 px
   // and lost its first and last line; the name of the element gives way instead, and in the
   // third of a 1280 px window the end of the type after it, never the id
   const layout = async (width: number) => {
@@ -205,9 +205,7 @@ test("the header of the inspector keeps a long type on one line at a laptop widt
       "/examples/fbc_constraints_v3%20(fbc_constraints_v3.xml)?pk=fbc_constraints_v3/UserDefinedConstraintComponent:ratio_v1",
     );
     const header = page.getByTestId("inspector-header");
-    await expect(header.getByTestId("inspector-type")).toHaveText(
-      "User defined constraint component",
-    );
+    await expect(header.getByTestId("inspector-type")).toHaveText("UserDefinedConstraintComponent");
     return header.evaluate((element) => {
       const box = (id: string) => {
         const target = element.querySelector(`[data-testid="${id}"]`)!;

@@ -186,7 +186,7 @@ describe("inspector", () => {
     const trigger = constraintEvent.mainModel!.listOfEvents![0]!.trigger!;
     const wrapper = mountWith(AttributesColumn, { element: trigger }, constraintEvent);
     const labels = wrapper.findAll("[data-testid=attribute-row] dt").map((dt) => dt.text());
-    expect(labels).toEqual(["metaId", "sbo", "math", "initial value", "persistent"]);
+    expect(labels).toEqual(["metaid", "sboTerm", "math", "initialValue", "persistent"]);
     const rows = wrapper.findAll("[data-testid=attribute-row]");
     // initial value is false, persistent is true: the check mark is the mark of a true flag
     expect(rows[3]!.find("[aria-label=true]").exists()).toBe(false);
@@ -213,7 +213,7 @@ describe("inspector", () => {
         .find("dd")
         .text(),
     ).not.toBe("-");
-    const units = rows.find((r) => r.find("dt").text() === "units")!;
+    const units = rows.find((r) => r.find("dt").text() === "listOfUnits")!;
     expect(units.findAll("thead th").map((th) => th.text())).toEqual([
       "kind",
       "exponent",
@@ -240,7 +240,7 @@ describe("inspector", () => {
     // gives it and not as the id of its species
     const table = wrapper
       .findAll("[data-testid=attribute-row]")
-      .find((row) => row.find("dt").text() === "reactants")!;
+      .find((row) => row.find("dt").text() === "listOfReactants")!;
     const name = table.get("tbody tr td [data-testid=report-name]");
     expect(name.text()).toBe(`${reaction.id}.${reactant.species}`);
   });
@@ -253,11 +253,11 @@ describe("inspector", () => {
       .findAll("[data-testid=attribute-row]")
       .filter((r) => r.find("dd [data-testid=element-link]").exists())
       .map((r) => [r.find("dt").text(), r.find("dd [data-testid=element-link]").text()]);
-    expect(rows).toContainEqual(["kinetic law", "R1.kineticLaw"]);
+    expect(rows).toContainEqual(["kineticLaw", "R1.kineticLaw"]);
     const v2 = fbcConstraints.mainModel!.listOfReactions!.find((r) => r.id === "v2")!;
     const association = mountWith(AttributesColumn, { element: v2 }, fbcConstraints)
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "gene product association")!;
+      .find((r) => r.find("dt").text() === "fbc:geneProductAssociation")!;
     expect(association.find("[data-testid=element-link]").text()).toBe("v2.geneProductAssociation");
     const objective = fbcBounds.mainModel!.listOfObjectives!.find((o) => o.id === "biomass_max")!;
     const term = mountWith(AttributesColumn, { element: objective }, fbcBounds).get(
@@ -276,7 +276,7 @@ describe("inspector", () => {
     const wrapper = mountWith(SubmodelAttributes, { element: submodel }, compModels);
     const row = wrapper
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "time conversion factor")!;
+      .find((r) => r.find("dt").text() === "timeConversionFactor")!;
     expect(row.find("a").exists()).toBe(false);
     expect(row.find("dd").text()).toBe("-");
   });
@@ -286,7 +286,7 @@ describe("inspector", () => {
     const wrapper = mountWith(AttributesColumn, { element: species }, compDeletion);
     const row = wrapper
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "replaced elements")!;
+      .find((r) => r.find("dt").text() === "comp:listOfReplacedElements")!;
     const pks = row.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
     expect(pks).toContain("comp_deletion/Submodel:cell1");
     // the port of the submodel names the species, and the edge ends at that species
@@ -299,8 +299,8 @@ describe("inspector", () => {
     const rows = mountWith(ReplacedElementAttributes, { element: replaced }, compDeletion)
       .findAll("[data-testid=attribute-row]")
       .map((r) => [r.find("dt").text(), r.find("dd").text()]);
-    expect(rows).toContainEqual(["submodel", "cell1"]);
-    expect(rows).toContainEqual(["conversion factor", "f_amount"]);
+    expect(rows).toContainEqual(["submodelRef", "cell1"]);
+    expect(rows).toContainEqual(["conversionFactor", "f_amount"]);
 
     const parameter = compDeletion.mainModel!.listOfParameters!.find(
       (p) => p.comp?.replacedElements?.[0]?.deletion,
@@ -319,7 +319,7 @@ describe("inspector", () => {
     const wrapper = mountWith(SubmodelAttributes, { element: submodel }, compDeletion);
     const row = wrapper
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "deletions")!;
+      .find((r) => r.find("dt").text() === "listOfDeletions")!;
     const pks = row.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
     expect(pks).toContain("comp_deletion/Deletion:del_k");
     expect(pks).toContain("cell/Parameter:k");
@@ -341,7 +341,7 @@ describe("inspector", () => {
     await router.push("/examples/fbc_constraints_v3");
     const row = mountWith(AttributesColumn, { element: fbcConstraints.mainModel! }, fbcConstraints)
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "active objective")!;
+      .find((r) => r.find("dt").text() === "fbc:activeObjective")!;
     expect(row.find("[data-testid=element-link]").attributes("data-pk")).toBe(
       "fbc_constraints_v3/Objective:growth_max",
     );
@@ -367,8 +367,8 @@ describe("inspector", () => {
     const rows = wrapper
       .findAll("[data-testid=attribute-row]")
       .map((r) => [r.find("dt").text(), r.find("dd").text()]);
-    expect(rows).toContainEqual(["lower bound", "ratio_lb"]);
-    expect(rows).toContainEqual(["upper bound", "ratio_ub"]);
+    expect(rows).toContainEqual(["lowerBound", "ratio_lb"]);
+    expect(rows).toContainEqual(["upperBound", "ratio_ub"]);
     const pks = wrapper.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
     expect(pks).toContain("fbc_constraints_v3/Reaction:v1");
     expect(pks).toContain("fbc_constraints_v3/Parameter:c_two");
@@ -382,7 +382,7 @@ describe("inspector", () => {
     )!;
     const row = mountWith(AttributesColumn, { element: parameter }, fbcConstraints)
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "key value pairs")!;
+      .find((r) => r.find("dt").text() === "fbc:listOfKeyValuePairs")!;
     expect(row.find("dd").text()).toContain("source");
     expect(row.find("dd").text()).toContain("measured");
     expect(row.find("dd").find("a").attributes("href")).toBe("https://sbml.org/fbc/keyvaluepair");
@@ -391,7 +391,7 @@ describe("inspector", () => {
     const infinite = { ...parameter, keyValuePairs: [{ key: "bound", value: "Infinity" }] };
     const text = mountWith(AttributesColumn, { element: infinite }, fbcConstraints)
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "key value pairs")!
+      .find((r) => r.find("dt").text() === "fbc:listOfKeyValuePairs")!
       .find("tbody")
       .text();
     expect(text).toContain("Infinity");
@@ -403,7 +403,7 @@ describe("inspector", () => {
     const reaction = fbcConstraints.mainModel!.listOfReactions!.find((r) => r.id === "v1")!;
     const row = mountWith(ReactionAttributes, { element: reaction }, fbcConstraints)
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "gene product association")!;
+      .find((r) => r.find("dt").text() === "fbc:geneProductAssociation")!;
     // the structure of the tree, with the operators between the nodes of every group
     expect(row.find("dd").text()).toContain("((g_ptsG and g_ptsH) or g_galP)");
     const pks = row.findAll("[data-testid=element-link]").map((l) => l.attributes("data-pk"));
@@ -424,7 +424,7 @@ describe("inspector", () => {
     const ref = fbcConstraints.get("fbc_constraints_v3/GeneProductRef:ref_galP")!;
     const row = mountWith(AttributesColumn, { element: ref }, fbcConstraints)
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "gene product")!;
+      .find((r) => r.find("dt").text() === "geneProduct")!;
     expect(row.find("[data-testid=element-link]").attributes("data-pk")).toBe(
       "fbc_constraints_v3/GeneProduct:g_galP",
     );
@@ -853,12 +853,12 @@ describe("inspector", () => {
     const signal = qual.mainModel!.listOfQualitativeSpecies![0] as QualitativeSpecies;
     const wrapper = mountWith(QualitativeSpeciesAttributes, { element: signal }, qual);
     const rows = wrapper.findAll("[data-testid=attribute-row]").map((r) => r.get("dt").text());
-    expect(rows).toEqual(["compartment", "initial level", "max level", "constant"]);
+    expect(rows).toEqual(["compartment", "initialLevel", "maxLevel", "constant"]);
     expect(wrapper.find("[data-testid=element-link]").text()).toBe("cell");
     // the level the file does not set reads as a dash and not as the integer libsbml answers
     const initial = wrapper
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.get("dt").text() === "initial level")!;
+      .find((r) => r.get("dt").text() === "initialLevel")!;
     expect(initial.get("dd").text()).toBe("-");
   });
 
@@ -873,10 +873,10 @@ describe("inspector", () => {
     const inputs = tables[0]!;
     expect(inputs.findAll("thead th:not([aria-hidden])").map((th) => th.text())).toEqual([
       "id",
-      "species",
+      "qualitativeSpecies",
       "sign",
-      "threshold",
-      "effect",
+      "thresholdLevel",
+      "transitionEffect",
     ]);
     expect(inputs.findAll("tbody tr")).toHaveLength(3);
     expect(inputs.findAll("[data-testid=qual-sign]").map((s) => s.text())).toEqual([
@@ -889,8 +889,8 @@ describe("inspector", () => {
     const terms = tables[2]!;
     expect(terms.findAll("thead th").map((th) => th.text())).toEqual([
       "term",
-      "condition",
-      "result level",
+      "math",
+      "resultLevel",
     ]);
     const rows = terms.findAll("tbody tr");
     expect(rows).toHaveLength(3);
@@ -915,7 +915,7 @@ describe("inspector", () => {
     const wrapper = mountWith(AttributesColumn, { element: replaced }, repressilator);
     const row = wrapper
       .findAll("[data-testid=attribute-row]")
-      .find((r) => r.find("dt").text() === "replaced by")!;
+      .find((r) => r.find("dt").text() === "comp:replacedBy")!;
     expect(row.find("dd").text()).toContain("mmole");
   });
 
@@ -1010,10 +1010,10 @@ describe("inspector", () => {
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
       `sign: ${attributeEntry("Input", "sign")!.summary}`,
     );
-    const level = headers.find((th) => th.text() === "output level")!;
+    const level = headers.find((th) => th.text() === "outputLevel")!;
     await level.get("span").trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
-      `output level: ${attributeEntry("Output", "outputLevel")!.summary}`,
+      `outputLevel: ${attributeEntry("Output", "outputLevel")!.summary}`,
     );
     wrapper.unmount();
   });

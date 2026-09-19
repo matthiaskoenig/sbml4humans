@@ -116,7 +116,7 @@ function selectedClass(pk: string): string {
         type="checkbox"
         class="size-3.5 accent-gray-700"
         :checked="isVisible(info.type)"
-        :aria-label="`show ${info.plural}`"
+        :aria-label="`show ${info.type}`"
         :data-testid="`bar-toggle-${info.type}`"
         @change="toggle(info.type)"
       />
@@ -125,7 +125,7 @@ function selectedClass(pk: string): string {
         class="flex items-center gap-1.5 hover:underline"
         @click="scrollTo(info.type)"
       >
-        <TypeMark :type="info.type" />{{ info.plural }}
+        <TypeMark :type="info.type" />{{ info.type }}
       </button>
       <span
         class="font-mono text-xs text-gray-500 tabular-nums"

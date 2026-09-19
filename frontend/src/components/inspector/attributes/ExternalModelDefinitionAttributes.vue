@@ -25,16 +25,16 @@ const entryIndex = computed(() => {
 </script>
 
 <template>
-  <AttributeRow label="source" :type="element.sbmlType" field="source"
+  <AttributeRow :type="element.sbmlType" field="source"
     ><ValueText :value="element.source" mono
   /></AttributeRow>
-  <AttributeRow label="model ref" :type="element.sbmlType" field="modelRef"
+  <AttributeRow :type="element.sbmlType" field="modelRef"
     ><ValueText :value="element.modelRef" mono
   /></AttributeRow>
-  <AttributeRow label="md5" :type="element.sbmlType" field="md5"
+  <AttributeRow :type="element.sbmlType" field="md5"
     ><ValueText :value="element.md5" mono
   /></AttributeRow>
-  <AttributeRow label="status" :type="element.sbmlType" field="resolution.status">
+  <AttributeRow :type="element.sbmlType" field="resolution.status">
     <span
       :class="status === 'resolved' ? 'text-gray-900' : 'text-amber-700'"
       :data-status="status"
@@ -42,7 +42,7 @@ const entryIndex = computed(() => {
       >{{ RESOLUTION_STATUS_LABELS[status] }}</span
     >
   </AttributeRow>
-  <AttributeRow label="document" :type="element.sbmlType" field="resolution.entry">
+  <AttributeRow :type="element.sbmlType" field="resolution.entry">
     <RouterLink
       v-if="entry && entryIndex"
       :to="view.routeFor(entryIndex.document.pk, { entry, model: null })"
@@ -52,7 +52,7 @@ const entryIndex = computed(() => {
     >
     <ValueText v-else :value="entry" mono />
   </AttributeRow>
-  <AttributeRow label="model" :type="element.sbmlType" field="resolution.model">
+  <AttributeRow :type="element.sbmlType" field="resolution.model">
     <ElementLink
       v-if="resolution?.model"
       :pk="resolution.model"
@@ -62,7 +62,7 @@ const entryIndex = computed(() => {
     />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
-  <AttributeRow label="md5 check" :type="element.sbmlType" field="resolution.md5Matches">
+  <AttributeRow :type="element.sbmlType" field="resolution.md5Matches">
     <span v-if="resolution?.md5Matches === true" data-testid="resolution-md5"
       >matches the document</span
     >

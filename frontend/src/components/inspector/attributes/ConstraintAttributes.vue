@@ -8,12 +8,12 @@ defineProps<{ element: Constraint }>();
 </script>
 
 <template>
-  <AttributeRow label="math" :type="element.sbmlType" field="math"
+  <AttributeRow :type="element.sbmlType" field="math"
     ><MathView :math="element.math" display
   /></AttributeRow>
   <!-- the message is XHTML written for the reader of a simulation, under the rules of the
   notes (core §4.10.2), so it is rendered and not printed as markup -->
-  <AttributeRow label="message" :type="element.sbmlType" field="message" wide
+  <AttributeRow :type="element.sbmlType" field="message" wide
     ><XhtmlView :xhtml="element.message" testid="message"
   /></AttributeRow>
 </template>

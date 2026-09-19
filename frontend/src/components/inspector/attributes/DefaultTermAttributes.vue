@@ -7,7 +7,7 @@ defineProps<{ element: DefaultTerm }>();
 </script>
 
 <template>
-  <AttributeRow label="result level" :type="element.sbmlType" field="resultLevel"
+  <AttributeRow :type="element.sbmlType" field="resultLevel"
     ><ValueText :value="element.resultLevel"
   /></AttributeRow>
 </template>

@@ -29,7 +29,7 @@ const view = useReportView();
  * the split pane remembers it. */
 const INSPECTOR_WIDTH = Math.round(window.innerWidth / 3);
 
-/** The narrowest the inspector gets: the label column of an attribute row is 11rem wide, below
+/** The narrowest the inspector gets: the label column of an attribute row is 12rem wide, below
  * this the value next to it has no room left. */
 const INSPECTOR_MIN = 360;
 

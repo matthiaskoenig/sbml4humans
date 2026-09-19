@@ -10,16 +10,16 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="reaction" :type="element.sbmlType" field="reaction">
+  <AttributeRow :type="element.sbmlType" field="reaction">
     <ElementLink
       :pk="index?.resolve(element.pk, 'fluxBound', element.reaction)"
       :label="element.reaction"
     />
   </AttributeRow>
-  <AttributeRow label="operation" :type="element.sbmlType" field="operation"
+  <AttributeRow :type="element.sbmlType" field="operation"
     ><ValueText :value="element.operation" mono
   /></AttributeRow>
-  <AttributeRow label="value" :type="element.sbmlType" field="value"
+  <AttributeRow :type="element.sbmlType" field="value"
     ><ValueText :value="element.value" double
   /></AttributeRow>
 </template>

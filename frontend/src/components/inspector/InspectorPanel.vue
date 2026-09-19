@@ -7,7 +7,6 @@ import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import XmlView from "@/components/misc/XmlView.vue";
-import { typeInfo } from "@/data/sbmlTypes";
 import { useReportIndex } from "@/report/context";
 import { referenceUrl } from "@/report/glossary";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
@@ -18,9 +17,7 @@ const index = useReportIndex();
 const view = useReportView();
 
 const element = computed(() => index.value?.get(props.pk) ?? null);
-const label = computed(() =>
-  element.value?.sbmlType ? typeInfo(element.value.sbmlType).label : "",
-);
+const label = computed(() => element.value?.sbmlType ?? "");
 /** The element is named as every link to it names it; the type is already named next to it. */
 const name = computed(() => elementLabel(index.value, props.pk) ?? "");
 const showXml = ref(false);

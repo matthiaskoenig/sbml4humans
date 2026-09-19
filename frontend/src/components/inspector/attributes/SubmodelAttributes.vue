@@ -40,7 +40,7 @@ const deletions = computed(() =>
 </script>
 
 <template>
-  <AttributeRow label="model ref" :type="element.sbmlType" field="modelRef">
+  <AttributeRow :type="element.sbmlType" field="modelRef">
     <ElementLink :pk="model" :label="element.modelRef" />
   </AttributeRow>
   <AttributeRow
@@ -59,28 +59,19 @@ const deletions = computed(() =>
       RESOLUTION_STATUS_LABELS[external.resolution?.status ?? "notFound"]
     }}</span>
   </AttributeRow>
-  <AttributeRow
-    label="time conversion factor"
-    :type="element.sbmlType"
-    field="timeConversionFactor"
-  >
+  <AttributeRow :type="element.sbmlType" field="timeConversionFactor">
     <ElementLink
       :pk="index?.resolve(element.pk, 'timeConversionFactor', element.timeConversionFactor)"
       :label="element.timeConversionFactor"
     />
   </AttributeRow>
-  <AttributeRow
-    label="extent conversion factor"
-    :type="element.sbmlType"
-    field="extentConversionFactor"
-  >
+  <AttributeRow :type="element.sbmlType" field="extentConversionFactor">
     <ElementLink
       :pk="index?.resolve(element.pk, 'extentConversionFactor', element.extentConversionFactor)"
       :label="element.extentConversionFactor"
     />
   </AttributeRow>
   <AttributeRow
-    label="deletions"
     :type="element.sbmlType"
     field="listOfDeletions"
     :wide="!!element.listOfDeletions?.length"

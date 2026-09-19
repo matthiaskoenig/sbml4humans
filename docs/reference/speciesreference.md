@@ -1,4 +1,4 @@
-# Species reference
+# SpeciesReference
 
 The participation of a species in a reaction as a reactant or a product.
 
@@ -57,7 +57,7 @@ The role is shown in the inspector, below the reaction.
 
 - [Reaction](reaction.md): a process which changes the quantities of species
 - [Species](species.md): a pool of a chemical entity in a compartment
-- [Modifier species reference](modifierspeciesreference.md): the participation of a species in a reaction as a modifier
+- [ModifierSpeciesReference](modifierspeciesreference.md): the participation of a species in a reaction as a modifier
 
 ## Specification
 

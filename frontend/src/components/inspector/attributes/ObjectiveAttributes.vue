@@ -10,20 +10,19 @@ defineProps<{ element: Objective }>();
 const index = useReportIndex();
 
 const COLUMNS = [
-  { key: "id", header: "id" },
-  { key: "reaction", header: "reaction" },
-  { key: "reaction2", header: "second reaction" },
-  { key: "coefficient", header: "coefficient", double: true },
-  { key: "variableType", header: "variable type" },
+  { key: "id" },
+  { key: "reaction" },
+  { key: "reaction2" },
+  { key: "coefficient", double: true },
+  { key: "variableType" },
 ];
 </script>
 
 <template>
-  <AttributeRow label="type" :type="element.sbmlType" field="type"
+  <AttributeRow :type="element.sbmlType" field="type"
     ><ValueText :value="element.type"
   /></AttributeRow>
   <AttributeRow
-    label="flux objectives"
     :type="element.sbmlType"
     field="listOfFluxObjectives"
     :wide="!!element.listOfFluxObjectives?.length"

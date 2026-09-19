@@ -14,30 +14,29 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="type" :type="element.sbmlType" field="type"
+  <AttributeRow :type="element.sbmlType" field="type"
     ><ValueText :value="element.type"
   /></AttributeRow>
-  <AttributeRow label="value" :type="element.sbmlType" field="value"
+  <AttributeRow :type="element.sbmlType" field="value"
     ><ValueText :value="element.value" double
   /></AttributeRow>
-  <AttributeRow label="var" :type="element.sbmlType" field="var">
+  <AttributeRow :type="element.sbmlType" field="var">
     <ElementLink :pk="index?.resolve(element.pk, 'var', element.var)" :label="element.var" />
   </AttributeRow>
-  <AttributeRow label="units" :type="element.sbmlType" field="units">
+  <AttributeRow :type="element.sbmlType" field="units">
     <UnitsLink
       :pk="index?.resolve(element.pk, 'units', element.units)"
       :label="element.units"
       :latex="null"
     />
   </AttributeRow>
-  <AttributeRow label="definition" :type="element.sbmlType" field="definitionUrl"
+  <AttributeRow :type="element.sbmlType" field="definitionUrl"
     ><DefinitionLink :url="element.definitionUrl"
   /></AttributeRow>
-  <AttributeRow label="math" :type="element.sbmlType" field="math"
+  <AttributeRow :type="element.sbmlType" field="math"
     ><MathView :math="element.math"
   /></AttributeRow>
   <AttributeRow
-    label="uncert parameters"
     :type="element.sbmlType"
     field="uncertParameters"
     :wide="!!element.uncertParameters?.length"

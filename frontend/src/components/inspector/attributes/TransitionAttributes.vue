@@ -9,6 +9,7 @@ import MathView from "@/components/misc/MathView.vue";
 import QualSignMark from "@/components/misc/QualSignMark.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { useReportIndex } from "@/report/context";
+import { attributeLabel } from "@/report/glossary";
 import { elementLabel } from "@/report/label";
 import { columnChars } from "@/report/text";
 
@@ -16,24 +17,24 @@ const props = defineProps<{ element: Transition }>();
 const index = useReportIndex();
 
 const INPUT_COLUMNS = [
-  { key: "id", header: "id" },
-  { key: "qualitativeSpecies", header: "species" },
-  { key: "sign", header: "sign" },
-  { key: "thresholdLevel", header: "threshold" },
-  { key: "transitionEffect", header: "effect" },
+  { key: "id" },
+  { key: "qualitativeSpecies" },
+  { key: "sign" },
+  { key: "thresholdLevel" },
+  { key: "transitionEffect" },
 ];
 
 const OUTPUT_COLUMNS = [
-  { key: "id", header: "id" },
-  { key: "qualitativeSpecies", header: "species" },
-  { key: "outputLevel", header: "output level" },
-  { key: "transitionEffect", header: "effect" },
+  { key: "id" },
+  { key: "qualitativeSpecies" },
+  { key: "outputLevel" },
+  { key: "transitionEffect" },
 ];
 
 const TERM_COLUMNS = [
   { key: "term", header: "term", field: "id" },
-  { key: "condition", header: "condition", field: "math" },
-  { key: "resultLevel", header: "result level" },
+  { key: "condition", field: "math" },
+  { key: "resultLevel" },
 ];
 
 /** The widths of the two columns the inputs and the outputs share, from the rows of both, so
@@ -49,11 +50,11 @@ const widths = computed(() => {
       influences.map((influence) => elementLabel(index.value, influence.pk)),
     ),
     qualitativeSpecies: columnChars(
-      "species",
+      attributeLabel("Input", "qualitativeSpecies"),
       influences.map((influence) => influence.qualitativeSpecies),
     ),
     transitionEffect: columnChars(
-      "effect",
+      attributeLabel("Input", "transitionEffect"),
       influences.map((influence) => influence.transitionEffect),
     ),
   };
@@ -61,8 +62,8 @@ const widths = computed(() => {
 /** The inputs have the sign and the threshold where the outputs have their level, so the effect,
  * which both have, lines up where the output level is as wide as the two of them with the
  * padding of the second cell, 0.75rem of text of 0.75rem whose characters are 0.61 of it wide. */
-const SIGN = columnChars("sign", []);
-const THRESHOLD = columnChars("threshold", []);
+const SIGN = columnChars(attributeLabel("Input", "sign"), []);
+const THRESHOLD = columnChars(attributeLabel("Input", "thresholdLevel"), []);
 const inputWidths = computed(() => ({ ...widths.value, sign: SIGN, thresholdLevel: THRESHOLD }));
 const outputWidths = computed(() => ({
   ...widths.value,
@@ -102,7 +103,6 @@ const terms = computed<TermRow[]>(() => {
 
 <template>
   <AttributeRow
-    label="inputs"
     :type="element.sbmlType"
     field="listOfInputs"
     :wide="!!element.listOfInputs?.length"
@@ -125,7 +125,6 @@ const terms = computed<TermRow[]>(() => {
     </NestedTable>
   </AttributeRow>
   <AttributeRow
-    label="outputs"
     :type="element.sbmlType"
     field="listOfOutputs"
     :wide="!!element.listOfOutputs?.length"
@@ -146,12 +145,7 @@ const terms = computed<TermRow[]>(() => {
       <template #cell-outputLevel="{ row }"><ValueText :value="row.outputLevel" /></template>
     </NestedTable>
   </AttributeRow>
-  <AttributeRow
-    label="function terms"
-    :type="element.sbmlType"
-    field="listOfFunctionTerms"
-    :wide="!!terms.length"
-  >
+  <AttributeRow :type="element.sbmlType" field="listOfFunctionTerms" :wide="!!terms.length">
     <NestedTable :rows="terms" :columns="TERM_COLUMNS" type="FunctionTerm">
       <template #cell-term="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-condition="{ row }">

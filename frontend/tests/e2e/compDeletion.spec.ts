@@ -31,7 +31,7 @@ test.describe("comp_deletion", () => {
     await row(page, "Submodel:cell1").click();
     const inspector = page.getByTestId("inspector");
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Submodel");
-    const deletions = attribute(page, "deletions").getByTestId("nested-table");
+    const deletions = attribute(page, "listOfDeletions").getByTestId("nested-table");
     await expect(deletions.locator("thead th")).toHaveText(["deletion", "element"]);
     await expect(deletions.locator("tbody tr").first().locator("td")).toHaveText(["del_k", "k"]);
 
@@ -39,7 +39,7 @@ test.describe("comp_deletion", () => {
     await deletions.getByTestId("element-link").first().click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Deletion");
     await expect(inspector.getByTestId("inspector-id")).toHaveText("del_k");
-    await expect(attribute(page, "id ref")).toContainText("k");
+    await expect(attribute(page, "idRef")).toContainText("k");
     await expect(inspector.getByTestId("notes")).toContainText("rate constant of the medium");
     // it links the parameter of the submodel which the composed model does not contain
     await inspector
@@ -53,7 +53,7 @@ test.describe("comp_deletion", () => {
   test("walks from a species over its replacement to the species it replaces", async ({ page }) => {
     await row(page, "Species:glc").click();
     const inspector = page.getByTestId("inspector");
-    const replaced = attribute(page, "replaced elements").getByTestId("nested-table");
+    const replaced = attribute(page, "comp:listOfReplacedElements").getByTestId("nested-table");
     await expect(replaced.locator("tbody tr").first().locator("td")).toHaveText(["cell1", "glc"]);
 
     await inspector
@@ -62,10 +62,10 @@ test.describe("comp_deletion", () => {
       .getByTestId("element-link")
       .first()
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Replaced element");
-    await expect(attribute(page, "submodel")).toContainText("cell1");
-    await expect(attribute(page, "port ref")).toContainText("glc_port");
-    await expect(attribute(page, "conversion factor")).toContainText("f_amount");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("ReplacedElement");
+    await expect(attribute(page, "submodelRef")).toContainText("cell1");
+    await expect(attribute(page, "portRef")).toContainText("glc_port");
+    await expect(attribute(page, "conversionFactor")).toContainText("f_amount");
 
     // the replacement names the submodel and the species inside it which it replaces
     await inspector
@@ -87,9 +87,9 @@ test.describe("comp_deletion", () => {
       .getByTestId("element-link")
       .nth(2)
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Replaced element");
-    await expect(attribute(page, "id ref")).toContainText("cell_in_tissue");
-    await expect(attribute(page, "nested reference")).toContainText("cell_port");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("ReplacedElement");
+    await expect(attribute(page, "idRef")).toContainText("cell_in_tissue");
+    await expect(attribute(page, "sBaseRef")).toContainText("cell_port");
     // the chain ends at the compartment of the cell inside the tissue
     await inspector
       .getByTestId("links-references")
@@ -103,7 +103,7 @@ test.describe("comp_deletion", () => {
   test("follows a deletion into the document of an external model definition", async ({ page }) => {
     await row(page, "Submodel:unit_library").click();
     const inspector = page.getByTestId("inspector");
-    const deletions = attribute(page, "deletions").getByTestId("nested-table");
+    const deletions = attribute(page, "listOfDeletions").getByTestId("nested-table");
     const cells = deletions.locator("tbody tr").first().locator("td");
     // the example is read from its directory, where the document of the external model
     // definition lies next to it: the unit definition it removes is a link into that document
@@ -119,7 +119,7 @@ test.describe("comp_deletion", () => {
       .getByTestId("links-modelRef")
       .getByTestId("element-link")
       .click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("External model definition");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("ExternalModelDefinition");
     await expect(attribute(page, "md5")).toContainText("bde1522151d26d8fbca09893ce85ac52");
     await expect(inspector.getByTestId("resolution-status")).toHaveText("resolved");
     await expect(inspector.getByTestId("resolution-md5")).toHaveText("matches the document");

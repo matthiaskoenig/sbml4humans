@@ -116,7 +116,7 @@ A species is a pool of entities which the model treats as indistinguishable, for
 related = ["Compartment"]
 
 [types.Species.attributes.initialAmount]
-label = "initial amount"
+label = "initialAmount"
 type = "double"
 spec = { doc = "l3v2", section = "4.6.4" }
 summary = "the amount of the species when the simulation starts"

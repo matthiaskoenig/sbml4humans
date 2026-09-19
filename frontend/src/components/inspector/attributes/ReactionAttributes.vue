@@ -18,10 +18,10 @@ const props = defineProps<{ element: Reaction }>();
 const index = useReportIndex();
 
 const PARTICIPANT_COLUMNS = [
-  { key: "id", header: "id" },
-  { key: "species", header: "species" },
-  { key: "stoichiometry", header: "stoichiometry", double: true },
-  { key: "constant", header: "constant" },
+  { key: "id" },
+  { key: "species" },
+  { key: "stoichiometry", double: true },
+  { key: "constant" },
 ];
 const MODIFIER_COLUMNS = PARTICIPANT_COLUMNS.slice(0, 2);
 
@@ -61,23 +61,22 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
 </script>
 
 <template>
-  <AttributeRow label="reversible" :type="element.sbmlType" field="reversible"
+  <AttributeRow :type="element.sbmlType" field="reversible"
     ><BooleanMark :value="element.reversible"
   /></AttributeRow>
-  <AttributeRow label="fast" :type="element.sbmlType" field="fast"
+  <AttributeRow :type="element.sbmlType" field="fast"
     ><BooleanMark :value="element.fast"
   /></AttributeRow>
-  <AttributeRow label="compartment" :type="element.sbmlType" field="compartment">
+  <AttributeRow :type="element.sbmlType" field="compartment">
     <ElementLink
       :pk="index?.resolve(element.pk, 'compartment', element.compartment)"
       :label="element.compartment"
     />
   </AttributeRow>
-  <AttributeRow label="equation" :type="element.sbmlType" field="equation"
+  <AttributeRow :type="element.sbmlType" field="equation"
     ><span class="font-mono">{{ element.equation }}</span></AttributeRow
   >
   <AttributeRow
-    label="reactants"
     :type="element.sbmlType"
     field="listOfReactants"
     :wide="!!element.listOfReactants?.length"
@@ -96,7 +95,6 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     </NestedTable>
   </AttributeRow>
   <AttributeRow
-    label="products"
     :type="element.sbmlType"
     field="listOfProducts"
     :wide="!!element.listOfProducts?.length"
@@ -115,7 +113,6 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     </NestedTable>
   </AttributeRow>
   <AttributeRow
-    label="modifiers"
     :type="element.sbmlType"
     field="listOfModifiers"
     :wide="!!element.listOfModifiers?.length"
@@ -132,7 +129,7 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
       /></template>
     </NestedTable>
   </AttributeRow>
-  <AttributeRow label="kinetic law" :type="element.sbmlType" field="kineticLaw">
+  <AttributeRow :type="element.sbmlType" field="kineticLaw">
     <template v-if="element.kineticLaw">
       <ElementLink :pk="element.kineticLaw.pk" />
       <MathView :math="element.kineticLaw.math" display />
@@ -141,23 +138,19 @@ const species = (referencePk: string, kind: EdgeKind, id: string) =>
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>
   <template v-if="element.fbc">
-    <AttributeRow label="lower flux bound" :type="element.sbmlType" field="fbc.lowerFluxBound">
+    <AttributeRow :type="element.sbmlType" field="fbc.lowerFluxBound">
       <ElementLink
         :pk="index?.resolve(element.pk, 'lowerFluxBound', element.fbc.lowerFluxBound)"
         :label="element.fbc.lowerFluxBound"
       />
     </AttributeRow>
-    <AttributeRow label="upper flux bound" :type="element.sbmlType" field="fbc.upperFluxBound">
+    <AttributeRow :type="element.sbmlType" field="fbc.upperFluxBound">
       <ElementLink
         :pk="index?.resolve(element.pk, 'upperFluxBound', element.fbc.upperFluxBound)"
         :label="element.fbc.upperFluxBound"
       />
     </AttributeRow>
-    <AttributeRow
-      label="gene product association"
-      :type="element.sbmlType"
-      field="fbc.geneProductAssociation"
-    >
+    <AttributeRow :type="element.sbmlType" field="fbc.geneProductAssociation">
       <template v-if="element.fbc.geneProductAssociation">
         <!-- the association is named on a line of its own and its expression below it, the
         way the kinetic law is named above its formula -->

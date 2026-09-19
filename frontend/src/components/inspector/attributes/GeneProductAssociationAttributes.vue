@@ -7,7 +7,7 @@ defineProps<{ element: GeneProductAssociation }>();
 </script>
 
 <template>
-  <AttributeRow label="association" :type="element.sbmlType" field="association">
+  <AttributeRow :type="element.sbmlType" field="association">
     <GeneAssociationView v-if="element.association" :node="element.association" />
     <span v-else class="text-gray-400">-</span>
   </AttributeRow>

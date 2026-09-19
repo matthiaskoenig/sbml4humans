@@ -28,19 +28,19 @@ test.describe("qual", () => {
       "id",
       "name",
       "compartment",
-      "initial level",
-      "max level",
+      "initialLevel",
+      "maxLevel",
       "constant",
     ]);
 
     await row(page, "QualitativeSpecies:P").click();
     const inspector = page.getByTestId("inspector");
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Qualitative species");
-    await expect(attribute(page, "initial level")).toContainText("1");
-    await expect(attribute(page, "max level")).toContainText("2");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("QualitativeSpecies");
+    await expect(attribute(page, "initialLevel")).toContainText("1");
+    await expect(attribute(page, "maxLevel")).toContainText("2");
     // the input of the system carries no initial level at all
     await row(page, "QualitativeSpecies:S").click();
-    await expect(attribute(page, "initial level")).toContainText("-");
+    await expect(attribute(page, "initialLevel")).toContainText("-");
     await expect(attribute(page, "constant")).toBeVisible();
   });
 
@@ -58,21 +58,21 @@ test.describe("qual", () => {
     await row(page, "Transition:tr_G").click();
     const inspector = page.getByTestId("inspector");
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Transition");
-    const inputs = attribute(page, "inputs").getByTestId("nested-table");
+    const inputs = attribute(page, "listOfInputs").getByTestId("nested-table");
     await expect(inputs.locator("thead th:not([aria-hidden])")).toHaveText([
       "id",
-      "species",
+      "qualitativeSpecies",
       "sign",
-      "threshold",
-      "effect",
+      "thresholdLevel",
+      "transitionEffect",
     ]);
     await expect(inputs.locator("tbody tr").nth(1).locator("td").nth(3)).toHaveText("2");
 
     // an input is an element of its own and names the species it reads
     await inputs.getByTestId("element-link").first().click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Input");
-    await expect(attribute(page, "transition effect")).toContainText("none");
-    await attribute(page, "qualitative species").getByTestId("element-link").click();
+    await expect(attribute(page, "transitionEffect")).toContainText("none");
+    await attribute(page, "qualitativeSpecies").getByTestId("element-link").click();
     await expect(page).toHaveURL(/pk=qual_example\/QualitativeSpecies:S$/);
     // the species says which transitions read it, which is the influence graph backwards
     await expect(
@@ -84,8 +84,8 @@ test.describe("qual", () => {
     await openExample(page, QUAL);
     await row(page, "Transition:tr_P").click();
     const inspector = page.getByTestId("inspector");
-    const terms = attribute(page, "function terms").getByTestId("nested-table");
-    await expect(terms.locator("thead th")).toHaveText(["term", "condition", "result level"]);
+    const terms = attribute(page, "listOfFunctionTerms").getByTestId("nested-table");
+    await expect(terms.locator("thead th")).toHaveText(["term", "math", "resultLevel"]);
     const rows = terms.locator("tbody tr");
     await expect(rows).toHaveCount(3);
     await expect(rows.nth(0).locator("td").nth(2)).toHaveText("2");
@@ -94,11 +94,11 @@ test.describe("qual", () => {
     await expect(rows.nth(2).locator("td").nth(2)).toHaveText("0");
 
     // the output of a Petri net transition produces a level per result level
-    const outputs = attribute(page, "outputs").getByTestId("nested-table");
+    const outputs = attribute(page, "listOfOutputs").getByTestId("nested-table");
     await expect(outputs.locator("tbody tr").first().locator("td").nth(3)).toHaveText("production");
     await outputs.getByTestId("element-link").first().click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Output");
-    await expect(attribute(page, "output level")).toContainText("1");
+    await expect(attribute(page, "outputLevel")).toContainText("1");
   });
 
   test("walks the math of a function term to the species and the input it names", async ({
@@ -107,10 +107,10 @@ test.describe("qual", () => {
     await openExample(page, QUAL);
     await row(page, "Transition:tr_G").click();
     const inspector = page.getByTestId("inspector");
-    const terms = attribute(page, "function terms").getByTestId("nested-table");
+    const terms = attribute(page, "listOfFunctionTerms").getByTestId("nested-table");
     await terms.getByTestId("element-link").first().click();
-    await expect(inspector.getByTestId("inspector-type")).toHaveText("Function term");
-    await expect(attribute(page, "result level")).toContainText("1");
+    await expect(inspector.getByTestId("inspector-type")).toHaveText("FunctionTerm");
+    await expect(attribute(page, "resultLevel")).toContainText("1");
 
     // the symbols of the condition are the species whose level and the input whose threshold
     // it compares, each a link of its own: the text `theta_G_S` contains the `S` of the species

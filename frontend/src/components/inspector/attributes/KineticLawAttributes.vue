@@ -9,22 +9,21 @@ import UnitsView from "@/components/misc/UnitsView.vue";
 defineProps<{ element: KineticLaw }>();
 
 const COLUMNS = [
-  { key: "id", header: "id" },
-  { key: "value", header: "value", double: true },
-  { key: "unitsLatex", header: "units" },
-  { key: "derivedUnits", header: "derived units" },
+  { key: "id" },
+  { key: "value", double: true },
+  { key: "unitsLatex", field: "units" },
+  { key: "derivedUnits" },
 ];
 </script>
 
 <template>
-  <AttributeRow label="math" :type="element.sbmlType" field="math"
+  <AttributeRow :type="element.sbmlType" field="math"
     ><MathView :math="element.math" display
   /></AttributeRow>
-  <AttributeRow label="derived units" :type="element.sbmlType" field="derivedUnits"
+  <AttributeRow :type="element.sbmlType" field="derivedUnits"
     ><UnitsView :latex="element.derivedUnits"
   /></AttributeRow>
   <AttributeRow
-    label="local parameters"
     :type="element.sbmlType"
     field="listOfLocalParameters"
     :wide="!!element.listOfLocalParameters?.length"

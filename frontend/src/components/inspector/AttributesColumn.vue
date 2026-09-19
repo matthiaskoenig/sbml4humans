@@ -76,10 +76,10 @@ const replacedElements = computed(() =>
 
 <template>
   <dl data-testid="attributes-column">
-    <AttributeRow label="metaId" :type="element.sbmlType" field="metaId"
+    <AttributeRow :type="element.sbmlType" field="metaId"
       ><ValueText :value="element.metaId" mono
     /></AttributeRow>
-    <AttributeRow label="sbo" :type="element.sbmlType" field="sbo">
+    <AttributeRow :type="element.sbmlType" field="sbo">
       <a
         v-if="sboUrl"
         :href="sboUrl"
@@ -91,12 +91,7 @@ const replacedElements = computed(() =>
       <span v-else class="text-gray-400">-</span>
     </AttributeRow>
     <template v-if="element.comp">
-      <AttributeRow
-        v-if="replacedBy"
-        label="replaced by"
-        :type="element.sbmlType"
-        field="comp.replacedBy"
-      >
+      <AttributeRow v-if="replacedBy" :type="element.sbmlType" field="comp.replacedBy">
         <ElementLink :pk="replacedBy.submodel" :label="replacedBy.submodelRef" />
         <span class="mx-1 text-gray-400">/</span>
         <ElementLink
@@ -107,7 +102,6 @@ const replacedElements = computed(() =>
       </AttributeRow>
       <AttributeRow
         v-if="replacedElements.length"
-        label="replaced elements"
         :type="element.sbmlType"
         field="comp.replacedElements"
         wide
@@ -115,10 +109,7 @@ const replacedElements = computed(() =>
         <NestedTable
           :rows="replacedElements"
           type="ReplacedElement"
-          :columns="[
-            { key: 'submodelRef', header: 'submodel' },
-            { key: 'name', header: 'element' },
-          ]"
+          :columns="[{ key: 'submodelRef' }, { key: 'name', header: 'element' }]"
         >
           <template #cell-submodelRef="{ row }"
             ><ElementLink :pk="row.submodel" :label="row.submodelRef"
@@ -132,7 +123,6 @@ const replacedElements = computed(() =>
     <component :is="component" v-if="component" :element="element" />
     <AttributeRow
       v-if="element.keyValuePairs?.length"
-      label="key value pairs"
       :type="element.sbmlType"
       field="keyValuePairs"
       wide
@@ -156,7 +146,6 @@ const replacedElements = computed(() =>
     shows -->
     <AttributeRow
       v-if="element.uncertainties?.length"
-      label="uncertainties"
       :type="element.sbmlType"
       field="uncertainties"
       wide

@@ -34,7 +34,7 @@ The link is two links of one kind: from the [reaction](reaction.md) to every [mo
 
 It is shown under "References" of the reaction and under "Referenced by" of the species. A species which is a modifier of a reaction usually also appears in the math of its kinetic law, which is a link of the kind "math".
 
-## kinetic law
+## kineticLaw
 
 The formula which gives the speed of a reaction.
 
@@ -42,7 +42,7 @@ A [reaction](reaction.md) holds the formula of its speed in a [kinetic law](kine
 
 It is shown under "References" of the reaction and under "Referenced by" of the kinetic law. A reaction has one kinetic law at most, and its formula is the speed of the reaction, so the other links look across it: the reaction lists what its formula reads under "math", and a species or a parameter the formula reads lists the reaction there, not the kinetic law. The kinetic law keeps its own links.
 
-## local parameter
+## localParameter
 
 A parameter which only the formula of one kinetic law can read.
 
@@ -74,7 +74,7 @@ An [event](event.md) may hold a [delay](delay.md) of its own, and the link runs 
 
 It is shown under "References" of the event and under "Referenced by" of the delay.
 
-## event assignment
+## eventAssignment
 
 A new value an event gives to an element of the model.
 
@@ -86,15 +86,15 @@ It is shown under "References" of the event and under "Referenced by" of the ass
 
 The element a rule, an event assignment or a constraint component is about.
 
-An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference. A [component](userdefinedconstraintcomponent.md) of a user defined constraint of fbc names the reaction or the parameter it weighs with the same attribute, which it does not set but reads; the second factor of a quadratic component is a link of its own, [second variable](links.md#second-variable).
+An [assignment rule](assignmentrule.md), a [rate rule](raterule.md) and an [event assignment](eventassignment.md) name the element they set in their variable: a compartment, a species, a parameter or the stoichiometry of a species reference. A [component](userdefinedconstraintcomponent.md) of a user defined constraint of fbc names the reaction or the parameter it weighs with the same attribute, which it does not set but reads; the second factor of a quadratic component is a link of its own, [second variable](links.md#variable2).
 
 The link is shown under "References" of the rule or of the assignment, and under "Referenced by" of the element, where it shows what determines its value.
 
-## second variable
+## variable2
 
 The second factor of a quadratic term of a user defined constraint.
 
-A quadratic [component](userdefinedconstraintcomponent.md) of a user defined constraint weighs the product of two variables, the reaction or the parameter of its [variable](links.md#variable) and the one of its [second variable](userdefinedconstraintcomponent.md#second-variable). The second one has a link of its own, so that the element it names says that it is the second factor of a product and not a term of its own.
+A quadratic [component](userdefinedconstraintcomponent.md) of a user defined constraint weighs the product of two variables, the reaction or the parameter of its [variable](links.md#variable) and the one of its [second variable](userdefinedconstraintcomponent.md#variable2). The second one has a link of its own, so that the element it names says that it is the second factor of a product and not a term of its own.
 
 It is shown under "References" of the component and under "Referenced by" of the reaction or the parameter.
 
@@ -116,55 +116,55 @@ Two more references carry the same relation. A number in a formula of Level 3 ma
 
 The link is shown under "References" of the element and under "Referenced by" of the unit definition, where it shows which elements are measured in it.
 
-## conversion factor
+## conversionFactor
 
 The parameter which converts the values of an element.
 
-A [model](model.md) and a [species](species.md) name a conversion factor parameter for the amounts of species, and a [replaced element](replacedelement.md) names one for the element it replaces. In every case the link goes to a constant [parameter](parameter.md) of the model. The two conversion factors of a [submodel](submodel.md) are links of their own, [time conversion factor](links.md#time-conversion-factor) and [extent conversion factor](links.md#extent-conversion-factor).
+A [model](model.md) and a [species](species.md) name a conversion factor parameter for the amounts of species, and a [replaced element](replacedelement.md) names one for the element it replaces. In every case the link goes to a constant [parameter](parameter.md) of the model. The two conversion factors of a [submodel](submodel.md) are links of their own, [time conversion factor](links.md#timeconversionfactor) and [extent conversion factor](links.md#extentconversionfactor).
 
 It is shown under "References" of the element and under "Referenced by" of the parameter.
 
-## time conversion factor
+## timeConversionFactor
 
 The parameter which converts the time of a submodel.
 
-A [submodel](submodel.md) names the [parameter](parameter.md) which converts the units of time of the model it instantiates into the units of time of the model which contains it, in its [time conversion factor](submodel.md#time-conversion-factor).
+A [submodel](submodel.md) names the [parameter](parameter.md) which converts the units of time of the model it instantiates into the units of time of the model which contains it, in its [time conversion factor](submodel.md#timeconversionfactor).
 
 It is shown under "References" of the submodel and under "Referenced by" of the parameter.
 
-## extent conversion factor
+## extentConversionFactor
 
 The parameter which converts the reaction extent of a submodel.
 
-A [submodel](submodel.md) names the [parameter](parameter.md) which converts the units of reaction extent of the model it instantiates into those of the model which contains it, in its [extent conversion factor](submodel.md#extent-conversion-factor).
+A [submodel](submodel.md) names the [parameter](parameter.md) which converts the units of reaction extent of the model it instantiates into those of the model which contains it, in its [extent conversion factor](submodel.md#extentconversionfactor).
 
 It is shown under "References" of the submodel and under "Referenced by" of the parameter.
 
-## flux bound
+## fluxBound
 
 The reaction a flux bound of fbc Version 1 constrains.
 
-In a document of fbc Version 1 a [flux bound](fluxbound.md) is an object of its own, which names the [reaction](reaction.md) whose flux it constrains together with an operation and a value. From Version 2 on the bounds are attributes of the reaction, which names their parameters with a [lower flux bound](links.md#lower-flux-bound) and an [upper flux bound](links.md#upper-flux-bound) link.
+In a document of fbc Version 1 a [flux bound](fluxbound.md) is an object of its own, which names the [reaction](reaction.md) whose flux it constrains together with an operation and a value. From Version 2 on the bounds are attributes of the reaction, which names their parameters with a [lower flux bound](links.md#lowerfluxbound) and an [upper flux bound](links.md#upperfluxbound) link.
 
 The link is shown under "References" of the flux bound and under "Referenced by" of the reaction, where it shows what bounds its flux.
 
-## lower flux bound
+## lowerFluxBound
 
 The parameter which holds the lowest flux of a reaction.
 
-A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its [lower flux bound](reaction.md#lower-flux-bound). A genome scale model gives hundreds of reactions the same parameter, and the link says of every one of them that it is their lower bound.
+A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its [lower flux bound](reaction.md#fbc-lowerfluxbound). A genome scale model gives hundreds of reactions the same parameter, and the link says of every one of them that it is their lower bound.
 
 It is shown under "References" of the reaction and under "Referenced by" of the parameter.
 
-## upper flux bound
+## upperFluxBound
 
 The parameter which holds the highest flux of a reaction.
 
-A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its [upper flux bound](reaction.md#upper-flux-bound). A genome scale model gives hundreds of reactions the same parameter, and the link says of every one of them that it is their upper bound.
+A [reaction](reaction.md) of a model which uses fbc Version 2 or later names the [parameter](parameter.md) of its [upper flux bound](reaction.md#fbc-upperfluxbound). A genome scale model gives hundreds of reactions the same parameter, and the link says of every one of them that it is their upper bound.
 
 It is shown under "References" of the reaction and under "Referenced by" of the parameter.
 
-## gene product
+## geneProduct
 
 A gene product a reaction needs, named by a reference of its association.
 
@@ -172,7 +172,7 @@ The link goes from a [gene product reference](geneproductref.md), the leaf of th
 
 It is shown under "References" of the reference and under "Referenced by" of the gene product. The inspector looks across the tree of the association, which is the question a reader asks: a reaction lists the gene products it needs under this kind, and a gene product lists the reactions which need it, each of them once.
 
-## gene product association
+## geneProductAssociation
 
 A node of the gene association of a reaction, from the reaction down to its genes.
 
@@ -182,7 +182,7 @@ The chain is what makes the structure of the association walkable: it says which
 
 It is shown under "References" of the reaction and of every node, and under "Referenced by" of the node below.
 
-## associated species
+## associatedSpecies
 
 The species a gene product stands for.
 
@@ -190,23 +190,23 @@ A [gene product](geneproduct.md) may name the [species](species.md) which repres
 
 The link is shown under "References" of the gene product and under "Referenced by" of the species.
 
-## flux objective
+## fluxObjective
 
 A term of an objective function and the reaction whose flux it weighs.
 
-An [objective](objective.md) names every [flux objective](fluxobjective.md) it is the sum of, and each of those names the [reaction](reaction.md) whose flux it weighs. Both hops carry this kind, the way a reaction and its species reference both carry the kind of the participation. From Version 3 of fbc on a quadratic term may multiply the flux with the flux of a second reaction, which is a link of its own, [second reaction](links.md#second-reaction).
+An [objective](objective.md) names every [flux objective](fluxobjective.md) it is the sum of, and each of those names the [reaction](reaction.md) whose flux it weighs. Both hops carry this kind, the way a reaction and its species reference both carry the kind of the participation. From Version 3 of fbc on a quadratic term may multiply the flux with the flux of a second reaction, which is a link of its own, [second reaction](links.md#reaction2).
 
 The coefficient is an attribute of the flux objective, not of the link. The chain is shown under "References" of the objective and of the flux objective, and under "Referenced by" of the reaction, where it says that this reaction is what the model optimises.
 
-## second reaction
+## reaction2
 
 The second flux of a quadratic term of an objective.
 
-A quadratic [flux objective](fluxobjective.md) of fbc Version 3 weighs the product of the flux of its reaction and the flux of its [second reaction](fluxobjective.md#second-reaction). The second one has a link of its own, so that the reaction it names says that it is the second factor of a product and not a term of the objective of its own.
+A quadratic [flux objective](fluxobjective.md) of fbc Version 3 weighs the product of the flux of its reaction and the flux of its [second reaction](fluxobjective.md#reaction2). The second one has a link of its own, so that the reaction it names says that it is the second factor of a product and not a term of the objective of its own.
 
 It is shown under "References" of the flux objective and under "Referenced by" of the reaction.
 
-## active objective
+## activeObjective
 
 The objective a model declares as the one which is optimised.
 
@@ -214,23 +214,23 @@ A [model](model.md) which defines several [objectives](objective.md) names the o
 
 It is shown under "References" of the model and under "Referenced by" of the objective, where it says that this objective is the one the model was published with.
 
-## lower bound
+## lowerBound
 
 The parameter which holds the lowest value of a user defined constraint.
 
-A [user defined constraint](userdefinedconstraint.md) keeps the weighted sum of its components between two numbers, and it names the [parameter](parameter.md) of the lower one in its [lower bound](userdefinedconstraint.md#lower-bound). The bound limits the sum and not the flux of one reaction, which is why it is not a flux bound.
+A [user defined constraint](userdefinedconstraint.md) keeps the weighted sum of its components between two numbers, and it names the [parameter](parameter.md) of the lower one in its [lower bound](userdefinedconstraint.md#lowerbound). The bound limits the sum and not the flux of one reaction, which is why it is not a flux bound.
 
 It is shown under "References" of the constraint and under "Referenced by" of the parameter.
 
-## upper bound
+## upperBound
 
 The parameter which holds the highest value of a user defined constraint.
 
-A [user defined constraint](userdefinedconstraint.md) keeps the weighted sum of its components between two numbers, and it names the [parameter](parameter.md) of the upper one in its [upper bound](userdefinedconstraint.md#upper-bound). The bound limits the sum and not the flux of one reaction, which is why it is not a flux bound.
+A [user defined constraint](userdefinedconstraint.md) keeps the weighted sum of its components between two numbers, and it names the [parameter](parameter.md) of the upper one in its [upper bound](userdefinedconstraint.md#upperbound). The bound limits the sum and not the flux of one reaction, which is why it is not a flux bound.
 
 It is shown under "References" of the constraint and under "Referenced by" of the parameter.
 
-## constraint component
+## constraintComponent
 
 A term of a user defined constraint.
 
@@ -262,7 +262,7 @@ A [transition](transition.md) names every [output](output.md) it lists and each 
 
 It is shown under "References" of the transition and of the output and under "Referenced by" of the qualitative species, where it says which transitions decide its level.
 
-## function term
+## functionTerm
 
 A row of the transition table of a transition.
 
@@ -270,7 +270,7 @@ A [transition](transition.md) names every [function term](functionterm.md) of it
 
 It is shown under "References" of the transition and under "Referenced by" of the term. The terms are the rows of the table of their transition, so the other links look across them, the way they look across the kinetic law of a reaction: the transition lists what its conditions read under "math", and a qualitative species a condition reads lists the transition there. A term keeps its own links.
 
-## default term
+## defaultTerm
 
 The term of a transition which holds where no other one does.
 
@@ -282,11 +282,11 @@ It is shown under "References" of the transition and under "Referenced by" of th
 
 A set of measures of how well the value of an element is known.
 
-An element whose value is uncertain names every [uncertainty](uncertainty.md) it carries, and each uncertainty names the [uncert parameters](uncertparameter.md) which are its measures with [uncert parameter](links.md#uncert-parameter) links. An element may carry several uncertainties, one per experiment or publication, so the link is what says which element a set of measures describes.
+An element whose value is uncertain names every [uncertainty](uncertainty.md) it carries, and each uncertainty names the [uncert parameters](uncertparameter.md) which are its measures with [uncert parameter](links.md#uncertparameter) links. An element may carry several uncertainties, one per experiment or publication, so the link is what says which element a set of measures describes.
 
 It is shown under "References" of the element and under "Referenced by" of the uncertainty, which is how a reader gets from an uncertainty back to the value it is about.
 
-## uncert parameter
+## uncertParameter
 
 A measure of an uncertainty.
 
@@ -298,23 +298,23 @@ It is shown under "References" of the uncertainty and of a parameter with parame
 
 The element which holds the number of a measure.
 
-A measure of an [uncertainty](uncertainty.md) which is not a fixed number names the element of the model which holds it in the [var](uncertparameter.md#var) of an [uncert parameter](uncertparameter.md). The two ends of the interval of an [uncert span](uncertspan.md) are links of their own, [var lower](links.md#var-lower) and [var upper](links.md#var-upper).
+A measure of an [uncertainty](uncertainty.md) which is not a fixed number names the element of the model which holds it in the [var](uncertparameter.md#var) of an [uncert parameter](uncertparameter.md). The two ends of the interval of an [uncert span](uncertspan.md) are links of their own, [var lower](links.md#varlower) and [var upper](links.md#varupper).
 
 It is shown under "References" of the measure and under "Referenced by" of the element it names, where it says which measurement that element stands for.
 
-## var lower
+## varLower
 
 The element which holds the lower end of the interval of a measure.
 
-An [uncert span](uncertspan.md) whose lower end is not a fixed number names the element of the model which holds it in its [var lower](uncertspan.md#var-lower). The link says of that element that it is the lower end of the interval, which the element does not say itself.
+An [uncert span](uncertspan.md) whose lower end is not a fixed number names the element of the model which holds it in its [var lower](uncertspan.md#varlower). The link says of that element that it is the lower end of the interval, which the element does not say itself.
 
 It is shown under "References" of the span and under "Referenced by" of the element it names.
 
-## var upper
+## varUpper
 
 The element which holds the upper end of the interval of a measure.
 
-An [uncert span](uncertspan.md) whose upper end is not a fixed number names the element of the model which holds it in its [var upper](uncertspan.md#var-upper). The link says of that element that it is the upper end of the interval, which the element does not say itself.
+An [uncert span](uncertspan.md) whose upper end is not a fixed number names the element of the model which holds it in its [var upper](uncertspan.md#varupper). The link says of that element that it is the upper end of the interval, which the element does not say itself.
 
 It is shown under "References" of the span and under "Referenced by" of the element it names.
 
@@ -326,15 +326,15 @@ The [document](sbmldocument.md) names the [model](model.md) it holds and, in a d
 
 It is shown under "References" of the document and under "Referenced by" of the model.
 
-## external model definition
+## externalModelDefinition
 
 A model of another document which this document refers to.
 
-The [document](sbmldocument.md) names every [external model definition](externalmodeldefinition.md) of its list. The model behind it lives in another file, which the report follows where it has that file, and a [submodel](submodel.md) instantiates it with a [model reference](links.md#model-reference) link.
+The [document](sbmldocument.md) names every [external model definition](externalmodeldefinition.md) of its list. The model behind it lives in another file, which the report follows where it has that file, and a [submodel](submodel.md) instantiates it with a [model reference](links.md#modelref) link.
 
 It is shown under "References" of the document and under "Referenced by" of the external model definition.
 
-## model reference
+## modelRef
 
 The model a submodel instantiates.
 
@@ -360,7 +360,7 @@ Where the model of the submodel is one of another document, the link ends at the
 
 The link is shown under "References" of the submodel and of the deletion, and under "Referenced by" of the element which is removed.
 
-## replaced by
+## replacedBy
 
 The element of a submodel which replaces this one.
 
@@ -370,7 +370,7 @@ Where the model of the submodel is one of another document, the link ends at the
 
 The link is shown under "References" of the replaced element and of the replacement, and under "Referenced by" of the element which replaces it.
 
-## replaced element
+## replacedElement
 
 The element of a submodel which this one replaces.
 
@@ -380,7 +380,7 @@ Where the model of the submodel is one of another document, the link ends at the
 
 The link is shown under "References" of the replacing element and of the replacement, and under "Referenced by" of the element which is replaced.
 
-## reference
+## sBaseRef
 
 The next link of a chain of references into a submodel of a submodel.
 
@@ -394,4 +394,4 @@ An element a formula refers to.
 
 Every formula of a model refers to elements by their identifier: the species and the parameters of a kinetic law, the elements a rule or a trigger reads, the function definition a formula calls. The report collects these symbols of every formula and links each of them to the element it names, resolving the local parameters of a kinetic law before the elements of the model. The arguments of a function definition are local to it and are no references, and a symbol which names nothing, such as the symbol of time, produces no link.
 
-The link is shown under "References" of the element which carries the formula and under "Referenced by" of the element the formula uses, where it answers in which equations a species or a parameter occurs. The formula of a [kinetic law](links.md#kinetic-law) is the speed of its reaction and the condition of a [function term](links.md#function-term) a row of the table of its transition, so their links are shown as those of the reaction and of the transition, and the kinetic law and the term keep their own.
+The link is shown under "References" of the element which carries the formula and under "Referenced by" of the element the formula uses, where it answers in which equations a species or a parameter occurs. The formula of a [kinetic law](links.md#kineticlaw) is the speed of its reaction and the condition of a [function term](links.md#functionterm) a row of the table of its transition, so their links are shown as those of the reaction and of the transition, and the kinetic law and the term keep their own.

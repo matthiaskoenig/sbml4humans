@@ -1,4 +1,5 @@
 import type { EdgeKind } from "@/api/types";
+import { linkEntry } from "@/report/glossary";
 
 /** The fixed order of the link groups in the inspector. */
 export const EDGE_KINDS: readonly EdgeKind[] = [
@@ -52,57 +53,8 @@ export const EDGE_KINDS: readonly EdgeKind[] = [
   "math",
 ];
 
-const LABELS: Readonly<Record<EdgeKind, string>> = {
-  compartment: "compartment",
-  reactant: "reactant",
-  product: "product",
-  modifier: "modifier",
-  kineticLaw: "kinetic law",
-  localParameter: "local parameter",
-  trigger: "trigger",
-  priority: "priority",
-  delay: "delay",
-  eventAssignment: "event assignment",
-  variable: "variable",
-  variable2: "second variable",
-  symbol: "symbol",
-  units: "units",
-  conversionFactor: "conversion factor",
-  timeConversionFactor: "time conversion factor",
-  extentConversionFactor: "extent conversion factor",
-  fluxBound: "flux bound",
-  lowerFluxBound: "lower flux bound",
-  upperFluxBound: "upper flux bound",
-  geneProduct: "gene product",
-  geneProductAssociation: "gene product association",
-  associatedSpecies: "associated species",
-  fluxObjective: "flux objective",
-  reaction2: "second reaction",
-  activeObjective: "active objective",
-  lowerBound: "lower bound",
-  upperBound: "upper bound",
-  constraintComponent: "constraint component",
-  coefficient: "coefficient",
-  input: "input",
-  output: "output",
-  functionTerm: "function term",
-  defaultTerm: "default term",
-  uncertainty: "uncertainty",
-  uncertParameter: "uncert parameter",
-  var: "var",
-  varLower: "var lower",
-  varUpper: "var upper",
-  model: "model",
-  externalModelDefinition: "external model definition",
-  modelRef: "model reference",
-  port: "port",
-  deletion: "deletion",
-  replacedBy: "replaced by",
-  replacedElement: "replaced element",
-  sBaseRef: "reference",
-  math: "math",
-};
-
+/** The name of a link group: the key of the kind, which is the name of the attribute that makes
+ * the reference. The glossary labels every kind that way, and its check enforces it. */
 export function edgeKindLabel(kind: EdgeKind): string {
-  return LABELS[kind];
+  return linkEntry(kind)?.label ?? kind;
 }

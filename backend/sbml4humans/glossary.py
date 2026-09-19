@@ -13,7 +13,8 @@ the glossary or of the report model and commit both outputs.
 `uv run python -m sbml4humans.glossary --check` regenerates into a temporary
 directory and fails when a committed file is stale, when a type or a field of
 the report model has no entry, when a type or an attribute entry of the
-glossary is not a type or a field of the report, when a link of a description
+glossary is not a type or a field of the report, when a type or an attribute
+of a specification is not labelled by its name there, when a link of a description
 does not resolve to a page or to an anchor of one, when a page references a
 missing image or when the navigation of the site does not list a generated page.
 """
@@ -477,6 +478,45 @@ class Glossary:
             raise GlossaryError(
                 "\n".join(["the glossary does not cover the report:", *missing])
             )
+
+    def validate_labels(self) -> None:
+        """Check that what the specification names is labelled by that name.
+
+        A type is labelled by the name of its class, `FunctionDefinition` and not
+        "Function definition", and an attribute which cites a specification by
+        the name it has there, `initialConcentration`, or `fbc:charge` for an
+        attribute a package adds to a type of the core: a name is one word. An
+        attribute the report adds cites no specification and is labelled in plain
+        words, "derived units", so that a reader tells the two apart. A link kind
+        is labelled by its key, which is the name of the attribute that refers.
+
+        Raises:
+            GlossaryError: with every label which is not such a name.
+        """
+        problems: list[str] = []
+        for key, entry in self.types.items():
+            if key not in PACKAGES and entry.label != key:
+                problems.append(
+                    f"{_where(f'types.{key}', self.owners)}: the type is labelled "
+                    f"'{entry.label}', not by its name '{key}'"
+                )
+            problems += [
+                f"{_where(f'types.{key}.attributes.{name}', self.owners)}: the "
+                f"attribute cites a specification and is labelled '{attribute.label}',"
+                f" which is not a name of a specification"
+                for name, attribute in entry.attributes.items()
+                if attribute.spec is not None
+                and not re.fullmatch(r"([a-z]+:)?[A-Za-z][A-Za-z0-9]*", attribute.label)
+            ]
+        # a link kind is the attribute which makes the reference, under the same name
+        problems += [
+            f"{_where(f'links.{key}', self.owners)}: the link kind is labelled "
+            f"'{entry.label}', not by its name '{key}'"
+            for key, entry in self.links.items()
+            if entry.label != key
+        ]
+        if problems:
+            raise GlossaryError("\n".join(["labels:", *problems]))
 
     def _validate_references(self) -> None:
         """Check that every `spec` and every `related` entry exists."""
@@ -1143,6 +1183,7 @@ def main(argv: list[str]) -> int:
         checks: tuple[Callable[[], None], ...] = (
             lambda: check(root, glossary),
             lambda: glossary.validate_coverage(root),
+            lambda: glossary.validate_labels(),
             lambda: glossary.validate_links(root),
             lambda: glossary.validate_navigation(root),
         )

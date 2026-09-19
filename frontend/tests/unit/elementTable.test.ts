@@ -96,9 +96,11 @@ describe("ElementTable", () => {
         provide: { [ReportIndexKey as symbol]: ref(qual) },
       },
     });
-    await header(wrapper, "function terms").get("[data-testid=sort-button]").trigger("mouseenter");
+    await header(wrapper, "listOfFunctionTerms")
+      .get("[data-testid=sort-button]")
+      .trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
-      `the number of the function terms: ${attributeEntry("Transition", "listOfFunctionTerms")!.summary}`,
+      `the number of elements of listOfFunctionTerms: ${attributeEntry("Transition", "listOfFunctionTerms")!.summary}`,
     );
   });
 
@@ -117,9 +119,9 @@ describe("ElementTable", () => {
     expect(ids(table)).toEqual(["Z", "Y", "X", "PZ", "PY", "PX"]);
 
     // another column starts ascending, equal values keep the order of the report
-    await header(table, "initial amount").get("[data-testid=sort-button]").trigger("click");
+    await header(table, "initialAmount").get("[data-testid=sort-button]").trigger("click");
     expect(header(table, "id").attributes("aria-sort")).toBe("none");
-    expect(header(table, "initial amount").attributes("aria-sort")).toBe("ascending");
+    expect(header(table, "initialAmount").attributes("aria-sort")).toBe("ascending");
     expect(ids(table)).toEqual(["PX", "PY", "PZ", "X", "Z", "Y"]);
   });
 
@@ -422,7 +424,7 @@ describe("ElementCell", () => {
     // the column counted the terms, under a header which promises them
     const bounds = new ReportIndex(loadReport("fbc_bounds_v1"));
     const constraints = new ReportIndex(loadReport("fbc_constraints_v3"));
-    const column = columnsOf("Objective").find((c) => c.header === "flux objectives")!;
+    const column = columnsOf("Objective").find((c) => c.header === "listOfFluxObjectives")!;
     const objective = (reportIndex: ReportIndex, id: string) =>
       reportIndex.mainModel!.listOfObjectives!.find((o) => o.id === id)!;
 
@@ -446,7 +448,9 @@ describe("ElementCell", () => {
 
   it("renders the components of a user defined constraint as the sum they weigh", () => {
     const constraints = new ReportIndex(loadReport("fbc_constraints_v3"));
-    const column = columnsOf("UserDefinedConstraint").find((c) => c.header === "components")!;
+    const column = columnsOf("UserDefinedConstraint").find(
+      (c) => c.header === "listOfUserDefinedConstraintComponents",
+    )!;
     const constraint = (id: string) =>
       constraints.mainModel!.listOfUserDefinedConstraints!.find((c) => c.id === id)!;
     const ratio = mountCell(constraint("ratio"), column, constraints);
@@ -466,7 +470,7 @@ describe("ElementCell", () => {
 
   it("links every deletion of a submodel", () => {
     const deletion = new ReportIndex(loadReport("comp_deletion"));
-    const column = columnsOf("Submodel").find((c) => c.header === "deletions")!;
+    const column = columnsOf("Submodel").find((c) => c.header === "listOfDeletions")!;
     const submodel = (id: string) => deletion.mainModel!.listOfSubmodels!.find((s) => s.id === id)!;
     const links = mountCell(submodel("cell1"), column, deletion).findAll(
       "[data-testid=element-link]",
@@ -481,7 +485,7 @@ describe("ElementCell", () => {
     )!;
     const assignments = division.listOfEventAssignments!;
     expect(assignments).toHaveLength(2);
-    const column = columnsOf("Event").find((c) => c.header === "assignments")!;
+    const column = columnsOf("Event").find((c) => c.header === "listOfEventAssignments")!;
     const wrapper = mountCell(division, column, cellCycle);
 
     const links = wrapper.findAll("[data-testid=element-link]");
@@ -505,7 +509,7 @@ describe("ElementCell", () => {
 
   it("shows the placeholder for an event without assignments", () => {
     const start = (cellCycle.byType("BIOMD0000000007").get("Event") as Event[])[0]!;
-    const column = columnsOf("Event").find((c) => c.header === "assignments")!;
+    const column = columnsOf("Event").find((c) => c.header === "listOfEventAssignments")!;
     const wrapper = mountCell({ ...start, listOfEventAssignments: [] }, column, cellCycle);
     expect(wrapper.find("[data-testid=element-link]").exists()).toBe(false);
     expect(wrapper.text()).toBe("-");

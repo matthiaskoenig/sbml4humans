@@ -1,4 +1,4 @@
-# Gene product
+# GeneProduct
 
 A gene or one of its products which the reactions of the model depend on.
 
@@ -13,7 +13,7 @@ The report shows the gene products of a model in a section of their own, with a 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
 | [label](#label) | `string` | the identifier under which the source of the model knows the gene | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [associated species](#associated-species) | `SIdRef` | the species of the model which stands for this gene product | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [associatedSpecies](#associatedspecies) | `SIdRef` | the species of the model which stands for this gene product | [fbc v3 3.5](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -23,7 +23,7 @@ The label carries the gene identifier as it is written in the reconstruction, fo
 
 The report shows the label in the column "label" and in the inspector.
 
-<span id="associated-species"></span>**associated species**
+<span id="associatedspecies"></span>**associatedSpecies**
 
 Some reconstructions model a gene product as a [species](species.md) which participates in reactions. The attribute connects the two, and when it is set it names an existing species of the model.
 

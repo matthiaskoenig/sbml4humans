@@ -1,13 +1,42 @@
 import type { ElementType } from "@/api/types";
 import { CORE_COLUMNS } from "@/report/columns/core";
 import { PACKAGE_COLUMNS } from "@/report/columns/packages";
-import type { ColumnDef } from "@/report/columns/types";
+import type { ColumnDef, ColumnSpec } from "@/report/columns/types";
+import { attributeLabel } from "@/report/glossary";
 
-export type { CellKind, ColumnDef } from "@/report/columns/types";
+export type { CellKind, ColumnDef, ColumnSpec } from "@/report/columns/types";
 
-export const COLUMNS: Readonly<Record<ElementType, readonly ColumnDef[]>> = {
+const SPECS: Readonly<Record<ElementType, readonly ColumnSpec[]>> = {
   ...CORE_COLUMNS,
   ...PACKAGE_COLUMNS,
+};
+
+function headed(type: ElementType): readonly ColumnDef[] {
+  return SPECS[type].map((spec) => ({ ...spec, header: attributeLabel(type, spec.field) }));
+}
+
+/** The columns of every type, each headed by the name the glossary gives its field. */
+export const COLUMNS: Readonly<Record<ElementType, readonly ColumnDef[]>> = {
+  FunctionDefinition: headed("FunctionDefinition"),
+  UnitDefinition: headed("UnitDefinition"),
+  Compartment: headed("Compartment"),
+  Species: headed("Species"),
+  Parameter: headed("Parameter"),
+  InitialAssignment: headed("InitialAssignment"),
+  AssignmentRule: headed("AssignmentRule"),
+  RateRule: headed("RateRule"),
+  AlgebraicRule: headed("AlgebraicRule"),
+  Constraint: headed("Constraint"),
+  Reaction: headed("Reaction"),
+  Event: headed("Event"),
+  Submodel: headed("Submodel"),
+  Port: headed("Port"),
+  GeneProduct: headed("GeneProduct"),
+  Objective: headed("Objective"),
+  FluxBound: headed("FluxBound"),
+  UserDefinedConstraint: headed("UserDefinedConstraint"),
+  QualitativeSpecies: headed("QualitativeSpecies"),
+  Transition: headed("Transition"),
 };
 
 export function columnsOf(type: ElementType): readonly ColumnDef[] {

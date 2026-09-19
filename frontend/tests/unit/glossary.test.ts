@@ -1,5 +1,5 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
@@ -9,7 +9,14 @@ import { ATTRIBUTE_COMPONENTS } from "@/components/inspector/attributes";
 import { COLUMNS } from "@/report/columns";
 import { EDGE_KINDS } from "@/data/edgeKinds";
 import { DOCUMENT_TYPES, ELEMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
-import { DOCS_URL, attributeEntry, linkEntry, referenceUrl, typeEntry } from "@/report/glossary";
+import {
+  DOCS_URL,
+  attributeEntry,
+  attributeLabel,
+  linkEntry,
+  referenceUrl,
+  typeEntry,
+} from "@/report/glossary";
 
 const TYPES = [...DOCUMENT_TYPES, ...ELEMENT_TYPES, ...NESTED_TYPES];
 
@@ -38,6 +45,30 @@ function staticFields(source: string): { field: string; type: SbmlType | null }[
     return field ? [{ field, type: type ?? null }] : [];
   });
 }
+
+/** The rows of a component's source which state both a static `field="..."` and a static
+ * `label="..."`: the glossary names the field of such a row, and the label overrides that name. */
+function labelledFields(source: string): { field: string; label: string }[] {
+  return [...source.matchAll(/<AttributeRow\b[^>]*>/g)].flatMap((tag) => {
+    const field = tag[0].match(/(?<!:)\bfield="([^"]+)"/)?.[1];
+    const label = tag[0].match(/(?<!:)\blabel="([^"]+)"/)?.[1];
+    return field && label ? [{ field, label }] : [];
+  });
+}
+
+/** The name of an attribute as a specification writes it: one word in camel case, behind the
+ * prefix of its package where a package adds the attribute to a core type (`fbc:charge`). The
+ * check of the glossary holds every attribute which cites a specification to the same pattern. */
+const SPECIFICATION_NAME = /^([a-z]+:)?[A-Za-z][A-Za-z0-9]*$/;
+
+/** The columns of a field which the report adds and no specification names, under the plain
+ * words which head them. */
+const REPORT_COLUMNS: Readonly<Record<string, string>> = {
+  derivedUnits: "derived units",
+  "kineticLaw.derivedUnits": "derived units",
+  unitsLatex: "formula",
+  equation: "equation",
+};
 
 /** `ModelAttributes.vue` binds `:field="idKey"` in a `v-for` over its `UNITS` table instead of
  * writing six field props out by hand; this reads the second column of that table ("substance",
@@ -69,12 +100,13 @@ describe("glossary", () => {
 
   it("falls back to the shared attributes and to the first segment of a path", () => {
     // Species has no metaId attribute of its own, so this resolves the SBase entry, whose
-    // label the glossary keeps as "metaId" (the identifier itself, not a description of it).
-    expect(attributeEntry("Species", "metaId")?.label).toBe("metaId");
+    // label is the name of the attribute in the specification, "metaid", and not the name of
+    // the field of the report, "metaId".
+    expect(attributeEntry("Species", "metaId")?.label).toBe("metaid");
     // Submodel has no "listOfDeletions.length" attribute of its own, and the count column
     // does not need one: falling back to the first segment "listOfDeletions" resolves the
     // entry of the list the column counts, which describes the same thing at the list level.
-    expect(attributeEntry("Submodel", "listOfDeletions.length")?.label).toBe("deletions");
+    expect(attributeEntry("Submodel", "listOfDeletions.length")?.label).toBe("listOfDeletions");
   });
 
   it("does not fall back where the fallback would mislead", () => {
@@ -117,6 +149,44 @@ describe("glossary", () => {
         expect(attributeEntry(type, field), `${type}.${field} (AttributesColumn)`).toBeDefined();
       }
     }
+  });
+
+  it("names every row of the inspector by the glossary", () => {
+    // a row with a field takes its name from the glossary, so that the inspector, the tables and
+    // the reference name an attribute alike; a label next to a field would be a second name
+    const inspectorDir = join(ATTRIBUTES_DIR, "..");
+    const components = readdirSync(inspectorDir, { recursive: true, encoding: "utf8" }).filter(
+      (file) => file.endsWith(".vue"),
+    );
+    expect(components.length).toBeGreaterThan(Object.keys(ATTRIBUTE_COMPONENTS).length);
+    const labelled = components.flatMap((file) =>
+      labelledFields(readFileSync(join(inspectorDir, file), "utf8")).map(
+        ({ field, label }) =>
+          `${relative(ATTRIBUTES_DIR, join(inspectorDir, file))}: ${field} as "${label}"`,
+      ),
+    );
+    // the one exception: a submodel shows the model its external model definition resolves to,
+    // a field of another type, under a name which says whose model it is
+    expect(labelled).toEqual(['SubmodelAttributes.vue: resolution.model as "external model"']);
+  });
+
+  it("heads every column of a table by the name the glossary gives its field", () => {
+    for (const [type, columns] of Object.entries(COLUMNS)) {
+      for (const column of columns) {
+        const where = `${type}.${column.field}`;
+        expect(column.header, where).toBe(attributeLabel(type as SbmlType, column.field));
+        const words = REPORT_COLUMNS[column.field];
+        if (words === undefined) {
+          // an attribute of a specification is headed by its name there, never by words
+          expect(column.header, where).toMatch(SPECIFICATION_NAME);
+        } else {
+          expect(column.header, where).toBe(words);
+        }
+      }
+    }
+    expect(COLUMNS.Species.map((column) => column.header)).toEqual(
+      expect.arrayContaining(["initialConcentration", "hasOnlySubstanceUnits", "fbc:charge"]),
+    );
   });
 
   it("builds the url of a reference page", () => {

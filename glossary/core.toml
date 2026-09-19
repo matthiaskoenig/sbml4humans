@@ -4,6 +4,15 @@
 # of the documentation site. Run `uv run python -m sbml4humans.glossary` after a
 # change and commit the generated files.
 #
+# It is also the only place where something is named. The `label` of a type is
+# the name of its class, `FunctionDefinition`, and the `label` of an attribute
+# which cites a `spec` is its name in that specification, `initialConcentration`,
+# with the prefix of the package for an attribute a package adds to a type of
+# the core, `fbc:charge`. An attribute the report adds cites no `spec` and is
+# labelled in plain words, `derived units`. The application heads the columns
+# of its tables and labels the rows of its inspector with these labels, and
+# `--check` refuses a label of the specification which is not such a name.
+#
 # The prose is written from the specification named in the `spec` of the entry,
 # it does not repeat it. `summary` is one sentence without a final period,
 # `description` is markdown without hard line wraps.
@@ -57,7 +66,7 @@ The report shows the name in the second column of every table, next to the id.
 """
 
 [types.SBase.attributes.metaId]
-label = "metaId"
+label = "metaid"
 type = "ID"
 spec = { doc = "l3v2", section = "3.2.3" }
 summary = "the identifier the annotations of the element point at"
@@ -68,7 +77,7 @@ The report shows the meta id in the attributes of the inspector and uses it as a
 """
 
 [types.SBase.attributes.sbo]
-label = "sbo"
+label = "sboTerm"
 type = "SBOTerm"
 spec = { doc = "l3v2", section = "3.2.4" }
 summary = "the term of the Systems Biology Ontology which classifies the element"
@@ -129,7 +138,7 @@ The "XML" button in the header of the inspector puts the XML view in the place o
 # the document and the model
 # ----------------------------------------------------------------------------
 [types.SBMLDocument]
-label = "Document"
+label = "SBMLDocument"
 package = "core"
 spec = { doc = "l3v2", section = "4.1" }
 summary = "the container of an SBML file, with its level, version and packages"
@@ -221,7 +230,7 @@ The "XML" button in the header of the inspector shows it.
 """
 
 [types.Model.attributes.substanceUnits]
-label = "substance units"
+label = "substanceUnits"
 type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.2" }
 summary = "the units of the amounts of the species which do not declare their own"
@@ -243,7 +252,7 @@ It is shown next to the substance units in the attributes of the model.
 """
 
 [types.Model.attributes.timeUnits]
-label = "time units"
+label = "timeUnits"
 type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.3" }
 summary = "the unit in which time is measured in the model"
@@ -265,7 +274,7 @@ It is shown next to the time units in the attributes of the model.
 """
 
 [types.Model.attributes.volumeUnits]
-label = "volume units"
+label = "volumeUnits"
 type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.4" }
 summary = "the units of the size of the compartments with three dimensions"
@@ -287,7 +296,7 @@ It is shown next to the volume units in the attributes of the model.
 """
 
 [types.Model.attributes.areaUnits]
-label = "area units"
+label = "areaUnits"
 type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.4" }
 summary = "the units of the size of the compartments with two dimensions"
@@ -309,7 +318,7 @@ It is shown next to the area units in the attributes of the model.
 """
 
 [types.Model.attributes.lengthUnits]
-label = "length units"
+label = "lengthUnits"
 type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.4" }
 summary = "the units of the size of the compartments with one dimension"
@@ -331,7 +340,7 @@ It is shown next to the length units in the attributes of the model.
 """
 
 [types.Model.attributes.extentUnits]
-label = "extent units"
+label = "extentUnits"
 type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.2.5" }
 summary = "the units in which the extent of a reaction is measured"
@@ -353,7 +362,7 @@ It is shown next to the extent units in the attributes of the model.
 """
 
 [types.Model.attributes.conversionFactor]
-label = "conversion factor"
+label = "conversionFactor"
 type = "SIdRef"
 spec = { doc = "l3v2", section = "4.2.6" }
 summary = "the parameter which converts between the units of a species and the extent of a reaction"
@@ -364,7 +373,7 @@ The report shows the referenced parameter with its value and its units in the at
 """
 
 [types.Model.attributes.listOfFunctionDefinitions]
-label = "function definitions"
+label = "listOfFunctionDefinitions"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the user defined functions of the model"
@@ -375,7 +384,7 @@ The report shows the list as the section "Function definitions" of the report an
 """
 
 [types.Model.attributes.listOfUnitDefinitions]
-label = "unit definitions"
+label = "listOfUnitDefinitions"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the units the model defines"
@@ -386,7 +395,7 @@ The report shows the list as the section "Unit definitions" of the report.
 """
 
 [types.Model.attributes.listOfCompartments]
-label = "compartments"
+label = "listOfCompartments"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the compartments of the model"
@@ -397,7 +406,7 @@ The report shows the list as the section "Compartments" of the report.
 """
 
 [types.Model.attributes.listOfSpecies]
-label = "species"
+label = "listOfSpecies"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the species of the model"
@@ -408,7 +417,7 @@ The report shows the list as the section "Species" of the report.
 """
 
 [types.Model.attributes.listOfParameters]
-label = "parameters"
+label = "listOfParameters"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the global parameters of the model"
@@ -419,7 +428,7 @@ The report shows the list as the section "Parameters" of the report.
 """
 
 [types.Model.attributes.listOfInitialAssignments]
-label = "initial assignments"
+label = "listOfInitialAssignments"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the initial assignments of the model"
@@ -430,7 +439,7 @@ The report shows the list as the section "Initial assignments" of the report.
 """
 
 [types.Model.attributes.listOfRules]
-label = "rules"
+label = "listOfRules"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the assignment, rate and algebraic rules of the model"
@@ -441,7 +450,7 @@ The report separates them into three sections, because the three say very differ
 """
 
 [types.Model.attributes.listOfConstraints]
-label = "constraints"
+label = "listOfConstraints"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the constraints of the model"
@@ -452,7 +461,7 @@ The report shows the list as the section "Constraints" of the report.
 """
 
 [types.Model.attributes.listOfReactions]
-label = "reactions"
+label = "listOfReactions"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the reactions of the model"
@@ -463,7 +472,7 @@ The report shows the list as the section "Reactions" of the report.
 """
 
 [types.Model.attributes.listOfEvents]
-label = "events"
+label = "listOfEvents"
 type = "list"
 spec = { doc = "l3v2", section = "4.2.7" }
 summary = "the events of the model"
@@ -478,7 +487,7 @@ The report shows the list as the section "Events" of the report.
 # functions, units, compartments, species and parameters
 # ----------------------------------------------------------------------------
 [types.FunctionDefinition]
-label = "Function definition"
+label = "FunctionDefinition"
 package = "core"
 spec = { doc = "l3v2", section = "4.3" }
 summary = "a named function which the mathematics of the model can call"
@@ -501,7 +510,7 @@ The report renders the formula and shows it in the column "math" and in the insp
 """
 
 [types.UnitDefinition]
-label = "Unit definition"
+label = "UnitDefinition"
 package = "core"
 spec = { doc = "l3v2", section = "4.4" }
 summary = "a named unit built from the base units of SBML"
@@ -513,7 +522,7 @@ The report renders every unit definition as a formula, in the table and in the i
 related = ["Model", "Compartment", "Species", "Parameter"]
 
 [types.UnitDefinition.attributes.listOfUnits]
-label = "units"
+label = "listOfUnits"
 type = "list"
 spec = { doc = "l3v2", section = "4.4.2" }
 summary = "the units the definition multiplies, each with its exponent, scale and multiplier"
@@ -547,7 +556,7 @@ The report shows the size of a compartment, the units of that size and the units
 related = ["Model", "Species", "UnitDefinition"]
 
 [types.Compartment.attributes.spatialDimensions]
-label = "dimensions"
+label = "spatialDimensions"
 type = "double"
 spec = { doc = "l3v2", section = "4.5.2" }
 summary = "the number of dimensions of the compartment"
@@ -632,7 +641,7 @@ The report links the compartment in the table and in the inspector.
 """
 
 [types.Species.attributes.initialAmount]
-label = "initial amount"
+label = "initialAmount"
 type = "double"
 spec = { doc = "l3v2", section = "4.6.4" }
 summary = "the amount of the species when the simulation starts"
@@ -643,7 +652,7 @@ The report shows the initial amount in the table and in the inspector.
 """
 
 [types.Species.attributes.initialConcentration]
-label = "initial concentration"
+label = "initialConcentration"
 type = "double"
 spec = { doc = "l3v2", section = "4.6.4" }
 summary = "the concentration of the species when the simulation starts"
@@ -654,7 +663,7 @@ The report shows the initial concentration in the table and in the inspector.
 """
 
 [types.Species.attributes.substanceUnits]
-label = "substance units"
+label = "substanceUnits"
 type = "UnitSIdRef"
 spec = { doc = "l3v2", section = "4.6.4" }
 summary = "the units of the amount of the species"
@@ -665,7 +674,7 @@ The report links the referenced unit definition and renders it as a formula.
 """
 
 [types.Species.attributes.hasOnlySubstanceUnits]
-label = "only substance units"
+label = "hasOnlySubstanceUnits"
 type = "boolean"
 spec = { doc = "l3v2", section = "4.6.5" }
 summary = "whether the identifier of the species stands for an amount instead of a concentration"
@@ -676,7 +685,7 @@ The report shows the flag as a mark in the column "only substance units" and use
 """
 
 [types.Species.attributes.boundaryCondition]
-label = "boundary condition"
+label = "boundaryCondition"
 type = "boolean"
 spec = { doc = "l3v2", section = "4.6.6" }
 summary = "whether the quantity of the species is left unchanged by the reactions"
@@ -716,7 +725,7 @@ The report derives the units of a species from its substance units, from the uni
 """
 
 [types.Species.attributes.conversionFactor]
-label = "conversion factor"
+label = "conversionFactor"
 type = "SIdRef"
 spec = { doc = "l3v2", section = "4.6.7" }
 summary = "the parameter which converts the extent of a reaction into the quantity of the species"
@@ -794,7 +803,7 @@ The report resolves the units of the parameter and renders them as a formula. A 
 # initial assignments, rules and constraints
 # ----------------------------------------------------------------------------
 [types.InitialAssignment]
-label = "Initial assignment"
+label = "InitialAssignment"
 package = "core"
 spec = { doc = "l3v2", section = "4.8" }
 summary = "a formula which computes the value of an element at the start of the simulation"
@@ -837,7 +846,7 @@ The report derives the units of the formula from the units of the quantities it 
 """
 
 [types.AssignmentRule]
-label = "Assignment rule"
+label = "AssignmentRule"
 package = "core"
 spec = { doc = "l3v2", section = "4.9.3" }
 summary = "a formula which holds at every moment of the simulation"
@@ -880,7 +889,7 @@ The report derives the units of the formula from the units of the quantities it 
 """
 
 [types.RateRule]
-label = "Rate rule"
+label = "RateRule"
 package = "core"
 spec = { doc = "l3v2", section = "4.9.4" }
 summary = "a formula which gives the rate of change of an element"
@@ -923,7 +932,7 @@ The report derives the units of the formula from the units of the quantities it 
 """
 
 [types.AlgebraicRule]
-label = "Algebraic rule"
+label = "AlgebraicRule"
 package = "core"
 spec = { doc = "l3v2", section = "4.9.2" }
 summary = "an equation which has to hold at every moment of the simulation"
@@ -1038,7 +1047,7 @@ The report links the compartment in the column "compartment" and in the inspecto
 """
 
 [types.Reaction.attributes.listOfReactants]
-label = "reactants"
+label = "listOfReactants"
 type = "list"
 spec = { doc = "l3v2", section = "4.11.1" }
 summary = "the species the reaction consumes, with their stoichiometry"
@@ -1049,7 +1058,7 @@ The report lists the reactants in the inspector of the reaction, with a link to 
 """
 
 [types.Reaction.attributes.listOfProducts]
-label = "products"
+label = "listOfProducts"
 type = "list"
 spec = { doc = "l3v2", section = "4.11.1" }
 summary = "the species the reaction produces, with their stoichiometry"
@@ -1060,7 +1069,7 @@ The report lists the products in the inspector of the reaction and writes them o
 """
 
 [types.Reaction.attributes.listOfModifiers]
-label = "modifiers"
+label = "listOfModifiers"
 type = "list"
 spec = { doc = "l3v2", section = "4.11.1" }
 summary = "the species which influence the reaction without being consumed"
@@ -1071,7 +1080,7 @@ The report lists the modifiers in the inspector of the reaction, with a link to 
 """
 
 [types.Reaction.attributes.kineticLaw]
-label = "kinetic law"
+label = "kineticLaw"
 type = "KineticLaw"
 spec = { doc = "l3v2", section = "4.11.5" }
 summary = "the formula which gives the speed of the reaction"
@@ -1082,7 +1091,7 @@ The report shows the rendered formula in the column "kinetic law" and the whole 
 """
 
 [types.Reaction.attributes."kineticLaw.math"]
-label = "kinetic law"
+label = "kineticLaw"
 package = "report"
 type = "Math"
 summary = "the rate formula of the reaction's kinetic law, rendered"
@@ -1126,7 +1135,7 @@ The report shows the rendered trigger, the priority and the delay of an event, t
 related = ["Trigger", "Priority", "Delay", "EventAssignment"]
 
 [types.Event.attributes.useValuesFromTriggerTime]
-label = "values from trigger time"
+label = "useValuesFromTriggerTime"
 type = "boolean"
 spec = { doc = "l3v2", section = "4.12.1" }
 summary = "whether the assignments use the values of the moment the event was triggered"
@@ -1157,7 +1166,7 @@ The report renders the condition in the column "trigger" and in the inspector.
 """
 
 [types.Event.attributes."trigger.initialValue"]
-label = "initial value"
+label = "initialValue"
 type = "boolean"
 spec = { doc = "l3v2", section = "4.12.2" }
 summary = "whether the condition is taken to be true just before the simulation starts"
@@ -1219,7 +1228,7 @@ The report renders the delay in the column "delay" of the events and in the insp
 """
 
 [types.Event.attributes.listOfEventAssignments]
-label = "assignments"
+label = "listOfEventAssignments"
 type = "list"
 spec = { doc = "l3v2", section = "4.12.5" }
 summary = "the changes the event makes when it is executed"
@@ -1235,7 +1244,7 @@ The report shows the assignments in the column "assignments", every one of them 
 # local parameters and the assignments of an event
 # ----------------------------------------------------------------------------
 [types.SpeciesReference]
-label = "Species reference"
+label = "SpeciesReference"
 package = "core"
 spec = { doc = "l3v2", section = "4.11.3" }
 summary = "the participation of a species in a reaction as a reactant or a product"
@@ -1302,7 +1311,7 @@ The role is shown in the inspector, below the reaction.
 """
 
 [types.ModifierSpeciesReference]
-label = "Modifier species reference"
+label = "ModifierSpeciesReference"
 package = "core"
 spec = { doc = "l3v2", section = "4.11.4" }
 summary = "the participation of a species in a reaction as a modifier"
@@ -1337,7 +1346,7 @@ The reaction is the first row of the inspector of a modifier species reference.
 
 
 [types.KineticLaw]
-label = "Kinetic law"
+label = "KineticLaw"
 package = "core"
 spec = { doc = "l3v2", section = "4.11.5" }
 summary = "the formula which gives the speed of a reaction"
@@ -1369,7 +1378,7 @@ The report derives the units of the formula from the units of the quantities it 
 """
 
 [types.KineticLaw.attributes.listOfLocalParameters]
-label = "local parameters"
+label = "listOfLocalParameters"
 type = "list"
 spec = { doc = "l3v2", section = "4.11.6" }
 summary = "the parameters which only this kinetic law uses"
@@ -1380,7 +1389,7 @@ The report shows the local parameters as a table in the inspector of the kinetic
 """
 
 [types.LocalParameter]
-label = "Local parameter"
+label = "LocalParameter"
 package = "core"
 spec = { doc = "l3v2", section = "4.11.6" }
 summary = "a named value which only one kinetic law uses"
@@ -1456,7 +1465,7 @@ The report renders the condition in the column "trigger" of the events and in th
 """
 
 [types.Trigger.attributes.initialValue]
-label = "initial value"
+label = "initialValue"
 type = "boolean"
 spec = { doc = "l3v2", section = "4.12.2" }
 summary = "whether the condition is taken to be true just before the simulation starts"
@@ -1524,7 +1533,7 @@ The report renders the formula in the column "delay" of the events and in the in
 """
 
 [types.EventAssignment]
-label = "Event assignment"
+label = "EventAssignment"
 package = "core"
 spec = { doc = "l3v2", section = "4.12.5" }
 summary = "the new value an event gives to one element of the model"

@@ -1,4 +1,4 @@
-# Local parameter
+# LocalParameter
 
 A named value which only one kinetic law uses.
 
@@ -44,7 +44,7 @@ The report resolves the units of the local parameter and renders them as a formu
 
 ## Related elements
 
-- [Kinetic law](kineticlaw.md): the formula which gives the speed of a reaction
+- [KineticLaw](kineticlaw.md): the formula which gives the speed of a reaction
 - [Parameter](parameter.md): a named value which the mathematics of the model can use
 - [Reaction](reaction.md): a process which changes the quantities of species
 

@@ -13,14 +13,14 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 | [reversible](#reversible) | `boolean` | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [fast](#fast) | `boolean` | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [compartment](#compartment) | `SIdRef` | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [reactants](#reactants) | `list` | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [products](#products) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [modifiers](#modifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [kinetic law](#kinetic-law) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfReactants](#listofreactants) | `list` | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfProducts](#listofproducts) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfModifiers](#listofmodifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [kineticLaw](#kineticlaw) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [lower flux bound](#lower-flux-bound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [upper flux bound](#upper-flux-bound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [gene product association](#gene-product-association) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:upperFluxBound](#fbc-upperfluxbound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:geneProductAssociation](#fbc-geneproductassociation) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -42,25 +42,25 @@ The compartment is optional and has no effect on the equations of the model; it 
 
 The report links the compartment in the column "compartment" and in the inspector.
 
-<span id="reactants"></span>**reactants**
+<span id="listofreactants"></span>**listOfReactants**
 
 Every reactant is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event consumes. A reaction has at least one reactant or one product.
 
 The report lists the reactants in the inspector of the reaction, with a link to every species, and writes them on the left of the equation.
 
-<span id="products"></span>**products**
+<span id="listofproducts"></span>**listOfProducts**
 
 Every product is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event produces.
 
 The report lists the products in the inspector of the reaction and writes them on the right of the equation.
 
-<span id="modifiers"></span>**modifiers**
+<span id="listofmodifiers"></span>**listOfModifiers**
 
 A modifier is a [modifier species reference](modifierspeciesreference.md): a catalyst, an inhibitor or an activator which appears in the kinetic law but is neither created nor destroyed. Modifiers have no stoichiometry.
 
 The report lists the modifiers in the inspector of the reaction, with a link to every species; they are not part of the equation, which shows what a reaction consumes and produces.
 
-<span id="kinetic-law"></span>**kinetic law**
+<span id="kineticlaw"></span>**kineticLaw**
 
 The [kinetic law](kineticlaw.md) holds the rate formula of the reaction and the local parameters it uses. It is optional, and a reaction without one has no defined speed, which different simulators treat differently.
 
@@ -72,19 +72,19 @@ The fbc package extends a reaction with the two parameters which bound its flux 
 
 The report shows the bounds, the association and the gene products it names in the inspector of a reaction of a model which uses fbc.
 
-<span id="lower-flux-bound"></span>**lower flux bound**
+<span id="fbc-lowerfluxbound"></span>**fbc:lowerFluxBound**
 
 The bound is not a number but the identifier of a [parameter](parameter.md) of the model, so that many reactions can share one bound and a scenario is changed in one place. A model which sets `strict` of the fbc package has to give every reaction both bounds, and every bound has to be a constant parameter with a value which is neither missing nor infinite in the direction which would remove the bound; without `strict` a bound may be computed during a simulation.
 
 The report links the parameter in the inspector of the reaction.
 
-<span id="upper-flux-bound"></span>**upper flux bound**
+<span id="fbc-upperfluxbound"></span>**fbc:upperFluxBound**
 
 Like the lower bound it names a [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
 
 The report links the parameter in the inspector of the reaction.
 
-<span id="gene-product-association"></span>**gene product association**
+<span id="fbc-geneproductassociation"></span>**fbc:geneProductAssociation**
 
 The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
 
@@ -94,11 +94,11 @@ The report shows the tree in the inspector of the reaction, one line per branch,
 
 | field | type | meaning |
 | --- | --- | --- |
-| [kinetic law](#kinetic-law-2) | `Math` | the rate formula of the reaction's kinetic law, rendered |
+| [kineticLaw](#kineticlaw-2) | `Math` | the rate formula of the reaction's kinetic law, rendered |
 | [derived units](#derived-units) | `latex` | the units the report derives for the rate formula of the kinetic law |
 | [equation](#equation) | `string` | the reaction written as a chemical equation |
 
-<span id="kinetic-law-2"></span>**kinetic law**
+<span id="kineticlaw-2"></span>**kineticLaw**
 
 The table of reactions shows the formula of the [kinetic law](kineticlaw.md) directly in its own column "kinetic law", so a reader does not have to open the reaction to see how fast it runs. It is the same formula the inspector renders under "math" of the kinetic law; a reaction without a kinetic law shows a dash.
 
@@ -115,9 +115,9 @@ The equation is a column of the table of reactions and a row of the inspector.
 ## Related elements
 
 - [Species](species.md): a pool of a chemical entity in a compartment
-- [Species reference](speciesreference.md): the participation of a species in a reaction as a reactant or a product
-- [Modifier species reference](modifierspeciesreference.md): the participation of a species in a reaction as a modifier
-- [Kinetic law](kineticlaw.md): the formula which gives the speed of a reaction
+- [SpeciesReference](speciesreference.md): the participation of a species in a reaction as a reactant or a product
+- [ModifierSpeciesReference](modifierspeciesreference.md): the participation of a species in a reaction as a modifier
+- [KineticLaw](kineticlaw.md): the formula which gives the speed of a reaction
 - [Compartment](compartment.md): a bounded space in which species are located
 
 ## Specification

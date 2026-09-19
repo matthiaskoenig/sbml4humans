@@ -12,32 +12,32 @@ The report shows the transitions of a model in a section of their own, with the 
 
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
-| [inputs](#inputs) | `list` | the qualitative species the transition reads | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [outputs](#outputs) | `list` | the qualitative species the transition changes | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [function terms](#function-terms) | `list` | the terms which decide the level, in the order in which they are read | [qual 3.6.3](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
-| [default term](#default-term) | `DefaultTerm` | the term which holds in every state no function term covers | [qual 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [listOfInputs](#listofinputs) | `list` | the qualitative species the transition reads | [qual 3.6.1](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [listOfOutputs](#listofoutputs) | `list` | the qualitative species the transition changes | [qual 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [listOfFunctionTerms](#listoffunctionterms) | `list` | the terms which decide the level, in the order in which they are read | [qual 3.6.3](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
+| [defaultTerm](#defaultterm) | `DefaultTerm` | the term which holds in every state no function term covers | [qual 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/qual/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
-<span id="inputs"></span>**inputs**
+<span id="listofinputs"></span>**listOfInputs**
 
 Every [input](input.md) names one [qualitative species](qualitativespecies.md) whose level the condition of a function term may read, with the threshold at which it matters and the sign of its influence. A transition may list none of them, in which case its terms read no species at all.
 
 The report shows the species of the inputs with their sign in the column "inputs" and the table of the inputs in the inspector.
 
-<span id="outputs"></span>**outputs**
+<span id="listofoutputs"></span>**listOfOutputs**
 
 Every [output](output.md) names one [qualitative species](qualitativespecies.md) whose level the transition sets or increases. A transition without outputs changes nothing, which is why a model which does something has at least one.
 
 The report shows the species of the outputs in the column "outputs" and the table of the outputs in the inspector.
 
-<span id="function-terms"></span>**function terms**
+<span id="listoffunctionterms"></span>**listOfFunctionTerms**
 
 The list is the transition table of the transition. Its [terms](functionterm.md) are read in the order in which the file writes them and the first one whose condition holds decides the result level, so two terms whose conditions overlap are not a contradiction: the earlier one wins.
 
 The report shows the terms as a table of condition and result level in the inspector of the transition, with the default term as its last row.
 
-<span id="default-term"></span>**default term**
+<span id="defaultterm"></span>**defaultTerm**
 
 Every transition has exactly one [default term](defaultterm.md), which makes the transition table total: whatever the levels of the inputs, some term gives a result level.
 
@@ -45,11 +45,11 @@ The report shows it as the last row of the table of the function terms, under th
 
 ## Related elements
 
-- [Qualitative species](qualitativespecies.md): an entity of a qualitative model, which carries a level instead of an amount
+- [QualitativeSpecies](qualitativespecies.md): an entity of a qualitative model, which carries a level instead of an amount
 - [Input](input.md): a qualitative species a transition reads, with the sign of its influence
 - [Output](output.md): a qualitative species a transition changes, with the effect it has on it
-- [Function term](functionterm.md): one row of the transition table: a condition and the level it results in
-- [Default term](defaultterm.md): the level of a transition in every state no function term covers
+- [FunctionTerm](functionterm.md): one row of the transition table: a condition and the level it results in
+- [DefaultTerm](defaultterm.md): the level of a transition in every state no function term covers
 - [Qualitative Models (qual)](qual.md): the package which describes a model whose entities carry a level
 
 ## Specification

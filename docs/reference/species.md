@@ -11,16 +11,16 @@ The report shows the initial quantity of a species, its units, the flags which s
 | attribute | type | meaning | specification |
 | --- | --- | --- | --- |
 | [compartment](#compartment) | `SIdRef` | the compartment the species is located in | [core 4.6.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initial amount](#initial-amount) | `double` | the amount of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initial concentration](#initial-concentration) | `double` | the concentration of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [substance units](#substance-units) | `UnitSIdRef` | the units of the amount of the species | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [only substance units](#only-substance-units) | `boolean` | whether the identifier of the species stands for an amount instead of a concentration | [core 4.6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [boundary condition](#boundary-condition) | `boolean` | whether the quantity of the species is left unchanged by the reactions | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialAmount](#initialamount) | `double` | the amount of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialConcentration](#initialconcentration) | `double` | the concentration of the species when the simulation starts | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [substanceUnits](#substanceunits) | `UnitSIdRef` | the units of the amount of the species | [core 4.6.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [hasOnlySubstanceUnits](#hasonlysubstanceunits) | `boolean` | whether the identifier of the species stands for an amount instead of a concentration | [core 4.6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [boundaryCondition](#boundarycondition) | `boolean` | whether the quantity of the species is left unchanged by the reactions | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [constant](#constant) | `boolean` | whether the quantity of the species stays fixed during a simulation | [core 4.6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [conversion factor](#conversion-factor) | `SIdRef` | the parameter which converts the extent of a reaction into the quantity of the species | [core 4.6.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [conversionFactor](#conversionfactor) | `SIdRef` | the parameter which converts the extent of a reaction into the quantity of the species | [core 4.6.7](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 | [fbc](#fbc) | `SpeciesFbc` | the chemical formula and the charge which fbc adds to a species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [chemical formula](#chemical-formula) | `string` | the elemental composition of the species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [charge](#charge) | `integer` | the charge of the species, counted in electrons | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:chemicalFormula](#fbc-chemicalformula) | `string` | the elemental composition of the species | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:charge](#fbc-charge) | `integer` | the charge of the species, counted in electrons | [fbc v3 3.4](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -30,31 +30,31 @@ Every species names the compartment it is in; SBML has no default compartment. T
 
 The report links the compartment in the table and in the inspector.
 
-<span id="initial-amount"></span>**initial amount**
+<span id="initialamount"></span>**initialAmount**
 
 The initial amount is the quantity of the species at the start of a simulation, measured in its substance units. A species sets either an initial amount or an initial concentration, never both, and it may set neither, in which case the value comes from an initial assignment or a rule.
 
 The report shows the initial amount in the table and in the inspector.
 
-<span id="initial-concentration"></span>**initial concentration**
+<span id="initialconcentration"></span>**initialConcentration**
 
 The initial concentration is the amount of the species divided by the size of its compartment at the start of a simulation. It excludes the initial amount, a species sets at most one of the two.
 
 The report shows the initial concentration in the table and in the inspector.
 
-<span id="substance-units"></span>**substance units**
+<span id="substanceunits"></span>**substanceUnits**
 
 The substance units say what a quantity of one means, for example one mole, one millimole or one item. When the species does not declare them, it inherits the substance units of the model.
 
 The report links the referenced unit definition and renders it as a formula.
 
-<span id="only-substance-units"></span>**only substance units**
+<span id="hasonlysubstanceunits"></span>**hasOnlySubstanceUnits**
 
 This flag decides what the identifier of the species means when it appears in a formula: with "true" it is an amount, with "false" it is an amount divided by the size of its compartment, that is a concentration. The flag is needed as its own attribute because the initial quantity and the units are both optional.
 
 The report shows the flag as a mark in the column "only substance units" and uses it when it derives the units of the species.
 
-<span id="boundary-condition"></span>**boundary condition**
+<span id="boundarycondition"></span>**boundaryCondition**
 
 A species on the boundary of the reaction system may appear as a reactant or a product, but the reactions do not determine its quantity; it is held by the modeller, for example as a constant supply of glucose. A species which is not a boundary condition is changed by every reaction it takes part in.
 
@@ -66,7 +66,7 @@ A constant species keeps its amount for the whole simulation, whatever happens a
 
 The report shows the flag as a mark in the column "constant".
 
-<span id="conversion-factor"></span>**conversion factor**
+<span id="conversionfactor"></span>**conversionFactor**
 
 When the amount of a species is not measured in the extent units of the reactions, a constant parameter states the factor between the two, instead of leaving the conversion implicit. A factor on the species overrides the one of the model.
 
@@ -78,13 +78,13 @@ A constraint based model needs the elemental composition and the charge of a spe
 
 The report shows them in the inspector of a species of a model which uses fbc.
 
-<span id="chemical-formula"></span>**chemical formula**
+<span id="fbc-chemicalformula"></span>**fbc:chemicalFormula**
 
 The formula must consist only of atomic names of the periodic table or user defined compounds, each of which takes the form of a single capital letter followed by zero or more lowercase letters, with an integer behind a symbol where more than one atom is present. The order should follow the Hill system: the carbon atoms first, then the hydrogen atoms, then every other element in alphabetical order, and every element including hydrogen in alphabetical order when the formula contains no carbon. `C10H12N5O13P3` is such a formula.
 
 The report shows the formula in the inspector of the species.
 
-<span id="charge"></span>**charge**
+<span id="fbc-charge"></span>**fbc:charge**
 
 The charge is given in electrons, not in coulombs, and it is the charge of one entity of the species. Together with the chemical formula it is what a check of the charge balance of a reaction needs.
 
@@ -109,7 +109,7 @@ The report derives the units of a species from its substance units, from the uni
 
 - [Compartment](compartment.md): a bounded space in which species are located
 - [Reaction](reaction.md): a process which changes the quantities of species
-- [Species reference](speciesreference.md): the participation of a species in a reaction as a reactant or a product
+- [SpeciesReference](speciesreference.md): the participation of a species in a reaction as a reactant or a product
 - [Parameter](parameter.md): a named value which the mathematics of the model can use
 
 ## Specification

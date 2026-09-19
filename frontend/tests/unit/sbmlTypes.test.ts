@@ -44,6 +44,9 @@ describe("sbml types", () => {
       expect(typeInfo(info.type)).toBe(info);
       expect(info.color).toMatch(/^#[0-9a-f]{6}$/);
       expect(info.icon, info.type).toBeDefined();
+      // a type has no name besides the name of its class, neither a label nor a plural
+      expect(info, info.type).not.toHaveProperty("label");
+      expect(info, info.type).not.toHaveProperty("plural");
     }
   });
 
@@ -60,7 +63,7 @@ describe("sbml types", () => {
     expect(typeInfo("Uncertainty").pkg).toBe("distrib");
     expect(typeInfo("UncertParameter").pkg).toBe("distrib");
     expect(typeInfo("UncertSpan").pkg).toBe("distrib");
-    expect(typeInfo("UncertSpan").label).toBe("Uncert span");
+    expect(typeInfo("UncertSpan").type).toBe("UncertSpan");
   });
 
   it("marks the package of the comp and fbc types", () => {
@@ -98,24 +101,27 @@ describe("sbml types", () => {
     expect(EDGE_KINDS.indexOf("eventAssignment")).toBe(EDGE_KINDS.indexOf("delay") + 1);
     // an element names its uncertainties and each of them its measures
     expect(EDGE_KINDS.indexOf("uncertainty")).toBe(EDGE_KINDS.indexOf("uncertParameter") - 1);
-    expect(edgeKindLabel("kineticLaw")).toBe("kinetic law");
-    expect(edgeKindLabel("eventAssignment")).toBe("event assignment");
-    expect(edgeKindLabel("geneProductAssociation")).toBe("gene product association");
-    expect(edgeKindLabel("fluxBound")).toBe("flux bound");
-    expect(edgeKindLabel("replacedBy")).toBe("replaced by");
-    expect(edgeKindLabel("localParameter")).toBe("local parameter");
-    expect(edgeKindLabel("externalModelDefinition")).toBe("external model definition");
-    expect(edgeKindLabel("sBaseRef")).toBe("reference");
-    expect(edgeKindLabel("functionTerm")).toBe("function term");
-    expect(edgeKindLabel("defaultTerm")).toBe("default term");
+    expect(edgeKindLabel("kineticLaw")).toBe("kineticLaw");
+    expect(edgeKindLabel("eventAssignment")).toBe("eventAssignment");
+    expect(edgeKindLabel("geneProductAssociation")).toBe("geneProductAssociation");
+    expect(edgeKindLabel("fluxBound")).toBe("fluxBound");
+    expect(edgeKindLabel("replacedBy")).toBe("replacedBy");
+    expect(edgeKindLabel("localParameter")).toBe("localParameter");
+    expect(edgeKindLabel("externalModelDefinition")).toBe("externalModelDefinition");
+    expect(edgeKindLabel("sBaseRef")).toBe("sBaseRef");
+    expect(edgeKindLabel("functionTerm")).toBe("functionTerm");
+    expect(edgeKindLabel("defaultTerm")).toBe("defaultTerm");
     expect(edgeKindLabel("uncertainty")).toBe("uncertainty");
-    expect(edgeKindLabel("uncertParameter")).toBe("uncert parameter");
+    expect(edgeKindLabel("uncertParameter")).toBe("uncertParameter");
     expect(edgeKindLabel("var")).toBe("var");
     // an attribute of a pair has a kind of its own, so the element it names says which it is
     expect(EDGE_KINDS.indexOf("varUpper")).toBe(EDGE_KINDS.indexOf("varLower") + 1);
-    expect(edgeKindLabel("lowerFluxBound")).toBe("lower flux bound");
-    expect(edgeKindLabel("reaction2")).toBe("second reaction");
-    expect(edgeKindLabel("variable2")).toBe("second variable");
-    expect(edgeKindLabel("timeConversionFactor")).toBe("time conversion factor");
+    expect(edgeKindLabel("lowerFluxBound")).toBe("lowerFluxBound");
+    expect(edgeKindLabel("reaction2")).toBe("reaction2");
+    expect(edgeKindLabel("variable2")).toBe("variable2");
+    expect(edgeKindLabel("timeConversionFactor")).toBe("timeConversionFactor");
+    // a link group is named by the key of its kind, the name of the attribute which makes the
+    // reference, and by no words of its own
+    for (const kind of EDGE_KINDS) expect(edgeKindLabel(kind), kind).toBe(kind);
   });
 });

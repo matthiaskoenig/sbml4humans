@@ -8,10 +8,10 @@ defineProps<{ element: FunctionTerm }>();
 </script>
 
 <template>
-  <AttributeRow label="condition" :type="element.sbmlType" field="math"
+  <AttributeRow :type="element.sbmlType" field="math"
     ><MathView :math="element.math"
   /></AttributeRow>
-  <AttributeRow label="result level" :type="element.sbmlType" field="resultLevel"
+  <AttributeRow :type="element.sbmlType" field="resultLevel"
     ><ValueText :value="element.resultLevel"
   /></AttributeRow>
 </template>

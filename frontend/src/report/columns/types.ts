@@ -16,11 +16,12 @@ export type CellKind =
   | "influence"
   | "xhtml";
 
-/** One column of an element table. */
-export interface ColumnDef {
+/** What a column of an element table is defined by. It states no header: a column is headed by
+ * the name the glossary gives its field, the name of the attribute in the specification, so that
+ * a table, the inspector and the reference name an attribute alike. */
+export interface ColumnSpec {
   /** Dotted path into the row, also the sort field. */
   field: string;
-  header: string;
   kind: CellKind;
   /** Kind "link": the edge kind that resolves the referenced element. Kind "influence": the
    * edge kind that resolves the qualitative species of every input or output of the cell. */
@@ -39,7 +40,12 @@ export interface ColumnDef {
   onlyWhenTrue?: boolean;
 }
 
-export const ID_COLUMNS: readonly ColumnDef[] = [
-  { field: "id", header: "id", kind: "id", width: "12rem" },
-  { field: "name", header: "name", kind: "text", width: "14rem" },
+export const ID_COLUMNS: readonly ColumnSpec[] = [
+  { field: "id", kind: "id", width: "12rem" },
+  { field: "name", kind: "text", width: "14rem" },
 ];
+
+/** One column of an element table: what defines it, under the header of its field. */
+export interface ColumnDef extends ColumnSpec {
+  header: string;
+}

@@ -10,13 +10,13 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="variable" :type="element.sbmlType" field="variable">
+  <AttributeRow :type="element.sbmlType" field="variable">
     <ElementLink
       :pk="index?.resolve(element.pk, 'variable', element.variable)"
       :label="element.variable"
     />
   </AttributeRow>
-  <AttributeRow label="math" :type="element.sbmlType" field="math"
+  <AttributeRow :type="element.sbmlType" field="math"
     ><MathView :math="element.math" display
   /></AttributeRow>
 </template>

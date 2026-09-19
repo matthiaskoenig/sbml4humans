@@ -2,7 +2,6 @@
 import type { SbmlElement, ElementType } from "@/api/types";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
-import { typeInfo } from "@/data/sbmlTypes";
 
 defineProps<{
   type: ElementType;
@@ -16,7 +15,7 @@ defineProps<{
   <section :id="`section-${type}`" class="scroll-mt-2" :data-testid="`section-${type}`">
     <h2 class="flex items-center gap-2 px-1 pt-4 pb-2 text-sm font-semibold text-gray-800">
       <TypeMark :type="type" size="md" />
-      {{ typeInfo(type).plural }}
+      {{ type }}
       <span class="font-mono text-xs font-normal text-gray-500" data-testid="section-count">
         {{ rows.length === total ? total : `${rows.length} / ${total}` }}
       </span>

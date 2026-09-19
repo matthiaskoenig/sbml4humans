@@ -53,6 +53,15 @@ export function attributeEntry(type: SbmlType, field: string): GlossaryEntry | u
   return typeAttributes?.[segment] ?? sbaseAttributes?.[segment];
 }
 
+/** The name of a field of a type, which heads its column and labels its row in the inspector:
+ * the name of the attribute in the specification (`initialConcentration`, `fbc:charge`), and
+ * plain words for what the report adds (`derived units`). The glossary is the only place where
+ * an attribute is named, as it is the only place where it is explained; a field without an
+ * entry, which the tests rule out, is named by its last segment. */
+export function attributeLabel(type: SbmlType, field: string): string {
+  return attributeEntry(type, field)?.label ?? field.slice(field.lastIndexOf(".") + 1);
+}
+
 export function linkEntry(kind: EdgeKind): GlossaryEntry | undefined {
   return glossary.links[kind];
 }

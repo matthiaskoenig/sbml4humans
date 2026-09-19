@@ -10,27 +10,22 @@ const index = useReportIndex();
 </script>
 
 <template>
-  <AttributeRow label="reaction" :type="element.sbmlType" field="reaction">
+  <AttributeRow :type="element.sbmlType" field="reaction">
     <ElementLink
       :pk="index?.resolve(element.pk, 'fluxObjective', element.reaction)"
       :label="element.reaction"
     />
   </AttributeRow>
-  <AttributeRow
-    v-if="element.reaction2"
-    label="second reaction"
-    :type="element.sbmlType"
-    field="reaction2"
-  >
+  <AttributeRow v-if="element.reaction2" :type="element.sbmlType" field="reaction2">
     <ElementLink
       :pk="index?.resolve(element.pk, 'reaction2', element.reaction2)"
       :label="element.reaction2"
     />
   </AttributeRow>
-  <AttributeRow label="coefficient" :type="element.sbmlType" field="coefficient"
+  <AttributeRow :type="element.sbmlType" field="coefficient"
     ><ValueText :value="element.coefficient" double
   /></AttributeRow>
-  <AttributeRow label="variable type" :type="element.sbmlType" field="variableType"
+  <AttributeRow :type="element.sbmlType" field="variableType"
     ><ValueText :value="element.variableType"
   /></AttributeRow>
 </template>
