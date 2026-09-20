@@ -41,7 +41,7 @@ If you have any questions or issues please [open an issue](https://github.com/ma
 
 If you use SBML4Humans please cite the archived software on [Zenodo](https://doi.org/10.5281/zenodo.22827237):
 
-> König, M., & Das, S. (2026). *SBML4Humans: interactive reports of SBML models* (Version 0.5.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22841376
+> König, M., & Das, S. (2026). *SBML4Humans: interactive reports of SBML models* (Version 0.7.0) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22853900
 
 ```bibtex
 @software{koenig_sbml4humans,
@@ -49,10 +49,10 @@ If you use SBML4Humans please cite the archived software on [Zenodo](https://doi
   title     = {SBML4Humans: interactive reports of SBML models},
   year      = {2026},
   month     = sep,
-  version   = {0.5.0},
+  version   = {0.7.0},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.22841376},
-  url       = {https://doi.org/10.5281/zenodo.22841376},
+  doi       = {10.5281/zenodo.22853900},
+  url       = {https://doi.org/10.5281/zenodo.22853900},
 }
 ```
 
