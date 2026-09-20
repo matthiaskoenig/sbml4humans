@@ -10,9 +10,9 @@ The report shows every uncertainty as an element of its own, with the table of i
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [uncertParameters](#uncertparameters) | `list` | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [uncertParameters](#uncertparameters) | [`list`](datatypes.md#list) | optional | the statistical measures which make up the uncertainty | [distrib 3.11](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -21,6 +21,15 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 Every parameter names the statistic it describes, for example `mean`, `standardDeviation`, `variance`, `sampleSize`, a span such as `confidenceInterval` or `range`, or the `distribution` the value was drawn from. It gives the statistic either as a number in its value, or as a reference to an element of the model in its variable, and it may carry its own units. A parameter of the type `distribution` carries the math of the distribution or a definition url instead of a value; a parameter of the type `externalParameter` has to carry a definition url and may use everything else next to it, a value, a span, math or parameters of its own.
 
 The report shows every parameter of an uncertainty as a row of the table in the inspector of that uncertainty, with its value or the interval of a span, its units, its definition and its math, and links every parameter to the element it is, where its notes say where the measurement comes from.
+
+- `1520310` (error): Apart from the general notes and annotations subobjects permitted on all SBML objects, a &lt;listOfUncertParameters&gt; container object may only contain &lt;uncertParameter&gt; objects.
+- `1520403` (error): An &lt;uncertainty&gt; object may contain one and only one instance of the &lt;listOfUncertParameters&gt; element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an &lt;uncertainty&gt; object.
+
+## Validation rules
+
+- `1520401` (error): An &lt;uncertainty&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on an &lt;uncertainty&gt;.
+- `1520402` (error): An &lt;uncertainty&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on an &lt;uncertainty&gt;.
+- `1520403` (error): An &lt;uncertainty&gt; object may contain one and only one instance of the &lt;listOfUncertParameters&gt; element. No other elements from the SBML Level 3 Distributions namespaces are permitted on an &lt;uncertainty&gt; object.
 
 ## Related elements
 

@@ -8,11 +8,11 @@ The report shows the trigger as an element of its own, and its rendered conditio
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [math](#math) | `Math` | the condition whose change from false to true fires the event | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [initialValue](#initialvalue) | `boolean` | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [persistent](#persistent) | `boolean` | whether the event is still executed when its condition becomes false again before execution | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [math](#math) | [`Math`](datatypes.md#math) | optional | the condition whose change from false to true fires the event | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [initialValue](#initialvalue) | [`boolean`](datatypes.md#boolean) | required | whether the condition is taken to be true just before the simulation starts | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [persistent](#persistent) | [`boolean`](datatypes.md#boolean) | required | whether the event is still executed when its condition becomes false again before execution | [core 4.12.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -22,17 +22,31 @@ The math is an expression which returns a boolean value, and the event fires at 
 
 The report renders the condition in the column "trigger" of the events and in the inspector, and links the elements the condition reads.
 
+Default: the event is never triggered.
+
+- `21202` (error): An &lt;event&gt;'s &lt;trigger&gt; expression must evaluate to a value of type Boolean.
+- `21209` (error): A Trigger object must contain exactly one MathML &lt;math&gt; element. The &lt;math&gt; element is optional in L3V2 and beyond.
+
 <span id="initialvalue"></span>**initialValue**
 
 To know whether an event may already fire at time zero, a simulator has to know what the condition was just before. With "true" it is taken to have been true, so the event cannot fire at the start; with "false" it may fire immediately.
 
 The report shows the flag as a mark, in the column "initial value" of the events and in the inspector.
 
+- `21229` (error): The attribute 'initialValue' on a Trigger object must have a value of type Boolean.
+
 <span id="persistent"></span>**persistent**
 
 Between the moment an event triggers and the moment it is executed, its condition may turn false again, because the event is delayed or because another event changed the model. With "true" the assignments are carried out anyway, with "false" the event is dropped.
 
 The report shows the flag as a mark, in the column "persistent" of the events and in the inspector.
+
+- `21228` (error): The attribute 'persistent' on a Trigger object must have a value of type Boolean.
+
+## Validation rules
+
+- `10716` (warning): The value of the 'sboTerm' attribute on a &lt;trigger&gt; is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, "mathematical expression").
+- `21226` (error): A Trigger object must have the required attributes 'persistent' and 'initialValue', and in addition, may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Trigger object.
 
 ## Related elements
 

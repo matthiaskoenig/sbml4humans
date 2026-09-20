@@ -10,9 +10,9 @@ The report shows the association in the inspector of its reaction and gives ever
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [association](#association) | `Association` | the single node the association holds | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [association](#association) | [`Association`](datatypes.md#association) | required | the single node the association holds | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -21,6 +21,16 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 The node is an [and](and.md), an [or](or.md) or a [gene product reference](geneproductref.md); the last of them is the whole association of a reaction which depends on one gene alone.
 
 The report renders the node and everything below it as the expression it stands for.
+
+- `2020805` (error): A &lt;GeneProductAssociation&gt; object must have one and only one of the concrete &lt;Association&gt; objects: &lt;GeneProductRef&gt;, &lt;And&gt; or &lt;Or&gt;.
+
+## Validation rules
+
+- `2010301` (error): (Extends validation rule #10301 in the SBML Level 3 Version 1 Core specification.) Within a &lt;model&gt; object the values of the attributes id and fbc:id on every instance of the following classes of objects must be unique across the set of all id and fbc:id attribute values of all such objects in a model: the model itself, plus all contained &lt;functionDefinition&gt;, &lt;compartment&gt;, &lt;species&gt;, &lt;reaction&gt;, &lt;speciesReference&gt;, &lt;modifierSpeciesReference&gt;, &lt;event&gt;, and &lt;parameter&gt; objects, plus the &lt;fluxBound&gt;, &lt;objective&gt;, &lt;fluxObjective&gt;, &lt;geneProduct&gt; and &lt;geneProductAssociation&gt; objects defined by the Flux Balance Constraints package.
+- `2020801` (error): A &lt;GeneProductAssociation&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a &lt;GeneProductAssociation.
+- `2020802` (error): A &lt;GeneProductAssociation&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespace are permitted on a &lt;GeneProductAssociation.
+- `2020803` (error): A &lt;GeneProductAssociation&gt; object may have the optional attributes 'fbc:id' and 'fbc:name'. No other attributes from the SBML Level 3 Flux Balance Constraints namespace are permitted on a &lt;GeneProductAssociation&gt; object.
+- `2020805` (error): A &lt;GeneProductAssociation&gt; object must have one and only one of the concrete &lt;Association&gt; objects: &lt;GeneProductRef&gt;, &lt;And&gt; or &lt;Or&gt;.
 
 ## Related elements
 

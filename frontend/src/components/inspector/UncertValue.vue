@@ -10,8 +10,8 @@ const props = defineProps<{ measure: UncertMeasure }>();
 const index = useReportIndex();
 
 /** A span carries the two ends of an interval in the place of the single value of a parameter
- * (distrib §3.12). An end the file leaves out leaves the interval open at that side, which the
- * report reads as "from 1" and "to 4" instead of "1 to 4". */
+ * (distrib §3.12). An end the file leaves out is undefined, which the report reads as "from 1"
+ * and "to 4" instead of "1 to 4". */
 const span = computed(() => (props.measure.sbmlType === "UncertSpan" ? props.measure : null));
 const hasLower = computed(
   () => !!span.value && (span.value.valueLower != null || !!span.value.varLower),

@@ -19,6 +19,9 @@ export function useReportView(): {
   setEntry(entry: string | null): Promise<unknown>;
   setModel(model: string | null): Promise<unknown>;
   routeFor(pk: string, across?: { entry: string; model: string | null }): RouteLocationRaw;
+  openHelp(key: string): Promise<unknown>;
+  closeHelp(mode?: Mode): Promise<unknown>;
+  helpRoute(key: string): RouteLocationRaw;
 } {
   const route = useRoute();
   const router = useRouter();
@@ -43,15 +46,24 @@ export function useReportView(): {
     select: (pk, mode = "push") => update({ pk }, mode),
     setSearch: (q) => update({ q }, "replace"),
     setTypes: (types) => update({ types }),
-    setEntry: (entry) => update({ entry, model: null, pk: null }),
-    setModel: (model) => update({ model, pk: null }),
+    setEntry: (entry) => update({ entry, model: null, pk: null, help: null }),
+    setModel: (model) => update({ model, pk: null, help: null }),
     // an element of another entry is shown in the report of that entry and in its model, and
-    // neither the search nor the type filter of this entry says anything about that one
+    // neither the search, the type filter nor an open dialog of this entry says anything about
+    // that one
     routeFor: (pk, across) => {
       const next = across
-        ? { entry: across.entry, model: across.model, pk, q: "", types: null }
+        ? { entry: across.entry, model: across.model, pk, q: "", types: null, help: null }
         : { ...state.value, pk };
       return { path: route.path, query: queryOf(next) };
     },
+    openHelp: (key) => update({ help: key }),
+    // a reader closes the dialog by pushing a route without it, so that the back button returns
+    // to what they read; a key which is no entry of the glossary is closed with `replace`
+    // instead, which leaves no history entry behind which would reopen nothing
+    closeHelp: (mode = "push") => update({ help: null }, mode),
+    // the href of a link inside the dialog itself, which points at another entry without
+    // touching anything else of the route: the selection, the search and the open report survive
+    helpRoute: (key) => ({ path: route.path, query: queryOf({ ...state.value, help: key }) }),
   };
 }

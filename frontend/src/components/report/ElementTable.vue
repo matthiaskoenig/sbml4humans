@@ -3,10 +3,11 @@ import { ArrowDownWideNarrowIcon, ArrowUpDownIcon, ArrowUpNarrowWideIcon } from 
 import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from "vue";
 
 import type { ElementType, SbmlElement } from "@/api/types";
+import HelpButton from "@/components/help/HelpButton.vue";
 import ElementCell from "@/components/report/ElementCell.vue";
 import { fieldValue, visibleColumns, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
-import { attributeEntry } from "@/report/glossary";
+import { attributeEntry, attributeKey } from "@/report/glossary";
 import { elementLabel } from "@/report/label";
 import { rowWindow } from "@/report/rowWindow";
 import { sortRows, type SortState } from "@/report/sort";
@@ -116,11 +117,25 @@ function headerTooltip(column: ColumnDef): string | undefined {
   return `the number of elements of ${column.header}: ${summary}`;
 }
 
+/** The entry the help of a header opens, the attribute of its column. A column the glossary does
+ * not name, which its tests rule out, gets no help rather than one which leads nowhere. */
+function helpKey(column: ColumnDef): string | undefined {
+  return attributeKey(props.type, column.field);
+}
+
 function toggleSort(column: ColumnDef): void {
   sort.value =
     sort.value?.field === column.field
       ? { field: column.field, order: sort.value.order === 1 ? -1 : 1 }
       : { field: column.field, order: 1 };
+}
+
+/** A click anywhere in the header cell sorts by its column. The button which carries the name is
+ * what the keyboard reaches and what answers Enter and Space, and its click reaches this by
+ * bubbling, so that the name and the cell around it are one target; the help link of the cell
+ * keeps its click to itself and explains the column instead. */
+function onHeaderClick(column: ColumnDef): void {
+  if (sortable(column)) toggleSort(column);
 }
 
 function ariaSort(column: ColumnDef): "ascending" | "descending" | "none" | undefined {
@@ -224,28 +239,58 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
             v-for="column in columns"
             :key="column.field"
             scope="col"
-            class="px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600 select-none"
+            class="group/th px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600 select-none"
+            :class="{ 'cursor-pointer': sortable(column) }"
             :style="column.width ? { width: column.width } : undefined"
             :aria-sort="ariaSort(column)"
+            :aria-label="column.header"
+            @click="onHeaderClick(column)"
           >
-            <button
-              v-if="sortable(column)"
-              v-tooltip.bottom="headerTooltip(column)"
-              type="button"
-              class="flex w-full cursor-pointer items-center gap-1 rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-link"
-              data-testid="sort-button"
-              @click="toggleSort(column)"
-            >
-              <span>{{ column.header }}</span>
-              <component
-                :is="sortIcon(column)"
-                class="-mx-px size-3.5 text-gray-400"
-                :stroke-width="SORT_ICON_STROKE"
+            <!-- the help of the column stands next to the name and never inside the button which
+            carries it, so that the click which explains the column does not sort it and the
+            keyboard reaches the two one after the other. The cell names itself, since the name of
+            the help would otherwise be read out with the header of every cell of the column -->
+            <!-- the row of the header is as wide as the name and the arrows, so that the help
+            below stands after them wherever the column is wider than its header; in the last
+            column it is the whole cell, so that the help ends at the edge of the table -->
+            <div class="relative flex w-fit items-center gap-1 group-last/th:w-full">
+              <button
+                v-if="sortable(column)"
+                v-tooltip.bottom="headerTooltip(column)"
+                type="button"
+                class="flex cursor-pointer items-center gap-1 rounded-sm font-medium focus-visible:outline-2 focus-visible:outline-link"
+                data-testid="sort-button"
+              >
+                <span>{{ column.header }}</span>
+                <component
+                  :is="sortIcon(column)"
+                  class="-mx-px size-3.5 text-gray-400"
+                  :stroke-width="SORT_ICON_STROKE"
+                />
+              </button>
+              <span
+                v-else
+                v-tooltip.bottom="headerTooltip(column)"
+                class="flex items-center gap-1"
+                >{{ column.header }}</span
+              >
+              <!-- the help costs the column no width: it is out of the flow, a step after the
+              name of the column, in the 12 px of padding which part that name from the name of
+              the next column, so that it covers neither of them and a dense table is as wide as
+              it is without it. In the last column it stands at the edge of the cell instead, one
+              step further left, since a step beyond it would be a step beyond the table, which
+              would make the table scroll. It is shown when the cell is hovered or carries the
+              focus, and always where there is no pointer which could hover it; the hit area
+              around it is the square a finger needs, and it reaches to the left, over the cell,
+              and never past the icon -->
+              <HelpButton
+                v-if="helpKey(column)"
+                :help-key="helpKey(column)!"
+                :label="column.header"
+                size="sm"
+                class="absolute top-1/2 left-full ml-1 -translate-y-1/2 opacity-0 before:absolute before:-inset-y-1 before:right-0 before:-left-2 group-last/th:ml-0 group-focus-within/th:opacity-100 group-hover/th:opacity-100 pointer-coarse:opacity-100"
               />
-            </button>
-            <span v-else v-tooltip.bottom="headerTooltip(column)" class="flex items-center gap-1">{{
-              column.header
-            }}</span>
+            </div>
           </th>
         </tr>
       </thead>

@@ -8,9 +8,9 @@ The report shows the rendered equation and the units it produces; which element 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [math](#math) | `Math` | the expression which has to be zero | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [math](#math) | [`Math`](datatypes.md#math) | optional | the expression which has to be zero | [core 4.9.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -20,15 +20,25 @@ The math is an arbitrary expression which returns a number, and the rule says th
 
 The report renders the expression in the column "math" and in the inspector.
 
+Default: how the rule behaves mathematically stays undefined.
+
+- `20907` (error): Every AssignmentRule, RateRule and AlgebraicRule object must contain exactly one MathML &lt;math&gt; element. The &lt;math&gt; element is optional in L3V2 and beyond.
+
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| [derived units](#derived-units) | `latex` | the units of the expression as the report derives them |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the expression as the report derives them |
 
 <span id="derived-units"></span>**derived units**
 
 The report derives the units of the expression from the units of the quantities it uses. The terms of an equation should all have the same units.
+
+## Validation rules
+
+- `10601` (error): The system of equations created from an SBML model must not be overdetermined.
+- `10705` (warning): The value of the 'sboTerm' attribute on a rule is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to a mathematical expression (i.e., terms derived from SBO:0000064, "mathematical expression"). Note: This applies to Algebraic Rules in addition to Rate and Assignment Rules.
+- `20910` (error): An AlgebraicRule object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on an AlgebraicRule object.
 
 ## Related elements
 

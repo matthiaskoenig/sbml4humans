@@ -15,6 +15,8 @@ export interface ViewState {
   q: string;
   /** Visible element types, null = all. */
   types: ElementType[] | null;
+  /** Key of the glossary entry the help dialog shows, null = dialog closed. */
+  help: string | null;
 }
 
 function first(value: LocationQueryValue | LocationQueryValue[] | undefined): string | null {
@@ -30,6 +32,7 @@ export function parseQuery(query: LocationQuery): ViewState {
     pk: first(query.pk),
     q: first(query.q) ?? "",
     types: types === null ? null : types.split(",").filter(isElementType),
+    help: first(query.help),
   };
 }
 
@@ -40,5 +43,6 @@ export function toQuery(state: ViewState): LocationQueryRaw {
   if (state.pk) query.pk = state.pk;
   if (state.q) query.q = state.q;
   if (state.types !== null) query.types = state.types.join(",");
+  if (state.help) query.help = state.help;
   return query;
 }

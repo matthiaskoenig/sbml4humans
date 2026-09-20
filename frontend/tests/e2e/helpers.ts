@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 
@@ -17,6 +17,14 @@ export async function openExample(page: Page, id: string, timeout = 30_000): Pro
 
 export function query(page: Page, key: string): string | null {
   return new URL(page.url()).searchParams.get(key);
+}
+
+/** The attribute row of the inspector whose label is this field, the way `report.spec.ts` picks a
+ * row by the text it carries; the field names of the repressilator this file uses share no
+ * substring with one another, so the row's whole text (its label and its value together) is
+ * enough to tell them apart. */
+export function attributeRow(scope: Locator, field: string): Locator {
+  return scope.getByTestId("attribute-row").filter({ hasText: field });
 }
 
 /** A local http server for the repressilator model, so the url input is tested without an

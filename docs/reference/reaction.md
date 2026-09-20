@@ -8,19 +8,19 @@ The report shows the equation of a reaction, its kinetic law and the units of th
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [reversible](#reversible) | `boolean` | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fast](#fast) | `boolean` | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [compartment](#compartment) | `SIdRef` | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfReactants](#listofreactants) | `list` | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfProducts](#listofproducts) | `list` | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [listOfModifiers](#listofmodifiers) | `list` | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [kineticLaw](#kineticlaw) | `KineticLaw` | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [fbc](#fbc) | `ReactionFbc` | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | `SIdRef` | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:upperFluxBound](#fbc-upperfluxbound) | `SIdRef` | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [fbc:geneProductAssociation](#fbc-geneproductassociation) | `GeneProductAssociation` | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [reversible](#reversible) | [`boolean`](datatypes.md#boolean) | required | whether the reaction can also run backwards | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [fast](#fast) | [`boolean`](datatypes.md#boolean) | optional | whether the reaction was declared to be much faster than the others | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [compartment](#compartment) | [`SIdRef`](datatypes.md#sidref) | optional | the compartment in which the reaction takes place | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfReactants](#listofreactants) | [`list`](datatypes.md#list) | optional | the species the reaction consumes, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfProducts](#listofproducts) | [`list`](datatypes.md#list) | optional | the species the reaction produces, with their stoichiometry | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [listOfModifiers](#listofmodifiers) | [`list`](datatypes.md#list) | optional | the species which influence the reaction without being consumed | [core 4.11.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [kineticLaw](#kineticlaw) | [`KineticLaw`](kineticlaw.md) | optional | the formula which gives the speed of the reaction | [core 4.11.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [fbc](#fbc) | [`ReactionFbc`](datatypes.md#reactionfbc) | optional | the flux bounds and the gene association which fbc adds to a reaction | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:lowerFluxBound](#fbc-lowerfluxbound) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which holds the smallest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:upperFluxBound](#fbc-upperfluxbound) | [`SIdRef`](datatypes.md#sidref) | optional | the parameter which holds the largest flux the reaction may carry | [fbc v3 3.8](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [fbc:geneProductAssociation](#fbc-geneproductassociation) | [`GeneProductAssociation`](geneproductassociation.md) | optional | the genes under which the reaction can run | [fbc v3 3.9](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -36,11 +36,17 @@ In SBML Level 2 and in Level 3 Version 1 a fast reaction was one which reaches a
 
 The report shows the flag for the models which still carry it, so that a model of an older level can be read as it was written. Level 1 and Level 2 from Version 2 on make a reaction slow unless the file says otherwise, so a reaction of those levels which does not write the flag is shown with the cross of `false`; Level 2 Version 1 gave the flag no default, and a reaction of that version which does not write it is shown with the dash of an attribute which is not set.
 
+Default: the attribute exists up to Level 3 Version 1, where it is required, and Level 3 Version 2 removed it: every reaction is equivalent to one with false.
+
+- `21152` (warning): The value of the 'fast' attribute should be 'false', as the attribute has been deprecated.
+
 <span id="compartment"></span>**compartment**
 
 The compartment is optional and has no effect on the equations of the model; it helps a reader, a visualisation or a tool which checks a rate law to know where the process happens.
 
 The report links the compartment in the column "compartment" and in the inspector.
+
+- `21107` (error): The value of the attribute 'compartment' in a &lt;reaction&gt; object is optional, but if present, must be the identifier of an existing Compartment object defined in the model.
 
 <span id="listofreactants"></span>**listOfReactants**
 
@@ -48,11 +54,21 @@ Every reactant is a [species reference](speciesreference.md) which names a speci
 
 The report lists the reactants in the inspector of the reaction, with a link to every species, and writes them on the left of the equation.
 
+Default: the reaction consumes nothing and must then have a product.
+
+- `21101` (error): A &lt;reaction&gt; definition must contain at least one &lt;speciesReference&gt;, either in its &lt;listOfReactants&gt; or its &lt;listOfProducts&gt;. A reaction without any reactant or product species is not permitted, regardless of whether the reaction has any modifier species.
+- `21104` (error): The list of reactants (&lt;listOfReactants&gt;) and list of products (&lt;listOfProducts&gt;) in a &lt;reaction&gt; can only contain &lt;speciesReference&gt; elements.
+
 <span id="listofproducts"></span>**listOfProducts**
 
 Every product is a [species reference](speciesreference.md) which names a species of the model and how much of it one reaction event produces.
 
 The report lists the products in the inspector of the reaction and writes them on the right of the equation.
+
+Default: the reaction produces nothing and must then have a reactant.
+
+- `21101` (error): A &lt;reaction&gt; definition must contain at least one &lt;speciesReference&gt;, either in its &lt;listOfReactants&gt; or its &lt;listOfProducts&gt;. A reaction without any reactant or product species is not permitted, regardless of whether the reaction has any modifier species.
+- `21104` (error): The list of reactants (&lt;listOfReactants&gt;) and list of products (&lt;listOfProducts&gt;) in a &lt;reaction&gt; can only contain &lt;speciesReference&gt; elements.
 
 <span id="listofmodifiers"></span>**listOfModifiers**
 
@@ -60,11 +76,15 @@ A modifier is a [modifier species reference](modifierspeciesreference.md): a cat
 
 The report lists the modifiers in the inspector of the reaction, with a link to every species; they are not part of the equation, which shows what a reaction consumes and produces.
 
+- `21105` (error): The list of modifiers (&lt;listOfModifiers&gt;) in a &lt;reaction&gt; can only contain &lt;modifierSpeciesReference&gt; elements.
+
 <span id="kineticlaw"></span>**kineticLaw**
 
 The [kinetic law](kineticlaw.md) holds the rate formula of the reaction and the local parameters it uses. It is optional, and a reaction without one has no defined speed, which different simulators treat differently.
 
 The report shows the rendered formula in the column "kinetic law" and the whole kinetic law in the inspector of the reaction.
+
+Default: the speed of the reaction is undefined.
 
 <span id="fbc"></span>**fbc**
 
@@ -78,25 +98,51 @@ The bound is not a number but the identifier of a [parameter](parameter.md) of t
 
 The report links the parameter in the inspector of the reaction.
 
+Default: only a model which is not strict may leave the bound unset.
+
+- `2020702` (error): An SBML &lt;Reaction&gt; object may have the optional attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'. No other attributes from the Flux Balance Constraints namespaces are permitted on a &lt;Reaction&gt;.
+- `2020703` (error): The attribute 'fbc:lowerFluxBound' of a &lt;Reaction&gt; must be of the data type 'SIdRef'.
+- `2020705` (error): The attribute 'fbc:lowerFluxBound' of a &lt;Reaction&gt; must point to an existing &lt;Parameter&gt; in the model.
+- `2020707` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', a &lt;Reaction&gt; must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.
+- `2020708` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.
+- `2020709` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.
+- `2020710` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an &lt;InitialAssignment&gt;.
+- `2020711` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attribute 'fbc:lowerFluxBound' may not have the value 'INF'.
+- `2020713` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' .
+
 <span id="fbc-upperfluxbound"></span>**fbc:upperFluxBound**
 
 Like the lower bound it names a [parameter](parameter.md) of the model, and a reaction whose flux is fixed points with both attributes at the same parameter. The package defines SBO terms which mark a parameter as a flux bound.
 
 The report links the parameter in the inspector of the reaction.
 
+Default: only a model which is not strict may leave the bound unset.
+
+- `2020702` (error): An SBML &lt;Reaction&gt; object may have the optional attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'. No other attributes from the Flux Balance Constraints namespaces are permitted on a &lt;Reaction&gt;.
+- `2020704` (error): The attribute 'fbc:upperFluxBound' of a &lt;Reaction&gt; must be of the data type 'SIdRef'.
+- `2020706` (error): The attribute 'fbc:upperFluxBound' of a &lt;Reaction&gt; must point to an existing &lt;Parameter&gt; in the model.
+- `2020707` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', a &lt;Reaction&gt; must define the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound'.
+- `2020708` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have their 'constant' attribute set to 'true'.
+- `2020709` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' must have a defined value for their 'value' attribute, which may not be 'NaN'.
+- `2020710` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; objects referred to by the attributes 'fbc:lowerFluxBound' and 'fbc:upperFluxBound' may not be targeted by an &lt;InitialAssignment&gt;.
+- `2020712` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' may not have the value '-INF'.
+- `2020713` (error): When the value of the &lt;Model&gt;s 'fbc:strict' attribute is 'true', the &lt;Parameter&gt; object referred to by the attribute 'fbc:lowerFluxBound' must be less than or equal to the value of the &lt;Parameter&gt; object referred to by the attribute 'fbc:upperFluxBound' .
+
 <span id="fbc-geneproductassociation"></span>**fbc:geneProductAssociation**
 
 The [association](geneproductassociation.md) is a tree of the operators `and` and `or` over the [gene products](geneproduct.md) of the model: `and` for the subunits of one complex, `or` for the isoenzymes which can do the same job. `((b3670 and b3671) or (b0077 and b0078))` is such an expression, and it is what a knockout analysis evaluates when it removes a gene.
 
-The report shows the tree in the inspector of the reaction, one line per branch, and links every gene product it names.
+The report names the association on a line of its own in the inspector of the reaction and writes the whole expression below it, as one paragraph which wraps, and links every gene product it names.
+
+- `2020701` (error): There may be at most one instance of a &lt;GeneProductAssociation&gt; within a &lt;Reaction&gt; object using Flux BalanceConstraints.
 
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| [kineticLaw](#kineticlaw-2) | `Math` | the rate formula of the reaction's kinetic law, rendered |
-| [derived units](#derived-units) | `latex` | the units the report derives for the rate formula of the kinetic law |
-| [equation](#equation) | `string` | the reaction written as a chemical equation |
+| [kineticLaw](#kineticlaw-2) | [`Math`](datatypes.md#math) | the rate formula of the reaction's kinetic law, rendered |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units the report derives for the rate formula of the kinetic law |
+| [equation](#equation) | [`string`](datatypes.md#string) | the reaction written as a chemical equation |
 
 <span id="kineticlaw-2"></span>**kineticLaw**
 
@@ -111,6 +157,14 @@ The report derives the units of the [kinetic law](kineticlaw.md)'s formula from 
 The report builds the equation from the reactants and the products of the reaction, with a single or a double arrow according to the flag "reversible". A stoichiometry of one is left out, a stoichiometry of minus one becomes a minus in front of the species, and a stoichiometry which is no number, because a rule or an initial assignment sets it, is replaced by the identifier of the species reference, or by a question mark when it has none. The modifiers are not part of it, they are shown in the inspector. It is the fastest way to see what a reaction does without opening it.
 
 The equation is a column of the table of reactions and a row of the inspector.
+
+## Validation rules
+
+- `10707` (warning): The value of the 'sboTerm' attribute on a &lt;reaction&gt; is expected to be an SBO identifier (http://www.biomodels.net/SBO/) referring to an occurring entity representation defined in SBO (i.e., terms derived from SBO:0000231, "occurring entity representation").
+- `21102` (error): The order of subelements within &lt;reaction&gt; must be the following: &lt;listOfReactants&gt; (optional), &lt;listOfProducts&gt; (optional), &lt;listOfModifiers&gt; (optional), &lt;kineticLaw&gt;.
+- `21103` (error): The following containers are all optional in a &lt;reaction&gt;, but if any is present, it must not be empty: &lt;listOfReactants&gt;, &lt;listOfProducts&gt;, &lt;listOfModifiers&gt;, &lt;kineticLaw&gt;.
+- `21106` (error): A &lt;reaction&gt; object may contain at most one of each of the following elements: &lt;listOfReactants&gt;, &lt;listOfProducts&gt;, &lt;listOfModifiers&gt;, and &lt;kineticLaw&gt;.
+- `21110` (error): A &lt;reaction&gt; object must have the required attributes 'id' and 'reversible', and may have the optional attributes 'metaid', 'sboTerm', 'name' and 'compartment'. For SBML Level 3 Version 1 documents only, 'fast' is additionally required. No other attributes from the SBML Level 3 Core namespace are permitted on a Reaction object.
 
 ## Related elements
 

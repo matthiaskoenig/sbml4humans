@@ -29,6 +29,7 @@ def frontend(tmp_path: Path) -> Path:
     (directory / "assets").mkdir(parents=True)
     (directory / "index.html").write_text("<html>the page</html>")
     (directory / "assets" / "index.js").write_text("console.log('the script')")
+    (directory / "assets" / "glossary-details.json").write_text('{"entries": {}}')
     (tmp_path / "secret.txt").write_text("outside of the build")
     return directory
 
@@ -92,6 +93,11 @@ def test_the_frontend_is_served(local: TestClient) -> None:
     """The page, its files, and the page again for every route of the frontend."""
     assert local.get("/").text == "<html>the page</html>"
     assert "the script" in local.get("/assets/index.js").text
+    # the explanations of the report are a file of the build which the page fetches, so a
+    # reader of a local report has them without a network
+    details = local.get("/assets/glossary-details.json")
+    assert details.json() == {"entries": {}}
+    assert details.headers["content-type"].startswith("application/json")
     for route in (
         "/report?local=token",
         "/examples",

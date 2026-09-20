@@ -8,12 +8,12 @@ The report shows the size of a compartment, the units of that size and the units
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [spatialDimensions](#spatialdimensions) | `double` | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [size](#size) | `double` | the size of the compartment at the start of the simulation | [core 4.5.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [units](#units) | `UnitSIdRef` | the units of the size of the compartment | [core 4.5.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [constant](#constant) | `boolean` | whether the size of the compartment stays fixed during a simulation | [core 4.5.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [spatialDimensions](#spatialdimensions) | [`double`](datatypes.md#double) | optional | the number of dimensions of the compartment | [core 4.5.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [size](#size) | [`double`](datatypes.md#double) | optional | the size of the compartment at the start of the simulation | [core 4.5.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [units](#units) | [`UnitSIdRef`](datatypes.md#unitsidref) | optional | the units of the size of the compartment | [core 4.5.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [constant](#constant) | [`boolean`](datatypes.md#boolean) | required | whether the size of the compartment stays fixed during a simulation | [core 4.5.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -23,11 +23,20 @@ Three dimensions means the size is a volume, two means an area, one means a leng
 
 The report shows the dimensions in the column "dimensions" and in the inspector.
 
+Default: no units are inherited from the model, because there is no basis to choose between volume, area and length.
+
+- `20518` (warning): If neither the attribute 'units' nor the attribute 'spatialDimensions' on a Compartment object is set, the unit associated with that compartment's size is undefined.
+
 <span id="size"></span>**size**
 
 The size is the volume, the area or the length of the compartment, depending on its dimensions. It is optional: a missing size means that the value is unknown or that it is computed by an initial assignment or a rule, it does not mean one. When the compartment is not constant, the size can change during a simulation.
 
 The report shows the size in the table and in the inspector, and the identifier of a compartment stands for its size in every formula of the model.
+
+Default: the size is unknown or set by an initial assignment or a rule.
+
+- `20501` (error): The size of a &lt;compartment&gt; must not be set if the compartment's 'spatialDimensions' attribute has value '0'.
+- `80501` (warning): As a principle of best modeling practice, the size of a &lt;compartment&gt; should be set to a value rather than be left undefined. Doing so improves the portability of models between different simulation and analysis systems, and helps make it easier to detect potential errors in models.
 
 <span id="units"></span>**units**
 
@@ -35,18 +44,30 @@ The units are either a unit definition of the model or one of the base units. Wh
 
 The report links the referenced unit definition and renders it as a formula.
 
+Default: the volume, area or length units of the model, according to the dimensions of the compartment.
+
+- `10311` (error): The syntax of unit identifiers (i.e., the values of the 'id' attribute on UnitDefinition, the 'units' attribute on Compartment, the 'units' attribute on Parameter, and the 'substanceUnits' attribute on Species) must conform to the syntax of the SBML type UnitSId.
+- `10313` (error): Unit identifier references (i.e the 'units' attribute on &lt;Compartment&gt;, the 'units' attribute on &lt;Parameter&gt;, and the 'substanceUnits' attribute on &lt;Species&gt;) must be the identifier of a &lt;UnitDefinition&gt; in the &lt;Model&gt;, or the identifier of a predefined unit in SBML.
+- `20502` (error): If a &lt;compartment&gt; definition has a 'spatialDimensions' value of '0', then its 'units' attribute must not be set. If the compartment has no dimensions, then no units can be associated with a non-existent size.
+- `20511` (warning): If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '1' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'lengthUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'lengthUnits' attributes are set, the unit of compartment size is undefined.
+- `20512` (warning): If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '2' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'areaUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'areaUnits' attributes are set, the unit of compartment size is undefined.
+- `20513` (warning): If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '3' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'volumeUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'volumeUnits' attributes are set, the unit of compartment size is undefined.
+- `20518` (warning): If neither the attribute 'units' nor the attribute 'spatialDimensions' on a Compartment object is set, the unit associated with that compartment's size is undefined.
+
 <span id="constant"></span>**constant**
 
 A constant compartment keeps its size for the whole simulation and can only be given a value by an initial assignment. A compartment which is not constant can be changed by a rule or by an event, which is how a growing cell is modelled.
 
 The report shows the flag as a mark in the column "constant".
 
+- `20503` (error): If a &lt;compartment&gt; definition has a 'spatialDimensions' value of '0', then its 'constant' attribute value must either default to or be set to 'true'. If the compartment has no dimensions, then its size can never change.
+
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| [rendered units](#rendered-units) | `latex` | the units of the size rendered as a formula |
-| [derived units](#derived-units) | `latex` | the units of the size as the report derives them |
+| [rendered units](#rendered-units) | [`latex`](datatypes.md#latex) | the units of the size rendered as a formula |
+| [derived units](#derived-units) | [`latex`](datatypes.md#latex) | the units of the size as the report derives them |
 
 <span id="rendered-units"></span>**rendered units**
 
@@ -55,6 +76,11 @@ The report resolves the unit definition the compartment references and renders i
 <span id="derived-units"></span>**derived units**
 
 The report derives the units of a compartment from its own units, or from the units of the model which it inherits, and renders them as a formula. Derived units make it visible what a value means even when the model does not declare units everywhere.
+
+## Validation rules
+
+- `10712` (warning): The value of the 'sboTerm' attribute on a &lt;compartment&gt; is expected to be an SBO identifier (http://www.biomodels.net/SBO/). In SBML Level 2 prior to Version 4 it is expected to refer to a participant physical type (i.e., terms derived from SBO:0000236, "participant physical type"); in Versions 4 and above it is expected to refer to a material entity (i.e., terms derived from SBO:0000240, "material entity").
+- `20517` (error): A Compartment object must have the required attributes 'id' and 'constant', and may have the optional attributes 'metaid', 'sboTerm', 'name', 'spatialDimensions', 'size' and 'units'. No other attributes from the SBML Level 3 Core namespace are permitted on a Compartment object.
 
 ## Related elements
 

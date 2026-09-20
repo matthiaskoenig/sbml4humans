@@ -14,8 +14,8 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 
 | field | type | meaning |
 | --- | --- | --- |
-| [list](#list) | `string` | the name the list has in the file, which says what it lists |
-| [size](#size) | `integer` | the number of elements the list holds |
+| [list](#list) | [`string`](datatypes.md#string) | the name the list has in the file, which says what it lists |
+| [size](#size) | [`integer`](datatypes.md#integer) | the number of elements the list holds |
 
 <span id="list"></span>**list**
 

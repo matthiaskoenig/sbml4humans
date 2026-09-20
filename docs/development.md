@@ -87,17 +87,35 @@ uv run --project backend zensical build --clean --strict   # build into site/
 
 `--strict` aborts the build on a warning, i.e. on a link or an anchor of a page which does not resolve; the `documentation` workflow builds the site the same way, so a broken link fails the check instead of reaching the published page.
 
-`site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. The reference pages under `docs/reference/` and the tooltips of the application (`frontend/src/data/glossary.json`) are generated, not written by hand, from the glossary in `glossary/`:
+`site/` is git ignored, it is built by the `documentation` workflow and published to <https://matthiaskoenig.github.io/sbml4humans/>. Three outputs are generated, not written by hand, from the glossary in `glossary/`: the reference pages under `docs/reference/`, the tooltips of the application (`frontend/src/data/glossary.json`) and the explanations of its help dialog (`frontend/src/data/glossary-details.json`). All three are committed.
 
 ```bash
 cd backend
-uv run python -m sbml4humans.glossary           # regenerate both, commit the result
+uv run python -m sbml4humans.glossary           # regenerate all three, commit the result
 uv run python -m sbml4humans.glossary --check   # the check of the documentation workflow
 ```
 
 The glossary names what it explains: the `label` of a type is the name of its class in the specification, the `label` of an attribute which cites a specification is its name there (`initialConcentration`, and `fbc:charge` for an attribute a package adds to a type of the core), the `label` of a link kind is its key, and only what the report adds is labelled in plain words (`derived units`). The application takes the headers of its columns, the labels of the rows of its inspector and the names of its link groups from these labels and states none of its own, so a name is changed in the glossary and nowhere else.
 
-`--check` regenerates into a temporary directory and fails when a committed file is not current, when a type or a field of the report model has no entry, when a label of the specification is not such a name, when a type or an attribute entry explains something the report does not have, when a link of a description does not resolve to a page or to an anchor of one, when a page references a missing image, or when the navigation in `zensical.toml` does not list a generated page.
+An attribute states its low level next to its prose, which the reference page and the dialog both show. The header comment of `glossary/core.toml` holds the conventions in full, these are the keys:
+
+- `required`, whether the specification demands the attribute. Every attribute which cites a `spec` states it, an attribute the report adds never does, because no specification asks anything of it.
+- `default`, one clause in plain words which says what holds when the attribute is absent, only next to `required = false` and only where the absence teaches the reader something. Level 3 defines no default values, so this says what holds instead, no stronger than the specification says.
+- `rules`, the numbers of the validation rules of libsbml which concern the entry, on an attribute and on a type. Their text is never written in the glossary: the generator reads the message, the severity and the section of the specification from libsbml, the library which judges the file of a reader. A rule is cited at the attribute its message is about and at the type when it concerns the element as a whole; rules about MathML, about units consistency or about modelling practice in general are left out, as is a rule whose sentence is not true for the reader of the page.
+- `values`, the literals of an enumeration, in the order and the spelling of the specification.
+- `[datatypes.*]`, one entry per `type` an attribute names which is no type of the glossary. An entry which cites a `spec` is a data type of that specification (`SIdRef`, `double`, `FbcType`), one without a `spec` a kind of value the report adds (`latex`, `Math`). Every `type` has to resolve to such an entry or to a type of the glossary, and a data type nothing uses is an error.
+
+The number of a rule is found with `resolve_rule`, which answers exactly what the generator would write, so a candidate is read before it is cited. With `uv run python` from `backend/`:
+
+```python
+from sbml4humans.glossaryrules import resolve_rule
+
+for code in range(20608, 20612):
+    rule = resolve_rule(code)
+    print(code, rule.severity, rule.message)
+```
+
+`--check` regenerates into a temporary directory and fails when a committed file is not current, when a type or a field of the report model has no entry, when a label of the specification is not such a name, when a type or an attribute entry explains something the report does not have, when an attribute of a specification does not state whether it is required, when an attribute the report adds states `required` or when a `default` stands next to `required = true`, when a rule number is unknown to libsbml, is cited twice in one entry or belongs to another package than the entry, when a `type` resolves to neither a data type nor a type of the glossary or a data type is unused, when a link of a description does not resolve to a page or to an anchor of one, when a page references a missing image, or when the navigation in `zensical.toml` does not list a generated page.
 
 The [release notes](release-notes.md) page is generated as well, from the files of `release-notes/`, the versions newest first:
 

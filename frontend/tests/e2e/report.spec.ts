@@ -182,7 +182,7 @@ test.describe("repressilator", () => {
     await expect(tooltip).toBeHidden();
   });
 
-  test("hovering the id column header shows its tooltip and the inspector type links to the reference page", async ({
+  test("hovering the id column header shows its tooltip and the inspector type explains the type", async ({
     page,
   }) => {
     const table = page.getByTestId("table-Species");
@@ -194,8 +194,12 @@ test.describe("repressilator", () => {
     await page.mouse.move(0, 0);
     await expect(tooltip).toBeHidden();
 
+    // the header linked the reference page of the type; it opens the entry of the type now, and
+    // the dialog carries that link, for every entry it shows and not for a type alone
     await table.locator("tbody tr[data-pk]").first().click();
-    await expect(page.getByTestId("inspector-type-link")).toHaveAttribute(
+    await page.getByTestId("inspector-type").getByTestId("help-label").click();
+    await expect(page.getByTestId("help-title")).toHaveText("Species");
+    await expect(page.getByTestId("help-docs-link")).toHaveAttribute(
       "href",
       /reference\/species\//,
     );

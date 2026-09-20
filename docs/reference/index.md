@@ -2,7 +2,7 @@
 
 Every element type a report shows, the attributes of the elements and the fields the report adds. The pages are generated from the glossary of the repository, which is also the source of the tooltips of the application.
 
-The [link kinds](links.md) explain how the elements of a report reference each other, the [report concepts](concepts.md) explain what the report computes on top of the model.
+The [link kinds](links.md) explain how the elements of a report reference each other, the [report concepts](concepts.md) explain what the report computes on top of the model, and the [data types](datatypes.md) explain the values its attributes and its fields carry.
 
 ## Core
 

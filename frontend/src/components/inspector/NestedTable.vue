@@ -2,9 +2,10 @@
 import { computed } from "vue";
 
 import type { SbmlType } from "@/api/types";
+import HelpLabel from "@/components/help/HelpLabel.vue";
 import ShowAllButton from "@/components/misc/ShowAllButton.vue";
 import ValueText from "@/components/misc/ValueText.vue";
-import { attributeEntry, attributeLabel } from "@/report/glossary";
+import { attributeEntry, attributeKey, attributeLabel } from "@/report/glossary";
 import { useLimitedList } from "@/report/limitedList";
 
 const props = defineProps<{
@@ -49,6 +50,12 @@ function tooltip(column: { header: string; key: string; field?: string }): strin
   return summary ? `${column.header}: ${summary}` : undefined;
 }
 
+/** The entry the header opens, the attribute of its column; a table whose rows are no type of
+ * the report, the one a caller heads itself, explains nothing. */
+function helpKey(column: { key: string; field?: string }): string | undefined {
+  return props.type ? attributeKey(props.type, column.field ?? column.key) : undefined;
+}
+
 /** The width of a column of `chars` characters: a character of the monospace font is 0.6 of
  * its size wide, and the cell has the 0.75rem of padding at its right. */
 function width(column: { key: string; header: string }): Record<string, string> {
@@ -73,7 +80,9 @@ const { shown, hiddenCount, showAll } = useLimitedList(() => props.rows);
         <thead>
           <tr class="border-b border-gray-200 text-left text-gray-500">
             <th v-for="column in headed" :key="column.key" class="py-1 pr-3 font-medium">
-              <span v-tooltip.bottom="tooltip(column)">{{ column.header }}</span>
+              <HelpLabel :help-key="helpKey(column)" :tooltip="tooltip(column)">{{
+                column.header
+              }}</HelpLabel>
             </th>
             <th v-if="widths" aria-hidden="true" />
           </tr>

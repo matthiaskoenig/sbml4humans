@@ -8,9 +8,9 @@ The report shows the priority as an element of its own and its rendered formula 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [math](#math) | `Math` | the formula whose value orders the events of one moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [math](#math) | [`Math`](datatypes.md#math) | optional | the formula whose value orders the events of one moment | [core 4.12.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
 
 Every element of a model also carries the [common attributes](sbase.md) of `SBase`.
 
@@ -19,6 +19,14 @@ Every element of a model also carries the [common attributes](sbase.md) of `SBas
 The math returns a dimensionless number, and a larger value means the event is executed earlier. An event without a priority has none, and the order of simultaneous events is then not fixed.
 
 The report renders the formula in the column "priority" of the events and in the inspector, and links the elements it reads.
+
+Default: the event behaves as one without a priority.
+
+- `21231` (error): An Priority object must contain exactly one MathML &lt;math&gt; element. The &lt;math&gt; element is optional in L3V2 and beyond.
+
+## Validation rules
+
+- `21232` (error): A Priority object may have the optional attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespace are permitted on a Priority object.
 
 ## Related elements
 

@@ -19,6 +19,7 @@ interface TooltipTarget {
   placement: Placement;
   mono: boolean;
   show: () => void;
+  focus: () => void;
   hide: () => void;
 }
 
@@ -37,6 +38,17 @@ function tooltipElement(): HTMLDivElement {
     document.body.appendChild(tooltip);
   }
   return tooltip;
+}
+
+/** The one tooltip element, moved to where it is painted above the element it belongs to. A modal
+ * dialog, the help dialog of the report, is painted in the top layer, above everything the page
+ * itself paints, whatever its z-index: a tooltip for an element inside it has to live in that
+ * dialog, or the backdrop of the dialog covers it. Everything else keeps it in the body. */
+function hostedTooltip(el: HTMLElement): HTMLDivElement {
+  const tip = tooltipElement();
+  const host = el.closest("dialog[open]") ?? document.body;
+  if (tip.parentElement !== host) host.appendChild(tip);
+  return tip;
 }
 
 function placementOf(binding: DirectiveBinding<TooltipValue>): Placement {
@@ -68,7 +80,7 @@ function show(el: HTMLElement): void {
   if (!target?.text) return;
   if (owner && owner !== el) owner.removeAttribute("aria-describedby");
   owner = el;
-  const tip = tooltipElement();
+  const tip = hostedTooltip(el);
   tip.textContent = target.text;
   tip.className = target.mono ? MONO_CLASS : CLASS;
   tip.hidden = false;
@@ -76,6 +88,22 @@ function show(el: HTMLElement): void {
   document.addEventListener("keydown", onKeydown);
   document.addEventListener("scroll", onScroll, { capture: true, passive: true });
   void position(el, target.placement);
+}
+
+/** Show the tooltip for a focus, which only a reader on the keyboard is shown one for: a pointer
+ * and a script focus an element as well, and the browser hands the focus back to the element
+ * which opened a dialog when it closes, where a tooltip would stand next to a pointer that is
+ * somewhere else entirely. `:focus-visible` is the browser's own judgement of this, and the hover
+ * covers the pointer. An engine which does not know the selector throws on it and keeps the
+ * tooltip it showed for every focus. */
+function focus(el: HTMLElement): void {
+  let keyboard: boolean;
+  try {
+    keyboard = el.matches(":focus-visible");
+  } catch {
+    keyboard = true;
+  }
+  if (keyboard) show(el);
 }
 
 /** Hide the tooltip; with an element only when it is shown for that element. */
@@ -98,11 +126,12 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
       placement: placementOf(binding),
       mono: binding.modifiers.mono === true,
       show: () => show(el),
+      focus: () => focus(el),
       hide: () => hide(el),
     };
     targets.set(el, target);
     el.addEventListener("mouseenter", target.show);
-    el.addEventListener("focusin", target.show);
+    el.addEventListener("focusin", target.focus);
     el.addEventListener("mouseleave", target.hide);
     el.addEventListener("focusout", target.hide);
   },
@@ -126,7 +155,7 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
     const target = targets.get(el);
     if (target) {
       el.removeEventListener("mouseenter", target.show);
-      el.removeEventListener("focusin", target.show);
+      el.removeEventListener("focusin", target.focus);
       el.removeEventListener("mouseleave", target.hide);
       el.removeEventListener("focusout", target.hide);
       targets.delete(el);

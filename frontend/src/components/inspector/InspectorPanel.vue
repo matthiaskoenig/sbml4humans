@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ExternalLinkIcon, XIcon } from "@lucide/vue";
+import { XIcon } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 
+import HelpLabel from "@/components/help/HelpLabel.vue";
 import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import XmlView from "@/components/misc/XmlView.vue";
 import { useReportIndex } from "@/report/context";
-import { referenceUrl } from "@/report/glossary";
+import { typeEntry, typeKey } from "@/report/glossary";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
 import { useReportView } from "@/report/view";
 
@@ -18,6 +19,12 @@ const view = useReportView();
 
 const element = computed(() => index.value?.get(props.pk) ?? null);
 const label = computed(() => element.value?.sbmlType ?? "");
+/** The type of the header opens its entry, which carries the link to its reference page in the
+ * footer of the dialog, where every entry has one. */
+const typeHelp = computed(() => {
+  const type = element.value?.sbmlType;
+  return type ? { key: typeKey(type), summary: typeEntry(type)?.summary } : null;
+});
 /** The element is named as every link to it names it; the type is already named next to it. */
 const name = computed(() => elementLabel(index.value, props.pk) ?? "");
 const showXml = ref(false);
@@ -63,20 +70,16 @@ const xmlEmptyMessage = computed(() =>
       data-testid="inspector-header"
     >
       <TypeMark v-if="element.sbmlType" :type="element.sbmlType" size="md" />
-      <a
-        v-if="element.sbmlType"
-        :href="referenceUrl(element.sbmlType)"
-        target="_blank"
-        rel="noopener"
-        data-testid="inspector-type-link"
-        class="flex min-w-0 items-center gap-1 whitespace-nowrap text-link hover:underline"
+      <!-- the type keeps the colour it had as the link to its reference page, which it still is,
+      of the explanation and not of the page; a type the glossary does not carry opens nothing
+      and is as quiet as the rest of the header -->
+      <span
+        class="min-w-0 truncate whitespace-nowrap"
+        :class="typeHelp?.key ? 'text-link' : 'shrink-0 text-gray-500'"
+        data-testid="inspector-type"
       >
-        <span class="truncate" data-testid="inspector-type">{{ label }}</span>
-        <ExternalLinkIcon class="size-3 shrink-0" />
-      </a>
-      <span v-else class="shrink-0 whitespace-nowrap text-gray-500" data-testid="inspector-type">{{
-        label
-      }}</span>
+        <HelpLabel :help-key="typeHelp?.key" :tooltip="typeHelp?.summary">{{ label }}</HelpLabel>
+      </span>
       <span
         v-tooltip.bottom="element.id ? undefined : REPORT_NAME_HINT"
         class="max-w-1/2 shrink-0 truncate font-mono font-semibold"

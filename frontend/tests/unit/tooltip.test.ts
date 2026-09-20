@@ -37,6 +37,16 @@ function mountHost(text: string | undefined, mono = false) {
 const tooltip = () => document.getElementById(TOOLTIP_ID);
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
+/** Whether the element answers `:focus-visible`, which the directive asks a focus it receives.
+ * jsdom implements the selector and answers `false` to it, whatever has the focus, so a test of
+ * the keyboard has to say so itself. */
+function focusVisible(element: Element, visible: boolean): void {
+  const matches = element.matches.bind(element);
+  vi.spyOn(element, "matches").mockImplementation((selector: string) =>
+    selector === ":focus-visible" ? visible : matches(selector),
+  );
+}
+
 afterEach(() => {
   wrapper?.unmount();
   wrapper = null;
@@ -79,10 +89,34 @@ describe("v-tooltip", () => {
   });
 
   it("shows on keyboard focus and hides on Escape", async () => {
-    await mountHost("value").get("[data-testid=host]").trigger("focusin");
+    const host = mountHost("value").get("[data-testid=host]");
+    focusVisible(host.element, true);
+    await host.trigger("focusin");
     expect(tooltip()?.hidden).toBe(false);
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
     expect(tooltip()?.hidden).toBe(true);
+  });
+
+  // the browser restores the focus to the label which opened the help dialog when it closes: a
+  // tooltip on that label would stand next to a pointer which is somewhere else entirely
+  it("shows nothing on a focus the pointer or a script caused", async () => {
+    const host = mountHost("value").get("[data-testid=host]");
+    focusVisible(host.element, false);
+    await host.trigger("focusin");
+    expect(tooltip()?.hidden ?? true).toBe(true);
+    expect(host.attributes("aria-describedby")).toBeUndefined();
+    // the pointer shows it as it always did
+    await host.trigger("mouseenter");
+    expect(tooltip()?.hidden).toBe(false);
+  });
+
+  it("shows on focus where the engine does not know the selector", async () => {
+    const host = mountHost("value").get("[data-testid=host]");
+    vi.spyOn(host.element, "matches").mockImplementation(() => {
+      throw new Error("unknown pseudo-class :focus-visible");
+    });
+    await host.trigger("focusin");
+    expect(tooltip()?.hidden).toBe(false);
   });
 
   it("shows nothing without a text", async () => {
@@ -99,6 +133,24 @@ describe("v-tooltip", () => {
     expect(tooltip()?.textContent).toBe("second");
     await host.setProps({ text: undefined });
     expect(tooltip()?.hidden).toBe(true);
+  });
+
+  // a modal dialog, the help dialog of the report, is painted in the top layer, above everything
+  // the page itself paints: a tooltip which stayed in the body would be covered by its backdrop
+  it("puts the tooltip into an open dialog and back into the body after it", async () => {
+    const dialog = document.createElement("dialog");
+    dialog.setAttribute("open", "");
+    document.body.appendChild(dialog);
+    const inside = mount(Host, { props: { text: "in the dialog" }, attachTo: dialog });
+    await inside.get("[data-testid=host]").trigger("mouseenter");
+    expect(tooltip()?.parentElement).toBe(dialog);
+    expect(tooltip()?.textContent).toBe("in the dialog");
+    inside.unmount();
+    dialog.remove();
+
+    const host = mountHost("on the page").get("[data-testid=host]");
+    await host.trigger("mouseenter");
+    expect(tooltip()?.parentElement).toBe(document.body);
   });
 
   it("hides on a scroll and when the element is unmounted", async () => {

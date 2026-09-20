@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 
 import { pingLocal } from "@/api/client";
 import type { SbmlElement, ElementType } from "@/api/types";
+import HelpDialog from "@/components/help/HelpDialog.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import AppBar from "@/components/layout/AppBar.vue";
 import AppFooter from "@/components/layout/AppFooter.vue";
@@ -215,5 +216,8 @@ watch([selectedPk, index], ([pk, current]) => {
       </template>
     </SplitPane>
     <AppFooter dense />
+    <!-- the explanation of the entry the route names, mounted once for the whole page: every
+    label which opens one opens it here -->
+    <HelpDialog />
   </div>
 </template>

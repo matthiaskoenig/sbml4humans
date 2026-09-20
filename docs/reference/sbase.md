@@ -8,26 +8,31 @@ The report shows these attributes for every element: the id and the name in the 
 
 ## Attributes
 
-| attribute | type | meaning | specification |
-| --- | --- | --- | --- |
-| [id](#id) | `SId` | the identifier other elements of the model use to reference the element | [core 3.2.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [name](#name) | `string` | the readable name of the element | [core 3.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [metaid](#metaid) | `ID` | the identifier the annotations of the element point at | [core 3.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [sboTerm](#sboterm) | `SBOTerm` | the term of the Systems Biology Ontology which classifies the element | [core 3.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [notes](#notes) | `XHTML` | the free text the model author wrote about the element | [core 3.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [annotations](#annotations) | `list` | the controlled vocabulary terms which link the element to database entries | [core 6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [history](#history) | `ModelHistory` | who created the element and when it was modified | [core 6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
-| [replacements](#replacements) | `CompSBase` | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:replacedBy](#comp-replacedby) | `ReplacedBy` | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [comp:listOfReplacedElements](#comp-listofreplacedelements) | `list` | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
-| [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | `list` | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
-| [distrib:listOfUncertainties](#distrib-listofuncertainties) | `list` | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
+| attribute | type | required | meaning | specification |
+| --- | --- | --- | --- | --- |
+| [id](#id) | [`SId`](datatypes.md#sid) | optional | the identifier other elements of the model use to reference the element | [core 3.2.1](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [name](#name) | [`string`](datatypes.md#string) | optional | the readable name of the element | [core 3.2.2](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [metaid](#metaid) | [`ID`](datatypes.md#id) | optional | the identifier the annotations of the element point at | [core 3.2.3](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [sboTerm](#sboterm) | [`SBOTerm`](datatypes.md#sboterm) | optional | the term of the Systems Biology Ontology which classifies the element | [core 3.2.4](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [notes](#notes) | [`XHTML`](datatypes.md#xhtml) | optional | the free text the model author wrote about the element | [core 3.2.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [annotations](#annotations) | [`list`](datatypes.md#list) | optional | the controlled vocabulary terms which link the element to database entries | [core 6.5](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [history](#history) | [`ModelHistory`](datatypes.md#modelhistory) | optional | who created the element and when it was modified | [core 6.6](https://sbml.org/documents/specifications/level-3/version-2/core/) |
+| [replacements](#replacements) | [`CompSBase`](datatypes.md#compsbase) | optional | how the element replaces an element of a submodel or is replaced by one | [comp 3.6](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:replacedBy](#comp-replacedby) | [`ReplacedBy`](replacedby.md) | optional | the element of a submodel which takes the place of this element | [comp 3.6.4](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [comp:listOfReplacedElements](#comp-listofreplacedelements) | [`list`](datatypes.md#list) | optional | the elements of submodels which this element takes the place of | [comp 3.6.2](https://sbml.org/documents/specifications/level-3/version-1/comp/) |
+| [fbc:listOfKeyValuePairs](#fbc-listofkeyvaluepairs) | [`list`](datatypes.md#list) | optional | the controlled annotation fbc Version 3 allows on any element | [fbc v3 3.16](https://identifiers.org/combine.specifications/sbml.level-3.version-1.fbc.version-3.release-1) |
+| [distrib:listOfUncertainties](#distrib-listofuncertainties) | [`list`](datatypes.md#list) | optional | the statistical measures of the value of the element | [distrib 3.9](https://sbml.org/specifications/sbml-level-3/version-1/distrib/version-1/release-1/sbml-level-3-version-1-distrib-version-1-release-1.pdf) |
 
 <span id="id"></span>**id**
 
 The id is the name of the element inside the model. It is unique within a model and is what the math of a rule, of a kinetic law or of an event assignment writes when it refers to the element. Some types make the id required, for example a species, a compartment or a parameter cannot be referenced without one. On an initial assignment, a rule and an event assignment it is optional and it exists from Level 3 Version 2 on, so most models leave it empty; what such an element sets is its symbol or its variable, not its id.
 
 The report shows the id in the first column of every table, behind the mark of the type of the element, and uses it as the label of every link to the element. An element without an id is named by the key of its [primary key](concepts.md) instead, and an element which the file nests in another one after that element.
+
+Default: nothing can reference the element; the types which exist to be referenced, for example a species, a compartment or a parameter, require it.
+
+- `10301` (error): The value of the 'id' field on every instance of the following type of object in a model must be unique: &lt;model&gt;, &lt;functionDefinition&gt;, &lt;compartmentType&gt;, &lt;compartment&gt;, &lt;speciesType&gt;, &lt;species&gt;, &lt;reaction&gt;, &lt;speciesReference&gt;, &lt;modifierSpeciesReference&gt;, &lt;event&gt;, and model-wide &lt;parameter&gt;s. Note that &lt;unitDefinition&gt; and parameters defined inside a reaction are treated separately.
+- `10310` (error): The syntax of 'id' attribute values must conform to the syntax of the SBML type 'SId'.
 
 <span id="name"></span>**name**
 
@@ -41,17 +46,28 @@ The meta id exists so that the RDF metadata in the annotation of an element can 
 
 The report shows the meta id in the attributes of the inspector and uses it as a fallback label when an element has no id.
 
+- `10307` (error): Every 'metaid' attribute value must be unique across the set of all 'metaid' values in a model.
+- `10309` (error): The syntax of 'metaid' attribute values must conform to the syntax of the XML type 'ID'.
+
 <span id="sboterm"></span>**sboTerm**
 
 The Systems Biology Ontology is a set of controlled terms for the parts of a model, for example "simple chemical" for a species or "mass action rate law" for a kinetic law. The term makes the intention of the model author explicit for software which understands the ontology, and a model stays interpretable without it.
 
 The report shows the term in the attributes of the inspector and links it to its entry on identifiers.org.
 
+- `10308` (error): The value of an 'sboTerm' attribute must have the data type 'SBOTerm', which is a string consisting of the characters 'S', 'B', 'O', ':' followed by exactly seven digits.
+
 <span id="notes"></span>**notes**
 
 The notes hold XHTML written for human readers: a description of what the element stands for, the assumptions behind a rate law, the source of a value. They are the place where the story of a model is told, and many published models carry their documentation here.
 
 The report renders the notes of the selected element in the last section of the inspector, under its annotations, with a restricted set of markup.
+
+- `10801` (error): The contents of the &lt;notes&gt; element must be explicitly placed in the XHTML XML namespace.
+- `10802` (error): The contents of the &lt;notes&gt; element must not contain an XML declaration (i.e., a string of the form "&lt;?xml version="1.0" encoding="UTF-8"?&gt;" or similar).
+- `10803` (error): The contents of the &lt;notes&gt; element must not contain an XML DOCTYPE declaration (i.e., a string beginning with the characters "&lt;!DOCTYPE".
+- `10804` (error): The XHTML content inside a &lt;notes&gt; element can only take one of the following general forms: (1) a complete XHTML document beginning with the element &lt;html&gt; and ending with &lt;/html&gt;; (2) the "body" portion of a document beginning with the element &lt;body&gt; and ending with &lt;/body&gt;; or (3) XHTML content that is permitted within a &lt;body&gt; ... &lt;/body&gt; elements.
+- `10805` (error): A given SBML object may contain at most one &lt;notes&gt; element.
 
 <span id="annotations"></span>**annotations**
 
@@ -60,6 +76,10 @@ An annotation relates the element to an entry of an external database, for examp
 An annotation can carry annotations of its own, which qualify it further: the evidence for a relation, or the modification of the protein a species stands for.
 
 The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource, and shows the terms below a term indented under it.
+
+- `99401` (warning): In order to follow the general syntax for a standard SBML RDF annotation the first element of RDF element must be a Description element with an 'about' attribute.
+- `99402` (warning): In order to follow the general syntax for a standard SBML RDF annotation, the 'about' attribute of the Description element must be of the form #string.
+- `99403` (warning): In order to follow the general syntax for a standard SBML RDF annotation, the 'about' attribute of the Description element must be of the form #string, where the string component is equal to the value of the metaid attribute of the containing SBML element.
 
 <span id="history"></span>**history**
 
@@ -75,15 +95,21 @@ The report shows the rows "replaced by" and "replaced elements" in the inspector
 
 <span id="comp-replacedby"></span>**comp:replacedBy**
 
-An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the same four ways a [port](port.md) names an element.
+An element which is replaced disappears from the composed model: every reference to it points at the element of the submodel instead. The submodel is named by its identifier, the element inside it by a port, an identifier, a unit identifier or a meta id, the four ways a [reference](sbaseref.md) of the package names an element.
 
 The report links the submodel and shows the named element next to it.
+
+- `1020105` (error): Any object derived from the extended SBase class (defined in the Hierarchical Model Composition package) may contain at most one instance of a &lt;replacedBy&gt; subobject.
 
 <span id="comp-listofreplacedelements"></span>**comp:listOfReplacedElements**
 
 Every entry names a submodel and one element inside it which this element replaces. It is how a species of the containing model is connected to the species of two submodels: the containing species replaces both, and the three become one pool.
 
 The report lists the submodel and the named element of every replacement in the inspector.
+
+- `1020101` (error): Any object derived from the extended SBase class (defined in the Hierarchical Model Composition package) may contain at most one instance of a &lt;listOfReplacedElements&gt; subobject.
+- `1020102` (error): Apart from the general notes and annotation subobjects permitted on all SBML objects, a &lt;listOfReplacedElements&gt; container object may only contain &lt;replacedElement&gt; objects.
+- `1020104` (error): The &lt;listOfReplacedElements&gt; in an SBase object is optional, but if present, must not be empty.
 
 <span id="fbc-listofkeyvaluepairs"></span>**fbc:listOfKeyValuePairs**
 
@@ -93,18 +119,29 @@ Every key of one element is unique, the value is a string, and the uri says wher
 
 The report lists the pairs of an element in its inspector. libsbml does not read the identifier and the name back from a file, so the report shows the key, the value and the uri alone.
 
+- `2021501` (error): A &lt;keyValuePair&gt; object may have the optional SBML Level 3 Core attributes 'metaid' and 'sboTerm'. No other attributes from the SBML Level 3 Core namespaces are permitted on a &lt;keyValuePair&gt;.
+- `2021502` (error): A &lt;keyValuePair&gt; object may have the optional SBML Level 3 Core subobjects for notes and annotations. No other elements from the SBML Level 3 Core namespaces are permitted on a &lt;keyValuePair&gt;.
+- `2021503` (error): A &lt;keyValuePair&gt; object must have the required attribute 'fbc:key', and may have the optional attributes 'fbc:id', 'fbc:name', 'fbc:value' and 'fbc:uri'. No other attributes from the SBML Level 3 Flux Balance Constraints namespaces are permitted on a &lt;keyValuePair&gt; object.
+- `2021504` (error): The attribute 'fbc:key' on a &lt;keyValuePair&gt; must have a value of data type 'string'.
+- `2021506` (error): The attribute 'fbc:value' on a &lt;keyValuePair&gt; must have a value of data type 'string'.
+- `2021507` (error): The attribute 'fbc:uri' on a &lt;keyValuePair&gt; must have a value of data type 'string'.
+- `2021508` (error): A &lt;ListOfKeyValuePairs&gt; object must have the required attribute 'xmlns'. No other attributes from the SBML Level~3 Flux Balance Constraints namespaces are permitted on a &lt;ListOfKeyValuePairs&gt; object.
+
 <span id="distrib-listofuncertainties"></span>**distrib:listOfUncertainties**
 
 Any element with a mathematical meaning or with math of its own may carry uncertainties, and it may carry several of them, because measures from different experiments or different publications may overlap or contradict each other and each set belongs together.
 
 The report shows the uncertainties of an element in its inspector, each of them named with a link to it and with the table of the measures it collects, so that how well a value is known is read where the value is. Every [uncertainty](uncertainty.md) is an element of its own, which names the element it describes under "Referenced by", and the search finds an element by the names, the notes and the types of the measures of its uncertainties.
 
+- `1520201` (error): A 'SBase' object may contain one and only one instance of the &lt;listOfUncertainties&gt; element. No other elements from the SBML Level 3 Distributions namespaces are permitted on a 'SBase' object.
+- `1520202` (error): Apart from the general notes and annotations subobjects permitted on all SBML objects, a &lt;listOfUncertainties&gt; container object may only contain &lt;uncertainty&gt; objects.
+
 ## In the report
 
 | field | type | meaning |
 | --- | --- | --- |
-| [xml](#xml) | `string` | the element as it is written in the SBML file |
-| [lists](#lists) | `list` | the lists of the element which state something of their own |
+| [xml](#xml) | [`string`](datatypes.md#string) | the element as it is written in the SBML file |
+| [lists](#lists) | [`list`](datatypes.md#list) | the lists of the element which state something of their own |
 
 <span id="xml"></span>**xml**
 

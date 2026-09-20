@@ -2,7 +2,8 @@
 import { computed } from "vue";
 
 import type { SbmlType } from "@/api/types";
-import { attributeEntry } from "@/report/glossary";
+import HelpLabel from "@/components/help/HelpLabel.vue";
+import { attributeEntry, attributeKey } from "@/report/glossary";
 
 const props = defineProps<{
   /** The type and the field of the glossary which name and explain the row. */
@@ -26,6 +27,11 @@ const name = computed(() => props.label ?? entry.value?.label ?? props.field ?? 
 const tooltip = computed(() =>
   entry.value?.summary ? `${name.value}: ${entry.value.summary}` : name.value,
 );
+/** The entry the label opens, the attribute the row shows. A row without a field is named by the
+ * caller and explained by nothing, and its label stays plain text. */
+const helpKey = computed(() =>
+  props.type && props.field ? attributeKey(props.type, props.field) : undefined,
+);
 </script>
 
 <template>
@@ -39,7 +45,11 @@ const tooltip = computed(() =>
     :class="wide ? 'grid-cols-1' : 'grid-cols-subgrid'"
     data-testid="attribute-row"
   >
-    <dt v-tooltip.bottom="tooltip" class="truncate text-gray-500">{{ name }}</dt>
+    <!-- the label is truncated by the cell around it and the link inside it is as wide as its
+    text, so that the ellipsis stays and the visible label is what a reader clicks -->
+    <dt class="truncate text-gray-500">
+      <HelpLabel :help-key="helpKey" :tooltip="tooltip">{{ name }}</HelpLabel>
+    </dt>
     <dd class="min-w-0 break-words"><slot /></dd>
   </div>
 </template>
