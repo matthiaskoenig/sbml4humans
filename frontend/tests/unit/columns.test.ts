@@ -39,11 +39,6 @@ describe("columns", () => {
               const head = column.field.split(".")[0]!;
               expect(Object.keys(element), `${type}.${column.field}`).toContain(head);
               fieldValue(element, column.field);
-              if (column.latexField) {
-                const latexHead = column.latexField.split(".")[0]!;
-                expect(Object.keys(element), `${type}.${column.latexField}`).toContain(latexHead);
-                fieldValue(element, column.latexField);
-              }
               checked += 1;
             }
           }
@@ -53,7 +48,7 @@ describe("columns", () => {
     expect(checked).toBeGreaterThan(100);
   });
 
-  it("link columns name an edge kind and units columns a latex field", () => {
+  it("link columns name an edge kind", () => {
     for (const columns of Object.values(COLUMNS)) {
       for (const column of columns) {
         // an influence column resolves the species of every input or output it renders over
@@ -66,6 +61,24 @@ describe("columns", () => {
         }
       }
     }
+  });
+
+  it("shows no units but the derived units, in the column right of the value", () => {
+    for (const [type, columns] of Object.entries(COLUMNS)) {
+      for (const column of columns) {
+        expect(column.link, `${type}.${column.field}`).not.toBe("units");
+      }
+    }
+    const fields = (type: "Compartment" | "Species" | "Parameter"): string[] =>
+      COLUMNS[type].map((column) => column.field);
+    const after = (type: "Compartment" | "Species" | "Parameter", field: string): string =>
+      fields(type)[fields(type).indexOf(field) + 1]!;
+    expect(fields("Compartment")).not.toContain("units");
+    expect(fields("Parameter")).not.toContain("units");
+    expect(fields("Species")).not.toContain("substanceUnits");
+    expect(after("Compartment", "size")).toBe("derivedUnits");
+    expect(after("Parameter", "value")).toBe("derivedUnits");
+    expect(after("Species", "initialConcentration")).toBe("derivedUnits");
   });
 
   it("shows the fbc columns only in a table a row of which fills them", () => {

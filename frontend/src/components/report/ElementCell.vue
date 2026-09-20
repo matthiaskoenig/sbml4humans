@@ -20,7 +20,6 @@ import QualSignMark from "@/components/misc/QualSignMark.vue";
 import TermsView from "@/components/misc/TermsView.vue";
 import TransitionTermsView from "@/components/misc/TransitionTermsView.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
-import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import XhtmlView from "@/components/misc/XhtmlView.vue";
@@ -58,15 +57,6 @@ const targetPk = computed(() =>
     ? (index.value?.resolve(props.row.pk, props.column.link, text.value) ?? null)
     : null,
 );
-
-/** Kind "link" with units: the latex of the units sits next to the id. UnitsLink hides the
- * units latex entirely when it is null, empty or the report's "-" placeholder, so the id is
- * never followed by a redundant dash or a repeated id. */
-const unitsLatex = computed(() => {
-  if (props.column.link !== "units") return null;
-  const latex = fieldValue(props.row, props.column.latexField ?? `${props.column.field}Latex`);
-  return typeof latex === "string" ? latex : null;
-});
 
 /** Kind "geneAssociation": the tree of the reaction as the expression it stands for, capped at
  * the first genes so that one huge association does not fill the row. The genes are links in
@@ -150,10 +140,7 @@ function signOf(influence: Input | Output): string | null | undefined {
   are rendered with -->
   <XhtmlView v-else-if="column.kind === 'xhtml'" :xhtml="text" />
   <UnitsView v-else-if="column.kind === 'units'" :latex="text" />
-  <template v-else-if="column.kind === 'link'">
-    <UnitsLink v-if="column.link === 'units'" :pk="targetPk" :label="text" :latex="unitsLatex" />
-    <ElementLink v-else :pk="targetPk" :label="text" />
-  </template>
+  <ElementLink v-else-if="column.kind === 'link'" :pk="targetPk" :label="text" />
   <!-- the assignments of an event, on the one line of the row: "variable = math", separated by
   a comma and a space -->
   <ValueText v-else-if="column.kind === 'assignments' && !assignments.length" :value="null" />

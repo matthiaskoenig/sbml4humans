@@ -2,11 +2,7 @@ import type { ElementType } from "@/api/types";
 import { ID_COLUMNS, type ColumnSpec } from "@/report/columns/types";
 
 const MATH: ColumnSpec = { field: "math", kind: "math" };
-const DERIVED_UNITS: ColumnSpec = {
-  field: "derivedUnits",
-  kind: "units",
-  latexField: "derivedUnits",
-};
+const DERIVED_UNITS: ColumnSpec = { field: "derivedUnits", kind: "units" };
 
 type CoreType = Exclude<
   ElementType,
@@ -22,14 +18,13 @@ type CoreType = Exclude<
 
 export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnSpec[]>> = {
   FunctionDefinition: [...ID_COLUMNS, MATH],
-  UnitDefinition: [...ID_COLUMNS, { field: "unitsLatex", kind: "units", latexField: "unitsLatex" }],
+  UnitDefinition: [...ID_COLUMNS, { field: "unitsLatex", kind: "units" }],
   Compartment: [
     ...ID_COLUMNS,
     { field: "spatialDimensions", kind: "number" },
     { field: "size", kind: "number" },
-    { field: "units", kind: "link", link: "units", latexField: "unitsLatex" },
-    { field: "constant", kind: "boolean" },
     DERIVED_UNITS,
+    { field: "constant", kind: "boolean" },
   ],
   Species: [
     ...ID_COLUMNS,
@@ -42,24 +37,16 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnSpec[]>> = {
       kind: "number",
       optional: true,
     },
-    {
-      field: "substanceUnits",
-      kind: "link",
-      link: "units",
-      latexField: "unitsLatex",
-      optional: true,
-    },
+    DERIVED_UNITS,
     { field: "hasOnlySubstanceUnits", kind: "boolean" },
     { field: "boundaryCondition", kind: "boolean" },
     { field: "constant", kind: "boolean" },
-    DERIVED_UNITS,
   ],
   Parameter: [
     ...ID_COLUMNS,
     { field: "value", kind: "number" },
-    { field: "units", kind: "link", link: "units", latexField: "unitsLatex" },
-    { field: "constant", kind: "boolean" },
     DERIVED_UNITS,
+    { field: "constant", kind: "boolean" },
   ],
   InitialAssignment: [
     ...ID_COLUMNS,
@@ -110,12 +97,7 @@ export const CORE_COLUMNS: Readonly<Record<CoreType, readonly ColumnSpec[]>> = {
       optional: true,
     },
     { field: "kineticLaw.math", kind: "math", optional: true },
-    {
-      field: "kineticLaw.derivedUnits",
-      kind: "units",
-      latexField: "kineticLaw.derivedUnits",
-      optional: true,
-    },
+    { field: "kineticLaw.derivedUnits", kind: "units", optional: true },
   ],
   Event: [
     ...ID_COLUMNS,
