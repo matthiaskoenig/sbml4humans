@@ -80,6 +80,25 @@ test.describe("qual", () => {
     ).toContainText("theta_G_S");
   });
 
+  test("shows the math of the function terms in the table of the transitions", async ({ page }) => {
+    await openExample(page, QUAL);
+    await expect(page.getByTestId("table-Transition").locator("thead th")).toHaveText([
+      "id",
+      "name",
+      "listOfInputs",
+      "listOfOutputs",
+      "listOfFunctionTerms",
+    ]);
+    // the rule of a transition on the line of its row: every term with its condition, in the
+    // order in which they are read, and the default term behind them
+    const terms = page
+      .locator('tbody tr[data-pk$="Transition:tr_P"]')
+      .getByTestId("transition-terms");
+    await expect(terms.getByTestId("result-level")).toHaveText(["2", "1", "0"]);
+    await expect(terms.getByTestId("math")).toHaveCount(2);
+    await expect(terms).toContainText("otherwise");
+  });
+
   test("shows the function terms of a transition as its transition table", async ({ page }) => {
     await openExample(page, QUAL);
     await row(page, "Transition:tr_P").click();
