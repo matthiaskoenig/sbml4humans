@@ -62,6 +62,12 @@ FBC_DIR = MODELS_DIR / "fbc"
 FBC_ECOLI_CORE_SBML = FBC_DIR / "e_coli_core.xml.gz"
 FBC_RECON3D_SBML = FBC_DIR / "Recon3D.xml.gz"
 
+# logical models (qual), written by TabularQual (MIT license) from the published
+# models, https://github.com/sys-bio/TabularQual/tree/main/examples
+QUAL_DIR = MODELS_DIR / "qual"
+QUAL_FAURE2006_SBML = QUAL_DIR / "Faure2006.sbml"
+QUAL_THIEFFRYTHOMAS1995_SBML = QUAL_DIR / "ThieffryThomas1995_multivalue.sbml"
+
 # small example models, one per SBML feature
 EXAMPLES_DIR = RESOURCES_DIR / "examples"
 EXAMPLE_IDS: list[str] = [
@@ -117,6 +123,8 @@ API_EXAMPLES_MODEL: list[Path] = [
     COMP_SPT_BODY,
     FBC_ECOLI_CORE_SBML,
     FBC_RECON3D_SBML,
+    QUAL_FAURE2006_SBML,
+    QUAL_THIEFFRYTHOMAS1995_SBML,
     *(EXAMPLES_DIR / f"{eid}.xml" for eid in EXAMPLE_IDS),
 ]
 
