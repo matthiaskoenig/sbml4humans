@@ -105,16 +105,14 @@ function sortable(column: ColumnDef): boolean {
     column.kind !== "terms" &&
     column.kind !== "elements" &&
     column.kind !== "geneAssociation" &&
-    column.kind !== "influence"
+    column.kind !== "influence" &&
+    column.kind !== "functionTerms"
   );
 }
 
-/** The tooltip of a header: the summary of the attribute of the column, and for a column which
- * counts the elements of a list, that it counts them, because the summary describes the list. */
+/** The tooltip of a header: the summary of the attribute of the column. */
 function headerTooltip(column: ColumnDef): string | undefined {
-  const summary = attributeEntry(props.type, column.field)?.summary;
-  if (!summary || column.kind !== "count") return summary;
-  return `the number of elements of ${column.header}: ${summary}`;
+  return attributeEntry(props.type, column.field)?.summary;
 }
 
 /** The entry the help of a header opens, the attribute of its column. A column the glossary does

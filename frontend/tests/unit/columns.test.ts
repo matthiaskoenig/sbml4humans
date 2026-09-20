@@ -154,7 +154,9 @@ describe("columns", () => {
     const transition = qual.byType("qual_example").get("Transition")![0]!;
     const inputs = fieldValue(transition, "listOfInputs") as { qualitativeSpecies: string }[];
     expect(inputs.map((input) => input.qualitativeSpecies)).toEqual(["S", "P", "G"]);
-    expect(fieldValue(transition, "listOfFunctionTerms.length")).toBe(2);
+    // the cell of the function terms holds the terms, whose math it renders
+    const terms = fieldValue(transition, "listOfFunctionTerms") as { resultLevel: number }[];
+    expect(terms.map((term) => term.resultLevel)).toEqual([1, 1]);
   });
 
   it("resolves dotted paths", () => {

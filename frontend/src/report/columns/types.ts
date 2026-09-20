@@ -8,12 +8,12 @@ export type CellKind =
   | "math"
   | "units"
   | "link"
-  | "count"
   | "assignments"
   | "terms"
   | "elements"
   | "geneAssociation"
   | "influence"
+  | "functionTerms"
   | "xhtml";
 
 /** What a column of an element table is defined by. It states no header: a column is headed by

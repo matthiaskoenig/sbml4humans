@@ -2,7 +2,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
-import type { Event, Parameter, Reaction, SbmlElement, Species } from "@/api/types";
+import type { Event, Parameter, Reaction, SbmlElement, Species, Transition } from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
 import { vTooltip } from "@/directives/tooltip";
@@ -146,8 +146,8 @@ describe("ElementTable", () => {
     );
   });
 
-  it("says in the tooltip of a column of counts that it counts", async () => {
-    // the header of the function terms of a transition explains the terms, the cell counts them
+  it("heads the function terms of a transition with the summary of the list", async () => {
+    // the cell shows the terms themselves, so the header says what the glossary says of the list
     const qual = new ReportIndex(loadReport("qual_example"));
     await router.push("/examples/qual_example");
     wrapper = mount(ElementTable, {
@@ -159,12 +159,14 @@ describe("ElementTable", () => {
         provide: { [ReportIndexKey as symbol]: ref(qual) },
       },
     });
-    await header(wrapper, "listOfFunctionTerms")
-      .get("[data-testid=sort-button]")
-      .trigger("mouseenter");
+    const terms = header(wrapper, "listOfFunctionTerms");
+    // a rule has no order to sort the rows by
+    expect(terms.find("[data-testid=sort-button]").exists()).toBe(false);
+    await terms.get("span.flex").trigger("mouseenter");
     expect(document.getElementById("app-tooltip")?.textContent).toBe(
-      `the number of elements of listOfFunctionTerms: ${attributeEntry("Transition", "listOfFunctionTerms")!.summary}`,
+      attributeEntry("Transition", "listOfFunctionTerms")!.summary,
     );
+    expect(wrapper.findAll("[data-testid=transition-terms]")).toHaveLength(2);
   });
 
   it("sorts by a click on the header and toggles the order", async () => {
@@ -506,7 +508,28 @@ describe("ElementCell", () => {
     const sum = mountCell(objective(fbcExample, "biomass_max"), column, fbcExample);
     expect(sum.get("[data-testid=terms]").text()).toBe("1 × v1 + 1 × v2 + 1 × v3 + 1 × v4");
     // a list of terms has no order to sort the rows by
-    expect(column.kind).not.toBe("count");
+    expect(column.kind).toBe("terms");
+  });
+
+  it("renders the function terms of a transition as the rule they are", () => {
+    const qual = new ReportIndex(loadReport("qual_example"));
+    const column = columnsOf("Transition").find((c) => c.header === "listOfFunctionTerms")!;
+    const transitions = qual.byType("qual_example").get("Transition")! as Transition[];
+    const gene = transitions.find((transition) => transition.id === "tr_G")!;
+    const cell = mountCell(gene, column, qual);
+    // every function term with its math, in the order of the file, and the default term last
+    const levels = cell.findAll("[data-testid=result-level]").map((level) => level.text());
+    expect(levels).toEqual(["1", "1", "0"]);
+    expect(cell.findAll("[data-testid=math]")).toHaveLength(2);
+    const text = cell.get("[data-testid=transition-terms]").text();
+    expect(text.match(/ if /g)).toHaveLength(2);
+    expect(text.endsWith("0 otherwise")).toBe(true);
+    // a transition without a term shows the placeholder, and one with the default term alone
+    // shows that term
+    const empty = { ...gene, listOfFunctionTerms: [], defaultTerm: null };
+    expect(mountCell(empty, column, qual).text()).toBe("-");
+    const fallback = mountCell({ ...gene, listOfFunctionTerms: [] }, column, qual);
+    expect(fallback.get("[data-testid=transition-terms]").text()).toBe("0 otherwise");
   });
 
   it("renders the components of a user defined constraint as the sum they weigh", () => {

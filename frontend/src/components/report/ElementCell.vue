@@ -10,6 +10,7 @@ import type {
   SBase,
   SbmlElement,
   Math,
+  Transition,
   UserDefinedConstraintComponent,
 } from "@/api/types";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
@@ -17,6 +18,7 @@ import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
 import QualSignMark from "@/components/misc/QualSignMark.vue";
 import TermsView from "@/components/misc/TermsView.vue";
+import TransitionTermsView from "@/components/misc/TransitionTermsView.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
@@ -27,6 +29,7 @@ import { useReportIndex } from "@/report/context";
 import { toNumber } from "@/report/number";
 import { geneAssociationText } from "@/report/geneAssociation";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
+import { transitionTerms } from "@/report/transitionTerms";
 
 const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
 const index = useReportIndex();
@@ -112,6 +115,12 @@ function speciesPk(influence: Input | Output): string | null {
   );
 }
 
+/** Kind "functionTerms": the transition table of the row, its function terms and the default
+ * term behind them, which is a field of its own of the transition. */
+const functionTerms = computed(() =>
+  props.column.kind === "functionTerms" ? transitionTerms(props.row as Transition) : [],
+);
+
 /** The sign of an input, which an output does not carry. */
 function signOf(influence: Input | Output): string | null | undefined {
   return "sign" in influence ? influence.sign : null;
@@ -135,11 +144,7 @@ function signOf(influence: Input | Output): string | null | undefined {
     <ValueText v-else :value="null" mono />
   </span>
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
-  <ValueText
-    v-else-if="column.kind === 'number' || column.kind === 'count'"
-    :value="numberValue"
-    double
-  />
+  <ValueText v-else-if="column.kind === 'number'" :value="numberValue" double />
   <MathView v-else-if="column.kind === 'math'" :math="mathValue" />
   <!-- the message of a constraint is XHTML, not text: it is rendered with the markup the notes
   are rendered with -->
@@ -179,6 +184,7 @@ function signOf(influence: Input | Output): string | null | undefined {
         :sign="signOf(influence)"
     /></template>
   </span>
+  <TransitionTermsView v-else-if="column.kind === 'functionTerms'" :terms="functionTerms" />
   <!-- the expression is capped at the width of its column and cut off with an ellipsis: an
   association of a genome scale model runs over thousands of genes, and the inspector is where
   the whole tree is read -->
