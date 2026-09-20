@@ -208,6 +208,32 @@ def test_qual_example_is_served() -> None:
     assert example.packages == ["qual"]
 
 
+@pytest.mark.parametrize(
+    ("example_id", "name", "count"),
+    [
+        ("Faure2006 (Faure2006.sbml)", "Mammalian Cell Cycle 2006", 10),
+        (
+            "ThieffryThomas1995_multivalue (ThieffryThomas1995_multivalue.sbml)",
+            "A multi-valued model on lysis vs lysogeny decision in the phage lambda",
+            4,
+        ),
+    ],
+)
+def test_published_qual_models_are_served(
+    example_id: str, name: str, count: int
+) -> None:
+    """The published logical models are served, a transition per qualitative species."""
+    example = load_examples()[example_id]
+    assert example.name == name
+    assert example.description is not None
+    assert example.packages == ["qual"]
+    response = report_for_path(example.file, trusted=True)
+    (entry,) = response.reports.values()
+    (model,) = entry.report.models
+    assert len(model.list_of_qualitative_species) == count
+    assert len(model.list_of_transitions) == count
+
+
 def test_distrib_spans_example_is_served() -> None:
     """The example of the spans and distributions of distrib is served."""
     example = load_examples()["distrib_spans (distrib_spans.xml)"]
