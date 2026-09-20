@@ -2,6 +2,17 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.7.1
+
+A maintenance release: SBML4Humans reads its models with libsbml 5.21.2. The application is the one of [0.7.0](https://github.com/matthiaskoenig/sbml4humans/releases/tag/0.7.0), whose notes describe the explanations of a report.
+
+### Dependencies
+- `python-libsbml` is 5.21.2 or newer, formerly 5.21.1. [libsbml 5.21.2](https://github.com/sbmlteam/libsbml/releases/tag/v5.21.2) fixes the conversion between markdown and html, a memory leak of the gene product association of fbc and the copy of an `ASTNode` of a constant, and is the first version built for python 3.15
+- nothing a report shows changed with it: the reports of the examples are the same with both versions, and so are the message, the severity and the section of the 458 validation rules the glossary cites, which the reference and the explanations read from libsbml
+
+### Known issue
+- libsbml 5.21.2 still knows the `UncertKind` value of the coefficient of variation under the misspelling `coeffientOfVariation` only. A distrib file which writes `coefficientOfVariation`, as Section 3.3.2 of the distrib specification spells it, is refused by libsbml with the error 1520308, and its measure is shown without its type ([#66](https://github.com/matthiaskoenig/sbml4humans/issues/66)). A file which a tool built on libsbml wrote carries the misspelling and is shown with its type. Reported to libsbml as [sbmlteam/libsbml#492](https://github.com/sbmlteam/libsbml/issues/492): the body of the specification spells the value correctly, the validation rules of its Appendix A misspell it, and libsbml follows the appendix
+
 ## 0.7.0
 
 Every name a report shows explains itself. A click on the label of an attribute, on the name of a type or on the heading of a group of links opens a dialog which says what the thing is and what the specification asks of it: the data type of its value, whether it is required, what holds when a file does not set it, and the validation rules it is held to, as libsbml states them. The glossary carries all of this, so the reference of the documentation states it as well, and a report which was opened from python explains itself without a network.

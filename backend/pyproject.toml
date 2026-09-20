@@ -27,7 +27,7 @@ authors = [
 dependencies = [
     # the report: libsbml reads the models, lxml renders the math with xslt,
     # pint formats the units, pymetadata handles combine archives and annotations
-    "python-libsbml>=5.21.1",
+    "python-libsbml>=5.21.2",
     "lxml>=6.0.0",
     "numpy>=2.2.2",
     "pint>=0.25.3",
