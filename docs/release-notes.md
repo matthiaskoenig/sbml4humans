@@ -2,6 +2,31 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.7.2
+
+The tables of a report say more on less space: a value is read together with its units, and the table of the transitions of a qualitative model shows the rules instead of their number.
+
+### The tables
+- the derived units stand in the column right of the value they belong to, the size of a compartment, the value of a parameter and the initial amount and concentration of a species, so that a value and its units are read together ([#72](https://github.com/matthiaskoenig/sbml4humans/issues/72))
+- the derived units are the only units of a table: the column of the units attribute, `units` of a compartment and of a parameter and `substanceUnits` of a species, is gone, since the derived units are the rendered units of the element and say the same. The attribute stays a row of the inspector, with the link to its unit definition ([#71](https://github.com/matthiaskoenig/sbml4humans/issues/71))
+- the column `listOfFunctionTerms` of the table of the transitions shows the rule of the transition instead of the number of its function terms: `level if condition` for every function term in the order of the file and `level otherwise` for the default term, for example `1 if (S ≥ theta_G_S) ∧ (P < theta_G_P); 1 if (G ≥ theta_G_G) ∧ (P < theta_G_P); 0 otherwise`, which gives an overview of the rules of a qualitative model ([#70](https://github.com/matthiaskoenig/sbml4humans/issues/70))
+
+### The examples
+- two published logical models of the qual package are examples, written by [TabularQual](https://github.com/sys-bio/TabularQual): `Faure2006`, the Boolean model of the mammalian cell cycle, in which every input of a transition carries its sign, and `ThieffryThomas1995_multivalue`, the decision between lysis and lysogeny of the phage lambda, whose qualitative species have up to four levels ([#78](https://github.com/matthiaskoenig/sbml4humans/issues/78))
+
+### Fixes
+- the entries of a COMBINE archive are in the order of its manifest, in the description of an archive example, in the manifest of a report and in the context bar. The order was the one of the file system the archive was extracted to and differed between machines; it is fixed in pymetadata 0.6.4, which the backend requires now
+
+### Development
+- the table and the inspector build the rows of the function terms of a transition from one place, `report/transitionTerms.ts`, the inspector had its own copy
+- the cell kind `count`, the units link of a table cell and the `latexField` of a column are removed, nothing uses them any more
+- the architecture notes of `CLAUDE.md` are split per directory, `backend/CLAUDE.md`, `frontend/CLAUDE.md` and `glossary/CLAUDE.md`, and are loaded with the work below that directory only
+- the api of the backend and the data model of the report did not change: the release is the frontend, the glossary, the documentation, the examples and the requirement of pymetadata 0.6.4
+
+### Documentation
+- [reading a report](https://matthiaskoenig.github.io/sbml4humans/report/) describes the columns of the tables as they are now, and the screenshots which show a table are retaken
+- `CITATION.cff` and the "How to cite" sections name version 0.7.1 and its DOI [10.5281/zenodo.22854257](https://doi.org/10.5281/zenodo.22854257)
+
 ## 0.7.1
 
 A maintenance release: SBML4Humans reads its models with libsbml 5.21.2. The application is the one of [0.7.0](https://github.com/matthiaskoenig/sbml4humans/releases/tag/0.7.0), whose notes describe the explanations of a report.
