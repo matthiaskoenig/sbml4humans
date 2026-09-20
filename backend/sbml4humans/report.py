@@ -24,7 +24,6 @@ from pathlib import Path
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
-from sbml4humans.archive import read_omex
 from sbml4humans.external import ExternalModels, normalize_location, resolve_source
 from sbml4humans.links import LinkSource, build_link_graphs
 from sbml4humans.model import (
@@ -227,7 +226,7 @@ def _omex_for_path(path: Path, named: bool = False) -> Omex:
     next to it are resolved against.
     """
     if Omex.is_omex(path):
-        return read_omex(path)
+        return Omex.from_omex(path)
 
     location = SBML_LOCATION
     if named:
