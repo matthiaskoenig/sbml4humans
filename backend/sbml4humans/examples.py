@@ -12,6 +12,7 @@ import libsbml
 from pydantic import BaseModel, Field, FilePath
 from pymetadata.omex import ManifestEntry, Omex
 
+from sbml4humans.archive import read_omex
 from sbml4humans.resources import (
     API_EXAMPLES_MODEL,
     API_EXAMPLES_OMEX,
@@ -70,7 +71,7 @@ def example_from_sbml(
 
 def example_from_omex(omex_path: Path) -> ExampleMetaData:
     """Read the metadata of an example from its COMBINE archive."""
-    omex = Omex.from_omex(omex_path)
+    omex = read_omex(omex_path)
     return ExampleMetaData(
         id=omex_path.stem,
         file=omex_path,
@@ -118,7 +119,7 @@ def biomodel_examples(
         if not omex_path.is_file():
             continue
 
-        omex = Omex.from_omex(omex_path)
+        omex = read_omex(omex_path)
         sbml_path = omex.get_path(main_sbml_entry(omex).location)
         examples.append(example_from_sbml(sbml_path, example_id=biomodel_id))
 
