@@ -68,7 +68,7 @@ path = "sbml4humans/__init__.py"
 # follows it. Run from this directory: `uv run bump-my-version bump minor`.
 # No tag: the bump is merged into develop with squash or rebase, which rewrites
 # the commit, so the tag is created on develop after the merge (see docs/development.md)
-current_version = "0.6.2"
+current_version = "0.7.0"
 commit = true
 tag = false
 tag_name = "{new_version}"
