@@ -118,6 +118,25 @@ def test_report_for_omex_has_all_sbml_entries() -> None:
     assert "./models/icg_body.xml" in response.reports
 
 
+def test_report_for_omex_keeps_the_order_of_the_manifest() -> None:
+    """The manifest and the reports of a response are in the order of the manifest.
+
+    The order of the file system must not show, which pymetadata 0.6.4 ensures.
+    """
+    response = report_for_path(OMEX_ICGMODEL)
+    locations = [
+        "./models/icg_liver.xml",
+        "./models/icg_body.xml",
+        "./models/icg_body_flat.xml",
+    ]
+    assert [entry.location for entry in response.manifest.entries] == [
+        ".",
+        "./manifest.xml",
+        *locations,
+    ]
+    assert list(response.reports) == locations
+
+
 def test_report_for_sbml_string() -> None:
     """Report data is created from an SBML string."""
     entry = report_for_sbml(REPRESSILATOR_SBML.read_text(encoding="utf-8"))

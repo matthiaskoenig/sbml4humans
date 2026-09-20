@@ -675,16 +675,16 @@ wheels = [
 
 [[package]]
 name = "pymetadata"
-version = "0.6.2"
+version = "0.6.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "requests" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f7/1d/1c4bed8223cbc9626c982810dfd0c81a8b10fb548c0a5901cabd829ca55f/pymetadata-0.6.2.tar.gz", hash = "sha256:6bc9991bc1fb5f030a193e3994dd7e46e7d4b5c05ad1815f7ff6acc8bee3d810", size = 5764252, upload-time = "2026-09-08T19:51:06.182Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/16/66/ff7e234c246889a043b7a3b83968f98b0af48d94a269cdc71f36aba38a1b/pymetadata-0.6.4.tar.gz", hash = "sha256:ad54c33759a1faecf84ed1402791ae423c189819406e1d4f39c63bbe6ab7001a", size = 5767591, upload-time = "2026-09-20T23:48:37.131Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/50/1b/e897e1ad3f949af19cf96a0f9d20c9cfb60f2d83d16c729cc4efc993c0f7/pymetadata-0.6.2-py3-none-any.whl", hash = "sha256:42c221dff55c855c474f12ad4dcb6c5788e76884a8f522f0c9006e38788e43c9", size = 322262, upload-time = "2026-09-08T19:51:04.475Z" },
+    { url = "https://files.pythonhosted.org/packages/be/37/136ebd81024f7da12e22eaaa3b32959ece3b04e48bcbb9893ebb288e4f97/pymetadata-0.6.4-py3-none-any.whl", hash = "sha256:b3b93627cc8b171a53c13ce098079777f8db2115fb7a5321a4ae700cef5b844c", size = 323019, upload-time = "2026-09-20T23:48:35.219Z" },
 ]
 
 [[package]]
@@ -883,7 +883,7 @@ requires-dist = [
     { name = "pint", specifier = ">=0.25.3" },
     { name = "platformdirs", specifier = ">=4.4" },
     { name = "pydantic", specifier = ">=2.12" },
-    { name = "pymetadata", specifier = ">=0.6.2" },
+    { name = "pymetadata", specifier = ">=0.6.4" },
     { name = "python-libsbml", specifier = ">=5.21.2" },
     { name = "python-multipart", specifier = ">=0.0.32" },
     { name = "uvicorn", specifier = ">=0.52.4" },
