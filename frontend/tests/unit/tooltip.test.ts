@@ -54,6 +54,24 @@ afterEach(() => {
 });
 
 describe("v-tooltip", () => {
+  it("shows nothing for the mouseenter a touch is followed by", async () => {
+    const host = mountHost("the identifier of the element").get("[data-testid=host]");
+    // a finger does not hover: the browser sends the mouse events of a tap after its touch, and
+    // no mouseleave follows them until the next tap somewhere else
+    const touch = new Event("pointerdown", { bubbles: true });
+    Object.defineProperty(touch, "pointerType", { value: "touch" });
+    host.element.dispatchEvent(touch);
+    await host.trigger("mouseenter");
+    expect(tooltip()?.hidden ?? true).toBe(true);
+
+    // the mouse of the same device hovers again
+    const mouse = new Event("pointermove", { bubbles: true });
+    Object.defineProperty(mouse, "pointerType", { value: "mouse" });
+    host.element.dispatchEvent(mouse);
+    await host.trigger("mouseenter");
+    expect(tooltip()?.hidden).toBe(false);
+  });
+
   it("shows the text on mouseenter and hides it on mouseleave", async () => {
     const host = mountHost("kd_mRNA * X (click to copy)").get("[data-testid=host]");
     await host.trigger("mouseenter");

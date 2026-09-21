@@ -330,11 +330,16 @@ const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
           @keydown="onRowKeydown($event, row, range.start + i)"
           @focus="activePk = row.pk"
         >
+          <!-- a row of a narrow window is as high as a finger needs to hit it; the rows of a
+          windowed table keep `ROW_HEIGHT`, which the window is computed from -->
           <td
             v-for="(column, j) in columns"
             :key="column.field"
             class="px-3 align-top whitespace-nowrap"
-            :class="[virtual ? 'py-0' : 'py-1.5', pinned(column, j) ? PINNED_CELL : '']"
+            :class="[
+              virtual ? 'py-0' : 'py-1.5 max-md:py-2.5',
+              pinned(column, j) ? PINNED_CELL : '',
+            ]"
             :style="column.width ? { width: column.width } : undefined"
           >
             <div

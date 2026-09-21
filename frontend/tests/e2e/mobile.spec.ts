@@ -176,3 +176,33 @@ test("the report page of a phone leaves the footer to the other pages", async ({
   await openExample(page, REPRESSILATOR);
   await expect(page.getByTestId("app-footer")).toBeHidden();
 });
+
+test.describe("the help dialog of a phone", () => {
+  test("fills the window", async ({ page }) => {
+    await openExample(page, REPRESSILATOR);
+    await page.getByTestId("section-Species").getByTestId("help-button").first().click();
+    const dialog = page.getByTestId("help-dialog");
+    await expect(dialog).toBeVisible();
+    const box = await dialog.boundingBox();
+    const viewport = page.viewportSize()!;
+    expect(box!.width).toBe(viewport.width);
+    expect(box!.height).toBe(viewport.height);
+    await expectNoOverflow(page);
+  });
+});
+
+test("the examples page of a phone stacks the heading and the filter", async ({ page }) => {
+  await page.goto("/examples");
+  const heading = await page.getByRole("heading", { name: "Examples" }).boundingBox();
+  const filter = await page.getByTestId("examples-filter").boundingBox();
+  expect(filter!.y).toBeGreaterThan(heading!.y + heading!.height - 1);
+  expect(filter!.width).toBeGreaterThan(page.viewportSize()!.width - 40);
+});
+
+test("a tap leaves no tooltip behind", async ({ page }) => {
+  await openExample(page, REPRESSILATOR);
+  // the button which sorts a column explains itself on hover, and a finger does not hover
+  await page.getByTestId("table-Species").getByTestId("sort-button").first().tap();
+  await expect(page.getByTestId("table-Species").locator("th[aria-sort=ascending]")).toHaveCount(1);
+  await expect(page.locator("#app-tooltip")).toBeHidden();
+});
