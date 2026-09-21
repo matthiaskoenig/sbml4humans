@@ -7,11 +7,12 @@ const REPRESSILATOR = "BIOMD0000000012 (BIOMD0000000012_urn.xml)";
 /** The page never scrolls sideways on a phone: what is wider than the window, a table, scrolls
  * inside a box of its own. */
 async function expectNoOverflow(page: Page): Promise<void> {
-  const { scrollWidth, clientWidth } = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-  }));
-  expect(scrollWidth).toBeLessThanOrEqual(clientWidth);
+  // a string body, not a typed function, the way `referrer.spec.ts` reads `document.referrer`:
+  // the specs are type checked without the DOM
+  const overflow = await page.evaluate<number>(
+    "document.documentElement.scrollWidth - document.documentElement.clientWidth",
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 }
 
 test.describe("the pages fit a phone", () => {
