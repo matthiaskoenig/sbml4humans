@@ -134,3 +134,45 @@ test.describe("the tables of a phone", () => {
     expect(after!.width).toBeLessThanOrEqual(box!.width / 2);
   });
 });
+
+test.describe("the type bar of a phone", () => {
+  test("holds the types behind one button which says how many are shown", async ({ page }) => {
+    await openExample(page, REPRESSILATOR);
+    const toggle = page.getByTestId("type-bar-toggle");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(toggle).toContainText("6 / 6");
+    await expect(page.getByTestId("bar-toggle-Species")).toBeHidden();
+    // the document and the model stay in reach
+    await expect(page.getByTestId("bar-document")).toBeVisible();
+    await expect(page.getByTestId("bar-model")).toBeVisible();
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await page.getByTestId("bar-toggle-Species").uncheck();
+    await expect(toggle).toContainText("5 / 6");
+    await expect(page.getByTestId("section-Species")).toHaveCount(0);
+    await expectNoOverflow(page);
+  });
+
+  test("closes when a type is scrolled to", async ({ page }) => {
+    await openExample(page, REPRESSILATOR);
+    await page.getByTestId("type-bar-toggle").click();
+    await page.getByTestId("bar-type-Reaction").getByRole("button").click();
+    await expect(page.getByTestId("bar-toggle-Species")).toBeHidden();
+    await expect(page.getByTestId("section-Reaction")).toBeInViewport();
+  });
+
+  test("gives way to the inspector", async ({ page }) => {
+    await openExample(page, REPRESSILATOR);
+    await page.getByTestId("bar-model").click();
+    await expect(page.getByTestId("inspector")).toBeVisible();
+    await expect(page.getByTestId("type-bar")).toBeHidden();
+  });
+});
+
+test("the report page of a phone leaves the footer to the other pages", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByTestId("app-footer")).toBeVisible();
+  await openExample(page, REPRESSILATOR);
+  await expect(page.getByTestId("app-footer")).toBeHidden();
+});

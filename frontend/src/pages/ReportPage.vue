@@ -186,7 +186,9 @@ watch([selectedPk, index], ([pk, current]) => {
     <RouterLink to="/" class="text-link hover:underline">Load a model</RouterLink>
   </div>
   <div v-else-if="index && model" class="flex min-h-0 flex-1 flex-col" data-testid="report-page">
-    <TypeBar :index="index" :model="model" :counts="counts" />
+    <!-- the bar is about the tables, and on a narrow window the inspector stands in their place:
+    it gives its rows to the element which is read -->
+    <TypeBar v-show="!(narrow && selectedPk)" :index="index" :model="model" :counts="counts" />
     <!-- the inspector is the first pane: the element which is read stands at the left, where a
     reader begins, and the tables it was selected in keep the rest of the window -->
     <SplitPane
@@ -217,7 +219,9 @@ watch([selectedPk, index], ([pk, current]) => {
         :empty-message="emptyMessage"
       />
     </div>
-    <AppFooter dense />
+    <!-- a narrow window leaves the footer to the home page and the examples page, the height it
+    takes is the height the report is read in -->
+    <AppFooter dense class="max-md:hidden" />
     <!-- the explanation of the entry the route names, mounted once for the whole page: every
     label which opens one opens it here -->
     <HelpDialog />
