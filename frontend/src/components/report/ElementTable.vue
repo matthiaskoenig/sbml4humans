@@ -220,6 +220,21 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
     toggleSelection(row);
   }
 }
+
+/** The id of a row stays in view while its table scrolls sideways, which a table does wherever
+ * the window is narrower than its columns, on a phone always: the first column is pinned to the
+ * left edge of the scroll. A pinned cell covers what scrolls below it, so it carries the
+ * background of its row, and the line at its right edge is a shadow, since a border of a
+ * collapsed table stays behind when its cell is pinned. Where a device pixel is not a whole
+ * number of CSS pixels, a cell pinned at the very edge is rounded to a pixel the scroll is not,
+ * which leaves a slit the scrolled text shows through: the cell is pinned one pixel beyond the
+ * edge, where the scroll cuts it off. */
+function pinned(column: ColumnDef, position: number): boolean {
+  return position === 0 && column.kind === "id";
+}
+const PINNED = "sticky -left-px shadow-[inset_-1px_0_0_var(--color-gray-200)]";
+const PINNED_CELL = `${PINNED} z-[1] bg-inherit`;
+const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
 </script>
 
 <template>
@@ -234,11 +249,14 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
       <thead class="sticky top-0 z-10 bg-gray-50">
         <tr class="border-b border-gray-200">
           <th
-            v-for="column in columns"
+            v-for="(column, i) in columns"
             :key="column.field"
             scope="col"
             class="group/th px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600 select-none"
-            :class="{ 'cursor-pointer': sortable(column) }"
+            :class="[
+              { 'cursor-pointer': sortable(column) },
+              pinned(column, i) ? PINNED_HEADER : '',
+            ]"
             :style="column.width ? { width: column.width } : undefined"
             :aria-sort="ariaSort(column)"
             :aria-label="column.header"
@@ -305,7 +323,7 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
           :tabindex="row.pk === tabbablePk ? 0 : -1"
           class="cursor-pointer border-b border-gray-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-link"
           :class="[
-            row.pk === selectedPk ? 'bg-selected' : 'hover:bg-gray-50',
+            row.pk === selectedPk ? 'bg-selected' : 'bg-white hover:bg-gray-50',
             { 'scroll-mt-10': virtual },
           ]"
           @click="onRowClick($event, row)"
@@ -313,10 +331,10 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
           @focus="activePk = row.pk"
         >
           <td
-            v-for="column in columns"
+            v-for="(column, j) in columns"
             :key="column.field"
             class="px-3 align-top whitespace-nowrap"
-            :class="virtual ? 'py-0' : 'py-1.5'"
+            :class="[virtual ? 'py-0' : 'py-1.5', pinned(column, j) ? PINNED_CELL : '']"
             :style="column.width ? { width: column.width } : undefined"
           >
             <div

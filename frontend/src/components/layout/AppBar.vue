@@ -66,7 +66,9 @@ onBeforeUnmount(() => {
     <div class="order-last w-full empty:hidden max-md:pb-2 md:order-none md:w-auto">
       <slot name="search" />
     </div>
-    <div class="flex h-12 min-w-0 flex-1 items-center gap-3">
+    <!-- the first row of the bar keeps the height of `h-12` with the border of the bar, the bar
+    itself grows with the row of the search -->
+    <div class="flex h-[calc(3rem-1px)] min-w-0 flex-1 items-center gap-3">
       <slot name="context" />
     </div>
     <div ref="menu" class="relative flex items-center">

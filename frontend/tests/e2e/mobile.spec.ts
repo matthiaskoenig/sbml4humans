@@ -112,3 +112,25 @@ test.describe("the report page of a phone", () => {
     await expect(page.getByTestId("inspector-id")).toHaveText("BIOMD0000000012");
   });
 });
+
+test.describe("the tables of a phone", () => {
+  test("keep the id of a row in view while the table scrolls sideways", async ({ page }) => {
+    await openExample(page, REPRESSILATOR);
+    const table = page.getByTestId("table-Parameter");
+    const idCell = table.locator("tbody tr[data-pk]").first().locator("td").first();
+    const idHeader = table.locator("thead th").first();
+    const before = await idCell.boundingBox();
+    const scrollLeft = await table.evaluate((element) => {
+      element.scrollLeft = 300;
+      return element.scrollLeft;
+    });
+    expect(scrollLeft).toBeGreaterThan(0);
+    // pinned a pixel beyond the edge of the scroll, see `pinned` of the table
+    const after = await idCell.boundingBox();
+    expect(after!.x).toBe(before!.x - 1);
+    expect((await idHeader.boundingBox())!.x).toBe(before!.x - 1);
+    // the pinned column leaves the other columns more than half of the table
+    const box = await table.boundingBox();
+    expect(after!.width).toBeLessThanOrEqual(box!.width / 2);
+  });
+});
