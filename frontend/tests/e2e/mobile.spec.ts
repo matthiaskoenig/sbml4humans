@@ -133,6 +133,14 @@ test.describe("the tables of a phone", () => {
     const box = await table.boundingBox();
     expect(after!.width).toBeLessThanOrEqual(box!.width / 2);
   });
+
+  test("cut a long id off before it takes the width of the other columns", async ({ page }) => {
+    await openExample(page, "e_coli_core (e_coli_core.xml.gz)");
+    const table = page.getByTestId("table-Reaction");
+    const idCell = table.locator("tbody tr[data-pk]").first().locator("td").first();
+    const box = await table.boundingBox();
+    expect((await idCell.boundingBox())!.width).toBeLessThanOrEqual(box!.width / 2);
+  });
 });
 
 test.describe("the type bar of a phone", () => {

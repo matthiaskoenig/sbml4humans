@@ -5,6 +5,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from 
 import type { ElementType, SbmlElement } from "@/api/types";
 import HelpButton from "@/components/help/HelpButton.vue";
 import ElementCell from "@/components/report/ElementCell.vue";
+import { useNarrow } from "@/narrow";
 import { fieldValue, visibleColumns, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
 import { attributeEntry, attributeKey } from "@/report/glossary";
@@ -37,6 +38,7 @@ const props = defineProps<{
   allRows?: SbmlElement[];
 }>();
 const view = useReportView();
+const narrow = useNarrow();
 const index = useReportIndex();
 
 const columns = computed(() => visibleColumns(props.type, props.allRows ?? props.rows));
@@ -232,6 +234,14 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
 function pinned(column: ColumnDef, position: number): boolean {
   return position === 0 && column.kind === "id";
 }
+/** The width a column asks for. The pinned column of a narrow window asks for none and is as
+ * wide as its ids, which the cell cuts off at a part of the window: the width it has on a wide
+ * window is more than half of a phone. */
+function widthStyle(column: ColumnDef, position: number): { width: string } | undefined {
+  if (!column.width || (narrow.value && pinned(column, position))) return undefined;
+  return { width: column.width };
+}
+
 const PINNED = "sticky -left-px shadow-[inset_-1px_0_0_var(--color-gray-200)]";
 const PINNED_CELL = `${PINNED} z-[1] bg-inherit`;
 const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
@@ -257,7 +267,7 @@ const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
               { 'cursor-pointer': sortable(column) },
               pinned(column, i) ? PINNED_HEADER : '',
             ]"
-            :style="column.width ? { width: column.width } : undefined"
+            :style="widthStyle(column, i)"
             :aria-sort="ariaSort(column)"
             :aria-label="column.header"
             @click="onHeaderClick(column)"
@@ -340,7 +350,7 @@ const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
               virtual ? 'py-0' : 'py-1.5 max-md:py-2.5',
               pinned(column, j) ? PINNED_CELL : '',
             ]"
-            :style="column.width ? { width: column.width } : undefined"
+            :style="widthStyle(column, j)"
           >
             <div
               v-if="virtual"

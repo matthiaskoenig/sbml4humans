@@ -20,7 +20,8 @@ const feedbackUrl = computed(() =>
   }),
 );
 
-/** A narrow window holds the links of the bar behind the menu button. The menu closes with the
+/** A window below `lg` holds the links of the bar behind the menu button: between `md` and `lg`
+ * the bar has the search and the context of a report in its one row, and no room left for them. The menu closes with the
  * page it opened, with Escape and with a click outside of it. */
 const open = ref(false);
 const menu = ref<HTMLElement | null>(null);
@@ -74,7 +75,7 @@ onBeforeUnmount(() => {
     <div ref="menu" class="relative flex items-center">
       <button
         type="button"
-        class="-mr-2 flex size-10 items-center justify-center rounded text-gray-600 hover:bg-gray-100 md:hidden"
+        class="-mr-2 flex size-10 items-center justify-center rounded text-gray-600 hover:bg-gray-100 lg:hidden"
         aria-label="menu"
         aria-controls="app-bar-links"
         :aria-expanded="open"
@@ -87,7 +88,7 @@ onBeforeUnmount(() => {
       one -->
       <nav
         id="app-bar-links"
-        class="max-md:absolute max-md:top-full max-md:right-0 max-md:z-30 max-md:min-w-44 max-md:flex-col max-md:rounded max-md:border max-md:border-gray-200 max-md:bg-white max-md:py-1 max-md:shadow-lg md:flex md:items-center md:gap-3 max-md:[&>a]:px-4 max-md:[&>a]:py-2.5"
+        class="max-lg:absolute max-lg:top-full max-lg:right-0 max-lg:z-30 max-lg:min-w-44 max-lg:flex-col max-lg:rounded max-lg:border max-lg:border-gray-200 max-lg:bg-white max-lg:py-1 max-lg:shadow-lg lg:flex lg:items-center lg:gap-3 max-lg:[&>a]:px-4 max-lg:[&>a]:py-2.5"
         :class="open ? 'flex' : 'hidden'"
         data-testid="app-bar-links"
       >
