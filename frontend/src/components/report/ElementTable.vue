@@ -5,6 +5,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type Component } from 
 import type { ElementType, SbmlElement } from "@/api/types";
 import HelpButton from "@/components/help/HelpButton.vue";
 import ElementCell from "@/components/report/ElementCell.vue";
+import { useNarrow } from "@/narrow";
 import { fieldValue, visibleColumns, type ColumnDef } from "@/report/columns";
 import { useReportIndex } from "@/report/context";
 import { attributeEntry, attributeKey } from "@/report/glossary";
@@ -37,6 +38,7 @@ const props = defineProps<{
   allRows?: SbmlElement[];
 }>();
 const view = useReportView();
+const narrow = useNarrow();
 const index = useReportIndex();
 
 const columns = computed(() => visibleColumns(props.type, props.allRows ?? props.rows));
@@ -59,11 +61,16 @@ const scrollTop = ref(0);
 let frame = 0;
 
 /** One update of the window per animation frame. */
+/** Whether the table is scrolled sideways, which is when its pinned column covers the others
+ * and draws the line that says so. */
+const sideways = ref(false);
+
 function onScroll(): void {
   if (frame) return;
   frame = requestAnimationFrame(() => {
     frame = 0;
     scrollTop.value = scroller.value?.scrollTop ?? 0;
+    sideways.value = (scroller.value?.scrollLeft ?? 0) > 0;
   });
 }
 
@@ -220,6 +227,35 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
     toggleSelection(row);
   }
 }
+
+/** The id of a row stays in view while its table scrolls sideways, which a table does wherever
+ * the window is narrower than its columns, on a phone always: the first column is pinned to the
+ * left edge of the scroll. A pinned cell covers what scrolls below it, so it carries the
+ * background of its row, and while the table is scrolled sideways a line at its right edge
+ * says that it does; the line is a shadow, since a border of a collapsed table stays behind when
+ * its cell is pinned. Where a device pixel is not a whole
+ * number of CSS pixels, a cell pinned at the very edge is rounded to a pixel the scroll is not,
+ * which leaves a slit the scrolled text shows through: the cell is pinned one pixel beyond the
+ * edge, where the scroll cuts it off. */
+function pinned(column: ColumnDef, position: number): boolean {
+  return position === 0 && column.kind === "id";
+}
+/** The width a column asks for. The pinned column of a narrow window asks for none and is as
+ * wide as its ids, which the cell cuts off at a part of the window: the width it has on a wide
+ * window is more than half of a phone. */
+function widthStyle(column: ColumnDef, position: number): { width: string } | undefined {
+  if (!column.width || (narrow.value && pinned(column, position))) return undefined;
+  return { width: column.width };
+}
+
+const PINNED = "sticky -left-px";
+const PINNED_LINE = "shadow-[inset_-1px_0_0_var(--color-gray-200)]";
+const pinnedCell = computed(
+  () => `${PINNED} z-[1] bg-inherit ${sideways.value ? PINNED_LINE : ""}`,
+);
+const pinnedHeader = computed(
+  () => `${PINNED} z-[2] bg-gray-50 ${sideways.value ? PINNED_LINE : ""}`,
+);
 </script>
 
 <template>
@@ -234,12 +270,12 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
       <thead class="sticky top-0 z-10 bg-gray-50">
         <tr class="border-b border-gray-200">
           <th
-            v-for="column in columns"
+            v-for="(column, i) in columns"
             :key="column.field"
             scope="col"
             class="group/th px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600 select-none"
-            :class="{ 'cursor-pointer': sortable(column) }"
-            :style="column.width ? { width: column.width } : undefined"
+            :class="[{ 'cursor-pointer': sortable(column) }, pinned(column, i) ? pinnedHeader : '']"
+            :style="widthStyle(column, i)"
             :aria-sort="ariaSort(column)"
             :aria-label="column.header"
             @click="onHeaderClick(column)"
@@ -305,19 +341,24 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
           :tabindex="row.pk === tabbablePk ? 0 : -1"
           class="cursor-pointer border-b border-gray-100 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-link"
           :class="[
-            row.pk === selectedPk ? 'bg-selected' : 'hover:bg-gray-50',
+            row.pk === selectedPk ? 'bg-selected' : 'bg-white hover:bg-gray-50',
             { 'scroll-mt-10': virtual },
           ]"
           @click="onRowClick($event, row)"
           @keydown="onRowKeydown($event, row, range.start + i)"
           @focus="activePk = row.pk"
         >
+          <!-- a row of a narrow window is as high as a finger needs to hit it; the rows of a
+          windowed table keep `ROW_HEIGHT`, which the window is computed from -->
           <td
-            v-for="column in columns"
+            v-for="(column, j) in columns"
             :key="column.field"
             class="px-3 align-top whitespace-nowrap"
-            :class="virtual ? 'py-0' : 'py-1.5'"
-            :style="column.width ? { width: column.width } : undefined"
+            :class="[
+              virtual ? 'py-0' : 'py-1.5 max-md:py-2.5',
+              pinned(column, j) ? pinnedCell : '',
+            ]"
+            :style="widthStyle(column, j)"
           >
             <div
               v-if="virtual"

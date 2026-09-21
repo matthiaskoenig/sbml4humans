@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 3456;
 const CHROME = { ...devices["Desktop Chrome"], viewport: { width: 1600, height: 1000 } };
+/** The phone of the narrow layout, which `mobile.spec.ts` alone is written for. */
+const PHONE = devices["Pixel 7"];
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -23,8 +25,13 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testIgnore: /examples-walk/,
+      testIgnore: /examples-walk|mobile/,
       use: CHROME,
+    },
+    {
+      name: "mobile",
+      testMatch: /mobile/,
+      use: PHONE,
     },
     // the walk over every example runs alone, after the other specs: creating a report is CPU
     // bound in the backend, which the parallel workers of the other specs would compete for

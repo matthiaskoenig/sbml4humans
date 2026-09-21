@@ -120,14 +120,16 @@ function signOf(influence: Input | Output): string | null | undefined {
 <template>
   <!-- the identifier of a row carries the mark of its type, so that the tables of the rules,
   which look alike, are told apart by the mark; a row the file gives no id is named as the
-  inspector names it, in italics, which tells that name from an id of the file -->
-  <span v-if="column.kind === 'id'" class="flex items-center gap-1.5">
+  inspector names it, in italics, which tells that name from an id of the file. The column of the
+  id is pinned while its table scrolls sideways, so on a narrow window a long id is cut off
+  before it takes the width the other columns are read in; the inspector shows it whole -->
+  <span v-if="column.kind === 'id'" class="flex items-center gap-1.5 max-md:max-w-[40vw]">
     <TypeMark v-if="row.sbmlType" :type="row.sbmlType" />
-    <span v-if="text" class="font-mono font-medium">{{ text }}</span>
+    <span v-if="text" class="min-w-0 truncate font-mono font-medium">{{ text }}</span>
     <span
       v-else-if="reportName"
       v-tooltip.bottom="REPORT_NAME_HINT"
-      class="font-mono text-gray-600 italic"
+      class="min-w-0 truncate font-mono text-gray-600 italic"
       data-testid="report-name"
       >{{ reportName }}</span
     >

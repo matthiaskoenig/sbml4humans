@@ -260,16 +260,18 @@ function onClick(event: MouseEvent): void {
 </script>
 
 <template>
+  <!-- on a narrow window the dialog is the whole window: the margin a dialog keeps on a wide one
+  would take the width an explanation is read in -->
   <dialog
     ref="dialog"
-    class="m-auto w-[calc(100%-1.5rem)] max-w-2xl overflow-hidden rounded-lg bg-white p-0 shadow-xl backdrop:bg-gray-900/40"
+    class="m-auto w-[calc(100%-1.5rem)] max-w-2xl overflow-hidden rounded-lg bg-white p-0 shadow-xl backdrop:bg-gray-900/40 max-md:m-0 max-md:h-dvh max-md:max-h-none max-md:w-full max-md:max-w-none max-md:rounded-none"
     :aria-labelledby="TITLE_ID"
     data-testid="help-dialog"
     @close="onClose"
     @mousedown="onMouseDown"
     @click="onClick"
   >
-    <div v-if="help" class="flex max-h-[80vh] flex-col">
+    <div v-if="help" class="flex max-h-[80vh] flex-col max-md:h-full max-md:max-h-none">
       <!-- the header is one line: the breadcrumb gives way first, and where even it is too narrow
       for everything, on a telephone, the name of the type an attribute belongs to gives way to the
       name of the attribute and leaves its mark, which links it, the way the header of the
