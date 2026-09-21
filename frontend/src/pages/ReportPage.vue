@@ -3,7 +3,7 @@ import { computed, onUnmounted, provide, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { pingLocal } from "@/api/client";
-import type { SbmlElement, ElementType } from "@/api/types";
+import type { ElementType } from "@/api/types";
 import HelpDialog from "@/components/help/HelpDialog.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
 import AppBar from "@/components/layout/AppBar.vue";
@@ -12,10 +12,11 @@ import ErrorState from "@/components/layout/ErrorState.vue";
 import LoadingState from "@/components/layout/LoadingState.vue";
 import SplitPane from "@/components/layout/SplitPane.vue";
 import ContextBar from "@/components/report/ContextBar.vue";
-import ElementSection from "@/components/report/ElementSection.vue";
+import ReportTables from "@/components/report/ReportTables.vue";
 import SearchBox from "@/components/report/SearchBox.vue";
 import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
+import { useNarrow } from "@/narrow";
 import { ReportIndexKey } from "@/report/context";
 import { matches } from "@/report/search";
 import { useReportView } from "@/report/view";
@@ -24,6 +25,7 @@ import { LOCAL_PING_INTERVAL, useReportStore } from "@/stores/report";
 const route = useRoute();
 const store = useReportStore();
 const view = useReportView();
+const narrow = useNarrow();
 
 /** The width the inspector opens with: a third of the window, which leaves the tables the two
  * thirds they need for their widest columns. A reader who drags the divider keeps their width,
@@ -135,9 +137,13 @@ const selectedPk = computed(() => view.state.value.pk);
  * and a page which opens with the tables alone does not show that there is an inspector. The
  * route is replaced, so that the way back does not pass a report without a selection, and only a
  * model which comes into view selects itself: a reader who closes the inspector keeps it closed,
- * and a url which names an element keeps that element. */
+ * and a url which names an element keeps that element. A narrow window shows the inspector in
+ * place of the tables, so its report opens with the tables and without a selection: the model is
+ * one tap away in the type bar. */
 const defaultPk = computed(() =>
-  showsReport.value && !store.loading && !store.error ? (model.value?.pk ?? null) : null,
+  showsReport.value && !narrow.value && !store.loading && !store.error
+    ? (model.value?.pk ?? null)
+    : null,
 );
 watch(
   defaultPk,
@@ -184,6 +190,7 @@ watch([selectedPk, index], ([pk, current]) => {
     <!-- the inspector is the first pane: the element which is read stands at the left, where a
     reader begins, and the tables it was selected in keep the rest of the window -->
     <SplitPane
+      v-if="!narrow"
       direction="horizontal"
       storage-key="inspector-width"
       :initial="INSPECTOR_WIDTH"
@@ -195,26 +202,21 @@ watch([selectedPk, index], ([pk, current]) => {
         <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
       </template>
       <template #second>
-        <div class="h-full overflow-y-auto px-4 pb-8" data-testid="tables">
-          <p
-            v-if="visibleSections.length === 0"
-            class="p-8 text-center text-sm text-gray-500"
-            data-testid="no-matches"
-          >
-            {{ emptyMessage }}
-          </p>
-          <ElementSection
-            v-for="section in visibleSections"
-            :key="section.type"
-            :type="section.type"
-            :rows="section.rows as SbmlElement[]"
-            :all-rows="section.all as SbmlElement[]"
-            :total="section.total"
-            :list="section.list"
-          />
-        </div>
+        <ReportTables :sections="visibleSections" :empty-message="emptyMessage" />
       </template>
     </SplitPane>
+    <!-- a narrow window has no room for the two next to each other: the tables are the page, and
+    the element a reader selects takes their place until the reader returns. The tables stay
+    mounted below it, so that they are where the reader left them -->
+    <div v-else class="flex min-h-0 flex-1 flex-col" data-testid="report-stack">
+      <InspectorPanel v-if="selectedPk" :pk="selectedPk" class="min-h-0 flex-1" />
+      <ReportTables
+        v-show="!selectedPk"
+        class="min-h-0 flex-1"
+        :sections="visibleSections"
+        :empty-message="emptyMessage"
+      />
+    </div>
     <AppFooter dense />
     <!-- the explanation of the entry the route names, mounted once for the whole page: every
     label which opens one opens it here -->

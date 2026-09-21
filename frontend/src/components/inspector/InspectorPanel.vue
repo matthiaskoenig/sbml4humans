@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { XIcon } from "@lucide/vue";
+import { ArrowLeftIcon, XIcon } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 
 import HelpLabel from "@/components/help/HelpLabel.vue";
@@ -9,6 +9,7 @@ import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import XmlView from "@/components/misc/XmlView.vue";
 import { useReportIndex } from "@/report/context";
+import { useNarrow } from "@/narrow";
 import { typeEntry, typeKey } from "@/report/glossary";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
 import { useReportView } from "@/report/view";
@@ -16,6 +17,7 @@ import { useReportView } from "@/report/view";
 const props = defineProps<{ pk: string }>();
 const index = useReportIndex();
 const view = useReportView();
+const narrow = useNarrow();
 
 const element = computed(() => index.value?.get(props.pk) ?? null);
 const label = computed(() => element.value?.sbmlType ?? "");
@@ -69,6 +71,18 @@ const xmlEmptyMessage = computed(() =>
       class="flex h-10 shrink-0 items-center gap-1.5 border-b border-gray-200 px-3 text-sm"
       data-testid="inspector-header"
     >
+      <!-- on a narrow window the inspector stands in place of the tables, and what closes it is
+      the way back to them, where a reader looks for it: at the start of the header -->
+      <button
+        v-if="narrow"
+        type="button"
+        class="-ml-2 flex size-10 shrink-0 items-center justify-center rounded text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+        aria-label="back to the tables"
+        data-testid="inspector-back"
+        @click="view.select(null)"
+      >
+        <ArrowLeftIcon class="size-4" />
+      </button>
       <TypeMark v-if="element.sbmlType" :type="element.sbmlType" size="md" />
       <!-- the type keeps the colour it had as the link to its reference page, which it still is,
       of the explanation and not of the page; a type the glossary does not carry opens nothing
@@ -111,6 +125,7 @@ const xmlEmptyMessage = computed(() =>
         XML
       </button>
       <button
+        v-if="!narrow"
         type="button"
         class="shrink-0 rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
         aria-label="close"
