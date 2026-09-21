@@ -51,7 +51,7 @@ If a term of a report is unfamiliar, the [reference](reference/index.md) explain
 
 If you use SBML4Humans please cite the archived software on [Zenodo](https://doi.org/10.5281/zenodo.22827237):
 
-> König, M., & Das, S. (2026). *SBML4Humans: interactive reports of SBML models* (Version 0.7.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22854257
+> König, M., & Das, S. (2026). *SBML4Humans: interactive reports of SBML models* (Version 0.7.2) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.22865785
 
 ```bibtex
 @software{koenig_sbml4humans,
@@ -59,10 +59,10 @@ If you use SBML4Humans please cite the archived software on [Zenodo](https://doi
   title     = {SBML4Humans: interactive reports of SBML models},
   year      = {2026},
   month     = sep,
-  version   = {0.7.1},
+  version   = {0.7.2},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.22854257},
-  url       = {https://doi.org/10.5281/zenodo.22854257},
+  doi       = {10.5281/zenodo.22865785},
+  url       = {https://doi.org/10.5281/zenodo.22865785},
 }
 ```
 
