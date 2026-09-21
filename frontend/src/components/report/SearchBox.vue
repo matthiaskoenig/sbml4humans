@@ -25,7 +25,7 @@ onBeforeUnmount(() => clearTimeout(timer));
 </script>
 
 <template>
-  <div class="relative">
+  <div class="relative md:w-72">
     <SearchIcon
       class="pointer-events-none absolute top-1/2 left-2 size-3 -translate-y-1/2 text-gray-400"
     />
@@ -33,7 +33,7 @@ onBeforeUnmount(() => clearTimeout(timer));
       v-model="text"
       type="search"
       placeholder="Search id, name, notes, math"
-      class="w-72 rounded border border-gray-300 py-1 pr-2 pl-7 text-sm focus:border-link focus:outline-none"
+      class="w-full rounded border border-gray-300 py-1 pr-2 pl-7 text-sm focus:border-link focus:outline-none"
       data-testid="search-input"
       @keydown.esc="text = ''"
     />
