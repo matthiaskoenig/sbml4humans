@@ -120,11 +120,14 @@ test.describe("the tables of a phone", () => {
     const idCell = table.locator("tbody tr[data-pk]").first().locator("td").first();
     const idHeader = table.locator("thead th").first();
     const before = await idCell.boundingBox();
+    // the line of the pinned column is drawn while it covers the others alone
+    await expect(idCell).toHaveCSS("box-shadow", "none");
     const scrollLeft = await table.evaluate((element) => {
       element.scrollLeft = 300;
       return element.scrollLeft;
     });
     expect(scrollLeft).toBeGreaterThan(0);
+    await expect(idCell).not.toHaveCSS("box-shadow", "none");
     // pinned a pixel beyond the edge of the scroll, see `pinned` of the table
     const after = await idCell.boundingBox();
     expect(after!.x).toBe(before!.x - 1);

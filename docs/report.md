@@ -137,6 +137,16 @@ The inspector of an external model definition says how far it was followed: the 
 
 The report never fetches a file. A source which is a URL is shown as it is and marked as a remote source, so that the time a report takes does not depend on another server and a model cannot make the server request an address. An SBML file which is uploaded on its own has no file next to it, so its external model definitions are not followed and its references end at the submodel; put the files into one COMBINE archive to see them resolved. The examples which are single files are read from their directory on the server, which is why `comp_deletion` and `icg_body` show the files they name as further entries.
 
+## On a phone
+
+A window narrower than 768 px, a phone, has no room for the tables and the inspector next to each other, so the report shows one of them at a time. It opens with the tables and without a selected element. A tap on a row shows the inspector in place of the tables, the arrow at the start of its header and the back button of the browser return to the tables where you left them. The model and the document are opened from their marks in the type bar.
+
+[![The report of the repressilator on a phone: the tables it opens with, and the inspector of the species PX in their place](images/report-phone.png)](images/report-phone.png)
+
+The type bar is one row: the types are behind the button which says how many of them the tables show, and the links of the app bar are behind its menu button. The search has a row of its own. The footer is left to the home page and the examples page.
+
+A table which is wider than the window scrolls sideways inside its frame, and the id of every row stays in view while it does, in every window: the column of the ids is pinned to the left edge of the table. On a phone a long id is cut off in the table, the inspector shows it whole. The explanation of a name fills the window.
+
 ## The url of a report
 
 The state of a report is part of its address, so a report can be linked in the state it is in: a selected element, a search, a filter of types, one entry of an archive and one model of a document.

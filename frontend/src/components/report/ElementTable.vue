@@ -61,11 +61,16 @@ const scrollTop = ref(0);
 let frame = 0;
 
 /** One update of the window per animation frame. */
+/** Whether the table is scrolled sideways, which is when its pinned column covers the others
+ * and draws the line that says so. */
+const sideways = ref(false);
+
 function onScroll(): void {
   if (frame) return;
   frame = requestAnimationFrame(() => {
     frame = 0;
     scrollTop.value = scroller.value?.scrollTop ?? 0;
+    sideways.value = (scroller.value?.scrollLeft ?? 0) > 0;
   });
 }
 
@@ -226,8 +231,9 @@ async function onRowKeydown(event: KeyboardEvent, row: SbmlElement, index: numbe
 /** The id of a row stays in view while its table scrolls sideways, which a table does wherever
  * the window is narrower than its columns, on a phone always: the first column is pinned to the
  * left edge of the scroll. A pinned cell covers what scrolls below it, so it carries the
- * background of its row, and the line at its right edge is a shadow, since a border of a
- * collapsed table stays behind when its cell is pinned. Where a device pixel is not a whole
+ * background of its row, and while the table is scrolled sideways a line at its right edge
+ * says that it does; the line is a shadow, since a border of a collapsed table stays behind when
+ * its cell is pinned. Where a device pixel is not a whole
  * number of CSS pixels, a cell pinned at the very edge is rounded to a pixel the scroll is not,
  * which leaves a slit the scrolled text shows through: the cell is pinned one pixel beyond the
  * edge, where the scroll cuts it off. */
@@ -242,9 +248,14 @@ function widthStyle(column: ColumnDef, position: number): { width: string } | un
   return { width: column.width };
 }
 
-const PINNED = "sticky -left-px shadow-[inset_-1px_0_0_var(--color-gray-200)]";
-const PINNED_CELL = `${PINNED} z-[1] bg-inherit`;
-const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
+const PINNED = "sticky -left-px";
+const PINNED_LINE = "shadow-[inset_-1px_0_0_var(--color-gray-200)]";
+const pinnedCell = computed(
+  () => `${PINNED} z-[1] bg-inherit ${sideways.value ? PINNED_LINE : ""}`,
+);
+const pinnedHeader = computed(
+  () => `${PINNED} z-[2] bg-gray-50 ${sideways.value ? PINNED_LINE : ""}`,
+);
 </script>
 
 <template>
@@ -263,10 +274,7 @@ const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
             :key="column.field"
             scope="col"
             class="group/th px-3 py-2 text-left font-medium whitespace-nowrap text-gray-600 select-none"
-            :class="[
-              { 'cursor-pointer': sortable(column) },
-              pinned(column, i) ? PINNED_HEADER : '',
-            ]"
+            :class="[{ 'cursor-pointer': sortable(column) }, pinned(column, i) ? pinnedHeader : '']"
             :style="widthStyle(column, i)"
             :aria-sort="ariaSort(column)"
             :aria-label="column.header"
@@ -348,7 +356,7 @@ const PINNED_HEADER = `${PINNED} z-[2] bg-gray-50`;
             class="px-3 align-top whitespace-nowrap"
             :class="[
               virtual ? 'py-0' : 'py-1.5 max-md:py-2.5',
-              pinned(column, j) ? PINNED_CELL : '',
+              pinned(column, j) ? pinnedCell : '',
             ]"
             :style="widthStyle(column, j)"
           >
