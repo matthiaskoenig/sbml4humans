@@ -12,7 +12,6 @@ from fastapi.testclient import TestClient
 from sbml4humans import __version__, api, limits
 from sbml4humans.examples import load_examples, report_for_example
 from sbml4humans.model import ReportResponse
-from sbml4humans.report import report_for_path
 from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
