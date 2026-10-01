@@ -19,7 +19,8 @@ services:
     restart: always
     build: .
     volumes:
-      - .:/code
+      # the working tree, read-only: the container runs as an unprivileged user and writes nothing
+      - .:/code:ro
     expose:
       - "1444"
     ports:
