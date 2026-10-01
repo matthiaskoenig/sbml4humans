@@ -1,0 +1,6 @@
+/* The math of the report in the size of the text around it. Imported by `report/latex.ts` after
+ * the stylesheet of KaTeX, which it overrides, so that both come with the math alone and no page
+ * without math carries them. */
+.katex {
+  font-size: 1em;
+}

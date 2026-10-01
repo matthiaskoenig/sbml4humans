@@ -5,7 +5,7 @@ import { useRoute } from "vue-router";
 
 import logo from "@/assets/logo.png";
 import { issueUrl } from "@/feedback";
-import { DOCS_URL } from "@/report/glossary";
+import { DOCS_URL } from "@/docs";
 import { useReportStore } from "@/stores/report";
 
 const route = useRoute();
