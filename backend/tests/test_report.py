@@ -1,7 +1,9 @@
 """Tests of the report creation."""
 
+import contextlib
 import gzip
 import tempfile
+import zipfile
 from collections import Counter
 from pathlib import Path
 
@@ -9,7 +11,9 @@ import pytest
 from pydantic import BaseModel
 from pymetadata.omex import Omex
 
-from sbml4humans.examples import ExampleMetaData, load_examples
+from sbml4humans import limits
+from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
+from sbml4humans.limits import ContentTooLargeError
 from sbml4humans.model import ReportResponse, ResolutionStatus, SBase
 from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
 from sbml4humans.resources import (
@@ -21,8 +25,8 @@ from sbml4humans.resources import (
 )
 
 
-# `ExampleMetaData.file` of a curated biomodel is its extracted main SBML file
-# (`examples.py::biomodel_examples`), so `test_report_for_path` below never
+# The report of a curated biomodel example is the one of its main SBML entry
+# (`examples.py::report_for_example`), so `test_report_for_path` below never
 # exercises `Omex.from_omex` on these archives' real, multi-file manifests.
 # Kept to ten archives so the suite stays fast.
 BIOMODEL_ARCHIVES = sorted(BIOMODELS_CURATED_PATH.glob("BIOMD*.omex"))[:10]
@@ -81,7 +85,7 @@ def _check_report(response: ReportResponse) -> None:
 def test_report_for_path(example: ExampleMetaData) -> None:
     """Report data, unique pks and a consistent link graph for every example."""
     assert example.file.is_file()
-    _check_report(report_for_path(example.file))
+    _check_report(report_for_example(example))
 
 
 @pytest.mark.parametrize("path", BIOMODEL_ARCHIVES, ids=lambda p: p.name)
@@ -95,9 +99,9 @@ def test_report_for_biomodel_archive(path: Path) -> None:
     response = report_for_path(path)
     _check_report(response)
     assert any(e.location.endswith(".xml") for e in response.manifest.entries)
-    archive = Omex.from_omex(path)
-    if any(e.master for e in archive.manifest.entries):
-        assert any(e.master for e in response.manifest.entries)
+    with Omex.from_omex(path) as archive:
+        if any(e.master for e in archive.manifest.entries):
+            assert any(e.master for e in response.manifest.entries)
 
 
 def test_report_for_sbml_file() -> None:
@@ -202,6 +206,101 @@ def test_error_of_unreadable_content_names_no_path() -> None:
     assert "line 1:" in message
     assert tempfile.gettempdir() not in message
     assert "model.xml" not in message
+
+
+@pytest.fixture
+def tmp_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """The directory of the temporary files of the test, empty at its start."""
+    root = tmp_path / "tmp"
+    root.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(root))
+    return root
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        REPRESSILATOR_SBML.read_bytes(),
+        gzip.compress(REPRESSILATOR_SBML.read_bytes()),
+        OMEX_ICGMODEL.read_bytes(),
+        b"<not-sbml/>",
+    ],
+    ids=["sbml", "gzip", "omex", "invalid"],
+)
+def test_a_report_leaves_no_temporary_files(tmp_root: Path, content: bytes) -> None:
+    """The content of a request does not stay on the server, also when it fails."""
+    with contextlib.suppress(ValueError):
+        report_for_bytes(content)
+    assert list(tmp_root.iterdir()) == []
+
+
+def test_a_report_of_a_path_leaves_no_temporary_files(tmp_root: Path) -> None:
+    """Neither a file nor an archive nor the files next to a trusted file."""
+    report_for_path(REPRESSILATOR_SBML)
+    report_for_path(OMEX_COMPMODELS)
+    report_for_path(EXAMPLES_DIR / "comp_deletion.xml", trusted=True)
+    assert list(tmp_root.iterdir()) == []
+
+
+def test_the_examples_leave_no_temporary_files(tmp_root: Path) -> None:
+    """The examples, of which a biomodel is an entry of its archive."""
+    load_examples.cache_clear()
+    try:
+        examples = load_examples()
+        assert list(tmp_root.iterdir()) == []
+        report_for_example(examples["BIOMD0000000001"])
+        report_for_example(examples["icg_model"])
+        assert list(tmp_root.iterdir()) == []
+    finally:
+        load_examples.cache_clear()
+
+
+def test_a_gzip_bomb_is_refused(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Gzipped content is decompressed up to `MAX_CONTENT_SIZE`."""
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
+    with pytest.raises(ContentTooLargeError, match="1024 bytes"):
+        report_for_bytes(gzip.compress(b" " * 4096))
+
+
+def _archive(path: Path, entries: dict[str, bytes]) -> Path:
+    """Write a COMBINE archive with a manifest and the entries."""
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(
+            "manifest.xml",
+            '<omexManifest xmlns="http://identifiers.org/combine.specifications/'
+            'omex-manifest"/>',
+        )
+        for name, content in entries.items():
+            archive.writestr(name, content)
+    return path
+
+
+def test_an_archive_beyond_the_limits_is_refused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The number of entries, the size and the compression of an archive."""
+    monkeypatch.setattr(limits, "MAX_ARCHIVE_ENTRIES", 3)
+    many = _archive(tmp_path / "many.omex", {f"{k}.txt": b"x" for k in range(5)})
+    with pytest.raises(ContentTooLargeError, match="more than 3 entries"):
+        report_for_bytes(many.read_bytes())
+
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
+    large = _archive(tmp_path / "large.omex", {"large.txt": b"x" * 2048})
+    with pytest.raises(ContentTooLargeError, match="larger than the limit"):
+        report_for_bytes(large.read_bytes())
+
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 100 * 1024 * 1024)
+    monkeypatch.setattr(limits, "COMPRESSION_RATIO_MIN_SIZE", 1024)
+    bomb = _archive(tmp_path / "bomb.omex", {"bomb.txt": b"x" * 1024 * 1024})
+    with pytest.raises(ContentTooLargeError, match="compressed more than"):
+        report_for_bytes(bomb.read_bytes())
+
+
+def test_a_trusted_path_is_not_limited(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The limits protect the server from requests, not the user from own files."""
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
+    monkeypatch.setattr(limits, "MAX_ARCHIVE_ENTRIES", 1)
+    _check_report(report_for_path(OMEX_ICGMODEL, trusted=True))
 
 
 def test_uid_differs_between_reports() -> None:

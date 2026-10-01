@@ -2,16 +2,16 @@
 
 import io
 import json
+from collections.abc import Iterator
 from typing import Any
 
 import pytest
 from fastapi import FastAPI, UploadFile
 from fastapi.testclient import TestClient
 
-from sbml4humans import __version__, api
-from sbml4humans.examples import load_examples
+from sbml4humans import __version__, api, limits
+from sbml4humans.examples import load_examples, report_for_example
 from sbml4humans.model import ReportResponse
-from sbml4humans.report import report_for_path
 from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
@@ -31,7 +31,9 @@ def _strict_json(content: bytes) -> Any:
 def _check_error(data: dict[str, Any], info: dict[str, str] | None = None) -> None:
     """Check the error payload of the api."""
     assert set(data) == {"errors", "warnings", "info"}
-    assert len(data["errors"]) == 2
+    # the message alone, the traceback is logged by the server
+    assert len(data["errors"]) == 1
+    assert "Traceback" not in data["errors"][0]
     assert data["warnings"] == []
     if info is not None:
         assert data["info"] == info
@@ -171,13 +173,13 @@ def _without_request(data: dict[str, Any]) -> dict[str, Any]:
 def test_example_is_the_json_fastapi_writes(client: TestClient) -> None:
     """The kept JSON of an example is the JSON FastAPI writes for its report."""
     example = "fbc_bounds_v1 (fbc_bounds_v1.xml)"
-    path = load_examples()[example].file
+    metadata = load_examples()[example]
     app = FastAPI()
 
     @app.get("/report", response_model=ReportResponse, response_model_by_alias=True)
     def report() -> ReportResponse:
         """The report of the example as a report endpoint returns it."""
-        return report_for_path(path, trusted=True)
+        return report_for_example(metadata)
 
     kept = client.get(f"/api/examples/{example}")
     written = TestClient(app).get("/report")
@@ -356,7 +358,9 @@ def test_annotation_resource(
 
 
 def test_annotation_resource_failing(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """A failing resolution results in an error payload with the resource."""
 
@@ -368,5 +372,88 @@ def test_annotation_resource_failing(
     assert response.status_code == 200
     data = response.json()
     _check_error(data, info={"resource": "x/y"})
-    assert data["errors"][0] == "unknown namespace"
-    assert "Traceback" in data["errors"][1]
+    assert data["errors"] == ["unknown namespace"]
+    # the traceback stays on the server
+    assert "Traceback" in caplog.text
+    assert "unknown namespace" in caplog.text
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://127.0.0.1:1/model.xml",
+        "http://localhost:1/model.xml",
+        "http://169.254.169.254/latest/meta-data/",
+        "file:///etc/passwd",
+    ],
+)
+def test_url_of_the_internal_network_is_refused(client: TestClient, url: str) -> None:
+    """The server downloads from public addresses alone, nothing of its network."""
+    response = client.get("/api/url", params={"url": url})
+    assert response.status_code == 200
+    data = response.json()
+    _check_error(data, info={"url": url})
+    assert "not downloaded" in data["errors"][0]
+
+
+def _chunks(content: bytes) -> Iterator[bytes]:
+    """The content in chunks, which is sent without a content length."""
+    for k in range(0, len(content), 256):
+        yield content[k : k + 256]
+
+
+@pytest.mark.parametrize("chunked", [False, True])
+def test_the_size_of_a_body_is_limited(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, chunked: bool
+) -> None:
+    """Pasted content and an upload beyond `MAX_CONTENT_SIZE` are refused."""
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
+    content = REPRESSILATOR_SBML.read_bytes()
+    assert len(content) > 1024
+    response = client.post(
+        "/api/content", content=_chunks(content) if chunked else content
+    )
+    assert response.status_code == 200
+    data = response.json()
+    _check_error(data, info={})
+    assert "limit of 1024 bytes" in data["errors"][0]
+    # the response of an error carries the CORS headers like any other
+    response = client.post(
+        "/api/file",
+        files={"source": ("model.xml", content)},
+        headers={"Origin": "https://example.org"},
+    )
+    assert response.status_code == 200
+    assert response.headers["access-control-allow-origin"] == "*"
+    data = response.json()
+    _check_error(data, info={})
+    assert "limit of 1024 bytes" in data["errors"][0]
+    # an upload without content length is refused while it is read
+    boundary = "sbml4humans-test"
+    body = (
+        (
+            f"--{boundary}\r\n"
+            'Content-Disposition: form-data; name="source"; filename="model.xml"\r\n'
+            "Content-Type: application/xml\r\n\r\n"
+        ).encode()
+        + content
+        + f"\r\n--{boundary}--\r\n".encode()
+    )
+    response = client.post(
+        "/api/file",
+        content=_chunks(body),
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    _check_error(data, info={})
+    assert "limit of 1024 bytes" in data["errors"][0]
+
+
+def test_a_body_within_the_limit_is_reported(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The limit counts the body, a chunked one as well."""
+    content = REPRESSILATOR_SBML.read_bytes()
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", len(content))
+    _check_report(client.post("/api/content", content=_chunks(content)).json())

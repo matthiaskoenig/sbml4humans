@@ -42,7 +42,22 @@ def app(frontend: Path) -> LocalApp:
 
 @pytest.fixture
 def local(app: LocalApp) -> TestClient:
-    """A client which talks to the app the way the browser of the user does."""
+    """A client which talks to the app the way the browser of the user does.
+
+    A browser states the site a request comes from, for a request of the page
+    of the server `same-origin`.
+    """
+    return TestClient(
+        app,
+        base_url=ORIGIN,
+        raise_server_exceptions=False,
+        headers={"Sec-Fetch-Site": "same-origin"},
+    )
+
+
+@pytest.fixture
+def python_client(app: LocalApp) -> TestClient:
+    """A client which talks to the app the way `sbml4humans.show` does."""
     return TestClient(app, base_url=ORIGIN, raise_server_exceptions=False)
 
 
@@ -171,6 +186,21 @@ def test_errors_follow_the_contract_of_the_api(
     assert invalid.json()["errors"]
 
 
+def test_errors_carry_the_traceback_on_the_machine_of_the_user(
+    local: TestClient, tmp_path: Path
+) -> None:
+    """The client of the local server is the user, who may read the traceback."""
+    garbage = tmp_path / "garbage.xml"
+    garbage.write_text("no sbml")
+    errors = _post_report(local, garbage)["errors"]
+    assert len(errors) == 2
+    assert "Traceback" in errors[1]
+    # the routed public api as well
+    errors = local.post("/api/content", content=b"garbage").json()["errors"]
+    assert len(errors) == 2
+    assert "Traceback" in errors[1]
+
+
 # -------------------------------------------------------------------------------------
 # who may talk to the server
 # -------------------------------------------------------------------------------------
@@ -211,6 +241,48 @@ def test_another_origin_is_refused(local: TestClient, origin: str) -> None:
         assert local.get(path, headers={"Origin": origin}).status_code == 403
     # the page of the server itself states its own origin on a post
     assert local.get("/api/examples", headers={"Origin": ORIGIN}).status_code == 200
+
+
+@pytest.mark.parametrize("site", ["cross-site", "same-site"])
+def test_a_request_of_another_site_is_refused(app: LocalApp, site: str) -> None:
+    """A page of another site does not reach the api by a request without origin.
+
+    An image or a link of another page is a GET without `Origin`, which the
+    browser states as a request of another site.
+    """
+    client = TestClient(app, base_url=ORIGIN, headers={"Sec-Fetch-Site": site})
+    for path in (
+        "/api/examples",
+        "/api/local/ping",
+        "/api/url?url=http://intranet/",
+        "/api/local/reports/unknown",
+    ):
+        assert client.get(path).status_code == 403, path
+    # the page itself may be opened from another site
+    assert client.get("/report").status_code == 200
+
+
+def test_a_request_the_user_makes_is_answered(app: LocalApp) -> None:
+    """The address typed into the browser, which states no site."""
+    client = TestClient(app, base_url=ORIGIN, headers={"Sec-Fetch-Site": "none"})
+    assert client.get("/api/examples").status_code == 200
+
+
+def test_the_python_client_reaches_the_local_endpoints_alone(
+    python_client: TestClient,
+) -> None:
+    """A request without `Origin` and `Sec-Fetch-Site` is no request of a browser.
+
+    It is the client of `sbml4humans.show`, which needs the local endpoints, or
+    the request of an old browser, which might be one of another site, so the
+    public api is not answered.
+    """
+    assert python_client.get("/api/local/ping").status_code == 200
+    assert python_client.get("/api/examples").status_code == 403
+    assert python_client.get("/api/url?url=http://intranet/").status_code == 403
+    assert python_client.post("/api/content", content=b"<sbml/>").status_code == 403
+    token = _post_report(python_client, REPRESSILATOR_SBML)["token"]
+    assert python_client.get(f"/api/local/reports/{token}").status_code == 200
 
 
 # -------------------------------------------------------------------------------------
