@@ -2,6 +2,7 @@
 
 import contextlib
 import math
+from functools import lru_cache
 
 import libsbml
 import numpy as np
@@ -47,6 +48,18 @@ def _factor(u: libsbml.Unit) -> tuple[str, float] | None:
     scale = u.getScale() if u.isSetScale() else 0
     multiplier = u.getMultiplier()
     multiplier = multiplier if math.isfinite(multiplier) else 1.0
+    return _factor_of(kind, exponent, scale, multiplier)
+
+
+@lru_cache(maxsize=4096)
+def _factor_of(
+    kind: str, exponent: float, scale: int, multiplier: float
+) -> tuple[str, float] | None:
+    """The rendering of the unit `(multiplier * 10^scale * kind)^exponent`.
+
+    The numbers are finite, see `_factor`. Rendering with pint is slow and a
+    model names the same few units again and again, so the rendering is cached.
+    """
     try:
         magnitude = multiplier * 10.0**scale
     except OverflowError:
