@@ -441,6 +441,19 @@ describe("inspector", () => {
       .text();
     expect(text).toContain("Infinity");
     expect(text).not.toContain("\u221e");
+
+    // the uri of a pair comes from the model: only an http(s) uri is a link, a `javascript:`
+    // uri is shown as text and never runs on a click
+    const unsafe = {
+      ...parameter,
+      keyValuePairs: [{ key: "x", value: "1", uri: "javascript:alert(document.domain)" }],
+    };
+    const cell = mountWith(AttributesColumn, { element: unsafe }, fbcConstraints)
+      .findAll("[data-testid=attribute-row]")
+      .find((r) => r.find("dt").text() === "fbc:listOfKeyValuePairs")!
+      .find("tbody");
+    expect(cell.find("a").exists()).toBe(false);
+    expect(cell.text()).toContain("javascript:alert(document.domain)");
   });
 
   it("renders the gene product association of a reaction as its tree", async () => {
