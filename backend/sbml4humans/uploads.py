@@ -7,6 +7,7 @@ the id reads the report, so it is 128 random bits. The age of an upload is the
 modification time of its file, so the uploads survive a restart of the server.
 """
 
+import contextlib
 import functools
 import logging
 import os
@@ -23,6 +24,8 @@ logger = logging.getLogger(__name__)
 
 UPLOAD_LIFETIME = 24 * 60 * 60.0  # [s]
 MAX_UPLOAD_BYTES = 100 * 1024 * 1024
+# the uploads of all tools together, so a client which uploads in a loop cannot fill the disk
+MAX_STORE_BYTES = 5 * 1024 * 1024 * 1024
 CLEANUP_INTERVAL = 60 * 60.0  # [s]
 UPLOADS_VARIABLE = "SBML4HUMANS_UPLOADS"
 # the form of `secrets.token_urlsafe(16)`, anything else is no id and never a path
@@ -60,13 +63,27 @@ class UploadTooLargeError(ValueError):
         return f"The upload is larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB."
 
 
+class UploadStoreFullError(RuntimeError):
+    """Raised for an upload while the store holds `MAX_STORE_BYTES`."""
+
+    def __str__(self) -> str:
+        """Message for the frontend."""
+        return "sbml4humans keeps too many uploads at the moment, try again later."
+
+
 class UploadStore:
     """The uploads in a directory, one file per upload named by its id."""
 
-    def __init__(self, directory: Path, lifetime: float = UPLOAD_LIFETIME) -> None:
+    def __init__(
+        self,
+        directory: Path,
+        lifetime: float = UPLOAD_LIFETIME,
+        max_bytes: int = MAX_STORE_BYTES,
+    ) -> None:
         """Create the store of the directory, which is created if it does not exist."""
         self.directory = directory
         self.lifetime = lifetime
+        self.max_bytes = max_bytes
         directory.mkdir(parents=True, exist_ok=True)
 
     def put(self, content: bytes) -> Upload:
@@ -75,6 +92,12 @@ class UploadStore:
         The file is written to a temporary file of the directory first and renamed,
         so a file of an id is always complete; `mkstemp` creates it with mode 0600.
         """
+        # the directory is created again if it was removed, e.g. a cleaned temporary directory
+        self.directory.mkdir(parents=True, exist_ok=True)
+        if self._size() + len(content) > self.max_bytes:
+            self.remove_expired()
+            if self._size() + len(content) > self.max_bytes:
+                raise UploadStoreFullError
         upload_id = secrets.token_urlsafe(16)
         fd, partial = tempfile.mkstemp(dir=self.directory, prefix=PARTIAL_PREFIX)
         try:
@@ -111,6 +134,8 @@ class UploadStore:
         """Delete the expired uploads, and partial files as old; returns how many."""
         now = time.time()
         removed = 0
+        if not self.directory.is_dir():
+            return 0
         for path in self.directory.iterdir():
             try:
                 if path.is_file() and self._expired(path.stat().st_mtime, now):
@@ -121,6 +146,14 @@ class UploadStore:
         if removed:
             logger.info("Removed %s expired uploads", removed)
         return removed
+
+    def _size(self) -> int:
+        """The bytes of the files of the store."""
+        size = 0
+        for path in self.directory.iterdir():
+            with contextlib.suppress(FileNotFoundError):
+                size += path.stat().st_size
+        return size
 
     def _expired(self, written: float, now: float) -> bool:
         """Whether a file written at the time has expired at now."""

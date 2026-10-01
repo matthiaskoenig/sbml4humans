@@ -10,6 +10,7 @@ from sbml4humans.uploads import (
     UPLOAD_LIFETIME,
     UploadNotFoundError,
     UploadStore,
+    UploadStoreFullError,
     default_directory,
 )
 
@@ -74,3 +75,28 @@ def test_default_directory(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> N
     assert default_directory() == tmp_path / "uploads"
     monkeypatch.delenv("SBML4HUMANS_UPLOADS")
     assert default_directory().name == "sbml4humans-uploads"
+
+
+def test_put_refused_when_the_store_is_full(tmp_path: Path) -> None:
+    """Uploads are refused while the store holds its maximum, so the disk does not fill."""
+    store = UploadStore(tmp_path, max_bytes=10)
+    store.put(b"x" * 8)
+    with pytest.raises(UploadStoreFullError):
+        store.put(b"y" * 3)
+    assert len(list(tmp_path.iterdir())) == 1
+
+
+def test_put_after_the_directory_was_removed(tmp_path: Path) -> None:
+    """A store whose directory was removed (e.g. a cleaned temporary directory) creates it again."""
+    store = UploadStore(tmp_path / "uploads")
+    (tmp_path / "uploads").rmdir()
+    upload = store.put(b"a")
+    assert store.get(upload.id) == b"a"
+    assert store.remove_expired() == 0
+
+
+def test_remove_expired_of_a_removed_directory(tmp_path: Path) -> None:
+    """The cleanup of a removed directory removes nothing and does not fail."""
+    store = UploadStore(tmp_path / "uploads")
+    (tmp_path / "uploads").rmdir()
+    assert store.remove_expired() == 0

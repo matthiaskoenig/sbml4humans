@@ -14,6 +14,7 @@ keys and an infinite value or a value which is not a number as the strings
 """
 
 import asyncio
+import contextlib
 import logging
 import traceback
 from collections.abc import AsyncIterator
@@ -64,9 +65,16 @@ class ExampleNotFoundError(KeyError):
 
 
 async def remove_expired_uploads(store: UploadStore) -> None:
-    """Delete the expired uploads now and every `CLEANUP_INTERVAL`."""
+    """Delete the expired uploads now and every `CLEANUP_INTERVAL`.
+
+    A failure of one cleanup is logged, the next one runs: the loop ends only with
+    the api.
+    """
     while True:
-        await asyncio.to_thread(store.remove_expired)
+        try:
+            await asyncio.to_thread(store.remove_expired)
+        except Exception:
+            logger.exception("The cleanup of the expired uploads failed")
         await asyncio.sleep(CLEANUP_INTERVAL)
 
 
@@ -82,6 +90,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         cleanup.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await cleanup
 
 
 api = FastAPI(
@@ -241,6 +251,9 @@ def upload(
     The upload is reported once, so content which cannot be reported is an error
     and not kept.
     """
+    # Starlette has spooled the body to a temporary file already: this bounds the
+    # memory, the transfer itself is limited by the nginx in front of the api
+    # (`client_max_body_size 100m`)
     content = source.file.read(MAX_UPLOAD_BYTES + 1)
     if len(content) > MAX_UPLOAD_BYTES:
         raise UploadTooLargeError

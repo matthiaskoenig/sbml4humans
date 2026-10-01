@@ -1,5 +1,7 @@
 """Tests of the http api."""
 
+import asyncio
+import contextlib
 import json
 from collections.abc import Iterator
 from pathlib import Path
@@ -339,3 +341,32 @@ def test_upload_unknown(client: TestClient, uploads: UploadStore) -> None:
     data = response.json()
     _check_error(data, info={})
     assert "kept for 24 hours" in data["errors"][0]
+
+
+def test_cleanup_continues_after_a_failure(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A failure of one cleanup is logged and the next cleanup runs."""
+    monkeypatch.setattr(api, "CLEANUP_INTERVAL", 0.01)
+    calls: list[int] = []
+
+    class FailingOnce:
+        """A store whose first cleanup fails."""
+
+        def remove_expired(self) -> int:
+            """Fail at the first call."""
+            calls.append(1)
+            if len(calls) == 1:
+                raise PermissionError("not allowed")
+            return 0
+
+    async def run() -> None:
+        task = asyncio.create_task(api.remove_expired_uploads(FailingOnce()))  # ty: ignore[invalid-argument-type]
+        await asyncio.sleep(0.2)
+        task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await task
+
+    asyncio.run(run())
+    assert len(calls) > 1
+    assert "not allowed" in caplog.text

@@ -53,7 +53,7 @@ A report which was created from an upload or from pasted content cannot be share
 
 ## Links from other tools
 
-Other tools open a model in sbml4humans with an upload that has an address: they post the SBML file or COMBINE archive to `POST /api/upload`, in the multipart field `source`, which answers the id of the upload and the time it expires, and open `/report?upload=<id>`. [cy3sbml](https://matthiaskoenig.github.io/cy3sbml/), the SBML app of Cytoscape, does this for the model of a network. The backend keeps an upload for 24 hours and deletes it afterwards. Until then anyone with the address can open the report, so it can be shared like the report of a url; after that the address says that the upload is no longer available. An upload which cannot be read is refused and not kept, and an upload is at most 100 MB.
+Other tools open a model in sbml4humans with an upload that has an address: they post the SBML file or COMBINE archive to `POST /api/upload`, in the multipart field `source`, which answers the id of the upload and the time it expires, and open `/report?upload=<id>`. [cy3sbml](https://matthiaskoenig.github.io/cy3sbml/), the SBML app of Cytoscape, does this for the model of a network. The backend keeps an upload for 24 hours and deletes it afterwards. Until then anyone with the address can open the report, so it can be shared like the report of a url; after that the address says that the upload is no longer available. An upload which cannot be read is refused and not kept, and an upload is at most 100 MB. While the server keeps too many uploads, a new one is refused with the message to try again later.
 
 ## When a model cannot be read
 
