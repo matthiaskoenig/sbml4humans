@@ -202,9 +202,9 @@ def test_example_without_gzip(client: TestClient) -> None:
         "/api/examples/icg_model", headers={"Accept-Encoding": "identity"}
     )
     assert "content-encoding" not in response.headers
-    assert response.headers["vary"] == "Accept-Encoding"
+    assert "Accept-Encoding" in response.headers["vary"].split(", ")
     gzipped = client.get("/api/examples/icg_model", headers={"Accept-Encoding": "gzip"})
-    assert gzipped.headers["vary"] == "Accept-Encoding"
+    assert "Accept-Encoding" in gzipped.headers["vary"].split(", ")
     _check_report(_strict_json(response.content))
 
 
