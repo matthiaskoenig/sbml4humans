@@ -13,18 +13,21 @@ keys and an infinite value or a value which is not a number as the strings
 `"Infinity"`, `"-Infinity"` and `"NaN"`.
 """
 
+import asyncio
 import logging
 import traceback
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Any
+from datetime import datetime
+from typing import Annotated, Any
 
 import httpx
-from fastapi import FastAPI, Request, UploadFile
+from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.responses import Response
 
@@ -33,6 +36,13 @@ from sbml4humans.annotations import annotation_info
 from sbml4humans.examples import ExampleMetaData, load_examples
 from sbml4humans.model import ReportResponse
 from sbml4humans.report import report_for_bytes, report_for_path
+from sbml4humans.uploads import (
+    CLEANUP_INTERVAL,
+    MAX_UPLOAD_BYTES,
+    UploadStore,
+    UploadTooLargeError,
+    upload_store,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -53,11 +63,25 @@ class ExampleNotFoundError(KeyError):
         return f"example for id does not exist '{self.example_id}'"
 
 
+async def remove_expired_uploads(store: UploadStore) -> None:
+    """Delete the expired uploads now and every `CLEANUP_INTERVAL`."""
+    while True:
+        await asyncio.to_thread(store.remove_expired)
+        await asyncio.sleep(CLEANUP_INTERVAL)
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    """Read the examples on startup, so that the first requests are fast."""
+    """Read the examples on startup, and delete the expired uploads while the api runs.
+
+    The examples are read on startup, so that the first requests are fast.
+    """
     load_examples()
-    yield
+    cleanup = asyncio.create_task(remove_expired_uploads(upload_store()))
+    try:
+        yield
+    finally:
+        cleanup.cancel()
 
 
 api = FastAPI(
@@ -199,6 +223,43 @@ async def report_from_content(request: Request) -> ReportResponse:
     """Create the report data of the SBML content in the request body."""
     content = await request.body()
     return await run_in_threadpool(report_for_bytes, content)
+
+
+class UploadResponse(BaseModel):
+    """The id of an upload, whose report is at `/report?upload=<id>`, and when it expires."""
+
+    id: str
+    expires: datetime
+
+
+@api.post("/api/upload", tags=["reports"], response_model=UploadResponse)
+def upload(
+    source: UploadFile, store: Annotated[UploadStore, Depends(upload_store)]
+) -> UploadResponse:
+    """Keep an SBML file or COMBINE archive for 24 hours, for the report of its id.
+
+    The upload is reported once, so content which cannot be reported is an error
+    and not kept.
+    """
+    content = source.file.read(MAX_UPLOAD_BYTES + 1)
+    if len(content) > MAX_UPLOAD_BYTES:
+        raise UploadTooLargeError
+    report_for_bytes(content)
+    stored = store.put(content)
+    return UploadResponse(id=stored.id, expires=stored.expires)
+
+
+@api.get(
+    "/api/upload/{upload_id}",
+    tags=["reports"],
+    response_model=ReportResponse,
+    response_model_by_alias=True,
+)
+def report_from_upload(
+    upload_id: str, store: Annotated[UploadStore, Depends(upload_store)]
+) -> ReportResponse:
+    """Create the report data of an upload."""
+    return report_for_bytes(store.get(upload_id))
 
 
 @api.get("/api/annotation_resource", tags=["metadata"])

@@ -1,6 +1,8 @@
 """Tests of the http api."""
 
 import json
+from collections.abc import Iterator
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -9,6 +11,7 @@ from fastapi.testclient import TestClient
 from sbml4humans import __version__, api
 from sbml4humans.model import ReportResponse
 from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
+from sbml4humans.uploads import UploadStore, upload_store
 
 
 def _strict_json(content: bytes) -> Any:
@@ -63,6 +66,7 @@ def test_openapi(client: TestClient) -> None:
         ("/api/file", "post"),
         ("/api/url", "get"),
         ("/api/content", "post"),
+        ("/api/upload/{upload_id}", "get"),
     ]:
         content = schema["paths"][path][method]["responses"]["200"]["content"]
         assert content["application/json"]["schema"] == {
@@ -284,3 +288,54 @@ def test_annotation_resource_failing(
     _check_error(data, info={"resource": "x/y"})
     assert data["errors"][0] == "unknown namespace"
     assert "Traceback" in data["errors"][1]
+
+
+@pytest.fixture
+def uploads(tmp_path: Path) -> Iterator[UploadStore]:
+    """A store of uploads in a temporary directory for the api."""
+    store = UploadStore(tmp_path / "uploads")
+    api.api.dependency_overrides[upload_store] = lambda: store
+    yield store
+    api.api.dependency_overrides.pop(upload_store)
+
+
+def test_upload(client: TestClient, uploads: UploadStore) -> None:
+    """An upload is stored, and its report is read by its id."""
+    with OMEX_ICGMODEL.open("rb") as f:
+        response = client.post("/api/upload", files={"source": ("model.omex", f)})
+    assert response.status_code == 200
+    data = response.json()
+    assert set(data) == {"id", "expires"}
+    assert uploads.get(data["id"]) == OMEX_ICGMODEL.read_bytes()
+
+    report = client.get(f"/api/upload/{data['id']}")
+    assert report.status_code == 200
+    _check_report(report.json())
+    assert len(report.json()["reports"]) == 3
+
+
+def test_upload_invalid(client: TestClient, uploads: UploadStore) -> None:
+    """An upload which cannot be reported is an error and not stored."""
+    response = client.post("/api/upload", files={"source": ("model.xml", b"garbage")})
+    _check_error(response.json(), info={})
+    assert list(uploads.directory.iterdir()) == []
+
+
+def test_upload_too_large(
+    client: TestClient, uploads: UploadStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An upload above the limit is an error and not stored."""
+    monkeypatch.setattr(api, "MAX_UPLOAD_BYTES", 10)
+    response = client.post("/api/upload", files={"source": ("model.xml", b"x" * 11)})
+    data = response.json()
+    _check_error(data, info={})
+    assert "larger than" in data["errors"][0]
+    assert list(uploads.directory.iterdir()) == []
+
+
+def test_upload_unknown(client: TestClient, uploads: UploadStore) -> None:
+    """An unknown id is an error which says how long uploads are kept."""
+    response = client.get("/api/upload/unknown_id_of_22_chars")
+    data = response.json()
+    _check_error(data, info={})
+    assert "kept for 24 hours" in data["errors"][0]
