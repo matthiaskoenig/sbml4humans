@@ -1,6 +1,10 @@
 # ------------------
 # sbml4humans.de
 # ------------------
+# The proxy of sbml4humans.de: terminates https and forwards every request to the nginx container
+# of docker-compose-production.yml, which serves the frontend and proxies /api to the backend.
+# Needs the snippets /etc/nginx/snippets/ssl.conf (nginx/ssl.conf) and
+# /etc/nginx/snippets/sbml4humans-security-headers.conf (nginx/security-headers.conf).
 access_log /var/www/logs/sbml4humans.de_access.log;
 error_log /var/www/logs/sbml4humans.de_error.log;
 
@@ -9,14 +13,16 @@ server {
     listen [::]:80;
 
     server_name sbml4humans.de www.sbml4humans.de;
+    server_tokens off;
 
-    # letsencrypt webroot authenticator
-    location /.well-known/acme-challenge/ {
+    # letsencrypt webroot authenticator, the renewal of the certificate depends on it
+    location ^~ /.well-known/acme-challenge/ {
         root /usr/share/nginx/letsencrypt;
+        default_type "text/plain";
     }
 
-    # https redirects
-    location = / {
+    # every other path redirects to https
+    location / {
         return 301 https://sbml4humans.de$request_uri;
     }
 }
@@ -26,36 +32,45 @@ server {
     listen [::]:443 ssl http2;
 
     server_name www.sbml4humans.de;
+    server_tokens off;
+
     ssl_certificate     /etc/letsencrypt/live/sbml4humans.de/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/sbml4humans.de/privkey.pem;
+    include /etc/nginx/snippets/ssl.conf;
+    include /etc/nginx/snippets/sbml4humans-security-headers.conf;
 
     return 301 https://sbml4humans.de$request_uri;
 }
 
 server {
-        listen 443 ssl http2;
-        listen [::]:443 ssl http2;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
 
-        server_name sbml4humans.de;
+    server_name sbml4humans.de;
+    server_tokens off;
 
-        ssl_certificate     /etc/letsencrypt/live/sbml4humans.de/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/sbml4humans.de/privkey.pem;
-        include /etc/nginx/snippets/ssl.conf;
+    ssl_certificate     /etc/letsencrypt/live/sbml4humans.de/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/sbml4humans.de/privkey.pem;
+    include /etc/nginx/snippets/ssl.conf;
+    include /etc/nginx/snippets/sbml4humans-security-headers.conf;
 
-        client_max_body_size 100m;
-        proxy_connect_timeout       900;
-        proxy_send_timeout          900;
-        proxy_read_timeout          900;
-        send_timeout                900;
+    client_max_body_size 100m;
+    proxy_connect_timeout       900;
+    proxy_send_timeout          900;
+    proxy_read_timeout          900;
+    send_timeout                900;
 
-        location / {
-                # return 200 "ssl on proxy";
-                # denbi-cloud: node2
-                proxy_pass http://192.168.0.132:8084;
-                proxy_set_header HOST $host;
-                proxy_set_header X-Real-IP $remote_addr;
-                proxy_set_header X-Forwarded-for $remote_addr;
-                proxy_set_header X-Forwarded-Proto https;
-                port_in_redirect off;
-        }
+    location / {
+        # denbi-cloud: node2, the nginx container of docker-compose-production.yml
+        proxy_pass http://192.168.0.132:8084;
+        # http/1.1 to the container, whose gzip compresses http/1.1 requests only; the
+        # compressed responses and their Cache-Control pass through unchanged
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        port_in_redirect off;
+    }
 }
