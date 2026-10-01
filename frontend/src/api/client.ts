@@ -103,6 +103,12 @@ export function getLocal(token: string): Promise<ReportResponse> {
   return request<ReportResponse>(`/local/reports/${encodeURIComponent(token)}`);
 }
 
+/** The report of a model another tool uploaded (`POST /api/upload`), which the backend keeps
+ * for 24 hours under its id. */
+export function getUpload(id: string): Promise<ReportResponse> {
+  return request<ReportResponse>(`/upload/${encodeURIComponent(id)}`);
+}
+
 /** Tell the local server that a report of it is still open: it ends itself when it is idle. */
 export async function pingLocal(): Promise<void> {
   await request<{ version: string }>("/local/ping", { signal: AbortSignal.timeout(15_000) });

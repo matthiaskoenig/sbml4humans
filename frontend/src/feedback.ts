@@ -12,9 +12,9 @@ export interface FeedbackContext {
   source: ReportSource | null;
 }
 
-/** The report a reader gives feedback on, as far as it is public: an example and a model behind
- * a url can be opened by whoever reads the issue, so the issue names them and the view of the
- * route, which holds the selected element. A file, pasted content and a local report are the
+/** The report a reader gives feedback on, as far as it is public: an example, a model behind
+ * a url and an upload of another tool (for 24 hours) can be opened by whoever reads the issue,
+ * so the issue names them and the view of the route, which holds the selected element. A file, pasted content and a local report are the
  * reader's own, and neither their name nor the ids of their elements, which the query of the
  * route carries, are written into an issue for them. */
 function reportLines(context: FeedbackContext): string[] {
@@ -25,6 +25,12 @@ function reportLines(context: FeedbackContext): string[] {
   }
   if (source.kind === "url") {
     return [`- page: \`${context.fullPath}\``, `- model: ${source.url ?? ""}`];
+  }
+  if (source.kind === "upload") {
+    return [
+      `- page: \`${context.fullPath}\``,
+      "- model: an upload, whose report the page shows for 24 hours",
+    ];
   }
   return [`- page: \`${context.path}\``, "- model: a file of my own"];
 }

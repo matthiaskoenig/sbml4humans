@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   getLocal,
+  getUpload,
   pingLocal,
   ApiError,
   getAnnotationResource,
@@ -144,6 +145,17 @@ describe("api client", () => {
     fetchMock.mockResolvedValue(jsonResponse({ version: "1.0.0" }));
     await pingLocal();
     expect(fetchMock.mock.calls[1]?.[0]).toBe(`${import.meta.env.VITE_API_URL}/local/ping`);
+  });
+
+  it("reads the report of an upload by its id", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ uid: "x", manifest: {}, reports: {} }));
+    vi.stubGlobal("fetch", fetchMock);
+    await getUpload("an id/with?marks");
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      `${import.meta.env.VITE_API_URL}/upload/an%20id%2Fwith%3Fmarks`,
+    );
   });
 
   it("fixtures carry the report response shape", () => {

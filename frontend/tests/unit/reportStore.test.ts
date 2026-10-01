@@ -8,7 +8,13 @@ import { loadFixture } from "./fixtures";
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
-  return { ...original, getExample: vi.fn(), getUrl: vi.fn(), getLocal: vi.fn() };
+  return {
+    ...original,
+    getExample: vi.fn(),
+    getUrl: vi.fn(),
+    getLocal: vi.fn(),
+    getUpload: vi.fn(),
+  };
 });
 
 describe("report store", () => {
@@ -33,6 +39,16 @@ describe("report store", () => {
     expect(store.defaultEntry).toBe(store.entries[0]);
     expect(store.indexFor("./models/omex_comp.xml")?.mainModel?.id).toBe("omex_comp");
     expect(store.source).toEqual({ kind: "example", id: "CompModels", name: "CompModels" });
+  });
+
+  it("loads the report of an upload once", async () => {
+    vi.mocked(client.getUpload).mockResolvedValue(loadFixture("comp_deletion"));
+    const store = useReportStore();
+    await store.loadUpload("upload1");
+    await store.loadUpload("upload1");
+    expect(client.getUpload).toHaveBeenCalledTimes(1);
+    expect(client.getUpload).toHaveBeenCalledWith("upload1");
+    expect(store.source).toEqual({ kind: "upload", id: "upload1", name: "uploaded model" });
   });
 
   it("loads the report of a local token once", async () => {
