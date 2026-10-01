@@ -18,6 +18,7 @@ vi.mock("@/api/client", async (importOriginal) => {
     postContent: vi.fn(),
     getLocal: vi.fn(),
     pingLocal: vi.fn(),
+    getUpload: vi.fn(),
   };
 });
 
@@ -66,6 +67,13 @@ describe("ReportPage", () => {
     const page = await mountReport({ url: "" });
     expect(page.find("[data-testid=no-report]").exists()).toBe(true);
     expect(page.find("[data-testid=report-page]").exists()).toBe(false);
+  });
+
+  it("shows the report of an upload", async () => {
+    vi.mocked(client.getUpload).mockReset().mockResolvedValue(loadFixture("repressilator"));
+    const page = await mountReport({ upload: "upload1" });
+    expect(client.getUpload).toHaveBeenCalledWith("upload1");
+    expect(page.find("[data-testid=report-page]").exists()).toBe(true);
   });
 
   it("shows the report of a local token and keeps the local server alive while it is open", async () => {

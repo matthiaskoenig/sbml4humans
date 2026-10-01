@@ -5,6 +5,7 @@ import {
   type ApiError,
   getExample,
   getLocal,
+  getUpload,
   getUrl,
   postContent,
   postFile,
@@ -14,8 +15,9 @@ import type { ReportResponse } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 
 /** `local` is the report of a file of this machine, which `sbml4humans.show` of the python
- * package created on its local server and which the page reads by its token. */
-export type SourceKind = "example" | "url" | "file" | "content" | "local";
+ * package created on its local server and which the page reads by its token. `upload` is the
+ * report of a model another tool uploaded, which the backend keeps for 24 hours under its id. */
+export type SourceKind = "example" | "url" | "file" | "content" | "local" | "upload";
 
 /** How often an open local report tells its server that it is still read [ms]. The server ends
  * itself after a quarter of an hour without a request, and a browser wakes the timers of a tab
@@ -37,6 +39,7 @@ function sameSource(a: ReportSource, b: ReportSource): boolean {
   if (a.kind === "example") return a.id === b.id;
   if (a.kind === "url") return a.url === b.url;
   if (a.kind === "local") return a.token === b.token;
+  if (a.kind === "upload") return a.id === b.id;
   return false;
 }
 
@@ -86,6 +89,8 @@ export const useReportStore = defineStore("report", () => {
   const loadUrl = (url: string) => load({ kind: "url", url, name: url }, () => getUrl(url));
   const loadLocal = (token: string) =>
     load({ kind: "local", token, name: "local report" }, () => getLocal(token));
+  const loadUpload = (id: string) =>
+    load({ kind: "upload", id, name: "uploaded model" }, () => getUpload(id));
   const loadFile = (file: File) => load({ kind: "file", name: file.name }, () => postFile(file));
   const loadContent = (text: string) =>
     load({ kind: "content", name: "pasted SBML" }, () => postContent(text));
@@ -108,6 +113,7 @@ export const useReportStore = defineStore("report", () => {
     loadExample,
     loadUrl,
     loadLocal,
+    loadUpload,
     loadFile,
     loadContent,
     clear,

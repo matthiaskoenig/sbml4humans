@@ -9,6 +9,8 @@
 #   sudo docker compose -f docker-compose-production.yml up --detach
 # -----------------------------------------------------------------------------
 volumes:
+  uploads:
+    driver: local
   vue_dist:
     driver: local
   node_modules:
@@ -22,6 +24,11 @@ services:
     # the image carries the code, nothing of the host is mounted. The backend is reachable through
     # the docker network alone, by the nginx container: a published port would bypass nginx and
     # the firewall of the host, which docker circumvents
+    volumes:
+      # the uploads of other tools, kept for 24 hours (POST /api/upload)
+      - uploads:/uploads
+    environment:
+      SBML4HUMANS_UPLOADS: /uploads
     expose:
       - "1444"
     security_opt:

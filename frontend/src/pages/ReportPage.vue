@@ -37,11 +37,13 @@ const INSPECTOR_WIDTH = Math.round(window.innerWidth / 3);
 const INSPECTOR_MIN = 360;
 
 watch(
-  () => [route.name, route.params.id, route.query.url, route.query.local] as const,
-  ([name, id, url, local]) => {
+  () =>
+    [route.name, route.params.id, route.query.url, route.query.local, route.query.upload] as const,
+  ([name, id, url, local, upload]) => {
     if (name === "example" && typeof id === "string") void store.loadExample(id);
     else if (name !== "report") return;
     else if (typeof local === "string" && local) void store.loadLocal(local);
+    else if (typeof upload === "string" && upload) void store.loadUpload(upload);
     else if (typeof url === "string" && url) void store.loadUrl(url);
   },
   { immediate: true },
@@ -69,8 +71,8 @@ onUnmounted(() => {
  * after a reload, or when the route is entered with the report of an example still loaded, the
  * page shows the empty state instead of a report that does not belong to the route. */
 const showsReport = computed(() => {
-  // an empty `url=` or `local=` loads nothing, the watcher above skips it too
-  const named = [route.query.url, route.query.local].some(
+  // an empty `url=`, `local=` or `upload=` loads nothing, the watcher above skips it too
+  const named = [route.query.url, route.query.local, route.query.upload].some(
     (value) => typeof value === "string" && value !== "",
   );
   if (route.name !== "report" || named) return true;

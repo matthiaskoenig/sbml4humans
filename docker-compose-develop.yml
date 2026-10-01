@@ -10,6 +10,8 @@
 #   sudo docker compose -f docker-compose-develop.yml up
 # -----------------------------------------------------------------------------
 volumes:
+  uploads:
+    driver: local
   node_modules:
     driver: local
 
@@ -20,7 +22,12 @@ services:
     build: .
     volumes:
       # the working tree, read-only: the container runs as an unprivileged user and writes nothing
+      # but the uploads
       - .:/code:ro
+      # the uploads of other tools, kept for 24 hours (POST /api/upload)
+      - uploads:/uploads
+    environment:
+      SBML4HUMANS_UPLOADS: /uploads
     expose:
       - "1444"
     ports:

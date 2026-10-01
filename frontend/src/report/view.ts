@@ -6,9 +6,10 @@ import { parseQuery, toQuery, type ViewState } from "@/report/query";
 
 type Mode = "push" | "replace";
 
-/** The keys of the route query which say where the report came from, the url of a model and the
- * token of a local report: they are not view state, and every route of the report keeps them. */
-const SOURCE_KEYS = ["url", "local"] as const;
+/** The keys of the route query which say where the report came from, the url of a model, the
+ * token of a local report and the id of an upload: they are not view state, and every route of
+ * the report keeps them. */
+const SOURCE_KEYS = ["url", "local", "upload"] as const;
 
 /** The view state of the report page and the actions that write it back to the route. */
 export function useReportView(): {

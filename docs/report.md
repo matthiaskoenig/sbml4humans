@@ -160,6 +160,7 @@ The state of a report is part of its address, so a report can be linked in the s
 | `entry` | the location of the SBML entry inside the COMBINE archive |
 | `model` | the id of the model or of the model definition |
 | `url` | the address the model was downloaded from, for a report which was loaded from a url |
+| `upload` | the id of an upload of another tool, for a report which was loaded from an upload; the upload is kept for 24 hours |
 
 Selecting an element adds a step to the history of the browser, so the back button walks back through the elements you looked at. The model a report selects when it opens adds none. Typing in the search box does not, so the back button does not step through every keystroke.
 

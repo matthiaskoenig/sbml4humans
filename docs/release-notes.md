@@ -2,6 +2,15 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.9.0
+
+Other tools open a model in SBML4Humans with an upload that has an address. [cy3sbml](https://github.com/matthiaskoenig/cy3sbml), the SBML app of Cytoscape, uses it to open the model of a network with one click ([cy3sbml#473](https://github.com/matthiaskoenig/cy3sbml/issues/473)).
+
+### New
+- `POST /api/upload` keeps an SBML file or COMBINE archive for 24 hours and answers its id and the time it expires; the report of the upload is at `/report?upload=<id>`, which can be shared and reloaded until the upload expires. An upload which cannot be read is refused and not kept, and an upload is at most 100 MB
+- `GET /api/upload/{id}` answers the report data of an upload, and says that an upload is kept for 24 hours when it is no longer there
+- the backend deletes the expired uploads every hour; the production deployment keeps the uploads on the volume `uploads`, so they survive a restart
+
 ## 0.8.0
 
 A report can be read on a phone: below 768 px the report shows the tables or the inspector, one at a time, and no page scrolls sideways any more.

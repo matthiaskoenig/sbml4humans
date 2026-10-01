@@ -60,6 +60,18 @@ describe("issueUrl", () => {
     expect(body).toContain(`- model: ${url}`);
   });
 
+  it("names the page of an upload, whose report can be opened", () => {
+    const body = bodyOf(
+      issueUrl({
+        fullPath: "/report?upload=upload1&pk=x",
+        path: "/report",
+        source: { kind: "upload", id: "upload1", name: "uploaded model" },
+      }),
+    );
+    expect(body).toContain("- page: `/report?upload=upload1&pk=x`");
+    expect(body).toContain("- model: an upload");
+  });
+
   it.each(["file", "content", "local"] as const)(
     "says nothing about a model of the reader, a %s",
     (kind) => {
