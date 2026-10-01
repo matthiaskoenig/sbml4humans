@@ -13,7 +13,16 @@ or to download a url from inside the network. A request whose `Host` is not the
 server (DNS rebinding) or whose `Origin` is another one (a cross site request)
 is refused, and the two endpoints which act on the machine, the report of a
 path and the shutdown, need the secret of the state file, which only a process
-of the same user can read.
+of the same user can read. A request of another page without `Origin`, the GET
+of an image or a link, is stated by the browser in `Sec-Fetch-Site` as one of
+another site and refused below `/api/` as well. A request which states neither
+is no request of a current browser but of the client of `sbml4humans.show`, and
+is answered for the endpoints of this module alone, which the secret or the
+token of a report guard.
+
+The client of the server is the user of the machine, so an error response
+carries the traceback of the failure (`TRACEBACK_STATE`), which the public api
+keeps to itself.
 
 The server ends itself when it was idle for `IDLE_TIMEOUT`. A report page pings
 it while it is open, so it lives as long as somebody looks at a report.
@@ -42,6 +51,7 @@ from sbml4humans import __version__
 from sbml4humans.api import (
     GZIP_LEVEL,
     GZIP_MINIMUM_SIZE,
+    TRACEBACK_STATE,
     add_error_contract,
     add_gzip,
     api,
@@ -67,6 +77,9 @@ WATCH_INTERVAL = 1.0  # [s]
 
 # the paths of the public api next to `/api/`, its OpenAPI pages
 API_PAGES = ("/docs", "/redoc", "/openapi.json")
+# what `Sec-Fetch-Site` of a request to the api may state: the page of the
+# server, or the user who typed the address
+FETCH_SITES = ("same-origin", "none")
 
 
 class ReportStore:
@@ -181,6 +194,7 @@ class LocalApp:
             return
 
         path: str = scope["path"]
+        scope = {**scope, "state": {**scope.get("state", {}), TRACEBACK_STATE: True}}
         if path.startswith("/api/local/"):
             await self.local(scope, receive, send)
         elif path.startswith("/api/") or path in API_PAGES:
@@ -193,7 +207,14 @@ class LocalApp:
                 await response(scope, receive, send)
 
     def _allowed(self, scope: Scope) -> bool:
-        """Whether the request names this server as its host and as its origin."""
+        """Whether the request names this server as its host and comes from it.
+
+        Every request has to name the server as its host and, if it states an
+        origin, the server as its origin. A request of the api has to state
+        that it comes from the page of the server or from the user
+        (`Sec-Fetch-Site`), unless it is the client of `sbml4humans.show`,
+        which states neither and asks the endpoints of this module alone.
+        """
         headers = {
             key.decode("latin-1").lower(): value.decode("latin-1")
             for key, value in scope["headers"]
@@ -201,7 +222,17 @@ class LocalApp:
         if headers.get("host") not in self.hosts:
             return False
         origin = headers.get("origin")
-        return origin is None or origin in {f"http://{host}" for host in self.hosts}
+        if origin is not None and origin not in {
+            f"http://{host}" for host in self.hosts
+        }:
+            return False
+        path: str = scope["path"]
+        if not path.startswith("/api/"):
+            return True
+        site = headers.get("sec-fetch-site")
+        if site is not None:
+            return site in FETCH_SITES
+        return origin is not None or path.startswith("/api/local/")
 
     def _check_secret(self, secret: str | None) -> None:
         """Refuse a request which does not know the secret."""

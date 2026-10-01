@@ -117,6 +117,9 @@ jobs:
         run: uv sync
       - name: Start the backend
         working-directory: backend
+        # the url input is tested with a model served on 127.0.0.1
+        env:
+          SBML4HUMANS_ALLOW_PRIVATE_URLS: "1"
         run: |
           uv run uvicorn sbml4humans.api:api --port 1444 &
           for i in $(seq 1 30); do curl -fs http://localhost:1444/api/examples > /dev/null && break; sleep 1; done

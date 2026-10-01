@@ -15,6 +15,7 @@ from sbml4humans.examples import (
     load_examples,
     main_sbml_entry,
     omex_description,
+    report_for_example,
 )
 from sbml4humans.links import _names_an_element, _nested, _with_extensions
 from sbml4humans.model import (
@@ -98,9 +99,9 @@ def test_biomodel_examples_skips_missing_files(tmp_path: Path) -> None:
     shutil.copy(OMEX_ICGMODEL, tmp_path / "BIOMD0000000002.omex")
     examples = biomodel_examples(tmp_path, count=3)
     assert [e.id for e in examples] == ["BIOMD0000000002"]
-    assert examples[0].file.is_file()
-    # the master model of the archive
-    assert examples[0].file.name == "icg_body_flat.xml"
+    # the master model of the archive, which is extracted when it is read
+    assert examples[0].file == tmp_path / "BIOMD0000000002.omex"
+    assert examples[0].location == "./models/icg_body_flat.xml"
 
 
 def test_main_sbml_entry_master() -> None:
@@ -227,7 +228,7 @@ def test_published_qual_models_are_served(
     assert example.name == name
     assert example.description is not None
     assert example.packages == ["qual"]
-    response = report_for_path(example.file, trusted=True)
+    response = report_for_example(example)
     (entry,) = response.reports.values()
     (model,) = entry.report.models
     assert len(model.list_of_qualitative_species) == count
@@ -311,7 +312,7 @@ def test_comp_references_reach_elements() -> None:
     """
     named = resolved = across = 0
     for example in load_examples().values():
-        response = report_for_path(example.file, trusted=True)
+        response = report_for_example(example)
         for entry in response.reports.values():
             for emd in entry.report.external_model_definitions:
                 assert emd.resolution.status == ResolutionStatus.RESOLVED, example.id

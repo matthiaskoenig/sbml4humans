@@ -41,6 +41,7 @@ dependencies = [
     "httpx>=0.28.1",
     # the state file of the local server of `show`, in the cache directory of the user
     "platformdirs>=4.4",
+    "httpcore>=1.0.9",
 ]
 
 [project.scripts]

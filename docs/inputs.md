@@ -10,7 +10,7 @@ The home page has a tab for each input: "Upload", "URL" and "Paste".
 
 **Upload** takes a file from your computer. Drop it onto the dashed area or use "Choose a file" and pick it in the file dialog, which offers the extensions `.xml`, `.sbml`, `.gz`, `.omex` and `.zip`. The report opens as soon as it is created.
 
-**URL** takes the web address of a model, for example the download link of a model of BioModels or the raw url of a file in a git repository. Enter it and press "Load"; the backend downloads the address, follows redirects and gives up after 60 seconds. The address you entered last is kept in your browser and is filled in the next time you open the page.
+**URL** takes the web address of a model, for example the download link of a model of BioModels or the raw url of a file in a git repository. Enter it and press "Load"; the backend downloads the address, follows up to 5 redirects and gives up after 60 seconds. Only `http` and `https` addresses of the public internet are downloaded: an address of the machine of the backend or of a private network (`localhost`, `10.x.x.x`, `192.168.x.x`, ...) is refused, also behind a redirect. This holds for the local server of `sbml4humans.show` as well, which opens a file of your machine by its path. The address you entered last is kept in your browser and is filled in the next time you open the page.
 
 **Paste** takes the content of an SBML file as text. Paste the XML into the text area and press "Create report". This is the fastest way to look at a model which is in your clipboard or which you have just edited in a text editor.
 
@@ -58,8 +58,10 @@ The application shows what went wrong instead of an empty report. The message co
 
 - a file which contains no model at all is reported as "No SBML model could be read", followed by the error log of libsbml
 - a url which answers with an error is reported with the status of the request; a url which cannot be reached at all, or which is still downloading after 60 seconds, is reported without one
+- a url which is no `http` or `https` address of the public internet is reported as not downloaded
+- an upload, pasted content or a download larger than 100 MB is refused, and so is a gzipped model which decompresses to more than 100 MB or a COMBINE archive with more than 1000 entries, more than 100 MB uncompressed or an entry which is compressed more than 200 times
 - a backend which is not running is reported as not reachable, which is what a local development setup shows when only the frontend was started
 
-"Show details" below the message opens the full traceback of the backend, which is worth reading when the message alone does not say enough, and worth including when you report a problem.
+The public service sends the message alone, the traceback of the failure stays in the log of its backend. A report which was opened from python with `sbml4humans.show` runs its backend on your own machine, there "Show details" below the message opens the full traceback, which is worth reading when the message alone does not say enough, and worth including when you report a problem.
 
 Warnings of libsbml do not stop a report. A model which libsbml reads despite its errors is shown, with the elements it could read.

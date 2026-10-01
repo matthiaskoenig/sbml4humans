@@ -11,6 +11,12 @@ Nothing is fetched. A single file which was read from a trusted directory, which
 is one the operator or the user chose and never the temporary file of an upload,
 gains the files next to it which its external model definitions name as further
 entries of its archive.
+
+An archive is extracted into a temporary directory of its own, which is removed
+when the report is built. The content of a request is read within the limits of
+`limits.py`: a gzipped model is decompressed up to `MAX_CONTENT_SIZE`, and an
+archive is checked for the number, the size and the compression of its entries
+before it is extracted.
 """
 
 import gzip
@@ -19,12 +25,16 @@ import logging
 import tempfile
 import time
 import uuid
+import zipfile
+from contextlib import ExitStack
 from pathlib import Path
 
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
+from sbml4humans import limits
 from sbml4humans.external import ExternalModels, normalize_location, resolve_source
+from sbml4humans.limits import ContentTooLargeError, format_size
 from sbml4humans.links import LinkSource, build_link_graphs
 from sbml4humans.model import (
     Debug,
@@ -41,6 +51,8 @@ logger = logging.getLogger(__name__)
 # location of a single SBML file in the archive created for it
 SBML_LOCATION = "./model.xml"
 GZIP_MAGIC = b"\x1f\x8b"
+# the bytes decompressed at a time
+CHUNK_SIZE = 1024 * 1024  # [byte]
 
 
 class _Entry:
@@ -105,38 +117,50 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
         trusted: the directory of the path was chosen by the operator or the
             user, so the files in it which the external model definitions of a
             single SBML file name are read as further entries. Never set for a
-            path which holds the content of a request.
+            path which holds the content of a request. The content of a path
+            which is not trusted is read within the limits of `limits.py`.
+
+    Raises:
+        ValueError: if no model could be read from an SBML entry.
+        ContentTooLargeError: if the content of an untrusted path exceeds the
+            limits.
     """
     uid = uuid.uuid4().hex
     single = not Omex.is_omex(path)
-    omex = _omex_for_path(path, named=trusted)
-    entries = {
-        entry.location: _Entry(omex.get_path(entry.location), uid=uid)
-        for entry in omex.manifest.entries
-        if entry.is_sbml()
-    }
-    unreadable: list[str] = []
-    if single and trusted:
-        unreadable = _add_files_of_directory(omex, entries, path.parent, uid)
-
-    locations = [entry.location for entry in omex.manifest.entries]
-    checksums: dict[str, str] = {}
-    if any(
-        emd.md5 is not None
-        for entry in entries.values()
-        for emd in entry.info.report.external_model_definitions
-    ):
-        checksums = {location: _md5(omex.get_path(location)) for location in entries}
-    _link(entries, checksums, [*locations, *unreadable])
-
-    manifest = Manifest(
-        entries=[
-            ManifestEntry(
-                location=entry.location, format=str(entry.format), master=entry.master
-            )
+    if not single and not trusted:
+        _check_archive(path)
+    with _omex_for_path(path, named=trusted, limited=not trusted) as omex:
+        entries = {
+            entry.location: _Entry(omex.get_path(entry.location), uid=uid)
             for entry in omex.manifest.entries
-        ]
-    )
+            if entry.is_sbml()
+        }
+        unreadable: list[str] = []
+        if single and trusted:
+            unreadable = _add_files_of_directory(omex, entries, path.parent, uid)
+
+        locations = [entry.location for entry in omex.manifest.entries]
+        checksums: dict[str, str] = {}
+        if any(
+            emd.md5 is not None
+            for entry in entries.values()
+            for emd in entry.info.report.external_model_definitions
+        ):
+            checksums = {
+                location: _md5(omex.get_path(location)) for location in entries
+            }
+        _link(entries, checksums, [*locations, *unreadable])
+
+        manifest = Manifest(
+            entries=[
+                ManifestEntry(
+                    location=entry.location,
+                    format=str(entry.format),
+                    master=entry.master,
+                )
+                for entry in omex.manifest.entries
+            ]
+        )
     reports = {location: entry.report_entry for location, entry in entries.items()}
     return ReportResponse(uid=uid, manifest=manifest, reports=reports)
 
@@ -217,13 +241,17 @@ def report_for_bytes(content: bytes) -> ReportResponse:
         return report_for_path(path)
 
 
-def _omex_for_path(path: Path, named: bool = False) -> Omex:
+def _omex_for_path(path: Path, named: bool = False, limited: bool = False) -> Omex:
     """Open the archive at path, or wrap the SBML file at path in a new archive.
 
     Gzipped SBML is decompressed, libsbml only detects compression by the file
     extension which is lost in the archive. With `named` the entry of a single
     file carries the name of that file, which is what the sources of the files
-    next to it are resolved against.
+    next to it are resolved against. With `limited` the decompressed SBML may
+    not exceed `MAX_CONTENT_SIZE`.
+
+    The archive is extracted into a temporary directory, which the caller
+    removes by using the archive as a context manager.
     """
     if Omex.is_omex(path):
         return Omex.from_omex(path)
@@ -233,22 +261,78 @@ def _omex_for_path(path: Path, named: bool = False) -> Omex:
         name = path.name.removesuffix(".gz") if _is_gzipped(path) else path.name
         location = f"./{name}"
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        if _is_gzipped(path):
-            sbml_path = Path(tmp_dir) / "model.xml"
-            sbml_path.write_bytes(gzip.decompress(path.read_bytes()))
-        else:
-            sbml_path = path
+    with ExitStack() as stack:
+        omex = stack.enter_context(Omex())
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            if _is_gzipped(path):
+                sbml_path = Path(tmp_dir) / "model.xml"
+                _gunzip(path, sbml_path, limits.MAX_CONTENT_SIZE if limited else None)
+            else:
+                sbml_path = path
 
-        # the entry is copied into the archive
-        omex = Omex()
-        omex.add_entry(
-            entry_path=sbml_path,
-            entry=OmexManifestEntry(
-                location=location, format=EntryFormat.SBML, master=True
-            ),
-        )
+            # the entry is copied into the archive
+            omex.add_entry(
+                entry_path=sbml_path,
+                entry=OmexManifestEntry(
+                    location=location, format=EntryFormat.SBML, master=True
+                ),
+            )
+        # the archive is the caller's, who removes its directory
+        stack.pop_all()
     return omex
+
+
+def _gunzip(source: Path, target: Path, limit: int | None) -> None:
+    """Decompress a gzipped file in chunks, up to `limit` bytes if one is given.
+
+    Raises:
+        ContentTooLargeError: if the decompressed content exceeds the limit.
+    """
+    size = 0
+    with gzip.open(source, "rb") as f_in, target.open("wb") as f_out:
+        while chunk := f_in.read(CHUNK_SIZE):
+            size += len(chunk)
+            if limit is not None and size > limit:
+                raise ContentTooLargeError(
+                    "The decompressed model is larger than the limit of "
+                    f"{format_size(limit)}."
+                )
+            f_out.write(chunk)
+
+
+def _check_archive(path: Path) -> None:
+    """Refuse an archive beyond the limits before it is extracted.
+
+    The sizes are the ones the archive states, which bound what is extracted:
+    `zipfile` reads no more of an entry than its stated size.
+
+    Raises:
+        ContentTooLargeError: if the archive has more than `MAX_ARCHIVE_ENTRIES`
+            entries, more than `MAX_CONTENT_SIZE` uncompressed or an entry above
+            `COMPRESSION_RATIO_MIN_SIZE` compressed more than
+            `MAX_COMPRESSION_RATIO` times.
+    """
+    with zipfile.ZipFile(path) as archive:
+        infos = archive.infolist()
+    if len(infos) > limits.MAX_ARCHIVE_ENTRIES:
+        raise ContentTooLargeError(
+            f"The archive has more than {limits.MAX_ARCHIVE_ENTRIES} entries."
+        )
+    size = sum(info.file_size for info in infos)
+    if size > limits.MAX_CONTENT_SIZE:
+        raise ContentTooLargeError(
+            "The uncompressed archive is larger than the limit of "
+            f"{format_size(limits.MAX_CONTENT_SIZE)}."
+        )
+    for info in infos:
+        if (
+            info.file_size > limits.COMPRESSION_RATIO_MIN_SIZE
+            and info.file_size > limits.MAX_COMPRESSION_RATIO * info.compress_size
+        ):
+            raise ContentTooLargeError(
+                f"The entry '{info.filename}' of the archive is compressed more "
+                f"than {limits.MAX_COMPRESSION_RATIO} times."
+            )
 
 
 def _is_gzipped(path: Path) -> bool:
