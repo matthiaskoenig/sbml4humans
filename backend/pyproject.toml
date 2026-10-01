@@ -30,12 +30,12 @@ dependencies = [
     "python-libsbml>=5.21.2",
     "lxml>=6.0.0",
     "numpy>=2.2.2",
-    "pint>=0.25.3",
-    "pymetadata>=0.6.4",
+    "pint>=0.26.1",
+    "pymetadata>=0.6.6",
     "pydantic>=2.12",
     # the http api
-    "fastapi>=0.141.1",
-    "uvicorn>=0.52.4",
+    "fastapi>=0.142.2",
+    "uvicorn>=0.54.0",
     "python-multipart>=0.0.32",
     # downloading models from urls, and the client of the local server of `show`
     "httpx>=0.28.1",
@@ -55,9 +55,9 @@ Repository = "https://github.com/matthiaskoenig/sbml4humans"
 dev = [
     "bump-my-version>=1.5.1",
     "pytest>=9.1.1",
-    "ruff>=0.16.6",
-    "ty>=0.0.78",
-    "zensical>=0.0.60",
+    "ruff>=0.16.9",
+    "ty>=0.0.84",
+    "zensical>=0.0.67",
 ]
 
 [tool.hatch.version]
