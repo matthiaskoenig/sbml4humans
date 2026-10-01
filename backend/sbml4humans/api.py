@@ -6,6 +6,11 @@ Error contract: the frontend expects every response with status 200. Failures
 are reported in the body as `{"errors": [message, traceback], "warnings": [],
 "info": {...}}`, with the query parameters of the request as `info`.
 
+Compression: a response of at least `GZIP_MINIMUM_SIZE` bytes is gzipped for a
+client which accepts it. The report of an example is built once and kept
+gzipped (`example_report_gzip`), so that a request for it is answered without
+building or compressing it again.
+
 A report endpoint returns its `ReportResponse` as it is. FastAPI takes an
 instance of the response model without validating it again and writes its JSON
 in one pass of pydantic, which applies the configuration of the model: camelCase
@@ -13,10 +18,12 @@ keys and an infinite value or a value which is not a number as the strings
 `"Infinity"`, `"-Infinity"` and `"NaN"`.
 """
 
+import gzip
 import logging
 import traceback
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from functools import lru_cache
 from typing import Any
 
 import httpx
@@ -26,6 +33,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import RequestResponseEndpoint
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.responses import Response
 
 from sbml4humans import __version__
@@ -38,6 +46,14 @@ from sbml4humans.report import report_for_bytes, report_for_path
 logger = logging.getLogger(__name__)
 
 DOWNLOAD_TIMEOUT = 60.0  # [s]
+
+# responses below this size are sent as they are, in bytes
+GZIP_MINIMUM_SIZE = 1000
+# a moderate level: the reports compress about 20 fold already at this level,
+# and a higher one costs time on every large report for a few percent
+GZIP_LEVEL = 5
+# the number of example reports kept gzipped, the largest (Recon3D) is 5 MB
+EXAMPLE_CACHE_SIZE = 32
 
 
 class ExampleNotFoundError(KeyError):
@@ -127,6 +143,17 @@ def add_error_contract(app: FastAPI) -> None:
     app.add_exception_handler(RequestValidationError, error_response)
 
 
+def add_gzip(app: FastAPI) -> None:
+    """Gzip the responses of the app for a client which accepts it.
+
+    Added last, the middleware is the outermost one and compresses the error
+    responses of the contract and the headers of CORS alike.
+    """
+    app.add_middleware(
+        GZipMiddleware, minimum_size=GZIP_MINIMUM_SIZE, compresslevel=GZIP_LEVEL
+    )
+
+
 add_error_contract(api)
 api.add_middleware(
     CORSMiddleware,
@@ -134,6 +161,7 @@ api.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+add_gzip(api)
 
 
 def download(url: str) -> bytes:
@@ -159,12 +187,38 @@ def examples() -> dict[str, list[dict[str, Any]]]:
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def example(example_id: str) -> ReportResponse:
-    """Create the report data of an example."""
+def example(example_id: str, request: Request) -> Response:
+    """The report data of an example, built on the first request for it."""
+    content = example_report_gzip(example_id)
+    if "gzip" in request.headers.get("accept-encoding", ""):
+        return Response(
+            content,
+            media_type="application/json",
+            headers={"Content-Encoding": "gzip", "Vary": "Accept-Encoding"},
+        )
+    # the gzip middleware names the header in `Vary` itself
+    return Response(gzip.decompress(content), media_type="application/json")
+
+
+@lru_cache(maxsize=EXAMPLE_CACHE_SIZE)
+def example_report_gzip(example_id: str) -> bytes:
+    """The gzipped JSON of the report of an example.
+
+    An example does not change while the server runs, so its report is built
+    once. The JSON is the one a report endpoint writes, kept gzipped, which
+    holds even the largest example in a few megabytes. The uid of the report is
+    the one of its first request.
+
+    Raises:
+        ExampleNotFoundError: if there is no example of the id.
+    """
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    return report_for_path(example.file, trusted=True)
+    report = report_for_path(example.file, trusted=True)
+    return gzip.compress(
+        report.model_dump_json(by_alias=True).encode(), compresslevel=GZIP_LEVEL
+    )
 
 
 @api.post(

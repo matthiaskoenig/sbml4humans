@@ -1,13 +1,17 @@
 """Tests of the http api."""
 
+import io
 import json
 from typing import Any
 
 import pytest
+from fastapi import FastAPI, UploadFile
 from fastapi.testclient import TestClient
 
 from sbml4humans import __version__, api
+from sbml4humans.examples import load_examples
 from sbml4humans.model import ReportResponse
+from sbml4humans.report import report_for_path
 from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
@@ -149,8 +153,90 @@ def test_a_report_endpoint_returns_the_response_for_fastapi_to_write() -> None:
     and writes its JSON in one pass, with the constants of a double which JSON
     has no literal for as the strings of the model configuration.
     """
-    response = api.example("fbc_bounds_v1 (fbc_bounds_v1.xml)")
+    upload = UploadFile(file=io.BytesIO(REPRESSILATOR_SBML.read_bytes()))
+    response = api.report_from_file(upload)
     assert isinstance(response, ReportResponse)
+
+
+def _without_request(data: dict[str, Any]) -> dict[str, Any]:
+    """The report data without what differs between two requests."""
+    data = {**data, "uid": None}
+    data["reports"] = {
+        location: {**entry, "debug": None}
+        for location, entry in data["reports"].items()
+    }
+    return data
+
+
+def test_example_is_the_json_fastapi_writes(client: TestClient) -> None:
+    """The kept JSON of an example is the JSON FastAPI writes for its report."""
+    example = "fbc_bounds_v1 (fbc_bounds_v1.xml)"
+    path = load_examples()[example].file
+    app = FastAPI()
+
+    @app.get("/report", response_model=ReportResponse, response_model_by_alias=True)
+    def report() -> ReportResponse:
+        """The report of the example as a report endpoint returns it."""
+        return report_for_path(path, trusted=True)
+
+    kept = client.get(f"/api/examples/{example}")
+    written = TestClient(app).get("/report")
+    assert _without_request(_strict_json(kept.content)) == _without_request(
+        _strict_json(written.content)
+    )
+
+
+def test_example_is_built_once(client: TestClient) -> None:
+    """The report of an example is built on the first request for it alone."""
+    api.example_report_gzip.cache_clear()
+    example = "BIOMD0000000012 (BIOMD0000000012_urn.xml)"
+    first = client.get(f"/api/examples/{example}").json()
+    second = client.get(f"/api/examples/{example}").json()
+    assert first == second
+    assert api.example_report_gzip.cache_info().hits == 1
+
+
+def test_example_without_gzip(client: TestClient) -> None:
+    """A client which does not accept gzip receives the plain JSON of an example."""
+    response = client.get(
+        "/api/examples/icg_model", headers={"Accept-Encoding": "identity"}
+    )
+    assert "content-encoding" not in response.headers
+    assert response.headers["vary"] == "Accept-Encoding"
+    gzipped = client.get("/api/examples/icg_model", headers={"Accept-Encoding": "gzip"})
+    assert gzipped.headers["vary"] == "Accept-Encoding"
+    _check_report(_strict_json(response.content))
+
+
+@pytest.mark.parametrize(
+    ("method", "path", "kwargs"),
+    [
+        ("get", "/api/examples/icg_model", {}),
+        ("get", "/api/examples", {}),
+        ("post", "/api/content", {"content": REPRESSILATOR_SBML.read_bytes()}),
+    ],
+)
+def test_gzip(
+    client: TestClient, method: str, path: str, kwargs: dict[str, Any]
+) -> None:
+    """A large response is gzipped for a client which accepts it."""
+    response = client.request(
+        method, path, headers={"Accept-Encoding": "gzip"}, **kwargs
+    )
+    assert response.headers["content-encoding"] == "gzip"
+    assert response.num_bytes_downloaded < len(response.content)
+    assert "errors" not in response.json()
+
+
+def test_gzip_error_response(client: TestClient) -> None:
+    """An error response is gzipped like any other and keeps its CORS headers."""
+    response = client.get(
+        "/api/examples/" + "x" * 2000,
+        headers={"Accept-Encoding": "gzip", "Origin": "https://example.org"},
+    )
+    assert response.headers["content-encoding"] == "gzip"
+    assert response.headers["access-control-allow-origin"] == "*"
+    _check_error(response.json())
 
 
 def test_example_with_special_characters(client: TestClient) -> None:
