@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { APP_COMMIT, APP_VERSION } from "@/build";
 import { commitUrl, releaseUrl, REPOSITORY_URL } from "@/repository";
-import { DOCS_URL } from "@/report/glossary";
+import { DOCS_URL } from "@/docs";
 
 /** The report page is a full height workspace and puts the footer under its split, where the
  * padding which lifts the footer off the content of a scrolling page would take height from the

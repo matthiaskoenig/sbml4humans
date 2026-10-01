@@ -12,7 +12,8 @@ import HelpTechnical from "@/components/help/HelpTechnical.vue";
 import { requiredWord } from "@/components/help/words";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import { SBML_TYPES } from "@/data/sbmlTypes";
-import { DOCS_URL, entryOfKey } from "@/report/glossary";
+import { DOCS_URL } from "@/docs";
+import { entryOfKey } from "@/report/glossary";
 import {
   loadGlossaryDetails,
   type GlossaryDetails,

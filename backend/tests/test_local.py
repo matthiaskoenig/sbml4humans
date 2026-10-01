@@ -133,6 +133,18 @@ def test_a_report_is_built_and_read_by_its_token(local: TestClient) -> None:
     assert "linkGraph" in body["reports"]["./BIOMD0000000012_urn.xml"]["report"]
 
 
+def test_the_responses_are_gzipped(local: TestClient, frontend: Path) -> None:
+    """The reports, the public api and the files of the build are gzipped."""
+    (frontend / "assets" / "large.js").write_text("console.log('x');\n" * 1000)
+    token = _post_report(local, REPRESSILATOR_SBML)["token"]
+    gzip = {"Accept-Encoding": "gzip"}
+    for path in (f"/api/local/reports/{token}", "/api/examples", "/assets/large.js"):
+        response = local.get(path, headers=gzip)
+        assert response.status_code == 200, path
+        assert response.headers["content-encoding"] == "gzip", path
+        assert response.num_bytes_downloaded < len(response.content), path
+
+
 def test_the_files_next_to_a_model_are_read(local: TestClient) -> None:
     """A path of the user is a trusted path (#36)."""
     answer = _post_report(local, EXAMPLES_DIR / "comp_deletion.xml")

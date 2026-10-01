@@ -1,5 +1,7 @@
 """Tests of the math rendering."""
 
+from concurrent.futures import ThreadPoolExecutor
+
 import libsbml
 import pytest
 
@@ -184,3 +186,28 @@ def test_a_product_is_set_with_the_operator_of_latex(
     latex = mathml.cmathml_to_latex(cmathml)
     assert expected in latex
     assert "\u00b7" not in latex
+
+
+def test_latex_in_threads() -> None:
+    """Threads render the math as one thread does, each with its stylesheets.
+
+    The api builds its reports in a threadpool, and a compiled stylesheet of
+    lxml must not be shared between threads.
+    """
+    astnodes = [libsbml.parseL3Formula(formula) for formula in formulas]
+    expected = [mathml.astnode_to_latex(astnode) for astnode in astnodes]
+
+    def render(_: int) -> list[str]:
+        """Render all formulas without the cache of the results."""
+        return [
+            mathml.cmathml_to_latex.__wrapped__(
+                libsbml.writeMathMLToString(astnode).replace(
+                    '<?xml version="1.0" encoding="UTF-8"?>', ""
+                )
+            )
+            for astnode in astnodes
+        ]
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        for latex in executor.map(render, range(32)):
+            assert latex == expected

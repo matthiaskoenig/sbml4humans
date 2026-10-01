@@ -4,7 +4,8 @@
 of 127.0.0.1, so that the report of a file of this machine opens in the browser
 without the file leaving the machine. `LocalApp` routes a request by its path:
 `/api/local/...` to the endpoints of this module, every other `/api/...` to the
-public api as it is, everything else to the frontend.
+public api as it is, everything else to the frontend. Its responses are gzipped
+like those of the api.
 
 Who may talk to the server: the public api allows every origin, which is wrong
 on localhost, where any page of the browser could ask the server to read a path
@@ -32,12 +33,19 @@ from fastapi import FastAPI, Header, HTTPException
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.responses import PlainTextResponse, Response
 from starlette.staticfiles import StaticFiles
 from starlette.types import Receive, Scope, Send
 
 from sbml4humans import __version__
-from sbml4humans.api import add_error_contract, api
+from sbml4humans.api import (
+    GZIP_LEVEL,
+    GZIP_MINIMUM_SIZE,
+    add_error_contract,
+    add_gzip,
+    api,
+)
 from sbml4humans.localstate import (
     HOST,
     SECRET_HEADER,
@@ -147,7 +155,11 @@ class LocalApp:
         self.last_request = time.monotonic()
         self.shutdown_requested = False
         self.local = self._local_api()
-        self.frontend = FrontendFiles(directory=frontend, html=True)
+        self.frontend = GZipMiddleware(
+            FrontendFiles(directory=frontend, html=True),
+            minimum_size=GZIP_MINIMUM_SIZE,
+            compresslevel=GZIP_LEVEL,
+        )
 
     def idle_seconds(self) -> float:
         """The time since the last request."""
@@ -200,6 +212,7 @@ class LocalApp:
         """The endpoints below `/api/local/`, with the error contract of the api."""
         local = FastAPI(title="sbml4humans local", version=__version__)
         add_error_contract(local)
+        add_gzip(local)
 
         @local.get("/api/local/ping")
         def ping() -> dict[str, str]:

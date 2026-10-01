@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import AppFooter from "@/components/layout/AppFooter.vue";
-import { DOCS_URL } from "@/report/glossary";
+import { DOCS_URL } from "@/docs";
 
 // the version and the commit are injected at build time, the tests set them instead
 const build = vi.hoisted(() => ({ APP_VERSION: "1.2.3", APP_COMMIT: "" }));

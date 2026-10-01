@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "katex/dist/katex.min.css";
 
 @theme {
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -17,10 +16,6 @@ body,
 
 body {
   @apply bg-white text-gray-900 antialiased;
-}
-
-.katex {
-  font-size: 1em;
 }
 
 /* The sanitised html of an SBase's notes (headings, lists, tables, pre/code, images, ...).
