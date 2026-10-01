@@ -10,6 +10,7 @@ import ElementLink from "@/components/misc/ElementLink.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import { referenceName, referenceTarget } from "@/report/comp";
 import { useReportIndex } from "@/report/context";
+import { isHttpUrl } from "@/report/text";
 
 const props = defineProps<{ element: SBase }>();
 const index = useReportIndex();
@@ -148,13 +149,14 @@ const replacedElements = computed(() =>
       <NestedTable :rows="element.keyValuePairs" :columns="keyValueColumns">
         <template #cell-uri="{ row }">
           <a
-            v-if="row.uri"
-            :href="row.uri"
+            v-if="isHttpUrl(row.uri)"
+            :href="row.uri!"
             target="_blank"
             rel="noopener"
             class="text-link hover:underline"
             >{{ row.uri }}</a
           >
+          <span v-else-if="row.uri" class="break-words">{{ row.uri }}</span>
           <span v-else class="text-gray-400">-</span>
         </template>
       </NestedTable>

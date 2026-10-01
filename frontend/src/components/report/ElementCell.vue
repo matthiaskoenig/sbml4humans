@@ -10,6 +10,7 @@ import type {
   SBase,
   SbmlElement,
   Math,
+  Transition,
   UserDefinedConstraintComponent,
 } from "@/api/types";
 import BooleanMark from "@/components/misc/BooleanMark.vue";
@@ -17,8 +18,8 @@ import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
 import QualSignMark from "@/components/misc/QualSignMark.vue";
 import TermsView from "@/components/misc/TermsView.vue";
+import TransitionTermsView from "@/components/misc/TransitionTermsView.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
-import UnitsLink from "@/components/misc/UnitsLink.vue";
 import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import XhtmlView from "@/components/misc/XhtmlView.vue";
@@ -27,6 +28,7 @@ import { useReportIndex } from "@/report/context";
 import { toNumber } from "@/report/number";
 import { geneAssociationText } from "@/report/geneAssociation";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
+import { transitionTerms } from "@/report/transitionTerms";
 
 const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
 const index = useReportIndex();
@@ -55,15 +57,6 @@ const targetPk = computed(() =>
     ? (index.value?.resolve(props.row.pk, props.column.link, text.value) ?? null)
     : null,
 );
-
-/** Kind "link" with units: the latex of the units sits next to the id. UnitsLink hides the
- * units latex entirely when it is null, empty or the report's "-" placeholder, so the id is
- * never followed by a redundant dash or a repeated id. */
-const unitsLatex = computed(() => {
-  if (props.column.link !== "units") return null;
-  const latex = fieldValue(props.row, props.column.latexField ?? `${props.column.field}Latex`);
-  return typeof latex === "string" ? latex : null;
-});
 
 /** Kind "geneAssociation": the tree of the reaction as the expression it stands for, capped at
  * the first genes so that one huge association does not fill the row. The genes are links in
@@ -112,6 +105,12 @@ function speciesPk(influence: Input | Output): string | null {
   );
 }
 
+/** Kind "functionTerms": the transition table of the row, its function terms and the default
+ * term behind them, which is a field of its own of the transition. */
+const functionTerms = computed(() =>
+  props.column.kind === "functionTerms" ? transitionTerms(props.row as Transition) : [],
+);
+
 /** The sign of an input, which an output does not carry. */
 function signOf(influence: Input | Output): string | null | undefined {
   return "sign" in influence ? influence.sign : null;
@@ -121,34 +120,29 @@ function signOf(influence: Input | Output): string | null | undefined {
 <template>
   <!-- the identifier of a row carries the mark of its type, so that the tables of the rules,
   which look alike, are told apart by the mark; a row the file gives no id is named as the
-  inspector names it, in italics, which tells that name from an id of the file -->
-  <span v-if="column.kind === 'id'" class="flex items-center gap-1.5">
+  inspector names it, in italics, which tells that name from an id of the file. The column of the
+  id is pinned while its table scrolls sideways, so on a narrow window a long id is cut off
+  before it takes the width the other columns are read in; the inspector shows it whole -->
+  <span v-if="column.kind === 'id'" class="flex items-center gap-1.5 max-md:max-w-[40vw]">
     <TypeMark v-if="row.sbmlType" :type="row.sbmlType" />
-    <span v-if="text" class="font-mono font-medium">{{ text }}</span>
+    <span v-if="text" class="min-w-0 truncate font-mono font-medium">{{ text }}</span>
     <span
       v-else-if="reportName"
       v-tooltip.bottom="REPORT_NAME_HINT"
-      class="font-mono text-gray-600 italic"
+      class="min-w-0 truncate font-mono text-gray-600 italic"
       data-testid="report-name"
       >{{ reportName }}</span
     >
     <ValueText v-else :value="null" mono />
   </span>
   <BooleanMark v-else-if="column.kind === 'boolean'" :value="booleanValue" />
-  <ValueText
-    v-else-if="column.kind === 'number' || column.kind === 'count'"
-    :value="numberValue"
-    double
-  />
+  <ValueText v-else-if="column.kind === 'number'" :value="numberValue" double />
   <MathView v-else-if="column.kind === 'math'" :math="mathValue" />
   <!-- the message of a constraint is XHTML, not text: it is rendered with the markup the notes
   are rendered with -->
   <XhtmlView v-else-if="column.kind === 'xhtml'" :xhtml="text" />
   <UnitsView v-else-if="column.kind === 'units'" :latex="text" />
-  <template v-else-if="column.kind === 'link'">
-    <UnitsLink v-if="column.link === 'units'" :pk="targetPk" :label="text" :latex="unitsLatex" />
-    <ElementLink v-else :pk="targetPk" :label="text" />
-  </template>
+  <ElementLink v-else-if="column.kind === 'link'" :pk="targetPk" :label="text" />
   <!-- the assignments of an event, on the one line of the row: "variable = math", separated by
   a comma and a space -->
   <ValueText v-else-if="column.kind === 'assignments' && !assignments.length" :value="null" />
@@ -179,6 +173,7 @@ function signOf(influence: Input | Output): string | null | undefined {
         :sign="signOf(influence)"
     /></template>
   </span>
+  <TransitionTermsView v-else-if="column.kind === 'functionTerms'" :terms="functionTerms" />
   <!-- the expression is capped at the width of its column and cut off with an ellipsis: an
   association of a genome scale model runs over thousands of genes, and the inspector is where
   the whole tree is read -->

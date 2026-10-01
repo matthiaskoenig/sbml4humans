@@ -21,16 +21,18 @@ services:
   backend:
     restart: always
     build: .
+    # the image carries the code, nothing of the host is mounted. The backend is reachable through
+    # the docker network alone, by the nginx container: a published port would bypass nginx and
+    # the firewall of the host, which docker circumvents
     volumes:
-      - .:/code
       # the uploads of other tools, kept for 24 hours (POST /api/upload)
       - uploads:/uploads
     environment:
       SBML4HUMANS_UPLOADS: /uploads
     expose:
       - "1444"
-    ports:
-      - "1444:1444"
+    security_opt:
+      - no-new-privileges:true
 
   frontend:
     build:
@@ -47,7 +49,7 @@ services:
 
   nginx:
     restart: always
-    image: nginx:1.27.0
+    image: nginx:1.28
     ports:
       - 8084:80
     volumes:

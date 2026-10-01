@@ -24,7 +24,7 @@ The units of a quantity or of a formula as they follow from the model.
 
 A model does not have to declare units everywhere: a compartment, a species or a parameter inherits the units of the model when it declares none, and the units of a formula follow from the units of the elements it uses. The report derives the units which follow from the model, reduces them to base units with their exponent, scale and multiplier, and renders the result as a formula. A quantity without a dimension reads `dimensionless`, and a dash says that the units are not declared or that the model does not say enough to derive them.
 
-Derived units are shown in the column "derived units" of the tables and in the inspector. They are the fastest check whether a kinetic law is dimensionally what it should be, because the derived units of a kinetic law are extent per time when the law is right.
+Derived units are shown in the column "derived units" of the tables, right of the size or the value they belong to, and in the inspector. They are the only units of a table, the units an element declares are a row of the inspector. They are the fastest check whether a kinetic law is dimensionally what it should be, because the derived units of a kinetic law are extent per time when the law is right.
 
 ## number
 
@@ -54,9 +54,9 @@ The rendered formula is the column "math" of the tables of rules, function defin
 
 The units an element declares, rendered as a formula.
 
-A units attribute names a unit definition, and a unit definition is a list of base units with an exponent, a scale and a multiplier. The report resolves the reference and renders the product as a formula, so that a table shows millimole over litre as a fraction instead of the identifier `mmol_per_l`, next to the identifier it comes from.
+A units attribute names a unit definition, and a unit definition is a list of base units with an exponent, a scale and a multiplier. The report resolves the reference and renders the product as a formula, so that the inspector shows millimole over litre as a fraction next to the identifier `mmol_per_l` it comes from.
 
-The rendered units appear in the units columns of the tables, in the units of the inspector and in the units column of the table of unit definitions, whose inspector shows them as the formula above the units the definition is built from.
+The rendered units appear in the units of the inspector and in the units column of the table of unit definitions, whose inspector shows them as the formula above the units the definition is built from.
 
 ## model kind
 

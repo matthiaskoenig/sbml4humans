@@ -11,8 +11,8 @@
 // whole needs its type bar, its tables and its inspector at once, which no window that narrow
 // shows: it is captured in REPORT_VIEWPORT, the narrowest window in which the layout is honest,
 // and the documentation links those images to their file, so that a click opens them at full
-// size. The tables of a qualitative model are captured at the width of the column, which every
-// one of them fits.
+// size. The tables of a qualitative model are captured in REPORT_VIEWPORT as well, which the
+// rules of its transitions need.
 import { chromium, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -31,6 +31,8 @@ const PAGE_VIEWPORT = { width: COLUMN_WIDTH, height: 900 };
 // tables keep the columns of a species left of it. The height is the one the pictures aim at,
 // they end a few pixels above or below it, where no pane is cut through a line.
 const REPORT_VIEWPORT = { width: 1200, height: 800 };
+// a phone: two of its windows stand next to each other in the column of the site
+const PHONE_VIEWPORT = { width: 360, height: 720 };
 // the width the inspector is dragged to for the pictures of the inspector alone: the article
 // column, so that its text is the size of the text next to it. It stays one column of three
 // sections below `@4xl`, which is what a reader of a report sees. A section of it is the 24 px of
@@ -328,6 +330,44 @@ try {
   );
   await pages.close();
 
+  // report-phone.png: the report on a phone, where the inspector stands in place of the tables:
+  // the tables a report opens with and the inspector of a species next to each other, two
+  // windows of a phone in one picture as wide as the column of the site
+  const phone = await browser.newPage({
+    viewport: PHONE_VIEWPORT,
+    deviceScaleFactor: 2,
+    hasTouch: true,
+    isMobile: true,
+  });
+  await open(phone, "BIOMD0000000012");
+  await expect(phone.getByTestId("inspector")).toHaveCount(0);
+  const phoneTables = await phone.screenshot({ animations: "disabled" });
+  // a tap and not the click of `selectRow`: the pointer of a click would rest where the
+  // inspector puts a label, and the picture would show the tooltip of a hover a phone has none of
+  await phone
+    .getByTestId("table-Species")
+    .locator("tbody tr[data-pk] td:first-child", { hasText: /^PX$/ })
+    .tap();
+  await expect(phone.getByTestId("inspector-id")).toHaveText("PX");
+  await resolvedSboTerm(phone);
+  const phoneInspector = await phone.screenshot({ animations: "disabled" });
+  await phone.close();
+  const pair = await newPage({ width: COLUMN_WIDTH, height: PHONE_VIEWPORT.height + 2 });
+  const frame = "border: 1px solid #d1d5db; border-radius: 12px;";
+  await pair.setContent(
+    `<body style="margin: 0"><div id="pair" style="display: flex; justify-content: space-between; width: ${COLUMN_WIDTH}px">${[
+      phoneTables,
+      phoneInspector,
+    ]
+      .map(
+        (image) =>
+          `<img style="width: ${PHONE_VIEWPORT.width}px; box-sizing: border-box; ${frame}" src="data:image/png;base64,${image.toString("base64")}" />`,
+      )
+      .join("")}</div></body>`,
+  );
+  await shot("report-phone", pair.locator("#pair"));
+  await pair.close();
+
   // the report as a whole: the type bar on top, the element tables and the inspector next to each
   // other below it, the footer under both
   const report = await newPage(REPORT_VIEWPORT);
@@ -367,11 +407,12 @@ try {
   // report-qual.png: the report of a qualitative model, the one kind of model which is built
   // from no reaction at all. Its two tables are the state space of the model and its influence
   // graph, which is what the columns of a qualitative report are for, and nothing is selected so
-  // that both tables have the whole width of the window. The signs of the influences are the
-  // point of the picture, so it is taken in a window as wide as the column of the site, where
-  // they are drawn at the size of the text next to them, from the type bar down: every table of
-  // the model fits that width, and the app bar above them does not.
-  const qual = await newPage(PAGE_VIEWPORT);
+  // that both tables have the whole width of the window. The signs of the influences and the
+  // rules of the transitions are the point of the picture, and a rule is every function term of
+  // a transition with its math on one line, which the column of the site is too narrow for: the
+  // picture is taken in the window of the report, from the type bar down, where every table of
+  // the model fits.
+  const qual = await newPage(REPORT_VIEWPORT);
   await open(qual, "qual_example (qual_example.xml)");
   await closeInspector(qual);
   await expect(qual.getByTestId("table-QualitativeSpecies")).toBeVisible();

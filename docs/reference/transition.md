@@ -6,7 +6,7 @@ A transition is to a qualitative model what a [reaction](reaction.md) with its k
 
 Its identifier is optional and has no mathematical meaning, because nothing in a qualitative model refers to a transition.
 
-The report shows the transitions of a model in a section of their own, with the species they read and the species they change, and the inspector shows the function terms as the table of condition and result level they are.
+The report shows the transitions of a model in a section of their own, with the species they read, the species they change and the function terms on one line, `level if condition` for every term and `level otherwise` for the default term, which is an overview of the rules of the model. The inspector shows the function terms as the table of condition and result level they are.
 
 ## Attributes
 

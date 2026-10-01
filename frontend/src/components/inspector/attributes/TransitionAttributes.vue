@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { Math, Transition } from "@/api/types";
+import type { Transition } from "@/api/types";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import NestedTable from "@/components/inspector/NestedTable.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
@@ -12,6 +12,7 @@ import { useReportIndex } from "@/report/context";
 import { attributeLabel } from "@/report/glossary";
 import { elementLabel } from "@/report/label";
 import { columnChars } from "@/report/text";
+import { OTHERWISE, transitionTerms } from "@/report/transitionTerms";
 
 const props = defineProps<{ element: Transition }>();
 const index = useReportIndex();
@@ -70,35 +71,7 @@ const outputWidths = computed(() => ({
   outputLevel: SIGN + THRESHOLD + 1 / 0.61,
 }));
 
-interface TermRow {
-  pk: string;
-  math: Math | null | undefined;
-  resultLevel: number | null | undefined;
-  /** The default term has no condition: it holds wherever no function term does. */
-  isDefault: boolean;
-}
-
-/** The transition table of the transition (qual §3.6.6): the function terms in the order in
- * which they are read, the first one whose condition holds deciding the level, and the default
- * term as the last row, where the condition reads "otherwise". */
-const terms = computed<TermRow[]>(() => {
-  const rows: TermRow[] = (props.element.listOfFunctionTerms ?? []).map((term) => ({
-    pk: term.pk,
-    math: term.math,
-    resultLevel: term.resultLevel,
-    isDefault: false,
-  }));
-  const fallback = props.element.defaultTerm;
-  if (fallback) {
-    rows.push({
-      pk: fallback.pk,
-      math: null,
-      resultLevel: fallback.resultLevel,
-      isDefault: true,
-    });
-  }
-  return rows;
-});
+const terms = computed(() => transitionTerms(props.element));
 </script>
 
 <template>
@@ -149,7 +122,7 @@ const terms = computed<TermRow[]>(() => {
     <NestedTable :rows="terms" :columns="TERM_COLUMNS" type="FunctionTerm">
       <template #cell-term="{ row }"><ElementLink :pk="row.pk" /></template>
       <template #cell-condition="{ row }">
-        <span v-if="row.isDefault" class="text-gray-500 italic">otherwise</span>
+        <span v-if="row.isDefault" class="text-gray-500 italic">{{ OTHERWISE }}</span>
         <MathView v-else :math="row.math" />
       </template>
       <template #cell-resultLevel="{ row }"><ValueText :value="row.resultLevel" /></template>

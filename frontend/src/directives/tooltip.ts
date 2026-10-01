@@ -75,6 +75,26 @@ function onScroll(): void {
   hide();
 }
 
+/** Whether the pointer which moved last is a finger. A finger does not hover, but the browser
+ * sends the mouse events of a tap after its touch, a `mouseenter` among them, and no `mouseleave`
+ * until the next tap somewhere else: the tooltip of a tapped button would stay over the page.
+ * A device with both follows the pointer in use, the mouse hovers again as soon as it moves. */
+let touching = false;
+
+function onPointer(event: Event): void {
+  touching = (event as PointerEvent).pointerType === "touch";
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("pointerdown", onPointer, { capture: true, passive: true });
+  document.addEventListener("pointermove", onPointer, { capture: true, passive: true });
+}
+
+/** Show the tooltip for a hover, which a pointer that hovers alone is shown one for. */
+function hover(el: HTMLElement): void {
+  if (!touching) show(el);
+}
+
 function show(el: HTMLElement): void {
   const target = targets.get(el);
   if (!target?.text) return;
@@ -125,7 +145,7 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
       text: binding.value,
       placement: placementOf(binding),
       mono: binding.modifiers.mono === true,
-      show: () => show(el),
+      show: () => hover(el),
       focus: () => focus(el),
       hide: () => hide(el),
     };

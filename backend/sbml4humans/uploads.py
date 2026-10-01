@@ -23,7 +23,6 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 UPLOAD_LIFETIME = 24 * 60 * 60.0  # [s]
-MAX_UPLOAD_BYTES = 100 * 1024 * 1024
 # the uploads of all tools together, so a client which uploads in a loop cannot fill the disk
 MAX_STORE_BYTES = 5 * 1024 * 1024 * 1024
 CLEANUP_INTERVAL = 60 * 60.0  # [s]
@@ -53,14 +52,6 @@ class UploadNotFoundError(KeyError):
     def __str__(self) -> str:
         """Message for the frontend."""
         return f"The upload '{self.upload_id}' is not available: uploads are kept for 24 hours."
-
-
-class UploadTooLargeError(ValueError):
-    """Raised for an upload above `MAX_UPLOAD_BYTES`."""
-
-    def __str__(self) -> str:
-        """Message for the frontend."""
-        return f"The upload is larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB."
 
 
 class UploadStoreFullError(RuntimeError):

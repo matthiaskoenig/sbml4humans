@@ -3,9 +3,14 @@
 The content MathML of libsbml is converted with xslt stylesheets to
 presentation MathML and then to latex, followed by heuristic cleanups of the
 latex for a better rendering. The stylesheets live in `sbml4humans.resources`.
+
+Compiling a stylesheet costs about twenty times its application, so each is
+compiled once per thread: an `XSLT` object of lxml must not be shared between
+threads, and the api builds its reports in the threads of its threadpool.
 """
 
 import re
+import threading
 from functools import lru_cache
 
 import libsbml
@@ -17,6 +22,18 @@ from sbml4humans.resources import XSLT_DIR
 
 xslt_cmml2pmml = ET.parse(str(XSLT_DIR / "ctopff.xsl"))
 xslt_pmml2tex = ET.parse(str(XSLT_DIR / "xsltml" / "mmltex.xsl"))
+
+
+class _Transforms(threading.local):
+    """The compiled stylesheets of the current thread, compiled on first use."""
+
+    def __init__(self) -> None:
+        """Compile the stylesheets for the thread which first uses them."""
+        self.cmml2pmml = ET.XSLT(xslt_cmml2pmml)
+        self.pmml2tex = ET.XSLT(xslt_pmml2tex)
+
+
+_transforms = _Transforms()
 
 # greek symbols rendered in latex, without the small lambda which marks
 # function definitions
@@ -64,8 +81,9 @@ def astnode_to_latex(astnode: libsbml.ASTNode) -> str:
 def cmathml_to_latex(cmml_str: str) -> str:
     """Convert content MathML to latex with the xslt transformations."""
     cmml_dom = ET.fromstring(cmml_str)
-    pmml_dom = ET.XSLT(xslt_cmml2pmml)(cmml_dom)
-    tex_str = str(ET.XSLT(xslt_pmml2tex)(pmml_dom))
+    transforms = _transforms
+    pmml_dom = transforms.cmml2pmml(cmml_dom)
+    tex_str = str(transforms.pmml2tex(pmml_dom))
 
     # remove equation symbols
     tex_str = tex_str.replace("$", "")

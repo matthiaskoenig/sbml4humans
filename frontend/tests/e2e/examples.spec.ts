@@ -17,8 +17,8 @@ test("an unknown example shows the api error", async ({ page }) => {
   await expect(page.getByTestId("error-message")).toHaveText(
     "example for id does not exist 'nope'",
   );
-  await page.getByTestId("error-traceback-toggle").click();
-  await expect(page.getByTestId("error-traceback")).toContainText("Traceback");
+  // the public api logs the traceback and sends the message alone
+  await expect(page.getByTestId("error-traceback-toggle")).toHaveCount(0);
 });
 
 test("every card of the examples page shows the whole id of its example", async ({ page }) => {

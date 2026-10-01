@@ -51,7 +51,9 @@ test("loads a url and remembers it", async ({ page }) => {
 test("an invalid url shows the error inline", async ({ page }) => {
   await page.goto("/");
   await page.getByTestId("home-tab-url").click();
-  await page.getByTestId("url-input").fill("https://sbml4humans.de/does-not-exist.xml");
+  // the reserved top level domain .invalid never resolves (RFC 6761), so the test depends on no
+  // server and fails fast
+  await page.getByTestId("url-input").fill("https://model.invalid/does-not-exist.xml");
   await page.getByTestId("url-submit").click();
   await expect(page.getByTestId("error-message")).toBeVisible();
   await expect(page).toHaveURL(/\/$/);

@@ -41,7 +41,8 @@ const packages = computed(() => props.index.document.packages?.map((pkg) => pkg.
       data-testid="model-select"
       @update:model-value="(value: string) => view.setModel(value)"
     />
-    <span v-else class="truncate font-mono text-gray-700" data-testid="model-name">{{
+    <!-- a narrow window leaves the name to the type bar, which carries it as well -->
+    <span v-else class="truncate font-mono text-gray-700 max-md:hidden" data-testid="model-name">{{
       model.id
     }}</span>
     <span class="whitespace-nowrap text-gray-500" data-testid="document-info">

@@ -255,6 +255,12 @@ class SBMLDocumentInfo:
     def __init__(self, doc: libsbml.SBMLDocument):
         """Prepare the build of the report of the document."""
         self.doc = doc
+        # asking an element for the plugin of a package the document does not
+        # use costs as much as for one it uses, and the extensions of every
+        # element are asked for, so the packages are known up front
+        self.packages: frozenset[str] = frozenset(
+            plugin.getPackageName() for plugin in package_plugins(doc)
+        )
         self.symbols: dict[str, set[str]] = {}
         self.units_of_math: dict[str, set[str]] = {}
         self.scope = DOCUMENT_SCOPE
@@ -447,8 +453,13 @@ class SBMLDocumentInfo:
             if _states_something(list_of)
         ]
 
-    @staticmethod
-    def _extension_lists(sbase: libsbml.SBase) -> list[libsbml.ListOf]:
+    def _plugin(self, sbase: libsbml.SBase, package: str) -> Any:
+        """The plugin of a package of an element, None if the document lacks it."""
+        if package not in self.packages:
+            return None
+        return sbase.getPlugin(package)
+
+    def _extension_lists(self, sbase: libsbml.SBase) -> list[libsbml.ListOf]:
         """The lists the comp and the distrib extension give an element.
 
         comp lets any element list the elements it replaces (comp §3.6) and
@@ -456,14 +467,14 @@ class SBMLDocumentInfo:
         list of replaced elements for an element which replaces nothing.
         """
         lists: list[libsbml.ListOf] = []
-        comp = sbase.getPlugin("comp")
+        comp = self._plugin(sbase, "comp")
         if comp and isinstance(comp, libsbml.CompSBasePlugin):
             replaced: libsbml.ListOfReplacedElements | None = (
                 comp.getListOfReplacedElements()
             )
             if replaced is not None:
                 lists.append(replaced)
-        distrib = sbase.getPlugin("distrib")
+        distrib = self._plugin(sbase, "distrib")
         if distrib and isinstance(distrib, libsbml.DistribSBasePlugin):
             lists.append(distrib.getListOfUncertainties())
         return lists
@@ -1172,7 +1183,7 @@ class SBMLDocumentInfo:
             sbase: the element carrying the extension.
             key: the key of the element, which keys its replacements.
         """
-        plugin = sbase.getPlugin("comp")
+        plugin = self._plugin(sbase, "comp")
         if not plugin or not isinstance(plugin, libsbml.CompSBasePlugin):
             return None
         replaced_by = None
@@ -1373,8 +1384,7 @@ class SBMLDocumentInfo:
             for index, fb in enumerate(plugin.getListOfFluxBounds())
         ]
 
-    @staticmethod
-    def key_value_pairs(sbase: libsbml.SBase) -> list[KeyValuePair]:
+    def key_value_pairs(self, sbase: libsbml.SBase) -> list[KeyValuePair]:
         """The key value pairs of an element, the controlled annotation of fbc §3.17.
 
         libsbml reads them from the annotation of any element of a document
@@ -1383,7 +1393,7 @@ class SBMLDocumentInfo:
         from a file, but not the identifier and the name the specification
         allows, so the report carries the three attributes which survive.
         """
-        plugin = sbase.getPlugin("fbc")
+        plugin = self._plugin(sbase, "fbc")
         if not plugin or not isinstance(plugin, libsbml.FbcSBasePlugin):
             return []
         return [
@@ -1686,7 +1696,7 @@ class SBMLDocumentInfo:
         metaId is keyed by its position in the list instead of the digest of
         its xml.
         """
-        plugin = sbase.getPlugin("distrib")
+        plugin = self._plugin(sbase, "distrib")
         if not plugin or not isinstance(plugin, libsbml.DistribSBasePlugin):
             return []
         uncertainties = []

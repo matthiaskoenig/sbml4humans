@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import AppBar from "@/components/layout/AppBar.vue";
 import { vTooltip } from "@/directives/tooltip";
-import { DOCS_URL } from "@/report/glossary";
+import { DOCS_URL } from "@/docs";
 import { router } from "@/router";
 import { useReportStore } from "@/stores/report";
 

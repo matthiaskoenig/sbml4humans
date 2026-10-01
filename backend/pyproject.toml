@@ -30,17 +30,18 @@ dependencies = [
     "python-libsbml>=5.21.2",
     "lxml>=6.0.0",
     "numpy>=2.2.2",
-    "pint>=0.25.3",
-    "pymetadata>=0.6.2",
+    "pint>=0.26.1",
+    "pymetadata>=0.6.6",
     "pydantic>=2.12",
     # the http api
-    "fastapi>=0.141.1",
-    "uvicorn>=0.52.4",
+    "fastapi>=0.142.2",
+    "uvicorn>=0.54.0",
     "python-multipart>=0.0.32",
     # downloading models from urls, and the client of the local server of `show`
     "httpx>=0.28.1",
     # the state file of the local server of `show`, in the cache directory of the user
     "platformdirs>=4.4",
+    "httpcore>=1.0.9",
 ]
 
 [project.scripts]
@@ -55,9 +56,9 @@ Repository = "https://github.com/matthiaskoenig/sbml4humans"
 dev = [
     "bump-my-version>=1.5.1",
     "pytest>=9.1.1",
-    "ruff>=0.16.6",
-    "ty>=0.0.78",
-    "zensical>=0.0.60",
+    "ruff>=0.16.9",
+    "ty>=0.0.84",
+    "zensical>=0.0.67",
 ]
 
 [tool.hatch.version]
@@ -68,7 +69,7 @@ path = "sbml4humans/__init__.py"
 # follows it. Run from this directory: `uv run bump-my-version bump minor`.
 # No tag: the bump is merged into develop with squash or rebase, which rewrites
 # the commit, so the tag is created on develop after the merge (see docs/development.md)
-current_version = "0.7.1"
+current_version = "0.8.0"
 commit = true
 tag = false
 tag_name = "{new_version}"

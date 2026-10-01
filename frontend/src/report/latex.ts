@@ -1,4 +1,7 @@
 import katex from "katex";
+import "katex/dist/katex.min.css";
+
+import "@/assets/latex.css";
 
 /** A latex longer than this many characters is not rendered: at tens of thousands of characters
  * KaTeX takes seconds and produces megabytes of html for a single formula, synchronously, in

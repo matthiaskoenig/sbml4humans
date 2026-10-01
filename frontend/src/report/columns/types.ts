@@ -8,12 +8,12 @@ export type CellKind =
   | "math"
   | "units"
   | "link"
-  | "count"
   | "assignments"
   | "terms"
   | "elements"
   | "geneAssociation"
   | "influence"
+  | "functionTerms"
   | "xhtml";
 
 /** What a column of an element table is defined by. It states no header: a column is headed by
@@ -26,9 +26,6 @@ export interface ColumnSpec {
   /** Kind "link": the edge kind that resolves the referenced element. Kind "influence": the
    * edge kind that resolves the qualitative species of every input or output of the cell. */
   link?: EdgeKind;
-  /** Kind "units" and kind "link" with `link: "units"`: the field holding the latex of the
-   * units, default `${field}Latex`. */
-  latexField?: string;
   width?: string;
   /** A column which is left out of a table no row of which fills it: the fbc columns of a
    * species or a reaction of a model which does not use the package. */

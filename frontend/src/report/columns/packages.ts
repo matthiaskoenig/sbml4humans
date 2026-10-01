@@ -72,11 +72,12 @@ export const PACKAGE_COLUMNS: Readonly<Record<PackageType, readonly ColumnSpec[]
     { field: "constant", kind: "boolean" },
   ],
   // the species of the inputs with their sign and the species of the outputs are the influence
-  // the transition encodes, which is what a reader of a qualitative model looks for first
+  // the transition encodes, which is what a reader of a qualitative model looks for first, and
+  // the function terms with their math are the rule which decides it
   Transition: [
     ...ID_COLUMNS,
     { field: "listOfInputs", kind: "influence", link: "input" },
     { field: "listOfOutputs", kind: "influence", link: "output" },
-    { field: "listOfFunctionTerms.length", kind: "count" },
+    { field: "listOfFunctionTerms", kind: "functionTerms" },
   ],
 };

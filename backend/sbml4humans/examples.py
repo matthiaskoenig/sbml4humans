@@ -1,7 +1,9 @@
 """Example models served by the api.
 
 The examples are the models of `sbml4humans.resources`: the example models and
-the first curated biomodels. They are read once on first use.
+the first curated biomodels. They are read once on first use. The example of a
+biomodel is the main SBML entry of its archive, which is extracted for the
+time its metadata or its report is read and removed afterwards.
 """
 
 import logging
@@ -12,6 +14,8 @@ import libsbml
 from pydantic import BaseModel, Field, FilePath
 from pymetadata.omex import ManifestEntry, Omex
 
+from sbml4humans.model import ReportResponse
+from sbml4humans.report import report_for_path
 from sbml4humans.resources import (
     API_EXAMPLES_MODEL,
     API_EXAMPLES_OMEX,
@@ -30,10 +34,16 @@ DESCRIPTION_NAMES_LENGTH = 60
 
 
 class ExampleMetaData(BaseModel):
-    """Metadata of an example model."""
+    """Metadata of an example model.
+
+    The `file` is the SBML file or the COMBINE archive of the example, and
+    `location` the entry of the archive which is the example, if the example is
+    one entry of it rather than the whole archive.
+    """
 
     id: str
     file: FilePath
+    location: str | None = None
     name: str | None = None
     description: str | None = None
     packages: list[str] = Field(default_factory=list)
@@ -70,12 +80,13 @@ def example_from_sbml(
 
 def example_from_omex(omex_path: Path) -> ExampleMetaData:
     """Read the metadata of an example from its COMBINE archive."""
-    omex = Omex.from_omex(omex_path)
+    with Omex.from_omex(omex_path) as omex:
+        description = omex_description(omex)
     return ExampleMetaData(
         id=omex_path.stem,
         file=omex_path,
         name=omex_path.stem,
-        description=omex_description(omex),
+        description=description,
         packages=["OMEX"],
     )
 
@@ -118,9 +129,12 @@ def biomodel_examples(
         if not omex_path.is_file():
             continue
 
-        omex = Omex.from_omex(omex_path)
-        sbml_path = omex.get_path(main_sbml_entry(omex).location)
-        examples.append(example_from_sbml(sbml_path, example_id=biomodel_id))
+        with Omex.from_omex(omex_path) as omex:
+            location = main_sbml_entry(omex).location
+            example = example_from_sbml(omex.get_path(location), example_id=biomodel_id)
+        examples.append(
+            example.model_copy(update={"file": omex_path, "location": location})
+        )
 
     return examples
 
@@ -163,3 +177,16 @@ def load_examples() -> dict[str, ExampleMetaData]:
 
     logger.info("%s examples loaded", len(examples))
     return examples
+
+
+def report_for_example(example: ExampleMetaData) -> ReportResponse:
+    """Create the report of an example.
+
+    The example is read trusted: its files were chosen by the operator, so the
+    files next to it which its external model definitions name are read as
+    well, for an entry of an archive the other entries of the archive.
+    """
+    if example.location is None:
+        return report_for_path(example.file, trusted=True)
+    with Omex.from_omex(example.file) as omex:
+        return report_for_path(omex.get_path(example.location), trusted=True)

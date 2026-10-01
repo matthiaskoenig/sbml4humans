@@ -2,7 +2,7 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
-## 0.8.0
+## 0.9.0
 
 Other tools open a model in SBML4Humans with an upload that has an address. [cy3sbml](https://github.com/matthiaskoenig/cy3sbml), the SBML app of Cytoscape, uses it to open the model of a network with one click ([cy3sbml#473](https://github.com/matthiaskoenig/cy3sbml/issues/473)).
 
@@ -10,6 +10,57 @@ Other tools open a model in SBML4Humans with an upload that has an address. [cy3
 - `POST /api/upload` keeps an SBML file or COMBINE archive for 24 hours and answers its id and the time it expires; the report of the upload is at `/report?upload=<id>`, which can be shared and reloaded until the upload expires. An upload which cannot be read is refused and not kept, and an upload is at most 100 MB
 - `GET /api/upload/{id}` answers the report data of an upload, and says that an upload is kept for 24 hours when it is no longer there
 - the backend deletes the expired uploads every hour; the production deployment keeps the uploads on the volume `uploads`, so they survive a restart
+
+## 0.8.0
+
+A report can be read on a phone: below 768 px the report shows the tables or the inspector, one at a time, and no page scrolls sideways any more.
+
+### The report on a phone
+- a window narrower than 768 px shows one pane at a time: the report opens with the tables, a tap on a row shows the inspector in their place, and the arrow at the start of its header and the back button of the browser return to the tables where they were left ([#74](https://github.com/matthiaskoenig/sbml4humans/issues/74))
+- a report on a phone opens without the model selected, since the inspector would stand in place of the tables; the model and the document are opened from their marks in the type bar
+- the type bar is one row: the types are behind a button which says how many of them the tables show, and the bar gives way to the inspector while an element is read
+- the search has a row of its own in the app bar, the links of the bar are behind a menu button, and the footer is left to the home page and the examples page
+- the explanation of a name fills the window, the examples page stacks its heading and its filter, the rows of a table are as high as a finger needs to hit them
+- a tap leaves no tooltip behind: a finger does not hover, and the tooltip of a tapped button stayed over the page until the next tap
+
+### The tables
+- the id of a row stays in view while its table scrolls sideways, in every window: the column of the ids is pinned to the left edge of the table, with a line at its right edge while the table is scrolled. A table which fits its window looks as before
+- on a phone the pinned column is as wide as its ids and a long id is cut off at 40% of the window, the inspector shows it whole
+
+### Fixes
+- the links of the app bar no longer run into the context of a report between 768 px and 1024 px, they are behind the menu button below 1024 px
+
+### Development
+- one breakpoint, the `md` of Tailwind: the styles of a narrow window are `max-md:` variants, and what is not a style asks `useNarrow()` of `src/narrow.ts`
+- the tables of the report are `report/ReportTables.vue`, which the split of a wide window and the page of a narrow one both render; `SplitPane` did not change
+- the Playwright project `mobile` (Pixel 7) runs `tests/e2e/mobile.spec.ts`, the end to end tests of the narrow window, with every run of `npm run test:e2e`
+- `docs/report.md` has the section "On a phone" with the picture `report-phone.png`, which `scripts/screenshots.mjs` takes
+- the api of the backend and the data model of the report did not change: the release is the frontend and the documentation
+
+## 0.7.2
+
+The tables of a report say more on less space: a value is read together with its units, and the table of the transitions of a qualitative model shows the rules instead of their number.
+
+### The tables
+- the derived units stand in the column right of the value they belong to, the size of a compartment, the value of a parameter and the initial amount and concentration of a species, so that a value and its units are read together ([#72](https://github.com/matthiaskoenig/sbml4humans/issues/72))
+- the derived units are the only units of a table: the column of the units attribute, `units` of a compartment and of a parameter and `substanceUnits` of a species, is gone, since the derived units are the rendered units of the element and say the same. The attribute stays a row of the inspector, with the link to its unit definition ([#71](https://github.com/matthiaskoenig/sbml4humans/issues/71))
+- the column `listOfFunctionTerms` of the table of the transitions shows the rule of the transition instead of the number of its function terms: `level if condition` for every function term in the order of the file and `level otherwise` for the default term, for example `1 if (S ≥ theta_G_S) ∧ (P < theta_G_P); 1 if (G ≥ theta_G_G) ∧ (P < theta_G_P); 0 otherwise`, which gives an overview of the rules of a qualitative model ([#70](https://github.com/matthiaskoenig/sbml4humans/issues/70))
+
+### The examples
+- two published logical models of the qual package are examples, written by [TabularQual](https://github.com/sys-bio/TabularQual): `Faure2006`, the Boolean model of the mammalian cell cycle, in which every input of a transition carries its sign, and `ThieffryThomas1995_multivalue`, the decision between lysis and lysogeny of the phage lambda, whose qualitative species have up to four levels ([#78](https://github.com/matthiaskoenig/sbml4humans/issues/78))
+
+### Fixes
+- the entries of a COMBINE archive are in the order of its manifest, in the description of an archive example, in the manifest of a report and in the context bar. The order was the one of the file system the archive was extracted to and differed between machines; it is fixed in pymetadata 0.6.4, which the backend requires now
+
+### Development
+- the table and the inspector build the rows of the function terms of a transition from one place, `report/transitionTerms.ts`, the inspector had its own copy
+- the cell kind `count`, the units link of a table cell and the `latexField` of a column are removed, nothing uses them any more
+- the architecture notes of `CLAUDE.md` are split per directory, `backend/CLAUDE.md`, `frontend/CLAUDE.md` and `glossary/CLAUDE.md`, and are loaded with the work below that directory only
+- the api of the backend and the data model of the report did not change: the release is the frontend, the glossary, the documentation, the examples and the requirement of pymetadata 0.6.4
+
+### Documentation
+- [reading a report](https://matthiaskoenig.github.io/sbml4humans/report/) describes the columns of the tables as they are now, and the screenshots which show a table are retaken
+- `CITATION.cff` and the "How to cite" sections name version 0.7.1 and its DOI [10.5281/zenodo.22854257](https://doi.org/10.5281/zenodo.22854257)
 
 ## 0.7.1
 

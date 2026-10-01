@@ -10,7 +10,7 @@ The home page has a tab for each input: "Upload", "URL" and "Paste".
 
 **Upload** takes a file from your computer. Drop it onto the dashed area or use "Choose a file" and pick it in the file dialog, which offers the extensions `.xml`, `.sbml`, `.gz`, `.omex` and `.zip`. The report opens as soon as it is created.
 
-**URL** takes the web address of a model, for example the download link of a model of BioModels or the raw url of a file in a git repository. Enter it and press "Load"; the backend downloads the address, follows redirects and gives up after 60 seconds. The address you entered last is kept in your browser and is filled in the next time you open the page.
+**URL** takes the web address of a model, for example the download link of a model of BioModels or the raw url of a file in a git repository. Enter it and press "Load"; the backend downloads the address, follows up to 5 redirects and gives up after 60 seconds. Only `http` and `https` addresses of the public internet are downloaded: an address of the machine of the backend or of a private network (`localhost`, `10.x.x.x`, `192.168.x.x`, ...) is refused, also behind a redirect. This holds for the local server of `sbml4humans.show` as well, which opens a file of your machine by its path. The address you entered last is kept in your browser and is filled in the next time you open the page.
 
 **Paste** takes the content of an SBML file as text. Paste the XML into the text area and press "Create report". This is the fastest way to look at a model which is in your clipboard or which you have just edited in a text editor.
 
@@ -32,11 +32,12 @@ The examples page lists the models the backend ships with, with a filter above t
 
 ![The examples page, with a filter above a grid of example cards](images/examples.png)
 
-The examples are of six kinds:
+The examples are of seven kinds:
 
 - small models which each show one feature of SBML and are named after it, among them `algebraic_rule`, `notes`, `species`, `unit_definitions` and `distrib_uncertainties`
 - small models written for the documentation, one per part of the data model which no published model of this list contains: `constraint_event`, a model of Level 3 Version 2 with a [constraint](reference/constraint.md) and its message, an [event](reference/event.md) whose trigger, priority and delay each carry an identifier, and a kinetic law with the list of [local parameters](reference/localparameter.md) of Level 3, which the curated models of Level 2 write in another list; `comp_deletion`, with the [deletions](reference/deletion.md), the [replacements](reference/replacedelement.md) and the chain of [references](reference/sbaseref.md) which reach into a submodel of a submodel; `fbc_bounds_v1` and `fbc_constraints_v3`, the [flux bound](reference/fluxbound.md) objects of fbc Version 1 and the [user defined constraints](reference/userdefinedconstraint.md) of Version 3; `qual_example`, a gene regulatory switch written with a logical and a Petri net [transition](reference/transition.md); `distrib_spans`, whose measurements are [intervals](reference/uncertspan.md) and distributions; and `list_of`, whose [lists](reference/listof.md) carry notes, an annotation, an SBO term, an id and a name of their own, one of them an empty list of rules with a note which says why
 - published models, for example the repressilator, a model of hepatic glucose metabolism, and the physiologically based models of indocyanine green, dextromethorphan and sparteine, which use the comp package to build a body out of organ models
+- published logical models which use the qual package, written by [TabularQual](https://github.com/sys-bio/TabularQual): `Faure2006`, the Boolean model of the mammalian cell cycle, in which every [input](reference/input.md) of a [transition](reference/transition.md) carries its sign, and `ThieffryThomas1995_multivalue`, the decision between lysis and lysogeny of the phage lambda, whose [qualitative species](reference/qualitativespecies.md) have up to four levels
 - constraint based reconstructions which use the fbc package: the core model of *E. coli* and Recon3D, the human reconstruction, which is large enough to show what a report does with tens of thousands of elements
 - the first curated models of [BioModels](https://www.ebi.ac.uk/biomodels/), each read from its COMBINE archive
 - four COMBINE archives, among them `CompModels`, which holds several SBML entries and is the example to look at when you want to see how an archive is shown
@@ -61,8 +62,10 @@ The application shows what went wrong instead of an empty report. The message co
 
 - a file which contains no model at all is reported as "No SBML model could be read", followed by the error log of libsbml
 - a url which answers with an error is reported with the status of the request; a url which cannot be reached at all, or which is still downloading after 60 seconds, is reported without one
+- a url which is no `http` or `https` address of the public internet is reported as not downloaded
+- an upload, pasted content or a download larger than 100 MB is refused, and so is a gzipped model which decompresses to more than 100 MB or a COMBINE archive with more than 1000 entries, more than 100 MB uncompressed or an entry which is compressed more than 200 times
 - a backend which is not running is reported as not reachable, which is what a local development setup shows when only the frontend was started
 
-"Show details" below the message opens the full traceback of the backend, which is worth reading when the message alone does not say enough, and worth including when you report a problem.
+The public service sends the message alone, the traceback of the failure stays in the log of its backend. A report which was opened from python with `sbml4humans.show` runs its backend on your own machine, there "Show details" below the message opens the full traceback, which is worth reading when the message alone does not say enough, and worth including when you report a problem.
 
 Warnings of libsbml do not stop a report. A model which libsbml reads despite its errors is shown, with the elements it could read.

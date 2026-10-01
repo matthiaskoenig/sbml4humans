@@ -76,6 +76,12 @@ npm run test:unit
 npm run test:e2e
 ```
 
+The end to end tests need the backend on port 1444, started with `SBML4HUMANS_ALLOW_PRIVATE_URLS=1`, as the CI does: the test of the url input serves its model on `127.0.0.1`, which the backend refuses to download otherwise. Never set the variable for a server which is reachable by others, it lets the backend download from every address of its network.
+
+```bash
+cd backend && SBML4HUMANS_ALLOW_PRIVATE_URLS=1 uv run uvicorn sbml4humans.api:api --port 1444
+```
+
 ## Documentation
 
 The documentation is this Zensical site, built from the sources in `docs/` with the configuration in `zensical.toml`, from the repository root:

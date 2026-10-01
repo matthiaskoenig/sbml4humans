@@ -21,7 +21,9 @@ services:
     restart: always
     build: .
     volumes:
-      - .:/code
+      # the working tree, read-only: the container runs as an unprivileged user and writes nothing
+      # but the uploads
+      - .:/code:ro
       # the uploads of other tools, kept for 24 hours (POST /api/upload)
       - uploads:/uploads
     environment:

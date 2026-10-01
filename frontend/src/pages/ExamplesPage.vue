@@ -39,13 +39,13 @@ const examples = computed(() => {
 <template>
   <AppBar />
   <main class="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6" data-testid="examples-page">
-    <div class="flex items-center justify-between gap-4">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
       <h1 class="text-2xl font-semibold tracking-tight">Examples</h1>
       <input
         v-model="filter"
         type="search"
         placeholder="Filter examples"
-        class="w-64 rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-link focus:outline-none"
+        class="w-full rounded border border-gray-300 px-3 py-1.5 text-sm focus:border-link focus:outline-none sm:w-64"
         data-testid="examples-filter"
       />
     </div>
