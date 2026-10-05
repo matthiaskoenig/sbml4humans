@@ -110,3 +110,19 @@ def test_comp_examples_map_every_issue(name: str) -> None:
     issues = issues_of(info.doc, info.positions)
     assert issues
     assert {i.pk for i in issues} <= set(_report_pks(info))
+
+
+def test_issue_on_a_list_without_content_goes_to_its_owner() -> None:
+    """An issue on a list the report does not carry is the issue of the owner."""
+    sbml = (EXAMPLES_DIR / "validation.xml").read_text()
+    sbml = sbml.replace("<listOfParameters>", '<listOfParameters foo="1">')
+    issues = _issues(sbml)
+    assert (20227, "error", "validation/Model:validation") in issues
+
+
+def test_issue_on_a_list_of_a_reaction_goes_to_the_reaction() -> None:
+    """The lists of a reaction and of its kinetic law belong to their owner."""
+    sbml = (EXAMPLES_DIR / "validation.xml").read_text()
+    sbml = sbml.replace("<listOfReactants>", '<listOfReactants foo="1">')
+    issues = _issues(sbml)
+    assert (21150, "error", "validation/Reaction:R1") in issues

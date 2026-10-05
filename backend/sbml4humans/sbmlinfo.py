@@ -426,7 +426,7 @@ class SBMLDocumentInfo:
             "comp": self.comp_sbase(sbase, key),
             "uncertainties": self.uncertainties(sbase, key),
             "key_value_pairs": self.key_value_pairs(sbase),
-            "lists": self.lists(sbase, key, lists, scope),
+            "lists": self.lists(sbase, key, lists, scope, pk),
         }
 
     def lists(
@@ -435,6 +435,7 @@ class SBMLDocumentInfo:
         owner_key: str,
         lists: Iterable[libsbml.ListOf],
         scope: str | None = None,
+        owner_pk: str | None = None,
     ) -> list[ListOf]:
         """The lists of an element which carry something of their own.
 
@@ -449,14 +450,19 @@ class SBMLDocumentInfo:
             owner_key: the key of the owner, which keys its lists.
             lists: the lists of the class of the owner.
             scope: the scope of the owner, where it is not the current one.
+            owner_pk: the pk of the owner, where an issue of a list which is
+                not in the report goes to.
         """
         is_scope = isinstance(owner, libsbml.Model | libsbml.SBMLDocument)
         prefix = "" if is_scope else f"{owner_key}."
-        return [
-            self.list_of(list_of, f"{prefix}{list_of.getElementName()}", scope)
-            for list_of in (*lists, *self._extension_lists(owner))
-            if _states_something(list_of)
-        ]
+        result: list[ListOf] = []
+        for list_of in (*lists, *self._extension_lists(owner)):
+            if _states_something(list_of):
+                key = f"{prefix}{list_of.getElementName()}"
+                result.append(self.list_of(list_of, key, scope))
+            elif owner_pk is not None:
+                self.positions.add(list_of, owner_pk)
+        return result
 
     def _plugin(self, sbase: libsbml.SBase, package: str) -> Any:
         """The plugin of a package of an element, None if the document lacks it."""
