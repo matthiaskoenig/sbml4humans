@@ -332,6 +332,50 @@ def test_a_hanging_name_resolution_ends_after_its_step(
     assert time.monotonic() - start < 1.5
 
 
+def test_a_host_name_which_cannot_be_encoded_is_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A label of more than 63 characters fails in `getaddrinfo`, not in a thread."""
+    hooked: list[threading.ExceptHookArgs] = []
+    monkeypatch.setattr(threading, "excepthook", hooked.append)
+    with pytest.raises(UrlNotAllowedError, match="no valid name"):
+        download("http://" + "a" * 64 + ".com/x")
+    assert hooked == []
+
+
+def test_name_resolutions_are_bounded(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Beyond the resolutions in flight a download is refused, nothing resolves."""
+    resolutions = threading.BoundedSemaphore(1)
+    monkeypatch.setattr(download_module, "_RESOLUTIONS", resolutions)
+    resolved: list[str] = []
+
+    def resolve(host: str, port: int) -> list[IPAddress]:
+        resolved.append(host)
+        return [ipaddress.ip_address("93.184.215.14")]
+
+    monkeypatch.setattr(download_module, "resolve", resolve)
+    # a resolution which hangs holds the one slot
+    assert resolutions.acquire(blocking=False)
+    try:
+        with pytest.raises(httpx.ConnectError, match="name resolutions"):
+            download(f"http://{PUBLIC_HOST}/model")
+    finally:
+        resolutions.release()
+    assert resolved == []
+
+
+def test_a_resolution_frees_its_slot(
+    server: int, resolved: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A resolution which ended, also by an error, gives its slot back."""
+    resolutions = threading.BoundedSemaphore(1)
+    monkeypatch.setattr(download_module, "_RESOLUTIONS", resolutions)
+    with pytest.raises(UrlNotAllowedError):
+        download("http://" + "a" * 64 + ".com/x")
+    assert download(f"http://{PUBLIC_HOST}:{server}/model") == MODEL
+    assert download(f"http://{PUBLIC_HOST}:{server}/model") == MODEL
+
+
 def test_an_error_status_fails(server: int, resolved: list[str]) -> None:
     """A url which answers with an error status is no model."""
     with pytest.raises(Exception, match="404"):

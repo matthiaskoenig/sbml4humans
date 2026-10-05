@@ -29,7 +29,8 @@ comes first, and it reads at most `MAX_CONTENT_SIZE` bytes after the content
 encoding of the response is undone. The name resolution of the system has no
 timeout, so it runs in a thread of its own which the download stops waiting
 for; a resolution which hangs ends by the timeouts of the resolver of the
-system.
+system. At most `MAX_RESOLUTIONS` resolutions run at a time, the hanging ones
+included, a download beyond them is refused.
 """
 
 import ipaddress
@@ -64,6 +65,10 @@ if ALLOW_PRIVATE_URLS:
     )
 
 SCHEMES = ("http", "https")
+# the name resolutions which run at a time, also those a download stopped
+# waiting for; a download beyond them is refused
+MAX_RESOLUTIONS = 32
+_RESOLUTIONS = threading.BoundedSemaphore(MAX_RESOLUTIONS)
 # the well-known prefix of NAT64 (RFC 6052), whose last 32 bits are an IPv4 address
 NAT64_PREFIX = ipaddress.ip_network("64:ff9b::/96")
 
@@ -148,20 +153,36 @@ def _resolve_within(host: str, port: int, timeout: float) -> list[IPAddress] | N
     """The addresses of a host, None when the resolution takes longer than `timeout`.
 
     `socket.getaddrinfo` has no timeout, so `resolve` runs in a daemon thread,
-    which is left to end by itself when it takes longer.
+    which is left to end by itself when it takes longer; it holds a slot of
+    `_RESOLUTIONS` until it has ended.
+
+    Raises:
+        httpx.ConnectError: if `MAX_RESOLUTIONS` resolutions run already.
+        Exception: what the resolution raised.
     """
+    resolutions = _RESOLUTIONS
+    if not resolutions.acquire(blocking=False):
+        raise httpx.ConnectError(
+            "Too many name resolutions run at the moment, try again later."
+        )
     addresses: list[list[IPAddress]] = []
-    errors: list[OSError] = []
+    errors: list[BaseException] = []
 
     def run() -> None:
-        """Resolve the host, keep the addresses or the error."""
+        """Resolve the host, keep the addresses or the error, free the slot."""
         try:
             addresses.append(resolve(host, port))
-        except OSError as exc:
+        except BaseException as exc:
             errors.append(exc)
+        finally:
+            resolutions.release()
 
     thread = threading.Thread(target=run, name=f"resolve {host}", daemon=True)
-    thread.start()
+    try:
+        thread.start()
+    except BaseException:
+        resolutions.release()
+        raise
     thread.join(timeout)
     if thread.is_alive():
         return None
@@ -230,7 +251,8 @@ class PublicNetworkBackend(httpcore.SyncBackend):
         """Connect to the checked address of the host.
 
         Raises:
-            UrlNotAllowedError: if an address of the host is not public.
+            UrlNotAllowedError: if an address of the host is not public or the
+                host is no valid name.
             DownloadTimeoutError: if the deadline passes.
             httpx.ConnectTimeout: if the name resolution takes longer than the
                 timeout of its step.
@@ -240,6 +262,11 @@ class PublicNetworkBackend(httpcore.SyncBackend):
             addresses = _resolve_within(host, port, step)
         except OSError as exc:
             raise httpx.ConnectError(f"The host '{host}' is unknown: {exc}") from exc
+        except ValueError as exc:
+            # e.g. a label of more than 63 characters, which idna cannot encode
+            raise UrlNotAllowedError(
+                f"The host '{host}' is no valid name, it is not downloaded: {exc}"
+            ) from exc
         if addresses is None:
             if self._deadline.passed():
                 raise DownloadTimeoutError
