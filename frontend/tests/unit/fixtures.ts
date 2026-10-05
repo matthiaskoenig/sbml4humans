@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { ExampleMetaData, Report, ReportResponse } from "@/api/types";
+import type { ExampleMetaData, Report, ReportResponse, ValidationIssue } from "@/api/types";
 
 // `new URL(x, import.meta.url)` is Vite's static asset-url pattern: it rewrites the call at
 // transform time, which mangles a runtime path built from a template literal. Building the
@@ -44,4 +44,26 @@ export function loadReport(name: FixtureName, location?: string): Report {
 export function loadExamplesFixture(): ExampleMetaData[] {
   const path = join(FIXTURES_DIR, "examples.json");
   return JSON.parse(readFileSync(path, "utf8")) as ExampleMetaData[];
+}
+
+/** A copy of a report whose validation holds the given issues in place of its own: each names its
+ * element and severity, the rule and the texts default to a plain warning of units. */
+export function withIssues(
+  report: Report,
+  issues: (Pick<ValidationIssue, "pk" | "severity"> & Partial<ValidationIssue>)[],
+  validationSkipped: Report["validationSkipped"] = null,
+): Report {
+  return {
+    ...report,
+    validationSkipped,
+    validation: issues.map((issue) => ({
+      rule: 99505,
+      category: "Units consistency",
+      shortMessage: `an issue of ${issue.pk}`,
+      message: `The message of an issue of ${issue.pk}.`,
+      line: 0,
+      column: 0,
+      ...issue,
+    })),
+  };
 }

@@ -83,6 +83,14 @@ const entries = computed(() =>
   }),
 );
 
+/** The mark of the document, the model or an external model definition, which have no row of a
+ * table and whose entry of the bar is their row: the worst severity of their issues and of those of
+ * what they hold without a row (their lists); a note alone is no mark. */
+function markOf(pk: string): "error" | "warning" | null {
+  const worst = props.index.worstSeverity(pk);
+  return worst === "info" ? null : worst;
+}
+
 function selectedClass(pk: string): string {
   return view.state.value.pk === pk ? "bg-selected" : "hover:bg-gray-100";
 }
@@ -104,7 +112,10 @@ function selectedClass(pk: string): string {
     >
       <!-- a narrow window keeps the mark of the document and leaves its name to a screen reader,
       so that the document, the model and the button of the types are one row -->
-      <TypeMark type="SBMLDocument" /><span class="max-md:sr-only">SBMLDocument</span>
+      <TypeMark type="SBMLDocument" /><span class="max-md:sr-only">SBMLDocument</span
+      ><span v-if="markOf(index.document.pk)" class="flex" data-testid="bar-issue-document">
+        <SeverityIcon :severity="markOf(index.document.pk)!" />
+      </span>
     </button>
     <button
       type="button"
@@ -115,7 +126,10 @@ function selectedClass(pk: string): string {
     >
       <TypeMark type="Model" /><span class="truncate font-mono max-md:max-w-[34vw]">{{
         model.id
-      }}</span>
+      }}</span
+      ><span v-if="markOf(model.pk)" class="flex" data-testid="bar-issue-model">
+        <SeverityIcon :severity="markOf(model.pk)!" />
+      </span>
     </button>
     <button
       v-for="emd in index.externalModelDefinitions"
@@ -126,7 +140,10 @@ function selectedClass(pk: string): string {
       data-testid="bar-emd"
       @click="view.select(emd.pk)"
     >
-      <TypeMark type="ExternalModelDefinition" /><span class="font-mono">{{ emd.id }}</span>
+      <TypeMark type="ExternalModelDefinition" /><span class="font-mono">{{ emd.id }}</span
+      ><span v-if="markOf(emd.pk)" class="flex" data-testid="bar-issue-emd">
+        <SeverityIcon :severity="markOf(emd.pk)!" />
+      </span>
     </button>
 
     <!-- the quiet separator between the document and what the model is made of, which a model

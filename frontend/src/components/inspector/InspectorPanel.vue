@@ -31,13 +31,10 @@ const typeHelp = computed(() => {
 });
 /** The element is named as every link to it names it; the type is already named next to it. */
 const name = computed(() => elementLabel(index.value, props.pk) ?? "");
-/** The issues of the element above its attributes, then those of the elements it holds without a
- * row of their own, which mark its row; the document holds, below its own, the list of every
- * issue, where the summary of the app bar leads. */
-const issues = computed(() => [
-  ...(index.value?.issuesOf(props.pk) ?? []),
-  ...(index.value?.heldIssuesOf(props.pk) ?? []),
-]);
+/** The issues of the element above its attributes together with those of the elements it holds
+ * without a row of their own, which mark its row, errors first; the document holds, below its
+ * own, the list of every issue, where the summary of the app bar leads. */
+const issues = computed(() => index.value?.rowIssuesOf(props.pk) ?? []);
 const isDocument = computed(() => element.value?.sbmlType === "SBMLDocument");
 const showXml = ref(false);
 watch(

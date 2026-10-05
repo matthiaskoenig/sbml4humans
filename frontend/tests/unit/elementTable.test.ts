@@ -22,7 +22,7 @@ import { ReportIndex } from "@/report/index";
 import { elementLabel } from "@/report/label";
 import { router } from "@/router";
 
-import { loadReport } from "./fixtures";
+import { loadReport, withIssues } from "./fixtures";
 import { helpKeyOf } from "./help";
 import { summaryOf } from "./summary";
 
@@ -481,6 +481,27 @@ describe("ElementTable of a document with issues", () => {
     await issue.trigger("mouseenter");
     const label = elementLabel(validation, r1.kineticLaw!.pk);
     expect(document.getElementById("app-tooltip")?.textContent).toContain(`${label}: 99505`);
+  });
+
+  it("lists a held error before the warnings of the row itself in the tooltip", async () => {
+    await router.push({ path: "/report", query: {} });
+    const report = loadReport("validation");
+    const r1 = report.models![0]!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    const held = new ReportIndex(
+      withIssues(report, [
+        { pk: r1.pk, severity: "warning", rule: 10501 },
+        { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
+      ]),
+    );
+    const reactions = held.byType(modelId).get("Reaction")!;
+    const table = mountTable(reactions, "Reaction", held);
+    const issue = rowOf(table, r1.pk).get("[data-testid=row-issue]");
+    expect(issue.find("[data-testid=severity-error]").exists()).toBe(true);
+    await issue.trigger("mouseenter");
+    const tip = document.getElementById("app-tooltip")?.textContent ?? "";
+    const label = elementLabel(held, r1.kineticLaw!.pk);
+    expect(tip.indexOf(`${label}: 99505`)).toBeGreaterThanOrEqual(0);
+    expect(tip.indexOf(`${label}: 99505`)).toBeLessThan(tip.indexOf("10501"));
   });
 
   it("keeps the place of the mark in an unmarked row of a table with issues", async () => {

@@ -4,7 +4,7 @@ import type { Edge, Reaction, SBase, Species } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 import { elementLabel } from "@/report/label";
 
-import { loadFixture, loadReport, type FixtureName } from "./fixtures";
+import { loadFixture, loadReport, withIssues, type FixtureName } from "./fixtures";
 
 const repressilator = new ReportIndex(loadReport("repressilator"));
 const icgBody = new ReportIndex(loadReport("icg_body"));
@@ -68,6 +68,38 @@ describe("ReportIndex", () => {
     // an element of a table holds nothing of another element of a table
     const k1 = validation.mainModel!.listOfParameters!.find((p) => p.id === "k1")!;
     expect(validation.heldIssuesOf(k1.pk)).toEqual([]);
+  });
+
+  it("folds the issues of the lists of a model, which have no row, into the model", () => {
+    const report = loadReport("list_of");
+    const model = report.models![0]!.pk;
+    const index = new ReportIndex(
+      withIssues(report, [
+        { pk: model, severity: "warning", rule: 80701 },
+        { pk: "list_of/ListOf:metabolites", severity: "error", rule: 20101 },
+      ]),
+    );
+    expect(index.worstSeverity(model)).toBe("error");
+    expect(index.heldIssuesOf(model).map((i) => i.rule)).toEqual([20101]);
+    expect(index.issuesOf("list_of/ListOf:metabolites").map((i) => i.rule)).toEqual([20101]);
+    // the elements of a table of the model are no part of the model's row
+    const species = index.byType(report.models![0]!.id!).get("Species")![0]!;
+    const held = new ReportIndex(withIssues(report, [{ pk: species.pk, severity: "error" }]));
+    expect(held.heldIssuesOf(model)).toEqual([]);
+    expect(held.worstSeverity(model)).toBeNull();
+  });
+
+  it("lists the issues of a row errors first, a held error before its own warnings", () => {
+    const report = loadReport("validation");
+    const r1 = report.models![0]!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    const index = new ReportIndex(
+      withIssues(report, [
+        { pk: r1.pk, severity: "warning", rule: 10501 },
+        { pk: r1.pk, severity: "info", rule: 99999 },
+        { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
+      ]),
+    );
+    expect(index.rowIssuesOf(r1.pk).map((i) => i.rule)).toEqual([99505, 10501, 99999]);
   });
 
   it("scopes the worst severity of a type to one model", () => {

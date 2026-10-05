@@ -83,8 +83,10 @@ export class ReportIndex {
   constructor(report: Report, location: string | null = null) {
     this.report = report;
     this.location = location;
-    this.add(report.document);
-    for (const definition of report.externalModelDefinitions ?? []) this.add(definition);
+    // the document, an external model definition and a model have no row of a table: their entry
+    // of the type bar is their row, which the issues of what they hold without a row mark
+    this.addHolder(report.document);
+    for (const definition of report.externalModelDefinitions ?? []) this.addHolder(definition);
     for (const model of report.models ?? []) this.addModel(model);
     for (const node of Object.values(report.linkGraph?.nodes ?? {})) this.nodes.set(node.pk, node);
     for (const edge of report.linkGraph?.edges ?? []) {
@@ -156,6 +158,18 @@ export class ReportIndex {
    * its pk. Empty for every element which is no row of a table. */
   heldIssuesOf(pk: string): ValidationIssue[] {
     return bySeverity(this.heldByPk.get(pk) ?? []);
+  }
+
+  /** The issues of an element and of those it holds (`heldIssuesOf`), errors first: the issues
+   * of its row, its tooltip and its inspector. */
+  rowIssuesOf(pk: string): ValidationIssue[] {
+    return bySeverity([...(this.issuesByPk.get(pk) ?? []), ...(this.heldByPk.get(pk) ?? [])]);
+  }
+
+  /** Why the consistency of the document was not checked, null where it was: its issues are then
+   * those of reading it alone. */
+  get validationSkipped(): Report["validationSkipped"] {
+    return this.report.validationSkipped ?? null;
   }
 
   /** The worst severity of the issues of an element and of those it holds (`heldIssuesOf`), null
@@ -326,7 +340,7 @@ export class ReportIndex {
   }
 
   private addModel(model: Model): void {
-    this.add(model);
+    this.addHolder(model);
     const byType = new Map<ElementType, SbmlElement[]>();
     for (const info of ELEMENT_TYPES) {
       const list = (model[info.listKey] ?? []) as SbmlElement[];
@@ -361,6 +375,14 @@ export class ReportIndex {
   private addElement(element: SbmlElement): void {
     this.holder = element.pk;
     this.addNested(element);
+    this.holder = null;
+  }
+
+  /** An element whose row is its entry of the type bar, the document, an external model
+   * definition or a model, and what it holds without a row: its lists and its uncertainties. */
+  private addHolder(element: SBase): void {
+    this.holder = element.pk;
+    this.add(element);
     this.holder = null;
   }
 

@@ -35,10 +35,11 @@ import { ReportIndexKey } from "@/report/context";
 import { attributeEntry, linkEntry } from "@/report/glossary";
 import { ASSOCIATION_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
+import { VALIDATION_LINK_LIMIT } from "@/report/validation";
 import { elementLabel } from "@/report/label";
 import { router } from "@/router";
 
-import { loadFixture, loadReport } from "./fixtures";
+import { loadFixture, loadReport, withIssues } from "./fixtures";
 import { helpKeyOf } from "./help";
 import { summaryOf } from "./summary";
 
@@ -1371,6 +1372,24 @@ describe("inspector", () => {
       expect(named.get("[data-testid=element-link]").attributes("data-pk")).toBe(law.pk);
     });
 
+    it("lists a held error before the warnings of the element itself", () => {
+      const report = loadReport("validation");
+      const r1 = report.models![0]!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+      const held = new ReportIndex(
+        withIssues(report, [
+          { pk: r1.pk, severity: "warning", rule: 10501 },
+          { pk: r1.pk, severity: "warning", rule: 10502 },
+          { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
+        ]),
+      );
+      const wrapper = mountWith(InspectorPanel, { pk: r1.pk }, held);
+      const rules = wrapper
+        .get("[data-testid=inspector-validation]")
+        .findAll("[data-testid=validation-issue] [data-testid=validation-rule]")
+        .map((rule) => rule.text());
+      expect(rules).toEqual(["99505", "10501", "10502"]);
+    });
+
     it("names no element in front of an issue of the element itself", () => {
       const wrapper = mountWith(InspectorPanel, { pk: k1 }, validation);
       expect(wrapper.find("[data-testid=validation-issue-element]").exists()).toBe(false);
@@ -1450,6 +1469,58 @@ describe("inspector", () => {
       expect(rule("99505").find("a").exists()).toBe(false);
     });
 
+    it("says that a document which was not validated was not, and not that it has no issues", () => {
+      const skipped = new ReportIndex(
+        withIssues(loadReport("constraint_event"), [], "submodelInstances"),
+      );
+      const wrapper = mountWith(InspectorPanel, { pk: skipped.document.pk }, skipped);
+      const list = wrapper.get("[data-testid=validation-list]");
+      expect(list.find("[data-testid=validation-skipped]").exists()).toBe(true);
+      expect(list.find("[data-testid=no-validation-issues]").exists()).toBe(false);
+    });
+
+    it("lists the read errors of a document which was not validated below the note", () => {
+      const report = loadReport("constraint_event");
+      const skipped = new ReportIndex(
+        withIssues(
+          report,
+          [{ pk: report.document.pk, severity: "error", rule: 20222 }],
+          "submodelInstances",
+        ),
+      );
+      const wrapper = mountWith(InspectorPanel, { pk: skipped.document.pk }, skipped);
+      const list = wrapper.get("[data-testid=validation-list]");
+      expect(list.find("[data-testid=validation-skipped]").exists()).toBe(true);
+      expect(list.findAll("[data-testid=validation-group]")).toHaveLength(1);
+    });
+
+    it("renders the links of a group of the list only once it is opened, the first ones first", async () => {
+      // one issue of one rule on every element of a large report
+      const report = loadReport("icg_body");
+      const pks = Object.keys(report.linkGraph!.nodes!);
+      expect(pks.length).toBeGreaterThan(VALIDATION_LINK_LIMIT);
+      const many = new ReportIndex(
+        withIssues(
+          report,
+          pks.map((pk) => ({ pk, severity: "warning" as const, rule: 99508 })),
+        ),
+      );
+      const wrapper = mountWith(InspectorPanel, { pk: many.document.pk }, many);
+      const group = wrapper.get("[data-testid=validation-group]");
+      expect(group.findAll("[data-testid=element-link]")).toHaveLength(0);
+
+      const details = group.get("details");
+      (details.element as HTMLDetailsElement).open = true;
+      await details.trigger("toggle");
+      expect(group.findAll("[data-testid=element-link]")).toHaveLength(VALIDATION_LINK_LIMIT);
+      await group.get("[data-testid=show-all]").trigger("click");
+      expect(group.findAll("[data-testid=element-link]")).toHaveLength(new Set(pks).size);
+
+      (details.element as HTMLDetailsElement).open = false;
+      await details.trigger("toggle");
+      expect(group.findAll("[data-testid=element-link]")).toHaveLength(0);
+    });
+
     it("says that a document without issues has none", () => {
       const wrapper = mountWith(
         InspectorPanel,
@@ -1467,6 +1538,9 @@ describe("inspector", () => {
       const group = wrapper
         .findAll("[data-testid=validation-group]")
         .find((g) => g.get("[data-testid=validation-rule]").text() === "10712")!;
+      const details = group.get("details");
+      (details.element as HTMLDetailsElement).open = true;
+      await details.trigger("toggle");
       const link = group.get("[data-testid=element-link]");
       expect(link.text()).toBe("cell");
       await link.trigger("click");

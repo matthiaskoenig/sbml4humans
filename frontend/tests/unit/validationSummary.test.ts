@@ -6,7 +6,7 @@ import { vTooltip } from "@/directives/tooltip";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
-import { loadReport } from "./fixtures";
+import { loadReport, withIssues } from "./fixtures";
 
 const validation = new ReportIndex(loadReport("validation"));
 // the repressilator carries unit warnings and no error, the constraint and event example none
@@ -34,10 +34,12 @@ describe("ValidationSummary", () => {
     const summary = mountSummary(validation);
     expect(summary.find("[data-testid=validation-summary]").exists()).toBe(true);
     const errors = summary.get("[data-testid=validation-errors]");
-    expect(errors.text()).toBe("1error");
+    expect(errors.text()).toBe("1 error");
+    expect(errors.attributes("aria-label")).toBe("1 error");
     expect(errors.find("[data-testid=severity-error]").exists()).toBe(true);
     const warnings = summary.get("[data-testid=validation-warnings]");
-    expect(warnings.text()).toBe(`${validation.issueCounts.warning}warnings`);
+    expect(warnings.text()).toBe(`${validation.issueCounts.warning} warnings`);
+    expect(warnings.attributes("aria-label")).toBe(`${validation.issueCounts.warning} warnings`);
     expect(warnings.find("[data-testid=severity-warning]").exists()).toBe(true);
   });
 
@@ -54,7 +56,7 @@ describe("ValidationSummary", () => {
     const summary = mountSummary(repressilator);
     expect(summary.find("[data-testid=validation-errors]").exists()).toBe(false);
     expect(summary.get("[data-testid=validation-warnings]").text()).toBe(
-      `${repressilator.issueCounts.warning}warnings`,
+      `${repressilator.issueCounts.warning} warnings`,
     );
   });
 
@@ -62,5 +64,18 @@ describe("ValidationSummary", () => {
     await router.push({ path: "/report", query: {} });
     const summary = mountSummary(valid);
     expect(summary.find("[data-testid=validation-summary]").exists()).toBe(false);
+  });
+
+  it("says that a document which was not validated was not, rather than nothing", async () => {
+    await router.push({ path: "/report", query: {} });
+    const skipped = new ReportIndex(
+      withIssues(loadReport("constraint_event"), [], "submodelInstances"),
+    );
+    const summary = mountSummary(skipped);
+    const chip = summary.get("[data-testid=validation-skipped]");
+    expect(chip.attributes("aria-label")).toBe("not validated");
+    await chip.trigger("click");
+    await flushPromises();
+    expect(router.currentRoute.value.query.pk).toBe(skipped.document.pk);
   });
 });

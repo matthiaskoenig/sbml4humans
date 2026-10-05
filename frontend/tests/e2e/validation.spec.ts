@@ -11,7 +11,8 @@ test.describe("validation", () => {
 
   test("leads from the summary over the list to an element and its issues", async ({ page }) => {
     const summary = page.getByTestId("validation-summary");
-    await expect(summary.getByTestId("validation-errors")).toContainText("1");
+    await expect(summary.getByTestId("validation-errors")).toHaveText("1 error");
+    await expect(summary.getByTestId("validation-errors")).toHaveAccessibleName("1 error");
     await expect(summary.getByTestId("validation-warnings")).toBeVisible();
 
     await summary.getByTestId("validation-errors").click();
@@ -25,7 +26,7 @@ test.describe("validation", () => {
     await compartment.getByTestId("element-link").first().click();
     await expect(inspector.getByTestId("inspector-type")).toHaveText("Compartment");
     await expect(inspector.getByTestId("inspector-validation")).toContainText("10712");
-    expect(query(page, "pk")).toMatch(/Compartment:cell$/);
+    await expect.poll(() => query(page, "pk")).toMatch(/Compartment:cell$/);
 
     // back returns to the list of the document
     await page.goBack();
@@ -49,6 +50,9 @@ test.describe("validation", () => {
     await expect(
       page.getByTestId("bar-type-Reaction").getByTestId("severity-warning"),
     ).toBeVisible();
+    // the error of the example is an issue of the model, whose entry of the type bar is its row
+    await expect(page.getByTestId("bar-model").getByTestId("severity-error")).toBeVisible();
+    await expect(page.getByTestId("bar-document").getByTestId("bar-issue-document")).toHaveCount(0);
   });
 
   test("a valid model shows no summary", async ({ page }) => {

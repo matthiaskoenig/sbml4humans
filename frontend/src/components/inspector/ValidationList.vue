@@ -7,11 +7,19 @@ import ElementLink from "@/components/misc/ElementLink.vue";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import { conceptEntry, conceptKey, ruleKey } from "@/report/glossary";
 import type { ReportIndex } from "@/report/index";
-import { groupByRule, SEVERITY_ORDER, type Severity } from "@/report/validation";
+import ShowAllButton from "@/components/misc/ShowAllButton.vue";
+import {
+  groupByRule,
+  SEVERITY_ORDER,
+  VALIDATION_LINK_LIMIT,
+  type Severity,
+} from "@/report/validation";
 
 /** Every issue of the document in the inspector of the document, a rule once with the elements it
  * concerns, filtered by severity and by category. A link selects the element, and the back button
- * returns here, as the selection is part of the route. */
+ * returns here, as the selection is part of the route. A group renders its links only while it is
+ * open, the first `VALIDATION_LINK_LIMIT` of them before a "show all": the issues of a genome scale
+ * model concern tens of thousands of elements. */
 const props = defineProps<{ index: ReportIndex }>();
 const validation = conceptEntry("validation");
 const rule = conceptEntry("validationRule");
@@ -42,6 +50,27 @@ const groups = computed(() =>
   })),
 );
 
+/** The rules whose group is open, and those whose group shows all of its links. */
+const open = ref<Set<number>>(new Set());
+const expanded = ref<Set<number>>(new Set());
+
+function withRule(set: Set<number>, rule: number, present: boolean): Set<number> {
+  const next = new Set(set);
+  if (present) next.add(rule);
+  else next.delete(rule);
+  return next;
+}
+
+function onToggle(rule: number, event: Event): void {
+  const isOpen = (event.target as HTMLDetailsElement).open;
+  open.value = withRule(open.value, rule, isOpen);
+  if (!isOpen) expanded.value = withRule(expanded.value, rule, false);
+}
+
+function linksOf(rule: number, pks: string[]): string[] {
+  return expanded.value.has(rule) ? pks : pks.slice(0, VALIDATION_LINK_LIMIT);
+}
+
 function toggle(severity: Severity): void {
   const next = new Set(shown.value);
   if (next.has(severity)) next.delete(severity);
@@ -58,13 +87,21 @@ function toggle(severity: Severity): void {
       }}</HelpLabel>
     </h3>
     <p
-      v-if="index.issues.length === 0"
+      v-if="index.validationSkipped === 'submodelInstances'"
+      class="mb-2 text-sm text-gray-600"
+      data-testid="validation-skipped"
+    >
+      libsbml did not check this document: its main model expands to more comp submodel instances
+      than are checked in a bounded time. Only the errors of reading the file are listed.
+    </p>
+    <p
+      v-if="index.issues.length === 0 && index.validationSkipped === null"
       class="text-sm text-gray-600"
       data-testid="no-validation-issues"
     >
       libsbml found no errors or warnings.
     </p>
-    <template v-else>
+    <template v-if="index.issues.length > 0">
       <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         <label
           v-for="severity in present"
@@ -93,7 +130,7 @@ function toggle(severity: Severity): void {
       </div>
       <ul class="divide-y divide-gray-100 text-sm">
         <li v-for="group in groups" :key="group.rule" class="py-1.5" data-testid="validation-group">
-          <details>
+          <details @toggle="onToggle(group.rule, $event)">
             <summary class="flex cursor-pointer items-start gap-2">
               <SeverityIcon :severity="group.severity" size="md" class="mt-0.5" />
               <span
@@ -111,13 +148,19 @@ function toggle(severity: Severity): void {
                 >{{ group.issues.length }}</span
               >
             </summary>
-            <div class="mt-1 flex flex-wrap gap-1 pl-6 text-xs">
+            <div v-if="open.has(group.rule)" class="mt-1 flex flex-wrap gap-1 pl-6 text-xs">
               <ElementLink
-                v-for="pk in group.pks"
+                v-for="pk in linksOf(group.rule, group.pks)"
                 :key="pk"
                 :pk="pk"
                 mark
                 class="rounded border border-gray-200 px-1.5 py-0.5 hover:bg-gray-50"
+              />
+              <ShowAllButton
+                v-if="!expanded.has(group.rule) && group.pks.length > VALIDATION_LINK_LIMIT"
+                :count="group.pks.length - VALIDATION_LINK_LIMIT"
+                class="px-1.5 py-0.5"
+                @click="expanded = withRule(expanded, group.rule, true)"
               />
             </div>
           </details>

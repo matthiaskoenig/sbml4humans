@@ -6,7 +6,7 @@ import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
 
-import { loadReport } from "./fixtures";
+import { loadReport, withIssues } from "./fixtures";
 
 const index = new ReportIndex(loadReport("repressilator"));
 const model = index.mainModel!;
@@ -148,5 +148,67 @@ describe("TypeBar", () => {
     };
     expect(markOf(definitions.mainModel!)).toBe(false);
     expect(markOf(definitions.model("m1")!)).toBe(true);
+  });
+
+  /** The bar of the main model of an index, every element of a type counted as a match. */
+  function mountBarOf(of: ReportIndex) {
+    const counts = new Map<ElementType, TypeCount>();
+    for (const [type, elements] of of.byType(of.mainModel!.id!)) {
+      counts.set(type, { total: elements.length, matched: elements.length });
+    }
+    return mount(TypeBar, {
+      props: { index: of, model: of.mainModel!, counts },
+      global: { plugins: [router] },
+    });
+  }
+
+  it("marks the model, which has no row of its own, by its worst severity", async () => {
+    // the one error of the validation example, 10601, is an issue of the model
+    const validation = new ReportIndex(loadReport("validation"));
+    await router.push({ path: "/report", query: {} });
+    const wrapper = mountBarOf(validation);
+    const model = wrapper.get("[data-testid=bar-model]");
+    expect(model.find("[data-testid=bar-issue-model]").exists()).toBe(true);
+    expect(model.find("[data-testid=severity-error]").exists()).toBe(true);
+    expect(
+      wrapper.get("[data-testid=bar-document]").find("[data-testid^=severity-]").exists(),
+    ).toBe(false);
+    wrapper.unmount();
+  });
+
+  it("marks the document and an external model definition by their issues, a note alone not", async () => {
+    const comp = loadReport("comp_models", "./models/omex_comp.xml");
+    const marked = new ReportIndex(
+      withIssues(comp, [
+        { pk: comp.document.pk, severity: "warning" },
+        { pk: "document/ExternalModelDefinition:emd1", severity: "error", rule: 1090101 },
+        { pk: "document/ExternalModelDefinition:emd2", severity: "info" },
+      ]),
+    );
+    await router.push({ path: "/report", query: {} });
+    const wrapper = mountBarOf(marked);
+    const document = wrapper.get("[data-testid=bar-document]");
+    expect(document.find("[data-testid=bar-issue-document]").exists()).toBe(true);
+    expect(document.find("[data-testid=severity-warning]").exists()).toBe(true);
+    const emds = wrapper.findAll("[data-testid=bar-emd]");
+    const emd = (id: string) => emds.find((button) => button.text().includes(id))!;
+    expect(emd("emd1").find("[data-testid=severity-error]").exists()).toBe(true);
+    expect(emd("emd1").find("[data-testid=bar-issue-emd]").exists()).toBe(true);
+    expect(emd("emd2").find("[data-testid^=severity-]").exists()).toBe(false);
+    expect(emd("emd0").find("[data-testid^=severity-]").exists()).toBe(false);
+    wrapper.unmount();
+  });
+
+  it("marks the model by the issue of a list of the model, which has no row", async () => {
+    const report = loadReport("list_of");
+    const marked = new ReportIndex(
+      withIssues(report, [{ pk: "list_of/ListOf:metabolites", severity: "warning" }]),
+    );
+    await router.push({ path: "/report", query: {} });
+    const wrapper = mountBarOf(marked);
+    expect(
+      wrapper.get("[data-testid=bar-model]").find("[data-testid=severity-warning]").exists(),
+    ).toBe(true);
+    wrapper.unmount();
   });
 });
