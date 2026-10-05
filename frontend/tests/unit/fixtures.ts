@@ -19,6 +19,7 @@ export type FixtureName =
   | "fbc_constraints_v3"
   | "model_definitions"
   | "comp_deletion"
+  | "validation"
   | "comp_models"
   | "distrib_uncertainties"
   | "distrib_spans"

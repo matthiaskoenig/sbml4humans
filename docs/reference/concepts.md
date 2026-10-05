@@ -222,3 +222,35 @@ A link which ends at an element of another entry of the archive.
 The links of a report stay inside one SBML document, with one exception: a model of the comp package may instantiate a model of another document through an [external model definition](externalmodeldefinition.md), and its [replacements](replacedelement.md), [deletions](deletion.md) and [ports](port.md) then name elements of that document. Where the other document is part of the report, as another entry of the same COMBINE archive, the link ends at the element inside it.
 
 Such a link shows the file name of the other entry next to the element, and following it opens the report of that entry. The element lists the link under "Referenced by" with the file name of the entry it comes from.
+
+## validation
+
+The errors and warnings libsbml finds in the document.
+
+The report runs the consistency checks of [libsbml](https://sbml.org/software/libsbml/) on every document with the categories libsbml checks by default: the identifiers, the general rules of the specification and of its packages, the SBO terms, the math, the units, whether the model is overdetermined and the modelling practice. The errors libsbml finds while it reads the file are part of it too.
+
+libsbml checks in stages and stops after the first stage which finds an error, so a document with an error of its identifiers shows none of its unit warnings until that error is fixed.
+
+libsbml reports where in the file an issue is, not which element it concerns, so the report gives an issue to the element which starts closest before that position, and to the document when none does. For a document of the comp package libsbml instantiates the submodels to check them and says itself that its line numbers are unreliable: the element of such an issue can be the wrong one.
+
+The external model definitions are checked against the documents which are part of the report; the validation reads no other file and fetches no url.
+
+## rule
+
+The number of the validation rule of libsbml.
+
+Every issue names the rule it breaks by its number in libsbml. A rule of SBML core has a number below 100000 and is one of the validation rules of the appendix of the specification, a number of 99000 and above is a check of libsbml of its own, and a rule of a package carries the offset of the package. Where the glossary cites a rule, its text is part of the explanation of the element in the help.
+
+## severity
+
+Whether an issue is an error, a warning or a note.
+
+- `error`: the document breaks a rule the specification requires; a tool may refuse or misread it.
+- `warning`: the document follows the rules, but something is likely not what was meant, such as a quantity without units.
+- `info`: a note of libsbml, which needs no change.
+
+## category
+
+Which check of libsbml found the issue.
+
+libsbml groups its checks in categories, such as the unit consistency, the identifier consistency or the consistency of a package. The list of all issues can be filtered by them.

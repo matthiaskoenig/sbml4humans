@@ -19,6 +19,7 @@ const EXAMPLES = {
   fbc_constraints_v3: "fbc_constraints_v3 (fbc_constraints_v3.xml)",
   model_definitions: "model_definitions (model_definitions.xml)",
   comp_deletion: "comp_deletion (comp_deletion.xml)",
+  validation: "validation (validation.xml)",
   comp_models: "CompModels",
   distrib_uncertainties: "distrib_uncertainties (distrib_uncertainties.xml)",
   distrib_spans: "distrib_spans (distrib_spans.xml)",

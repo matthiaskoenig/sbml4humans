@@ -1,5 +1,5 @@
 {
-  "uid": "a58a672bb0234f95ba3a5a24211a5b4a",
+  "uid": "c289a53b2a974a8e8ae862ee25bcce95",
   "manifest": {
     "entries": [
       {
@@ -675,10 +675,112 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "validation": [
+          {
+            "rule": 99506,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "Unable to verify consistency of units: the unit of time has not been declared",
+            "message": "In situations where a mathematical expression refers to time, the units of time should be consistent with the global time units of the model. In models where the 'timeUnits' attribute has not been declared, libSBML does not yet have the functionality to verify accurately the consistency of the units in such expressions.",
+            "line": 3,
+            "column": 2,
+            "pk": "list_of/Model:list_of"
+          },
+          {
+            "rule": 99507,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "Unable to verify consistency of units: the units of reaction extent have not been declared",
+            "message": "In situations where a mathematical expression refers to extent, the units of extent should be consistent with the global extent units of the model. In models where the 'extentUnits' attribute has not been declared, libSBML does not yet have the functionality to verify accurately the consistency of the units in such expressions.",
+            "line": 3,
+            "column": 2,
+            "pk": "list_of/Model:list_of"
+          },
+          {
+            "rule": 99508,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "Unable to verify consistency of units: encountered a model entity with no declared units",
+            "message": "In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <compartment> 'cell' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+            "line": 22,
+            "column": 6,
+            "pk": "list_of/Compartment:cell"
+          },
+          {
+            "rule": 20513,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "No units defined for 3-D Compartment object",
+            "message": "If the attribute 'units' on a Compartment object having a 'spatialDimensions' attribute value of '3' has not been set, then the unit of measurement associated with the compartment's size is determined by the value of the enclosing Model object's 'volumeUnits' attribute. If neither the Compartment object's 'units' nor the enclosing Model object's 'volumeUnits' attributes are set, the unit of compartment size is undefined.\nReference: L3V2 Section 4.5.4",
+            "line": 22,
+            "column": 6,
+            "pk": "list_of/Compartment:cell"
+          },
+          {
+            "rule": 99508,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "Unable to verify consistency of units: encountered a model entity with no declared units",
+            "message": "In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <species> 'S1' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+            "line": 41,
+            "column": 6,
+            "pk": "list_of/Species:S1"
+          },
+          {
+            "rule": 20616,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "No substance units defined for the species",
+            "message": "If the attribute 'substanceUnits' in a Species object has not been set, then the unit of measurement associated with the species' quantity is determined by the value of the enclosing Model object's 'substanceUnits' attribute. If neither the Species object's 'substanceUnits' attribute nor the enclosing Model object's 'substanceUnits' attribute are set, then the unit of that species' quantity is undefined.\nReference: L3V2 Section 4.6.5\n The <species> with id 'S1' does not have a substanceUnits attribute, nor does its enclosing <model>.",
+            "line": 41,
+            "column": 6,
+            "pk": "list_of/Species:S1"
+          },
+          {
+            "rule": 99508,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "Unable to verify consistency of units: encountered a model entity with no declared units",
+            "message": "In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <species> 'S2' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+            "line": 42,
+            "column": 6,
+            "pk": "list_of/Species:S2"
+          },
+          {
+            "rule": 20616,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "No substance units defined for the species",
+            "message": "If the attribute 'substanceUnits' in a Species object has not been set, then the unit of measurement associated with the species' quantity is determined by the value of the enclosing Model object's 'substanceUnits' attribute. If neither the Species object's 'substanceUnits' attribute nor the enclosing Model object's 'substanceUnits' attribute are set, then the unit of that species' quantity is undefined.\nReference: L3V2 Section 4.6.5\n The <species> with id 'S2' does not have a substanceUnits attribute, nor does its enclosing <model>.",
+            "line": 42,
+            "column": 6,
+            "pk": "list_of/Species:S2"
+          },
+          {
+            "rule": 99505,
+            "severity": "warning",
+            "category": "SBML unit consistency",
+            "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+            "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'cell * k1 * S1' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+            "line": 62,
+            "column": 8,
+            "pk": "list_of/KineticLaw:J0.kineticLaw"
+          },
+          {
+            "rule": 1090106,
+            "severity": "warning",
+            "category": "SBML component consistency",
+            "shortMessage": "Line numbers unreliable.",
+            "message": "Due to the need to instantiate models, modelDefinitions, submodels etc. for the purposes of validation it is problematic to reliably report line numbers when performing validation on models using the Hierarchical Model Composition package.",
+            "line": 1,
+            "column": 1,
+            "pk": "document/SBMLDocument:document"
+          }
+        ]
       },
       "debug": {
-        "jsonReportTime": "0.018 [s]"
+        "jsonReportTime": "0.003 [s]"
       }
     }
   }

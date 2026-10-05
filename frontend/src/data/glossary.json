@@ -1691,6 +1691,22 @@
     "unitsLatex": {
       "label": "rendered units",
       "summary": "the units an element declares, rendered as a formula"
+    },
+    "validation": {
+      "label": "validation",
+      "summary": "the errors and warnings libsbml finds in the document"
+    },
+    "validationCategory": {
+      "label": "category",
+      "summary": "which check of libsbml found the issue"
+    },
+    "validationRule": {
+      "label": "rule",
+      "summary": "the number of the validation rule of libsbml"
+    },
+    "validationSeverity": {
+      "label": "severity",
+      "summary": "whether an issue is an error, a warning or a note"
     }
   }
 }

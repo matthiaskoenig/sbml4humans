@@ -102,6 +102,7 @@ EXAMPLE_IDS: list[str] = [
     "species",
     "unit_definitions",
     "units_namespace",
+    "validation",
 ]
 
 API_EXAMPLES_MODEL: list[Path] = [
