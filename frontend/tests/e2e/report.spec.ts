@@ -143,6 +143,21 @@ test.describe("repressilator", () => {
     await expect(page.getByTestId("xml-view")).toContainText("<species");
   });
 
+  test("the XML wraps inside its box, below the copy button", async ({ page }) => {
+    await page.setViewportSize({ width: 1000, height: 800 });
+    await page.getByTestId("table-Species").locator("tbody tr[data-pk]").first().click();
+    await page.getByTestId("inspector-xml-toggle").click();
+    const code = page.getByTestId("xml-code");
+    await expect(code).toContainText("<species");
+    // the lines are wrapped, none of them scrolls the box sideways
+    expect(await code.evaluate((pre) => pre.scrollWidth <= pre.clientWidth)).toBe(true);
+    // the indentation is text of the line, so a selection of the code is the xml
+    expect(await code.innerText()).toMatch(/^<species[^\n]*>\n {2}</);
+    const copy = await page.getByTestId("xml-copy").boundingBox();
+    const box = await code.boundingBox();
+    expect(copy!.y + copy!.height).toBeLessThanOrEqual(box!.y);
+  });
+
   test("a click on a column header sorts the rows", async ({ page }) => {
     const table = page.getByTestId("table-Species");
     const ids = () => table.locator("tbody tr[data-pk] td:first-child").allInnerTexts();
