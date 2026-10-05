@@ -42,6 +42,147 @@ The report writes every reaction as its reactants, an arrow and its products, wi
 
 The equation is a column of the table of reactions and a row of the inspector of a reaction, and it is what makes a list of reactions readable without opening any of them.
 
+## qualifier
+
+The relation between the element and the resource, from MIRIAM.
+
+An annotation is a statement with three parts: the element, a qualifier and a resource. The qualifier says how the element relates to the resource, so that "is" and "is described by" are not mistaken for each other. The qualifiers are those of the [BioModels.net qualifiers](http://co.mbine.org/standards/qualifiers), which MIRIAM defines in two groups: the biology qualifiers (`BQB_`) relate the biological object an element stands for to the resource, the model qualifiers (`BQM_`) relate the modelling object an element stands for, for example the model itself or a kinetic law, to the resource.
+
+The card shows the qualifier as the heading of the group of resources which share it. In the biology qualifiers the resource is called biological entity B, and in the model qualifiers modelling object B.
+
+| qualifier | meaning |
+|---|---|
+| `BQB_IS` | the biological entity has identity with the resource, for example a reaction and its exact counterpart in a database |
+| `BQB_HAS_PART` | the biological entity includes the resource, physically or logically, for example a complex and one of its components |
+| `BQB_IS_PART_OF` | the biological entity is a physical or logical part of the resource, for example a component and the complex it is part of |
+| `BQB_IS_VERSION_OF` | the biological entity is a more specific version or an instance of the resource, for example a specific process and a generic process of the Gene Ontology |
+| `BQB_HAS_VERSION` | the biological entity is a more general version of the resource, for example a generic protein and its species specific version in UniProt |
+| `BQB_IS_HOMOLOG_TO` | the biological entity is homologous to the resource, the two share a common ancestor |
+| `BQB_IS_DESCRIBED_BY` | the biological entity is described by the resource, for example a species or a parameter and the literature which describes it |
+| `BQB_IS_ENCODED_BY` | the biological entity is encoded, directly or transitively, by the resource, for example a protein and its DNA sequence |
+| `BQB_ENCODES` | the biological entity encodes, directly or transitively, the resource, for example a DNA sequence and a protein |
+| `BQB_OCCURS_IN` | the biological entity is physically limited to a location which is the resource, for example the compartment a reaction takes place in |
+| `BQB_HAS_PROPERTY` | the resource is a property of the biological entity, for example an enzymatic activity or a function it exerts |
+| `BQB_IS_PROPERTY_OF` | the biological entity is a property of the resource |
+| `BQB_HAS_TAXON` | the biological entity is taxonomically restricted to the resource, for example a reaction which only takes place in one species |
+| `BQM_IS` | the modelling object is identical with the resource, for example a model and its entry in a database of models |
+| `BQM_IS_DESCRIBED_BY` | the modelling object is described by the resource, for example a model or a kinetic law and the literature which describes it |
+| `BQM_IS_DERIVED_FROM` | the modelling object is derived from the resource, for example a refinement or an adaptation of a previously described component |
+| `BQM_IS_INSTANCE_OF` | the modelling object is an instance of the resource, for example a specific model and its generic form |
+| `BQM_HAS_INSTANCE` | the modelling object has the resource as an instance, it is a class of the resource, for example a generic model and its specific forms |
+
+## collection
+
+The database of identifiers.org the resource belongs to.
+
+A resource is named by a url of [identifiers.org](https://identifiers.org), which consists of a collection, the database or the ontology the entry is from, and the identifier of the entry in it. The collection is the part of the url which says where to look, for example `chebi`, `uniprot` or `go`.
+
+The card shows the collection next to the identifier, so that an identifier such as `15377` is not read without knowing which database it belongs to.
+
+## identifier
+
+The identifier of the resource in its collection, linked to its primary provider.
+
+The identifier is the part of the identifiers.org url which names the entry within its collection, for example `CHEBI:15377` in the collection `chebi`. It is unique within the collection, but not across collections.
+
+The card shows the identifier as a link to the primary provider of the collection, the web site which identifiers.org recommends for it. The other web sites which show the entry are listed as the providers of the resource.
+
+## ontology
+
+The ontology of the Ontology Lookup Service which defines the term.
+
+When a resource is a term of an ontology, the report asks the [Ontology Lookup Service](https://www.ebi.ac.uk/ols4) (OLS) of the EMBL-EBI for it. The label of the term, its IRI, its synonyms, its description and its cross references come from OLS, and the card shows them below the identifier. The ontology is the one of OLS which defines the term, for example the Gene Ontology or the Systems Biology Ontology.
+
+The answers of OLS are cached by the report for 30 days, so a term is not asked for again with every report. A resource which is no term of an ontology of OLS shows no ontology.
+
+## synonyms
+
+Other names of the term in its ontology.
+
+An ontology names a term once as its label and may know further names for it, which are the synonyms of the term. They come from the [Ontology Lookup Service](https://www.ebi.ac.uk/ols4) together with the rest of the term.
+
+The card shows the first synonyms and the rest behind "show all", because a term can have many.
+
+## cross references
+
+Entries of other databases which the ontology names for the term.
+
+An ontology often states that a term corresponds to an entry of another database, for example a term of the Gene Ontology to an entry of Reactome or of the Enzyme Commission. These are the cross references of the term, and they come from the [Ontology Lookup Service](https://www.ebi.ac.uk/ols4) together with the rest of the term.
+
+The card lists them below the description of the term, with the database and the identifier of every entry.
+
+## providers
+
+The web sites which show the entry of the resource.
+
+A collection of [identifiers.org](https://identifiers.org) is shown by one or more web sites, its providers, and every provider has its own url for an entry. The report lists the providers which identifiers.org knows for the collection, so that an entry can be opened where it is best presented.
+
+The card shows the providers below the identifier, as links to the entry. The identifier itself links to the primary provider.
+
+## formula
+
+The molecular formula of the compound in ChEBI.
+
+For a resource of the collection `chebi` the report asks [ChEBI](https://www.ebi.ac.uk/chebi/), the database of chemical entities of biological interest, for the compound. The formula is the molecular formula of the compound as ChEBI states it, for example `H2O`.
+
+The card shows it in the information of the ChEBI compound, next to the charge, the mass and the structure.
+
+## charge
+
+The net charge of the compound in ChEBI.
+
+The charge is the net charge of the compound as [ChEBI](https://www.ebi.ac.uk/chebi/) states it, in units of the elementary charge. A compound without a charge is neutral.
+
+The card shows it in the information of the ChEBI compound, so that the charge of a species can be compared with the charge the model assumes for it.
+
+## mass
+
+The average mass of the compound in ChEBI, in Dalton.
+
+The mass is the average mass of the compound as [ChEBI](https://www.ebi.ac.uk/chebi/) states it, in Dalton, which is the molar mass in grams per mole. It is the average over the natural distribution of the isotopes of the elements of the compound.
+
+The card shows it in the information of the ChEBI compound.
+
+## name
+
+The recommended name of the protein in UniProt.
+
+For a resource of the collection `uniprot` the report asks [UniProt](https://www.uniprot.org/), the database of protein sequences and their annotation, for the protein. The name is the recommended name of the protein as UniProt states it.
+
+The card shows it in the information of the UniProt protein, above the organism and the genes.
+
+## organism
+
+The organism the protein is from.
+
+The organism is the species the protein is from, as [UniProt](https://www.uniprot.org/) states it. The same protein can exist in many organisms with a different entry for each, so the organism tells which of them an annotation means.
+
+The card shows it in the information of the UniProt protein.
+
+## genes
+
+The genes which encode the protein.
+
+The genes are the names of the genes which encode the protein, as [UniProt](https://www.uniprot.org/) states them. A protein can be encoded by more than one gene, and a gene can have several names.
+
+The card shows them in the information of the UniProt protein.
+
+## length
+
+The number of amino acids of the canonical sequence.
+
+The length is the number of amino acids of the canonical sequence of the protein, the sequence which [UniProt](https://www.uniprot.org/) displays for the entry. Isoforms of the protein can be shorter or longer.
+
+The card shows it in the information of the UniProt protein.
+
+## function
+
+What the protein does, as UniProt describes it.
+
+The function is the text with which [UniProt](https://www.uniprot.org/) describes what the protein does, for example the reaction an enzyme catalyses or the process it takes part in. It is written by the curators of UniProt from the literature, and it can be long.
+
+The card shows it in the information of the UniProt protein, below the other values.
+
 ## rendered math
 
 The formula of an element as the report renders it.

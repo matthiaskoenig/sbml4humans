@@ -1592,6 +1592,46 @@
     }
   },
   "concepts": {
+    "annotationCollection": {
+      "label": "collection",
+      "summary": "the database of identifiers.org the resource belongs to"
+    },
+    "annotationIdentifier": {
+      "label": "identifier",
+      "summary": "the identifier of the resource in its collection, linked to its primary provider"
+    },
+    "annotationOntology": {
+      "label": "ontology",
+      "summary": "the ontology of the Ontology Lookup Service which defines the term"
+    },
+    "annotationProviders": {
+      "label": "providers",
+      "summary": "the web sites which show the entry of the resource"
+    },
+    "annotationQualifier": {
+      "label": "qualifier",
+      "summary": "the relation between the element and the resource, from MIRIAM"
+    },
+    "annotationSynonyms": {
+      "label": "synonyms",
+      "summary": "other names of the term in its ontology"
+    },
+    "annotationXrefs": {
+      "label": "cross references",
+      "summary": "entries of other databases which the ontology names for the term"
+    },
+    "chebiCharge": {
+      "label": "charge",
+      "summary": "the net charge of the compound in ChEBI"
+    },
+    "chebiFormula": {
+      "label": "formula",
+      "summary": "the molecular formula of the compound in ChEBI"
+    },
+    "chebiMass": {
+      "label": "mass",
+      "summary": "the average mass of the compound in ChEBI, in Dalton"
+    },
     "derivedUnits": {
       "label": "derived units",
       "summary": "the units of a quantity or of a formula as they follow from the model"
@@ -1627,6 +1667,26 @@
     "targetEntry": {
       "label": "link into another document",
       "summary": "a link which ends at an element of another entry of the archive"
+    },
+    "uniprotFunction": {
+      "label": "function",
+      "summary": "what the protein does, as UniProt describes it"
+    },
+    "uniprotGenes": {
+      "label": "genes",
+      "summary": "the genes which encode the protein"
+    },
+    "uniprotLength": {
+      "label": "length",
+      "summary": "the number of amino acids of the canonical sequence"
+    },
+    "uniprotName": {
+      "label": "name",
+      "summary": "the recommended name of the protein in UniProt"
+    },
+    "uniprotOrganism": {
+      "label": "organism",
+      "summary": "the organism the protein is from"
     },
     "unitsLatex": {
       "label": "rendered units",
