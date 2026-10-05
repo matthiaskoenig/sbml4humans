@@ -19,7 +19,7 @@ uv run python -m sbml4humans.schema              # regenerate the JSON schema af
 npm run dev          # http://localhost:3456, api on http://localhost:1444 (.env.development)
 npm run build        # type check and production build into dist/
 npm run build:package  # the build the python package ships, into backend/sbml4humans/resources/frontend/
-npm run test:e2e     # backend on port 1444 required, started with SBML4HUMANS_ALLOW_PRIVATE_URLS=1
+npm run test:e2e     # backend on port 1444 required, started with SBML4HUMANS_ALLOW_PRIVATE_URLS=1; builds dist-e2e/ and serves it on :4173
 npm run types        # regenerate src/types/report.ts and annotation.ts after a schema change, the CI diffs it
 npm run fixtures     # regenerate tests/fixtures/*.json after a model change, by hand
 npm run screenshots  # retake docs/images/*.png, needs the backend and a dev server, see scripts/screenshots.mjs
