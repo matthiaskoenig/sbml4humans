@@ -42,6 +42,16 @@ export default defineConfig({
   resolve: {
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        // KaTeX, which only the report page imports, is a chunk of its own: it changes with its
+        // version alone, so a browser keeps it across releases, and the chunk of the report page
+        // stays below the size vite warns about
+        codeSplitting: { groups: [{ name: "katex", test: /node_modules[\\/]katex[\\/]/ }] },
+      },
+    },
+  },
   server: { port: 3456, host: true, strictPort: true },
   preview: { port: 3456, host: true, strictPort: true },
 });
