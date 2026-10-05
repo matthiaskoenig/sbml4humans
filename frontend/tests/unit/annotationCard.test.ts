@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { config, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 
 import { vTooltip } from "@/directives/tooltip";
@@ -38,6 +38,10 @@ const GO: AnnotationResource = {
   errors: [],
 };
 
+// the help labels link through the router and show tooltips
+config.global.plugins = [router];
+config.global.directives = { tooltip: vTooltip };
+
 function card(info: AnnotationResource | null, state: AnnotationCardState = "resolved") {
   return mount(AnnotationCard, {
     props: {
@@ -46,7 +50,6 @@ function card(info: AnnotationResource | null, state: AnnotationCardState = "res
       info,
       state,
     },
-    global: { plugins: [router], directives: { tooltip: vTooltip } },
   });
 }
 

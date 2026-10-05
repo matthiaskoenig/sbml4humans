@@ -409,11 +409,26 @@ describe("annotations", () => {
     await flushPromises();
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(MAX_AUTO_RESOLVES);
     expect(wrapper.get("[data-testid=resolve-all]").text()).toBe("resolve all (50)");
+    // the resources beyond the budget are idle: no loading note, a plain identifier link, no label
+    const beyond = wrapper
+      .findAll("[data-testid=cvterm]")[2]!
+      .findAll("[data-testid=cvterm-resource]");
+    expect(beyond).toHaveLength(50);
+    for (const resource of beyond) {
+      expect(resource.find("[data-testid=annotation-loading]").exists()).toBe(false);
+      expect(resource.find("[data-testid=annotation-identifier]").exists()).toBe(true);
+      expect(resource.find("[data-testid=annotation-label]").exists()).toBe(false);
+    }
 
     await wrapper.get("[data-testid=resolve-all]").trigger("click");
     await flushPromises();
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(150);
     expect(wrapper.find("[data-testid=resolve-all]").exists()).toBe(false);
+    for (const resource of wrapper
+      .findAll("[data-testid=cvterm]")[2]!
+      .findAll("[data-testid=cvterm-resource]")) {
+      expect(resource.get("[data-testid=annotation-label]").text()).toBe("water");
+    }
 
     await wrapper.setProps({ cvterms: termsOf("second") });
     await flushPromises();

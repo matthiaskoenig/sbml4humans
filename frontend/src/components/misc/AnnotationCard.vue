@@ -99,7 +99,7 @@ function summary(key: string): string | undefined {
         :href="identifierHref"
         target="_blank"
         rel="noopener"
-        class="badge bg-amber-600 font-mono"
+        class="badge bg-amber-600 font-mono !break-all !whitespace-normal"
         data-testid="annotation-identifier"
         >{{ info?.identifier ?? resource }}</a
       >
@@ -113,8 +113,8 @@ function summary(key: string): string | undefined {
       {{ info.collection?.name ?? info.collection?.prefix }}.
     </p>
     <p
-      v-for="message in messages"
-      :key="message"
+      v-for="(message, i) in messages"
+      :key="i"
       class="mt-1 text-amber-700"
       data-testid="annotation-warning"
     >
@@ -227,6 +227,7 @@ function summary(key: string): string | undefined {
       <HelpLabel help-key="concepts/annotationXrefs" :tooltip="summary('annotationXrefs')">
         <span class="section-label">{{ label("annotationXrefs") }}</span>
       </HelpLabel>
+      <!-- the test id sits on the links only: the HelpLabel is an anchor and stays outside -->
       <span data-testid="annotation-xrefs">
         <template v-for="xref in xrefs" :key="xref.label">
           <a
@@ -246,6 +247,7 @@ function summary(key: string): string | undefined {
       <HelpLabel help-key="concepts/annotationProviders" :tooltip="summary('annotationProviders')">
         <span class="section-label">{{ label("annotationProviders") }}</span>
       </HelpLabel>
+      <!-- the test id sits on the links only: the HelpLabel is an anchor and stays outside -->
       <span data-testid="annotation-providers">
         <template v-for="(provider, i) in providers" :key="provider.url">
           <span v-if="i > 0"> · </span>
