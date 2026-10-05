@@ -99,4 +99,4 @@ def test_cache_directory_unset_keeps_default(
     else:
         monkeypatch.setenv(annotations.CACHE_VARIABLE, value)
     annotations.configure_cache()
-    assert pymetadata.CACHE_PATH == before
+    assert before == pymetadata.CACHE_PATH
