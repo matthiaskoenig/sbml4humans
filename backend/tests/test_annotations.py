@@ -70,6 +70,25 @@ def test_empty_ols_fields_are_no_term(monkeypatch: pytest.MonkeyPatch) -> None:
     assert resolve_resource("https://identifiers.org/pubmed/10659856").ontology is None
 
 
+def test_html_of_ols_is_plain_text(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The html tags of a term of OLS are dropped, a lone `<` is kept."""
+    monkeypatch.setattr(
+        RDFAnnotationData,
+        "query_ols",
+        _ols(
+            label="alpha-<small>D</small>-galactose",
+            description="<small>D</small>-Galactopyranose with a < b.",
+            synonyms=[{"name": "<i>alpha</i>-D-Gal"}, {"name": "<br/>"}],
+            iri="http://purl.obolibrary.org/obo/CHEBI_28061",
+        ),
+    )
+    term = resolve_resource("https://identifiers.org/GO:0005829").ontology
+    assert term is not None
+    assert term.label == "alpha-D-galactose"
+    assert term.description == "D-Galactopyranose with a < b."
+    assert term.synonyms == ["alpha-D-Gal"]
+
+
 def test_chebi(monkeypatch: pytest.MonkeyPatch) -> None:
     """A ChEBI compound carries formula, charge, mass and whether it has a structure."""
     monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols(label="indocyanine green"))

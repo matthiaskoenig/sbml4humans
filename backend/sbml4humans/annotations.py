@@ -30,6 +30,9 @@ CACHE_VARIABLE = "SBML4HUMANS_CACHE"
 # the longest resource the api resolves, and the form of a ChEBI id it draws
 MAX_RESOURCE_LENGTH = 2000
 CHEBI_ID = re.compile(r"CHEBI:\d{1,9}")
+# an html tag in a text of OLS, `<small>D</small>-galactose` in a definition of ChEBI; a `<`
+# which no name follows directly, as in `a < b`, is no tag
+HTML_TAG = re.compile(r"</?[A-Za-z][A-Za-z0-9]*(?:\s[^<>]*)?/?>")
 
 
 def configure_cache() -> None:
@@ -53,6 +56,12 @@ def _text(value: Any) -> str | None:
     if isinstance(value, str) and value.strip():
         return value.strip()
     return None
+
+
+def _plain(value: Any) -> str | None:
+    """Convert a text of OLS to plain text, without the html tags some terms carry."""
+    text = _text(value)
+    return _text(HTML_TAG.sub("", text)) if text else None
 
 
 def _messages(value: Any) -> list[str]:
@@ -137,7 +146,7 @@ def _synonyms(values: Any) -> list[str]:
     """The names of the synonyms of OLS, each once, in order."""
     names: list[str] = []
     for value in values if isinstance(values, list) else []:
-        name = _text(value.get("name") if isinstance(value, dict) else value)
+        name = _plain(value.get("name") if isinstance(value, dict) else value)
         if name and name not in names:
             names.append(name)
     return names
@@ -208,7 +217,7 @@ def resolve_resource(resource: str) -> AnnotationResource:
     )
     warnings = _messages(data.warnings)
     term = _text(data.term)
-    label = _text(data.label)
+    label = _plain(data.label)
     iri = _text(data.iri)
     ontology = None
     if label or iri:
@@ -217,7 +226,7 @@ def resolve_resource(resource: str) -> AnnotationResource:
             label=label,
             iri=iri,
             ols_url=_text(data.ols_url),
-            description=_text(data.description),
+            description=_plain(data.description),
             synonyms=_synonyms(data.synonyms),
             xrefs=_xrefs(data.xrefs),
         )
