@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { attributeRow, openExample, query } from "./helpers";
+import { attributeRow, expectReport, openExample, query } from "./helpers";
 
 /** The repressilator, the model every test of this file opens: small enough to load quickly and
  * rich enough to carry a species, a compartment and a reaction with the attributes the dialog
@@ -255,7 +255,7 @@ test.describe("the help dialog", () => {
     await expect.poll(() => query(page, "help")).toBe("datatypes/double");
 
     await page.goto(`/examples/${encodeURIComponent(REPRESSILATOR)}?help=types/Species`);
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expectReport(page);
     const link = page.getByTestId("help-markdown").locator("a[data-help-key]").first();
     const key = await link.getAttribute("data-help-key");
     await link.click();
@@ -274,7 +274,7 @@ test.describe("the help dialog", () => {
     });
 
     await page.goto(`/examples/${encodeURIComponent(REPRESSILATOR)}?help=types/Compartment/units`);
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expectReport(page);
     await expect(page.getByTestId("help-dialog")).toBeVisible();
     await expect(page.getByTestId("help-title")).toHaveText("units");
     // the title above shows already from the eager glossary; the rules come with the details,
@@ -285,12 +285,12 @@ test.describe("the help dialog", () => {
     expect(await page.getByTestId("help-rule").count()).toBeGreaterThanOrEqual(3);
 
     await page.goto(`/examples/${encodeURIComponent(REPRESSILATOR)}?help=types/Nope`);
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expectReport(page);
     await expect(page.getByTestId("help-dialog")).toBeHidden();
     await expect.poll(() => query(page, "help")).toBeNull();
 
     await page.goto(`/examples/${encodeURIComponent(REPRESSILATOR)}?help=foo/bar`);
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expectReport(page);
     await expect(page.getByTestId("help-dialog")).toBeHidden();
     await expect.poll(() => query(page, "help")).toBeNull();
 
@@ -315,7 +315,7 @@ test.describe("the help dialog", () => {
       requests.some(({ url, kind }) => url.includes("glossary-details") && kind === "fetch");
 
     await page.goto(`/examples/${encodeURIComponent(REPRESSILATOR)}`);
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expectReport(page);
     const inspector = await selectFirstSpecies(page);
     expect(fetchedDetails()).toBe(false);
     expect(requests.some(({ url }) => url.includes("HelpMarkdown"))).toBe(false);

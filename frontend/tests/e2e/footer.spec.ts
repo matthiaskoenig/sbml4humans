@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-import { openExample, REPRESSILATOR_FILE } from "./helpers";
+import { expectReport, openExample, REPRESSILATOR_FILE } from "./helpers";
 
 const REPOSITORY_URL = "https://github.com/matthiaskoenig/sbml4humans";
 
@@ -97,7 +97,7 @@ test("the feedback of an uploaded file names neither the file nor its elements",
 }) => {
   await page.goto("/");
   await page.getByTestId("file-input").setInputFiles(REPRESSILATOR_FILE);
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
   await expect(page).toHaveURL(/pk=/);
   const href = (await page.getByTestId("app-bar-feedback").getAttribute("href"))!;
   const body = new URL(href).searchParams.get("body")!;

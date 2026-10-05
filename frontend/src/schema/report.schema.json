@@ -6676,7 +6676,7 @@
       "type": "object"
     },
     "Report": {
-      "description": "The report of one SBML document.",
+      "description": "The report of one SBML document.\n\nThe validation of the document is not part of its report: it is answered\napart from it (`ValidationResponse`), when it is finished.",
       "properties": {
         "document": {
           "$ref": "#/$defs/SBMLDocument"

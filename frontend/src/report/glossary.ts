@@ -19,6 +19,8 @@ interface Glossary {
   types: Record<string, TypeGlossaryEntry>;
   links: Record<string, GlossaryEntry>;
   concepts: Record<string, GlossaryEntry>;
+  /** The keys of the entries which cite a validation rule, sorted, by the number of the rule. */
+  rules: Record<string, string[]>;
 }
 
 const glossary = rawGlossary as Glossary;
@@ -96,6 +98,23 @@ export function linkKey(kind: EdgeKind): string | undefined {
 /** The entry of a concept the report adds, by its key in `glossary/report.toml`. */
 export function conceptEntry(key: string): GlossaryEntry | undefined {
   return glossary.concepts[key];
+}
+
+/** The key of a concept, `concepts/<key>`, `undefined` where the concept has no entry. */
+export function conceptKey(key: string): string | undefined {
+  return conceptEntry(key) ? `concepts/${key}` : undefined;
+}
+
+/** The key of the entry which states the text of a validation rule, `undefined` where the
+ * glossary cites the rule nowhere. A rule cited by several entries opens the one of the type of
+ * the element the issue concerns, or of one of its attributes, and else the first which cites it. */
+export function ruleKey(rule: number, sbmlType?: SbmlType | null): string | undefined {
+  const keys = glossary.rules[String(rule)];
+  if (!keys?.length) return undefined;
+  const own = sbmlType
+    ? keys.find((key) => key === `types/${sbmlType}` || key.startsWith(`types/${sbmlType}/`))
+    : undefined;
+  return own ?? keys[0];
 }
 
 /** The label and the summary of any key the help dialog can open, from the eager glossary: the

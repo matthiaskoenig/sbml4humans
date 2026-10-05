@@ -12,8 +12,39 @@ import { vTooltip } from "@/directives/tooltip";
 import { ReportIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { MAX_LATEX_LENGTH } from "@/report/latex";
+import type * as Latex from "@/report/latex";
 import { pkKey } from "@/report/pk";
 import { router } from "@/router";
+
+// The components render a formula beyond the limit as text and on demand with KaTeX, whatever the
+// limit is (`latex.test.ts` tests the limit itself). A formula of the real limit takes KaTeX and
+// jsdom seconds on a loaded machine, so the components of this file see a limit of 200.
+vi.mock("@/report/latex", async (importOriginal) => {
+  const actual = await importOriginal<typeof Latex>();
+  const limit = 200;
+  return {
+    ...actual,
+    MAX_LATEX_LENGTH: limit,
+    renderLatex: (latex: string, options: { display?: boolean; unlimited?: boolean } = {}) =>
+      !options.unlimited && latex.length > limit
+        ? null
+        : actual.renderLatex(latex, { ...options, unlimited: true }),
+  };
+});
+
+/** The sum `x0 + x1 + ...` with the fewest terms whose latex is longer than MAX_LATEX_LENGTH,
+ * which the components show as text until it is rendered on demand. */
+function sumBeyondLimit(symbol: string): { latex: string; formula: string } {
+  const latex: string[] = [];
+  const formula: string[] = [];
+  // the length of the joined latex, which has one separator less than terms
+  for (let i = 0, length = -3; length <= MAX_LATEX_LENGTH; i++) {
+    latex.push(`${symbol}_{${i}}`);
+    formula.push(`${symbol}${i}`);
+    length += latex[i]!.length + 3;
+  }
+  return { latex: latex.join(" + "), formula: formula.join(" + ") };
+}
 
 import { loadReport } from "./fixtures";
 
@@ -115,9 +146,7 @@ describe("misc components", () => {
   });
 
   it("shows a formula longer than MAX_LATEX_LENGTH as truncated text and renders it on demand", async () => {
-    const terms = Array.from({ length: 3000 }, (_, i) => i);
-    const formula = terms.map((i) => `x${i}`).join(" + ");
-    const latex = terms.map((i) => `x_{${i}}`).join(" + ");
+    const { latex, formula } = sumBeyondLimit("x");
     expect(latex.length).toBeGreaterThan(MAX_LATEX_LENGTH);
     const wrapper = mount(MathView, {
       props: { math: { latex, formula }, display: true },
@@ -139,15 +168,8 @@ describe("misc components", () => {
   });
 
   it("resets the render-on-demand state when the math prop changes", async () => {
-    const terms = Array.from({ length: 3000 }, (_, i) => i);
-    const first = {
-      latex: terms.map((i) => `x_{${i}}`).join(" + "),
-      formula: terms.map((i) => `x${i}`).join(" + "),
-    };
-    const second = {
-      latex: terms.map((i) => `y_{${i}}`).join(" + "),
-      formula: terms.map((i) => `y${i}`).join(" + "),
-    };
+    const first = sumBeyondLimit("x");
+    const second = sumBeyondLimit("y");
     const wrapper = mount(MathView, {
       props: { math: first, display: true },
       global: { directives: { tooltip: vTooltip } },

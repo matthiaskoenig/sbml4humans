@@ -3,6 +3,10 @@
 // Usage: start the backend (cd backend && uv run uvicorn sbml4humans.api:api --port 1444) and
 // the dev server (cd frontend && npx vite --port 3456), then `npm run screenshots`. Rerun it
 // after a change of the user interface, the images are committed alongside the documentation.
+// SCREENSHOTS_BASE_URL names another dev server than the one on port 3456: the footer shows the
+// version and the commit a dev server was started with, so a server which has run since an
+// earlier commit is replaced by a fresh one on another port, e.g. `npx vite --port 3457` and
+// `SCREENSHOTS_BASE_URL=http://localhost:3457 npm run screenshots`.
 //
 // The article column of the built site is at most COLUMN_WIDTH wide and shows an image at the
 // width of the column, since every picture here is taken at twice the device scale and carries
@@ -17,7 +21,7 @@ import { chromium, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-const BASE_URL = "http://localhost:3456";
+const BASE_URL = process.env.SCREENSHOTS_BASE_URL ?? "http://localhost:3456";
 const API_URL = "http://localhost:1444/api";
 const OUT_DIR = fileURLToPath(new URL("../../docs/images/", import.meta.url));
 
@@ -157,10 +161,18 @@ try {
     await expect(page.getByRole("tooltip")).toHaveCount(0);
   }
 
-  /** Opens the report of an example and waits for the tables. */
+  /** Waits for the report and for its validation, which is answered after the report: its
+   * counts and marks belong to every picture of a report, the chip "validating" to none. */
+  async function reportShown(page) {
+    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expect(page.getByTestId("validation-pending")).toHaveCount(0, { timeout: 60_000 });
+    await expect(page.getByTestId("validation-failed")).toHaveCount(0);
+  }
+
+  /** Opens the report of an example and waits for the tables and the validation. */
   async function open(page, id) {
     await page.goto(`${BASE_URL}/examples/${encodeURIComponent(id)}`);
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await reportShown(page);
   }
 
   /** Escapes the characters a regular expression gives a meaning to, so that an id such as
@@ -574,12 +586,42 @@ try {
   await parts.goto(
     `${BASE_URL}/examples/CompModels?entry=${encodeURIComponent("./models/omex_comp.xml")}`,
   );
-  await expect(parts.getByTestId("report-page")).toBeVisible();
+  await reportShown(parts);
   await selectRow(parts, parts.getByTestId("table-Species"), "S0");
   await expect(parts.getByTestId("element-link-entry").first()).toBeVisible();
   await fitInspector(parts);
   await restPointer(parts);
   await shotFitted("inspector-external-model", parts, parts.getByTestId("inspector"));
+  await parts.setViewportSize(PARTS_VIEWPORT);
+
+  // inspector-validation.png: the inspector of the document with the errors and warnings of
+  // libsbml, one group per rule. The validation example holds an error of the model and warnings
+  // of several elements; the group of rule 99505 is opened, which lists the two elements whose
+  // units could not be checked. The chip of the errors in the app bar selects the document. The
+  // picture is the inspector from its header to the end of the list, which stands above the
+  // attributes of the document.
+  await open(parts, "validation (validation.xml)");
+  await parts.getByTestId("validation-errors").click();
+  const validationList = parts.getByTestId("validation-list");
+  await expect(validationList).toBeVisible();
+  const unitsGroup = validationList.getByTestId("validation-group").filter({ hasText: "99505" });
+  await unitsGroup.locator("summary").click();
+  await expect(unitsGroup.getByTestId("element-link").first()).toBeVisible();
+  await fitInspector(parts);
+  await restPointer(parts);
+  const validationInspector = await parts.getByTestId("inspector").boundingBox();
+  // the picture ends 8 px below the last group of the list, short of the attributes, which
+  // follow it closer than the margin of the list
+  const listBox = await validationList.boundingBox();
+  const validationEnd = listBox.y + listBox.height + 8;
+  await shot("inspector-validation", parts, {
+    clip: {
+      x: validationInspector.x,
+      y: validationInspector.y,
+      width: validationInspector.width,
+      height: Math.ceil(validationEnd - validationInspector.y),
+    },
+  });
   await parts.setViewportSize(PARTS_VIEWPORT);
 
   // archive-entries.png: the context of a COMBINE archive report in the app bar, a strip of the

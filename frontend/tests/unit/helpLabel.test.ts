@@ -6,7 +6,7 @@ import HelpButton from "@/components/help/HelpButton.vue";
 import HelpLabel from "@/components/help/HelpLabel.vue";
 import ElementSection from "@/components/report/ElementSection.vue";
 import { TOOLTIP_ID, vTooltip } from "@/directives/tooltip";
-import { ReportIndexKey } from "@/report/context";
+import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
 import { typeEntry } from "@/report/glossary";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
@@ -122,12 +122,21 @@ describe("ElementSection", () => {
   it("explains its type next to the heading, not inside it", async () => {
     await router.push("/examples/BIOMD0000000012");
     wrapper = mount(ElementSection, {
-      props: { type: "Species", rows: species, allRows: species, total: species.length },
+      props: {
+        type: "Species",
+        model: "BIOMD0000000012",
+        rows: species,
+        allRows: species,
+        total: species.length,
+      },
       attachTo: document.body,
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(index),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     }) as VueWrapper;
     const link = wrapper.get("[data-testid=help-button]");
@@ -141,12 +150,21 @@ describe("ElementSection", () => {
   it("names the heading by the type alone, not by the help which explains it", async () => {
     await router.push("/examples/BIOMD0000000012");
     wrapper = mount(ElementSection, {
-      props: { type: "Species", rows: species, allRows: species, total: species.length },
+      props: {
+        type: "Species",
+        model: "BIOMD0000000012",
+        rows: species,
+        allRows: species,
+        total: species.length,
+      },
       attachTo: document.body,
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(index),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     }) as VueWrapper;
     const name = accessibleName(wrapper.get("h2").element);

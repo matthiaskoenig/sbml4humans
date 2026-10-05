@@ -1,4 +1,4 @@
-import type { ExampleMetaData, ReportResponse } from "@/api/types";
+import type { ExampleMetaData, ReportResponse, ValidationResponse } from "@/api/types";
 import type { AnnotationResource } from "@/types/annotation";
 
 const API_URL: string = import.meta.env.VITE_API_URL;
@@ -108,6 +108,61 @@ export function getLocal(token: string): Promise<ReportResponse> {
  * for 24 hours under its id. */
 export function getUpload(id: string): Promise<ReportResponse> {
   return request<ReportResponse>(`/upload/${encodeURIComponent(id)}`);
+}
+
+/** The validation of the source of a report, which every report request has a twin of: the
+ * backend keeps no state between the two, so the source is sent again. The validation runs apart
+ * from the report and may take a minute, a newer report aborts it by the signal. */
+export function getExampleValidation(
+  id: string,
+  signal?: AbortSignal,
+): Promise<ValidationResponse> {
+  return request<ValidationResponse>(`/validation/examples/${encodeURIComponent(id)}`, {
+    signal,
+  });
+}
+
+/** The validation of the SBML (or COMBINE archive) at a url, downloaded again. */
+export function getUrlValidation(url: string, signal?: AbortSignal): Promise<ValidationResponse> {
+  return request<ValidationResponse>(`/validation/url?url=${encodeURIComponent(url)}`, {
+    signal,
+  });
+}
+
+/** The validation of a file, uploaded again. */
+export function postFileValidation(file: File, signal?: AbortSignal): Promise<ValidationResponse> {
+  const form = new FormData();
+  form.append("source", file, file.name);
+  return request<ValidationResponse>("/validation/file", { method: "POST", body: form, signal });
+}
+
+/** The validation of raw SBML content, posted again. */
+export function postContentValidation(
+  text: string,
+  signal?: AbortSignal,
+): Promise<ValidationResponse> {
+  return request<ValidationResponse>("/validation/content", {
+    method: "POST",
+    body: text,
+    headers: { "Content-Type": "application/xml" },
+    signal,
+  });
+}
+
+/** The validation of the file the local server of `sbml4humans.show` holds under a token, which
+ * it reads again. */
+export function getLocalValidation(
+  token: string,
+  signal?: AbortSignal,
+): Promise<ValidationResponse> {
+  return request<ValidationResponse>(`/local/validation/${encodeURIComponent(token)}`, {
+    signal,
+  });
+}
+
+/** The validation of a model another tool uploaded. */
+export function getUploadValidation(id: string, signal?: AbortSignal): Promise<ValidationResponse> {
+  return request<ValidationResponse>(`/validation/upload/${encodeURIComponent(id)}`, { signal });
 }
 
 /** Tell the local server that a report of it is still open: it ends itself when it is idle. */

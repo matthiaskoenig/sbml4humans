@@ -7,9 +7,15 @@ import {
   ApiError,
   getAnnotationResource,
   getExample,
+  getExampleValidation,
   getExamples,
+  getLocalValidation,
+  getUploadValidation,
+  getUrlValidation,
   postContent,
+  postContentValidation,
   postFile,
+  postFileValidation,
 } from "@/api/client";
 
 import { loadFixture } from "./fixtures";
@@ -154,6 +160,36 @@ describe("api client", () => {
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       `${import.meta.env.VITE_API_URL}/upload/an%20id%2Fwith%3Fmarks`,
     );
+  });
+
+  it("requests the validation of every source like its report, with the signal", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockImplementation(() => Promise.resolve(jsonResponse({ entries: {}, skipped: "busy" })));
+    vi.stubGlobal("fetch", fetchMock);
+    const signal = new AbortController().signal;
+    const api = import.meta.env.VITE_API_URL;
+    expect(await getExampleValidation("a b", signal)).toEqual({ entries: {}, skipped: "busy" });
+    await getUrlValidation("https://example.org/m.xml?x=1", signal);
+    await getLocalValidation("token1", signal);
+    await getUploadValidation("upload1", signal);
+    const file = new File(["<sbml/>"], "model.xml");
+    await postFileValidation(file, signal);
+    await postContentValidation("<sbml/>", signal);
+    const calls = fetchMock.mock.calls as [string, RequestInit][];
+    expect(calls.map(([url]) => url)).toEqual([
+      `${api}/validation/examples/a%20b`,
+      `${api}/validation/url?url=https%3A%2F%2Fexample.org%2Fm.xml%3Fx%3D1`,
+      `${api}/local/validation/token1`,
+      `${api}/validation/upload/upload1`,
+      `${api}/validation/file`,
+      `${api}/validation/content`,
+    ]);
+    for (const [, init] of calls) expect(init.signal).toBe(signal);
+    const form = calls[4]![1].body as FormData;
+    expect((form.get("source") as File).name).toBe("model.xml");
+    expect(calls[4]![1].method).toBe("POST");
+    expect(calls[5]![1]).toMatchObject({ method: "POST", body: "<sbml/>" });
   });
 
   it("fixtures carry the report response shape", () => {

@@ -14,6 +14,7 @@ const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
 const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
 const listOf = new ReportIndex(loadReport("list_of"));
+const validation = new ReportIndex(loadReport("validation"));
 
 const FIXTURE_NAMES: FixtureName[] = [
   "repressilator",
@@ -35,6 +36,19 @@ function allReportIndexes(): ReportIndex[] {
 }
 
 describe("ReportIndex", () => {
+  it("tells the row which holds an element without a row of its own", () => {
+    // the kinetic law of R1 has no table and is held by the row of the reaction
+    const r1 = validation.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    expect(validation.holderOf(r1.kineticLaw!.pk)).toBe(r1.pk);
+    // an element of a table holds nothing of another element of a table, and is held by nothing
+    expect(validation.holderOf(r1.pk)).toBeNull();
+    // the lists of a model are held by the model, whose entry of the type bar is its row
+    const model = listOf.models[0]!.pk;
+    expect(listOf.holderOf("list_of/ListOf:metabolites")).toBe(model);
+    expect(listOf.holderOf(model)).toBeNull();
+    expect(listOf.holderOf("unknown")).toBeNull();
+  });
+
   it("indexes the document, the models and every element by pk", () => {
     expect(repressilator.get(repressilator.document.pk)?.sbmlType).toBe("SBMLDocument");
     const model = repressilator.mainModel;

@@ -47,6 +47,8 @@ uv run uvicorn sbml4humans.api:api --reload --port 1444
 
 The environment variable `SBML4HUMANS_CACHE` is the directory of the disk cache of pymetadata, which keeps the answers of OLS, ChEBI, UniProt and the registry; without it the cache is `~/.cache/pymetadata`.
 
+The environment variable `SBML4HUMANS_VALIDATIONS` is the number of validations which run at a time, each in a child process of its own which may use up to 2 GiB of memory; without it half the cpus the backend may run on (`os.process_cpu_count()`, its cpu affinity: in a container all cpus of the host unless `--cpuset-cpus` restricts them, a cpu quota such as `--cpus` does not change it). Twice as many validations wait for a child, a further one is answered at once as busy. The numbers hold per server process, `uvicorn --workers N` multiplies them by N.
+
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every pull request (see [Branches and pull requests](#branches-and-pull-requests)):
 
 ```bash
@@ -78,7 +80,7 @@ npm run test:unit
 npm run test:e2e
 ```
 
-The end to end tests need the backend on port 1444, started with `SBML4HUMANS_ALLOW_PRIVATE_URLS=1`, as the CI does: the test of the url input serves its model on `127.0.0.1`, which the backend refuses to download otherwise. Never set the variable for a server which is reachable by others, it lets the backend download from every address of its network.
+The end to end tests need the backend on port 1444, started with `SBML4HUMANS_ALLOW_PRIVATE_URLS=1`, as the CI does: the test of the url input serves its model on `127.0.0.1`, which the backend refuses to download otherwise. Never set the variable for a server which is reachable by others, it lets the backend download from every address of its network. The tests run against a production build of the frontend, which Playwright makes afresh for every run (`npm run build:e2e` with `frontend/.env.e2e`, into the git ignored `frontend/dist-e2e/`) and serves with `vite preview` on port 4173, so a development server on port 3456 can run next to them. Before the specs run, the backend builds the report of every example they open (`tests/e2e/globalSetup.ts`), and the specs run on half the cores.
 
 ```bash
 cd backend && SBML4HUMANS_ALLOW_PRIVATE_URLS=1 uv run uvicorn sbml4humans.api:api --port 1444

@@ -97,6 +97,9 @@ export interface ReportEntry {
 }
 /**
  * The report of one SBML document.
+ *
+ * The validation of the document is not part of its report: it is answered
+ * apart from it (`ValidationResponse`), when it is finished.
  */
 export interface Report {
   document: SBMLDocument;

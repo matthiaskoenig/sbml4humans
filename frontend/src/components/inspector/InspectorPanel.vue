@@ -6,9 +6,11 @@ import HelpLabel from "@/components/help/HelpLabel.vue";
 import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
+import ValidationBlock from "@/components/inspector/ValidationBlock.vue";
+import ValidationList from "@/components/inspector/ValidationList.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import XmlView from "@/components/misc/XmlView.vue";
-import { useReportIndex } from "@/report/context";
+import { useReportIndex, useValidationIndex } from "@/report/context";
 import { useNarrow } from "@/narrow";
 import { typeEntry, typeKey } from "@/report/glossary";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
@@ -16,6 +18,7 @@ import { useReportView } from "@/report/view";
 
 const props = defineProps<{ pk: string }>();
 const index = useReportIndex();
+const validation = useValidationIndex();
 const view = useReportView();
 const narrow = useNarrow();
 
@@ -29,6 +32,11 @@ const typeHelp = computed(() => {
 });
 /** The element is named as every link to it names it; the type is already named next to it. */
 const name = computed(() => elementLabel(index.value, props.pk) ?? "");
+/** The issues of the element above its attributes together with those of the elements it holds
+ * without a row of their own, which mark its row, errors first; the document holds, below its
+ * own, the list of every issue, where the summary of the app bar leads. */
+const issues = computed(() => validation.value?.rowIssuesOf(props.pk) ?? []);
+const isDocument = computed(() => element.value?.sbmlType === "SBMLDocument");
 const showXml = ref(false);
 watch(
   () => props.pk,
@@ -147,6 +155,8 @@ const xmlEmptyMessage = computed(() =>
         class="grid h-full grid-cols-1 content-start divide-y divide-gray-200 overflow-y-auto @4xl:grid-cols-3 @4xl:content-stretch @4xl:divide-x @4xl:divide-y-0 @4xl:overflow-hidden"
       >
         <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
+          <ValidationBlock :pk="pk" :issues="issues" />
+          <ValidationList v-if="isDocument && validation" :validation="validation" />
           <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             Attributes
           </h3>

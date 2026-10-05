@@ -9,6 +9,7 @@ graph (`sbml4humans.links`).
 import hashlib
 import logging
 import math
+from collections import Counter
 from collections.abc import Callable, Iterable, Sequence
 from functools import partial
 from pathlib import Path
@@ -87,6 +88,7 @@ from sbml4humans.model import (
 )
 from sbml4humans.sbml import package_plugins, read_sbml
 from sbml4humans.units import udef_to_string
+from sbml4humans.validation import ElementPositions
 
 
 logger = logging.getLogger(__name__)
@@ -97,6 +99,7 @@ MODEL_QUALIFIERS: dict[int, BQM] = {getattr(libsbml, q.value): q for q in BQM}
 BIOLOGICAL_QUALIFIERS: dict[int, BQB] = {getattr(libsbml, q.value): q for q in BQB}
 
 DOCUMENT_SCOPE = "document"
+DOCUMENT_PK = f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}"
 
 # the key of the model of a document which carries neither an id nor a metaId,
 # which its id is optional for in Level 3 (core §4.2.1)
@@ -250,6 +253,8 @@ class SBMLDocumentInfo:
         symbols: the symbols of every math, keyed by the pk of the object
             carrying the math (kinetic law, rule, event, ...).
         units: the units the numbers of every math name, keyed the same way.
+        elements: the number of elements of the report by the scope of their
+            pk, which is the key of the model an element belongs to.
     """
 
     def __init__(self, doc: libsbml.SBMLDocument):
@@ -264,6 +269,9 @@ class SBMLDocumentInfo:
         self.symbols: dict[str, set[str]] = {}
         self.units_of_math: dict[str, set[str]] = {}
         self.scope = DOCUMENT_SCOPE
+        # where every element of the report starts, for the issues of libsbml
+        self.positions = ElementPositions(DOCUMENT_PK)
+        self.elements: Counter[str] = Counter()
         self.report: Report
 
     @staticmethod
@@ -404,6 +412,8 @@ class SBMLDocumentInfo:
             pk = f"{scope or self.scope}/{type_}:{key}"
         elif key is None:
             key = pk
+        self.positions.add(sbase, pk)
+        self.elements[pk.partition("/")[0]] += 1
         xml = None
         # a model definition of comp is a model with a type code of its own
         if with_xml and not isinstance(sbase, (libsbml.SBMLDocument, libsbml.Model)):
@@ -421,7 +431,7 @@ class SBMLDocumentInfo:
             "comp": self.comp_sbase(sbase, key),
             "uncertainties": self.uncertainties(sbase, key),
             "key_value_pairs": self.key_value_pairs(sbase),
-            "lists": self.lists(sbase, key, lists, scope),
+            "lists": self.lists(sbase, key, lists, scope, pk),
         }
 
     def lists(
@@ -430,6 +440,7 @@ class SBMLDocumentInfo:
         owner_key: str,
         lists: Iterable[libsbml.ListOf],
         scope: str | None = None,
+        owner_pk: str | None = None,
     ) -> list[ListOf]:
         """The lists of an element which carry something of their own.
 
@@ -444,14 +455,19 @@ class SBMLDocumentInfo:
             owner_key: the key of the owner, which keys its lists.
             lists: the lists of the class of the owner.
             scope: the scope of the owner, where it is not the current one.
+            owner_pk: the pk of the owner, where an issue of a list which is
+                not in the report goes to.
         """
         is_scope = isinstance(owner, libsbml.Model | libsbml.SBMLDocument)
         prefix = "" if is_scope else f"{owner_key}."
-        return [
-            self.list_of(list_of, f"{prefix}{list_of.getElementName()}", scope)
-            for list_of in (*lists, *self._extension_lists(owner))
-            if _states_something(list_of)
-        ]
+        result: list[ListOf] = []
+        for list_of in (*lists, *self._extension_lists(owner)):
+            if _states_something(list_of):
+                key = f"{prefix}{list_of.getElementName()}"
+                result.append(self.list_of(list_of, key, scope))
+            elif owner_pk is not None:
+                self.positions.add(list_of, owner_pk)
+        return result
 
     def _plugin(self, sbase: libsbml.SBase, package: str) -> Any:
         """The plugin of a package of an element, None if the document lacks it."""
@@ -631,7 +647,7 @@ class SBMLDocumentInfo:
         ]
         fields = self.sbase(
             doc,
-            pk=f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}",
+            pk=DOCUMENT_PK,
             key=DOCUMENT_SCOPE,
             lists=self._document_lists(),
         )

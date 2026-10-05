@@ -84,7 +84,7 @@ jobs:
         working-directory: frontend
         run: |
           npm run types
-          git diff --exit-code -- src/types/report.ts src/types/annotation.ts
+          git diff --exit-code -- src/types/report.ts src/types/annotation.ts src/types/validation.ts
       - name: Lint
         working-directory: frontend
         run: npm run lint

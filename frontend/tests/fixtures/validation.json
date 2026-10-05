@@ -1,0 +1,541 @@
+{
+  "uid": "f09d9f035fc147ef9e4388a47b6aa953",
+  "manifest": {
+    "entries": [
+      {
+        "location": ".",
+        "format": "http://identifiers.org/combine.specifications/omex",
+        "master": false
+      },
+      {
+        "location": "./manifest.xml",
+        "format": "http://identifiers.org/combine.specifications/omex-manifest",
+        "master": false
+      },
+      {
+        "location": "./validation.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml",
+        "master": true
+      }
+    ]
+  },
+  "reports": {
+    "./validation.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": null,
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "keyValuePairs": [],
+          "lists": [],
+          "level": 3,
+          "version": 2,
+          "packages": [],
+          "annotationXml": null
+        },
+        "models": [
+          {
+            "pk": "validation/Model:validation",
+            "sbmlType": "Model",
+            "id": "validation",
+            "metaId": "meta_validation",
+            "name": "model with validation errors and warnings",
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example model with an error and warnings of the validation of libsbml: the parameter x is set by an assignment rule and determined by an algebraic rule (overdetermined model), the compartment and the parameter k1 carry SBO terms of the wrong branch, and k1 and the literal numbers of the math declare no units.</p>\n  </body>\n</notes>",
+            "cvterms": [],
+            "history": null,
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "lists": [],
+            "kind": "model",
+            "annotationXml": null,
+            "substanceUnits": "mole",
+            "substanceUnitsLatex": "mole",
+            "timeUnits": "second",
+            "timeUnitsLatex": "s",
+            "volumeUnits": "litre",
+            "volumeUnitsLatex": "l",
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": "mole",
+            "extentUnitsLatex": "mole",
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [],
+            "listOfCompartments": [
+              {
+                "pk": "validation/Compartment:cell",
+                "sbmlType": "Compartment",
+                "id": "cell",
+                "metaId": null,
+                "name": "cell",
+                "sbo": "SBO:0000009",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000009"
+                    ],
+                    "nested": []
+                  }
+                ],
+                "history": null,
+                "xml": "<compartment sboTerm=\"SBO:0000009\" id=\"cell\" name=\"cell\" spatialDimensions=\"3\" size=\"1\" units=\"litre\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": "litre",
+                "unitsLatex": "l",
+                "derivedUnits": "l"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "validation/Species:A",
+                "sbmlType": "Species",
+                "id": "A",
+                "metaId": null,
+                "name": "A",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"A\" name=\"A\" compartment=\"cell\" initialAmount=\"10\" substanceUnits=\"mole\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "compartment": "cell",
+                "initialAmount": 10,
+                "initialConcentration": null,
+                "substanceUnits": "mole",
+                "hasOnlySubstanceUnits": true,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mole",
+                "derivedUnits": "mol",
+                "conversionFactor": null,
+                "fbc": null
+              },
+              {
+                "pk": "validation/Species:B",
+                "sbmlType": "Species",
+                "id": "B",
+                "metaId": null,
+                "name": "B",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"B\" name=\"B\" compartment=\"cell\" initialAmount=\"0\" substanceUnits=\"mole\" hasOnlySubstanceUnits=\"true\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "compartment": "cell",
+                "initialAmount": 0,
+                "initialConcentration": null,
+                "substanceUnits": "mole",
+                "hasOnlySubstanceUnits": true,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": "mole",
+                "derivedUnits": "mol",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [
+              {
+                "pk": "validation/Parameter:k1",
+                "sbmlType": "Parameter",
+                "id": "k1",
+                "metaId": null,
+                "name": "rate constant",
+                "sbo": "SBO:0000236",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000236"
+                    ],
+                    "nested": []
+                  }
+                ],
+                "history": null,
+                "xml": "<parameter sboTerm=\"SBO:0000236\" id=\"k1\" name=\"rate constant\" value=\"0.1\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "value": 0.1,
+                "constant": true,
+                "units": null,
+                "unitsLatex": null,
+                "derivedUnits": "-"
+              },
+              {
+                "pk": "validation/Parameter:x",
+                "sbmlType": "Parameter",
+                "id": "x",
+                "metaId": null,
+                "name": "x",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"x\" name=\"x\" value=\"1\" units=\"dimensionless\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "value": 1,
+                "constant": false,
+                "units": "dimensionless",
+                "unitsLatex": "-",
+                "derivedUnits": "dimensionless"
+              }
+            ],
+            "listOfInitialAssignments": [],
+            "listOfRules": [
+              {
+                "pk": "validation/AssignmentRule:x",
+                "sbmlType": "AssignmentRule",
+                "id": null,
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<assignmentRule variable=\"x\">\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <cn type=\"integer\"> 1 </cn>\n  </math>\n</assignmentRule>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "variable": "x",
+                "math": {
+                  "latex": " 1",
+                  "formula": "1"
+                },
+                "derivedUnits": "-"
+              },
+              {
+                "pk": "validation/AlgebraicRule:algebraicRule.0",
+                "sbmlType": "AlgebraicRule",
+                "id": null,
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<algebraicRule>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <minus/>\n      <ci> x </ci>\n      <cn type=\"integer\"> 1 </cn>\n    </apply>\n  </math>\n</algebraicRule>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "math": {
+                  "latex": " \\mathit{x}-1",
+                  "formula": "x - 1"
+                },
+                "derivedUnits": "dimensionless"
+              }
+            ],
+            "listOfConstraints": [],
+            "listOfReactions": [
+              {
+                "pk": "validation/Reaction:R1",
+                "sbmlType": "Reaction",
+                "id": "R1",
+                "metaId": null,
+                "name": "A to B",
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<reaction id=\"R1\" name=\"A to B\" reversible=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"A\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"B\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k1 </ci>\n        <ci> A </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "reversible": false,
+                "fast": null,
+                "compartment": null,
+                "listOfReactants": [
+                  {
+                    "pk": "validation/SpeciesReference:R1.reactant.A",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"A\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "species": "A",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [
+                  {
+                    "pk": "validation/SpeciesReference:R1.product.B",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"B\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "species": "B",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfModifiers": [],
+                "kineticLaw": {
+                  "pk": "validation/KineticLaw:R1.kineticLaw",
+                  "sbmlType": "KineticLaw",
+                  "id": null,
+                  "metaId": null,
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k1 </ci>\n      <ci> A </ci>\n    </apply>\n  </math>\n</kineticLaw>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "keyValuePairs": [],
+                  "lists": [],
+                  "math": {
+                    "latex": " \\mathit{k1}\\cdot \\mathit{A}",
+                    "formula": "k1 * A"
+                  },
+                  "derivedUnits": "mol",
+                  "listOfLocalParameters": []
+                },
+                "equation": "A ➞ B",
+                "fbc": null
+              }
+            ],
+            "listOfEvents": [],
+            "listOfSubmodels": [],
+            "listOfPorts": [],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": null
+          }
+        ],
+        "externalModelDefinitions": [],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "validation/Model:validation": {
+              "pk": "validation/Model:validation",
+              "sbmlType": "Model",
+              "id": "validation",
+              "name": "model with validation errors and warnings",
+              "model": null
+            },
+            "validation/Compartment:cell": {
+              "pk": "validation/Compartment:cell",
+              "sbmlType": "Compartment",
+              "id": "cell",
+              "name": "cell",
+              "model": "validation/Model:validation"
+            },
+            "validation/Species:A": {
+              "pk": "validation/Species:A",
+              "sbmlType": "Species",
+              "id": "A",
+              "name": "A",
+              "model": "validation/Model:validation"
+            },
+            "validation/Species:B": {
+              "pk": "validation/Species:B",
+              "sbmlType": "Species",
+              "id": "B",
+              "name": "B",
+              "model": "validation/Model:validation"
+            },
+            "validation/Parameter:k1": {
+              "pk": "validation/Parameter:k1",
+              "sbmlType": "Parameter",
+              "id": "k1",
+              "name": "rate constant",
+              "model": "validation/Model:validation"
+            },
+            "validation/Parameter:x": {
+              "pk": "validation/Parameter:x",
+              "sbmlType": "Parameter",
+              "id": "x",
+              "name": "x",
+              "model": "validation/Model:validation"
+            },
+            "validation/AssignmentRule:x": {
+              "pk": "validation/AssignmentRule:x",
+              "sbmlType": "AssignmentRule",
+              "id": null,
+              "name": null,
+              "model": "validation/Model:validation"
+            },
+            "validation/AlgebraicRule:algebraicRule.0": {
+              "pk": "validation/AlgebraicRule:algebraicRule.0",
+              "sbmlType": "AlgebraicRule",
+              "id": null,
+              "name": null,
+              "model": "validation/Model:validation"
+            },
+            "validation/Reaction:R1": {
+              "pk": "validation/Reaction:R1",
+              "sbmlType": "Reaction",
+              "id": "R1",
+              "name": "A to B",
+              "model": "validation/Model:validation"
+            },
+            "validation/SpeciesReference:R1.reactant.A": {
+              "pk": "validation/SpeciesReference:R1.reactant.A",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "validation/Model:validation"
+            },
+            "validation/SpeciesReference:R1.product.B": {
+              "pk": "validation/SpeciesReference:R1.product.B",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "validation/Model:validation"
+            },
+            "validation/KineticLaw:R1.kineticLaw": {
+              "pk": "validation/KineticLaw:R1.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "validation/Model:validation"
+            }
+          },
+          "edges": [
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "validation/Model:validation",
+              "kind": "model",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/Species:A",
+              "target": "validation/Compartment:cell",
+              "kind": "compartment",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/Species:B",
+              "target": "validation/Compartment:cell",
+              "kind": "compartment",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/AssignmentRule:x",
+              "target": "validation/Parameter:x",
+              "kind": "variable",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/AlgebraicRule:algebraicRule.0",
+              "target": "validation/Parameter:x",
+              "kind": "math",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/Reaction:R1",
+              "target": "validation/SpeciesReference:R1.reactant.A",
+              "kind": "reactant",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/SpeciesReference:R1.reactant.A",
+              "target": "validation/Species:A",
+              "kind": "reactant",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/Reaction:R1",
+              "target": "validation/SpeciesReference:R1.product.B",
+              "kind": "product",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/SpeciesReference:R1.product.B",
+              "target": "validation/Species:B",
+              "kind": "product",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/Reaction:R1",
+              "target": "validation/KineticLaw:R1.kineticLaw",
+              "kind": "kineticLaw",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/KineticLaw:R1.kineticLaw",
+              "target": "validation/Species:A",
+              "kind": "math",
+              "targetEntry": null
+            },
+            {
+              "source": "validation/KineticLaw:R1.kineticLaw",
+              "target": "validation/Parameter:k1",
+              "kind": "math",
+              "targetEntry": null
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.003 [s]"
+      }
+    }
+  }
+}

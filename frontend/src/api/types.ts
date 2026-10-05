@@ -52,6 +52,7 @@ import type {
 } from "@/types/report";
 
 export type * from "@/types/report";
+export type * from "@/types/validation";
 
 /** The objects of the document group of the type bar. */
 export type DocumentElement = SBMLDocument | Model | ExternalModelDefinition;

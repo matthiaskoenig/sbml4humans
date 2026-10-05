@@ -130,9 +130,11 @@ const DETAILS_PATH = join(
 const details = JSON.parse(readFileSync(DETAILS_PATH, "utf8")) as GlossaryDetails;
 const keys = new Set(Object.keys(details.entries));
 
+// one test per entry: the whole glossary in one test is seconds of work on a loaded machine
 describe("renderHelpMarkdown of the real glossary", () => {
-  it("renders every description with no surviving glossary href, script tag or unrendered link syntax", () => {
-    for (const [key, entry] of Object.entries(details.entries)) {
+  it.each(Object.entries(details.entries))(
+    "renders %s with no surviving glossary href, script tag or unrendered link syntax",
+    (key, entry) => {
       const html = renderHelpMarkdown(entry.description, hrefOf);
       expect(html, `${key}: a glossary: href survived`).not.toMatch(/href="glossary:/);
       expect(html, `${key}: a raw <script survived`).not.toContain("<script");
@@ -140,8 +142,8 @@ describe("renderHelpMarkdown of the real glossary", () => {
       for (const match of html.matchAll(/data-help-key="([^"]+)"/g)) {
         expect(keys.has(match[1]!), `${key}: data-help-key ${match[1]} is not an entry`).toBe(true);
       }
-    }
-  });
+    },
+  );
 });
 
 async function mountMarkdown(markdown: string) {

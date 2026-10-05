@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { expectReport } from "./helpers";
+
 /** A model whose notes carry markup outside the set `sanitizeNotes` allows: a `<style>` element,
  * a `position: fixed` element that overlaps the app bar, a form, and a paragraph and an image
  * that are the actual content of the notes. The attribute selector inside the `<style>` element
@@ -35,7 +37,7 @@ test("the notes of an element stay inside their box and keep only the allowed ma
   await page.getByTestId("home-tab-paste").click();
   await page.getByTestId("paste-input").fill(MODEL);
   await page.getByTestId("paste-submit").click();
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
 
   await page.getByTestId("bar-model").click();
   const inspector = page.getByTestId("inspector");

@@ -5,6 +5,8 @@ import ElementSection from "@/components/report/ElementSection.vue";
 /** The elements of one type of the current model: the ones the search leaves and all of them. */
 export interface TableSection {
   type: ElementType;
+  /** The id of the model the rows belong to. */
+  model: string;
   rows: SbmlElement[];
   all: SbmlElement[];
   total: number;
@@ -29,6 +31,7 @@ defineProps<{ sections: TableSection[]; emptyMessage: string }>();
       v-for="section in sections"
       :key="section.type"
       :type="section.type"
+      :model="section.model"
       :rows="section.rows"
       :all-rows="section.all"
       :total="section.total"

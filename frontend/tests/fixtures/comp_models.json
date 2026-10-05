@@ -1,5 +1,5 @@
 {
-  "uid": "3c1b875f630f493abadea924cda2c266",
+  "uid": "c04b08423f2642dba04484bfa7f206ae",
   "manifest": {
     "entries": [
       {
@@ -18,11 +18,6 @@
         "master": false
       },
       {
-        "location": "./models/omex_minimal.xml",
-        "format": "http://identifiers.org/combine.specifications/sbml.level-3.version-1",
-        "master": false
-      },
-      {
         "location": "./models/omex_comp.xml",
         "format": "http://identifiers.org/combine.specifications/sbml.level-3.version-1",
         "master": false
@@ -31,523 +26,15 @@
         "location": "./models/omex_comp_flat.xml",
         "format": "http://identifiers.org/combine.specifications/sbml.level-3.version-1",
         "master": false
+      },
+      {
+        "location": "./models/omex_minimal.xml",
+        "format": "http://identifiers.org/combine.specifications/sbml.level-3.version-1",
+        "master": false
       }
     ]
   },
   "reports": {
-    "./models/omex_minimal.xml": {
-      "report": {
-        "document": {
-          "pk": "document/SBMLDocument:document",
-          "sbmlType": "SBMLDocument",
-          "id": null,
-          "metaId": null,
-          "name": null,
-          "sbo": null,
-          "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 14px;font-family: Helvetica, arial, sans-serif;line-height: 1.6;background-color: white;color: #333;padding-top: 10px;padding-bottom: 10px;padding: 30px;\">\n    <p style=\"margin-top: 0 !important;margin-bottom: 0 !important;margin: 15px 0;\">Created with <a href=\"https://github.com/matthiaskoenig/sbmlutils\" style=\"text-decoration: none;color: #4183C4;\">https://github.com/matthiaskoenig/sbmlutils</a>.\n<a href=\"https://doi.org/10.5281/zenodo.5525390\" style=\"color: #4183C4;text-decoration: none;\">\n      <img alt=\"DOI\" src=\"https://zenodo.org/badge/DOI/10.5281/zenodo.5525390.svg\" style=\"max-width: 100%;\"/></a></p>\n    </body>\n  </notes>",
-          "cvterms": [],
-          "history": null,
-          "xml": null,
-          "comp": null,
-          "uncertainties": [],
-          "keyValuePairs": [],
-          "lists": [],
-          "level": 3,
-          "version": 1,
-          "packages": [
-            {
-              "prefix": "comp",
-              "version": 1
-            },
-            {
-              "prefix": "fbc",
-              "version": 2
-            }
-          ],
-          "annotationXml": null
-        },
-        "models": [
-          {
-            "pk": "omex_minimal/Model:omex_minimal",
-            "sbmlType": "Model",
-            "id": "omex_minimal",
-            "metaId": "meta_omex_minimal",
-            "name": null,
-            "sbo": null,
-            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: #333;background-color: white;line-height: 1.6;padding-bottom: 10px;padding: 30px;font-family: Helvetica, arial, sans-serif;font-size: 14px;padding-top: 10px;\">\n    <h2 style=\"position: relative;font-size: 24px;border-bottom: 1px solid #cccccc;margin-top: 0;margin: 20px 0 10px;cursor: text;padding-top: 0;color: black;padding: 0;font-weight: bold;-webkit-font-smoothing: antialiased;\">Terms of use</h2>\n    <p style=\"margin: 15px 0;\">The content of this model has been carefully created in a manual research effort.\nThis file has been created by <a href=\"https://livermetabolism.com\" style=\"text-decoration: none;color: #4183C4;\">Matthias König</a>\nusing <a style=\"text-decoration: none;color: #4183C4;\"/>\n    <a href=\"https://github.com/matthiaskoenig/sbmlutils\" style=\"color: #4183C4;text-decoration: none;\">sbmlutils</a>.\nFor questions contact koenigmx@hu-berlin.de.</p>\n    <a href=\"https://livermetabolism.com\" style=\"text-decoration: none;color: #4183C4;\">\n      <img src=\"https://livermetabolism.com/img/people/koenig.png\" style=\"max-width: 100%;\" width=\"80\"/>\n    </a>\nCopyright © 2021 Matthias König.\n<a href=\"http://creativecommons.org/licenses/by/4.0/\" rel=\"license\" style=\"color: #4183C4;text-decoration: none;\">\n      <img alt=\"Creative Commons License\" src=\"https://i.creativecommons.org/l/by/4.0/88x31.png\" style=\"border-width:0;max-width: 100%;\"/></a>\n      <br/>This work is licensed under a <a href=\"http://creativecommons.org/licenses/by/4.0/\" rel=\"license\" style=\"text-decoration: none;color: #4183C4;\">Creative Commons Attribution 4.0 International License</a>.\n<p style=\"margin: 15px 0;\">Redistribution and use of any part of this model, with or without modification,\nare permitted provided that the following conditions are met:</p>\n      <ol style=\"margin: 15px 0;padding-left: 30px;\">\n        <li style=\"margin-top: 0;margin: 15px 0;\">Redistributions of this SBML file must retain the above copyright notice, this\nlist of conditions and the following disclaimer.</li>\n        <li style=\"margin-bottom: 0;margin: 15px 0;\">Redistributions in a different form must reproduce the above copyright notice,\nthis list of conditions and the following disclaimer in the documentation and/or\nother materials provided with the distribution.</li>\n      </ol>\n      <p style=\"margin-bottom: 0 !important;margin: 15px 0;\">This model is distributed in the hope that it will be useful, but WITHOUT ANY\nWARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS\nFOR A PARTICULAR PURPOSE.</p></body>\n    </notes>",
-            "cvterms": [],
-            "history": {
-              "creators": [
-                {
-                  "givenName": "Matthias",
-                  "familyName": "König",
-                  "organization": "Humboldt-University Berlin, Institute for Theoretical Biology",
-                  "email": "koenigmx@hu-berlin.de"
-                }
-              ],
-              "createdDate": "1900-01-01T00:00:00Z",
-              "modifiedDates": [
-                "1900-01-01T00:00:00Z"
-              ]
-            },
-            "xml": null,
-            "comp": null,
-            "uncertainties": [],
-            "keyValuePairs": [],
-            "lists": [],
-            "kind": "model",
-            "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_omex_minimal\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
-            "substanceUnits": null,
-            "substanceUnitsLatex": null,
-            "timeUnits": null,
-            "timeUnitsLatex": null,
-            "volumeUnits": null,
-            "volumeUnitsLatex": null,
-            "areaUnits": null,
-            "areaUnitsLatex": null,
-            "lengthUnits": null,
-            "lengthUnitsLatex": null,
-            "extentUnits": null,
-            "extentUnitsLatex": null,
-            "conversionFactor": null,
-            "listOfFunctionDefinitions": [],
-            "listOfUnitDefinitions": [],
-            "listOfCompartments": [
-              {
-                "pk": "omex_minimal/Compartment:cell",
-                "sbmlType": "Compartment",
-                "id": "cell",
-                "metaId": null,
-                "name": null,
-                "sbo": null,
-                "notes": null,
-                "cvterms": [],
-                "history": null,
-                "xml": "<compartment id=\"cell\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
-                "comp": null,
-                "uncertainties": [],
-                "keyValuePairs": [],
-                "lists": [],
-                "spatialDimensions": 3,
-                "size": 1,
-                "constant": true,
-                "units": null,
-                "unitsLatex": null,
-                "derivedUnits": "-"
-              }
-            ],
-            "listOfSpecies": [
-              {
-                "pk": "omex_minimal/Species:S1",
-                "sbmlType": "Species",
-                "id": "S1",
-                "metaId": null,
-                "name": null,
-                "sbo": null,
-                "notes": null,
-                "cvterms": [],
-                "history": null,
-                "xml": "<species id=\"S1\" compartment=\"cell\" initialConcentration=\"10\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
-                "comp": null,
-                "uncertainties": [],
-                "keyValuePairs": [],
-                "lists": [],
-                "compartment": "cell",
-                "initialAmount": null,
-                "initialConcentration": 10,
-                "substanceUnits": null,
-                "hasOnlySubstanceUnits": false,
-                "boundaryCondition": false,
-                "constant": false,
-                "unitsLatex": null,
-                "derivedUnits": "-",
-                "conversionFactor": null,
-                "fbc": null
-              },
-              {
-                "pk": "omex_minimal/Species:S2",
-                "sbmlType": "Species",
-                "id": "S2",
-                "metaId": null,
-                "name": null,
-                "sbo": null,
-                "notes": null,
-                "cvterms": [],
-                "history": null,
-                "xml": "<species id=\"S2\" compartment=\"cell\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
-                "comp": null,
-                "uncertainties": [],
-                "keyValuePairs": [],
-                "lists": [],
-                "compartment": "cell",
-                "initialAmount": null,
-                "initialConcentration": 0,
-                "substanceUnits": null,
-                "hasOnlySubstanceUnits": false,
-                "boundaryCondition": false,
-                "constant": false,
-                "unitsLatex": null,
-                "derivedUnits": "-",
-                "conversionFactor": null,
-                "fbc": null
-              }
-            ],
-            "listOfParameters": [
-              {
-                "pk": "omex_minimal/Parameter:k1",
-                "sbmlType": "Parameter",
-                "id": "k1",
-                "metaId": null,
-                "name": null,
-                "sbo": null,
-                "notes": null,
-                "cvterms": [],
-                "history": null,
-                "xml": "<parameter id=\"k1\" value=\"0.1\" constant=\"true\"/>",
-                "comp": null,
-                "uncertainties": [],
-                "keyValuePairs": [],
-                "lists": [],
-                "value": 0.1,
-                "constant": true,
-                "units": null,
-                "unitsLatex": null,
-                "derivedUnits": "-"
-              }
-            ],
-            "listOfInitialAssignments": [],
-            "listOfRules": [],
-            "listOfConstraints": [],
-            "listOfReactions": [
-              {
-                "pk": "omex_minimal/Reaction:J0",
-                "sbmlType": "Reaction",
-                "id": "J0",
-                "metaId": null,
-                "name": null,
-                "sbo": null,
-                "notes": null,
-                "cvterms": [],
-                "history": null,
-                "xml": "<reaction id=\"J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k1 </ci>\n        <ci> S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
-                "comp": null,
-                "uncertainties": [],
-                "keyValuePairs": [],
-                "lists": [],
-                "reversible": false,
-                "fast": false,
-                "compartment": null,
-                "listOfReactants": [
-                  {
-                    "pk": "omex_minimal/SpeciesReference:J0.reactant.S1",
-                    "sbmlType": "SpeciesReference",
-                    "id": null,
-                    "metaId": null,
-                    "name": null,
-                    "sbo": null,
-                    "notes": null,
-                    "cvterms": [],
-                    "history": null,
-                    "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
-                    "comp": null,
-                    "uncertainties": [],
-                    "keyValuePairs": [],
-                    "lists": [],
-                    "species": "S1",
-                    "stoichiometry": 1,
-                    "constant": true
-                  }
-                ],
-                "listOfProducts": [
-                  {
-                    "pk": "omex_minimal/SpeciesReference:J0.product.S2",
-                    "sbmlType": "SpeciesReference",
-                    "id": null,
-                    "metaId": null,
-                    "name": null,
-                    "sbo": null,
-                    "notes": null,
-                    "cvterms": [],
-                    "history": null,
-                    "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
-                    "comp": null,
-                    "uncertainties": [],
-                    "keyValuePairs": [],
-                    "lists": [],
-                    "species": "S2",
-                    "stoichiometry": 1,
-                    "constant": true
-                  }
-                ],
-                "listOfModifiers": [],
-                "kineticLaw": {
-                  "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
-                  "sbmlType": "KineticLaw",
-                  "id": null,
-                  "metaId": null,
-                  "name": null,
-                  "sbo": null,
-                  "notes": null,
-                  "cvterms": [],
-                  "history": null,
-                  "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k1 </ci>\n      <ci> S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
-                  "comp": null,
-                  "uncertainties": [],
-                  "keyValuePairs": [],
-                  "lists": [],
-                  "math": {
-                    "latex": " \\mathit{k1}\\cdot \\mathit{S2}",
-                    "formula": "k1 * S2"
-                  },
-                  "derivedUnits": "-",
-                  "listOfLocalParameters": []
-                },
-                "equation": "S1 ➞ S2",
-                "fbc": null
-              }
-            ],
-            "listOfEvents": [],
-            "listOfSubmodels": [],
-            "listOfPorts": [
-              {
-                "pk": "omex_minimal/Port:cell_port",
-                "sbmlType": "Port",
-                "id": "cell_port",
-                "metaId": "cell_port",
-                "name": "Port of cell",
-                "sbo": "SBO:0000599",
-                "notes": null,
-                "cvterms": [
-                  {
-                    "qualifier": "BQB_IS",
-                    "resources": [
-                      "https://identifiers.org/SBO:0000599"
-                    ],
-                    "nested": []
-                  }
-                ],
-                "history": null,
-                "xml": "<comp:port metaid=\"cell_port\" sboTerm=\"SBO:0000599\" comp:idRef=\"cell\" comp:id=\"cell_port\" comp:name=\"Port of cell\"/>",
-                "comp": null,
-                "uncertainties": [],
-                "keyValuePairs": [],
-                "lists": [],
-                "portRef": null,
-                "idRef": "cell",
-                "unitRef": null,
-                "metaIdRef": null,
-                "sbaseRef": null
-              },
-              {
-                "pk": "omex_minimal/Port:S1_port",
-                "sbmlType": "Port",
-                "id": "S1_port",
-                "metaId": "S1_port",
-                "name": "Port of S1",
-                "sbo": "SBO:0000599",
-                "notes": null,
-                "cvterms": [
-                  {
-                    "qualifier": "BQB_IS",
-                    "resources": [
-                      "https://identifiers.org/SBO:0000599"
-                    ],
-                    "nested": []
-                  }
-                ],
-                "history": null,
-                "xml": "<comp:port metaid=\"S1_port\" sboTerm=\"SBO:0000599\" comp:idRef=\"S1\" comp:id=\"S1_port\" comp:name=\"Port of S1\"/>",
-                "comp": null,
-                "uncertainties": [],
-                "keyValuePairs": [],
-                "lists": [],
-                "portRef": null,
-                "idRef": "S1",
-                "unitRef": null,
-                "metaIdRef": null,
-                "sbaseRef": null
-              }
-            ],
-            "listOfGeneProducts": [],
-            "listOfObjectives": [],
-            "listOfFluxBounds": [],
-            "listOfUserDefinedConstraints": [],
-            "listOfQualitativeSpecies": [],
-            "listOfTransitions": [],
-            "fbc": {
-              "strict": false,
-              "activeObjective": null
-            }
-          }
-        ],
-        "externalModelDefinitions": [],
-        "linkGraph": {
-          "nodes": {
-            "document/SBMLDocument:document": {
-              "pk": "document/SBMLDocument:document",
-              "sbmlType": "SBMLDocument",
-              "id": null,
-              "name": null,
-              "model": null
-            },
-            "omex_minimal/Model:omex_minimal": {
-              "pk": "omex_minimal/Model:omex_minimal",
-              "sbmlType": "Model",
-              "id": "omex_minimal",
-              "name": null,
-              "model": null
-            },
-            "omex_minimal/Compartment:cell": {
-              "pk": "omex_minimal/Compartment:cell",
-              "sbmlType": "Compartment",
-              "id": "cell",
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/Species:S1": {
-              "pk": "omex_minimal/Species:S1",
-              "sbmlType": "Species",
-              "id": "S1",
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/Species:S2": {
-              "pk": "omex_minimal/Species:S2",
-              "sbmlType": "Species",
-              "id": "S2",
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/Parameter:k1": {
-              "pk": "omex_minimal/Parameter:k1",
-              "sbmlType": "Parameter",
-              "id": "k1",
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/Reaction:J0": {
-              "pk": "omex_minimal/Reaction:J0",
-              "sbmlType": "Reaction",
-              "id": "J0",
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/SpeciesReference:J0.reactant.S1": {
-              "pk": "omex_minimal/SpeciesReference:J0.reactant.S1",
-              "sbmlType": "SpeciesReference",
-              "id": null,
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/SpeciesReference:J0.product.S2": {
-              "pk": "omex_minimal/SpeciesReference:J0.product.S2",
-              "sbmlType": "SpeciesReference",
-              "id": null,
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/KineticLaw:J0.kineticLaw": {
-              "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
-              "sbmlType": "KineticLaw",
-              "id": null,
-              "name": null,
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/Port:cell_port": {
-              "pk": "omex_minimal/Port:cell_port",
-              "sbmlType": "Port",
-              "id": "cell_port",
-              "name": "Port of cell",
-              "model": "omex_minimal/Model:omex_minimal"
-            },
-            "omex_minimal/Port:S1_port": {
-              "pk": "omex_minimal/Port:S1_port",
-              "sbmlType": "Port",
-              "id": "S1_port",
-              "name": "Port of S1",
-              "model": "omex_minimal/Model:omex_minimal"
-            }
-          },
-          "edges": [
-            {
-              "source": "document/SBMLDocument:document",
-              "target": "omex_minimal/Model:omex_minimal",
-              "kind": "model",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/Species:S1",
-              "target": "omex_minimal/Compartment:cell",
-              "kind": "compartment",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/Species:S2",
-              "target": "omex_minimal/Compartment:cell",
-              "kind": "compartment",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/Reaction:J0",
-              "target": "omex_minimal/SpeciesReference:J0.reactant.S1",
-              "kind": "reactant",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/SpeciesReference:J0.reactant.S1",
-              "target": "omex_minimal/Species:S1",
-              "kind": "reactant",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/Reaction:J0",
-              "target": "omex_minimal/SpeciesReference:J0.product.S2",
-              "kind": "product",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/SpeciesReference:J0.product.S2",
-              "target": "omex_minimal/Species:S2",
-              "kind": "product",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/Reaction:J0",
-              "target": "omex_minimal/KineticLaw:J0.kineticLaw",
-              "kind": "kineticLaw",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/KineticLaw:J0.kineticLaw",
-              "target": "omex_minimal/Species:S2",
-              "kind": "math",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/KineticLaw:J0.kineticLaw",
-              "target": "omex_minimal/Parameter:k1",
-              "kind": "math",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/Port:cell_port",
-              "target": "omex_minimal/Compartment:cell",
-              "kind": "port",
-              "targetEntry": null
-            },
-            {
-              "source": "omex_minimal/Port:S1_port",
-              "target": "omex_minimal/Species:S1",
-              "kind": "port",
-              "targetEntry": null
-            }
-          ]
-        }
-      },
-      "debug": {
-        "jsonReportTime": "0.01 [s]"
-      }
-    },
     "./models/omex_comp.xml": {
       "report": {
         "document": {
@@ -2598,7 +2085,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.053 [s]"
+        "jsonReportTime": "0.008 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -4857,7 +4344,520 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.148 [s]"
+        "jsonReportTime": "0.01 [s]"
+      }
+    },
+    "./models/omex_minimal.xml": {
+      "report": {
+        "document": {
+          "pk": "document/SBMLDocument:document",
+          "sbmlType": "SBMLDocument",
+          "id": null,
+          "metaId": null,
+          "name": null,
+          "sbo": null,
+          "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 14px;font-family: Helvetica, arial, sans-serif;line-height: 1.6;background-color: white;color: #333;padding-top: 10px;padding-bottom: 10px;padding: 30px;\">\n    <p style=\"margin-top: 0 !important;margin-bottom: 0 !important;margin: 15px 0;\">Created with <a href=\"https://github.com/matthiaskoenig/sbmlutils\" style=\"text-decoration: none;color: #4183C4;\">https://github.com/matthiaskoenig/sbmlutils</a>.\n<a href=\"https://doi.org/10.5281/zenodo.5525390\" style=\"color: #4183C4;text-decoration: none;\">\n      <img alt=\"DOI\" src=\"https://zenodo.org/badge/DOI/10.5281/zenodo.5525390.svg\" style=\"max-width: 100%;\"/></a></p>\n    </body>\n  </notes>",
+          "cvterms": [],
+          "history": null,
+          "xml": null,
+          "comp": null,
+          "uncertainties": [],
+          "keyValuePairs": [],
+          "lists": [],
+          "level": 3,
+          "version": 1,
+          "packages": [
+            {
+              "prefix": "comp",
+              "version": 1
+            },
+            {
+              "prefix": "fbc",
+              "version": 2
+            }
+          ],
+          "annotationXml": null
+        },
+        "models": [
+          {
+            "pk": "omex_minimal/Model:omex_minimal",
+            "sbmlType": "Model",
+            "id": "omex_minimal",
+            "metaId": "meta_omex_minimal",
+            "name": null,
+            "sbo": null,
+            "notes": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\" style=\"color: #333;background-color: white;line-height: 1.6;padding-bottom: 10px;padding: 30px;font-family: Helvetica, arial, sans-serif;font-size: 14px;padding-top: 10px;\">\n    <h2 style=\"position: relative;font-size: 24px;border-bottom: 1px solid #cccccc;margin-top: 0;margin: 20px 0 10px;cursor: text;padding-top: 0;color: black;padding: 0;font-weight: bold;-webkit-font-smoothing: antialiased;\">Terms of use</h2>\n    <p style=\"margin: 15px 0;\">The content of this model has been carefully created in a manual research effort.\nThis file has been created by <a href=\"https://livermetabolism.com\" style=\"text-decoration: none;color: #4183C4;\">Matthias König</a>\nusing <a style=\"text-decoration: none;color: #4183C4;\"/>\n    <a href=\"https://github.com/matthiaskoenig/sbmlutils\" style=\"color: #4183C4;text-decoration: none;\">sbmlutils</a>.\nFor questions contact koenigmx@hu-berlin.de.</p>\n    <a href=\"https://livermetabolism.com\" style=\"text-decoration: none;color: #4183C4;\">\n      <img src=\"https://livermetabolism.com/img/people/koenig.png\" style=\"max-width: 100%;\" width=\"80\"/>\n    </a>\nCopyright © 2021 Matthias König.\n<a href=\"http://creativecommons.org/licenses/by/4.0/\" rel=\"license\" style=\"color: #4183C4;text-decoration: none;\">\n      <img alt=\"Creative Commons License\" src=\"https://i.creativecommons.org/l/by/4.0/88x31.png\" style=\"border-width:0;max-width: 100%;\"/></a>\n      <br/>This work is licensed under a <a href=\"http://creativecommons.org/licenses/by/4.0/\" rel=\"license\" style=\"text-decoration: none;color: #4183C4;\">Creative Commons Attribution 4.0 International License</a>.\n<p style=\"margin: 15px 0;\">Redistribution and use of any part of this model, with or without modification,\nare permitted provided that the following conditions are met:</p>\n      <ol style=\"margin: 15px 0;padding-left: 30px;\">\n        <li style=\"margin-top: 0;margin: 15px 0;\">Redistributions of this SBML file must retain the above copyright notice, this\nlist of conditions and the following disclaimer.</li>\n        <li style=\"margin-bottom: 0;margin: 15px 0;\">Redistributions in a different form must reproduce the above copyright notice,\nthis list of conditions and the following disclaimer in the documentation and/or\nother materials provided with the distribution.</li>\n      </ol>\n      <p style=\"margin-bottom: 0 !important;margin: 15px 0;\">This model is distributed in the hope that it will be useful, but WITHOUT ANY\nWARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS\nFOR A PARTICULAR PURPOSE.</p></body>\n    </notes>",
+            "cvterms": [],
+            "history": {
+              "creators": [
+                {
+                  "givenName": "Matthias",
+                  "familyName": "König",
+                  "organization": "Humboldt-University Berlin, Institute for Theoretical Biology",
+                  "email": "koenigmx@hu-berlin.de"
+                }
+              ],
+              "createdDate": "1900-01-01T00:00:00Z",
+              "modifiedDates": [
+                "1900-01-01T00:00:00Z"
+              ]
+            },
+            "xml": null,
+            "comp": null,
+            "uncertainties": [],
+            "keyValuePairs": [],
+            "lists": [],
+            "kind": "model",
+            "annotationXml": "<annotation>\n  <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:vCard=\"http://www.w3.org/2001/vcard-rdf/3.0#\" xmlns:vCard4=\"http://www.w3.org/2006/vcard/ns#\" xmlns:bqbiol=\"http://biomodels.net/biology-qualifiers/\" xmlns:bqmodel=\"http://biomodels.net/model-qualifiers/\">\n    <rdf:Description rdf:about=\"#meta_omex_minimal\">\n      <dcterms:creator>\n        <rdf:Bag>\n          <rdf:li rdf:parseType=\"Resource\">\n            <vCard:N rdf:parseType=\"Resource\">\n              <vCard:Family>König</vCard:Family>\n              <vCard:Given>Matthias</vCard:Given>\n            </vCard:N>\n            <vCard:EMAIL>koenigmx@hu-berlin.de</vCard:EMAIL>\n            <vCard:ORG rdf:parseType=\"Resource\">\n              <vCard:Orgname>Humboldt-University Berlin, Institute for Theoretical Biology</vCard:Orgname>\n            </vCard:ORG>\n          </rdf:li>\n        </rdf:Bag>\n      </dcterms:creator>\n      <dcterms:created rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:created>\n      <dcterms:modified rdf:parseType=\"Resource\">\n        <dcterms:W3CDTF>1900-01-01T00:00:00Z</dcterms:W3CDTF>\n      </dcterms:modified>\n    </rdf:Description>\n  </rdf:RDF>\n</annotation>",
+            "substanceUnits": null,
+            "substanceUnitsLatex": null,
+            "timeUnits": null,
+            "timeUnitsLatex": null,
+            "volumeUnits": null,
+            "volumeUnitsLatex": null,
+            "areaUnits": null,
+            "areaUnitsLatex": null,
+            "lengthUnits": null,
+            "lengthUnitsLatex": null,
+            "extentUnits": null,
+            "extentUnitsLatex": null,
+            "conversionFactor": null,
+            "listOfFunctionDefinitions": [],
+            "listOfUnitDefinitions": [],
+            "listOfCompartments": [
+              {
+                "pk": "omex_minimal/Compartment:cell",
+                "sbmlType": "Compartment",
+                "id": "cell",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<compartment id=\"cell\" spatialDimensions=\"3\" size=\"1\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "spatialDimensions": 3,
+                "size": 1,
+                "constant": true,
+                "units": null,
+                "unitsLatex": null,
+                "derivedUnits": "-"
+              }
+            ],
+            "listOfSpecies": [
+              {
+                "pk": "omex_minimal/Species:S1",
+                "sbmlType": "Species",
+                "id": "S1",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"S1\" compartment=\"cell\" initialConcentration=\"10\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 10,
+                "substanceUnits": null,
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": null,
+                "derivedUnits": "-",
+                "conversionFactor": null,
+                "fbc": null
+              },
+              {
+                "pk": "omex_minimal/Species:S2",
+                "sbmlType": "Species",
+                "id": "S2",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<species id=\"S2\" compartment=\"cell\" initialConcentration=\"0\" hasOnlySubstanceUnits=\"false\" boundaryCondition=\"false\" constant=\"false\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "compartment": "cell",
+                "initialAmount": null,
+                "initialConcentration": 0,
+                "substanceUnits": null,
+                "hasOnlySubstanceUnits": false,
+                "boundaryCondition": false,
+                "constant": false,
+                "unitsLatex": null,
+                "derivedUnits": "-",
+                "conversionFactor": null,
+                "fbc": null
+              }
+            ],
+            "listOfParameters": [
+              {
+                "pk": "omex_minimal/Parameter:k1",
+                "sbmlType": "Parameter",
+                "id": "k1",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<parameter id=\"k1\" value=\"0.1\" constant=\"true\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "value": 0.1,
+                "constant": true,
+                "units": null,
+                "unitsLatex": null,
+                "derivedUnits": "-"
+              }
+            ],
+            "listOfInitialAssignments": [],
+            "listOfRules": [],
+            "listOfConstraints": [],
+            "listOfReactions": [
+              {
+                "pk": "omex_minimal/Reaction:J0",
+                "sbmlType": "Reaction",
+                "id": "J0",
+                "metaId": null,
+                "name": null,
+                "sbo": null,
+                "notes": null,
+                "cvterms": [],
+                "history": null,
+                "xml": "<reaction id=\"J0\" reversible=\"false\" fast=\"false\">\n  <listOfReactants>\n    <speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfReactants>\n  <listOfProducts>\n    <speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>\n  </listOfProducts>\n  <kineticLaw>\n    <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n      <apply>\n        <times/>\n        <ci> k1 </ci>\n        <ci> S2 </ci>\n      </apply>\n    </math>\n  </kineticLaw>\n</reaction>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "reversible": false,
+                "fast": false,
+                "compartment": null,
+                "listOfReactants": [
+                  {
+                    "pk": "omex_minimal/SpeciesReference:J0.reactant.S1",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"S1\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "species": "S1",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfProducts": [
+                  {
+                    "pk": "omex_minimal/SpeciesReference:J0.product.S2",
+                    "sbmlType": "SpeciesReference",
+                    "id": null,
+                    "metaId": null,
+                    "name": null,
+                    "sbo": null,
+                    "notes": null,
+                    "cvterms": [],
+                    "history": null,
+                    "xml": "<speciesReference species=\"S2\" stoichiometry=\"1\" constant=\"true\"/>",
+                    "comp": null,
+                    "uncertainties": [],
+                    "keyValuePairs": [],
+                    "lists": [],
+                    "species": "S2",
+                    "stoichiometry": 1,
+                    "constant": true
+                  }
+                ],
+                "listOfModifiers": [],
+                "kineticLaw": {
+                  "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
+                  "sbmlType": "KineticLaw",
+                  "id": null,
+                  "metaId": null,
+                  "name": null,
+                  "sbo": null,
+                  "notes": null,
+                  "cvterms": [],
+                  "history": null,
+                  "xml": "<kineticLaw>\n  <math xmlns=\"http://www.w3.org/1998/Math/MathML\">\n    <apply>\n      <times/>\n      <ci> k1 </ci>\n      <ci> S2 </ci>\n    </apply>\n  </math>\n</kineticLaw>",
+                  "comp": null,
+                  "uncertainties": [],
+                  "keyValuePairs": [],
+                  "lists": [],
+                  "math": {
+                    "latex": " \\mathit{k1}\\cdot \\mathit{S2}",
+                    "formula": "k1 * S2"
+                  },
+                  "derivedUnits": "-",
+                  "listOfLocalParameters": []
+                },
+                "equation": "S1 ➞ S2",
+                "fbc": null
+              }
+            ],
+            "listOfEvents": [],
+            "listOfSubmodels": [],
+            "listOfPorts": [
+              {
+                "pk": "omex_minimal/Port:cell_port",
+                "sbmlType": "Port",
+                "id": "cell_port",
+                "metaId": "cell_port",
+                "name": "Port of cell",
+                "sbo": "SBO:0000599",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000599"
+                    ],
+                    "nested": []
+                  }
+                ],
+                "history": null,
+                "xml": "<comp:port metaid=\"cell_port\" sboTerm=\"SBO:0000599\" comp:idRef=\"cell\" comp:id=\"cell_port\" comp:name=\"Port of cell\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "portRef": null,
+                "idRef": "cell",
+                "unitRef": null,
+                "metaIdRef": null,
+                "sbaseRef": null
+              },
+              {
+                "pk": "omex_minimal/Port:S1_port",
+                "sbmlType": "Port",
+                "id": "S1_port",
+                "metaId": "S1_port",
+                "name": "Port of S1",
+                "sbo": "SBO:0000599",
+                "notes": null,
+                "cvterms": [
+                  {
+                    "qualifier": "BQB_IS",
+                    "resources": [
+                      "https://identifiers.org/SBO:0000599"
+                    ],
+                    "nested": []
+                  }
+                ],
+                "history": null,
+                "xml": "<comp:port metaid=\"S1_port\" sboTerm=\"SBO:0000599\" comp:idRef=\"S1\" comp:id=\"S1_port\" comp:name=\"Port of S1\"/>",
+                "comp": null,
+                "uncertainties": [],
+                "keyValuePairs": [],
+                "lists": [],
+                "portRef": null,
+                "idRef": "S1",
+                "unitRef": null,
+                "metaIdRef": null,
+                "sbaseRef": null
+              }
+            ],
+            "listOfGeneProducts": [],
+            "listOfObjectives": [],
+            "listOfFluxBounds": [],
+            "listOfUserDefinedConstraints": [],
+            "listOfQualitativeSpecies": [],
+            "listOfTransitions": [],
+            "fbc": {
+              "strict": false,
+              "activeObjective": null
+            }
+          }
+        ],
+        "externalModelDefinitions": [],
+        "linkGraph": {
+          "nodes": {
+            "document/SBMLDocument:document": {
+              "pk": "document/SBMLDocument:document",
+              "sbmlType": "SBMLDocument",
+              "id": null,
+              "name": null,
+              "model": null
+            },
+            "omex_minimal/Model:omex_minimal": {
+              "pk": "omex_minimal/Model:omex_minimal",
+              "sbmlType": "Model",
+              "id": "omex_minimal",
+              "name": null,
+              "model": null
+            },
+            "omex_minimal/Compartment:cell": {
+              "pk": "omex_minimal/Compartment:cell",
+              "sbmlType": "Compartment",
+              "id": "cell",
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/Species:S1": {
+              "pk": "omex_minimal/Species:S1",
+              "sbmlType": "Species",
+              "id": "S1",
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/Species:S2": {
+              "pk": "omex_minimal/Species:S2",
+              "sbmlType": "Species",
+              "id": "S2",
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/Parameter:k1": {
+              "pk": "omex_minimal/Parameter:k1",
+              "sbmlType": "Parameter",
+              "id": "k1",
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/Reaction:J0": {
+              "pk": "omex_minimal/Reaction:J0",
+              "sbmlType": "Reaction",
+              "id": "J0",
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/SpeciesReference:J0.reactant.S1": {
+              "pk": "omex_minimal/SpeciesReference:J0.reactant.S1",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/SpeciesReference:J0.product.S2": {
+              "pk": "omex_minimal/SpeciesReference:J0.product.S2",
+              "sbmlType": "SpeciesReference",
+              "id": null,
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/KineticLaw:J0.kineticLaw": {
+              "pk": "omex_minimal/KineticLaw:J0.kineticLaw",
+              "sbmlType": "KineticLaw",
+              "id": null,
+              "name": null,
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/Port:cell_port": {
+              "pk": "omex_minimal/Port:cell_port",
+              "sbmlType": "Port",
+              "id": "cell_port",
+              "name": "Port of cell",
+              "model": "omex_minimal/Model:omex_minimal"
+            },
+            "omex_minimal/Port:S1_port": {
+              "pk": "omex_minimal/Port:S1_port",
+              "sbmlType": "Port",
+              "id": "S1_port",
+              "name": "Port of S1",
+              "model": "omex_minimal/Model:omex_minimal"
+            }
+          },
+          "edges": [
+            {
+              "source": "document/SBMLDocument:document",
+              "target": "omex_minimal/Model:omex_minimal",
+              "kind": "model",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/Species:S1",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "compartment",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/Species:S2",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "compartment",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/Reaction:J0",
+              "target": "omex_minimal/SpeciesReference:J0.reactant.S1",
+              "kind": "reactant",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/SpeciesReference:J0.reactant.S1",
+              "target": "omex_minimal/Species:S1",
+              "kind": "reactant",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/Reaction:J0",
+              "target": "omex_minimal/SpeciesReference:J0.product.S2",
+              "kind": "product",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/SpeciesReference:J0.product.S2",
+              "target": "omex_minimal/Species:S2",
+              "kind": "product",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/Reaction:J0",
+              "target": "omex_minimal/KineticLaw:J0.kineticLaw",
+              "kind": "kineticLaw",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/KineticLaw:J0.kineticLaw",
+              "target": "omex_minimal/Species:S2",
+              "kind": "math",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/KineticLaw:J0.kineticLaw",
+              "target": "omex_minimal/Parameter:k1",
+              "kind": "math",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/Port:cell_port",
+              "target": "omex_minimal/Compartment:cell",
+              "kind": "port",
+              "targetEntry": null
+            },
+            {
+              "source": "omex_minimal/Port:S1_port",
+              "target": "omex_minimal/Species:S1",
+              "kind": "port",
+              "targetEntry": null
+            }
+          ]
+        }
+      },
+      "debug": {
+        "jsonReportTime": "0.002 [s]"
       }
     }
   }

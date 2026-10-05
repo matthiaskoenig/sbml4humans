@@ -1,5 +1,5 @@
 {
-  "uid": "2e05b14f38ab4c6f9fbab1538111fba2",
+  "uid": "84e33c9769b2474c98b20bae4fe1bee7",
   "manifest": {
     "entries": [
       {
@@ -1003,7 +1003,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "lists": [],
-                "unitsLatex": "\\frac{µl}{g}",
+                "unitsLatex": "\\frac{μl}{g}",
                 "listOfUnits": [
                   {
                     "kind": "litre",
@@ -1034,7 +1034,7 @@
                 "uncertainties": [],
                 "keyValuePairs": [],
                 "lists": [],
-                "unitsLatex": "\\frac{µl}{min \\cdot mg}",
+                "unitsLatex": "\\frac{μl}{min \\cdot mg}",
                 "listOfUnits": [
                   {
                     "kind": "litre",
@@ -11792,7 +11792,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.972 [s]"
+        "jsonReportTime": "0.114 [s]"
       }
     },
     "./icg_liver.xml": {
@@ -13788,7 +13788,7 @@
         }
       },
       "debug": {
-        "jsonReportTime": "0.068 [s]"
+        "jsonReportTime": "0.012 [s]"
       }
     }
   }

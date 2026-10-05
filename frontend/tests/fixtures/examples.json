@@ -18,7 +18,7 @@
   {
     "id": "CompModels",
     "name": "CompModels",
-    "description": "COMBINE archive with 3 SBML entries: omex_minimal.xml, omex_comp.xml, omex_comp_flat.xml",
+    "description": "COMBINE archive with 3 SBML entries: omex_comp.xml, omex_comp_flat.xml, omex_minimal.xml",
     "packages": [
       "OMEX"
     ]
@@ -423,6 +423,12 @@
     "packages": [
       "comp"
     ]
+  },
+  {
+    "id": "validation (validation.xml)",
+    "name": "model with validation errors and warnings",
+    "description": "<notes>\n  <body xmlns=\"http://www.w3.org/1999/xhtml\">\n    <p>Example model with an error and warnings of the validation of libsbml: the parameter x is set by an assignment rule and determined by an algebraic rule (overdetermined model), the compartment and the parameter k1 carry SBO terms of the wrong branch, and k1 and the literal numbers of the math declare no units.</p>\n  </body>\n</notes>",
+    "packages": []
   },
   {
     "id": "BIOMD0000000001",

@@ -222,3 +222,41 @@ A link which ends at an element of another entry of the archive.
 The links of a report stay inside one SBML document, with one exception: a model of the comp package may instantiate a model of another document through an [external model definition](externalmodeldefinition.md), and its [replacements](replacedelement.md), [deletions](deletion.md) and [ports](port.md) then name elements of that document. Where the other document is part of the report, as another entry of the same COMBINE archive, the link ends at the element inside it.
 
 Such a link shows the file name of the other entry next to the element, and following it opens the report of that entry. The element lists the link under "Referenced by" with the file name of the entry it comes from.
+
+## validation
+
+The errors and warnings libsbml finds in the document.
+
+sbml4humans runs the consistency checks of [libsbml](https://sbml.org/software/libsbml/) on every document with the categories libsbml checks by default: the identifiers, the general rules of the specification and of its packages, the SBO terms, the math, the units, whether the model is overdetermined and the modelling practice. The errors libsbml finds while it reads the file are part of it too.
+
+libsbml checks in stages and stops after the first stage which finds an error, so a document with an error of its identifiers shows none of its unit warnings until that error is fixed.
+
+libsbml reports where in the file an issue is, not which element it concerns, so the report gives an issue to the element which starts closest before that position, and to the document when none does. For a document of the comp package libsbml instantiates the submodels to check them and says itself that its line numbers are unreliable: the element of such an issue can be the wrong one.
+
+The external model definitions are checked against the documents which are part of the report; the validation reads no other file and fetches no url.
+
+The validation runs apart from the report, in a process of its own on the server: the report appears first, and the errors and warnings appear when the validation is done, while a chip "validating" stands in the place of the counts. A validation which failed says so in that place, with the message of the failure.
+
+To check a model of the comp package libsbml instantiates every submodel of its main model, the submodels of those in turn, along the [model](model.md) definitions and the [external model definitions](externalmodeldefinition.md), so the work grows with the product of the submodels of every level. A document with submodels which expands to more than 10,000 elements, its own and those of every instance, is not validated, and only the errors libsbml finds while it reads the file are listed; a document without submodels is never skipped for its size.
+
+A validation may take 60 seconds and its process may reserve 2 GiB of memory; one which runs out of either is stopped, and close to the memory limit libsbml may report fewer issues than the document has. The server runs a few validations at a time, and one it has no room for is not run: reloading the report later tries again. A document which was not validated says so and why in the place of the counts and in the inspector of the document. These limits keep the server responsive, they do not make a validation complete.
+
+## rule
+
+The number of the validation rule of libsbml.
+
+Every issue names the rule it breaks by its number in libsbml. A rule of SBML core has a number below 99000 and is one of the validation rules of the appendix of the specification, a number from 99000 to 99999 is a check of libsbml of its own, and a rule of a package carries the offset of the package, such as 1000000 and above for the comp package. Where the glossary cites a rule, its text is part of the explanation of the element in the help.
+
+## severity
+
+Whether an issue is an error, a warning or a note.
+
+- `error`: the document breaks a rule the specification requires; a tool may refuse or misread it.
+- `warning`: the document follows the rules, but something is likely not what was meant, such as a quantity without units.
+- `info`: a note of libsbml, which usually needs no change.
+
+## category
+
+Which check of libsbml found the issue.
+
+libsbml groups its checks in categories, such as the unit consistency, the identifier consistency or the consistency of a package. The list of all issues can be filtered by them.

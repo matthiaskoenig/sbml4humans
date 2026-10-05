@@ -1,0 +1,9 @@
+{
+  "entries": {
+    "./model.xml": {
+      "issues": [],
+      "skipped": "expandedSize"
+    }
+  },
+  "skipped": null
+}

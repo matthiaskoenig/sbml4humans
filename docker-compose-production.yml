@@ -34,6 +34,10 @@ services:
     environment:
       SBML4HUMANS_UPLOADS: /uploads
       SBML4HUMANS_CACHE: /cache
+      # the validations which run at a time, each in a child process which may use up to 2 GiB of
+      # memory: 2 x 2 GiB on top of the backend itself, see deploy.md before raising it. Without it
+      # half the cpus of the host would validate at a time, a cpu quota of docker does not count
+      SBML4HUMANS_VALIDATIONS: "2"
     expose:
       - "1444"
     security_opt:

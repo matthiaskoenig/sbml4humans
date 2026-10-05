@@ -8,7 +8,7 @@ import ReportPage from "@/pages/ReportPage.vue";
 import { router } from "@/router";
 import { LOCAL_PING_INTERVAL, useReportStore } from "@/stores/report";
 
-import { loadFixture } from "./fixtures";
+import { loadFixture, loadValidationFixture } from "./fixtures";
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
@@ -19,6 +19,10 @@ vi.mock("@/api/client", async (importOriginal) => {
     getLocal: vi.fn(),
     pingLocal: vi.fn(),
     getUpload: vi.fn(),
+    getExampleValidation: vi.fn(),
+    getLocalValidation: vi.fn(),
+    getUploadValidation: vi.fn(),
+    postContentValidation: vi.fn(),
   };
 });
 
@@ -42,6 +46,17 @@ describe("ReportPage", () => {
     setActivePinia(createPinia());
     vi.mocked(client.getExample).mockReset();
     vi.mocked(client.postContent).mockReset();
+    // a validation which never answers unless a test answers it
+    for (const request of [
+      client.getExampleValidation,
+      client.getLocalValidation,
+      client.getUploadValidation,
+      client.postContentValidation,
+    ]) {
+      vi.mocked(request)
+        .mockReset()
+        .mockReturnValue(new Promise(() => {}));
+    }
   });
 
   afterEach(() => {
@@ -58,6 +73,30 @@ describe("ReportPage", () => {
     const page = await mountReport();
     expect(page.find("[data-testid=no-report]").exists()).toBe(true);
     expect(page.find("[data-testid=report-page]").exists()).toBe(false);
+  });
+
+  it("shows the validation of the report once it is answered, pending until then", async () => {
+    vi.mocked(client.getExample).mockResolvedValue(loadFixture("validation"));
+    let answer!: (response: ReturnType<typeof loadValidationFixture>) => void;
+    vi.mocked(client.getExampleValidation).mockReturnValue(
+      new Promise((resolve) => (answer = resolve)),
+    );
+    await router.push("/examples/validation");
+    wrapper = mount(ReportPage, {
+      global: { plugins: [router], directives: { tooltip: vTooltip } },
+    });
+    await flushPromises();
+    const page = wrapper;
+    expect(page.find("[data-testid=report-page]").exists()).toBe(true);
+    expect(page.find("[data-testid=validation-pending]").exists()).toBe(true);
+    expect(page.find("[data-testid=validation-errors]").exists()).toBe(false);
+    expect(page.find("[data-testid=bar-issue-model]").exists()).toBe(false);
+    answer(loadValidationFixture("validation"));
+    await flushPromises();
+    expect(page.find("[data-testid=validation-pending]").exists()).toBe(false);
+    expect(page.get("[data-testid=validation-errors]").text()).toBe("1 error");
+    expect(page.find("[data-testid=bar-issue-model]").exists()).toBe(true);
+    expect(page.find("[data-testid=row-issue]").exists()).toBe(true);
   });
 
   it("shows the empty state on /report with an empty url", async () => {

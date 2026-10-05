@@ -3,8 +3,10 @@ import { ChevronDownIcon } from "@lucide/vue";
 import { computed, nextTick, ref } from "vue";
 
 import type { ElementType, Model } from "@/api/types";
+import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import { ELEMENT_TYPES, type ElementTypeInfo } from "@/data/sbmlTypes";
+import { useValidationIndex } from "@/report/context";
 import type { ReportIndex } from "@/report/index";
 import { useReportView } from "@/report/view";
 
@@ -19,6 +21,7 @@ const props = defineProps<{
   counts: Map<ElementType, TypeCount>;
 }>();
 const view = useReportView();
+const validation = useValidationIndex();
 
 const packages = computed(
   () => new Set(props.index.document.packages?.map((pkg) => pkg.prefix) ?? []),
@@ -70,6 +73,26 @@ async function scrollTo(type: ElementType): Promise<void> {
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+/** The entries of the bar, each type with the worst severity of the issues of its elements in
+ * the model of the bar, which the entry marks; a note alone is no mark. The lookup runs once per
+ * type and model, not once per render of an entry. */
+const entries = computed(() =>
+  types.value.map((info) => {
+    const worst = props.model.id
+      ? (validation.value?.worstSeverityOfType(info.type, props.model.id) ?? null)
+      : null;
+    return { info, severity: worst === "info" ? null : worst };
+  }),
+);
+
+/** The mark of the document, the model or an external model definition, which have no row of a
+ * table and whose entry of the bar is their row: the worst severity of their issues and of those of
+ * what they hold without a row (their lists); a note alone is no mark. */
+function markOf(pk: string): "error" | "warning" | null {
+  const worst = validation.value?.worstSeverity(pk) ?? null;
+  return worst === "info" ? null : worst;
+}
+
 function selectedClass(pk: string): string {
   return view.state.value.pk === pk ? "bg-selected" : "hover:bg-gray-100";
 }
@@ -91,7 +114,10 @@ function selectedClass(pk: string): string {
     >
       <!-- a narrow window keeps the mark of the document and leaves its name to a screen reader,
       so that the document, the model and the button of the types are one row -->
-      <TypeMark type="SBMLDocument" /><span class="max-md:sr-only">SBMLDocument</span>
+      <TypeMark type="SBMLDocument" /><span class="max-md:sr-only">SBMLDocument</span
+      ><span v-if="markOf(index.document.pk)" class="flex" data-testid="bar-issue-document">
+        <SeverityIcon :severity="markOf(index.document.pk)!" />
+      </span>
     </button>
     <button
       type="button"
@@ -102,7 +128,10 @@ function selectedClass(pk: string): string {
     >
       <TypeMark type="Model" /><span class="truncate font-mono max-md:max-w-[34vw]">{{
         model.id
-      }}</span>
+      }}</span
+      ><span v-if="markOf(model.pk)" class="flex" data-testid="bar-issue-model">
+        <SeverityIcon :severity="markOf(model.pk)!" />
+      </span>
     </button>
     <button
       v-for="emd in index.externalModelDefinitions"
@@ -113,7 +142,10 @@ function selectedClass(pk: string): string {
       data-testid="bar-emd"
       @click="view.select(emd.pk)"
     >
-      <TypeMark type="ExternalModelDefinition" /><span class="font-mono">{{ emd.id }}</span>
+      <TypeMark type="ExternalModelDefinition" /><span class="font-mono">{{ emd.id }}</span
+      ><span v-if="markOf(emd.pk)" class="flex" data-testid="bar-issue-emd">
+        <SeverityIcon :severity="markOf(emd.pk)!" />
+      </span>
     </button>
 
     <!-- the quiet separator between the document and what the model is made of, which a model
@@ -144,7 +176,7 @@ function selectedClass(pk: string): string {
       :class="open ? 'max-md:flex' : 'max-md:hidden'"
     >
       <span
-        v-for="info in types"
+        v-for="{ info, severity } in entries"
         :key="info.type"
         class="flex items-center gap-1.5 text-gray-800 max-md:py-1.5"
         :data-testid="`bar-type-${info.type}`"
@@ -170,6 +202,10 @@ function selectedClass(pk: string): string {
         >
           <template v-if="searching">{{ counts.get(info.type)?.matched ?? 0 }} / </template
           >{{ counts.get(info.type)?.total ?? 0 }}
+        </span>
+        <!-- the test id of the type sits on a span of its own, the icon keeps its own one -->
+        <span v-if="severity" class="flex" :data-testid="`bar-issue-${info.type}`">
+          <SeverityIcon :severity="severity" />
         </span>
       </span>
     </div>

@@ -64,9 +64,41 @@ def test_annotation_schema_is_current() -> None:
     )
 
 
-def test_main_writes_both_schemas_into_the_directory(tmp_path: Path) -> None:
-    """`main` writes the report and the annotation schema into the given directory."""
-    from sbml4humans.schema import annotation_schema_json, main
+def test_validation_schema_is_current() -> None:
+    """The committed schema of the validation is the one the model generates."""
+    from sbml4humans.schema import VALIDATION_SCHEMA_PATH, validation_schema_json
+
+    assert (
+        VALIDATION_SCHEMA_PATH.read_text(encoding="utf-8") == validation_schema_json()
+    )
+
+
+def test_validation_schema_describes_the_response() -> None:
+    """The schema of the validation is the one of its response."""
+    from sbml4humans.schema import validation_schema_json
+
+    schema = json.loads(validation_schema_json())
+    assert schema["title"] == "ValidationResponse"
+    assert set(schema["properties"]) == {"entries", "skipped"}
+    entry = schema["$defs"]["EntryValidation"]
+    reasons = ["expandedSize", "timeout", "memory", "busy"]
+    assert {"enum": reasons, "type": "string"} in entry["properties"]["skipped"][
+        "anyOf"
+    ]
+    # the api always writes every field, so none is optional in the types
+    assert schema["required"] == ["entries", "skipped"]
+    assert entry["required"] == ["issues", "skipped"]
+
+
+def test_the_report_schema_has_no_validation() -> None:
+    """The report is answered without its validation."""
+    schema = json.loads(schema_json())
+    assert "validation" not in schema["$defs"]["Report"]["properties"]
+
+
+def test_main_writes_every_schema_into_the_directory(tmp_path: Path) -> None:
+    """`main` writes the report, annotation and validation schema into a directory."""
+    from sbml4humans.schema import annotation_schema_json, main, validation_schema_json
 
     main(["schema", str(tmp_path / "out")])
     out = tmp_path / "out"
@@ -74,3 +106,6 @@ def test_main_writes_both_schemas_into_the_directory(tmp_path: Path) -> None:
     assert (out / "annotation.schema.json").read_text(
         encoding="utf-8"
     ) == annotation_schema_json()
+    assert (out / "validation.schema.json").read_text(
+        encoding="utf-8"
+    ) == validation_schema_json()

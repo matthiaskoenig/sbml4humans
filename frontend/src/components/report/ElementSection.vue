@@ -10,6 +10,8 @@ import { typeKey } from "@/report/glossary";
 
 const props = defineProps<{
   type: ElementType;
+  /** The id of the model the rows belong to. */
+  model: string;
   rows: SbmlElement[];
   allRows: SbmlElement[];
   total: number;
@@ -47,7 +49,7 @@ const helpKey = computed(() => typeKey(props.type));
       </span>
     </div>
     <div class="overflow-hidden rounded border border-gray-200">
-      <ElementTable :type="type" :rows="rows" :all-rows="allRows" />
+      <ElementTable :type="type" :model="model" :rows="rows" :all-rows="allRows" />
     </div>
   </section>
 </template>

@@ -99,6 +99,35 @@ The notes of the element follow where it has any, rendered as the XHTML the auth
 
 The "XML" button in the header replaces the three sections by the SBML of the element as it stands in the file, with a button which copies it. It is there for what a report cannot show better than the file itself: an annotation in a format the report does not read, an element of a package it does not support, or simply the exact text. The button is there for every element, including the document and the model, whose XML would be the whole file: for those two the view shows their annotation element alone, under a caption which says so, because that is where a tool writes what a file says about itself, and it says that the element carries no annotation where there is none.
 
+## Validation
+
+sbml4humans runs the consistency checks of [libsbml](https://sbml.org/software/libsbml/) on the document and shows the errors and warnings it finds where the elements they concern are shown. What the [validation](reference/concepts.md#validation) checks is explained in the reference.
+
+The validation runs apart from the report: the report appears as soon as it is built, and the validation is requested for the same source once it is there. While it runs, the bar of the report shows a quiet chip "validating" with a spinner, and the tables carry no marks yet; when it is done, the counts, the marks and the lists appear without a reload. A validation which failed shows a gray chip "validation failed", whose tooltip carries the message of the failure, and the report stays as it is. Loading another report stops the validation of the previous one.
+
+A document with errors or warnings shows their counts as two chips in the bar of the report, a red one for the errors and an amber one for the warnings; a valid document shows none. A click on a chip selects the document, whose inspector lists them all. On a phone the chips keep their counts and leave out the words. A document which was not validated shows a gray chip "not validated" in their place, whose tooltip and the inspector of the document say why.
+
+An element with an issue carries the mark of its worst severity in front of its id in the tables, and hovering the mark shows the rule and the message of every issue of the element. The issue of an element without a row of its own, the kinetic law of a reaction or the trigger of an event, marks the row which holds it, and the tooltip and the inspector of that row name the element it concerns. A table whose type has issues in the shown model keeps the place of the mark empty in the other rows, so that the ids stand under each other. The type bar marks a type which has issues in the shown model with the same mark after its count. The document, the model and the external model definitions have no row: their entry in the type bar carries the mark, the model also for the issues of its lists.
+
+[![The inspector of the document of the validation example: the error of the model and the warnings of libsbml, one group per rule, the group of rule 99505 opened to the two elements whose units could not be checked](images/inspector-validation.png)](images/inspector-validation.png)
+
+The inspector of an element lists its issues above its attributes, the errors first: the short message of libsbml, the number of the rule, the category and the severity, and the full message behind "more". The number of a rule opens the explanation which states the text of that rule where the [reference](reference/index.md) cites it. The inspector of the document lists every issue of the document, one group per rule with the number of its issues, and a group opens to links to the elements it concerns, the first 100 of them before a "show all". Checkboxes filter the list by severity and, where the issues fall into several categories, a select by category.
+
+libsbml checks in stages and stops after the first stage which finds an error: a document with an error of its identifiers shows none of its unit warnings until that error is fixed.
+
+libsbml reports where in the file an issue is, not which element it concerns, so the report gives an issue to the element which starts closest before that position, and to the document when none does. For a document of the comp package libsbml instantiates the submodels to check them and says itself that its line numbers are unreliable, so the element of such an issue can be the wrong one.
+
+The [external model definitions](reference/externalmodeldefinition.md) of a document are checked only against the documents which are part of the report, the other entries of its archive; the validation reads no other file and fetches no url.
+
+Every validation runs in a process of its own on the server, with limits of time and memory, so that a model which takes long to check delays neither its own report nor the reports of other readers. A document is not validated, and says why, when:
+
+- **the expanded size is too large**: to check a model of the comp package libsbml instantiates every submodel of its main model and the submodels of those in turn, also across the entries of an archive, so the work grows with the product of the submodels of every level. A document with submodels which expands to more than 10,000 elements, its own and those of every instance, is not checked; the inspector lists only the errors libsbml finds while it reads the file. A document without submodels is never skipped for its size.
+- **the time ran out**: a validation may take 60 seconds, the wait for its turn included, after which it is stopped; the entries of an archive it had checked by then keep their issues.
+- **the memory ran out**: the process of a validation may reserve 2 GiB of memory. Close to that limit libsbml may also end a check early without saying so and report fewer issues than the document has.
+- **the server was busy**: the server runs a few validations at a time and lets a few more wait, a further one is answered at once without a check. Reloading the report later tries again; a file or pasted content is not part of the address of the page and has to be loaded again.
+
+These limits keep the server responsive, they do not make a validation complete: a document which was validated shows what libsbml found within them.
+
 ## Explanations
 
 Every name the report shows is explained: a type, an attribute, the header of a column and the kind of a link. Hovering the name shows the one sentence which says what it is, and a click on it opens the explanation itself, in a dialog over the report.

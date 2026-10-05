@@ -17,7 +17,7 @@ import SearchBox from "@/components/report/SearchBox.vue";
 import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 import { useNarrow } from "@/narrow";
-import { ReportIndexKey } from "@/report/context";
+import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
 import { matches } from "@/report/search";
 import { useReportView } from "@/report/view";
 import { LOCAL_PING_INTERVAL, useReportStore } from "@/stores/report";
@@ -88,6 +88,9 @@ const entry = computed(() => {
 
 const index = computed(() => (entry.value ? store.indexFor(entry.value) : null));
 provide(ReportIndexKey, index);
+/** The validation of the entry, which arrives after its report. */
+const validation = computed(() => (entry.value ? store.validationFor(entry.value) : null));
+provide(ValidationIndexKey, validation);
 
 /** The model of the route if it exists in the entry, else the main model. */
 const model = computed(() => {
@@ -101,14 +104,16 @@ const model = computed(() => {
 const sections = computed(() => {
   const current = index.value;
   const currentModel = model.value;
-  if (!current || !currentModel?.id) return [];
-  const byType = current.byType(currentModel.id);
+  const modelId = currentModel?.id;
+  if (!current || !currentModel || !modelId) return [];
+  const byType = current.byType(modelId);
   const { q, types } = view.state.value;
   return ELEMENT_TYPES.map((info) => {
     const all = byType.get(info.type) ?? [];
     const rows = q.trim() ? all.filter((element) => matches(element, q, current)) : all;
     return {
       type: info.type,
+      model: modelId,
       rows,
       all,
       total: all.length,
@@ -174,6 +179,8 @@ watch([selectedPk, index], ([pk, current]) => {
         :entries="store.entries"
         :entry="entry"
         :model="model"
+        :validation-state="store.validationState"
+        :validation-error="store.validationError"
       />
     </template>
   </AppBar>

@@ -63,12 +63,20 @@ export class ReportIndex {
   private readonly incomingAcross = new Map<string, CrossEdge[]>();
   private entries: ReadonlyMap<string, ReportIndex> = new Map();
   private readonly byModel = new Map<string, Map<ElementType, SbmlElement[]>>();
+  /** The element with a row of a table which holds an element without one, by the pk of the
+   * nested element: the kinetic law, the species references and the lists of a reaction, the
+   * trigger of an event, and everything else `addElement` adds below an element of a table. */
+  private readonly holders = new Map<string, string>();
+  /** The element of a table whose nested elements `add` is adding, null outside one. */
+  private holder: string | null = null;
 
   constructor(report: Report, location: string | null = null) {
     this.report = report;
     this.location = location;
-    this.add(report.document);
-    for (const definition of report.externalModelDefinitions ?? []) this.add(definition);
+    // the document, an external model definition and a model have no row of a table: their entry
+    // of the type bar is their row, which holds what they hold without a row
+    this.addHolder(report.document);
+    for (const definition of report.externalModelDefinitions ?? []) this.addHolder(definition);
     for (const model of report.models ?? []) this.addModel(model);
     for (const node of Object.values(report.linkGraph?.nodes ?? {})) this.nodes.set(node.pk, node);
     for (const edge of report.linkGraph?.edges ?? []) {
@@ -117,6 +125,15 @@ export class ReportIndex {
   entry(location: string | null | undefined): ReportIndex | null {
     if (!location || location === this.location) return this;
     return this.entries.get(location) ?? null;
+  }
+
+  /** The element with a row which holds an element without a row of its own, whose row the
+   * element is part of: the reaction of its kinetic law, the event of its trigger, the model of
+   * its lists, the document of its lists. Null for an element which is a row itself, the
+   * document, a model and an external model definition among them, whose row is their entry of
+   * the type bar, and for an unknown pk. */
+  holderOf(pk: string): string | null {
+    return this.holders.get(pk) ?? null;
   }
 
   get document(): SBMLDocument {
@@ -261,6 +278,8 @@ export class ReportIndex {
    * so the lists of the document, of a model and of a nested element are found alike. */
   private add(element: SBase): void {
     this.elements.set(element.pk, element);
+    if (this.holder !== null && element.pk !== this.holder)
+      this.holders.set(element.pk, this.holder);
     for (const list of element.lists ?? []) this.add(list);
     for (const uncertainty of element.uncertainties ?? []) this.addUncertainty(uncertainty);
     if (element.comp?.replacedBy) this.add(element.comp.replacedBy);
@@ -269,7 +288,7 @@ export class ReportIndex {
   }
 
   private addModel(model: Model): void {
-    this.add(model);
+    this.addHolder(model);
     const byType = new Map<ElementType, SbmlElement[]>();
     for (const info of ELEMENT_TYPES) {
       const list = (model[info.listKey] ?? []) as SbmlElement[];
@@ -300,7 +319,22 @@ export class ReportIndex {
     }
   }
 
+  /** An element of a table and the elements nested in it, which it holds. */
   private addElement(element: SbmlElement): void {
+    this.holder = element.pk;
+    this.addNested(element);
+    this.holder = null;
+  }
+
+  /** An element whose row is its entry of the type bar, the document, an external model
+   * definition or a model, and what it holds without a row: its lists and its uncertainties. */
+  private addHolder(element: SBase): void {
+    this.holder = element.pk;
+    this.add(element);
+    this.holder = null;
+  }
+
+  private addNested(element: SbmlElement): void {
     this.add(element);
     switch (element.sbmlType) {
       case "Reaction":
