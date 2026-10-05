@@ -80,6 +80,8 @@ npm run test:unit
 npm run test:e2e
 ```
 
+Every build of the frontend fails when a JavaScript chunk is larger than 500 kB (`CHUNK_SIZE_LIMIT` of `frontend/chunkSizeLimit.ts`, a plugin of `vite.config.ts`), where vite itself only warns: the build of the `frontend` job of the CI is the check. A chunk which grows beyond it is split by the `codeSplitting` of `vite.config.ts` or by a lazy import, the way KaTeX and the renderer of the help dialog are.
+
 The end to end tests need the backend on port 1444, started with `SBML4HUMANS_ALLOW_PRIVATE_URLS=1`, as the CI does: the test of the url input serves its model on `127.0.0.1`, which the backend refuses to download otherwise. Never set the variable for a server which is reachable by others, it lets the backend download from every address of its network. The tests run against a production build of the frontend, which Playwright makes afresh for every run (`npm run build:e2e` with `frontend/.env.e2e`, into the git ignored `frontend/dist-e2e/`) and serves with `vite preview` on port 4173, so a development server on port 3456 can run next to them. Before the specs run, the backend builds the report of every example they open (`tests/e2e/globalSetup.ts`), and the specs run on half the cores.
 
 ```bash
@@ -160,7 +162,7 @@ A pull request can only be merged once the required checks are green:
 | ---------- | ----------- | ------------------------------------------------------------------------------------------- |
 | `test`     | `ci-cd.yml` | `pytest` of the backend                                                                     |
 | `schema`   | `ci-cd.yml` | the committed JSON schema of the report is current                                          |
-| `frontend` | `ci-cd.yml` | the generated types are current, lint, type check, unit tests and the build of the frontend |
+| `frontend` | `ci-cd.yml` | the generated types are current, lint, type check, unit tests and the build of the frontend, which fails on a chunk above 500 kB |
 | `e2e`      | `ci-cd.yml` | the Playwright end to end tests against the backend                                         |
 | `ruff`     | `ruff.yml`  | `ruff check` and `ruff format --check` of the backend                                       |
 | `ty`       | `ty.yml`    | `ty check` of the backend                                                                   |

@@ -6,6 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
 
+import { CHUNK_SIZE_LIMIT, chunkSizeLimit } from "./chunkSizeLimit.ts";
+
 const root = fileURLToPath(new URL("./", import.meta.url));
 
 /** The version the footer shows, the `version` of `package.json`, which follows the version of
@@ -34,7 +36,8 @@ function commit(): string {
 }
 
 export default defineConfig({
-  plugins: [vue(), tailwindcss()],
+  // a chunk above `CHUNK_SIZE_LIMIT` fails every build, the one of the CI among them
+  plugins: [vue(), tailwindcss(), chunkSizeLimit()],
   define: {
     __APP_VERSION__: JSON.stringify(version()),
     __APP_COMMIT__: JSON.stringify(commit()),
@@ -43,11 +46,12 @@ export default defineConfig({
     alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
   },
   build: {
+    chunkSizeWarningLimit: CHUNK_SIZE_LIMIT,
     rolldownOptions: {
       output: {
         // KaTeX, which only the report page imports, is a chunk of its own: it changes with its
         // version alone, so a browser keeps it across releases, and the chunk of the report page
-        // stays below the size vite warns about
+        // stays below `CHUNK_SIZE_LIMIT`
         codeSplitting: { groups: [{ name: "katex", test: /node_modules[\\/]katex[\\/]/ }] },
       },
     },
