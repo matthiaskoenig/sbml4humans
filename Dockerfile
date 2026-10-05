@@ -22,12 +22,12 @@ COPY ./backend /code/backend
 RUN pip install --no-cache-dir --upgrade -e /code/backend
 
 # the server runs as an unprivileged user which cannot change the code. It writes only to its
-# home directory (the cache of pymetadata, ~/.cache/pymetadata), the temporary directory and
-# /uploads, the mount point of the volume of the uploads, which a fresh named volume takes the
-# owner of
+# home directory, the temporary directory, /uploads and /cache, the mount points of the volumes
+# of the uploads and of the cache of pymetadata (SBML4HUMANS_CACHE), which a fresh named volume
+# takes the owner of
 RUN useradd --create-home --uid 1000 --user-group app \
-    && mkdir -p /uploads \
-    && chown app:app /uploads
+    && mkdir -p /uploads /cache \
+    && chown app:app /uploads /cache
 USER app
 
 EXPOSE 1444

@@ -1,5 +1,6 @@
 """Tests of the resolution of annotation resources."""
 
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -65,3 +66,17 @@ def test_messages_are_text(monkeypatch: pytest.MonkeyPatch) -> None:
     info = annotation_info("chebi/CHEBI:17234")
     assert info["errors"] == ["404 Client Error"]
     assert info["warnings"] == []
+
+
+def test_cache_directory_from_environment(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """`SBML4HUMANS_CACHE` is where pymetadata caches the web services."""
+    import pymetadata
+
+    from sbml4humans import annotations
+
+    monkeypatch.setattr(pymetadata, "CACHE_PATH", pymetadata.CACHE_PATH)
+    monkeypatch.setenv(annotations.CACHE_VARIABLE, str(tmp_path))
+    annotations.configure_cache()
+    assert tmp_path == pymetadata.CACHE_PATH

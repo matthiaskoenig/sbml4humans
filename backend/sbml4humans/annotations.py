@@ -4,11 +4,31 @@ Used by the frontend to display information (label, description, cross
 references) for the identifiers in the annotations of a model.
 """
 
+import os
+from pathlib import Path
 from typing import Any
 
+import pymetadata
 from pymetadata.core.annotation import RDFAnnotation, RDFAnnotationData
 from pymetadata.core.miriam import BQB
 
+
+CACHE_VARIABLE = "SBML4HUMANS_CACHE"
+
+
+def configure_cache() -> None:
+    """Point the disk cache of pymetadata to `SBML4HUMANS_CACHE` where it is set.
+
+    The deployment keeps the answers of OLS, ChEBI, UniProt and the registry on
+    a volume, so that they survive a new container; elsewhere pymetadata keeps
+    its default, `~/.cache/pymetadata`.
+    """
+    path = os.environ.get(CACHE_VARIABLE)
+    if path:
+        pymetadata.CACHE_PATH = Path(path)
+
+
+configure_cache()
 
 # fields the report shows as text; the Ontology Lookup Service reports a missing
 # definition as an empty list, which ends up in the description of the term
