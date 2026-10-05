@@ -7,6 +7,13 @@ after `VALIDATION_TIMEOUT` seconds from the call on, the wait for a free child
 included. The address space of a child is limited to `VALIDATION_MEMORY`
 bytes, and at most `MAX_CONCURRENT_VALIDATIONS` children run at a time.
 
+A child is a boundary of resources, not a sandbox: it bounds the time, the
+memory and the temporary files of a validation and keeps a crash of libsbml
+out of the server, but it runs as the user of the server, with its file
+system and its network. What a validation may read is confined by the code it
+runs (the resolver of the report in `validation.py`, the limits of the content
+in `limits.py`), not by the process.
+
 A server admits at most `MAX_CONCURRENT_VALIDATIONS + MAX_WAITING_VALIDATIONS`
 validations at a time (`admission`), a request beyond them is answered at once
 as `"busy"`, and so is one which got no child while at least `MIN_CHILD_TIME`

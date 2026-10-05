@@ -108,8 +108,13 @@ def test_duplicates_are_dropped() -> None:
     info.build_report()
     info.doc.checkConsistency()
     log: libsbml.SBMLErrorLog = info.doc.getErrorLog()
+    logged = log.getNumErrors()
+    assert logged > 0
     log.add(info.doc.getError(0))
+    # libsbml logs the issue a second time
+    assert log.getNumErrors() == logged + 1
     issues = issues_of(info.doc, info.positions)
+    assert len(issues) < log.getNumErrors()
     keys = [(i.rule, i.line, i.column, i.message) for i in issues]
     assert len(keys) == len(set(keys))
 

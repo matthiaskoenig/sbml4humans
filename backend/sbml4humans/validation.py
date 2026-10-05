@@ -18,7 +18,9 @@ instances is always validated, in a time linear in its size, which the
 timeout of the child process bounds.
 
 The validation runs in a child process (`isolation.py`), from reading the
-source on (`report.validate_source`).
+source on (`report.validate_source`). The child bounds its resources, it is no
+sandbox: that the comp validator reads nothing but the documents of the report
+is the work of `ReportResolver`.
 
 Importing this module replaces the resolvers of the process-wide resolver
 registry of libsbml by `ReportResolver`, for every user of libsbml in the
