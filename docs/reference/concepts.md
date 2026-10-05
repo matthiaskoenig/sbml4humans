@@ -48,7 +48,7 @@ The relation between the element and the resource, from MIRIAM.
 
 An annotation is a statement with three parts: the element, a qualifier and a resource. The qualifier says how the element relates to the resource, so that "is" and "is described by" are not mistaken for each other. The qualifiers are those of the [BioModels.net qualifiers](http://co.mbine.org/standards/qualifiers), which MIRIAM defines in two groups: the biology qualifiers (`BQB_`) relate the biological object an element stands for to the resource, the model qualifiers (`BQM_`) relate the modelling object an element stands for, for example the model itself or a kinetic law, to the resource.
 
-The card shows the qualifier as the heading of the group of resources which share it. In the biology qualifiers the resource is called biological entity B, and in the model qualifiers modelling object B.
+Every card shows the qualifier of its term as its first badge, in front of the collection and the identifier, so that each resource says how it relates to the element. A term with several resources therefore shows the same qualifier on each of their cards.
 
 | qualifier | meaning |
 |---|---|
@@ -101,7 +101,7 @@ Other names of the term in its ontology.
 
 An ontology names a term once as its label and may know further names for it, which are the synonyms of the term. They come from the [Ontology Lookup Service](https://www.ebi.ac.uk/ols4) together with the rest of the term.
 
-The card shows the first synonyms and the rest behind "show all", because a term can have many.
+The card shows the first five synonyms below the label of the term and the rest behind "show all", because a term can have many, a compound of ChEBI often dozens.
 
 ## cross references
 
@@ -109,7 +109,7 @@ Entries of other databases which the ontology names for the term.
 
 An ontology often states that a term corresponds to an entry of another database, for example a term of the Gene Ontology to an entry of Reactome or of the Enzyme Commission. These are the cross references of the term, and they come from the [Ontology Lookup Service](https://www.ebi.ac.uk/ols4) together with the rest of the term.
 
-The card lists them below the description of the term, with the database and the identifier of every entry.
+The card lists them below the description of the term and below the information of a ChEBI compound or a UniProt protein, with the database and the identifier of every entry, as a link where the ontology names one.
 
 ## providers
 
@@ -117,7 +117,7 @@ The web sites which show the entry of the resource.
 
 A collection of [identifiers.org](https://identifiers.org) is shown by one or more web sites, its providers, and every provider has its own url for an entry. The report lists the providers which identifiers.org knows for the collection, so that an entry can be opened where it is best presented.
 
-The card shows the providers below the identifier, as links to the entry. The identifier itself links to the primary provider.
+The card shows the providers in its last line, as links to the entry. The identifier itself links to the primary provider.
 
 ## formula
 
@@ -125,13 +125,13 @@ The molecular formula of the compound in ChEBI.
 
 For a resource of the collection `chebi` the report asks [ChEBI](https://www.ebi.ac.uk/chebi/), the database of chemical entities of biological interest, for the compound. The formula is the molecular formula of the compound as ChEBI states it, for example `H2O`.
 
-The card shows it in the information of the ChEBI compound, next to the charge, the mass and the structure.
+The card shows it in the information of the ChEBI compound, above the charge and the mass, next to the structure of the compound.
 
 ## charge
 
 The net charge of the compound in ChEBI.
 
-The charge is the net charge of the compound as [ChEBI](https://www.ebi.ac.uk/chebi/) states it, in units of the elementary charge. A compound without a charge is neutral.
+The charge is the net charge of the compound as [ChEBI](https://www.ebi.ac.uk/chebi/) states it, in units of the elementary charge. A charge of 0 means that the compound is neutral; a compound for which ChEBI states no charge shows no charge.
 
 The card shows it in the information of the ChEBI compound, so that the charge of a species can be compared with the charge the model assumes for it.
 
@@ -139,7 +139,7 @@ The card shows it in the information of the ChEBI compound, so that the charge o
 
 The average mass of the compound in ChEBI, in Dalton.
 
-The mass is the average mass of the compound as [ChEBI](https://www.ebi.ac.uk/chebi/) states it, in Dalton, which is the molar mass in grams per mole. It is the average over the natural distribution of the isotopes of the elements of the compound.
+The mass is the average mass of the compound as [ChEBI](https://www.ebi.ac.uk/chebi/) states it, in Dalton, which is numerically equal to the molar mass in grams per mole. It is the average over the natural distribution of the isotopes of the elements of the compound.
 
 The card shows it in the information of the ChEBI compound.
 
@@ -149,7 +149,7 @@ The recommended name of the protein in UniProt.
 
 For a resource of the collection `uniprot` the report asks [UniProt](https://www.uniprot.org/), the database of protein sequences and their annotation, for the protein. The name is the recommended name of the protein as UniProt states it.
 
-The card shows it in the information of the UniProt protein, above the organism and the genes.
+The card shows it, followed by the entry name of UniProt, in the first row of the information of the UniProt protein, above the organism and the genes.
 
 ## organism
 
