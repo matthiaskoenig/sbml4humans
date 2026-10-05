@@ -29,7 +29,8 @@ aborted by the `std::bad_alloc` libsbml does not catch, both end what is left
 of it as `"memory"`.
 
 A child keeps its temporary files, the archive of the source extracted by
-pymetadata among them, in a temporary directory the server makes for it and
+pymetadata among them, in a temporary directory the server makes for it (also
+its `TMPDIR`, `TEMP` and `TMP`, for native libraries) and
 removes when it has ended, so that a child which was killed or aborted leaves
 nothing of the content on the server. The cpu time of a child is limited to
 twice the timeout, so that a child ends itself also when its server died
@@ -226,11 +227,14 @@ def _child(
     """Run in the child: send every result of the function, then `_DONE`.
 
     The temporary files of the child go to `tempdir`, which the server
-    removes. The cpu time is limited to `cpu` seconds and the address space to
+    removes: those of python by `tempfile` and those of native libraries by
+    the variables of the environment they read (`TMPDIR`, `TEMP`, `TMP`). The cpu time is limited to `cpu` seconds and the address space to
     `memory`; when python runs out of memory, the limit is lifted again so that
     the child can say so. Another exception is sent with its traceback.
     """
     tempfile.tempdir = tempdir
+    for variable in ("TMPDIR", "TEMP", "TMP"):
+        os.environ[variable] = tempdir
     _limit_cpu(cpu)
     lift = _limit_memory(memory)
     try:

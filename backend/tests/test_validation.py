@@ -722,9 +722,11 @@ def _leaves_nothing(root: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Non
     assert set(system.glob("pymetadata_omex_*")) - before == set()
 
 
-def _tempdir(_: object) -> Iterator[tuple[str, str]]:
-    """The temporary directory of the child process."""
+def _tempdir(_: object) -> Iterator[tuple[str, str | None]]:
+    """The temporary directory of the child process, of python and of the system."""
     yield "tempdir", tempfile.gettempdir()
+    for variable in ("TMPDIR", "TEMP", "TMP"):
+        yield variable, os.environ.get(variable)
 
 
 def test_a_child_has_a_temporary_directory_of_its_own(
@@ -733,9 +735,13 @@ def test_a_child_has_a_temporary_directory_of_its_own(
     """The server makes the temporary directory of a child and removes it."""
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
         run = isolation.run_isolated(_tempdir, None)
-    tempdir = Path(dict(run.results)["tempdir"])
+    results = dict(run.results)
+    tempdir = Path(results["tempdir"])
     assert tempdir.parent == tmp_path / "tmp"
     assert not tempdir.exists()
+    # native libraries which make temporary files find it in the environment
+    for variable in ("TMPDIR", "TEMP", "TMP"):
+        assert results[variable] == str(tempdir)
 
 
 def _cpu_limit(_: object) -> Iterator[tuple[str, int]]:
