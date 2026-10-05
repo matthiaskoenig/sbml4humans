@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <model metaid="meta_validation" id="validation" name="model with validation errors and warnings" substanceUnits="mole" timeUnits="second" volumeUnits="litre" extentUnits="mole">
+    <notes>
+      <body xmlns="http://www.w3.org/1999/xhtml">
+        <p>Example model with an error and warnings of the validation of libsbml: the parameter x is set by an assignment rule and determined by an algebraic rule (overdetermined model), the compartment and the parameter k1 carry SBO terms of the wrong branch, and k1 and the literal numbers of the math declare no units.</p>
+      </body>
+    </notes>
+    <listOfCompartments>
+      <compartment id="cell" name="cell" sboTerm="SBO:0000009" spatialDimensions="3" size="1" units="litre" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="A" name="A" compartment="cell" initialAmount="10" substanceUnits="mole" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+      <species id="B" name="B" compartment="cell" initialAmount="0" substanceUnits="mole" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter id="k1" name="rate constant" sboTerm="SBO:0000236" value="0.1" constant="true"/>
+      <parameter id="x" name="x" value="1" units="dimensionless" constant="false"/>
+    </listOfParameters>
+    <listOfRules>
+      <assignmentRule variable="x">
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn type="integer"> 1 </cn></math>
+      </assignmentRule>
+      <algebraicRule>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><apply><minus/><ci> x </ci><cn type="integer"> 1 </cn></apply></math>
+      </algebraicRule>
+    </listOfRules>
+    <listOfReactions>
+      <reaction id="R1" name="A to B" reversible="false">
+        <listOfReactants>
+          <speciesReference species="A" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="B" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> k1 </ci>
+              <ci> A </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>

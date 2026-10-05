@@ -950,6 +950,27 @@ class LinkGraph(ReportModel):
     edges: list[Edge] = Field(default_factory=list)
 
 
+Severity = Literal["error", "warning", "info"]
+
+
+class ValidationIssue(ReportModel):
+    """An error, a warning or a note of the validation of libsbml.
+
+    libsbml reports the line and the column of an issue, not its element: the
+    pk is the element which starts closest before that position (the document
+    when none does). The texts are those of libsbml.
+    """
+
+    rule: int
+    severity: Severity
+    category: str
+    short_message: str
+    message: str
+    line: int
+    column: int
+    pk: str
+
+
 class Report(ReportModel):
     """The report of one SBML document."""
 
@@ -959,6 +980,7 @@ class Report(ReportModel):
         default_factory=list
     )
     link_graph: LinkGraph = Field(default_factory=LinkGraph)
+    validation: list[ValidationIssue] = Field(default_factory=list)
 
 
 class ManifestEntry(ReportModel):

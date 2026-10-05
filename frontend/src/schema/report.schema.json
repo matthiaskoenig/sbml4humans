@@ -6695,6 +6695,12 @@
         },
         "linkGraph": {
           "$ref": "#/$defs/LinkGraph"
+        },
+        "validation": {
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          },
+          "type": "array"
         }
       },
       "required": [
@@ -9209,6 +9215,52 @@
         "pk"
       ],
       "title": "UserDefinedConstraintComponent",
+      "type": "object"
+    },
+    "ValidationIssue": {
+      "description": "An error, a warning or a note of the validation of libsbml.\n\nlibsbml reports the line and the column of an issue, not its element: the\npk is the element which starts closest before that position (the document\nwhen none does). The texts are those of libsbml.",
+      "properties": {
+        "rule": {
+          "type": "integer"
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "shortMessage": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        },
+        "pk": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule",
+        "severity",
+        "category",
+        "shortMessage",
+        "message",
+        "line",
+        "column",
+        "pk"
+      ],
+      "title": "ValidationIssue",
       "type": "object"
     }
   },

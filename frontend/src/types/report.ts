@@ -103,6 +103,7 @@ export interface Report {
   models?: Model[];
   externalModelDefinitions?: ExternalModelDefinition[];
   linkGraph?: LinkGraph;
+  validation?: ValidationIssue[];
 }
 /**
  * The document: level, version and the packages it uses.
@@ -1452,6 +1453,23 @@ export interface Edge {
   target: string;
   kind: EdgeKind;
   targetEntry?: string | null;
+}
+/**
+ * An error, a warning or a note of the validation of libsbml.
+ *
+ * libsbml reports the line and the column of an issue, not its element: the
+ * pk is the element which starts closest before that position (the document
+ * when none does). The texts are those of libsbml.
+ */
+export interface ValidationIssue {
+  rule: number;
+  severity: "error" | "warning" | "info";
+  category: string;
+  shortMessage: string;
+  message: string;
+  line: number;
+  column: number;
+  pk: string;
 }
 /**
  * Timing information of a report.

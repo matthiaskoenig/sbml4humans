@@ -87,6 +87,7 @@ from sbml4humans.model import (
 )
 from sbml4humans.sbml import package_plugins, read_sbml
 from sbml4humans.units import udef_to_string
+from sbml4humans.validation import ElementPositions
 
 
 logger = logging.getLogger(__name__)
@@ -97,6 +98,7 @@ MODEL_QUALIFIERS: dict[int, BQM] = {getattr(libsbml, q.value): q for q in BQM}
 BIOLOGICAL_QUALIFIERS: dict[int, BQB] = {getattr(libsbml, q.value): q for q in BQB}
 
 DOCUMENT_SCOPE = "document"
+DOCUMENT_PK = f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}"
 
 # the key of the model of a document which carries neither an id nor a metaId,
 # which its id is optional for in Level 3 (core §4.2.1)
@@ -264,6 +266,8 @@ class SBMLDocumentInfo:
         self.symbols: dict[str, set[str]] = {}
         self.units_of_math: dict[str, set[str]] = {}
         self.scope = DOCUMENT_SCOPE
+        # where every element of the report starts, for the issues of libsbml
+        self.positions = ElementPositions(DOCUMENT_PK)
         self.report: Report
 
     @staticmethod
@@ -404,6 +408,7 @@ class SBMLDocumentInfo:
             pk = f"{scope or self.scope}/{type_}:{key}"
         elif key is None:
             key = pk
+        self.positions.add(sbase, pk)
         xml = None
         # a model definition of comp is a model with a type code of its own
         if with_xml and not isinstance(sbase, (libsbml.SBMLDocument, libsbml.Model)):
@@ -631,7 +636,7 @@ class SBMLDocumentInfo:
         ]
         fields = self.sbase(
             doc,
-            pk=f"{DOCUMENT_SCOPE}/SBMLDocument:{DOCUMENT_SCOPE}",
+            pk=DOCUMENT_PK,
             key=DOCUMENT_SCOPE,
             lists=self._document_lists(),
         )
