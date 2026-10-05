@@ -76,7 +76,27 @@ def test_cache_directory_from_environment(
 
     from sbml4humans import annotations
 
+    # set the attribute to its current value so that monkeypatch restores it afterwards
     monkeypatch.setattr(pymetadata, "CACHE_PATH", pymetadata.CACHE_PATH)
     monkeypatch.setenv(annotations.CACHE_VARIABLE, str(tmp_path))
     annotations.configure_cache()
     assert tmp_path == pymetadata.CACHE_PATH
+
+
+@pytest.mark.parametrize("value", [None, ""])
+def test_cache_directory_unset_keeps_default(
+    monkeypatch: pytest.MonkeyPatch, value: str | None
+) -> None:
+    """An unset or empty `SBML4HUMANS_CACHE` leaves the cache of pymetadata alone."""
+    import pymetadata
+
+    from sbml4humans import annotations
+
+    before = pymetadata.CACHE_PATH
+    monkeypatch.setattr(pymetadata, "CACHE_PATH", before)
+    if value is None:
+        monkeypatch.delenv(annotations.CACHE_VARIABLE, raising=False)
+    else:
+        monkeypatch.setenv(annotations.CACHE_VARIABLE, value)
+    annotations.configure_cache()
+    assert pymetadata.CACHE_PATH == before
