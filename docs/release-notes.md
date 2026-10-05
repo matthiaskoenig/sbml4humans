@@ -13,11 +13,15 @@ A report says what is wrong with a model: the errors and warnings of the validat
 - the validation of a document of the comp package checks its external model definitions against the documents of the report alone; it reads no other file and fetches no url
 - a document of the comp package which expands to more than 10,000 elements, its own and those of its submodel instances, is not validated; the report says "not validated" and lists the errors of reading the file
 - a validation may take 60 seconds and reserve 2 GiB of memory; one which runs out of either, or which the server has no room for at the moment, says "not validated" and why. Close to the memory limit libsbml may report fewer issues than a document has
+- a validation whose process ends abnormally for another reason than its limits keeps the entries of an archive it had checked and says "not validated" for the rest, rather than failing as a whole
+- a client may run 2 validations at a time and start 12 a minute on sbml4humans.de; a validation beyond is answered as busy, so that one client cannot keep the validation busy for everyone
+- a url is downloaded within its deadline also when the name resolution or a read hangs, every step ends at the deadline at the latest
 - the document, the model and the external model definitions carry the mark of their issues in the type bar
 - the api answers the validation of a source apart from its report, at `GET /api/validation/examples/{id}`, `GET /api/validation/url`, `POST /api/validation/file`, `POST /api/validation/content` and `GET /api/validation/upload/{id}`, described by its own JSON schema
 
 ### Deployment
 - the validations run in child processes of the backend, each of which may use up to 2 GiB of memory; `SBML4HUMANS_VALIDATIONS` sets how many run at a time, 2 in `docker-compose-production.yml`, without it half the cpus the backend may run on (in a container all cpus of the host unless `--cpuset-cpus` restricts them)
+- the proxy of sbml4humans.de limits the validation requests per client (`limit_conn` and `limit_req` of `nginx/sbml4humans.de`, answered 429), see `deploy.md`; copy the new configuration to the proxy
 
 ## 0.10.0
 
