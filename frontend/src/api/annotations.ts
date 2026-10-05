@@ -69,7 +69,8 @@ function addCaller(queued: QueuedResolve, signal: AbortSignal | undefined): void
  * FIFO queue. A caller that stops needing the resource passes an AbortSignal: once every caller
  * of a queued resolve has aborted, the resolve is dropped before it starts a request, its promise
  * rejects with an AbortError and the resource can be requested again later. A resolve that has
- * already started keeps running and still fills the cache. */
+ * already started keeps running and still fills the cache. A resource answered with errors (a
+ * web service failed) is not kept, the next call requests it again. */
 export function resolveAnnotation(
   resource: string,
   signal?: AbortSignal,
@@ -93,12 +94,20 @@ export function resolveAnnotation(
           reject,
         });
       },
-    ).catch((error: unknown) => {
-      // a failed or dropped resolve leaves the cache, unless a new resolve of the same resource
-      // has already taken its place
-      if (cache.get(resource) === created) cache.delete(resource);
-      throw error;
-    });
+    ).then(
+      (value) => {
+        // a resource whose web service failed is answered to its current callers but leaves the
+        // cache, so that the next resolve asks again, like the backend which does not keep it
+        if (value.errors?.length && cache.get(resource) === created) cache.delete(resource);
+        return value;
+      },
+      (error: unknown) => {
+        // a failed or dropped resolve leaves the cache, unless a new resolve of the same
+        // resource has already taken its place
+        if (cache.get(resource) === created) cache.delete(resource);
+        throw error;
+      },
+    );
     cache.set(resource, created);
     pending = created;
   }

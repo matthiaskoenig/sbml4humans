@@ -88,6 +88,23 @@ describe("annotations", () => {
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(1);
   });
 
+  it("requests a resource with errors again on the next resolve", async () => {
+    const failed = { ...info, errors: ["The Ontology Lookup Service could not be reached."] };
+    vi.mocked(client.getAnnotationResource).mockResolvedValue(failed);
+    const [a, b] = await Promise.all([
+      resolveAnnotation(info.resource),
+      resolveAnnotation(info.resource),
+    ]);
+    expect(a).toBe(failed);
+    expect(b).toBe(failed);
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(1);
+    vi.mocked(client.getAnnotationResource).mockResolvedValue(info);
+    expect(await resolveAnnotation(info.resource)).toBe(info);
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(2);
+    await resolveAnnotation(info.resource);
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(2);
+  });
+
   it("resolves at most MAX_CONCURRENT_RESOLVES resources at the same time and resolves them all", async () => {
     const resources = Array.from({ length: 10 }, (_, i) => `urn:test:${i}`);
     const settlers: (() => void)[] = [];
