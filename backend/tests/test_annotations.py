@@ -1,5 +1,6 @@
 """Tests of the resolution of annotation resources."""
 
+import threading
 from pathlib import Path
 from typing import Any
 
@@ -7,7 +8,7 @@ import pytest
 from pymetadata.core.annotation import RDFAnnotationData
 
 from sbml4humans import annotations
-from sbml4humans.annotations import resolve_resource
+from sbml4humans.annotations import AnnotationResource, ResourceCache, resolve_resource
 
 
 def _ols(**fields: Any) -> Any:
@@ -174,3 +175,138 @@ def test_cache_directory_unset_keeps_default(
         monkeypatch.setenv(annotations.CACHE_VARIABLE, value)
     annotations.configure_cache()
     assert before == pymetadata.CACHE_PATH
+
+
+class Resolver:
+    """Counts the resolves and answers what it was told."""
+
+    def __init__(self, **fields: Any) -> None:
+        """Answer resources with the given fields."""
+        self.calls = 0
+        self.fields = fields
+
+    def __call__(self, resource: str) -> AnnotationResource:
+        """Count the call and answer the resource."""
+        self.calls += 1
+        return AnnotationResource(resource=resource, **self.fields)
+
+
+def test_cache_hit() -> None:
+    """A resolved resource is resolved once within its lifetime."""
+    resolver = Resolver()
+    cache = ResourceCache(resolver)
+    assert cache.get("a") == cache.get("a")
+    assert resolver.calls == 1
+
+
+def test_resolved_lives_a_day_and_not_found_ten_minutes() -> None:
+    """A resource with warnings is resolved again after ten minutes, else after a day."""
+    now = [0.0]
+    found, missing = Resolver(), Resolver(warnings=["Term 'x' is not on OLS."])
+    found_cache = ResourceCache(found, clock=lambda: now[0])
+    missing_cache = ResourceCache(missing, clock=lambda: now[0])
+    found_cache.get("a")
+    missing_cache.get("a")
+    now[0] = 601.0
+    found_cache.get("a")
+    missing_cache.get("a")
+    assert (found.calls, missing.calls) == (1, 2)
+    now[0] = 86402.0
+    found_cache.get("a")
+    assert found.calls == 2
+
+
+def test_errors_are_not_cached() -> None:
+    """A resource whose web service failed is resolved again on the next request."""
+    resolver = Resolver(errors=["OLS down"])
+    cache = ResourceCache(resolver)
+    cache.get("a")
+    cache.get("a")
+    assert resolver.calls == 2
+
+
+def test_exceptions_are_not_cached() -> None:
+    """A resource which raises raises again and is not cached."""
+    calls = []
+
+    def resolve(resource: str) -> AnnotationResource:
+        calls.append(resource)
+        raise ValueError("unknown collection")
+
+    cache = ResourceCache(resolve)
+    for _ in range(2):
+        with pytest.raises(ValueError):
+            cache.get("a")
+    assert len(calls) == 2
+
+
+def test_oldest_entry_is_evicted() -> None:
+    """The cache holds at most `max_entries`, the least recently used goes first."""
+    resolver = Resolver()
+    cache = ResourceCache(resolver, max_entries=2)
+    cache.get("a")
+    cache.get("b")
+    cache.get("a")
+    cache.get("c")
+    cache.get("a")
+    cache.get("b")
+    assert resolver.calls == 4
+
+
+def test_concurrent_requests_share_one_lookup() -> None:
+    """Requests of one resource while it resolves wait for that one lookup."""
+    started = threading.Event()
+    release = threading.Event()
+    calls = []
+
+    def resolve(resource: str) -> AnnotationResource:
+        calls.append(resource)
+        started.set()
+        release.wait(5)
+        return AnnotationResource(resource=resource)
+
+    cache = ResourceCache(resolve)
+    results: list[AnnotationResource] = []
+    threads = [
+        threading.Thread(target=lambda: results.append(cache.get("a")))
+        for _ in range(4)
+    ]
+    threads[0].start()
+    assert started.wait(5)
+    for thread in threads[1:]:
+        thread.start()
+    release.set()
+    for thread in threads:
+        thread.join(5)
+    assert len(calls) == 1
+    assert len(results) == 4
+
+
+def test_waiters_get_the_exception_of_the_owner() -> None:
+    """Requests which wait for a lookup which raises get its exception, and do not hang."""
+    started = threading.Event()
+    release = threading.Event()
+
+    def resolve(resource: str) -> AnnotationResource:
+        started.set()
+        release.wait(5)
+        raise ValueError("unknown collection")
+
+    cache = ResourceCache(resolve)
+    raised: list[BaseException] = []
+
+    def request() -> None:
+        try:
+            cache.get("a")
+        except ValueError as err:
+            raised.append(err)
+
+    threads = [threading.Thread(target=request) for _ in range(3)]
+    threads[0].start()
+    assert started.wait(5)
+    for thread in threads[1:]:
+        thread.start()
+    release.set()
+    for thread in threads:
+        thread.join(5)
+    assert len(raised) == 3

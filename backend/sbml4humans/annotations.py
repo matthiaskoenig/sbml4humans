@@ -4,7 +4,13 @@ Used by the frontend to display information (label, description, cross
 references) for the identifiers in the annotations of a model.
 """
 
+import functools
 import os
+import threading
+import time
+from collections import OrderedDict
+from collections.abc import Callable
+from concurrent.futures import Future
 from pathlib import Path
 from typing import Any
 
@@ -245,3 +251,79 @@ def annotation_info(resource: str) -> dict[str, Any]:
         The camelCase JSON form of `resolve_resource`.
     """
     return resolve_resource(resource).model_dump(by_alias=True)
+
+
+class ResourceCache:
+    """The resolved resources of this process, in front of the disk cache of pymetadata.
+
+    A resource with a term lives `found_seconds`, a resource with warnings (a
+    term the web services do not know) `missing_seconds`, and a resource whose
+    web service failed is not kept, so that the next request asks again. Each
+    resource is looked up by one request at a time; the requests of a resource
+    which is being resolved wait for that lookup. At most `max_entries`
+    resources are kept, the least recently used is dropped first.
+    """
+
+    def __init__(
+        self,
+        resolve: Callable[[str], AnnotationResource],
+        max_entries: int = 5000,
+        found_seconds: float = 24 * 3600,
+        missing_seconds: float = 600,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        """Keep the resources `resolve` answers."""
+        self._resolve = resolve
+        self._max_entries = max_entries
+        self._found_seconds = found_seconds
+        self._missing_seconds = missing_seconds
+        self._clock = clock
+        self._lock = threading.Lock()
+        self._entries: OrderedDict[str, tuple[float, AnnotationResource]] = (
+            OrderedDict()
+        )
+        self._pending: dict[str, Future[AnnotationResource]] = {}
+
+    def _lifetime(self, value: AnnotationResource) -> float | None:
+        """How long a resource is kept, None when it is not kept at all."""
+        if value.errors:
+            return None
+        return self._missing_seconds if value.warnings else self._found_seconds
+
+    def get(self, resource: str) -> AnnotationResource:
+        """The resolved resource, from the cache while it lives."""
+        with self._lock:
+            entry = self._entries.get(resource)
+            if entry is not None and entry[0] > self._clock():
+                self._entries.move_to_end(resource)
+                return entry[1]
+            future = self._pending.get(resource)
+            owner = future is None
+            if future is None:
+                future = Future()
+                self._pending[resource] = future
+        if not owner:
+            return future.result()
+        try:
+            value = self._resolve(resource)
+        except BaseException as err:
+            future.set_exception(err)
+            raise
+        finally:
+            with self._lock:
+                self._pending.pop(resource, None)
+        lifetime = self._lifetime(value)
+        if lifetime is not None:
+            with self._lock:
+                self._entries[resource] = (self._clock() + lifetime, value)
+                self._entries.move_to_end(resource)
+                while len(self._entries) > self._max_entries:
+                    self._entries.popitem(last=False)
+        future.set_result(value)
+        return value
+
+
+@functools.cache
+def resource_cache() -> ResourceCache:
+    """The cache of the resolved resources of this process."""
+    return ResourceCache(resolve_resource)
