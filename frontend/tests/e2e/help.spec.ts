@@ -134,6 +134,23 @@ test.describe("the help dialog", () => {
     await expect(label).toBeFocused();
     await expect(tooltip).toBeHidden();
 
+    // nor on a label the pointer rests over while the dialog closes: the label comes out from
+    // under the dialog, the pointer did not move onto it. The way back closes the dialog, Escape
+    // would be a reader on the keyboard, who is shown the tooltip of the focused label
+    const compartment = attributeRow(inspector, "compartment").getByTestId("help-label");
+    const rest = (await compartment.boundingBox())!;
+    await label.click();
+    await expect(page.getByTestId("help-dialog")).toBeVisible();
+    await page.mouse.move(rest.x + rest.width / 2, rest.y + rest.height / 2);
+    await page.goBack();
+    await expect(page.getByTestId("help-dialog")).toBeHidden();
+    await expect(tooltip).toBeHidden();
+    // and it is shown as soon as the pointer moves on the label
+    await page.mouse.move(rest.x + rest.width / 2 + 2, rest.y + rest.height / 2);
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toContainText("compartment");
+    await page.mouse.move(0, 0);
+
     // a reader who reaches the label with Tab is shown its sentence as before: the focus leaves
     // it and comes back, so that the browser judges the focus as one of the keyboard
     await label.focus();

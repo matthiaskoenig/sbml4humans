@@ -1,6 +1,6 @@
 # Reading a report
 
-A report shows one [model](reference/model.md) of one SBML file at a time. The type bar at the top says what the model is made of, the tables under it show the elements of every type, and the inspector at the left of them shows one element in full. The whole model is on the page, the three parts are three views of it.
+A report shows one [model](reference/model.md) of one SBML file at a time. The type bar at the top says what the model is made of, the tables under it show the elements of every type, and the inspector at the right of them shows one element in full. The whole model is on the page, the three parts are three views of it.
 
 [![The type bar and the element tables of the repressilator report](images/report-tables.png)](images/report-tables.png)
 
@@ -63,7 +63,7 @@ While a search is active, every table shows only the matching rows, a type witho
 
 ## The inspector
 
-The inspector opens at the left of the tables for the selected element and shows everything the report has about it. A report opens with its model selected, so the first thing a reader sees next to the tables is what the model is: its name, its units, its annotations and its notes. The cross of the inspector closes it, and it stays closed until an element is selected.
+The inspector opens at the right of the tables for the selected element and shows everything the report has about it. A report opens with its model selected, so the first thing a reader sees next to the tables is what the model is: its name, its units, its annotations and its notes. The cross of the inspector closes it, and it stays closed until an element is selected.
 
 [![The inspector of a species, with its attributes, its links and its annotations](images/inspector-species.png)](images/inspector-species.png)
 

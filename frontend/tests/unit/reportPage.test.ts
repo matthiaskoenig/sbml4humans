@@ -116,7 +116,7 @@ describe("ReportPage", () => {
     expect(page.find("[data-testid=no-report]").exists()).toBe(false);
   });
 
-  it("opens the inspector at the left of the tables and carries the footer", async () => {
+  it("opens the inspector at the right of the tables and carries the footer", async () => {
     vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
@@ -125,13 +125,13 @@ describe("ReportPage", () => {
 
     const reportPage = page.get("[data-testid=report-page]");
     expect(reportPage.find("[data-testid=type-bar]").exists()).toBe(true);
-    // the inspector and the tables are the two panes of one horizontal split, the inspector first
+    // the inspector and the tables are the two panes of one horizontal split, the tables first
     const split = reportPage.get("[data-testid=split-handle]").element.parentElement!;
     expect(split.className).toContain("flex-row");
     const panes = [...split.querySelectorAll("[data-testid=tables], [data-testid=inspector]")].map(
       (pane) => pane.getAttribute("data-testid"),
     );
-    expect(panes).toEqual(["inspector", "tables"]);
+    expect(panes).toEqual(["tables", "inspector"]);
     // the footer sits under the split, not inside the pane which scrolls with the tables
     const footer = reportPage.get("[data-testid=app-footer]");
     expect(split.contains(footer.element)).toBe(false);

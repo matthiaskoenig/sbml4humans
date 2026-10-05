@@ -72,6 +72,32 @@ describe("v-tooltip", () => {
     expect(tooltip()?.hidden).toBe(false);
   });
 
+  it("shows nothing for a pointer which rests while the page changes under it", async () => {
+    const host = mountHost("the identifier of the element").get("[data-testid=host]");
+    const move = (x?: number, y?: number) => {
+      const event = new Event("pointermove", { bubbles: true });
+      Object.defineProperties(event, {
+        pointerType: { value: "mouse" },
+        clientX: { value: x },
+        clientY: { value: y },
+      });
+      host.element.dispatchEvent(event);
+    };
+    // the pointer closed a dialog by its button, and the element is now where it rests
+    move(40.5, 20.25);
+    await host.trigger("mouseenter", { clientX: 40, clientY: 20 });
+    expect(tooltip()?.hidden ?? true).toBe(true);
+    // it is shown once the pointer moves on the element, which it is already inside
+    move(41, 20);
+    expect(tooltip()?.hidden).toBe(false);
+    await host.trigger("mouseleave");
+
+    // a pointer which moves onto the element enters it before its move there is reported
+    await host.trigger("mouseenter", { clientX: 44, clientY: 21 });
+    expect(tooltip()?.hidden).toBe(false);
+    move();
+  });
+
   it("shows the text on mouseenter and hides it on mouseleave", async () => {
     const host = mountHost("kd_mRNA * X (click to copy)").get("[data-testid=host]");
     await host.trigger("mouseenter");

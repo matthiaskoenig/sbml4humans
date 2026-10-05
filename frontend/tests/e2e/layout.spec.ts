@@ -1,6 +1,6 @@
 import { expect, test, type Locator } from "@playwright/test";
 
-import { openExample } from "./helpers";
+import { openExample, search } from "./helpers";
 
 /** The cells of the nested tables of the inspector whose content covers more than one line. */
 function wrappedCells(column: Locator): Promise<string[]> {
@@ -52,7 +52,7 @@ test("the landing page shows the logo in the app bar and in the heading", async 
 
 test("the nested tables of a reaction keep an identifier on one line", async ({ page }) => {
   await openExample(page, "e_coli_core (e_coli_core.xml.gz)");
-  await page.getByTestId("search-input").fill("R_PFK");
+  await search(page, "R_PFK");
   await page.getByTestId("table-Reaction").locator("tbody tr[data-pk]").first().click();
   await expect(page.getByTestId("inspector-id")).toHaveText("R_PFK");
 
@@ -65,7 +65,7 @@ test("the nested tables of a reaction keep an identifier on one line", async ({ 
 
 test("the reactants of the repressilator keep an identifier on one line", async ({ page }) => {
   await openExample(page, "BIOMD0000000012");
-  await page.getByTestId("search-input").fill("Reaction1");
+  await search(page, "Reaction1");
   await page.getByTestId("table-Reaction").locator("tbody tr[data-pk]").first().click();
   await expect(page.getByTestId("inspector-id")).toHaveText("Reaction1");
   expect(await wrappedCells(page.getByTestId("attributes-column"))).toEqual([]);
@@ -130,7 +130,7 @@ test("the local parameters of a kinetic law keep an identifier on one line", asy
 
 test("every label of the inspector fits its column", async ({ page }) => {
   await openExample(page, "e_coli_core (e_coli_core.xml.gz)");
-  await page.getByTestId("search-input").fill("R_BIOMASS_Ecoli_core_w_GAM");
+  await search(page, "R_BIOMASS_Ecoli_core_w_GAM");
   await page.getByTestId("table-Reaction").locator("tbody tr[data-pk]").first().click();
   const column = page.getByTestId("attributes-column");
   // `fbc:geneProductAssociation` is the longest label of a row which has its value next to it
@@ -165,7 +165,7 @@ test("the type bar wraps its entries instead of cutting them off or scrolling", 
   ).toBeLessThanOrEqual(0);
 });
 
-test("the type bar lists the types the model uses and the inspector is left of the tables", async ({
+test("the type bar lists the types the model uses and the inspector is right of the tables", async ({
   page,
 }) => {
   await openExample(page, "BIOMD0000000012");
@@ -175,13 +175,14 @@ test("the type bar lists the types the model uses and the inspector is left of t
   await expect(bar.getByTestId("bar-type-FunctionDefinition")).toHaveCount(0);
   await expect(bar.getByTestId("bar-type-Event")).toHaveCount(0);
 
-  // the inspector opens at the left of the tables, at about a third of the window
+  // the inspector opens at the right of the tables, at about a third of the window
   await page.getByTestId("table-Species").locator("tbody tr[data-pk]").first().click();
   const tables = (await page.getByTestId("tables").boundingBox())!;
   const inspector = (await page.getByTestId("inspector").boundingBox())!;
-  expect(inspector.x).toBe(0);
-  expect(tables.x).toBeGreaterThanOrEqual(inspector.x + inspector.width);
   const window = page.viewportSize()!;
+  expect(tables.x).toBe(0);
+  expect(inspector.x).toBeGreaterThanOrEqual(tables.x + tables.width);
+  expect(inspector.x + inspector.width).toBe(window.width);
   expect(inspector.width).toBeGreaterThan(window.width / 4);
   expect(inspector.width).toBeLessThan(window.width / 2);
 
