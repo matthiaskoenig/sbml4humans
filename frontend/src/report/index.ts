@@ -13,8 +13,10 @@ import type {
   SBase,
   UncertMeasure,
   Uncertainty,
+  ValidationIssue,
 } from "@/api/types";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
+import { bySeverity, worse, type Severity } from "@/report/validation";
 
 /** The edge kinds of a participation: a reaction links to every reactant, product and modifier
  * it lists, and each of those links to its species with the same kind. */
@@ -63,6 +65,12 @@ export class ReportIndex {
   private readonly incomingAcross = new Map<string, CrossEdge[]>();
   private entries: ReadonlyMap<string, ReportIndex> = new Map();
   private readonly byModel = new Map<string, Map<ElementType, SbmlElement[]>>();
+  /** The issues of the validation of the document, in the order of libsbml. */
+  readonly issues: readonly ValidationIssue[];
+  private readonly issuesByPk = new Map<string, ValidationIssue[]>();
+  private readonly worstByPk = new Map<string, Severity>();
+  /** The number of issues of each severity. */
+  readonly issueCounts: Record<Severity, number> = { error: 0, warning: 0, info: 0 };
 
   constructor(report: Report, location: string | null = null) {
     this.report = report;
@@ -88,6 +96,12 @@ export class ReportIndex {
       }
       push(this.outgoing, edge.source, edge);
       push(this.incoming, edge.target, edge);
+    }
+    this.issues = report.validation ?? [];
+    for (const issue of this.issues) {
+      push(this.issuesByPk, issue.pk, issue);
+      this.worstByPk.set(issue.pk, worse(this.worstByPk.get(issue.pk) ?? null, issue.severity));
+      this.issueCounts[issue.severity] += 1;
     }
   }
 
@@ -117,6 +131,25 @@ export class ReportIndex {
   entry(location: string | null | undefined): ReportIndex | null {
     if (!location || location === this.location) return this;
     return this.entries.get(location) ?? null;
+  }
+
+  /** The issues of an element, errors first. */
+  issuesOf(pk: string): ValidationIssue[] {
+    return bySeverity(this.issuesByPk.get(pk) ?? []);
+  }
+
+  /** The worst severity of the issues of an element, null without one. */
+  worstSeverity(pk: string): Severity | null {
+    return this.worstByPk.get(pk) ?? null;
+  }
+
+  /** The worst severity of the elements of a type in every model of the entry. */
+  worstSeverityOfType(type: ElementType): Severity | null {
+    let worst: Severity | null = null;
+    for (const [pk, severity] of this.worstByPk) {
+      if (this.elements.get(pk)?.sbmlType === type) worst = worse(worst, severity);
+    }
+    return worst;
   }
 
   get document(): SBMLDocument {

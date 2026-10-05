@@ -14,6 +14,7 @@ const compDeletion = new ReportIndex(loadReport("comp_deletion"));
 const fbcConstraints = new ReportIndex(loadReport("fbc_constraints_v3"));
 const fbcBounds = new ReportIndex(loadReport("fbc_bounds_v1"));
 const listOf = new ReportIndex(loadReport("list_of"));
+const validation = new ReportIndex(loadReport("validation"));
 
 const FIXTURE_NAMES: FixtureName[] = [
   "repressilator",
@@ -35,6 +36,21 @@ function allReportIndexes(): ReportIndex[] {
 }
 
 describe("ReportIndex", () => {
+  it("looks up the issues of an element and of a type", () => {
+    const k1 = validation.mainModel?.listOfParameters?.find((p) => p.id === "k1");
+    expect(k1).toBeDefined();
+    expect(validation.issuesOf(k1!.pk).map((i) => i.rule)).toEqual(
+      expect.arrayContaining([10703, 20702]),
+    );
+    expect(validation.worstSeverity(k1!.pk)).toBe("warning");
+    expect(validation.worstSeverity(validation.mainModel!.pk)).toBe("error");
+    expect(validation.issueCounts.error).toBe(1);
+    expect(validation.issueCounts.warning).toBeGreaterThan(3);
+    expect(validation.worstSeverityOfType("Parameter")).toBe("warning");
+    expect(validation.worstSeverityOfType("Species")).toBeNull();
+    expect(repressilator.issuesOf(repressilator.document.pk)).toEqual([]);
+  });
+
   it("indexes the document, the models and every element by pk", () => {
     expect(repressilator.get(repressilator.document.pk)?.sbmlType).toBe("SBMLDocument");
     const model = repressilator.mainModel;
