@@ -8,6 +8,14 @@
 access_log /var/www/logs/sbml4humans.de_access.log;
 error_log /var/www/logs/sbml4humans.de_error.log;
 
+# The validations of one client, keyed by its address: the backend admits a few validations at a
+# time for everyone (a running validation may take 60 s), so that one client cannot keep the
+# admission busy for all others, it may have 2 validation requests open at a time and start 12 a
+# minute, a burst of 12 at once. A request beyond is answered 429, which the frontend shows as busy.
+# This proxy sees the address of the client; the nginx container behind it sees this proxy alone.
+limit_req_zone $binary_remote_addr zone=sbml4humans_validation_rate:10m rate=12r/m;
+limit_conn_zone $binary_remote_addr zone=sbml4humans_validation_open:10m;
+
 server {
     listen 80;
     listen [::]:80;
@@ -60,17 +68,28 @@ server {
     proxy_read_timeout          900;
     send_timeout                900;
 
+    # http/1.1 to the container, whose gzip compresses http/1.1 requests only; the compressed
+    # responses and their Cache-Control pass through unchanged. Every location inherits these.
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto https;
+    port_in_redirect off;
+
     location / {
         # denbi-cloud: node2, the nginx container of docker-compose-production.yml
         proxy_pass http://192.168.0.132:8084;
-        # http/1.1 to the container, whose gzip compresses http/1.1 requests only; the
-        # compressed responses and their Cache-Control pass through unchanged
-        proxy_http_version 1.1;
-        proxy_set_header Connection "";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto https;
-        port_in_redirect off;
+    }
+
+    # the validations, limited per client (the zones at the top); with http/2 every request
+    # counts as a connection of limit_conn
+    location /api/validation/ {
+        limit_req zone=sbml4humans_validation_rate burst=12 nodelay;
+        limit_req_status 429;
+        limit_conn sbml4humans_validation_open 2;
+        limit_conn_status 429;
+        proxy_pass http://192.168.0.132:8084;
     }
 }

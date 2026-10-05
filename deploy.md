@@ -6,7 +6,7 @@ SBML4Humans is deployed as docker containers behind a proxy server: the proxy te
 
 Log in to the proxy server `denbi-head`.
 
-The configuration of the site is `nginx/sbml4humans.de` of the repository, which proxies to the server the containers run on. It includes two snippets of the repository: `nginx/ssl.conf`, the TLS settings (TLS 1.2 and 1.3 only), and `nginx/security-headers.conf`, the security headers and the Content-Security-Policy of the frontend. Update the IP of the server the containers run on in the configuration before you copy it, then copy the snippets, activate the site, test the configuration and reload nginx:
+The configuration of the site is `nginx/sbml4humans.de` of the repository, which proxies to the server the containers run on. It includes two snippets of the repository: `nginx/ssl.conf`, the TLS settings (TLS 1.2 and 1.3 only), and `nginx/security-headers.conf`, the security headers and the Content-Security-Policy of the frontend. Update the IP of the server the containers run on in the configuration before you copy it (both `proxy_pass` directives), then copy the snippets, activate the site, test the configuration and reload nginx:
 
 ```bash
 sudo cp <repo>/nginx/sbml4humans.de /etc/nginx/sites-available/sbml4humans.de
@@ -20,6 +20,8 @@ sudo systemctl reload nginx
 `/etc/nginx/snippets/ssl.conf` may be included by other sites of the proxy; it no longer sets `Strict-Transport-Security`, a site which relied on it has to set the header itself.
 
 The Content-Security-Policy allows exactly what the built frontend loads: its own scripts, styles and fonts, the api on the same origin, images of the notes of a model from any https url and Google Analytics. When the frontend starts to load anything from another origin, extend the policy in `nginx/security-headers.conf`, otherwise the browser blocks it and logs the violation in the console.
+
+The validations are limited per client by the proxy, keyed by the address of the client: the backend admits a few validations at a time for everyone (each may run 60 seconds, see the containers below), so that one client cannot keep that admission busy for all others, `location /api/validation/` allows a client 2 open validation requests at a time (`limit_conn`, with http/2 every request counts) and 12 a minute with a burst of 12 (`limit_req`). A request beyond is answered `429 Too Many Requests` by nginx, which the frontend shows as busy, like the busy answer of the backend. The zones (`limit_req_zone`, `limit_conn_zone`) are at the top of the configuration, in the `http` context the site is included in, and carry the prefix `sbml4humans_` so that they do not clash with the zones of other sites of the proxy. The limits belong to this proxy: the nginx container behind it sees the address of the proxy alone. The local server of `sbml4humans.show` (`/api/local/`) is not behind a proxy and not limited. To see the limits work, `grep -c '" 429 ' /var/www/logs/sbml4humans.de_access.log` counts the refused requests.
 
 ### Certificates
 
