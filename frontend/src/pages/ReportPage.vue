@@ -191,22 +191,23 @@ watch([selectedPk, index], ([pk, current]) => {
     <!-- the bar is about the tables, and on a narrow window the inspector stands in their place:
     it gives its rows to the element which is read -->
     <TypeBar v-show="!(narrow && selectedPk)" :index="index" :model="model" :counts="counts" />
-    <!-- the inspector is the first pane: the element which is read stands at the left, where a
-    reader begins, and the tables it was selected in keep the rest of the window -->
+    <!-- the inspector is the second pane: the tables a reader selects in stand at the left, where
+    a reader begins, and the element which is read opens at the right of them, the side a panel
+    of details takes in most applications -->
     <SplitPane
       v-if="!narrow"
       direction="horizontal"
       storage-key="inspector-width"
       :initial="INSPECTOR_WIDTH"
       :min="INSPECTOR_MIN"
-      sized-pane="first"
+      sized-pane="second"
       :collapsed="!selectedPk"
     >
       <template #first>
-        <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
+        <ReportTables :sections="visibleSections" :empty-message="emptyMessage" />
       </template>
       <template #second>
-        <ReportTables :sections="visibleSections" :empty-message="emptyMessage" />
+        <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
       </template>
     </SplitPane>
     <!-- a narrow window has no room for the two next to each other: the tables are the page, and

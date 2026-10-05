@@ -15,6 +15,14 @@ export async function openExample(page: Page, id: string, timeout = 30_000): Pro
   await expect(page.getByTestId("report-page")).toBeVisible({ timeout });
 }
 
+/** Search the report and wait until the search is applied. The search box applies what is typed
+ * after a short pause, and the tables shrink to the matches then: a click in that pause lands on
+ * the row which the shrinking tables move under the pointer. */
+export async function search(page: Page, text: string): Promise<void> {
+  await page.getByTestId("search-input").fill(text);
+  await expect.poll(() => query(page, "q")).toBe(text);
+}
+
 export function query(page: Page, key: string): string | null {
   return new URL(page.url()).searchParams.get(key);
 }

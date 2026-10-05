@@ -26,3 +26,6 @@ site/
 
 # brainstorming sessions of the superpowers plugin
 .superpowers/
+
+# prototypes of the user interface, reviewed with lavish-axi
+.lavish/
