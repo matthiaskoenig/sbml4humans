@@ -7,6 +7,7 @@ import threading
 import time
 from collections.abc import Iterator
 
+import httpx
 import pytest
 
 from sbml4humans import download as download_module
@@ -71,6 +72,14 @@ class _Handler(http.server.BaseHTTPRequestHandler):
                 self.wfile.write(b"x" * 10)
                 self.wfile.flush()
                 time.sleep(0.1)
+        elif self.path == "/stall":
+            # the headers and a part of the body, then nothing for a long time
+            self.send_response(200)
+            self.send_header("Content-Length", "100")
+            self.end_headers()
+            self.wfile.write(b"x" * 10)
+            self.wfile.flush()
+            time.sleep(3)
         else:
             self._send(404, b"not found")
 
@@ -269,6 +278,58 @@ def test_the_time_is_limited(
     monkeypatch.setattr(limits, "DOWNLOAD_TIMEOUT", 0.3)
     with pytest.raises(DownloadTimeoutError):
         download(f"http://{PUBLIC_HOST}:{server}/slow")
+
+
+def test_a_stalled_server_ends_at_the_deadline(
+    server: int, resolved: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A read which waits for the server ends at the deadline, not after its step."""
+    monkeypatch.setattr(limits, "DOWNLOAD_TIMEOUT", 0.5)
+    monkeypatch.setattr(limits, "DOWNLOAD_STEP_TIMEOUT", 30.0)
+    start = time.monotonic()
+    with pytest.raises(DownloadTimeoutError):
+        download(f"http://{PUBLIC_HOST}:{server}/stall")
+    assert time.monotonic() - start < 1.5
+
+
+@pytest.fixture
+def hanging_resolver(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """A name resolution which does not answer until the test has ended."""
+    released = threading.Event()
+
+    def resolve(host: str, port: int) -> list[IPAddress]:
+        released.wait(30)
+        return [ipaddress.ip_address("93.184.215.14")]
+
+    monkeypatch.setattr(download_module, "resolve", resolve)
+    yield
+    released.set()
+
+
+@pytest.mark.usefixtures("hanging_resolver")
+def test_a_hanging_name_resolution_ends_at_the_deadline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The name resolution has no timeout of its own, the deadline bounds it."""
+    monkeypatch.setattr(limits, "DOWNLOAD_TIMEOUT", 0.5)
+    monkeypatch.setattr(limits, "DOWNLOAD_STEP_TIMEOUT", 30.0)
+    start = time.monotonic()
+    with pytest.raises(DownloadTimeoutError):
+        download(f"http://{PUBLIC_HOST}/model")
+    assert time.monotonic() - start < 1.5
+
+
+@pytest.mark.usefixtures("hanging_resolver")
+def test_a_hanging_name_resolution_ends_after_its_step(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The name resolution is a step, which ends after the step timeout."""
+    monkeypatch.setattr(limits, "DOWNLOAD_TIMEOUT", 30.0)
+    monkeypatch.setattr(limits, "DOWNLOAD_STEP_TIMEOUT", 0.5)
+    start = time.monotonic()
+    with pytest.raises(httpx.ConnectTimeout, match="name resolution"):
+        download(f"http://{PUBLIC_HOST}/model")
+    assert time.monotonic() - start < 1.5
 
 
 def test_an_error_status_fails(server: int, resolved: list[str]) -> None:
