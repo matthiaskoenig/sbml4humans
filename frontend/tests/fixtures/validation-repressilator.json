@@ -1,0 +1,379 @@
+{
+  "entries": {
+    "./BIOMD0000000012_url.xml": {
+      "issues": [
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'tau_mRNA / log(2)' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 528,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:t_ave"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'tau_mRNA / tau_prot' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 540,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:beta"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'eff / t_ave' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 549,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:k_tl"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression '(ps_a - ps_0) * 60' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 558,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:a_tr"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'ps_0 * 60' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 571,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:a0_tr"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'log(2) / tau_prot' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 580,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:kd_prot"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'log(2) / tau_mRNA' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 592,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:kd_mRNA"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'a_tr * eff * tau_prot / (log(2) * KM)' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 604,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:alpha"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <assignmentRule> <math> expression 'a0_tr * eff * tau_prot / (log(2) * KM)' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 625,
+          "column": 6,
+          "pk": "BIOMD0000000012/AssignmentRule:alpha0"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'kd_mRNA * X' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 664,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_420986"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'kd_mRNA * Y' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 690,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421012"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'kd_mRNA * Z' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 716,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421038"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'k_tl * X' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 745,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421076"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'k_tl * Y' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 774,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421112"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'k_tl * Z' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 803,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421148"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'kd_prot * PX' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 829,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421172"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'kd_prot * PY' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 855,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421196"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'kd_prot * PZ' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 881,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421220"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'a0_tr + a_tr * pow(KM, n) / (pow(KM, n) + pow(PZ, n))' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 910,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421256"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'a0_tr + a_tr * pow(KM, n) / (pow(KM, n) + pow(PX, n))' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 963,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421292"
+        },
+        {
+          "rule": 99505,
+          "severity": "warning",
+          "category": "SBML unit consistency",
+          "shortMessage": "Missing unit declarations on parameters or literal numbers in expression",
+          "message": "In situations where a mathematical expression contains literal numbers or parameters whose units have not been declared, it is not possible to verify accurately the consistency of the units in the expression. \n The units of the <kineticLaw> <math> expression 'a0_tr + a_tr * pow(KM, n) / (pow(KM, n) + pow(PY, n))' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
+          "line": 1016,
+          "column": 8,
+          "pk": "BIOMD0000000012/KineticLaw:_421329"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'beta' does not have a 'units' attribute.",
+          "line": 445,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:beta"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'alpha0' does not have a 'units' attribute.",
+          "line": 451,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:alpha0"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'alpha' does not have a 'units' attribute.",
+          "line": 457,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:alpha"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'eff' does not have a 'units' attribute.",
+          "line": 463,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:eff"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'n' does not have a 'units' attribute.",
+          "line": 469,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:n"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'KM' does not have a 'units' attribute.",
+          "line": 475,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:KM"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'tau_mRNA' does not have a 'units' attribute.",
+          "line": 481,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:tau_mRNA"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'tau_prot' does not have a 'units' attribute.",
+          "line": 482,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:tau_prot"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 't_ave' does not have a 'units' attribute.",
+          "line": 483,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:t_ave"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'kd_mRNA' does not have a 'units' attribute.",
+          "line": 484,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:kd_mRNA"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'kd_prot' does not have a 'units' attribute.",
+          "line": 490,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:kd_prot"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'k_tl' does not have a 'units' attribute.",
+          "line": 496,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:k_tl"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'a_tr' does not have a 'units' attribute.",
+          "line": 502,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:a_tr"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'ps_a' does not have a 'units' attribute.",
+          "line": 508,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:ps_a"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'ps_0' does not have a 'units' attribute.",
+          "line": 514,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:ps_0"
+        },
+        {
+          "rule": 80701,
+          "severity": "warning",
+          "category": "Modeling practice",
+          "shortMessage": "It's best to declare units for every parameter in a model",
+          "message": "As a principle of best modeling practice, the units of a <parameter> should be declared rather than be left undefined. Doing so improves the ability of software to check the consistency of units and helps make it easier to detect potential errors in models.\n The <parameter> with the id 'a0_tr' does not have a 'units' attribute.",
+          "line": 520,
+          "column": 6,
+          "pk": "BIOMD0000000012/Parameter:a0_tr"
+        }
+      ],
+      "skipped": null
+    }
+  }
+}

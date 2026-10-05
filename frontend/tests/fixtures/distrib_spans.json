@@ -1,5 +1,5 @@
 {
-  "uid": "6d3e7dc349b746939f89cead39e63ac7",
+  "uid": "4756f84176144ffe80b18718b2e47fe1",
   "manifest": {
     "entries": [
       {
@@ -1409,9 +1409,7 @@
               "targetEntry": null
             }
           ]
-        },
-        "validation": [],
-        "validationSkipped": null
+        }
       },
       "debug": {
         "jsonReportTime": "0.006 [s]"

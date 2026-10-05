@@ -1,5 +1,5 @@
 {
-  "uid": "167ab16913174d06839f85eccf7bad4f",
+  "uid": "cb105aaa45cf472a9e65c73f545d82c8",
   "manifest": {
     "entries": [
       {
@@ -464,40 +464,7 @@
               "targetEntry": null
             }
           ]
-        },
-        "validation": [
-          {
-            "rule": 1090106,
-            "severity": "warning",
-            "category": "SBML component consistency",
-            "shortMessage": "Line numbers unreliable.",
-            "message": "Due to the need to instantiate models, modelDefinitions, submodels etc. for the purposes of validation it is problematic to reliably report line numbers when performing validation on models using the Hierarchical Model Composition package.",
-            "line": 1,
-            "column": 1,
-            "pk": "document/SBMLDocument:document"
-          },
-          {
-            "rule": 99508,
-            "severity": "warning",
-            "category": "SBML unit consistency",
-            "shortMessage": "Unable to verify consistency of units: encountered a model entity with no declared units",
-            "message": "In situations where a mathematical expression refers to a compartment, species or parameter, it is necessary to know the units of the object to establish unit consistency. In models where the units of an object have not been declared, libSBML does not yet have the functionality to accurately verify the consistency of the units in mathematical expressions referring to that object. \n The units of the <species> 'A' cannot be fully checked. Unit consistency reported as either no errors or further unit errors related to this object may not be accurate.",
-            "line": 92,
-            "column": 8,
-            "pk": "m1/Species:A"
-          },
-          {
-            "rule": 20616,
-            "severity": "warning",
-            "category": "SBML unit consistency",
-            "shortMessage": "No substance units defined for the species",
-            "message": "If the attribute 'substanceUnits' in a Species object has not been set, then the unit of measurement associated with the species' quantity is determined by the value of the enclosing Model object's 'substanceUnits' attribute. If neither the Species object's 'substanceUnits' attribute nor the enclosing Model object's 'substanceUnits' attribute are set, then the unit of that species' quantity is undefined.\nReference: L3V1 Section 4.6.5\n The <species> with id 'A' does not have a substanceUnits attribute, nor does its enclosing <model>.",
-            "line": 92,
-            "column": 8,
-            "pk": "m1/Species:A"
-          }
-        ],
-        "validationSkipped": null
+        }
       },
       "debug": {
         "jsonReportTime": "0.002 [s]"
