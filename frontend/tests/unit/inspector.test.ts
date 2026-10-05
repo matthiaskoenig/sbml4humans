@@ -97,21 +97,33 @@ describe("inspector", () => {
     }
   });
 
-  // one mount per element of all fixtures, which takes more than the default 5 s on the
-  // GitHub runner while the other test files run in parallel
-  it("renders the attributes of every element of the fixtures without error", async () => {
-    await router.push("/examples/x");
-    let rendered = 0;
-    for (const index of indexes) {
-      for (const element of index.elements.values()) {
+  // one mount per element of all fixtures, one test per type of a fixture: all of them in one
+  // test is tens of seconds on a loaded machine
+  const byFixtureAndType = fixtures.flatMap((name, k) => {
+    const byType = new Map<string, SBase[]>();
+    for (const element of indexes[k]!.elements.values()) {
+      const type = element.sbmlType ?? "SBase";
+      byType.set(type, [...(byType.get(type) ?? []), element]);
+    }
+    return [...byType].map(
+      ([type, elements]) => [`${name} ${type}`, indexes[k]!, elements] as const,
+    );
+  });
+  it.each(byFixtureAndType)(
+    "renders the attributes of every element of %s without error",
+    async (_, index, elements) => {
+      await router.push("/examples/x");
+      for (const element of elements) {
         const wrapper = mountWith(AttributesColumn, { element }, index);
         expect(wrapper.find("[data-testid=attributes-column]").exists()).toBe(true);
         wrapper.unmount();
-        rendered += 1;
       }
-    }
-    expect(rendered).toBeGreaterThan(300);
-  }, 30_000);
+    },
+  );
+
+  it("renders the attributes of more than 300 elements across the fixtures", () => {
+    expect(indexes.reduce((count, index) => count + index.elements.size, 0)).toBeGreaterThan(300);
+  });
 
   it("shows the species attributes with a compartment link", async () => {
     await router.push("/examples/BIOMD0000000012");

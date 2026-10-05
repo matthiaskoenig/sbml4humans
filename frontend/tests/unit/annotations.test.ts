@@ -365,16 +365,19 @@ describe("annotations", () => {
 
   it("shows the first 50 terms of an element and requests at most MAX_AUTO_RESOLVES resources", async () => {
     vi.mocked(client.getAnnotationResource).mockResolvedValue(info);
-    const cvterms = Array.from({ length: 200 }, (_, i) => ({
+    // the 50 terms shown have more resources than the budget, and a term beyond them is hidden;
+    // as few resources as that takes, every card is time the test spends rendering
+    const perTerm = Math.ceil(MAX_AUTO_RESOLVES / 50) + 1;
+    const cvterms = Array.from({ length: 51 }, (_, i) => ({
       qualifier: "BQB_IS",
-      resources: Array.from({ length: 50 }, (_, j) => `urn:term${i}:${j}`),
+      resources: Array.from({ length: perTerm }, (_, j) => `urn:term${i}:${j}`),
     }));
     const wrapper = mount(CvTermList, { props: { cvterms } });
     await flushPromises();
     expect(wrapper.findAll("[data-testid=cvterm]")).toHaveLength(50);
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(MAX_AUTO_RESOLVES);
     expect(wrapper.get("[data-testid=resolve-all]").text()).toBe(
-      `resolve all (${50 * 50 - MAX_AUTO_RESOLVES})`,
+      `resolve all (${50 * perTerm - MAX_AUTO_RESOLVES})`,
     );
   });
 
