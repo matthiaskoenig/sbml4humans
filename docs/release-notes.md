@@ -2,6 +2,19 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.11.1
+
+The XML of an element reads like the file in an editor: it is highlighted and stays inside the inspector, however long its lines are.
+
+### The inspector
+- the XML view is highlighted: the names of the elements and the values of the attributes in colour, the text of an element in bold, the punctuation, comments and other markup quiet ([#107](https://github.com/matthiaskoenig/sbml4humans/issues/107))
+- a line longer than the inspector is wide wraps inside it, between the attributes or after a `/`, `#`, `?` or `&` of a url, and its continuation is indented below the start of its line, so that the nesting stays readable; a selection of the XML copies it with its indentation
+- the "Copy" button stands above the XML next to its caption and no longer covers the end of the first line
+
+### Development
+- `frontend/src/report/xml.ts` splits the XML into its tokens in one pass, without a regular expression which could backtrack, and is unit tested on malformed input and on its running time
+- the api of the backend and the data model of the report did not change: the release is the frontend and its documentation
+
 ## 0.11.0
 
 A report says what is wrong with a model: the errors and warnings of the validation of libsbml stand next to the elements they concern, and they arrive after the report, which appears as fast as before.
