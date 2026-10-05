@@ -304,13 +304,17 @@ def _child(
     reads after the end of the child, together with the traceback of python
     `faulthandler` writes when the child ends by a fatal signal.
     """
-    sys.stderr.flush()
+    if (
+        sys.stderr is not None
+    ):  # None in a child of a parent without a console (pythonw)
+        sys.stderr.flush()
     stderr = os.open(
         os.path.join(tempdir, _STDERR), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600
     )
     os.dup2(stderr, 2)
     os.close(stderr)
-    faulthandler.enable()
+    # an explicit file: without one faulthandler needs sys.stderr, which may be None
+    faulthandler.enable(file=os.fdopen(2, "w", closefd=False))
     tempfile.tempdir = tempdir
     for variable in ("TMPDIR", "TEMP", "TMP"):
         os.environ[variable] = tempdir

@@ -12,7 +12,8 @@ export function chunkSize(code: string): number {
 }
 
 /** A plugin which fails the build when a JavaScript chunk is larger than `limit` kB, naming every
- * such chunk and its size. */
+ * such chunk and its size. Only JavaScript chunks are checked, not assets such as the json of the
+ * glossary details. */
 export function chunkSizeLimit(limit: number = CHUNK_SIZE_LIMIT): Plugin {
   return {
     name: "sbml4humans:chunk-size-limit",
