@@ -27,6 +27,8 @@ shown before its validation has ended. The validation runs in a child process
 bounded in time and memory (`isolation.py`), waited for in a thread of its own
 (`validation_limiter`), so that it never holds a thread of the other endpoints;
 a validation beyond the admission of the server is answered at once as busy.
+A validation whose client disconnects is cancelled (`run_validation`): its
+child is killed and its admission freed at once.
 The validation of an example is kept (`example_validations`) unless a limit
 ended it.
 
@@ -50,7 +52,7 @@ from datetime import datetime
 from functools import lru_cache
 from typing import Annotated, Any
 
-from anyio import CapacityLimiter, to_thread
+from anyio import CapacityLimiter, create_task_group, to_thread
 from anyio.lowlevel import RunVar
 from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
@@ -484,18 +486,57 @@ def validation_limiter() -> CapacityLimiter:
 
 
 async def run_validation(
-    function: Callable[..., ValidationResponse], *args: Any
+    request: Request, function: Callable[..., ValidationResponse], *args: Any
 ) -> ValidationResponse:
     """Validate in a thread of the validations, if the server admits it.
 
     A validation beyond `isolation.admission_capacity()` is answered at once as
-    busy, without an entry, and never holds a thread of the other endpoints.
+    busy, without an entry, and never holds a thread of the other endpoints. A
+    validation whose client disconnects is cancelled: it stops waiting for a
+    child or its child is killed, and its admission is free again; it answers
+    busy, which nobody reads.
     """
     with isolation.admission() as admitted:
         if not admitted:
             logger.warning("a validation was refused, the server is busy")
             return ValidationResponse(skipped="busy")
-        return await to_thread.run_sync(function, *args, limiter=validation_limiter())
+        cancel = threading.Event()
+        validation: ValidationResponse | None = None
+        failure: Exception | None = None
+        async with create_task_group() as group:
+            group.start_soon(_cancel_on_disconnect, request, cancel)
+            try:
+                validation = await to_thread.run_sync(
+                    isolation.run_cancellable,
+                    cancel,
+                    function,
+                    *args,
+                    limiter=validation_limiter(),
+                )
+            except isolation.ValidationCancelledError:
+                logger.info("a validation was cancelled, its client disconnected")
+                validation = ValidationResponse(skipped="busy")
+            except Exception as exc:
+                # raised outside of the task group, which would wrap it in an
+                # exception group
+                failure = exc
+            finally:
+                group.cancel_scope.cancel()
+        if failure is not None:
+            raise failure
+        assert validation is not None
+        return validation
+
+
+async def _cancel_on_disconnect(request: Request, cancel: threading.Event) -> None:
+    """Set `cancel` when the client of the request disconnects.
+
+    The body of the request has been read, so the next message of the
+    connection is its end.
+    """
+    while (await request.receive())["type"] != "http.disconnect":
+        pass
+    cancel.set()
 
 
 @api.get(
@@ -504,7 +545,9 @@ async def run_validation(
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-async def validation_of_example(example_id: str) -> ValidationResponse:
+async def validation_of_example(
+    example_id: str, request: Request
+) -> ValidationResponse:
     """The validation of an example, kept after the first request for it."""
     validation = example_validations.get(example_id)
     if validation is not None:
@@ -512,7 +555,7 @@ async def validation_of_example(example_id: str) -> ValidationResponse:
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    validation = await run_validation(validation_for_example, example)
+    validation = await run_validation(request, validation_for_example, example)
     example_validations.put(example_id, validation)
     return validation
 
@@ -523,9 +566,11 @@ async def validation_of_example(example_id: str) -> ValidationResponse:
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-async def validation_of_file(source: UploadFile) -> ValidationResponse:
+async def validation_of_file(
+    source: UploadFile, request: Request
+) -> ValidationResponse:
     """Validate an uploaded SBML file or COMBINE archive."""
-    return await run_validation(validation_for_bytes, await source.read())
+    return await run_validation(request, validation_for_bytes, await source.read())
 
 
 @api.get(
@@ -534,13 +579,13 @@ async def validation_of_file(source: UploadFile) -> ValidationResponse:
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-async def validation_of_url(url: str) -> ValidationResponse:
+async def validation_of_url(url: str, request: Request) -> ValidationResponse:
     """Validate an SBML file or COMBINE archive behind a url.
 
     The validation is admitted before the download, a busy server downloads
     nothing.
     """
-    return await run_validation(validation_of_download, url)
+    return await run_validation(request, validation_of_download, url)
 
 
 def validation_of_download(url: str) -> ValidationResponse:
@@ -556,7 +601,7 @@ def validation_of_download(url: str) -> ValidationResponse:
 )
 async def validation_of_content(request: Request) -> ValidationResponse:
     """Validate the SBML content in the request body."""
-    return await run_validation(validation_for_bytes, await request.body())
+    return await run_validation(request, validation_for_bytes, await request.body())
 
 
 @api.get(
@@ -566,11 +611,13 @@ async def validation_of_content(request: Request) -> ValidationResponse:
     response_model_by_alias=True,
 )
 async def validation_of_upload(
-    upload_id: str, store: Annotated[UploadStore, Depends(upload_store)]
+    upload_id: str,
+    store: Annotated[UploadStore, Depends(upload_store)],
+    request: Request,
 ) -> ValidationResponse:
     """Validate an upload."""
     content = await run_in_threadpool(store.get, upload_id)
-    return await run_validation(validation_for_bytes, content)
+    return await run_validation(request, validation_for_bytes, content)
 
 
 @api.get(

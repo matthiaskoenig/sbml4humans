@@ -51,6 +51,10 @@ nothing of the content on the server. The cpu time of a child is limited to
 twice the timeout, so that a child ends itself also when its server died
 without ending it.
 
+A validation is cancelled when nobody waits for it any more, its client left
+(`run_cancellable`): it stops waiting for a child, or its child is killed, at
+once, which frees the child, the admission and the temporary directory.
+
 The python interface runs the same server on the machine of the user: where
 there is no forkserver (Windows) a child is spawned, a fresh interpreter which
 imports the validation itself, and where the address space cannot be limited
@@ -71,6 +75,7 @@ import time
 import traceback
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from multiprocessing.connection import Connection
 from multiprocessing.process import BaseProcess
@@ -107,6 +112,8 @@ MAX_CONCURRENT_VALIDATIONS = _concurrent_validations()
 MAX_WAITING_VALIDATIONS = 2 * MAX_CONCURRENT_VALIDATIONS
 # the time a child has at least, a validation which got a child later is busy
 MIN_CHILD_TIME = 1.0
+# the interval in which a waiting validation looks whether it was cancelled, s
+CANCEL_INTERVAL = 0.1
 
 Interruption = Literal["timeout", "memory", "busy", "crashed"]
 
@@ -130,9 +137,43 @@ _BAD_ALLOC = (
     "uncaught exception of type std::bad_alloc",
 )
 
+# the cancellation of the validation of this thread, None where none can cancel
+_CANCEL: ContextVar[threading.Event | None] = ContextVar("cancel", default=None)
+
 _SEMAPHORES: dict[int, threading.BoundedSemaphore] = {}
 _LOCK = threading.Lock()
 _admitted = 0
+
+
+class ValidationCancelledError(Exception):
+    """Raised by a validation which was cancelled, nobody waits for it any more."""
+
+
+def run_cancellable[R](
+    cancel: threading.Event, function: Callable[..., R], *args: Any
+) -> R:
+    """Run a function whose `run_isolated` ends as soon as `cancel` is set.
+
+    Raises:
+        ValidationCancelledError: if `cancel` was set before the end.
+    """
+    token = _CANCEL.set(cancel)
+    try:
+        return function(*args)
+    finally:
+        _CANCEL.reset(token)
+
+
+def _check_cancelled() -> None:
+    """Raise if the validation of this thread was cancelled.
+
+    Raises:
+        ValidationCancelledError: if it was.
+    """
+    cancel = _CANCEL.get()
+    if cancel is not None and cancel.is_set():
+        logger.info("a validation was cancelled")
+        raise ValidationCancelledError
 
 
 @dataclass
@@ -343,6 +384,7 @@ def _communicate(
     """Start the child of `_run_child` and receive its results until it has ended.
 
     Raises:
+        ValidationCancelledError: if the validation was cancelled.
         Exception: the exception the function raised in the child.
     """
     run = IsolatedRun()
@@ -360,10 +402,14 @@ def _communicate(
     try:
         while True:
             remaining = deadline - time.monotonic()
-            if remaining <= 0 or not receiver.poll(remaining):
+            if remaining <= 0:
                 logger.warning("the validation was ended after its timeout")
                 run.interruption = "timeout"
                 break
+            if not receiver.poll(min(remaining, CANCEL_INTERVAL)):
+                # the child is killed below
+                _check_cancelled()
+                continue
             try:
                 message = receiver.recv()
             except EOFError:
@@ -441,13 +487,22 @@ def run_isolated(
         The results the function yielded, and why it stopped early if it did.
 
     Raises:
+        ValidationCancelledError: if the validation was cancelled
+            (`run_cancellable`), while it waited for a child or while its
+            child ran, which is killed.
         Exception: the exception the function raised in the child.
     """
     deadline = time.monotonic() + VALIDATION_TIMEOUT
+    _check_cancelled()
     semaphore = _semaphore()
-    if not semaphore.acquire(timeout=max(0.0, deadline - time.monotonic())):
-        logger.warning("no child was free for a validation before its timeout")
-        return IsolatedRun(interruption="busy")
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            logger.warning("no child was free for a validation before its timeout")
+            return IsolatedRun(interruption="busy")
+        if semaphore.acquire(timeout=min(remaining, CANCEL_INTERVAL)):
+            break
+        _check_cancelled()
     if deadline - time.monotonic() < MIN_CHILD_TIME:
         # a child which got next to no time would only run out of it
         semaphore.release()
