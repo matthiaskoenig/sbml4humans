@@ -22,7 +22,7 @@ Out: checks which libsbml does not enable by default, a choice of the categories
 
 ## 1. Backend
 
-**Validation.** `_Entry` validates the document after it is read: the issues are the read errors of libsbml followed by those of `doc.checkConsistency()`. A new module `validation.py` holds the validation and the mapping, so `report.py` and `sbmlinfo.py` only call it.
+**Validation.** Every entry is validated once all entries are read (`report._link`): the issues are the whole error log of the document after `doc.checkConsistency()`, which keeps the read errors before the issues of the check. libsbml checks in stages and stops after the first stage which finds an error, so a document with an identifier error shows no unit warnings; the documentation says so. A new module `validation.py` holds the validation and the mapping, so `report.py` and `sbmlinfo.py` only call it.
 
 - The severity of libsbml becomes `error` (`LIBSBML_SEV_ERROR`, `LIBSBML_SEV_FATAL`), `warning` or `info`.
 - `category` is `getCategoryAsString()`, `short_message` `getShortMessage()`, `message` `getMessage()` stripped; nothing of an issue is written by hand.
@@ -35,11 +35,12 @@ Out: checks which libsbml does not enable by default, a choice of the categories
 - An issue at line 0, before the first element, or of a document whose elements have no lines goes to the `SBMLDocument`. Every issue thus has a pk.
 - For a document which uses comp, libsbml instantiates the submodels for its checks and its line numbers are unreliable; libsbml says so with the warning 1090106, which stays in the list so the reader knows the mapping can be off.
 
-**Untrusted documents.** The comp validator resolves the `source` of an external model definition through the global `SBMLResolverRegistry` of libsbml, relative to the location of the document. For a report which is not `trusted` (upload, url, pasted content) validation must never read a file or a url which the content names.
+**External documents.** The comp validator resolves the `source` of an external model definition through the global `SBMLResolverRegistry` of libsbml. Probed on 2026-10-05: with the default file resolver it reads an absolute path a document names even when the document was read from a string, and turning a consistency category off does not stop it. Validation must never read a file or a url which the content names.
 
-- The implementation first establishes what libsbml resolves (an absolute path, a relative path, an `http` url) with a test per case.
-- If resolution can be confined for an untrusted report without touching the registry of other concurrent reports, comp validation stays on. Otherwise an untrusted report validates with the comp consistency category off (`setConsistencyChecks`), and the trusted reports keep it.
-- The tests show that an untrusted document whose external model definition names an existing absolute path or a url is validated without that file being read or that url requested.
+- At import, `validation.py` replaces the file resolver of the registry by `ReportResolver`, a subclass of `libsbml.SBMLResolver` (SWIG directors work). Outside of a validation it delegates to a kept `libsbml.SBMLFileResolver`, so libsbml behaves as before for every other caller.
+- During the validation of an entry a `ContextVar` holds the documents the report already read, keyed by the `source` of each external model definition of the entry as the report resolved it (`resolve_source`, the entries of the archive and, for a trusted file, the files next to it). `resolveUri(uri, base)` and `resolve(uri, base)` answer from that map only, with a clone of the document, and with `None` for every other source: validation sees exactly the documents the report sees, and never touches the file system or the network.
+- The validation therefore runs in `report._link`, once every entry is read, and not in `_Entry`.
+- The tests show that a document whose external model definition names an existing absolute path or a url is validated without that file being read (1090101 is reported), and that a source the report resolved validates without 1090101.
 
 **Model** (`model.py`, then the JSON schema, `npm run types`, `npm run fixtures`):
 
@@ -47,7 +48,7 @@ Out: checks which libsbml does not enable by default, a choice of the categories
 - `Severity`: `Literal["error", "warning", "info"]`
 - `Report.validation: list[ValidationIssue]`, in the order of libsbml.
 
-**Glossary.** `ValidationIssue`, its fields and `Severity` get entries in `glossary/report.toml`, labelled in plain words (they are what the report adds), so the frontend takes every name of the validation from the glossary. Regenerate and commit `glossary.json`, `glossary-details.json` and `docs/reference/`.
+**Glossary.** The glossary check covers the `SBase` types only, so the validation is explained by concepts of `glossary/report.toml`: `validation` (what is checked, the stages of libsbml, the mapping by line and its limit for comp), `validationRule`, `validationSeverity` (error, warning, info) and `validationCategory`. The frontend takes the heading of the inspector block, the labels and the tooltips of the list from them. Regenerate and commit `glossary.json`, `glossary-details.json` and `docs/reference/`.
 
 ## 2. Frontend
 
@@ -74,8 +75,9 @@ Unit consistency issues stay in the list, the grouping keeps each of their rules
 
 ## 3. Testing
 
-- Backend (`pytest`): the issues of `minimal_model_comp` (errors 1020615 and 1090101 on their elements, the 1090106 warning), of `comp_deletion` and of `reaction` (unit warnings on the compartment and the species); a valid example has no issues; the mapping with a synthetic document (an issue on the line of a nested element, two elements on one line, line 0); the untrusted resolution cases; duplicate issues are kept once.
-- Frontend: unit tests of the `ReportIndex` lookups; an e2e test which opens `minimal_model_comp`, checks the chips, clicks one, finds the list in the inspector of the document, expands a group, follows a link to the element and finds its validation block and the icon of its row.
+- A new example `validation.xml` (in `resources/examples/`, so it is in the examples list and in the fixtures as `validation`) with known issues: the error 10601 (overdetermined model) on the model and the warnings 10712 (compartment), 10703, 20702 and 99508 (parameter `k1`) and 99505 (assignment rule, kinetic law).
+- Backend (`pytest`): the issues of `validation.xml` on their elements, of `minimal_model_comp` (errors 1020615 and 1090101 on their elements, the 1090106 warning), of `comp_deletion` and of `reaction` (unit warnings on the compartment and the species); a valid example has no issues; the mapping with a synthetic document (an issue on the line of a nested element, two elements on one line, line 0); the untrusted resolution cases; duplicate issues are kept once.
+- Frontend: unit tests of the `ReportIndex` lookups; an e2e test which opens `validation`, checks the chips, clicks one, finds the list in the inspector of the document, expands a group, follows a link to the element and finds its validation block and the icon of its row.
 - Lint, `ty`, the glossary check, the schema check and the docs build pass.
 
 ## 4. Documentation and release
