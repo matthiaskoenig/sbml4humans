@@ -1138,6 +1138,28 @@ def test_an_abnormal_end_keeps_the_entries_validated_before(
         assert written[end] in caplog.text
 
 
+def _noisy(_: object) -> Iterator[tuple[str, int]]:
+    """Write much and control characters to the standard error, then end well."""
+    os.write(2, b"x" * 10_000 + b"\x1b[31m\r\nforged line\n" + b"the end")
+    yield "done", 1
+
+
+def test_the_standard_error_of_a_child_is_logged_escaped(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The log gets the end of what a child wrote, its control characters escaped."""
+    run = isolation.run_isolated(_noisy, None)
+    assert run.results == [("done", 1)]
+    [record] = [r for r in caplog.records if "wrote" in r.getMessage()]
+    message = record.getMessage()
+    assert "the end" in message
+    assert "\x1b" not in message
+    assert "\r" not in message
+    assert "\n" not in message
+    assert "\\x1b" in message
+    assert len(message) < 4096 + 200
+
+
 def _crash(job: SourceJob) -> Iterator[tuple[str, list[Any]]]:
     """End the child process by a signal no limit sends, before any result."""
     os.kill(os.getpid(), signal.SIGSEGV)

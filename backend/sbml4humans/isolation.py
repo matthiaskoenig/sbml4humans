@@ -120,8 +120,15 @@ else:
 _STDERR = "stderr.txt"
 # the bytes of the end of the standard error of a child the server reads
 _STDERR_TAIL = 64 * 1024
-# what the C++ runtime writes when an uncaught std::bad_alloc aborts the child
-_BAD_ALLOC = "bad_alloc"
+# the characters of the end of the standard error of a child the server logs
+_STDERR_LOGGED = 4 * 1024
+# what the C++ runtime writes when an uncaught std::bad_alloc aborts the child:
+# libstdc++ (the name mangled when it cannot demangle it) and libc++
+_BAD_ALLOC = (
+    "terminate called after throwing an instance of 'std::bad_alloc'",
+    "terminate called after throwing an instance of 'St9bad_alloc'",
+    "uncaught exception of type std::bad_alloc",
+)
 
 _SEMAPHORES: dict[int, threading.BoundedSemaphore] = {}
 _LOCK = threading.Lock()
@@ -381,7 +388,11 @@ def _communicate(
         process.join()
         written = _written(tempdir)
         if written:
-            logger.warning("the child of the validation wrote:\n%s", written)
+            # the end of it, its control characters escaped, so that the child
+            # cannot write lines of its own into the log
+            logger.warning(
+                "the child of the validation wrote: %r", written[-_STDERR_LOGGED:]
+            )
     if ended:
         run.interruption = _abnormal_end(process.exitcode, written)
     return run
@@ -404,7 +415,7 @@ def _abnormal_end(exitcode: int | None, written: str) -> Interruption:
     An abort is for lack of memory when the C++ runtime wrote that a
     `std::bad_alloc` ended the child, every other end is `"crashed"`.
     """
-    if exitcode == -signal.SIGABRT and _BAD_ALLOC in written:
+    if exitcode == -signal.SIGABRT and any(text in written for text in _BAD_ALLOC):
         logger.warning("the validation was aborted, out of memory")
         return "memory"
     logger.warning("the validation ended unexpectedly (exit code %s)", exitcode)
