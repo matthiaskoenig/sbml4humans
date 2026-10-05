@@ -2,17 +2,22 @@
 
 import http.server
 import threading
-from collections.abc import Mapping
+import zipfile
+from pathlib import Path
 
 import libsbml
 import pytest
 
-from sbml4humans import report
-from sbml4humans.model import ReportResponse, ValidationIssue
+from sbml4humans.model import ReportResponse
 from sbml4humans.report import report_for_bytes, report_for_path
 from sbml4humans.resources import EXAMPLES_DIR
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
-from sbml4humans.validation import ElementPositions, issues_of, validate
+from sbml4humans.validation import (
+    ElementPositions,
+    ReportDocuments,
+    issues_of,
+    validate,
+)
 
 
 COMP_DELETION = EXAMPLES_DIR / "comp_deletion.xml"
@@ -185,36 +190,127 @@ def test_untrusted_absolute_source_opens_no_file() -> None:
         'comp:source="unit_definitions.xml"', f'comp:source="{target}"'
     )
     doc: libsbml.SBMLDocument = libsbml.readSBMLFromString(sbml)
-    issues = validate(doc, ElementPositions("d"), documents={})
+    issues = validate(doc, ElementPositions("d"))
     assert 1090101 in {i.rule for i in issues}
 
 
 def test_neighbour_file_is_not_read_by_the_validation() -> None:
     """A file next to the document is not resolved unless the report gives it."""
     doc: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(COMP_DELETION))
-    issues = validate(doc, ElementPositions("d"), documents={})
+    issues = validate(doc, ElementPositions("d"))
     assert 1090101 in {i.rule for i in issues}
+
+
+def _spy_find(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, str | None, str]]:
+    """Record every request of the resolver: source, base and the found model."""
+    found: list[tuple[str, str | None, str]] = []
+    find = ReportDocuments.find
+
+    def spy(
+        self: ReportDocuments, source: str, base: str | None
+    ) -> libsbml.SBMLDocument | None:
+        doc = find(self, source, base)
+        found.append((source, base, doc.getModel().getId() if doc else ""))
+        return doc
+
+    monkeypatch.setattr(ReportDocuments, "find", spy)
+    return found
 
 
 def test_trusted_neighbour_is_resolved_from_the_report(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A source the report read is resolved for the validation, without 1090101."""
-    given: list[set[str]] = []
-
-    def spy(
-        doc: libsbml.SBMLDocument,
-        positions: ElementPositions,
-        documents: Mapping[str, libsbml.SBMLDocument],
-    ) -> list[ValidationIssue]:
-        given.append(set(documents))
-        return validate(doc, positions, documents)
-
-    monkeypatch.setattr(report, "validate", spy)
+    found = _spy_find(monkeypatch)
     response = report_for_path(COMP_DELETION, trusted=True)
     assert "./unit_definitions.xml" in response.reports
-    assert {"unit_definitions.xml"} in given
+    assert ("unit_definitions.xml", "./comp_deletion.xml", "unit_definitions") in found
     assert 1090101 not in _rules(response, "./comp_deletion.xml")
+
+
+_COMP = (
+    '<?xml version="1.0" encoding="UTF-8"?>'
+    '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" '
+    'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" '
+    'level="3" version="1" comp:required="true">{}</sbml>'
+)
+
+
+def _emds(*emds: tuple[str, str, str]) -> str:
+    """A list of external model definitions of id, source and model."""
+    return (
+        "<comp:listOfExternalModelDefinitions>"
+        + "".join(
+            f'<comp:externalModelDefinition comp:id="{i}" comp:source="{source}" '
+            f'comp:modelRef="{ref}"/>'
+            for i, source, ref in emds
+        )
+        + "</comp:listOfExternalModelDefinitions>"
+    )
+
+
+# m.xml names Bx of sub/b.xml, which is an external model definition of
+# sub/b.xml naming c.xml, relative to sub/; ./c.xml is another document
+_CHAIN = {
+    "m.xml": _COMP.format(
+        '<model id="M"><comp:listOfSubmodels>'
+        '<comp:submodel comp:id="s" comp:modelRef="Bx"/>'
+        '<comp:submodel comp:id="w" comp:modelRef="Wx"/>'
+        "</comp:listOfSubmodels></model>"
+        + _emds(("Bx", "sub/b.xml", "Bx"), ("Wx", "c.xml", "W"))
+    ),
+    "sub/b.xml": _COMP.format('<model id="B"/>' + _emds(("Bx", "c.xml", "C"))),
+    "sub/c.xml": _COMP.format('<model id="C"/>'),
+    "c.xml": _COMP.format('<model id="W"/>'),
+}
+_UNRESOLVED = {1090101, 1090104, 1020615}
+
+
+def _check_chain(
+    response: ReportResponse, found: list[tuple[str, str | None, str]]
+) -> None:
+    """The chain is resolved within the report, each source against its base."""
+    assert {"./m.xml", "./sub/b.xml", "./sub/c.xml", "./c.xml"} <= set(response.reports)
+    for location, entry in response.reports.items():
+        rules = {issue.rule for issue in entry.report.validation}
+        assert not rules & _UNRESOLVED, location
+    assert ("c.xml", "sub/b.xml", "C") in found
+    assert ("c.xml", "./m.xml", "W") in found
+    assert {model for source, _, model in found if source == "c.xml"} == {"C", "W"}
+
+
+def test_chained_sources_resolve_against_their_document(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A chain of external model definitions of trusted files is followed."""
+    for name, content in _CHAIN.items():
+        (tmp_path / name).parent.mkdir(exist_ok=True)
+        (tmp_path / name).write_text(content)
+    found = _spy_find(monkeypatch)
+    _check_chain(report_for_path(tmp_path / "m.xml", trusted=True), found)
+
+
+def test_chained_sources_resolve_in_an_archive(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A chain of external model definitions across the entries of an archive."""
+    path = tmp_path / "chain.omex"
+    entries = "".join(
+        f'<content location="./{name}" '
+        'format="http://identifiers.org/combine.specifications/sbml" '
+        f'master="{str(name == "m.xml").lower()}"/>'
+        for name in _CHAIN
+    )
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(
+            "manifest.xml",
+            '<omexManifest xmlns="http://identifiers.org/combine.specifications/'
+            f'omex-manifest">{entries}</omexManifest>',
+        )
+        for name, content in _CHAIN.items():
+            archive.writestr(name, content)
+    found = _spy_find(monkeypatch)
+    _check_chain(report_for_path(path), found)
 
 
 def test_every_entry_is_validated() -> None:

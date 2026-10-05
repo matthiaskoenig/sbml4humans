@@ -29,7 +29,6 @@ import zipfile
 from contextlib import ExitStack
 from pathlib import Path
 
-import libsbml
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
@@ -45,7 +44,7 @@ from sbml4humans.model import (
     ReportResponse,
 )
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
-from sbml4humans.validation import validate
+from sbml4humans.validation import ReportDocuments, validate
 
 
 logger = logging.getLogger(__name__)
@@ -177,31 +176,13 @@ def _link(
     build_link_graphs(
         {location: entry.link_source for location, entry in entries.items()}, external
     )
+    documents = ReportDocuments(
+        {location: entry.info.doc for location, entry in entries.items()}
+    )
     for location, entry in entries.items():
         entry.info.report.validation = validate(
-            entry.info.doc,
-            entry.info.positions,
-            _documents_of(location, entry, entries),
+            entry.info.doc, entry.info.positions, documents, location
         )
-
-
-def _documents_of(
-    location: str, entry: _Entry, entries: dict[str, _Entry]
-) -> dict[str, libsbml.SBMLDocument]:
-    """The documents of the report which the external model definitions name.
-
-    Keyed by the source as the definition writes it, which is what the comp
-    validator asks the resolver for; a source which names no entry is left out
-    and stays unresolved.
-    """
-    by_location = {normalize_location(loc): other for loc, other in entries.items()}
-    documents: dict[str, libsbml.SBMLDocument] = {}
-    for emd in entry.info.report.external_model_definitions:
-        normalized = resolve_source(location, emd.source)
-        target = by_location.get(normalized) if normalized is not None else None
-        if target is not None:
-            documents[emd.source] = target.info.doc
-    return documents
 
 
 def _md5(path: Path) -> str:

@@ -9,9 +9,11 @@ import bisect
 import logging
 from collections.abc import Mapping
 from contextvars import ContextVar
+from dataclasses import dataclass
 
 import libsbml
 
+from sbml4humans.external import normalize_location, resolve_source
 from sbml4humans.model import Severity, ValidationIssue
 
 
@@ -109,11 +111,70 @@ def issues_of(
     return issues
 
 
-# the documents the comp validator may resolve while a document is validated,
-# keyed by the source of an external model definition, None outside of one
-_DOCUMENTS: ContextVar[Mapping[str, libsbml.SBMLDocument] | None] = ContextVar(
-    "validation_documents", default=None
-)
+class ReportDocuments:
+    """The documents of a report, which alone the comp validator may resolve.
+
+    libsbml asks the resolver for the `source` of an external model definition
+    together with the location uri of the document which names it, its base.
+    The base is the location uri of a document of the report, as libsbml read
+    it or as the resolver answered it, so a source is resolved against the
+    location of that document in the report (`resolve_source`), the way the
+    report resolves it, also along a chain of external model definitions.
+    """
+
+    def __init__(self, documents: Mapping[str, libsbml.SBMLDocument]) -> None:
+        """The documents of a report keyed by their location in it."""
+        self._documents: dict[str, libsbml.SBMLDocument] = {}
+        by_uri: dict[str, list[str]] = {}
+        for location, doc in documents.items():
+            normalized = normalize_location(location)
+            if normalized is None:
+                continue
+            self._documents[normalized] = doc
+            uri = doc.getLocationURI()
+            if uri:
+                by_uri.setdefault(uri, []).append(normalized)
+        # a uri which two documents share names neither of them
+        self._locations = {
+            uri: locations[0]
+            for uri, locations in by_uri.items()
+            if len(locations) == 1
+        }
+
+    def location_of(self, uri: str) -> str | None:
+        """The location in the report of the document with a location uri."""
+        return self._locations.get(uri)
+
+    def find(self, source: str, base: str | None) -> libsbml.SBMLDocument | None:
+        """The document a source names, seen from the document at `base`."""
+        if base is None:
+            return None
+        target = resolve_source(base, source)
+        return self._documents.get(target) if target is not None else None
+
+
+@dataclass(frozen=True)
+class _Validation:
+    """The validation of a document of a report, while it runs."""
+
+    documents: ReportDocuments
+    location: str
+    uri: str
+
+    def find(self, source: str, base_uri: str) -> libsbml.SBMLDocument | None:
+        """The document of the report a source names, seen from `base_uri`.
+
+        The validated document has the base of its own location uri, which is
+        empty for a document read from a string.
+        """
+        base = self.location if base_uri == self.uri else None
+        if base is None:
+            base = self.documents.location_of(base_uri)
+        return self.documents.find(source, base)
+
+
+# the validation which runs in this context, None outside of one
+_VALIDATION: ContextVar[_Validation | None] = ContextVar("validation", default=None)
 
 
 class ReportResolver(libsbml.SBMLResolver):
@@ -122,8 +183,8 @@ class ReportResolver(libsbml.SBMLResolver):
     The comp validator reads the document an external model definition names
     through the resolver registry of libsbml, which would read any path and,
     with a resolver for it, any url. While a document is validated this one
-    answers only the documents of the report; at every other time it is the
-    file resolver of libsbml.
+    answers only the documents of the report and never reads a file or a url;
+    at every other time it is the file resolver of libsbml.
     """
 
     def __init__(self) -> None:
@@ -138,10 +199,10 @@ class ReportResolver(libsbml.SBMLResolver):
         baseUri: str = "",
     ) -> libsbml.SBMLDocument | None:
         """The document at a uri: one of the report while validating."""
-        documents = _DOCUMENTS.get()
-        if documents is None:
+        validation = _VALIDATION.get()
+        if validation is None:
             return self._files.resolve(uri, baseUri)
-        doc = documents.get(uri)
+        doc = validation.find(uri, baseUri)
         if doc is None:
             return None
         # the caller of a resolver owns the document it returns
@@ -154,13 +215,18 @@ class ReportResolver(libsbml.SBMLResolver):
         uri: str,
         baseUri: str = "",
     ) -> libsbml.SBMLUri | None:
-        """The uri of a document: one of the report while validating."""
-        documents = _DOCUMENTS.get()
-        if documents is None:
+        """The uri of a document: one of the report while validating.
+
+        The uri of a document of the report is its location uri, which libsbml
+        gives as the base of the sources of that document.
+        """
+        validation = _VALIDATION.get()
+        if validation is None:
             return self._files.resolveUri(uri, baseUri)
-        if uri not in documents:
+        doc = validation.find(uri, baseUri)
+        if doc is None:
             return None
-        resolved = libsbml.SBMLUri(uri)
+        resolved = libsbml.SBMLUri(doc.getLocationURI() or uri)
         resolved.thisown = False
         return resolved
 
@@ -182,29 +248,31 @@ def _install_resolver() -> ReportResolver:
 # kept referenced, so that python does not collect the director libsbml calls
 _RESOLVER = _install_resolver()
 
+_NO_DOCUMENTS = ReportDocuments({})
+
 
 def validate(
     doc: libsbml.SBMLDocument,
     positions: ElementPositions,
-    documents: Mapping[str, libsbml.SBMLDocument],
+    documents: ReportDocuments = _NO_DOCUMENTS,
+    location: str = "",
 ) -> list[ValidationIssue]:
     """Check the consistency of a document and return all of its issues.
-
-    `documents` are the documents of the report which the external model
-    definitions of the document name, keyed by their `source`: the only ones
-    the comp validator can read.
 
     Args:
         doc: the document to check.
         positions: where the elements of the report of the document start.
-        documents: the documents the comp validator may resolve.
+        documents: the documents of the report, the only ones the comp
+            validator can read.
+        location: the location of the document in the report, against which
+            its sources are resolved.
 
     Returns:
         The issues of the document, in the order of libsbml.
     """
-    token = _DOCUMENTS.set(documents)
+    token = _VALIDATION.set(_Validation(documents, location, doc.getLocationURI()))
     try:
         doc.checkConsistency()
     finally:
-        _DOCUMENTS.reset(token)
+        _VALIDATION.reset(token)
     return issues_of(doc, positions)
