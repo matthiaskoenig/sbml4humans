@@ -154,10 +154,15 @@ def _run_child(
     """
     results: dict[str, Any] = {}
     receiver, sender = _CONTEXT.Pipe(duplex=False)
-    process = _start(function, argument, VALIDATION_MEMORY, sender)
-    # the child holds the sending end, which the server closes so that it reads
-    # the end of the pipe when the child has ended
-    sender.close()
+    try:
+        process = _start(function, argument, VALIDATION_MEMORY, sender)
+    except BaseException:
+        receiver.close()
+        raise
+    finally:
+        # the child holds the sending end, which the server closes so that it
+        # reads the end of the pipe when the child has ended
+        sender.close()
     interruption: Interruption = "timeout"
     try:
         while True:
