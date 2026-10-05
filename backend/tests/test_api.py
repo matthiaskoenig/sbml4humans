@@ -59,6 +59,7 @@ def _check_report(data: dict[str, Any]) -> None:
             "externalModelDefinitions",
             "linkGraph",
             "validation",
+            "validationSkipped",
         }
 
 

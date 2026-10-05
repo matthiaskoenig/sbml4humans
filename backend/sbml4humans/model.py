@@ -971,8 +971,17 @@ class ValidationIssue(ReportModel):
     pk: str
 
 
+ValidationSkipped = Literal["submodelInstances"]
+
+
 class Report(ReportModel):
-    """The report of one SBML document."""
+    """The report of one SBML document.
+
+    `validation_skipped` says why the consistency of the document was not
+    checked, in which case `validation` holds the issues of reading it alone:
+    `submodelInstances`, its main model expands to more comp submodel
+    instances than the validation instantiates in a bounded time.
+    """
 
     document: SBMLDocument
     models: list[Model] = Field(default_factory=list)
@@ -981,6 +990,7 @@ class Report(ReportModel):
     )
     link_graph: LinkGraph = Field(default_factory=LinkGraph)
     validation: list[ValidationIssue] = Field(default_factory=list)
+    validation_skipped: ValidationSkipped | None = None
 
 
 class ManifestEntry(ReportModel):

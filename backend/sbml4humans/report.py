@@ -44,7 +44,13 @@ from sbml4humans.model import (
     ReportResponse,
 )
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
-from sbml4humans.validation import ReportDocuments, validate
+from sbml4humans.validation import (
+    MAX_SUBMODEL_INSTANCES,
+    ReportDocuments,
+    issues_of,
+    submodel_instances,
+    validate,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -180,7 +186,18 @@ def _link(
         {location: entry.info.doc for location, entry in entries.items()}
     )
     for location, entry in entries.items():
-        entry.info.report.validation = validate(
+        report = entry.info.report
+        if submodel_instances(reports, location) > MAX_SUBMODEL_INSTANCES:
+            logger.warning(
+                "'%s' is not validated: its main model expands to more than %s "
+                "submodel instances",
+                location,
+                MAX_SUBMODEL_INSTANCES,
+            )
+            report.validation_skipped = "submodelInstances"
+            report.validation = issues_of(entry.info.doc, entry.info.positions)
+            continue
+        report.validation = validate(
             entry.info.doc, entry.info.positions, documents, location
         )
 

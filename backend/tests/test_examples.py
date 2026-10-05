@@ -1,6 +1,7 @@
 """Tests of the example models."""
 
 import shutil
+import zipfile
 from pathlib import Path
 
 import libsbml
@@ -82,6 +83,33 @@ def test_omex_description_counts_entries_without_naming_them() -> None:
     for k, entry in enumerate(omex.entries_by_format(format_key="sbml")):
         entry.location = f"./models/a_model_with_a_very_long_name_{k}.xml"
     assert omex_description(omex) == "COMBINE archive with 3 SBML entries"
+
+
+def test_omex_description_names_entries_in_manifest_order(tmp_path: Path) -> None:
+    """The entries are named in the order of the manifest, on every machine.
+
+    The files of the archive are written in another order and their names sort in a
+    third one, so neither the order of the zip file nor of the file system shows.
+    """
+    sbml = REPRESSILATOR_SBML.read_text()
+    names = ["b.xml", "c.xml", "a.xml"]
+    entries = "".join(
+        f'<content location="./{name}" '
+        'format="http://identifiers.org/combine.specifications/sbml"/>'
+        for name in names
+    )
+    path = tmp_path / "order.omex"
+    with zipfile.ZipFile(path, "w") as archive:
+        for name in sorted(names, reverse=True):
+            archive.writestr(name, sbml)
+        archive.writestr(
+            "manifest.xml",
+            '<omexManifest xmlns="http://identifiers.org/combine.specifications/'
+            f'omex-manifest">{entries}</omexManifest>',
+        )
+    with Omex.from_omex(path) as omex:
+        description = omex_description(omex)
+    assert description == "COMBINE archive with 3 SBML entries: b.xml, c.xml, a.xml"
 
 
 def test_omex_description_without_sbml() -> None:

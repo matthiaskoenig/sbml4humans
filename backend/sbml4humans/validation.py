@@ -3,6 +3,19 @@
 libsbml reports an issue with its line and column, not with its element, so the
 report records where every element starts (`ElementPositions`) and an issue
 goes to the element which starts closest before it.
+
+The comp validator instantiates every submodel of the main model, along the
+whole tree of the model definitions and the external model definitions it
+names, which grows with the product of the submodels of every level. A
+document whose main model expands to more than `MAX_SUBMODEL_INSTANCES`
+instances (`submodel_instances`) is not validated, only the issues of reading
+it are reported.
+
+Importing this module replaces the resolvers of the process-wide resolver
+registry of libsbml by `ReportResolver`, for every user of libsbml in the
+process (also a program which calls `sbml4humans.show`): outside of a
+validation it resolves files like the file resolver of libsbml, and a resolver
+of urls or another one which was registered before is gone.
 """
 
 import bisect
@@ -14,10 +27,15 @@ from dataclasses import dataclass
 import libsbml
 
 from sbml4humans.external import normalize_location, resolve_source
-from sbml4humans.model import Severity, ValidationIssue
+from sbml4humans.model import Model, Report, Severity, ValidationIssue
 
 
 logger = logging.getLogger(__name__)
+
+# the submodel instances of a main model which are validated; 1,000 instances
+# (three levels of ten submodels) are checked within a fifth of a second, ten
+# times as many take seconds and a hundred times as many more than a minute
+MAX_SUBMODEL_INSTANCES = 1000
 
 _ERRORS = frozenset(
     {
@@ -276,3 +294,57 @@ def validate(
     finally:
         _VALIDATION.reset(token)
     return issues_of(doc, positions)
+
+
+def submodel_instances(reports: Mapping[str, Report], location: str) -> int:
+    """The comp submodel instances the main model of an entry expands to.
+
+    The model a submodel instantiates is a model definition of its document or
+    the model an external model definition of it names, as `ExternalModels`
+    resolved it to another entry of the report; an instance counts with the
+    instances of its model. A model which instantiates itself, directly or
+    along a chain, counts its instances up to the cycle, which libsbml reports
+    as an error of its own.
+
+    Args:
+        reports: the report of every entry by its location.
+        location: the location of the entry.
+
+    Returns:
+        The number of submodel instances, 0 for a document without a main model.
+    """
+    counted: dict[tuple[str, str], int] = {}
+
+    def target(entry: str, model_ref: str) -> tuple[str, Model] | None:
+        """The entry and the model a submodel of a model of `entry` names."""
+        report = reports[entry]
+        for model in report.models:
+            if model.id == model_ref:
+                return entry, model
+        for emd in report.external_model_definitions:
+            other = emd.resolution.entry
+            if emd.id != model_ref or other is None or other not in reports:
+                continue
+            for model in reports[other].models:
+                if model.pk == emd.resolution.model:
+                    return other, model
+        return None
+
+    def instances(entry: str, model: Model, chain: frozenset[tuple[str, str]]) -> int:
+        """The instances of the submodels of a model, along a chain of models."""
+        key = (entry, model.pk)
+        if key in counted:
+            return counted[key]
+        total = 0
+        for submodel in model.list_of_submodels:
+            total += 1
+            found = target(entry, submodel.model_ref)
+            if found is not None and (found[0], found[1].pk) not in chain | {key}:
+                total += instances(*found, chain | {key})
+        counted[key] = total
+        return total
+
+    for model in reports[location].models:
+        if model.kind == "model":
+            return instances(location, model, frozenset())
+    return 0

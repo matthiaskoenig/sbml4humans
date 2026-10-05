@@ -2,6 +2,7 @@
 
 import http.server
 import threading
+import time
 import zipfile
 from pathlib import Path
 
@@ -13,9 +14,12 @@ from sbml4humans.report import report_for_bytes, report_for_path
 from sbml4humans.resources import EXAMPLES_DIR
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 from sbml4humans.validation import (
+    _RESOLVER,
     ElementPositions,
     ReportDocuments,
+    ReportResolver,
     issues_of,
+    submodel_instances,
     validate,
 )
 
@@ -125,6 +129,42 @@ def test_comp_examples_map_every_issue(name: str) -> None:
     issues = issues_of(info.doc, info.positions)
     assert issues
     assert {i.pk for i in issues} <= set(_report_pks(info))
+
+
+def test_unit_warnings_of_the_reaction_example() -> None:
+    """The units of the compartment and of the species of the example are missing."""
+    report = next(iter(report_for_path(EXAMPLES_DIR / "reaction.xml").reports.values()))
+    units = {
+        (issue.rule, issue.severity, issue.pk)
+        for issue in report.report.validation
+        if issue.rule in {20513, 20616}
+    }
+    assert units == {
+        (20513, "warning", "reaction/Compartment:c"),
+        (20616, "warning", "reaction/Species:x"),
+        (20616, "warning", "reaction/Species:y"),
+    }
+
+
+def test_unresolved_comp_example_marks_its_submodels_and_definitions() -> None:
+    """Without the file they name, the definitions and the submodels are errors."""
+    content = (EXAMPLES_DIR / "minimal_model_comp.xml").read_bytes()
+    report = next(iter(report_for_bytes(content).reports.values())).report
+    comp = {
+        (issue.rule, issue.severity, issue.pk)
+        for issue in report.validation
+        if issue.rule in {1020615, 1090101}
+    }
+    assert comp == {
+        *(
+            (1020615, "error", f"minimal_model_comp/Submodel:submodel{k}")
+            for k in range(5)
+        ),
+        *(
+            (1090101, "error", f"document/ExternalModelDefinition:emd{k}")
+            for k in range(5)
+        ),
+    }
 
 
 def test_issue_on_a_list_without_content_goes_to_its_owner() -> None:
@@ -321,9 +361,143 @@ def test_every_entry_is_validated() -> None:
         assert all(issue.pk for issue in entry.report.validation)
 
 
-def test_resolver_delegates_outside_validation() -> None:
-    """Outside of a validation libsbml resolves files as before."""
+def test_resolver_delegates_outside_validation(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Outside of a validation libsbml resolves files as before, through the report."""
     registry = libsbml.SBMLResolverRegistry.getInstance()
+    assert registry.getNumResolvers() == 1
+    assert isinstance(_RESOLVER, ReportResolver)
+    # the registry answers through the installed resolver, and the file resolver of
+    # libsbml behind it answers a file
+    calls: list[str] = []
+    resolve_uri = ReportResolver.resolveUri
+
+    def spy(
+        self: ReportResolver, uri: str, baseUri: str = ""
+    ) -> libsbml.SBMLUri | None:
+        """Record the uri the registry asks the report resolver for."""
+        calls.append(uri)
+        return resolve_uri(self, uri, baseUri)
+
+    monkeypatch.setattr(ReportResolver, "resolveUri", spy)
     uri = (EXAMPLES_DIR / "unit_definitions.xml").resolve().as_uri()
     resolved = registry.resolveUri(uri, "")
+    assert calls == [uri]
     assert resolved is not None
+
+
+# a parameter without units, which only the check of consistency reports
+_UNITLESS = (
+    '<listOfParameters><parameter id="p" value="1" constant="true"/></listOfParameters>'
+)
+
+
+def _submodels(model_ref: str, n: int) -> str:
+    """A list of `n` submodels of one model."""
+    return (
+        "<comp:listOfSubmodels>"
+        + "".join(
+            f'<comp:submodel comp:id="s{i}" comp:modelRef="{model_ref}"/>'
+            for i in range(n)
+        )
+        + "</comp:listOfSubmodels>"
+    )
+
+
+def _fan_out(depth: int, n: int = 10) -> bytes:
+    """A document whose main model expands to `n` submodels on `depth` levels."""
+    definitions = '<comp:modelDefinition id="d0"/>' + "".join(
+        f'<comp:modelDefinition id="d{k}">{_submodels(f"d{k - 1}", n)}'
+        "</comp:modelDefinition>"
+        for k in range(1, depth)
+    )
+    return _COMP.format(
+        f'<model id="m">{_UNITLESS}{_submodels(f"d{depth - 1}", n)}</model>'
+        f"<comp:listOfModelDefinitions>{definitions}</comp:listOfModelDefinitions>"
+    ).encode()
+
+
+def test_submodel_fan_out_beyond_the_budget_is_not_validated() -> None:
+    """A document which expands to 111,110 instances is reported at once."""
+    start = time.perf_counter()
+    response = report_for_bytes(_fan_out(5))
+    elapsed = time.perf_counter() - start
+    report = next(iter(response.reports.values())).report
+    assert report.validation_skipped == "submodelInstances"
+    assert 80701 not in {issue.rule for issue in report.validation}
+    assert elapsed < 0.5
+
+
+def test_read_errors_are_reported_without_validation() -> None:
+    """A document which is not validated still has the read errors of libsbml."""
+    content = _fan_out(5).replace(b'<model id="m">', b'<model id="m" foo="1">')
+    report = next(iter(report_for_bytes(content).reports.values())).report
+    assert report.validation_skipped == "submodelInstances"
+    assert 20222 in {issue.rule for issue in report.validation}
+
+
+def test_submodel_fan_out_within_the_budget_is_validated() -> None:
+    """A document which expands to 110 instances is validated."""
+    report = next(iter(report_for_bytes(_fan_out(2)).reports.values()))
+    assert report.report.validation_skipped is None
+    assert 80701 in {issue.rule for issue in report.report.validation}
+
+
+def test_submodel_instances_cut_a_cycle() -> None:
+    """A model which instantiates itself is counted once along its cycle."""
+    content = _COMP.format(
+        f'<model id="m">{_submodels("d", 2)}</model><comp:listOfModelDefinitions>'
+        f'<comp:modelDefinition id="d">{_submodels("d", 2)}</comp:modelDefinition>'
+        "</comp:listOfModelDefinitions>"
+    )
+    response = report_for_bytes(content.encode())
+    reports = {location: e.report for location, e in response.reports.items()}
+    assert submodel_instances(reports, next(iter(reports))) == 6
+
+
+def _archive(path: Path, documents: dict[str, str]) -> Path:
+    """A COMBINE archive of SBML documents, the first one the master."""
+    entries = "".join(
+        f'<content location="./{name}" '
+        'format="http://identifiers.org/combine.specifications/sbml" '
+        f'master="{str(k == 0).lower()}"/>'
+        for k, name in enumerate(documents)
+    )
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(
+            "manifest.xml",
+            '<omexManifest xmlns="http://identifiers.org/combine.specifications/'
+            f'omex-manifest">{entries}</omexManifest>',
+        )
+        for name, content in documents.items():
+            archive.writestr(name, content)
+    return path
+
+
+def test_archive_chain_beyond_the_budget_is_not_validated(tmp_path: Path) -> None:
+    """Instances through external model definitions of other entries count."""
+
+    def link(target: str) -> str:
+        """A main model of 10 submodels of the main model of `target`."""
+        return f'<model id="m">{_UNITLESS}{_submodels("x", 10)}</model>' + _emds(
+            ("x", target, "m")
+        )
+
+    documents = {
+        "a.xml": _COMP.format(link("b.xml")),
+        "b.xml": _COMP.format(link("c.xml")),
+        "c.xml": _COMP.format(link("d.xml")),
+        "d.xml": _COMP.format(f'<model id="m">{_UNITLESS}</model>'),
+    }
+    response = report_for_path(_archive(tmp_path / "chain.omex", documents))
+    skipped = {
+        location: entry.report.validation_skipped
+        for location, entry in response.reports.items()
+    }
+    # a: 10 + 100 + 1,000 instances, b: 10 + 100, c: 10, d: none
+    assert skipped == {
+        "./a.xml": "submodelInstances",
+        "./b.xml": None,
+        "./c.xml": None,
+        "./d.xml": None,
+    }
+    assert 80701 in {i.rule for i in response.reports["./b.xml"].report.validation}

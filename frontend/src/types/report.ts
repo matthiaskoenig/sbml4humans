@@ -97,6 +97,11 @@ export interface ReportEntry {
 }
 /**
  * The report of one SBML document.
+ *
+ * `validation_skipped` says why the consistency of the document was not
+ * checked, in which case `validation` holds the issues of reading it alone:
+ * `submodelInstances`, its main model expands to more comp submodel
+ * instances than the validation instantiates in a bounded time.
  */
 export interface Report {
   document: SBMLDocument;
@@ -104,6 +109,7 @@ export interface Report {
   externalModelDefinitions?: ExternalModelDefinition[];
   linkGraph?: LinkGraph;
   validation?: ValidationIssue[];
+  validationSkipped?: "submodelInstances" | null;
 }
 /**
  * The document: level, version and the packages it uses.

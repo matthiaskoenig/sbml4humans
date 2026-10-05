@@ -235,11 +235,13 @@ libsbml reports where in the file an issue is, not which element it concerns, so
 
 The external model definitions are checked against the documents which are part of the report; the validation reads no other file and fetches no url.
 
+To check a model of the comp package libsbml instantiates every submodel of its main model, the submodels of those in turn, along the [model](model.md) definitions and the [external model definitions](externalmodeldefinition.md), so the work grows with the product of the submodels of every level. A document whose main model expands to more than 1,000 submodel instances is not validated: the report says so in the place of the counts and in the inspector of the document, and lists only the errors libsbml finds while it reads the file.
+
 ## rule
 
 The number of the validation rule of libsbml.
 
-Every issue names the rule it breaks by its number in libsbml. A rule of SBML core has a number below 100000 and is one of the validation rules of the appendix of the specification, a number of 99000 and above is a check of libsbml of its own, and a rule of a package carries the offset of the package. Where the glossary cites a rule, its text is part of the explanation of the element in the help.
+Every issue names the rule it breaks by its number in libsbml. A rule of SBML core has a number below 99000 and is one of the validation rules of the appendix of the specification, a number from 99000 to 99999 is a check of libsbml of its own, and a rule of a package carries the offset of the package, such as 1000000 and above for the comp package. Where the glossary cites a rule, its text is part of the explanation of the element in the help.
 
 ## severity
 
@@ -247,7 +249,7 @@ Whether an issue is an error, a warning or a note.
 
 - `error`: the document breaks a rule the specification requires; a tool may refuse or misread it.
 - `warning`: the document follows the rules, but something is likely not what was meant, such as a quantity without units.
-- `info`: a note of libsbml, which needs no change.
+- `info`: a note of libsbml, which usually needs no change.
 
 ## category
 

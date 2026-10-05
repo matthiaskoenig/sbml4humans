@@ -6676,7 +6676,7 @@
       "type": "object"
     },
     "Report": {
-      "description": "The report of one SBML document.",
+      "description": "The report of one SBML document.\n\n`validation_skipped` says why the consistency of the document was not\nchecked, in which case `validation` holds the issues of reading it alone:\n`submodelInstances`, its main model expands to more comp submodel\ninstances than the validation instantiates in a bounded time.",
       "properties": {
         "document": {
           "$ref": "#/$defs/SBMLDocument"
@@ -6701,6 +6701,18 @@
             "$ref": "#/$defs/ValidationIssue"
           },
           "type": "array"
+        },
+        "validationSkipped": {
+          "anyOf": [
+            {
+              "const": "submodelInstances",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
