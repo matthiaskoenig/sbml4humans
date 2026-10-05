@@ -3,7 +3,14 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { ExampleMetaData, Report, ReportResponse, ValidationIssue } from "@/api/types";
+import type {
+  EntryValidation,
+  ExampleMetaData,
+  Report,
+  ReportResponse,
+  ValidationIssue,
+  ValidationResponse,
+} from "@/api/types";
 
 // `new URL(x, import.meta.url)` is Vite's static asset-url pattern: it rewrites the call at
 // transform time, which mangles a runtime path built from a template literal. Building the
@@ -25,7 +32,8 @@ export type FixtureName =
   | "distrib_spans"
   | "constraint_event"
   | "qual_example"
-  | "list_of";
+  | "list_of"
+  | "fan_out";
 
 export function loadFixture(name: FixtureName): ReportResponse {
   const path = join(FIXTURES_DIR, `${name}.json`);
@@ -46,17 +54,32 @@ export function loadExamplesFixture(): ExampleMetaData[] {
   return JSON.parse(readFileSync(path, "utf8")) as ExampleMetaData[];
 }
 
-/** A copy of a report whose validation holds the given issues in place of its own: each names its
- * element and severity, the rule and the texts default to a plain warning of units. */
+/** The fixtures whose validation is recorded as well, as `validation-<name>.json`. */
+export type ValidatedFixtureName = "validation" | "repressilator" | "fan_out";
+
+export function loadValidationFixture(name: ValidatedFixtureName): ValidationResponse {
+  const path = join(FIXTURES_DIR, `validation-${name}.json`);
+  return JSON.parse(readFileSync(path, "utf8")) as ValidationResponse;
+}
+
+/** The validation of the first (or given) entry of a fixture. */
+export function loadValidation(name: ValidatedFixtureName, location?: string): EntryValidation {
+  const response = loadValidationFixture(name);
+  const key = location ?? Object.keys(response.entries)[0];
+  const entry = key === undefined ? undefined : response.entries[key];
+  if (!entry) throw new Error(`validation fixture ${name} has no entry ${location}`);
+  return entry;
+}
+
+/** A validation which holds the given issues: each names its element and severity, the rule and
+ * the texts default to a plain warning of units. */
 export function withIssues(
-  report: Report,
   issues: (Pick<ValidationIssue, "pk" | "severity"> & Partial<ValidationIssue>)[],
-  validationSkipped: Report["validationSkipped"] = null,
-): Report {
+  skipped: EntryValidation["skipped"] = null,
+): EntryValidation {
   return {
-    ...report,
-    validationSkipped,
-    validation: issues.map((issue) => ({
+    skipped,
+    issues: issues.map((issue) => ({
       rule: 99505,
       category: "Units consistency",
       shortMessage: `an issue of ${issue.pk}`,

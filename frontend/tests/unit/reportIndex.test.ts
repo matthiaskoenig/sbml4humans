@@ -4,7 +4,7 @@ import type { Edge, Reaction, SBase, Species } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 import { elementLabel } from "@/report/label";
 
-import { loadFixture, loadReport, withIssues, type FixtureName } from "./fixtures";
+import { loadFixture, loadReport, type FixtureName } from "./fixtures";
 
 const repressilator = new ReportIndex(loadReport("repressilator"));
 const icgBody = new ReportIndex(loadReport("icg_body"));
@@ -36,79 +36,17 @@ function allReportIndexes(): ReportIndex[] {
 }
 
 describe("ReportIndex", () => {
-  it("looks up the issues of an element and of a type", () => {
-    const k1 = validation.mainModel?.listOfParameters?.find((p) => p.id === "k1");
-    expect(k1).toBeDefined();
-    expect(validation.issuesOf(k1!.pk).map((i) => i.rule)).toEqual(
-      expect.arrayContaining([10703, 20702]),
-    );
-    expect(validation.worstSeverity(k1!.pk)).toBe("warning");
-    expect(validation.worstSeverity(validation.mainModel!.pk)).toBe("error");
-    expect(validation.issueCounts.error).toBe(1);
-    expect(validation.issueCounts.warning).toBeGreaterThan(3);
-    const modelId = validation.mainModel!.id!;
-    expect(validation.worstSeverityOfType("Parameter", modelId)).toBe("warning");
-    expect(validation.worstSeverityOfType("Species", modelId)).toBeNull();
-    expect(repressilator.issuesOf(repressilator.document.pk)).toEqual([]);
-  });
-
-  it("marks the row which holds an element without a row of its own by the issues of it", () => {
-    // the kinetic law of R1 has a warning of its own, it has no table and marks the reaction
+  it("tells the row which holds an element without a row of its own", () => {
+    // the kinetic law of R1 has no table and is held by the row of the reaction
     const r1 = validation.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
-    const law = r1.kineticLaw!.pk;
-    const lawIssues = validation.issuesOf(law);
-    expect(lawIssues.map((i) => i.rule)).toEqual([99505]);
-    expect(validation.issuesOf(r1.pk)).toEqual([]);
-    expect(validation.heldIssuesOf(r1.pk)).toEqual(lawIssues);
-    expect(validation.worstSeverity(r1.pk)).toBe("warning");
-    expect(validation.worstSeverityOfType("Reaction", validation.mainModel!.id!)).toBe("warning");
-    // the kinetic law keeps its own issues and its own severity, and holds nothing
-    expect(validation.worstSeverity(law)).toBe("warning");
-    expect(validation.heldIssuesOf(law)).toEqual([]);
-    // an element of a table holds nothing of another element of a table
-    const k1 = validation.mainModel!.listOfParameters!.find((p) => p.id === "k1")!;
-    expect(validation.heldIssuesOf(k1.pk)).toEqual([]);
-  });
-
-  it("folds the issues of the lists of a model, which have no row, into the model", () => {
-    const report = loadReport("list_of");
-    const model = report.models![0]!.pk;
-    const index = new ReportIndex(
-      withIssues(report, [
-        { pk: model, severity: "warning", rule: 80701 },
-        { pk: "list_of/ListOf:metabolites", severity: "error", rule: 20101 },
-      ]),
-    );
-    expect(index.worstSeverity(model)).toBe("error");
-    expect(index.heldIssuesOf(model).map((i) => i.rule)).toEqual([20101]);
-    expect(index.issuesOf("list_of/ListOf:metabolites").map((i) => i.rule)).toEqual([20101]);
-    // the elements of a table of the model are no part of the model's row
-    const species = index.byType(report.models![0]!.id!).get("Species")![0]!;
-    const held = new ReportIndex(withIssues(report, [{ pk: species.pk, severity: "error" }]));
-    expect(held.heldIssuesOf(model)).toEqual([]);
-    expect(held.worstSeverity(model)).toBeNull();
-  });
-
-  it("lists the issues of a row errors first, a held error before its own warnings", () => {
-    const report = loadReport("validation");
-    const r1 = report.models![0]!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
-    const index = new ReportIndex(
-      withIssues(report, [
-        { pk: r1.pk, severity: "warning", rule: 10501 },
-        { pk: r1.pk, severity: "info", rule: 99999 },
-        { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
-      ]),
-    );
-    expect(index.rowIssuesOf(r1.pk).map((i) => i.rule)).toEqual([99505, 10501, 99999]);
-  });
-
-  it("scopes the worst severity of a type to one model", () => {
-    // both models of the fixture state a species, the warnings concern the species of m1 alone
-    const main = definitions.mainModel!.id!;
-    expect(main).not.toBe("m1");
-    expect(definitions.byType(main).get("Species")?.length).toBeGreaterThan(0);
-    expect(definitions.worstSeverityOfType("Species", "m1")).toBe("warning");
-    expect(definitions.worstSeverityOfType("Species", main)).toBeNull();
+    expect(validation.holderOf(r1.kineticLaw!.pk)).toBe(r1.pk);
+    // an element of a table holds nothing of another element of a table, and is held by nothing
+    expect(validation.holderOf(r1.pk)).toBeNull();
+    // the lists of a model are held by the model, whose entry of the type bar is its row
+    const model = listOf.models[0]!.pk;
+    expect(listOf.holderOf("list_of/ListOf:metabolites")).toBe(model);
+    expect(listOf.holderOf(model)).toBeNull();
+    expect(listOf.holderOf("unknown")).toBeNull();
   });
 
   it("indexes the document, the models and every element by pk", () => {
