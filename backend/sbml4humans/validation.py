@@ -7,6 +7,8 @@ goes to the element which starts closest before it.
 
 import bisect
 import logging
+from collections.abc import Mapping
+from contextvars import ContextVar
 
 import libsbml
 
@@ -105,3 +107,104 @@ def issues_of(
             )
         )
     return issues
+
+
+# the documents the comp validator may resolve while a document is validated,
+# keyed by the source of an external model definition, None outside of one
+_DOCUMENTS: ContextVar[Mapping[str, libsbml.SBMLDocument] | None] = ContextVar(
+    "validation_documents", default=None
+)
+
+
+class ReportResolver(libsbml.SBMLResolver):
+    """The resolver of libsbml, confined to the report while it validates.
+
+    The comp validator reads the document an external model definition names
+    through the resolver registry of libsbml, which would read any path and,
+    with a resolver for it, any url. While a document is validated this one
+    answers only the documents of the report; at every other time it is the
+    file resolver of libsbml.
+    """
+
+    def __init__(self) -> None:
+        """A resolver which keeps the file resolver of libsbml to delegate to."""
+        super().__init__()
+        self._files = libsbml.SBMLFileResolver()
+
+    # the SWIG base class declares its methods with `*args`
+    def resolve(  # ty: ignore[invalid-method-override]
+        self,
+        uri: str,
+        baseUri: str = "",
+    ) -> libsbml.SBMLDocument | None:
+        """The document at a uri: one of the report while validating."""
+        documents = _DOCUMENTS.get()
+        if documents is None:
+            return self._files.resolve(uri, baseUri)
+        doc = documents.get(uri)
+        if doc is None:
+            return None
+        # the caller of a resolver owns the document it returns
+        clone: libsbml.SBMLDocument = doc.clone()
+        clone.thisown = False
+        return clone
+
+    def resolveUri(  # ty: ignore[invalid-method-override]
+        self,
+        uri: str,
+        baseUri: str = "",
+    ) -> libsbml.SBMLUri | None:
+        """The uri of a document: one of the report while validating."""
+        documents = _DOCUMENTS.get()
+        if documents is None:
+            return self._files.resolveUri(uri, baseUri)
+        if uri not in documents:
+            return None
+        resolved = libsbml.SBMLUri(uri)
+        resolved.thisown = False
+        return resolved
+
+    def clone(self) -> ReportResolver:
+        """The registry keeps the one instance, so a clone is the instance."""
+        return self
+
+
+def _install_resolver() -> ReportResolver:
+    """Replace the resolvers of the registry of libsbml by the report resolver."""
+    registry = libsbml.SBMLResolverRegistry.getInstance()
+    while registry.getNumResolvers() > 0:
+        registry.removeResolver(0)
+    resolver = ReportResolver()
+    registry.addResolver(resolver)
+    return resolver
+
+
+# kept referenced, so that python does not collect the director libsbml calls
+_RESOLVER = _install_resolver()
+
+
+def validate(
+    doc: libsbml.SBMLDocument,
+    positions: ElementPositions,
+    documents: Mapping[str, libsbml.SBMLDocument],
+) -> list[ValidationIssue]:
+    """Check the consistency of a document and return all of its issues.
+
+    `documents` are the documents of the report which the external model
+    definitions of the document name, keyed by their `source`: the only ones
+    the comp validator can read.
+
+    Args:
+        doc: the document to check.
+        positions: where the elements of the report of the document start.
+        documents: the documents the comp validator may resolve.
+
+    Returns:
+        The issues of the document, in the order of libsbml.
+    """
+    token = _DOCUMENTS.set(documents)
+    try:
+        doc.checkConsistency()
+    finally:
+        _DOCUMENTS.reset(token)
+    return issues_of(doc, positions)

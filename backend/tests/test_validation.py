@@ -1,11 +1,21 @@
 """Tests of the validation of a document and the mapping of its issues."""
 
+import http.server
+import threading
+from collections.abc import Mapping
+
 import libsbml
 import pytest
 
+from sbml4humans import report
+from sbml4humans.model import ReportResponse, ValidationIssue
+from sbml4humans.report import report_for_bytes, report_for_path
 from sbml4humans.resources import EXAMPLES_DIR
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
-from sbml4humans.validation import ElementPositions, issues_of
+from sbml4humans.validation import ElementPositions, issues_of, validate
+
+
+COMP_DELETION = EXAMPLES_DIR / "comp_deletion.xml"
 
 
 def _issues(source: str) -> list[tuple[int, str, str]]:
@@ -126,3 +136,98 @@ def test_issue_on_a_list_of_a_reaction_goes_to_the_reaction() -> None:
     sbml = sbml.replace("<listOfReactants>", '<listOfReactants foo="1">')
     issues = _issues(sbml)
     assert (21150, "error", "validation/Reaction:R1") in issues
+
+
+def _rules(response: ReportResponse, location: str | None = None) -> set[int]:
+    """The rules of the issues of an entry of a response, the first by default."""
+    entries = response.reports
+    entry = entries[location] if location else next(iter(entries.values()))
+    return {issue.rule for issue in entry.report.validation}
+
+
+def test_untrusted_source_is_not_read() -> None:
+    """An absolute path or a url of an untrusted document is never resolved."""
+    requests: list[str] = []
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        """A server which records every request."""
+
+        def do_GET(self) -> None:
+            """Record the request and answer that nothing is there."""
+            requests.append(self.path)
+            self.send_response(404)
+            self.end_headers()
+
+        def log_message(self, format: str, *args: object) -> None:
+            """Log nothing."""
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        target = (EXAMPLES_DIR / "unit_definitions.xml").resolve()
+        sbml = COMP_DELETION.read_text()
+        for source in (str(target), f"http://127.0.0.1:{server.server_port}/u.xml"):
+            content = sbml.replace(
+                'comp:source="unit_definitions.xml"', f'comp:source="{source}"'
+            )
+            response = report_for_bytes(content.encode())
+            assert 1090101 in _rules(response), source
+        assert requests == []
+    finally:
+        server.shutdown()
+
+
+def test_untrusted_absolute_source_opens_no_file() -> None:
+    """The resolver answers no absolute path, whatever libsbml asks."""
+    target = (EXAMPLES_DIR / "unit_definitions.xml").resolve()
+    sbml = COMP_DELETION.read_text().replace(
+        'comp:source="unit_definitions.xml"', f'comp:source="{target}"'
+    )
+    doc: libsbml.SBMLDocument = libsbml.readSBMLFromString(sbml)
+    issues = validate(doc, ElementPositions("d"), documents={})
+    assert 1090101 in {i.rule for i in issues}
+
+
+def test_neighbour_file_is_not_read_by_the_validation() -> None:
+    """A file next to the document is not resolved unless the report gives it."""
+    doc: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(COMP_DELETION))
+    issues = validate(doc, ElementPositions("d"), documents={})
+    assert 1090101 in {i.rule for i in issues}
+
+
+def test_trusted_neighbour_is_resolved_from_the_report(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A source the report read is resolved for the validation, without 1090101."""
+    given: list[set[str]] = []
+
+    def spy(
+        doc: libsbml.SBMLDocument,
+        positions: ElementPositions,
+        documents: Mapping[str, libsbml.SBMLDocument],
+    ) -> list[ValidationIssue]:
+        given.append(set(documents))
+        return validate(doc, positions, documents)
+
+    monkeypatch.setattr(report, "validate", spy)
+    response = report_for_path(COMP_DELETION, trusted=True)
+    assert "./unit_definitions.xml" in response.reports
+    assert {"unit_definitions.xml"} in given
+    assert 1090101 not in _rules(response, "./comp_deletion.xml")
+
+
+def test_every_entry_is_validated() -> None:
+    """The neighbour which a trusted file names is validated as well."""
+    response = report_for_path(COMP_DELETION, trusted=True)
+    assert len(response.reports) > 1
+    for entry in response.reports.values():
+        assert all(issue.pk for issue in entry.report.validation)
+
+
+def test_resolver_delegates_outside_validation() -> None:
+    """Outside of a validation libsbml resolves files as before."""
+    registry = libsbml.SBMLResolverRegistry.getInstance()
+    uri = (EXAMPLES_DIR / "unit_definitions.xml").resolve().as_uri()
+    resolved = registry.resolveUri(uri, "")
+    assert resolved is not None
