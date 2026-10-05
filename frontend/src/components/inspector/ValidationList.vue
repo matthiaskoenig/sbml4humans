@@ -6,7 +6,6 @@ import SelectInput from "@/components/input/SelectInput.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import { conceptEntry, conceptKey, ruleKey } from "@/report/glossary";
-import type { ReportIndex } from "@/report/index";
 import ShowAllButton from "@/components/misc/ShowAllButton.vue";
 import {
   groupByRule,
@@ -14,30 +13,32 @@ import {
   VALIDATION_LINK_LIMIT,
   type Severity,
 } from "@/report/validation";
+import type { SkipReason, ValidationIndex } from "@/report/validationIndex";
 
 /** Every issue of the document in the inspector of the document, a rule once with the elements it
  * concerns, filtered by severity and by category. A link selects the element, and the back button
  * returns here, as the selection is part of the route. A group renders its links only while it is
  * open, the first `VALIDATION_LINK_LIMIT` of them before a "show all": the issues of a genome scale
- * model concern tens of thousands of elements. */
-const props = defineProps<{ index: ReportIndex }>();
-const validation = conceptEntry("validation");
+ * model concern tens of thousands of elements. An issue of an element the report does not hold
+ * (the local server reads the file again for the validation) names its pk without a link. */
+const props = defineProps<{ validation: ValidationIndex }>();
+const concept = conceptEntry("validation");
 const rule = conceptEntry("validationRule");
 const category = conceptEntry("validationCategory");
 
 const shown = ref<Set<Severity>>(new Set(SEVERITY_ORDER));
 const chosenCategory = ref<string>("");
 /** The severities the document has, the only ones worth a filter. */
-const present = computed(() => SEVERITY_ORDER.filter((s) => props.index.issueCounts[s] > 0));
+const present = computed(() => SEVERITY_ORDER.filter((s) => props.validation.issueCounts[s] > 0));
 const categoryOptions = computed(() => [
   { label: "all categories", value: "" },
-  ...[...new Set(props.index.issues.map((i) => i.category))]
+  ...[...new Set(props.validation.issues.map((i) => i.category))]
     .sort()
     .map((c) => ({ label: c, value: c })),
 ]);
 const groups = computed(() =>
   groupByRule(
-    props.index.issues.filter(
+    props.validation.issues.filter(
       (i) =>
         shown.value.has(i.severity) &&
         (chosenCategory.value === "" || i.category === chosenCategory.value),
@@ -46,7 +47,7 @@ const groups = computed(() =>
     ...group,
     pks: [...new Set(group.issues.map((i) => i.pk))],
     // the text of the rule as the entry of the type of its first element states it
-    help: ruleKey(group.rule, props.index.get(group.issues[0]!.pk)?.sbmlType),
+    help: ruleKey(group.rule, props.validation.report.get(group.issues[0]!.pk)?.sbmlType),
   })),
 );
 
@@ -71,6 +72,17 @@ function linksOf(rule: number, pks: string[]): string[] {
   return expanded.value.has(rule) ? pks : pks.slice(0, VALIDATION_LINK_LIMIT);
 }
 
+/** Why libsbml did not check the document, at length: the chip of the app bar says it briefly. */
+const SKIPPED: Record<SkipReason, string> = {
+  expandedSize:
+    "libsbml did not check this document: its comp submodels expand it to more elements than are checked in a bounded time. Only the errors of reading the file are listed.",
+  timeout:
+    "libsbml did not check this document: the check did not end in the time a validation may take.",
+  memory:
+    "libsbml did not check this document: the check needed more memory than a validation may use.",
+  busy: "libsbml did not check this document: the server was busy with other validations. Reload the report later to try again.",
+};
+
 function toggle(severity: Severity): void {
   const next = new Set(shown.value);
   if (next.has(severity)) next.delete(severity);
@@ -82,26 +94,26 @@ function toggle(severity: Severity): void {
 <template>
   <section class="mb-3" data-testid="validation-list">
     <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
-      <HelpLabel :help-key="conceptKey('validation')" :tooltip="validation?.summary">{{
-        validation?.label
+      <HelpLabel :help-key="conceptKey('validation')" :tooltip="concept?.summary">{{
+        concept?.label
       }}</HelpLabel>
     </h3>
     <p
-      v-if="index.validationSkipped === 'submodelInstances'"
+      v-if="validation.skipped"
       class="mb-2 text-sm text-gray-600"
+      :data-reason="validation.skipped"
       data-testid="validation-skipped"
     >
-      libsbml did not check this document: its main model expands to more comp submodel instances
-      than are checked in a bounded time. Only the errors of reading the file are listed.
+      {{ SKIPPED[validation.skipped] }}
     </p>
     <p
-      v-if="index.issues.length === 0 && index.validationSkipped === null"
+      v-if="validation.issues.length === 0 && validation.skipped === null"
       class="text-sm text-gray-600"
       data-testid="no-validation-issues"
     >
       libsbml found no errors or warnings.
     </p>
-    <template v-if="index.issues.length > 0">
+    <template v-if="validation.issues.length > 0">
       <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         <label
           v-for="severity in present"
@@ -116,7 +128,7 @@ function toggle(severity: Severity): void {
             @change="toggle(severity)"
           />
           <SeverityIcon :severity="severity" />{{ severity }}
-          <span class="text-gray-500 tabular-nums">{{ index.issueCounts[severity] }}</span>
+          <span class="text-gray-500 tabular-nums">{{ validation.issueCounts[severity] }}</span>
         </label>
         <SelectInput
           v-if="categoryOptions.length > 2"

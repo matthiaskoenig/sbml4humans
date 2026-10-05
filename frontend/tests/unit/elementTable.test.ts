@@ -17,12 +17,13 @@ import { vTooltip } from "@/directives/tooltip";
 import { columnsOf, type ColumnDef } from "@/report/columns";
 import { attributeEntry } from "@/report/glossary";
 import type * as Glossary from "@/report/glossary";
-import { ReportIndexKey } from "@/report/context";
+import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
+import { ValidationIndex } from "@/report/validationIndex";
 import { elementLabel } from "@/report/label";
 import { router } from "@/router";
 
-import { loadReport, withIssues } from "./fixtures";
+import { loadReport, loadValidation, withIssues } from "./fixtures";
 import { helpKeyOf } from "./help";
 import { summaryOf } from "./summary";
 
@@ -57,6 +58,7 @@ function mountTable(
   rows: SbmlElement[],
   type: ElementType = "Species",
   reportIndex: ReportIndex = index,
+  validation: ValidationIndex | null = null,
 ) {
   wrapper = mount(ElementTable, {
     props: { type, model: reportIndex.mainModel!.id!, rows },
@@ -64,7 +66,10 @@ function mountTable(
     global: {
       plugins: [router],
       directives: { tooltip: vTooltip },
-      provide: { [ReportIndexKey as symbol]: ref(reportIndex) },
+      provide: {
+        [ReportIndexKey as symbol]: ref(reportIndex),
+        [ValidationIndexKey as symbol]: ref(validation),
+      },
     },
   });
   return wrapper;
@@ -171,7 +176,10 @@ describe("ElementTable", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(qual) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(qual),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
     const terms = header(wrapper, "listOfFunctionTerms");
@@ -214,7 +222,10 @@ describe("ElementTable", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(index),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
     const names = rules.map((rule) => elementLabel(index, rule.pk)!);
@@ -454,16 +465,17 @@ describe("ElementTable windowing", () => {
 });
 
 describe("ElementTable of a document with issues", () => {
-  const validation = new ReportIndex(loadReport("validation"));
-  const modelId = validation.mainModel!.id!;
+  const report = new ReportIndex(loadReport("validation"));
+  const validation = new ValidationIndex(report, loadValidation("validation"));
+  const modelId = report.mainModel!.id!;
   const rowOf = (table: ReturnType<typeof mount>, pk: string) =>
     table.get(`tbody tr[data-pk="${pk}"]`);
 
   it("marks the id of a row with an issue by its worst severity, the issues in its tooltip", async () => {
     await router.push({ path: "/report", query: {} });
-    const parameters = validation.byType(modelId).get("Parameter")!;
+    const parameters = report.byType(modelId).get("Parameter")!;
     const k1 = parameters.find((parameter) => parameter.id === "k1")!;
-    const table = mountTable(parameters, "Parameter", validation);
+    const table = mountTable(parameters, "Parameter", report, validation);
     const issue = rowOf(table, k1.pk).find("[data-testid=row-issue]");
     expect(issue.exists()).toBe(true);
     expect(issue.find("[data-testid=severity-warning]").exists()).toBe(true);
@@ -473,33 +485,33 @@ describe("ElementTable of a document with issues", () => {
 
   it("marks the row of a reaction by the issue of its kinetic law, named in the tooltip", async () => {
     await router.push({ path: "/report", query: {} });
-    const reactions = validation.byType(modelId).get("Reaction")!;
+    const reactions = report.byType(modelId).get("Reaction")!;
     const r1 = reactions.find((reaction) => reaction.id === "R1")! as Reaction;
-    const table = mountTable(reactions, "Reaction", validation);
+    const table = mountTable(reactions, "Reaction", report, validation);
     const issue = rowOf(table, r1.pk).find("[data-testid=row-issue]");
     expect(issue.find("[data-testid=severity-warning]").exists()).toBe(true);
     await issue.trigger("mouseenter");
-    const label = elementLabel(validation, r1.kineticLaw!.pk);
+    const label = elementLabel(report, r1.kineticLaw!.pk);
     expect(document.getElementById("app-tooltip")?.textContent).toContain(`${label}: 99505`);
   });
 
   it("lists a held error before the warnings of the row itself in the tooltip", async () => {
     await router.push({ path: "/report", query: {} });
-    const report = loadReport("validation");
-    const r1 = report.models![0]!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
-    const held = new ReportIndex(
-      withIssues(report, [
+    const r1 = report.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    const held = new ValidationIndex(
+      report,
+      withIssues([
         { pk: r1.pk, severity: "warning", rule: 10501 },
         { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
       ]),
     );
-    const reactions = held.byType(modelId).get("Reaction")!;
-    const table = mountTable(reactions, "Reaction", held);
+    const reactions = report.byType(modelId).get("Reaction")!;
+    const table = mountTable(reactions, "Reaction", report, held);
     const issue = rowOf(table, r1.pk).get("[data-testid=row-issue]");
     expect(issue.find("[data-testid=severity-error]").exists()).toBe(true);
     await issue.trigger("mouseenter");
     const tip = document.getElementById("app-tooltip")?.textContent ?? "";
-    const label = elementLabel(held, r1.kineticLaw!.pk);
+    const label = elementLabel(report, r1.kineticLaw!.pk);
     expect(tip.indexOf(`${label}: 99505`)).toBeGreaterThanOrEqual(0);
     expect(tip.indexOf(`${label}: 99505`)).toBeLessThan(tip.indexOf("10501"));
   });
@@ -508,9 +520,9 @@ describe("ElementTable of a document with issues", () => {
     // the parameter x has no issue of its own: the slot in front of its type mark lines its id up
     // with the id of k1, which carries the mark
     await router.push({ path: "/report", query: {} });
-    const parameters = validation.byType(modelId).get("Parameter")!;
+    const parameters = report.byType(modelId).get("Parameter")!;
     const x = parameters.find((parameter) => parameter.id === "x")!;
-    const table = mountTable(parameters, "Parameter", validation);
+    const table = mountTable(parameters, "Parameter", report, validation);
     const row = rowOf(table, x.pk);
     expect(row.find("[data-testid=row-issue]").exists()).toBe(false);
     const slot = row.get("[data-testid=row-issue-slot]");
@@ -518,11 +530,18 @@ describe("ElementTable of a document with issues", () => {
     expect(slot.classes()).toEqual(expect.arrayContaining(["size-3.5", "shrink-0"]));
   });
 
+  it("marks no row and keeps no place for a mark while the validation is pending", () => {
+    const parameters = report.byType(modelId).get("Parameter")!;
+    const table = mountTable(parameters, "Parameter", report, null);
+    expect(table.find("[data-testid=row-issue]").exists()).toBe(false);
+    expect(table.find("[data-testid=row-issue-slot]").exists()).toBe(false);
+  });
+
   it("leaves the id of a row without an issue unmarked", async () => {
     await router.push({ path: "/report", query: {} });
-    const rows = validation.byType(modelId).get("Species")!;
+    const rows = report.byType(modelId).get("Species")!;
     const a = rows.find((row) => (row as Species).id === "A")!;
-    const table = mountTable(rows, "Species", validation);
+    const table = mountTable(rows, "Species", report, validation);
     expect(rowOf(table, a.pk).find("[data-testid=row-issue]").exists()).toBe(false);
     // no species has an issue, so the table keeps its narrow width without the slot
     expect(table.find("[data-testid=row-issue-slot]").exists()).toBe(false);
@@ -540,7 +559,10 @@ describe("ElementCell", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(reportIndex) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(reportIndex),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
   }

@@ -25,7 +25,7 @@ import UnitsView from "@/components/misc/UnitsView.vue";
 import ValueText from "@/components/misc/ValueText.vue";
 import XhtmlView from "@/components/misc/XhtmlView.vue";
 import { fieldValue, type ColumnDef } from "@/report/columns";
-import { useReportIndex } from "@/report/context";
+import { useReportIndex, useValidationIndex } from "@/report/context";
 import { toNumber } from "@/report/number";
 import { geneAssociationText } from "@/report/geneAssociation";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
@@ -39,6 +39,7 @@ const props = defineProps<{
   issueSlot?: boolean;
 }>();
 const index = useReportIndex();
+const validation = useValidationIndex();
 
 const value = computed(() => fieldValue(props.row, props.column.field));
 const text = computed(() => (typeof value.value === "string" ? value.value : null));
@@ -64,12 +65,12 @@ const reportName = computed(() =>
  * message, an issue of an element it holds named by its element. */
 const severity = computed(() => {
   if (props.column.kind !== "id") return null;
-  const worst = index.value?.worstSeverity(props.row.pk) ?? null;
+  const worst = validation.value?.worstSeverity(props.row.pk) ?? null;
   return worst === "info" ? null : worst;
 });
 const issueTip = computed(() =>
   severity.value
-    ? (index.value?.rowIssuesOf(props.row.pk) ?? [])
+    ? (validation.value?.rowIssuesOf(props.row.pk) ?? [])
         .map((issue) =>
           issue.pk === props.row.pk
             ? `${issue.rule} ${issue.shortMessage}`

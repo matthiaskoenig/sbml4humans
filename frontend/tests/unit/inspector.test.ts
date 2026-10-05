@@ -31,15 +31,16 @@ import TransitionAttributes from "@/components/inspector/attributes/TransitionAt
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
-import { ReportIndexKey } from "@/report/context";
+import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
 import { attributeEntry, linkEntry } from "@/report/glossary";
 import { ASSOCIATION_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
+import { ValidationIndex } from "@/report/validationIndex";
 import { VALIDATION_LINK_LIMIT } from "@/report/validation";
 import { elementLabel } from "@/report/label";
 import { router } from "@/router";
 
-import { loadFixture, loadReport, withIssues } from "./fixtures";
+import { loadFixture, loadReport, loadValidation, withIssues } from "./fixtures";
 import { helpKeyOf } from "./help";
 import { summaryOf } from "./summary";
 
@@ -76,7 +77,12 @@ function fakeLinksIndex(bySource: Record<string, string[]>): ReportIndex {
   return index;
 }
 
-function mountWith(component: unknown, props: Record<string, unknown>, index: ReportIndex) {
+function mountWith(
+  component: unknown,
+  props: Record<string, unknown>,
+  index: ReportIndex,
+  validation: ValidationIndex | null = null,
+) {
   return mount(
     component as never,
     {
@@ -84,7 +90,10 @@ function mountWith(component: unknown, props: Record<string, unknown>, index: Re
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(index),
+          [ValidationIndexKey as symbol]: ref(validation),
+        },
       },
     } as never,
   );
@@ -183,7 +192,10 @@ describe("inspector", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(repressilator) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(repressilator),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
     const dt = wrapper
@@ -753,7 +765,10 @@ describe("inspector", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(index),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
     await wrapper.get("[data-testid=show-all]").trigger("click");
@@ -1002,7 +1017,10 @@ describe("inspector", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(repressilator) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(repressilator),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
     await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
@@ -1019,7 +1037,10 @@ describe("inspector", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(constraintEvent) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(constraintEvent),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
     await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
@@ -1038,7 +1059,10 @@ describe("inspector", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(repressilator) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(repressilator),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     });
     await wrapper.get("[data-testid=inspector-xml-toggle]").trigger("click");
@@ -1345,11 +1369,15 @@ describe("inspector", () => {
   });
 
   describe("the validation issues", () => {
-    const validation = new ReportIndex(loadReport("validation"));
+    const report = new ReportIndex(loadReport("validation"));
+    const validation = new ValidationIndex(report, loadValidation("validation"));
     const k1 = "validation/Parameter:k1";
+    /** The inspector of an element of the report of the validation example and its issues. */
+    const mountIssues = (pk: string, issues: ValidationIndex = validation) =>
+      mountWith(InspectorPanel, { pk }, issues.report, issues);
 
     it("shows the issues of an element above its attributes", () => {
-      const wrapper = mountWith(InspectorPanel, { pk: k1 }, validation);
+      const wrapper = mountIssues(k1);
       const block = wrapper.get("[data-testid=inspector-validation]");
       const items = block.findAll("[data-testid=validation-issue]");
       expect(items).toHaveLength(validation.issuesOf(k1).length);
@@ -1373,28 +1401,28 @@ describe("inspector", () => {
       const r1 = "validation/Reaction:R1";
       const law = validation.heldIssuesOf(r1)[0]!;
       expect(law.rule).toBe(99505);
-      const wrapper = mountWith(InspectorPanel, { pk: r1 }, validation);
+      const wrapper = mountIssues(r1);
       const items = wrapper
         .get("[data-testid=inspector-validation]")
         .findAll("[data-testid=validation-issue]");
       expect(items).toHaveLength(1);
       expect(items[0]!.text()).toContain("99505");
       const named = items[0]!.get("[data-testid=validation-issue-element]");
-      expect(named.text()).toBe(elementLabel(validation, law.pk));
+      expect(named.text()).toBe(elementLabel(report, law.pk));
       expect(named.get("[data-testid=element-link]").attributes("data-pk")).toBe(law.pk);
     });
 
     it("lists a held error before the warnings of the element itself", () => {
-      const report = loadReport("validation");
-      const r1 = report.models![0]!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
-      const held = new ReportIndex(
-        withIssues(report, [
+      const r1 = report.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+      const held = new ValidationIndex(
+        report,
+        withIssues([
           { pk: r1.pk, severity: "warning", rule: 10501 },
           { pk: r1.pk, severity: "warning", rule: 10502 },
           { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
         ]),
       );
-      const wrapper = mountWith(InspectorPanel, { pk: r1.pk }, held);
+      const wrapper = mountIssues(r1.pk, held);
       const rules = wrapper
         .get("[data-testid=inspector-validation]")
         .findAll("[data-testid=validation-issue] [data-testid=validation-rule]")
@@ -1403,18 +1431,18 @@ describe("inspector", () => {
     });
 
     it("names no element in front of an issue of the element itself", () => {
-      const wrapper = mountWith(InspectorPanel, { pk: k1 }, validation);
+      const wrapper = mountIssues(k1);
       expect(wrapper.find("[data-testid=validation-issue-element]").exists()).toBe(false);
     });
 
     it("shows no block for an element without issues", () => {
-      const wrapper = mountWith(InspectorPanel, { pk: "validation/Species:A" }, validation);
+      const wrapper = mountIssues("validation/Species:A");
       expect(wrapper.find("[data-testid=inspector-validation]").exists()).toBe(false);
       expect(wrapper.find("[data-testid=validation-list]").exists()).toBe(false);
     });
 
     it("keeps the full message of an issue behind more", () => {
-      const wrapper = mountWith(InspectorPanel, { pk: k1 }, validation);
+      const wrapper = mountIssues(k1);
       const issue = validation.issuesOf(k1)[0]!;
       const details = wrapper.get("[data-testid=validation-issue] details");
       expect(details.get("summary").text()).toBe("more");
@@ -1422,7 +1450,7 @@ describe("inspector", () => {
     });
 
     it("lists every issue of the document in the inspector of the document", async () => {
-      const wrapper = mountWith(InspectorPanel, { pk: validation.document.pk }, validation);
+      const wrapper = mountIssues(report.document.pk);
       const list = wrapper.get("[data-testid=validation-list]");
       const groups = () => list.findAll("[data-testid=validation-group]");
       expect(groups()[0]!.text()).toContain("10601");
@@ -1446,7 +1474,7 @@ describe("inspector", () => {
 
     it("opens the text of a rule the glossary cites from its number", async () => {
       await router.push("/examples/x");
-      const cell = mountWith(InspectorPanel, { pk: "validation/Compartment:cell" }, validation);
+      const cell = mountIssues("validation/Compartment:cell");
       const number = cell.get("[data-testid=validation-issue] [data-testid=validation-rule]");
       expect(number.text()).toBe("10712");
       await number.get("[data-testid=help-label]").trigger("click");
@@ -1454,7 +1482,7 @@ describe("inspector", () => {
       expect(router.currentRoute.value.query.help).toBe("types/Compartment");
 
       // a rule cited by an attribute of the type of the element opens that attribute
-      const k1 = mountWith(InspectorPanel, { pk: "validation/Parameter:k1" }, validation);
+      const k1 = mountIssues("validation/Parameter:k1");
       const units = k1
         .findAll("[data-testid=validation-issue] [data-testid=validation-rule]")
         .find((r) => r.text() === "20702")!;
@@ -1465,7 +1493,7 @@ describe("inspector", () => {
 
     it("opens the text of a rule from the list of the document, plain where it is not cited", async () => {
       await router.push("/examples/x");
-      const wrapper = mountWith(InspectorPanel, { pk: validation.document.pk }, validation);
+      const wrapper = mountIssues(report.document.pk);
       const rule = (n: string) =>
         wrapper
           .findAll("[data-testid=validation-group] [data-testid=validation-rule]")
@@ -1481,29 +1509,70 @@ describe("inspector", () => {
       expect(rule("99505").find("a").exists()).toBe(false);
     });
 
-    it("says that a document which was not validated was not, and not that it has no issues", () => {
-      const skipped = new ReportIndex(
-        withIssues(loadReport("constraint_event"), [], "submodelInstances"),
+    it("says why a document was not validated, and not that it has no issues", () => {
+      const constraints = new ReportIndex(loadReport("constraint_event"));
+      const notes: Record<string, string> = {};
+      for (const reason of ["expandedSize", "timeout", "memory", "busy"] as const) {
+        const skipped = new ValidationIndex(constraints, withIssues([], reason));
+        const wrapper = mountIssues(constraints.document.pk, skipped);
+        const list = wrapper.get("[data-testid=validation-list]");
+        const note = list.get("[data-testid=validation-skipped]");
+        expect(note.attributes("data-reason")).toBe(reason);
+        notes[reason] = note.text();
+        expect(list.find("[data-testid=no-validation-issues]").exists()).toBe(false);
+      }
+      expect(notes.expandedSize).toContain("submodels");
+      expect(notes.timeout).toContain("time");
+      expect(notes.memory).toContain("memory");
+      expect(notes.busy).toContain("try again");
+      expect(new Set(Object.values(notes)).size).toBe(4);
+    });
+
+    it("says that a document whose validation the budget skipped has its read errors alone", () => {
+      const fanOut = new ReportIndex(loadReport("fan_out"));
+      const skipped = new ValidationIndex(fanOut, loadValidation("fan_out"));
+      const wrapper = mountIssues(fanOut.document.pk, skipped);
+      expect(wrapper.get("[data-testid=validation-skipped]").text()).toContain(
+        "Only the errors of reading the file are listed",
       );
-      const wrapper = mountWith(InspectorPanel, { pk: skipped.document.pk }, skipped);
-      const list = wrapper.get("[data-testid=validation-list]");
-      expect(list.find("[data-testid=validation-skipped]").exists()).toBe(true);
-      expect(list.find("[data-testid=no-validation-issues]").exists()).toBe(false);
     });
 
     it("lists the read errors of a document which was not validated below the note", () => {
-      const report = loadReport("constraint_event");
-      const skipped = new ReportIndex(
+      const constraints = new ReportIndex(loadReport("constraint_event"));
+      const skipped = new ValidationIndex(
+        constraints,
         withIssues(
-          report,
-          [{ pk: report.document.pk, severity: "error", rule: 20222 }],
-          "submodelInstances",
+          [{ pk: constraints.document.pk, severity: "error", rule: 20222 }],
+          "expandedSize",
         ),
       );
-      const wrapper = mountWith(InspectorPanel, { pk: skipped.document.pk }, skipped);
+      const wrapper = mountIssues(constraints.document.pk, skipped);
       const list = wrapper.get("[data-testid=validation-list]");
       expect(list.find("[data-testid=validation-skipped]").exists()).toBe(true);
       expect(list.findAll("[data-testid=validation-group]")).toHaveLength(1);
+    });
+
+    it("shows no validation while it is pending", () => {
+      const wrapper = mountWith(InspectorPanel, { pk: report.document.pk }, report, null);
+      expect(wrapper.find("[data-testid=validation-list]").exists()).toBe(false);
+      expect(wrapper.find("[data-testid=inspector-validation]").exists()).toBe(false);
+      const k1Wrapper = mountWith(InspectorPanel, { pk: k1 }, report, null);
+      expect(k1Wrapper.find("[data-testid=inspector-validation]").exists()).toBe(false);
+    });
+
+    it("lists an issue of an element the report does not hold by its pk, without a link", async () => {
+      // the local server reads the file again for the validation, which may have changed since
+      const gone = new ValidationIndex(
+        report,
+        withIssues([{ pk: "validation/Species:gone", severity: "error", rule: 20601 }]),
+      );
+      const wrapper = mountIssues(report.document.pk, gone);
+      const group = wrapper.get("[data-testid=validation-group]");
+      const details = group.get("details");
+      (details.element as HTMLDetailsElement).open = true;
+      await details.trigger("toggle");
+      expect(group.find("[data-testid=element-link]").exists()).toBe(false);
+      expect(group.text()).toContain("gone");
     });
 
     it("renders the links of a group of the list only once it is opened, the first ones first", async () => {
@@ -1511,13 +1580,12 @@ describe("inspector", () => {
       const report = loadReport("icg_body");
       const pks = Object.keys(report.linkGraph!.nodes!);
       expect(pks.length).toBeGreaterThan(VALIDATION_LINK_LIMIT);
-      const many = new ReportIndex(
-        withIssues(
-          report,
-          pks.map((pk) => ({ pk, severity: "warning" as const, rule: 99508 })),
-        ),
+      const icg = new ReportIndex(report);
+      const many = new ValidationIndex(
+        icg,
+        withIssues(pks.map((pk) => ({ pk, severity: "warning" as const, rule: 99508 }))),
       );
-      const wrapper = mountWith(InspectorPanel, { pk: many.document.pk }, many);
+      const wrapper = mountIssues(icg.document.pk, many);
       const group = wrapper.get("[data-testid=validation-group]");
       expect(group.findAll("[data-testid=element-link]")).toHaveLength(0);
 
@@ -1534,10 +1602,9 @@ describe("inspector", () => {
     });
 
     it("says that a document without issues has none", () => {
-      const wrapper = mountWith(
-        InspectorPanel,
-        { pk: constraintEvent.document.pk },
-        constraintEvent,
+      const wrapper = mountIssues(
+        constraintEvent.document.pk,
+        new ValidationIndex(constraintEvent, withIssues([])),
       );
       const list = wrapper.get("[data-testid=validation-list]");
       expect(list.find("[data-testid=no-validation-issues]").exists()).toBe(true);
@@ -1546,7 +1613,7 @@ describe("inspector", () => {
 
     it("selects an element of a rule from the list", async () => {
       await router.push("/examples/x");
-      const wrapper = mountWith(InspectorPanel, { pk: validation.document.pk }, validation);
+      const wrapper = mountIssues(report.document.pk);
       const group = wrapper
         .findAll("[data-testid=validation-group]")
         .find((g) => g.get("[data-testid=validation-rule]").text() === "10712")!;

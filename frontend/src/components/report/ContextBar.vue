@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import type { ApiError } from "@/api/client";
 import type { Model } from "@/api/types";
 import SelectInput from "@/components/input/SelectInput.vue";
 import ValidationSummary from "@/components/report/ValidationSummary.vue";
 import type { ReportIndex } from "@/report/index";
 import { useReportView } from "@/report/view";
+import type { ValidationState } from "@/stores/report";
 
-const props = defineProps<{ index: ReportIndex; entries: string[]; entry: string; model: Model }>();
+const props = defineProps<{
+  index: ReportIndex;
+  entries: string[];
+  entry: string;
+  model: Model;
+  validationState: ValidationState | null;
+  validationError: ApiError | null;
+}>();
 const view = useReportView();
 
 const entryOptions = computed(() =>
@@ -57,6 +66,6 @@ const packages = computed(() => props.index.document.packages?.map((pkg) => pkg.
         >{{ pkg }}</span
       >
     </span>
-    <ValidationSummary :index="index" />
+    <ValidationSummary :index="index" :state="validationState" :error="validationError" />
   </div>
 </template>

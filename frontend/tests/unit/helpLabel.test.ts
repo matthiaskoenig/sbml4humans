@@ -6,7 +6,7 @@ import HelpButton from "@/components/help/HelpButton.vue";
 import HelpLabel from "@/components/help/HelpLabel.vue";
 import ElementSection from "@/components/report/ElementSection.vue";
 import { TOOLTIP_ID, vTooltip } from "@/directives/tooltip";
-import { ReportIndexKey } from "@/report/context";
+import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
 import { typeEntry } from "@/report/glossary";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
@@ -133,7 +133,10 @@ describe("ElementSection", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(index),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     }) as VueWrapper;
     const link = wrapper.get("[data-testid=help-button]");
@@ -158,7 +161,10 @@ describe("ElementSection", () => {
       global: {
         plugins: [router],
         directives: { tooltip: vTooltip },
-        provide: { [ReportIndexKey as symbol]: ref(index) },
+        provide: {
+          [ReportIndexKey as symbol]: ref(index),
+          [ValidationIndexKey as symbol]: ref(null),
+        },
       },
     }) as VueWrapper;
     const name = accessibleName(wrapper.get("h2").element);

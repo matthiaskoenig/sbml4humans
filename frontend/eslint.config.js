@@ -13,6 +13,7 @@ export default defineConfig([
       "node_modules/",
       "src/types/report.ts",
       "src/types/annotation.ts",
+      "src/types/validation.ts",
       "playwright-report/",
       "test-results/",
     ],

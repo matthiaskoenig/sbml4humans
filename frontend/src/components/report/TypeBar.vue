@@ -6,6 +6,7 @@ import type { ElementType, Model } from "@/api/types";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import { ELEMENT_TYPES, type ElementTypeInfo } from "@/data/sbmlTypes";
+import { useValidationIndex } from "@/report/context";
 import type { ReportIndex } from "@/report/index";
 import { useReportView } from "@/report/view";
 
@@ -20,6 +21,7 @@ const props = defineProps<{
   counts: Map<ElementType, TypeCount>;
 }>();
 const view = useReportView();
+const validation = useValidationIndex();
 
 const packages = computed(
   () => new Set(props.index.document.packages?.map((pkg) => pkg.prefix) ?? []),
@@ -77,7 +79,7 @@ async function scrollTo(type: ElementType): Promise<void> {
 const entries = computed(() =>
   types.value.map((info) => {
     const worst = props.model.id
-      ? props.index.worstSeverityOfType(info.type, props.model.id)
+      ? (validation.value?.worstSeverityOfType(info.type, props.model.id) ?? null)
       : null;
     return { info, severity: worst === "info" ? null : worst };
   }),
@@ -87,7 +89,7 @@ const entries = computed(() =>
  * table and whose entry of the bar is their row: the worst severity of their issues and of those of
  * what they hold without a row (their lists); a note alone is no mark. */
 function markOf(pk: string): "error" | "warning" | null {
-  const worst = props.index.worstSeverity(pk);
+  const worst = validation.value?.worstSeverity(pk) ?? null;
   return worst === "info" ? null : worst;
 }
 

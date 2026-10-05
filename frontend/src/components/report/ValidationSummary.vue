@@ -1,19 +1,41 @@
 <script setup lang="ts">
+import { CircleOffIcon, LoaderCircleIcon } from "@lucide/vue";
 import { computed } from "vue";
 
+import type { ApiError } from "@/api/client";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
+import { useValidationIndex } from "@/report/context";
 import { conceptEntry } from "@/report/glossary";
 import type { ReportIndex } from "@/report/index";
+import type { SkipReason } from "@/report/validationIndex";
 import { useReportView } from "@/report/view";
+import type { ValidationState } from "@/stores/report";
 
 /** The counts of the errors and the warnings of the document; a click opens their list, which
  * is the inspector of the document. A valid document shows nothing, a document libsbml did not
- * check says so, so that the missing counts are not read as a valid document. */
-const props = defineProps<{ index: ReportIndex }>();
+ * check says so, so that the missing counts are not read as a valid document. The validation is
+ * answered after the report: while it runs a quiet chip says so, and a validation which failed
+ * says that it failed, with the message of the failure as its tooltip. */
+defineProps<{
+  index: ReportIndex;
+  state: ValidationState | null;
+  error: ApiError | null;
+}>();
 const view = useReportView();
-const counts = computed(() => props.index.issueCounts);
-const skipped = computed(() => props.index.validationSkipped !== null);
+const validation = useValidationIndex();
+const counts = computed(() => validation.value?.issueCounts ?? { error: 0, warning: 0, info: 0 });
+const skipped = computed(() => validation.value?.skipped ?? null);
 const tooltip = computed(() => conceptEntry("validation")?.summary);
+
+/** Why libsbml did not check the document, in the words of the chip: no severity of libsbml, the
+ * check did not run. The inspector of the document says it at length. */
+const SKIPPED: Record<SkipReason, string> = {
+  expandedSize:
+    "libsbml did not check this document: its comp submodels expand it beyond the size which is checked",
+  timeout: "libsbml did not check this document: the check did not end in time",
+  memory: "libsbml did not check this document: the check needed more memory than it may use",
+  busy: "libsbml did not check this document: the server was busy, reload the report later to try again",
+};
 
 /** "error" and "warning" are the severities of libsbml, the values the glossary lists for
  * validationSeverity. */
@@ -25,7 +47,31 @@ function words(count: number, severity: "error" | "warning"): string {
 <template>
   <!-- a narrow window keeps the counts and leaves the words out, the name of a chip keeps both -->
   <span
-    v-if="skipped || counts.error + counts.warning > 0"
+    v-if="state === 'pending'"
+    v-tooltip.bottom="
+      'libsbml checks the document, its errors and warnings appear here when it is done'
+    "
+    class="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs whitespace-nowrap text-gray-500"
+    role="status"
+    aria-label="validating"
+    data-testid="validation-pending"
+  >
+    <LoaderCircleIcon class="size-3.5 animate-spin" /><span class="max-md:hidden">validating</span>
+  </span>
+  <span
+    v-else-if="state === 'failed'"
+    v-tooltip.bottom="error?.message"
+    tabindex="0"
+    class="flex shrink-0 items-center gap-1 rounded-full border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs whitespace-nowrap text-gray-700"
+    aria-label="validation failed"
+    data-testid="validation-failed"
+  >
+    <CircleOffIcon class="size-3.5 text-gray-500" /><span class="max-md:hidden"
+      >validation failed</span
+    >
+  </span>
+  <span
+    v-else-if="skipped || counts.error + counts.warning > 0"
     class="flex shrink-0 items-center gap-1"
     data-testid="validation-summary"
   >
@@ -53,15 +99,13 @@ function words(count: number, severity: "error" | "warning"): string {
       <SeverityIcon severity="warning" />{{ counts.warning }}
       <span class="max-md:hidden">{{ words(counts.warning, "warning") }}</span>
     </button>
-    <!-- the words of the chip are its own: no severity of libsbml, the check did not run -->
     <button
       v-if="skipped"
-      v-tooltip.bottom="
-        'libsbml did not check this document, the inspector of the document says why'
-      "
+      v-tooltip.bottom="SKIPPED[skipped]"
       type="button"
       class="flex items-center gap-1 rounded-full border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs whitespace-nowrap text-gray-700 hover:bg-gray-100"
       aria-label="not validated"
+      :data-reason="skipped"
       data-testid="validation-skipped"
       @click="view.select(index.document.pk)"
     >

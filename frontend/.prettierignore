@@ -6,6 +6,7 @@ playwright-report/
 test-results/
 src/schema/report.schema.json
 src/schema/annotation.schema.json
+src/schema/validation.schema.json
 src/data/glossary.json
 src/data/glossary-details.json
 tests/fixtures/
