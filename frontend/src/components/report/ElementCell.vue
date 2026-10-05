@@ -62,7 +62,9 @@ const reportName = computed(() =>
 /** Kind "id": the worst severity of the issues of the row, which its id marks, those of the
  * elements it holds without a row of their own (its kinetic law, its trigger) among them; a note
  * alone is no mark. The tooltip lists the issues of the row, errors first, by rule and short
- * message, an issue of an element it holds named by its element. */
+ * message, an issue of an element it holds named by its element. A reader on the keyboard focuses
+ * the row and not its mark, which is no tab stop: the name of the mark, which the row is read
+ * with, is the severity and the issues, and the inspector of the row lists them. */
 const severity = computed(() => {
   if (props.column.kind !== "id") return null;
   const worst = validation.value?.worstSeverity(props.row.pk) ?? null;
@@ -78,6 +80,9 @@ const issueTip = computed(() =>
         )
         .join(" · ")
     : undefined,
+);
+const issueLabel = computed(() =>
+  severity.value ? `${severity.value}: ${issueTip.value}` : undefined,
 );
 
 /** Kind "link": the pk of the referenced element, resolved through the edges of the row. */
@@ -155,7 +160,7 @@ function signOf(influence: Input | Output): string | null | undefined {
   <span v-if="column.kind === 'id'" class="flex items-center gap-1.5 max-md:max-w-[40vw]">
     <!-- the worst severity of the issues of the row, in front of the mark of its type -->
     <span v-if="severity" v-tooltip="issueTip" class="flex" data-testid="row-issue">
-      <SeverityIcon :severity="severity" />
+      <SeverityIcon :severity="severity" :label="issueLabel" />
     </span>
     <span
       v-else-if="issueSlot"

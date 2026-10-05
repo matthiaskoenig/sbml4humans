@@ -516,6 +516,31 @@ describe("ElementTable of a document with issues", () => {
     expect(tip.indexOf(`${label}: 99505`)).toBeLessThan(tip.indexOf("10501"));
   });
 
+  it("names the issues of a row in the accessible name of its mark, which is no tab stop", async () => {
+    // a reader on the keyboard focuses the row, not the mark, and is read the name of the mark
+    await router.push({ path: "/report", query: {} });
+    const r1 = report.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    const held = new ValidationIndex(
+      report,
+      withIssues([
+        { pk: r1.pk, severity: "warning", rule: 10501 },
+        { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
+      ]),
+    );
+    const reactions = report.byType(modelId).get("Reaction")!;
+    const table = mountTable(reactions, "Reaction", report, held);
+    const row = rowOf(table, r1.pk);
+    const mark = row.get("[data-testid=row-issue] [role=img]");
+    const name = mark.attributes("aria-label") ?? "";
+    const label = elementLabel(report, r1.kineticLaw!.pk);
+    expect(name).toMatch(/^error: /);
+    expect(name).toContain(`${label}: 99505`);
+    expect(name).toContain("10501");
+    expect(name.indexOf("99505")).toBeLessThan(name.indexOf("10501"));
+    expect(row.find("[data-testid=row-issue] [tabindex]").exists()).toBe(false);
+    expect(row.get("[data-testid=row-issue]").attributes("tabindex")).toBeUndefined();
+  });
+
   it("keeps the place of the mark in an unmarked row of a table with issues", async () => {
     // the parameter x has no issue of its own: the slot in front of its type mark lines its id up
     // with the id of k1, which carries the mark
