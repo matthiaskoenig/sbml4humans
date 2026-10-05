@@ -1512,7 +1512,7 @@ describe("inspector", () => {
     it("says why a document was not validated, and not that it has no issues", () => {
       const constraints = new ReportIndex(loadReport("constraint_event"));
       const notes: Record<string, string> = {};
-      for (const reason of ["expandedSize", "timeout", "memory", "busy"] as const) {
+      for (const reason of ["expandedSize", "timeout", "memory", "busy", "unanswered"] as const) {
         const skipped = new ValidationIndex(constraints, withIssues([], reason));
         const wrapper = mountIssues(constraints.document.pk, skipped);
         const list = wrapper.get("[data-testid=validation-list]");
@@ -1524,8 +1524,19 @@ describe("inspector", () => {
       expect(notes.expandedSize).toContain("submodels");
       expect(notes.timeout).toContain("time");
       expect(notes.memory).toContain("memory");
-      expect(notes.busy).toContain("try again");
-      expect(new Set(Object.values(notes)).size).toBe(4);
+      expect(notes.busy).toContain("Reload the report later");
+      expect(notes.unanswered).toContain("left it out");
+      expect(new Set(Object.values(notes)).size).toBe(5);
+    });
+
+    it("asks to load a file or pasted content again when the server was busy", () => {
+      const constraints = new ReportIndex(loadReport("constraint_event"));
+      const busy = new ValidationIndex(constraints, withIssues([], "busy"), false);
+      const note = mountIssues(constraints.document.pk, busy).get(
+        "[data-testid=validation-skipped]",
+      );
+      expect(note.text()).toContain("Load it again later");
+      expect(note.text()).not.toContain("Reload");
     });
 
     it("says that a document whose validation the budget skipped has its read errors alone", () => {

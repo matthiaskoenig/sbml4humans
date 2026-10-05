@@ -11,6 +11,7 @@ import type {
   ValidationIssue,
   ValidationResponse,
 } from "@/api/types";
+import type { EntryResult } from "@/report/validationIndex";
 
 // `new URL(x, import.meta.url)` is Vite's static asset-url pattern: it rewrites the call at
 // transform time, which mangles a runtime path built from a template literal. Building the
@@ -75,8 +76,8 @@ export function loadValidation(name: ValidatedFixtureName, location?: string): E
  * the texts default to a plain warning of units. */
 export function withIssues(
   issues: (Pick<ValidationIssue, "pk" | "severity"> & Partial<ValidationIssue>)[],
-  skipped: EntryValidation["skipped"] = null,
-): EntryValidation {
+  skipped: EntryResult["skipped"] = null,
+): EntryResult {
   return {
     skipped,
     issues: issues.map((issue) => ({

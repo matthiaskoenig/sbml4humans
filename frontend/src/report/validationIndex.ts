@@ -2,7 +2,18 @@ import type { ElementType, EntryValidation, ValidationIssue } from "@/api/types"
 import type { ReportIndex } from "@/report/index";
 import { bySeverity, worse, type Severity } from "@/report/validation";
 
+/** Why the server did not check an entry. */
 export type SkipReason = NonNullable<EntryValidation["skipped"]>;
+
+/** Why an entry was not checked: a reason of the server, or `unanswered`, an entry the answer
+ * neither holds nor gives a reason for, which is not read as a valid document. */
+export type EntrySkip = SkipReason | "unanswered";
+
+/** The validation of one entry as the frontend keeps it. */
+export interface EntryResult {
+  issues: ValidationIssue[];
+  skipped: EntrySkip | null;
+}
 
 function push<K, V>(map: Map<K, V[]>, key: K, value: V): void {
   const list = map.get(key);
@@ -21,7 +32,10 @@ export class ValidationIndex {
   readonly issues: readonly ValidationIssue[];
   /** Why the consistency of the document was not checked, null where it was: its issues are then
    * those of reading it alone, or none. */
-  readonly skipped: SkipReason | null;
+  readonly skipped: EntrySkip | null;
+  /** Whether a reload of the page requests the validation again: false for a file and for pasted
+   * content, which the page does not keep, so the reader loads it again. */
+  readonly reloadable: boolean;
   /** The number of issues of each severity. */
   readonly issueCounts: Record<Severity, number> = { error: 0, warning: 0, info: 0 };
   private readonly issuesByPk = new Map<string, ValidationIssue[]>();
@@ -29,10 +43,11 @@ export class ValidationIndex {
   /** The issues of the nested elements without a row, by the pk of the row which holds them. */
   private readonly heldByPk = new Map<string, ValidationIssue[]>();
 
-  constructor(report: ReportIndex, validation: EntryValidation) {
+  constructor(report: ReportIndex, validation: EntryResult, reloadable = true) {
     this.report = report;
     this.issues = validation.issues;
     this.skipped = validation.skipped;
+    this.reloadable = reloadable;
     for (const issue of this.issues) {
       push(this.issuesByPk, issue.pk, issue);
       // the issue of an element without a row marks the row which holds it

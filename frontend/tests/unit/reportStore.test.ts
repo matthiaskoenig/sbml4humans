@@ -76,6 +76,30 @@ describe("report store", () => {
     expect(store.source).toEqual({ kind: "example", id: "CompModels", name: "CompModels" });
   });
 
+  it("keeps the report of the newer of two loads whose answers arrive in reverse order", async () => {
+    const first = deferred<ReturnType<typeof loadFixture>>();
+    const second = deferred<ReturnType<typeof loadFixture>>();
+    vi.mocked(client.getExample)
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise);
+    const store = useReportStore();
+    const older = store.loadExample("validation");
+    const newer = store.loadExample("BIOMD0000000012");
+    second.resolve(loadFixture("repressilator"));
+    await newer;
+    expect(store.source?.id).toBe("BIOMD0000000012");
+    expect(store.loading).toBe(false);
+    first.resolve(loadFixture("validation"));
+    await older;
+    expect(store.source?.id).toBe("BIOMD0000000012");
+    expect(store.entries).toEqual(["./BIOMD0000000012_url.xml"]);
+    expect(store.indexFor("./validation.xml")).toBeNull();
+    expect(store.loading).toBe(false);
+    // the validation is requested for the newer report alone
+    expect(client.getExampleValidation).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(client.getExampleValidation).mock.calls[0]![0]).toBe("BIOMD0000000012");
+  });
+
   it("loads the report of an upload once", async () => {
     vi.mocked(client.getUpload).mockResolvedValue(loadFixture("comp_deletion"));
     const store = useReportStore();
@@ -294,6 +318,41 @@ describe("report store", () => {
       await store.loadExample("fan_out");
       await flushPromises();
       expect(store.validationFor("./model.xml")?.skipped).toBe("busy");
+    });
+
+    it("does not read an entry the answer leaves out without a reason as valid", async () => {
+      vi.mocked(client.getExample).mockResolvedValue(loadFixture("comp_models"));
+      vi.mocked(client.getExampleValidation).mockResolvedValue({
+        entries: { "./models/omex_comp.xml": { issues: [], skipped: null } },
+        skipped: null,
+      });
+      const store = useReportStore();
+      await store.loadExample("CompModels");
+      await flushPromises();
+      expect(store.validationState).toBe("done");
+      expect(store.validationFor("./models/omex_comp.xml")?.skipped).toBeNull();
+      expect(store.validationFor("./models/omex_minimal.xml")?.skipped).toBe("unanswered");
+      expect(store.validationFor("./models/omex_comp_flat.xml")?.skipped).toBe("unanswered");
+    });
+
+    it("knows whether a reload asks for the validation again", async () => {
+      vi.mocked(client.getExample).mockResolvedValue(loadFixture("fan_out"));
+      vi.mocked(client.postContent).mockResolvedValue(loadFixture("fan_out"));
+      vi.mocked(client.postFile).mockResolvedValue(loadFixture("fan_out"));
+      const busy = { entries: {}, skipped: "busy" as const };
+      vi.mocked(client.getExampleValidation).mockResolvedValue(busy);
+      vi.mocked(client.postContentValidation).mockResolvedValue(busy);
+      vi.mocked(client.postFileValidation).mockResolvedValue(busy);
+      const store = useReportStore();
+      await store.loadExample("fan_out");
+      await flushPromises();
+      expect(store.validationFor("./model.xml")?.reloadable).toBe(true);
+      await store.loadContent("<sbml/>");
+      await flushPromises();
+      expect(store.validationFor("./model.xml")?.reloadable).toBe(false);
+      await store.loadFile(new File(["<sbml/>"], "model.xml"));
+      await flushPromises();
+      expect(store.validationFor("./model.xml")?.reloadable).toBe(false);
     });
 
     it("keeps an entry the budget skipped", async () => {

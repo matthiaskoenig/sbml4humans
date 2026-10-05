@@ -90,7 +90,7 @@ describe("ValidationSummary", () => {
   it("says that a document which was not validated was not, and why, rather than nothing", async () => {
     await router.push({ path: "/report", query: {} });
     const tips = new Set<string>();
-    for (const reason of ["expandedSize", "timeout", "memory", "busy"] as const) {
+    for (const reason of ["expandedSize", "timeout", "memory", "busy", "unanswered"] as const) {
       const skipped = new ValidationIndex(constraintEvent, withIssues([], reason));
       const summary = mountSummary(skipped);
       const chip = summary.get("[data-testid=validation-skipped]");
@@ -105,8 +105,19 @@ describe("ValidationSummary", () => {
       summary.unmount();
       wrapper = null;
     }
-    expect(tips.size).toBe(4);
-    expect([...tips].find((tip) => tip.includes("busy"))).toContain("try again");
+    expect(tips.size).toBe(5);
+    expect([...tips].find((tip) => tip.includes("busy"))).toContain("reload the report later");
+  });
+
+  it("asks to load a file or pasted content again when the server was busy", async () => {
+    await router.push({ path: "/report", query: {} });
+    const busy = new ValidationIndex(constraintEvent, withIssues([], "busy"), false);
+    const summary = mountSummary(busy);
+    const chip = summary.get("[data-testid=validation-skipped]");
+    await chip.trigger("mouseenter");
+    const tip = document.getElementById("app-tooltip")?.textContent ?? "";
+    expect(tip).toContain("load it again later");
+    expect(tip).not.toContain("reload");
   });
 
   it("shows a quiet chip while the validation is pending, and no counts", async () => {

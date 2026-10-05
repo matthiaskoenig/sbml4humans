@@ -98,10 +98,12 @@ export const useReportStore = defineStore("report", () => {
   }
 
   /** Request the validation of the report which has just loaded, with the same source. An entry
-   * the answer leaves out was not reached and takes the reason of the answer. */
+   * the answer leaves out was not reached and takes the reason of the answer; one the answer
+   * leaves out without a reason is `unanswered`, never a valid document. */
   async function validate(
     reports: Map<string, ReportIndex>,
     request: (signal: AbortSignal) => Promise<ValidationResponse>,
+    reloadable: boolean,
   ): Promise<void> {
     const controller = new AbortController();
     validationController = controller;
@@ -111,8 +113,11 @@ export const useReportStore = defineStore("report", () => {
       if (controller.signal.aborted) return;
       const next = new Map<string, ValidationIndex>();
       for (const [location, report] of reports) {
-        const entry = result.entries[location] ?? { issues: [], skipped: result.skipped };
-        next.set(location, markRaw(new ValidationIndex(report, entry)));
+        const entry = result.entries[location] ?? {
+          issues: [],
+          skipped: result.skipped ?? "unanswered",
+        };
+        next.set(location, markRaw(new ValidationIndex(report, entry, reloadable)));
       }
       validations.value = next;
       validationState.value = "done";
@@ -153,7 +158,8 @@ export const useReportStore = defineStore("report", () => {
     } finally {
       if (current === generation) loading.value = false;
     }
-    void validate(connected, validation);
+    // a file and pasted content are not part of the url of the page, a reload loses them
+    void validate(connected, validation, next.kind !== "file" && next.kind !== "content");
   }
 
   const loadExample = (id: string) =>
