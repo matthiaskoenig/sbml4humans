@@ -30,6 +30,7 @@ import { toNumber } from "@/report/number";
 import { geneAssociationText } from "@/report/geneAssociation";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
 import { transitionTerms } from "@/report/transitionTerms";
+import { ROW_ISSUE_NAME_LIMIT } from "@/report/validation";
 
 const props = defineProps<{
   row: SbmlElement;
@@ -70,20 +71,29 @@ const severity = computed(() => {
   const worst = validation.value?.worstSeverity(props.row.pk) ?? null;
   return worst === "info" ? null : worst;
 });
-const issueTip = computed(() =>
+/** The issues of the row as the tooltip and the name of the mark state them. */
+const issueTexts = computed(() =>
   severity.value
-    ? (validation.value?.rowIssuesOf(props.row.pk) ?? [])
-        .map((issue) =>
-          issue.pk === props.row.pk
-            ? `${issue.rule} ${issue.shortMessage}`
-            : `${elementLabel(index.value, issue.pk) ?? issue.pk}: ${issue.rule} ${issue.shortMessage}`,
-        )
-        .join(" · ")
-    : undefined,
+    ? (validation.value?.rowIssuesOf(props.row.pk) ?? []).map((issue) =>
+        issue.pk === props.row.pk
+          ? `${issue.rule} ${issue.shortMessage}`
+          : `${elementLabel(index.value, issue.pk) ?? issue.pk}: ${issue.rule} ${issue.shortMessage}`,
+      )
+    : [],
 );
-const issueLabel = computed(() =>
-  severity.value ? `${severity.value}: ${issueTip.value}` : undefined,
+const issueTip = computed(() =>
+  issueTexts.value.length ? issueTexts.value.join(" · ") : undefined,
 );
+/** The name of the mark, read with the focused row: the severity, the number of the issues and
+ * the first `ROW_ISSUE_NAME_LIMIT` of them, so that a row with many issues stays short to hear. */
+const issueLabel = computed(() => {
+  const texts = issueTexts.value;
+  if (!severity.value || texts.length === 0) return undefined;
+  const count = `${texts.length} ${texts.length === 1 ? "issue" : "issues"}`;
+  const named = texts.slice(0, ROW_ISSUE_NAME_LIMIT).join(" · ");
+  const rest = texts.length - ROW_ISSUE_NAME_LIMIT;
+  return `${severity.value}: ${count}: ${named}${rest > 0 ? `, and ${rest} more` : ""}`;
+});
 
 /** Kind "link": the pk of the referenced element, resolved through the edges of the row. */
 const targetPk = computed(() =>

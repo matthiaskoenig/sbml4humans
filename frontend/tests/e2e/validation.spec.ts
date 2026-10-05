@@ -95,17 +95,39 @@ test.describe("validation", () => {
     await expect(list.getByTestId("validation-group")).toHaveCount(1);
   });
 
-  test("names the issues of a row in its mark, which the keyboard passes over", async ({
+  test("reaches the issues of a row by the keyboard, at the row and not at its mark", async ({
     page,
   }) => {
+    // the arrow keys move the focus from the last row of the parameters up to the row of k1
+    const rows = page.locator('tbody tr[data-pk*="/Parameter:"]');
     const row = page.locator('tbody tr[data-pk$="Parameter:k1"]');
-    const mark = row.getByTestId("row-issue").getByRole("img");
-    await expect(mark).toHaveAccessibleName(/^warning: .*10703/);
-    // the row is the stop of the keyboard, the mark is none
+    const last = rows.last();
+    await expect(last).not.toHaveAttribute("data-pk", /Parameter:k1$/);
+    await last.focus();
+    await expect(last).toBeFocused();
+    for (let step = 1; step < (await rows.count()); step += 1) {
+      await page.keyboard.press("ArrowUp");
+    }
+    await expect(row).toBeFocused();
+    // the focused row is read with the name of its mark, which names the issues
+    await expect(row).toHaveAccessibleName(/warning: \d+ issues?: .*10703/);
+    await expect(row.getByTestId("row-issue").getByRole("img")).toHaveAccessibleName(
+      /^warning: \d+ issues?: .*10703/,
+    );
+    // Enter opens the inspector of the row, which lists them
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("inspector").getByTestId("inspector-validation")).toContainText(
+      "10703",
+    );
+    // the mark is no stop of the keyboard: Tab leaves the row for what follows it
     await row.focus();
     await page.keyboard.press("Tab");
-    await expect(row.getByTestId("row-issue")).not.toBeFocused();
-    await expect(mark).not.toBeFocused();
+    await expect(row).not.toBeFocused();
+    expect(
+      await row
+        .getByTestId("row-issue")
+        .evaluate((mark) => mark.contains(mark.ownerDocument.activeElement)),
+    ).toBe(false);
   });
 
   test("marks the rows and the types with issues", async ({ page }) => {
