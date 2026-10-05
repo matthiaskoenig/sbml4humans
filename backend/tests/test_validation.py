@@ -440,6 +440,87 @@ def test_resolver_delegates_outside_validation(monkeypatch: pytest.MonkeyPatch) 
     assert resolved is not None
 
 
+def test_the_registry_owns_the_resolver() -> None:
+    """The registry took the C++ side of the resolver, python keeps its proxy."""
+    registry = libsbml.SBMLResolverRegistry.getInstance()
+    assert registry.getNumResolvers() == 1
+    assert _RESOLVER.thisown is False
+    assert _RESOLVER.clone() is _RESOLVER
+
+
+def _sbml(model_id: str) -> str:
+    """A document of an empty model."""
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        f'version="1"><model id="{model_id}"/></sbml>'
+    )
+
+
+def test_report_documents_keep_the_first_of_a_location(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Of two locations which normalize the same the first document is kept."""
+    first: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("first"))
+    second: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("second"))
+    documents = ReportDocuments({"./a.xml": first, "a.xml": second})
+    found = documents.find("a.xml", "b.xml")
+    assert found is not None
+    assert found.getModel().getId() == "first"
+    [record] = [r for r in caplog.records if r.levelname == "WARNING"]
+    assert "'./a.xml'" in record.getMessage()
+    assert "'a.xml'" in record.getMessage()
+
+
+@contextmanager
+def _validating(documents: ReportDocuments, location: str, uri: str) -> Iterator[None]:
+    """The resolver answers as in the validation of the document at `location`."""
+    token = validation._VALIDATION.set(validation._Validation(documents, location, uri))
+    try:
+        yield
+    finally:
+        validation._VALIDATION.reset(token)
+
+
+def test_resolve_uri_without_a_uri_of_the_document_is_none() -> None:
+    """A document without a location uri of its own has no uri to answer."""
+    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
+    target: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("target"))
+    assert target.getLocationURI() == ""
+    documents = ReportDocuments({"a.xml": main, "b.xml": target})
+    with _validating(documents, "a.xml", ""):
+        # the document is found, its uri is not the source it was asked for
+        assert _RESOLVER.resolve("b.xml", "") is not None
+        assert _RESOLVER.resolveUri("b.xml", "") is None
+
+
+def test_resolve_uri_of_a_shared_uri_is_none(tmp_path: Path) -> None:
+    """A location uri which two documents of the report share names neither."""
+    path = tmp_path / "shared.xml"
+    path.write_text(_sbml("shared"))
+    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
+    one: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
+    other: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
+    assert one.getLocationURI() == other.getLocationURI() != ""
+    documents = ReportDocuments({"a.xml": main, "b.xml": one, "c.xml": other})
+    with _validating(documents, "a.xml", ""):
+        assert _RESOLVER.resolve("b.xml", "") is not None
+        assert _RESOLVER.resolveUri("b.xml", "") is None
+
+
+def test_resolve_uri_of_a_document_is_its_location_uri(tmp_path: Path) -> None:
+    """The uri of a document of the report is its own location uri."""
+    path = tmp_path / "target.xml"
+    path.write_text(_sbml("target"))
+    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
+    target: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
+    documents = ReportDocuments({"a.xml": main, "b.xml": target})
+    with _validating(documents, "a.xml", ""):
+        resolved = _RESOLVER.resolveUri("b.xml", "")
+        assert resolved is not None
+        assert resolved.getUri() == target.getLocationURI()
+
+
 # -------------------------------------------------------------------------------------
 # the expanded-size budget
 # -------------------------------------------------------------------------------------
