@@ -28,6 +28,13 @@ A child which runs out of memory either raises `MemoryError` in python or is
 aborted by the `std::bad_alloc` libsbml does not catch, both end what is left
 of it as `"memory"`.
 
+A child keeps its temporary files, the archive of the source extracted by
+pymetadata among them, in a temporary directory the server makes for it and
+removes when it has ended, so that a child which was killed or aborted leaves
+nothing of the content on the server. The cpu time of a child is limited to
+twice the timeout, so that a child ends itself also when its server died
+without ending it.
+
 The python interface runs the same server on the machine of the user: where
 there is no forkserver (Windows) a child is spawned, a fresh interpreter which
 imports the validation itself, and where the address space cannot be limited
@@ -35,9 +42,12 @@ imports the validation itself, and where the address space cannot be limited
 """
 
 import logging
+import math
 import multiprocessing
 import os
+import shutil
 import signal
+import tempfile
 import threading
 import time
 import traceback
@@ -140,6 +150,19 @@ def admission() -> Iterator[bool]:
                 _admitted -= 1
 
 
+def start_forkserver() -> None:
+    """Start the forkserver, if the children are forked by one.
+
+    The forkserver imports the report and the validation once it runs, which
+    the first validation would otherwise wait for within its timeout. A
+    forkserver which runs already is kept.
+    """
+    if _CONTEXT.get_start_method() == "forkserver":
+        from multiprocessing import forkserver
+
+        forkserver.ensure_running()
+
+
 def _semaphore() -> threading.BoundedSemaphore:
     """The semaphore of `MAX_CONCURRENT_VALIDATIONS`, read when it is used."""
     with _LOCK:
@@ -173,18 +196,40 @@ def _limit_memory(memory: int) -> Callable[[], None]:
     return lift
 
 
+def _limit_cpu(seconds: int) -> None:
+    """Limit the cpu time of this process, after which it is ended by SIGXCPU.
+
+    Only the soft limit is lowered. Without a limit of the cpu time nothing is
+    limited.
+    """
+    try:
+        # there is no module `resource` on Windows
+        import resource
+
+        _, hard = resource.getrlimit(resource.RLIMIT_CPU)
+        soft = seconds if hard == resource.RLIM_INFINITY else min(seconds, hard)
+        resource.setrlimit(resource.RLIMIT_CPU, (soft, hard))
+    except (ImportError, AttributeError, ValueError, OSError) as exc:
+        logger.warning("the cpu time of the validation is not limited: %s", exc)
+
+
 def _child(
     function: Callable[[Any], Iterable[tuple[str, Any]]],
     argument: Any,
     memory: int,
+    cpu: int,
+    tempdir: str,
     connection: Connection,
 ) -> None:
     """Run in the child: send every result of the function, then `_DONE`.
 
-    The address space is limited to `memory`; when python runs out of it, the
-    limit is lifted again so that the child can say so. Another exception is
-    sent with its traceback.
+    The temporary files of the child go to `tempdir`, which the server
+    removes. The cpu time is limited to `cpu` seconds and the address space to
+    `memory`; when python runs out of memory, the limit is lifted again so that
+    the child can say so. Another exception is sent with its traceback.
     """
+    tempfile.tempdir = tempdir
+    _limit_cpu(cpu)
     lift = _limit_memory(memory)
     try:
         for result in function(argument):
@@ -208,12 +253,19 @@ def _child(
 def _start(
     function: Callable[[Any], Iterable[tuple[str, Any]]],
     argument: Any,
-    memory: int,
+    tempdir: str,
     connection: Connection,
 ) -> BaseProcess:
-    """Start a child which runs the function and sends on the connection."""
+    """Start a child which runs the function and sends on the connection.
+
+    The limits of the child are read when it starts: `VALIDATION_MEMORY` and
+    twice `VALIDATION_TIMEOUT` of cpu time.
+    """
+    cpu = math.ceil(2 * VALIDATION_TIMEOUT)
     process = _CONTEXT.Process(
-        target=_child, args=(function, argument, memory, connection), daemon=True
+        target=_child,
+        args=(function, argument, VALIDATION_MEMORY, cpu, tempdir, connection),
+        daemon=True,
     )
     process.start()
     return process
@@ -231,10 +283,32 @@ def _run_child(
             the deadline nor for lack of memory.
         Exception: the exception the function raised in the child.
     """
+    # the temporary directory of the child, which the server removes after the
+    # child has ended, whether it ended by itself, was killed or aborted
+    tempdir = tempfile.mkdtemp(prefix="sbml4humans_validation_")
+    try:
+        return _communicate(function, argument, deadline, tempdir)
+    finally:
+        shutil.rmtree(tempdir, ignore_errors=True)
+
+
+def _communicate(
+    function: Callable[[Any], Iterable[tuple[str, Any]]],
+    argument: Any,
+    deadline: float,
+    tempdir: str,
+) -> IsolatedRun:
+    """Start the child of `_run_child` and receive its results until it has ended.
+
+    Raises:
+        ValidationProcessError: if the child ended without its results, neither by
+            the deadline nor for lack of memory.
+        Exception: the exception the function raised in the child.
+    """
     run = IsolatedRun()
     receiver, sender = _CONTEXT.Pipe(duplex=False)
     try:
-        process = _start(function, argument, VALIDATION_MEMORY, sender)
+        process = _start(function, argument, tempdir, sender)
     except BaseException:
         receiver.close()
         raise

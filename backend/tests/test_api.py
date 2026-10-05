@@ -2,6 +2,7 @@
 
 import asyncio
 import contextlib
+import gzip
 import io
 import json
 import threading
@@ -779,6 +780,30 @@ def test_validation_of_content_beyond_the_limit(
     data = client.post("/api/validation/content", content=b"x" * 2048).json()
     _check_error(data, info={})
     assert "larger than" in data["errors"][0]
+
+
+def test_validation_of_content_beyond_the_decompression_limit(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The child decompresses gzip within the limits the server has."""
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 4096)
+    content = gzip.compress(COMP_DELETION.read_bytes())
+    assert len(content) < 4096 < len(gzip.decompress(content))
+    data = client.post("/api/validation/content", content=content).json()
+    _check_error(data, info={})
+    assert "4096 bytes" in data["errors"][0]
+
+
+def test_validation_of_an_archive_beyond_the_limits(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The child checks an archive with the limits the server has."""
+    monkeypatch.setattr(limits, "MAX_ARCHIVE_ENTRIES", 1)
+    with OMEX_ICGMODEL.open("rb") as f:
+        response = client.post("/api/validation/file", files={"source": ("m.omex", f)})
+    data = response.json()
+    _check_error(data, info={})
+    assert "more than 1 entries" in data["errors"][0]
 
 
 def test_validation_of_a_url(

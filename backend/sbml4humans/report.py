@@ -225,11 +225,14 @@ class SourceJob:
         trusted: as for `report_for_path`.
         budget: the elements an entry with submodel instances may expand to,
             read by the server when the validation is asked for.
+        limits: the limits of `limits.py` an untrusted source is read within,
+            read by the server when the validation is asked for.
     """
 
     path: str
     trusted: bool
     budget: int
+    limits: limits.ContentLimits
 
 
 # the key of the result which names the entries, which no location is
@@ -260,7 +263,7 @@ def validate_source(job: SourceJob) -> Iterator[tuple[str, Any]]:
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
-    with _read(Path(job.path), job.trusted) as read:
+    with job.limits.applied(), _read(Path(job.path), job.trusted) as read:
         yield _LOCATIONS, list(read.entries)
         reports = {
             location: entry.info.report for location, entry in read.entries.items()
@@ -316,7 +319,10 @@ def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse
     """
     start = time.perf_counter()
     job = SourceJob(
-        path=str(path), trusted=trusted, budget=validation.MAX_EXPANDED_ELEMENTS
+        path=str(path),
+        trusted=trusted,
+        budget=validation.MAX_EXPANDED_ELEMENTS,
+        limits=limits.ContentLimits.current(),
     )
     run = isolation.run_isolated(validate_source, job)
     locations: list[str] = []

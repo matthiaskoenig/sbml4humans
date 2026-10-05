@@ -3,17 +3,20 @@
 import http.server
 import os
 import signal
+import sys
+import tempfile
 import threading
 import time
 import zipfile
 from collections.abc import Callable, Iterable, Iterator
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
 import libsbml
 import pytest
 
-from sbml4humans import isolation, report, validation
+from sbml4humans import isolation, limits, report, validation
 from sbml4humans.model import EntryValidation, ValidationResponse
 from sbml4humans.report import (
     SourceJob,
@@ -659,6 +662,7 @@ def test_validate_source_in_this_process() -> None:
         path=str(EXAMPLES_DIR / "validation.xml"),
         trusted=False,
         budget=MAX_EXPANDED_ELEMENTS,
+        limits=limits.ContentLimits.current(),
     )
     results = list(validate_source(job))
     assert results[0] == ("", ["./model.xml"])
@@ -699,14 +703,70 @@ def _gone(pid: int) -> bool:
     return False
 
 
-def test_timeout_terminates_the_child(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A validation beyond the timeout is ended and its entry skipped."""
+@contextmanager
+def _leaves_nothing(root: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+    """Check that the server and its children leave no temporary file behind.
+
+    The temporary directory of the server is `root` within the context, which
+    has to be empty after it, and no directory of an archive may be left in the
+    temporary directory of the system, which the forkserver uses.
+    """
+    # the forkserver keeps its socket in the temporary directory it started with
+    isolation.start_forkserver()
+    system = Path(tempfile.gettempdir())
+    before = set(system.glob("pymetadata_omex_*"))
+    root.mkdir()
+    monkeypatch.setattr(tempfile, "tempdir", str(root))
+    yield
+    assert list(root.iterdir()) == []
+    assert set(system.glob("pymetadata_omex_*")) - before == set()
+
+
+def _tempdir(_: object) -> Iterator[tuple[str, str]]:
+    """The temporary directory of the child process."""
+    yield "tempdir", tempfile.gettempdir()
+
+
+def test_a_child_has_a_temporary_directory_of_its_own(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The server makes the temporary directory of a child and removes it."""
+    with _leaves_nothing(tmp_path / "tmp", monkeypatch):
+        run = isolation.run_isolated(_tempdir, None)
+    tempdir = Path(dict(run.results)["tempdir"])
+    assert tempdir.parent == tmp_path / "tmp"
+    assert not tempdir.exists()
+
+
+def _cpu_limit(_: object) -> Iterator[tuple[str, int]]:
+    """The soft limit of the cpu time of the child process, in seconds."""
+    import resource
+
+    yield "cpu", resource.getrlimit(resource.RLIMIT_CPU)[0]
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no resource limits on Windows")
+def test_a_child_has_a_cpu_limit(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A child ends itself after twice the timeout, if the server did not end it."""
+    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 10.0)
+    run = isolation.run_isolated(_cpu_limit, None)
+    assert dict(run.results)["cpu"] == 20
+
+
+def test_timeout_terminates_the_child(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A validation beyond the timeout is ended and its entry skipped.
+
+    The child is killed, the server removes what it left of the source.
+    """
     content = _slow(monkeypatch)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 1.0)
     pids = _spy_children(monkeypatch)
     start = time.perf_counter()
-    response = validation_for_bytes(content)
+    with _leaves_nothing(tmp_path / "tmp", monkeypatch):
+        response = validation_for_bytes(content)
     elapsed = time.perf_counter() - start
     assert response.skipped == "timeout"
     entry = _entry(response)
@@ -788,15 +848,21 @@ def test_one_tiny_submodel_makes_a_large_document_expand() -> None:
     assert time.perf_counter() - start < 5.0
 
 
-def test_memory_limit_skips_the_entry(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A validation beyond the memory limit is skipped, the parent answers."""
+def test_memory_limit_skips_the_entry(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A validation beyond the memory limit is skipped, the parent answers.
+
+    The child may be aborted, the server removes what it left of the source.
+    """
     content = _flat(20_000)
     # the address space of the child is far beyond the limit already, so every
     # page it maps from now on fails
     monkeypatch.setattr(isolation, "VALIDATION_MEMORY", 1024 * 1024)
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 20.0)
     pids = _spy_children(monkeypatch)
-    response = validation_for_bytes(content)
+    with _leaves_nothing(tmp_path / "tmp", monkeypatch):
+        response = validation_for_bytes(content)
     assert response.skipped == "memory"
     # the child may run out of memory before it read which entries there are
     for entry in response.entries.values():

@@ -11,8 +11,14 @@ extracted when it holds more than `MAX_ARCHIVE_ENTRIES` entries, more than
 `DOWNLOAD_TIMEOUT` and follows at most `MAX_REDIRECTS` redirects.
 
 The modules read the limits from this module when they apply them, so that a
-test can lower them.
+test can lower them; the child process of a validation reads its source with
+the limits of its server, which it gets as `ContentLimits`.
 """
+
+from collections.abc import Iterator
+from contextlib import contextmanager
+from dataclasses import dataclass
+
 
 # the most bytes of the content of a request, before and after decompression
 MAX_CONTENT_SIZE = 100 * 1024 * 1024  # [byte]
@@ -30,6 +36,54 @@ DOWNLOAD_TIMEOUT = 60.0  # [s]
 DOWNLOAD_STEP_TIMEOUT = 15.0  # [s]
 # the most redirects a download follows
 MAX_REDIRECTS = 5
+
+
+@dataclass(frozen=True)
+class ContentLimits:
+    """The limits of this module which reading a source applies, as they are now.
+
+    The child process of a validation reads its source with the limits of its
+    server, which a test may have lowered, and not with those it imported.
+
+    Attributes:
+        max_content_size: `MAX_CONTENT_SIZE`.
+        max_archive_entries: `MAX_ARCHIVE_ENTRIES`.
+        max_compression_ratio: `MAX_COMPRESSION_RATIO`.
+        compression_ratio_min_size: `COMPRESSION_RATIO_MIN_SIZE`.
+    """
+
+    max_content_size: int
+    max_archive_entries: int
+    max_compression_ratio: int
+    compression_ratio_min_size: int
+
+    @classmethod
+    def current(cls) -> ContentLimits:
+        """The limits of this module as they are now."""
+        return cls(
+            max_content_size=MAX_CONTENT_SIZE,
+            max_archive_entries=MAX_ARCHIVE_ENTRIES,
+            max_compression_ratio=MAX_COMPRESSION_RATIO,
+            compression_ratio_min_size=COMPRESSION_RATIO_MIN_SIZE,
+        )
+
+    @contextmanager
+    def applied(self) -> Iterator[None]:
+        """Set the limits of this module to these for the time of the context."""
+        global MAX_CONTENT_SIZE, MAX_ARCHIVE_ENTRIES
+        global MAX_COMPRESSION_RATIO, COMPRESSION_RATIO_MIN_SIZE
+        before = ContentLimits.current()
+        MAX_CONTENT_SIZE = self.max_content_size
+        MAX_ARCHIVE_ENTRIES = self.max_archive_entries
+        MAX_COMPRESSION_RATIO = self.max_compression_ratio
+        COMPRESSION_RATIO_MIN_SIZE = self.compression_ratio_min_size
+        try:
+            yield
+        finally:
+            MAX_CONTENT_SIZE = before.max_content_size
+            MAX_ARCHIVE_ENTRIES = before.max_archive_entries
+            MAX_COMPRESSION_RATIO = before.max_compression_ratio
+            COMPRESSION_RATIO_MIN_SIZE = before.compression_ratio_min_size
 
 
 class ContentTooLargeError(ValueError):
