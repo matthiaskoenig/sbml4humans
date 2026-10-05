@@ -5,7 +5,7 @@ import HelpLabel from "@/components/help/HelpLabel.vue";
 import SelectInput from "@/components/input/SelectInput.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
-import { conceptEntry, conceptKey } from "@/report/glossary";
+import { conceptEntry, conceptKey, ruleKey } from "@/report/glossary";
 import type { ReportIndex } from "@/report/index";
 import { groupByRule, SEVERITY_ORDER, type Severity } from "@/report/validation";
 
@@ -34,7 +34,12 @@ const groups = computed(() =>
         shown.value.has(i.severity) &&
         (chosenCategory.value === "" || i.category === chosenCategory.value),
     ),
-  ).map((group) => ({ ...group, pks: [...new Set(group.issues.map((i) => i.pk))] })),
+  ).map((group) => ({
+    ...group,
+    pks: [...new Set(group.issues.map((i) => i.pk))],
+    // the text of the rule as the entry of the type of its first element states it
+    help: ruleKey(group.rule, props.index.get(group.issues[0]!.pk)?.sbmlType),
+  })),
 );
 
 function toggle(severity: Severity): void {
@@ -91,10 +96,12 @@ function toggle(severity: Severity): void {
             <summary class="flex cursor-pointer items-start gap-2">
               <SeverityIcon :severity="group.severity" size="md" class="mt-0.5" />
               <span
-                v-tooltip.bottom="rule?.summary"
-                class="font-mono text-xs leading-5 text-gray-600"
+                class="font-mono text-xs leading-5"
+                :class="group.help ? 'text-link' : 'text-gray-600'"
                 data-testid="validation-rule"
-                >{{ group.rule }}</span
+                ><HelpLabel :help-key="group.help" :tooltip="rule?.summary">{{
+                  group.rule
+                }}</HelpLabel></span
               >
               <span class="min-w-0 flex-1">{{ group.shortMessage }}</span>
               <span

@@ -171,6 +171,34 @@ def test_renders_the_json_without_the_descriptions() -> None:
     assert data["concepts"]["derivedUnits"]["summary"]
 
 
+def test_renders_the_entries_which_cite_a_rule() -> None:
+    """The json maps a rule to the keys of the entries which cite it, a type first."""
+    glossary = Glossary.from_directory(FIXTURE)
+    rules = render_json(glossary)["rules"]
+    assert rules["20601"] == ["types/Species"]
+    assert rules["20609"] == ["types/Species/initialAmount"]
+    assert list(rules) == sorted(rules, key=int)
+    cited = {code for _, entry in glossary.entries() for code in entry.rules}
+    assert set(rules) == {str(code) for code in cited}
+
+
+def test_a_rule_cited_twice_lists_both_entries(tmp_path: Path) -> None:
+    """A rule which a type and one of its attributes cite names both, sorted."""
+    glossary = _glossary_file(
+        tmp_path,
+        '[types.Species]\nlabel = "Species"\nsummary = "a species"\n'
+        'description = "A pool of a chemical entity."\nrules = [20601]\n'
+        "[types.Species.attributes.initialAmount]\n"
+        'label = "initialAmount"\nsummary = "the amount at the start"\n'
+        'description = "The amount of the species when the simulation starts."\n'
+        "rules = [20601]\n",
+    )
+    assert render_json(glossary)["rules"]["20601"] == [
+        "types/Species",
+        "types/Species/initialAmount",
+    ]
+
+
 def test_a_missing_summary_is_an_error(tmp_path: Path) -> None:
     """An entry without a summary has no tooltip, which is an error."""
     (tmp_path / "core.toml").write_text('[types.Species]\nlabel = "Species"\n')

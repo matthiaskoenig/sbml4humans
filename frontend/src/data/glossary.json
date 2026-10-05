@@ -1708,5 +1708,1571 @@
       "label": "severity",
       "summary": "whether an issue is an error, a warning or a note"
     }
+  },
+  "rules": {
+    "10216": [
+      "types/LocalParameter"
+    ],
+    "10301": [
+      "types/SBase/id"
+    ],
+    "10302": [
+      "types/UnitDefinition"
+    ],
+    "10303": [
+      "types/LocalParameter"
+    ],
+    "10304": [
+      "types/AssignmentRule/variable",
+      "types/RateRule/variable"
+    ],
+    "10305": [
+      "types/EventAssignment/variable"
+    ],
+    "10306": [
+      "types/EventAssignment/variable"
+    ],
+    "10307": [
+      "types/SBase/metaId"
+    ],
+    "10308": [
+      "types/SBase/sbo"
+    ],
+    "10309": [
+      "types/SBase/metaId"
+    ],
+    "10310": [
+      "types/SBase/id"
+    ],
+    "10311": [
+      "types/Compartment/units",
+      "types/LocalParameter/units",
+      "types/Parameter/units",
+      "types/Species/substanceUnits"
+    ],
+    "10313": [
+      "types/Compartment/units",
+      "types/LocalParameter/units",
+      "types/Parameter/units",
+      "types/Species/substanceUnits"
+    ],
+    "10401": [
+      "types/Model/annotationXml",
+      "types/SBMLDocument/annotationXml"
+    ],
+    "10402": [
+      "types/Model/annotationXml",
+      "types/SBMLDocument/annotationXml"
+    ],
+    "10403": [
+      "types/Model/annotationXml",
+      "types/SBMLDocument/annotationXml"
+    ],
+    "10404": [
+      "types/Model/annotationXml",
+      "types/SBMLDocument/annotationXml"
+    ],
+    "10601": [
+      "types/AlgebraicRule"
+    ],
+    "10701": [
+      "types/Model"
+    ],
+    "10702": [
+      "types/FunctionDefinition"
+    ],
+    "10703": [
+      "types/Parameter"
+    ],
+    "10704": [
+      "types/InitialAssignment"
+    ],
+    "10705": [
+      "types/AlgebraicRule",
+      "types/AssignmentRule",
+      "types/RateRule"
+    ],
+    "10706": [
+      "types/Constraint"
+    ],
+    "10707": [
+      "types/Reaction"
+    ],
+    "10708": [
+      "types/ModifierSpeciesReference",
+      "types/SpeciesReference"
+    ],
+    "10709": [
+      "types/KineticLaw"
+    ],
+    "10710": [
+      "types/Event"
+    ],
+    "10711": [
+      "types/EventAssignment"
+    ],
+    "10712": [
+      "types/Compartment"
+    ],
+    "10713": [
+      "types/Species"
+    ],
+    "10716": [
+      "types/Trigger"
+    ],
+    "10717": [
+      "types/Delay"
+    ],
+    "10718": [
+      "types/LocalParameter"
+    ],
+    "10719": [
+      "types/SBMLDocument"
+    ],
+    "10801": [
+      "types/SBase/notes"
+    ],
+    "10802": [
+      "types/SBase/notes"
+    ],
+    "10803": [
+      "types/SBase/notes"
+    ],
+    "10804": [
+      "types/SBase/notes"
+    ],
+    "10805": [
+      "types/SBase/notes"
+    ],
+    "20101": [
+      "types/SBMLDocument"
+    ],
+    "20102": [
+      "types/SBMLDocument/level"
+    ],
+    "20103": [
+      "types/SBMLDocument/version"
+    ],
+    "20104": [
+      "types/SBMLDocument/packages"
+    ],
+    "20105": [
+      "types/SBMLDocument/level"
+    ],
+    "20106": [
+      "types/SBMLDocument/version"
+    ],
+    "20108": [
+      "types/SBMLDocument"
+    ],
+    "20201": [
+      "types/SBMLDocument"
+    ],
+    "20202": [
+      "types/Model"
+    ],
+    "20203": [
+      "types/Model"
+    ],
+    "20204": [
+      "types/Species/compartment"
+    ],
+    "20205": [
+      "types/Model"
+    ],
+    "20206": [
+      "types/Model/listOfFunctionDefinitions"
+    ],
+    "20207": [
+      "types/Model/listOfUnitDefinitions"
+    ],
+    "20208": [
+      "types/Model/listOfCompartments"
+    ],
+    "20209": [
+      "types/Model/listOfSpecies"
+    ],
+    "20210": [
+      "types/Model/listOfParameters"
+    ],
+    "20211": [
+      "types/Model/listOfInitialAssignments"
+    ],
+    "20212": [
+      "types/Model/listOfRules"
+    ],
+    "20213": [
+      "types/Model/listOfConstraints"
+    ],
+    "20214": [
+      "types/Model/listOfReactions"
+    ],
+    "20215": [
+      "types/Model/listOfEvents"
+    ],
+    "20216": [
+      "types/Model/conversionFactor"
+    ],
+    "20217": [
+      "types/Model/timeUnits"
+    ],
+    "20218": [
+      "types/Model/volumeUnits"
+    ],
+    "20219": [
+      "types/Model/areaUnits"
+    ],
+    "20220": [
+      "types/Model/lengthUnits"
+    ],
+    "20221": [
+      "types/Model/extentUnits"
+    ],
+    "20222": [
+      "types/Model"
+    ],
+    "20233": [
+      "types/Model/substanceUnits"
+    ],
+    "20301": [
+      "types/FunctionDefinition/math"
+    ],
+    "20303": [
+      "types/FunctionDefinition/math"
+    ],
+    "20304": [
+      "types/FunctionDefinition/math"
+    ],
+    "20305": [
+      "types/FunctionDefinition/math"
+    ],
+    "20306": [
+      "types/FunctionDefinition/math"
+    ],
+    "20307": [
+      "types/FunctionDefinition"
+    ],
+    "20401": [
+      "types/UnitDefinition"
+    ],
+    "20410": [
+      "types/UnitDefinition/listOfUnits"
+    ],
+    "20413": [
+      "types/UnitDefinition/listOfUnits"
+    ],
+    "20414": [
+      "types/UnitDefinition/listOfUnits"
+    ],
+    "20415": [
+      "types/UnitDefinition/listOfUnits"
+    ],
+    "20419": [
+      "types/UnitDefinition"
+    ],
+    "20421": [
+      "types/UnitDefinition/listOfUnits"
+    ],
+    "20501": [
+      "types/Compartment/size"
+    ],
+    "20502": [
+      "types/Compartment/units"
+    ],
+    "20503": [
+      "types/Compartment/constant"
+    ],
+    "20511": [
+      "types/Compartment/units",
+      "types/Model/lengthUnits"
+    ],
+    "20512": [
+      "types/Compartment/units",
+      "types/Model/areaUnits"
+    ],
+    "20513": [
+      "types/Compartment/units",
+      "types/Model/volumeUnits"
+    ],
+    "20517": [
+      "types/Compartment"
+    ],
+    "20518": [
+      "types/Compartment/spatialDimensions",
+      "types/Compartment/units"
+    ],
+    "20601": [
+      "types/Species/compartment"
+    ],
+    "20604": [
+      "types/Species/initialConcentration"
+    ],
+    "20609": [
+      "types/Species/initialAmount",
+      "types/Species/initialConcentration"
+    ],
+    "20610": [
+      "types/Species/boundaryCondition",
+      "types/Species/constant"
+    ],
+    "20611": [
+      "types/Species/boundaryCondition",
+      "types/Species/constant"
+    ],
+    "20614": [
+      "types/Species/compartment"
+    ],
+    "20616": [
+      "types/Species/substanceUnits"
+    ],
+    "20617": [
+      "types/Species/conversionFactor"
+    ],
+    "20623": [
+      "types/Species"
+    ],
+    "20702": [
+      "types/Parameter/units"
+    ],
+    "20705": [
+      "types/Model/conversionFactor",
+      "types/Parameter/constant",
+      "types/Species/conversionFactor"
+    ],
+    "20706": [
+      "types/Parameter"
+    ],
+    "20801": [
+      "types/InitialAssignment/symbol"
+    ],
+    "20802": [
+      "types/InitialAssignment/symbol"
+    ],
+    "20803": [
+      "types/InitialAssignment/symbol"
+    ],
+    "20804": [
+      "types/InitialAssignment/math"
+    ],
+    "20805": [
+      "types/InitialAssignment"
+    ],
+    "20806": [
+      "types/InitialAssignment/symbol"
+    ],
+    "20901": [
+      "types/AssignmentRule/variable"
+    ],
+    "20902": [
+      "types/RateRule/variable"
+    ],
+    "20903": [
+      "types/AssignmentRule/variable"
+    ],
+    "20904": [
+      "types/RateRule/variable"
+    ],
+    "20906": [
+      "types/AssignmentRule",
+      "types/InitialAssignment",
+      "types/KineticLaw"
+    ],
+    "20907": [
+      "types/AlgebraicRule/math",
+      "types/AssignmentRule/math",
+      "types/RateRule/math"
+    ],
+    "20908": [
+      "types/AssignmentRule"
+    ],
+    "20909": [
+      "types/RateRule"
+    ],
+    "20910": [
+      "types/AlgebraicRule"
+    ],
+    "20911": [
+      "types/AssignmentRule/variable",
+      "types/RateRule/variable"
+    ],
+    "20912": [
+      "types/RateRule"
+    ],
+    "21001": [
+      "types/Constraint/math"
+    ],
+    "21002": [
+      "types/Constraint"
+    ],
+    "21003": [
+      "types/Constraint/message"
+    ],
+    "21004": [
+      "types/Constraint/message"
+    ],
+    "21005": [
+      "types/Constraint/message"
+    ],
+    "21006": [
+      "types/Constraint/message"
+    ],
+    "21007": [
+      "types/Constraint/math"
+    ],
+    "21008": [
+      "types/Constraint/message"
+    ],
+    "21009": [
+      "types/Constraint"
+    ],
+    "21101": [
+      "types/Reaction/listOfProducts",
+      "types/Reaction/listOfReactants"
+    ],
+    "21102": [
+      "types/Reaction"
+    ],
+    "21103": [
+      "types/Reaction"
+    ],
+    "21104": [
+      "types/Reaction/listOfProducts",
+      "types/Reaction/listOfReactants"
+    ],
+    "21105": [
+      "types/Reaction/listOfModifiers"
+    ],
+    "21106": [
+      "types/Reaction"
+    ],
+    "21107": [
+      "types/Reaction/compartment"
+    ],
+    "21110": [
+      "types/Reaction"
+    ],
+    "21111": [
+      "types/ModifierSpeciesReference/species",
+      "types/SpeciesReference/species"
+    ],
+    "21116": [
+      "types/SpeciesReference"
+    ],
+    "21117": [
+      "types/ModifierSpeciesReference"
+    ],
+    "21121": [
+      "types/KineticLaw/math"
+    ],
+    "21122": [
+      "types/KineticLaw"
+    ],
+    "21123": [
+      "types/KineticLaw/listOfLocalParameters"
+    ],
+    "21124": [
+      "types/LocalParameter"
+    ],
+    "21127": [
+      "types/KineticLaw/listOfLocalParameters"
+    ],
+    "21128": [
+      "types/KineticLaw/listOfLocalParameters"
+    ],
+    "21130": [
+      "types/KineticLaw/math"
+    ],
+    "21132": [
+      "types/KineticLaw"
+    ],
+    "21152": [
+      "types/Reaction/fast"
+    ],
+    "21172": [
+      "types/LocalParameter"
+    ],
+    "21173": [
+      "types/LocalParameter"
+    ],
+    "21201": [
+      "types/Event/trigger"
+    ],
+    "21202": [
+      "types/Event/trigger.math",
+      "types/Trigger/math"
+    ],
+    "21203": [
+      "types/Event/listOfEventAssignments"
+    ],
+    "21205": [
+      "types/Event"
+    ],
+    "21206": [
+      "types/Event/delay",
+      "types/Event/useValuesFromTriggerTime"
+    ],
+    "21209": [
+      "types/Event/trigger.math",
+      "types/Trigger/math"
+    ],
+    "21210": [
+      "types/Delay/math",
+      "types/Event/delay.math"
+    ],
+    "21211": [
+      "types/EventAssignment/variable"
+    ],
+    "21212": [
+      "types/EventAssignment/variable"
+    ],
+    "21213": [
+      "types/EventAssignment/math"
+    ],
+    "21214": [
+      "types/EventAssignment"
+    ],
+    "21221": [
+      "types/Event/delay"
+    ],
+    "21222": [
+      "types/Event/listOfEventAssignments"
+    ],
+    "21223": [
+      "types/Event/listOfEventAssignments"
+    ],
+    "21225": [
+      "types/Event"
+    ],
+    "21226": [
+      "types/Trigger"
+    ],
+    "21227": [
+      "types/Delay"
+    ],
+    "21228": [
+      "types/Event/trigger.persistent",
+      "types/Trigger/persistent"
+    ],
+    "21229": [
+      "types/Event/trigger.initialValue",
+      "types/Trigger/initialValue"
+    ],
+    "21230": [
+      "types/Event/priority"
+    ],
+    "21231": [
+      "types/Event/priority.math",
+      "types/Priority/math"
+    ],
+    "21232": [
+      "types/Priority"
+    ],
+    "80501": [
+      "types/Compartment/size"
+    ],
+    "80601": [
+      "types/Species/initialAmount",
+      "types/Species/initialConcentration"
+    ],
+    "80701": [
+      "types/Parameter/units"
+    ],
+    "80702": [
+      "types/Parameter/value"
+    ],
+    "99401": [
+      "types/SBase/cvterms"
+    ],
+    "99402": [
+      "types/SBase/cvterms"
+    ],
+    "99403": [
+      "types/SBase/cvterms"
+    ],
+    "1010101": [
+      "types/comp"
+    ],
+    "1010102": [
+      "types/comp"
+    ],
+    "1010301": [
+      "types/Deletion",
+      "types/Submodel"
+    ],
+    "1010302": [
+      "types/ExternalModelDefinition"
+    ],
+    "1010303": [
+      "types/Port"
+    ],
+    "1010308": [
+      "types/ReplacedBy/submodelRef",
+      "types/ReplacedElement/submodelRef"
+    ],
+    "1010309": [
+      "types/ReplacedElement/deletion"
+    ],
+    "1010310": [
+      "types/ReplacedElement/conversionFactor"
+    ],
+    "1010501": [
+      "types/ReplacedBy",
+      "types/ReplacedElement",
+      "types/ReplacedElement/conversionFactor"
+    ],
+    "1020101": [
+      "types/SBase/comp.replacedElements"
+    ],
+    "1020102": [
+      "types/SBase/comp.replacedElements"
+    ],
+    "1020104": [
+      "types/SBase/comp.replacedElements"
+    ],
+    "1020105": [
+      "types/SBase/comp.replacedBy"
+    ],
+    "1020201": [
+      "types/comp"
+    ],
+    "1020202": [
+      "types/comp"
+    ],
+    "1020205": [
+      "types/comp"
+    ],
+    "1020206": [
+      "types/comp"
+    ],
+    "1020207": [
+      "types/comp"
+    ],
+    "1020208": [
+      "types/comp"
+    ],
+    "1020211": [
+      "types/comp"
+    ],
+    "1020212": [
+      "types/comp"
+    ],
+    "1020301": [
+      "types/ExternalModelDefinition"
+    ],
+    "1020302": [
+      "types/ExternalModelDefinition"
+    ],
+    "1020303": [
+      "types/ExternalModelDefinition"
+    ],
+    "1020304": [
+      "types/ExternalModelDefinition/source"
+    ],
+    "1020305": [
+      "types/ExternalModelDefinition/modelRef"
+    ],
+    "1020306": [
+      "types/ExternalModelDefinition/md5"
+    ],
+    "1020307": [
+      "types/ExternalModelDefinition/source"
+    ],
+    "1020308": [
+      "types/ExternalModelDefinition/modelRef"
+    ],
+    "1020309": [
+      "types/ExternalModelDefinition/md5"
+    ],
+    "1020310": [
+      "types/ExternalModelDefinition/modelRef"
+    ],
+    "1020501": [
+      "types/Model/listOfPorts",
+      "types/Model/listOfSubmodels"
+    ],
+    "1020502": [
+      "types/Model/listOfPorts",
+      "types/Model/listOfSubmodels"
+    ],
+    "1020503": [
+      "types/Model/listOfSubmodels"
+    ],
+    "1020504": [
+      "types/Model/listOfPorts"
+    ],
+    "1020601": [
+      "types/Submodel"
+    ],
+    "1020602": [
+      "types/Submodel"
+    ],
+    "1020603": [
+      "types/Submodel/listOfDeletions"
+    ],
+    "1020604": [
+      "types/Submodel/listOfDeletions"
+    ],
+    "1020605": [
+      "types/Submodel/listOfDeletions"
+    ],
+    "1020607": [
+      "types/Submodel"
+    ],
+    "1020608": [
+      "types/Submodel/modelRef"
+    ],
+    "1020613": [
+      "types/Submodel/timeConversionFactor"
+    ],
+    "1020614": [
+      "types/Submodel/extentConversionFactor"
+    ],
+    "1020615": [
+      "types/Submodel/modelRef"
+    ],
+    "1020616": [
+      "types/Submodel/modelRef"
+    ],
+    "1020617": [
+      "types/Submodel/modelRef"
+    ],
+    "1020622": [
+      "types/Submodel/timeConversionFactor"
+    ],
+    "1020623": [
+      "types/Submodel/extentConversionFactor"
+    ],
+    "1020701": [
+      "types/Deletion/portRef",
+      "types/Port/portRef",
+      "types/ReplacedBy/portRef",
+      "types/ReplacedElement/portRef",
+      "types/SBaseRef/portRef"
+    ],
+    "1020702": [
+      "types/Deletion/idRef",
+      "types/Port/idRef",
+      "types/ReplacedBy/idRef",
+      "types/ReplacedElement/idRef",
+      "types/SBaseRef/idRef"
+    ],
+    "1020703": [
+      "types/Deletion/unitRef",
+      "types/Port/unitRef",
+      "types/ReplacedBy/unitRef",
+      "types/ReplacedElement/unitRef",
+      "types/SBaseRef/unitRef"
+    ],
+    "1020704": [
+      "types/Deletion/metaIdRef",
+      "types/Port/metaIdRef",
+      "types/ReplacedBy/metaIdRef",
+      "types/ReplacedElement/metaIdRef",
+      "types/SBaseRef/metaIdRef"
+    ],
+    "1020705": [
+      "types/Deletion/sbaseRef",
+      "types/Port/sbaseRef",
+      "types/ReplacedBy/sbaseRef",
+      "types/ReplacedElement/sbaseRef",
+      "types/SBaseRef/sbaseRef"
+    ],
+    "1020706": [
+      "types/Deletion/portRef",
+      "types/Port/portRef",
+      "types/ReplacedBy/portRef",
+      "types/ReplacedElement/portRef",
+      "types/SBaseRef/portRef"
+    ],
+    "1020707": [
+      "types/Deletion/idRef",
+      "types/Port/idRef",
+      "types/ReplacedBy/idRef",
+      "types/ReplacedElement/idRef",
+      "types/SBaseRef/idRef"
+    ],
+    "1020708": [
+      "types/Deletion/unitRef",
+      "types/Port/unitRef",
+      "types/ReplacedBy/unitRef",
+      "types/ReplacedElement/unitRef",
+      "types/SBaseRef/unitRef"
+    ],
+    "1020709": [
+      "types/Deletion/metaIdRef",
+      "types/Port/metaIdRef",
+      "types/ReplacedBy/metaIdRef",
+      "types/ReplacedElement/metaIdRef",
+      "types/SBaseRef/metaIdRef"
+    ],
+    "1020710": [
+      "types/Deletion",
+      "types/Deletion/sbaseRef",
+      "types/Port",
+      "types/Port/sbaseRef",
+      "types/ReplacedBy",
+      "types/ReplacedBy/sbaseRef",
+      "types/ReplacedElement",
+      "types/ReplacedElement/sbaseRef",
+      "types/SBaseRef",
+      "types/SBaseRef/sbaseRef"
+    ],
+    "1020711": [
+      "types/Deletion/sbaseRef",
+      "types/Port/sbaseRef",
+      "types/ReplacedBy/sbaseRef",
+      "types/ReplacedElement/sbaseRef",
+      "types/SBaseRef/sbaseRef"
+    ],
+    "1020712": [
+      "types/SBaseRef/idRef",
+      "types/SBaseRef/metaIdRef",
+      "types/SBaseRef/portRef",
+      "types/SBaseRef/unitRef"
+    ],
+    "1020713": [
+      "types/SBaseRef/idRef",
+      "types/SBaseRef/metaIdRef",
+      "types/SBaseRef/portRef",
+      "types/SBaseRef/unitRef"
+    ],
+    "1020714": [
+      "types/Deletion",
+      "types/Port",
+      "types/ReplacedBy",
+      "types/ReplacedElement"
+    ],
+    "1020801": [
+      "types/Port/idRef",
+      "types/Port/metaIdRef",
+      "types/Port/unitRef"
+    ],
+    "1020802": [
+      "types/Port/idRef",
+      "types/Port/metaIdRef",
+      "types/Port/unitRef"
+    ],
+    "1020803": [
+      "types/Port",
+      "types/Port/portRef"
+    ],
+    "1020804": [
+      "types/Port"
+    ],
+    "1020901": [
+      "types/Deletion/idRef",
+      "types/Deletion/metaIdRef",
+      "types/Deletion/portRef",
+      "types/Deletion/unitRef"
+    ],
+    "1020902": [
+      "types/Deletion/idRef",
+      "types/Deletion/metaIdRef",
+      "types/Deletion/portRef",
+      "types/Deletion/unitRef"
+    ],
+    "1020903": [
+      "types/Deletion"
+    ],
+    "1021001": [
+      "types/ReplacedElement/deletion",
+      "types/ReplacedElement/idRef",
+      "types/ReplacedElement/metaIdRef",
+      "types/ReplacedElement/portRef",
+      "types/ReplacedElement/unitRef"
+    ],
+    "1021002": [
+      "types/ReplacedElement/deletion",
+      "types/ReplacedElement/idRef",
+      "types/ReplacedElement/metaIdRef",
+      "types/ReplacedElement/portRef",
+      "types/ReplacedElement/unitRef"
+    ],
+    "1021003": [
+      "types/ReplacedElement"
+    ],
+    "1021004": [
+      "types/ReplacedElement/submodelRef"
+    ],
+    "1021005": [
+      "types/ReplacedElement/deletion"
+    ],
+    "1021006": [
+      "types/ReplacedElement/conversionFactor"
+    ],
+    "1021010": [
+      "types/ReplacedElement"
+    ],
+    "1021011": [
+      "types/ReplacedElement/conversionFactor",
+      "types/ReplacedElement/deletion"
+    ],
+    "1021101": [
+      "types/ReplacedBy/idRef",
+      "types/ReplacedBy/metaIdRef",
+      "types/ReplacedBy/portRef",
+      "types/ReplacedBy/unitRef"
+    ],
+    "1021102": [
+      "types/ReplacedBy/idRef",
+      "types/ReplacedBy/metaIdRef",
+      "types/ReplacedBy/portRef",
+      "types/ReplacedBy/unitRef"
+    ],
+    "1021103": [
+      "types/ReplacedBy"
+    ],
+    "1021104": [
+      "types/ReplacedBy/submodelRef"
+    ],
+    "1021201": [
+      "types/ReplacedBy",
+      "types/ReplacedElement"
+    ],
+    "1021202": [
+      "types/ReplacedBy",
+      "types/ReplacedElement"
+    ],
+    "1021203": [
+      "types/ReplacedBy",
+      "types/ReplacedElement"
+    ],
+    "1021204": [
+      "types/ReplacedBy",
+      "types/ReplacedElement"
+    ],
+    "1510101": [
+      "types/distrib"
+    ],
+    "1510102": [
+      "types/distrib"
+    ],
+    "1520101": [
+      "types/distrib"
+    ],
+    "1520102": [
+      "types/distrib"
+    ],
+    "1520103": [
+      "types/distrib"
+    ],
+    "1520201": [
+      "types/SBase/uncertainties"
+    ],
+    "1520202": [
+      "types/SBase/uncertainties"
+    ],
+    "1520301": [
+      "types/UncertParameter"
+    ],
+    "1520302": [
+      "types/UncertParameter"
+    ],
+    "1520304": [
+      "types/UncertParameter",
+      "types/UncertParameter/uncertParameters",
+      "types/UncertSpan/uncertParameters"
+    ],
+    "1520305": [
+      "types/UncertParameter/value",
+      "types/UncertSpan/value"
+    ],
+    "1520306": [
+      "types/UncertParameter/var",
+      "types/UncertSpan/var"
+    ],
+    "1520307": [
+      "types/UncertParameter/units",
+      "types/UncertSpan/units"
+    ],
+    "1520308": [
+      "types/UncertParameter/type",
+      "types/UncertSpan/type"
+    ],
+    "1520309": [
+      "types/UncertParameter/definitionUrl",
+      "types/UncertSpan/definitionUrl"
+    ],
+    "1520310": [
+      "types/UncertParameter/uncertParameters",
+      "types/UncertSpan/uncertParameters",
+      "types/Uncertainty/uncertParameters"
+    ],
+    "1520401": [
+      "types/Uncertainty"
+    ],
+    "1520402": [
+      "types/Uncertainty"
+    ],
+    "1520403": [
+      "types/Uncertainty",
+      "types/Uncertainty/uncertParameters"
+    ],
+    "1520501": [
+      "types/UncertSpan"
+    ],
+    "1520502": [
+      "types/UncertSpan"
+    ],
+    "1520504": [
+      "types/UncertSpan/varLower"
+    ],
+    "1520505": [
+      "types/UncertSpan/valueLower"
+    ],
+    "1520506": [
+      "types/UncertSpan/varUpper"
+    ],
+    "1520507": [
+      "types/UncertSpan/valueUpper"
+    ],
+    "2010101": [
+      "types/fbc"
+    ],
+    "2010102": [
+      "types/fbc"
+    ],
+    "2010301": [
+      "types/FluxBound",
+      "types/FluxObjective",
+      "types/GeneProduct",
+      "types/GeneProductAssociation",
+      "types/Objective"
+    ],
+    "2020101": [
+      "types/fbc"
+    ],
+    "2020102": [
+      "types/fbc"
+    ],
+    "2020103": [
+      "types/fbc"
+    ],
+    "2020201": [
+      "types/Model/listOfFluxBounds",
+      "types/Model/listOfGeneProducts",
+      "types/Model/listOfObjectives",
+      "types/Model/listOfUserDefinedConstraints"
+    ],
+    "2020202": [
+      "types/Model/listOfFluxBounds",
+      "types/Model/listOfGeneProducts",
+      "types/Model/listOfObjectives"
+    ],
+    "2020203": [
+      "types/Model/listOfFluxBounds"
+    ],
+    "2020204": [
+      "types/Model/listOfObjectives"
+    ],
+    "2020206": [
+      "types/Model/fbc.activeObjective"
+    ],
+    "2020207": [
+      "types/Model/fbc.activeObjective"
+    ],
+    "2020208": [
+      "types/Model/fbc.activeObjective"
+    ],
+    "2020209": [
+      "types/Model/fbc.strict"
+    ],
+    "2020210": [
+      "types/Model/fbc.strict"
+    ],
+    "2020211": [
+      "types/Model/listOfGeneProducts"
+    ],
+    "2020213": [
+      "types/Model/listOfUserDefinedConstraints"
+    ],
+    "2020301": [
+      "types/Species/fbc.charge",
+      "types/Species/fbc.chemicalFormula"
+    ],
+    "2020302": [
+      "types/Species/fbc.charge"
+    ],
+    "2020303": [
+      "types/Species/fbc.chemicalFormula"
+    ],
+    "2020304": [
+      "types/Species/fbc.charge"
+    ],
+    "2020401": [
+      "types/FluxBound"
+    ],
+    "2020402": [
+      "types/FluxBound"
+    ],
+    "2020403": [
+      "types/FluxBound"
+    ],
+    "2020404": [
+      "types/FluxBound/reaction"
+    ],
+    "2020406": [
+      "types/FluxBound/operation"
+    ],
+    "2020407": [
+      "types/FluxBound/value"
+    ],
+    "2020408": [
+      "types/FluxBound/reaction"
+    ],
+    "2020409": [
+      "types/FluxBound/operation",
+      "types/FluxBound/reaction"
+    ],
+    "2020501": [
+      "types/Objective"
+    ],
+    "2020502": [
+      "types/Objective"
+    ],
+    "2020503": [
+      "types/Objective"
+    ],
+    "2020505": [
+      "types/Objective/type"
+    ],
+    "2020506": [
+      "types/Objective",
+      "types/Objective/listOfFluxObjectives"
+    ],
+    "2020507": [
+      "types/Objective/listOfFluxObjectives"
+    ],
+    "2020508": [
+      "types/Objective/listOfFluxObjectives"
+    ],
+    "2020601": [
+      "types/FluxObjective"
+    ],
+    "2020602": [
+      "types/FluxObjective"
+    ],
+    "2020603": [
+      "types/FluxObjective"
+    ],
+    "2020605": [
+      "types/FluxObjective/reaction"
+    ],
+    "2020606": [
+      "types/FluxObjective/reaction"
+    ],
+    "2020607": [
+      "types/FluxObjective/coefficient"
+    ],
+    "2020608": [
+      "types/FluxObjective/coefficient",
+      "types/Model/fbc.strict"
+    ],
+    "2020609": [
+      "types/FluxObjective/variableType"
+    ],
+    "2020610": [
+      "types/FluxObjective/reaction2"
+    ],
+    "2020611": [
+      "types/FluxObjective/reaction2"
+    ],
+    "2020701": [
+      "types/Reaction/fbc.geneProductAssociation"
+    ],
+    "2020702": [
+      "types/Reaction/fbc.lowerFluxBound",
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020703": [
+      "types/Reaction/fbc.lowerFluxBound"
+    ],
+    "2020704": [
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020705": [
+      "types/Reaction/fbc.lowerFluxBound"
+    ],
+    "2020706": [
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020707": [
+      "types/Model/fbc.strict",
+      "types/Reaction/fbc.lowerFluxBound",
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020708": [
+      "types/Model/fbc.strict",
+      "types/Reaction/fbc.lowerFluxBound",
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020709": [
+      "types/Model/fbc.strict",
+      "types/Reaction/fbc.lowerFluxBound",
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020710": [
+      "types/Model/fbc.strict",
+      "types/Reaction/fbc.lowerFluxBound",
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020711": [
+      "types/Model/fbc.strict",
+      "types/Reaction/fbc.lowerFluxBound"
+    ],
+    "2020712": [
+      "types/Model/fbc.strict",
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020713": [
+      "types/Model/fbc.strict",
+      "types/Reaction/fbc.lowerFluxBound",
+      "types/Reaction/fbc.upperFluxBound"
+    ],
+    "2020714": [
+      "types/Model/fbc.strict"
+    ],
+    "2020715": [
+      "types/Model/fbc.strict"
+    ],
+    "2020716": [
+      "types/Model/fbc.strict"
+    ],
+    "2020801": [
+      "types/GeneProductAssociation"
+    ],
+    "2020802": [
+      "types/GeneProductAssociation"
+    ],
+    "2020803": [
+      "types/GeneProductAssociation"
+    ],
+    "2020805": [
+      "types/GeneProductAssociation",
+      "types/GeneProductAssociation/association"
+    ],
+    "2020901": [
+      "types/GeneProductRef"
+    ],
+    "2020902": [
+      "types/GeneProductRef"
+    ],
+    "2020903": [
+      "types/GeneProductRef"
+    ],
+    "2020904": [
+      "types/GeneProductRef/geneProduct"
+    ],
+    "2020908": [
+      "types/GeneProductRef/geneProduct"
+    ],
+    "2021001": [
+      "types/And"
+    ],
+    "2021002": [
+      "types/And"
+    ],
+    "2021003": [
+      "types/And",
+      "types/And/associations"
+    ],
+    "2021101": [
+      "types/Or"
+    ],
+    "2021102": [
+      "types/Or"
+    ],
+    "2021103": [
+      "types/Or",
+      "types/Or/associations"
+    ],
+    "2021201": [
+      "types/GeneProduct"
+    ],
+    "2021202": [
+      "types/GeneProduct"
+    ],
+    "2021203": [
+      "types/GeneProduct"
+    ],
+    "2021204": [
+      "types/GeneProduct/label"
+    ],
+    "2021205": [
+      "types/GeneProduct/label"
+    ],
+    "2021207": [
+      "types/GeneProduct/associatedSpecies"
+    ],
+    "2021301": [
+      "types/UserDefinedConstraintComponent"
+    ],
+    "2021302": [
+      "types/UserDefinedConstraintComponent"
+    ],
+    "2021303": [
+      "types/UserDefinedConstraintComponent"
+    ],
+    "2021304": [
+      "types/UserDefinedConstraintComponent/coefficient"
+    ],
+    "2021305": [
+      "types/UserDefinedConstraintComponent/variable"
+    ],
+    "2021306": [
+      "types/UserDefinedConstraintComponent/variableType"
+    ],
+    "2021308": [
+      "types/UserDefinedConstraintComponent/variable2"
+    ],
+    "2021401": [
+      "types/UserDefinedConstraint"
+    ],
+    "2021402": [
+      "types/UserDefinedConstraint"
+    ],
+    "2021403": [
+      "types/UserDefinedConstraint"
+    ],
+    "2021404": [
+      "types/UserDefinedConstraint",
+      "types/UserDefinedConstraint/listOfUserDefinedConstraintComponents"
+    ],
+    "2021405": [
+      "types/UserDefinedConstraint/lowerBound"
+    ],
+    "2021406": [
+      "types/UserDefinedConstraint/upperBound"
+    ],
+    "2021408": [
+      "types/UserDefinedConstraint/listOfUserDefinedConstraintComponents"
+    ],
+    "2021501": [
+      "types/SBase/keyValuePairs"
+    ],
+    "2021502": [
+      "types/SBase/keyValuePairs"
+    ],
+    "2021503": [
+      "types/SBase/keyValuePairs"
+    ],
+    "2021504": [
+      "types/SBase/keyValuePairs"
+    ],
+    "2021506": [
+      "types/SBase/keyValuePairs"
+    ],
+    "2021507": [
+      "types/SBase/keyValuePairs"
+    ],
+    "2021508": [
+      "types/SBase/keyValuePairs"
+    ],
+    "3010101": [
+      "types/qual"
+    ],
+    "3010102": [
+      "types/qual"
+    ],
+    "3010201": [
+      "types/FunctionTerm/math"
+    ],
+    "3010202": [
+      "types/FunctionTerm/math"
+    ],
+    "3010301": [
+      "types/Input",
+      "types/Output",
+      "types/QualitativeSpecies",
+      "types/Transition"
+    ],
+    "3020101": [
+      "types/qual"
+    ],
+    "3020102": [
+      "types/qual"
+    ],
+    "3020103": [
+      "types/qual"
+    ],
+    "3020201": [
+      "types/Model/listOfQualitativeSpecies",
+      "types/Model/listOfTransitions"
+    ],
+    "3020202": [
+      "types/Model/listOfQualitativeSpecies",
+      "types/Model/listOfTransitions"
+    ],
+    "3020203": [
+      "types/Model/listOfTransitions"
+    ],
+    "3020204": [
+      "types/Model/listOfQualitativeSpecies"
+    ],
+    "3020301": [
+      "types/QualitativeSpecies"
+    ],
+    "3020302": [
+      "types/QualitativeSpecies"
+    ],
+    "3020303": [
+      "types/QualitativeSpecies"
+    ],
+    "3020304": [
+      "types/QualitativeSpecies/constant"
+    ],
+    "3020306": [
+      "types/QualitativeSpecies/initialLevel"
+    ],
+    "3020307": [
+      "types/QualitativeSpecies/maxLevel"
+    ],
+    "3020308": [
+      "types/QualitativeSpecies/compartment"
+    ],
+    "3020309": [
+      "types/QualitativeSpecies/initialLevel",
+      "types/QualitativeSpecies/maxLevel"
+    ],
+    "3020310": [
+      "types/QualitativeSpecies/constant"
+    ],
+    "3020311": [
+      "types/Output/qualitativeSpecies",
+      "types/Output/transitionEffect"
+    ],
+    "3020312": [
+      "types/QualitativeSpecies/initialLevel"
+    ],
+    "3020313": [
+      "types/QualitativeSpecies/maxLevel"
+    ],
+    "3020401": [
+      "types/Transition"
+    ],
+    "3020402": [
+      "types/Transition"
+    ],
+    "3020403": [
+      "types/Transition"
+    ],
+    "3020405": [
+      "types/Transition",
+      "types/Transition/listOfFunctionTerms",
+      "types/Transition/listOfInputs",
+      "types/Transition/listOfOutputs"
+    ],
+    "3020406": [
+      "types/Transition/listOfInputs",
+      "types/Transition/listOfOutputs"
+    ],
+    "3020407": [
+      "types/Transition/listOfInputs"
+    ],
+    "3020408": [
+      "types/Transition/listOfOutputs"
+    ],
+    "3020409": [
+      "types/Transition/defaultTerm",
+      "types/Transition/listOfFunctionTerms"
+    ],
+    "3020413": [
+      "types/QualitativeSpecies/maxLevel",
+      "types/Transition/listOfFunctionTerms"
+    ],
+    "3020414": [
+      "types/Transition/listOfFunctionTerms"
+    ],
+    "3020501": [
+      "types/Input"
+    ],
+    "3020502": [
+      "types/Input"
+    ],
+    "3020503": [
+      "types/Input"
+    ],
+    "3020505": [
+      "types/Input/sign"
+    ],
+    "3020506": [
+      "types/Input/transitionEffect"
+    ],
+    "3020507": [
+      "types/Input/thresholdLevel"
+    ],
+    "3020508": [
+      "types/Input/qualitativeSpecies"
+    ],
+    "3020509": [
+      "types/Input/transitionEffect",
+      "types/QualitativeSpecies/constant"
+    ],
+    "3020510": [
+      "types/Input/thresholdLevel"
+    ],
+    "3020601": [
+      "types/Output"
+    ],
+    "3020602": [
+      "types/Output"
+    ],
+    "3020603": [
+      "types/Output"
+    ],
+    "3020605": [
+      "types/Output/transitionEffect"
+    ],
+    "3020606": [
+      "types/Output/outputLevel"
+    ],
+    "3020607": [
+      "types/Output/qualitativeSpecies"
+    ],
+    "3020608": [
+      "types/Output/qualitativeSpecies",
+      "types/QualitativeSpecies/constant"
+    ],
+    "3020609": [
+      "types/Output/outputLevel",
+      "types/Output/transitionEffect"
+    ],
+    "3020610": [
+      "types/Output/outputLevel"
+    ],
+    "3020701": [
+      "types/DefaultTerm"
+    ],
+    "3020702": [
+      "types/DefaultTerm"
+    ],
+    "3020703": [
+      "types/DefaultTerm"
+    ],
+    "3020704": [
+      "types/DefaultTerm/resultLevel"
+    ],
+    "3020705": [
+      "types/DefaultTerm/resultLevel"
+    ],
+    "3020801": [
+      "types/FunctionTerm"
+    ],
+    "3020802": [
+      "types/FunctionTerm"
+    ],
+    "3020803": [
+      "types/FunctionTerm"
+    ],
+    "3020804": [
+      "types/FunctionTerm",
+      "types/FunctionTerm/math"
+    ],
+    "3020805": [
+      "types/FunctionTerm/resultLevel"
+    ],
+    "3020806": [
+      "types/FunctionTerm/resultLevel"
+    ]
   }
 }

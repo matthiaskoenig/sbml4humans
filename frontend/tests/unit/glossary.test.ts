@@ -16,6 +16,7 @@ import {
   entryOfKey,
   linkEntry,
   linkKey,
+  ruleKey,
   typeEntry,
   typeKey,
 } from "@/report/glossary";
@@ -184,6 +185,18 @@ describe("glossary", () => {
       "types/Reaction/kineticLaw.derivedUnits",
     );
     expect(attributeKey("Species", "nope")).toBeUndefined();
+  });
+
+  it("keys the entry which states a rule, the one of the element's type first", () => {
+    expect(ruleKey(10712)).toBe("types/Compartment");
+    // cited by the variable of an assignment rule and of a rate rule
+    expect(ruleKey(10304)).toBe("types/AssignmentRule/variable");
+    expect(ruleKey(10304, "RateRule")).toBe("types/RateRule/variable");
+    // a type which does not cite it falls back to the first entry which does
+    expect(ruleKey(10304, "Species")).toBe("types/AssignmentRule/variable");
+    expect(ruleKey(10311, "Parameter")).toBe("types/Parameter/units");
+    // a check of libsbml of its own, which no entry cites
+    expect(ruleKey(99505, "Parameter")).toBeUndefined();
   });
 
   it("keys a concept which has an entry and no other", () => {

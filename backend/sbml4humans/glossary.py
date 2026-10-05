@@ -1501,6 +1501,9 @@ def render_json(glossary: Glossary) -> dict[str, Any]:
         `page` of a type is the path of its reference page below the url of the
         documentation site, which the inspector links; a link kind and a concept
         carry the label and the summary of their tooltip and nothing else.
+        `rules` maps the number of every validation rule the glossary cites to
+        the keys of the entries which cite it, sorted, so that the number of an
+        issue of the report opens the entry which states its text.
     """
     return {
         "types": {
@@ -1518,7 +1521,21 @@ def render_json(glossary: Glossary) -> dict[str, Any]:
         },
         "links": _render_json_entries(glossary.links),
         "concepts": _render_json_entries(glossary.concepts),
+        "rules": _render_json_rules(glossary),
     }
+
+
+def _render_json_rules(glossary: Glossary) -> dict[str, list[str]]:
+    """The keys of the entries which cite a rule, by the number of the rule.
+
+    The numbers are sorted as numbers and written as the strings a json key
+    is; the keys of one rule are sorted, so a type comes before its attributes.
+    """
+    citing: dict[int, set[str]] = {}
+    for dotted, entry in glossary.entries():
+        for code in entry.rules:
+            citing.setdefault(code, set()).add(entry_key(dotted))
+    return {str(code): sorted(citing[code]) for code in sorted(citing)}
 
 
 def _render_json_entries(entries: Mapping[str, Entry]) -> dict[str, Any]:

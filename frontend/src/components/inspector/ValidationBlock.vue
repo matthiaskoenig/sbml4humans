@@ -2,11 +2,17 @@
 import type { ValidationIssue } from "@/api/types";
 import HelpLabel from "@/components/help/HelpLabel.vue";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
-import { conceptEntry, conceptKey } from "@/report/glossary";
+import { useReportIndex } from "@/report/context";
+import { conceptEntry, conceptKey, ruleKey } from "@/report/glossary";
 
 /** The issues of one element, errors first: the short message, the rule, the category and the
  * severity, and the full message of libsbml behind "more". */
 defineProps<{ issues: ValidationIssue[] }>();
+const index = useReportIndex();
+/** The entry which states the text of the rule of an issue, the one of its element first. */
+function helpOf(issue: ValidationIssue): string | undefined {
+  return ruleKey(issue.rule, index.value?.get(issue.pk)?.sbmlType);
+}
 const validation = conceptEntry("validation");
 const rule = conceptEntry("validationRule");
 const BOX = {
@@ -36,13 +42,15 @@ const BOX = {
           <span class="min-w-0 flex-1">
             <span class="font-medium">{{ issue.shortMessage }}</span>
             <span class="block text-xs text-gray-600">
-              <!-- the glossary has no lookup from the number of a rule to the entries which cite
-              it, so the number says what it is on hover and opens nothing -->
+              <!-- the number opens the entry which states the text of the rule, where the
+              glossary cites it, and is plain text else -->
               <span
-                v-tooltip.bottom="rule?.summary"
                 class="font-mono"
+                :class="{ 'text-link': helpOf(issue) }"
                 data-testid="validation-rule"
-                >{{ issue.rule }}</span
+                ><HelpLabel :help-key="helpOf(issue)" :tooltip="rule?.summary">{{
+                  issue.rule
+                }}</HelpLabel></span
               >
               · {{ issue.category }} · {{ issue.severity }}
             </span>

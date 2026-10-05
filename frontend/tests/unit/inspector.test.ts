@@ -1392,6 +1392,43 @@ describe("inspector", () => {
       expect(sbo).toEqual(["10703", "10712"]);
     });
 
+    it("opens the text of a rule the glossary cites from its number", async () => {
+      await router.push("/examples/x");
+      const cell = mountWith(InspectorPanel, { pk: "validation/Compartment:cell" }, validation);
+      const number = cell.get("[data-testid=validation-issue] [data-testid=validation-rule]");
+      expect(number.text()).toBe("10712");
+      await number.get("[data-testid=help-label]").trigger("click");
+      await flushPromises();
+      expect(router.currentRoute.value.query.help).toBe("types/Compartment");
+
+      // a rule cited by an attribute of the type of the element opens that attribute
+      const k1 = mountWith(InspectorPanel, { pk: "validation/Parameter:k1" }, validation);
+      const units = k1
+        .findAll("[data-testid=validation-issue] [data-testid=validation-rule]")
+        .find((r) => r.text() === "20702")!;
+      expect(helpKeyOf(units.get("[data-testid=help-label]").attributes("href"))).toBe(
+        "types/Parameter/units",
+      );
+    });
+
+    it("opens the text of a rule from the list of the document, plain where it is not cited", async () => {
+      await router.push("/examples/x");
+      const wrapper = mountWith(InspectorPanel, { pk: validation.document.pk }, validation);
+      const rule = (n: string) =>
+        wrapper
+          .findAll("[data-testid=validation-group] [data-testid=validation-rule]")
+          .find((r) => r.text() === n)!;
+      expect(helpKeyOf(rule("10712").get("[data-testid=help-label]").attributes("href"))).toBe(
+        "types/Compartment",
+      );
+      expect(helpKeyOf(rule("10601").get("[data-testid=help-label]").attributes("href"))).toBe(
+        "types/AlgebraicRule",
+      );
+      // a check of libsbml of its own, which the glossary cites nowhere
+      expect(rule("99505").find("[data-testid=help-label]").exists()).toBe(false);
+      expect(rule("99505").find("a").exists()).toBe(false);
+    });
+
     it("says that a document without issues has none", () => {
       const wrapper = mountWith(
         InspectorPanel,
