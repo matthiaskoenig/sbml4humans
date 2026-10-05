@@ -22,8 +22,7 @@ const showTraceback = ref(false);
     </h3>
     <div class="rounded border border-gray-300 bg-gray-50 px-2 py-1.5 text-sm text-gray-700">
       <p data-testid="validation-failure-message">
-        The validation failed, libsbml did not check this document:
-        <span class="break-words">{{ error.message }}</span>
+        The validation failed: <span class="break-words">{{ error.message }}</span>
       </p>
       <ul v-if="error.warnings.length" class="mt-1 list-disc pl-5 text-xs">
         <li v-for="warning in error.warnings" :key="warning">{{ warning }}</li>
