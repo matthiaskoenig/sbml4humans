@@ -320,7 +320,7 @@ An annotation relates the element to an entry of an external database, for examp
 
 An annotation can carry annotations of its own, which qualify it further: the evidence for a relation, or the modification of the protein a species stands for.
 
-The report groups the annotations of an element by qualifier, resolves the label of every entry and links it to the resource, and shows the terms below a term indented under it.
+The report groups the annotations of an element by qualifier and shows every resource as a card: its collection, its identifier, the term of its ontology with synonyms, description and cross references, the providers which show it, and for a ChEBI compound or a UniProt protein the information of that database.
 """
 
 [types.SBase.attributes.history]

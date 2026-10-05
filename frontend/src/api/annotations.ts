@@ -1,5 +1,5 @@
 import { getAnnotationResource } from "@/api/client";
-import type { AnnotationInfo } from "@/api/types";
+import type { AnnotationResource } from "@/types/annotation";
 
 /** At most this many resolve requests run at the same time; further resolves wait in a FIFO
  * queue. Opening an element can otherwise start one request per annotated resource in the same
@@ -27,7 +27,7 @@ interface QueuedResolve {
   reject: (error: DOMException) => void;
 }
 
-const cache = new Map<string, Promise<AnnotationInfo>>();
+const cache = new Map<string, Promise<AnnotationResource>>();
 // the queue in FIFO order: a Map iterates in insertion order
 const queue = new Map<string, QueuedResolve>();
 let active = 0;
@@ -69,31 +69,45 @@ function addCaller(queued: QueuedResolve, signal: AbortSignal | undefined): void
  * FIFO queue. A caller that stops needing the resource passes an AbortSignal: once every caller
  * of a queued resolve has aborted, the resolve is dropped before it starts a request, its promise
  * rejects with an AbortError and the resource can be requested again later. A resolve that has
- * already started keeps running and still fills the cache. */
-export function resolveAnnotation(resource: string, signal?: AbortSignal): Promise<AnnotationInfo> {
+ * already started keeps running and still fills the cache. A resource answered with errors (a
+ * web service failed) is not kept, the next call requests it again. */
+export function resolveAnnotation(
+  resource: string,
+  signal?: AbortSignal,
+): Promise<AnnotationResource> {
   let pending = cache.get(resource);
   if (!pending) {
-    const created: Promise<AnnotationInfo> = new Promise<AnnotationInfo>((resolve, reject) => {
-      queue.set(resource, {
-        resource,
-        callers: 0,
-        listeners: new AbortController(),
-        start: () => {
-          getAnnotationResource(resource)
-            .then(resolve, reject)
-            .finally(() => {
-              active -= 1;
-              runNext();
-            });
-        },
-        reject,
-      });
-    }).catch((error: unknown) => {
-      // a failed or dropped resolve leaves the cache, unless a new resolve of the same resource
-      // has already taken its place
-      if (cache.get(resource) === created) cache.delete(resource);
-      throw error;
-    });
+    const created: Promise<AnnotationResource> = new Promise<AnnotationResource>(
+      (resolve, reject) => {
+        queue.set(resource, {
+          resource,
+          callers: 0,
+          listeners: new AbortController(),
+          start: () => {
+            getAnnotationResource(resource)
+              .then(resolve, reject)
+              .finally(() => {
+                active -= 1;
+                runNext();
+              });
+          },
+          reject,
+        });
+      },
+    ).then(
+      (value) => {
+        // a resource whose web service failed is answered to its current callers but leaves the
+        // cache, so that the next resolve asks again, like the backend which does not keep it
+        if (value.errors?.length && cache.get(resource) === created) cache.delete(resource);
+        return value;
+      },
+      (error: unknown) => {
+        // a failed or dropped resolve leaves the cache, unless a new resolve of the same
+        // resource has already taken its place
+        if (cache.get(resource) === created) cache.delete(resource);
+        throw error;
+      },
+    );
     cache.set(resource, created);
     pending = created;
   }

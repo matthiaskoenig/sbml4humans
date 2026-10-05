@@ -63,6 +63,8 @@ git clone https://github.com/matthiaskoenig/sbml4humans.git
 
 `deploy.sh` is the deployment: it pulls the latest changes, removes the containers, images and volumes of the previous deployment with `docker-purge.sh`, and rebuilds and starts the backend, the frontend and the nginx container of `docker-compose-production.yml` in the background. The nginx container is published on port 8084, which the proxy forwards to; it serves the frontend with gzip and caching headers (`nginx/config/conf.d/local.conf`) and proxies `/api` to the backend, which runs as an unprivileged user from the code in its image and publishes no port, so it is reachable through the docker network alone. It also exports `VITE_COMMIT`, the commit it deploys, which the frontend build takes as an argument and the footer of the application links; the build context is `./frontend` and holds no repository to read it from, so a build without that variable shows the version alone.
 
+The backend keeps the cache of the web services (OLS, ChEBI, UniProt, the registry) on the named volume `cache` (`/cache`, `SBML4HUMANS_CACHE`) next to the volume `uploads` (`/uploads`, `SBML4HUMANS_UPLOADS`), so that it survives a restart of the container; a deploy removes the volumes (`docker-purge.sh`) and starts with an empty cache.
+
 ```bash
 ./deploy.sh
 ```

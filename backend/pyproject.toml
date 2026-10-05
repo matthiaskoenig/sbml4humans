@@ -31,7 +31,7 @@ dependencies = [
     "lxml>=6.0.0",
     "numpy>=2.2.2",
     "pint>=0.26.1",
-    "pymetadata>=0.6.6",
+    "pymetadata>=0.8.0",
     "pydantic>=2.12",
     # the http api
     "fastapi>=0.142.2",

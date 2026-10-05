@@ -12,7 +12,8 @@ import pytest
 from fastapi import FastAPI, UploadFile
 from fastapi.testclient import TestClient
 
-from sbml4humans import __version__, api, limits
+from sbml4humans import __version__, annotations, api, limits
+from sbml4humans.annotations import AnnotationResource, OntologyTerm
 from sbml4humans.examples import load_examples, report_for_example
 from sbml4humans.model import ReportResponse
 from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
@@ -346,41 +347,102 @@ def test_url_missing_parameter(client: TestClient) -> None:
     _check_error(response.json(), info={})
 
 
-def test_annotation_resource(
+def test_annotation_resource_is_typed(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Annotation resources are resolved."""
+    """The resource is answered in camelCase and may be cached by the browser for a day."""
+    value = AnnotationResource(
+        resource="GO:0006096",
+        identifier="GO:0006096",
+        pattern_match=True,
+        ontology=OntologyTerm(label="glycolytic process", ols_url="https://ols/x"),
+    )
+    monkeypatch.setattr(annotations.resource_cache(), "get", lambda resource: value)
+    response = client.get("/api/annotation_resource", params={"resource": "GO:0006096"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["patternMatch"] is True
+    assert body["ontology"]["olsUrl"] == "https://ols/x"
+    assert response.headers["cache-control"] == "public, max-age=86400"
 
-    def annotation_info(resource: str) -> dict[str, Any]:
-        return {"resource": resource, "label": "glucose"}
 
-    monkeypatch.setattr(api, "annotation_info", annotation_info)
+def test_annotation_resource_with_errors_is_not_cached(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A resource whose web service failed must not stay in the browser."""
+    value = AnnotationResource(resource="GO:1", errors=["OLS down"])
+    monkeypatch.setattr(annotations.resource_cache(), "get", lambda resource: value)
+    response = client.get("/api/annotation_resource", params={"resource": "GO:1"})
+    assert response.headers["cache-control"] == "no-store"
+
+
+def test_annotation_resource_with_warnings_is_cached_ten_minutes(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A resource the web services do not know stays in the browser ten minutes."""
+    value = AnnotationResource(
+        resource="CHEBI:999999999", warnings=["Term 'CHEBI:999999999' is not on ChEBI."]
+    )
+    monkeypatch.setattr(annotations.resource_cache(), "get", lambda resource: value)
     response = client.get(
-        "/api/annotation_resource", params={"resource": "chebi/CHEBI:17234"}
+        "/api/annotation_resource", params={"resource": "CHEBI:999999999"}
+    )
+    assert response.headers["cache-control"] == "public, max-age=600"
+
+
+def test_annotation_resource_too_long(client: TestClient) -> None:
+    """A resource longer than 2,000 characters is refused by the error contract."""
+    response = client.get("/api/annotation_resource", params={"resource": "x" * 2001})
+    assert response.status_code == 200
+    assert "2000" in response.json()["errors"][0]
+
+
+def test_annotation_resource_unknown_collection(client: TestClient) -> None:
+    """An unknown collection is answered by the error contract."""
+    response = client.get(
+        "/api/annotation_resource",
+        params={"resource": "https://identifiers.org/notacollection:1"},
     )
     assert response.status_code == 200
-    assert response.json() == {"resource": "chebi/CHEBI:17234", "label": "glucose"}
+    assert response.json()["errors"]
 
 
-def test_annotation_resource_failing(
-    client: TestClient,
-    monkeypatch: pytest.MonkeyPatch,
-    caplog: pytest.LogCaptureFixture,
+def test_annotation_structure(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A failing resolution results in an error payload with the resource."""
-
-    def annotation_info(resource: str) -> dict[str, Any]:
-        raise ValueError("unknown namespace")
-
-    monkeypatch.setattr(api, "annotation_info", annotation_info)
-    response = client.get("/api/annotation_resource", params={"resource": "x/y"})
+    """The structure is an svg which cannot run a script."""
+    monkeypatch.setattr(
+        annotations.ChebiQuery, "structure", staticmethod(lambda chebi: b"<svg/>")
+    )
+    response = client.get("/api/annotation_structure/CHEBI:15377")
     assert response.status_code == 200
-    data = response.json()
-    _check_error(data, info={"resource": "x/y"})
-    assert data["errors"] == ["unknown namespace"]
-    # the traceback stays on the server
-    assert "Traceback" in caplog.text
-    assert "unknown namespace" in caplog.text
+    assert response.headers["content-type"] == "image/svg+xml"
+    assert response.headers["content-security-policy"].startswith("sandbox")
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.content == b"<svg/>"
+
+
+@pytest.mark.parametrize(
+    "chebi", ["CHEBI:abc", "15377", "CHEBI:1%2F..", "CHEBI:1234567890", "CHEBI:1%0A"]
+)
+def test_annotation_structure_invalid(client: TestClient, chebi: str) -> None:
+    """An id which is not `CHEBI:<number>` has no structure."""
+    response = client.get(f"/api/annotation_structure/{chebi}")
+    assert response.status_code == 404
+    if "%2F" not in chebi:  # a slash is no route at all, the router answers
+        assert response.headers["cache-control"] == "no-store"
+
+
+def test_annotation_structure_missing(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A compound without a structure answers 404."""
+    monkeypatch.setattr(
+        annotations.ChebiQuery, "structure", staticmethod(lambda chebi: None)
+    )
+    response = client.get("/api/annotation_structure/CHEBI:1")
+    assert response.status_code == 404
+    assert response.headers["cache-control"] == "no-store"
 
 
 @pytest.mark.parametrize(

@@ -11,6 +11,8 @@
 volumes:
   uploads:
     driver: local
+  cache:
+    driver: local
   vue_dist:
     driver: local
   node_modules:
@@ -27,8 +29,11 @@ services:
     volumes:
       # the uploads of other tools, kept for 24 hours (POST /api/upload)
       - uploads:/uploads
+      # the answers of OLS, ChEBI, UniProt and the registry, kept across a restart of the container, a deploy removes the volume
+      - cache:/cache
     environment:
       SBML4HUMANS_UPLOADS: /uploads
+      SBML4HUMANS_CACHE: /cache
     expose:
       - "1444"
     security_opt:

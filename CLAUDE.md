@@ -20,7 +20,7 @@ npm run dev          # http://localhost:3456, api on http://localhost:1444 (.env
 npm run build        # type check and production build into dist/
 npm run build:package  # the build the python package ships, into backend/sbml4humans/resources/frontend/
 npm run test:e2e     # backend on port 1444 required, started with SBML4HUMANS_ALLOW_PRIVATE_URLS=1
-npm run types        # regenerate src/types/report.ts after a schema change, the CI diffs it
+npm run types        # regenerate src/types/report.ts and annotation.ts after a schema change, the CI diffs it
 npm run fixtures     # regenerate tests/fixtures/*.json after a model change, by hand
 npm run screenshots  # retake docs/images/*.png, needs the backend and a dev server, see scripts/screenshots.mjs
 
@@ -45,7 +45,7 @@ Releases: the version of sbml4humans is the version of the backend package, `fro
 
 The architecture of the backend is described in `backend/CLAUDE.md`, of the frontend in `frontend/CLAUDE.md` and of the glossary in `glossary/CLAUDE.md`; each is loaded with the first file read below its directory. Read `glossary/CLAUDE.md` also before a change of `backend/sbml4humans/glossary.py`, of `glossaryrules.py`, of the report model or of a label in the frontend.
 
-**Error contract.** The frontend expects every response with status 200. Every failure, including validation errors, is answered by `error_response` with status 200 and a body `{"errors": [message], "warnings": [], "info": {query parameters}}`; the traceback is logged and stays on the server, only a request whose state sets `api.TRACEBACK_STATE` (every request of the local server of `show`) gets it as the second element of `errors`, which the frontend shows behind "Show details". The tests run the `TestClient` with `raise_server_exceptions=False` to test this contract, keep it that way.
+**Error contract.** The frontend expects every response with status 200. Every failure, including validation errors, is answered by `error_response` with status 200 and a body `{"errors": [message], "warnings": [], "info": {query parameters}}`; the traceback is logged and stays on the server, only a request whose state sets `api.TRACEBACK_STATE` (every request of the local server of `show`) gets it as the second element of `errors`, which the frontend shows behind "Show details". The tests run the `TestClient` with `raise_server_exceptions=False` to test this contract, keep it that way. `GET /api/annotation_structure/{chebi}` is the one exception: an image, answered 404 without a structure.
 
 **The glossary.** `glossary/*.toml` in the repository root is the single source of every explanation and of every name: nothing is explained or named anywhere else, the frontend states no names of its own (the only words it owns are the chrome of the help dialog in `components/help/words.ts` and in the components themselves), and nothing of a validation rule is ever written by hand (`glossaryrules.resolve_rule` makes a rule text). Run `uv run python -m sbml4humans.glossary` after a change of the glossary or of the report model and commit all three outputs (`frontend/src/data/glossary.json`, `frontend/src/data/glossary-details.json`, `docs/reference/*.md`). The entry format and what `--check` enforces are in `glossary/CLAUDE.md`.
 

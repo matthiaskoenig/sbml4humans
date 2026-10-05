@@ -1,4 +1,4 @@
-import { flushPromises, mount } from "@vue/test-utils";
+import { config, flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import * as client from "@/api/client";
@@ -8,6 +8,9 @@ import {
   resetAnnotationCache,
   resolveAnnotation,
 } from "@/api/annotations";
+import type { AnnotationResource } from "@/types/annotation";
+import { vTooltip } from "@/directives/tooltip";
+import { router } from "@/router";
 import CvTermList from "@/components/misc/CvTermList.vue";
 import XhtmlView from "@/components/misc/XhtmlView.vue";
 
@@ -16,19 +19,18 @@ vi.mock("@/api/client", async (importOriginal) => {
   return { ...original, getAnnotationResource: vi.fn() };
 });
 
-const info = {
+const info: AnnotationResource = {
   resource: "https://identifiers.org/chebi/CHEBI:15377",
-  resource_normalized: null,
-  collection: "chebi",
-  term: "CHEBI:15377",
-  label: "water",
-  description: null,
+  collection: { prefix: "chebi", name: "ChEBI", homepage: null },
+  identifier: "CHEBI:15377",
   url: "https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:15377",
-  synonyms: [],
-  xrefs: [],
-  errors: [],
-  warnings: [],
+  ontology: { label: "water" },
 };
+
+/** The resolved resource of a resource, its term labelled by the resource. */
+function labelled(resource: string, label: string): AnnotationResource {
+  return { ...info, resource, ontology: { label } };
+}
 
 /** Resources whose requests keep every concurrent slot busy until they are settled. */
 const BUSY = Array.from({ length: MAX_CONCURRENT_RESOLVES }, (_, i) => `urn:busy:${i}`);
@@ -40,7 +42,7 @@ function holdRequests(): Map<string, () => void> {
   vi.mocked(client.getAnnotationResource).mockImplementation(
     (resource: string) =>
       new Promise((resolve) => {
-        settlers.set(resource, () => resolve({ ...info, resource, label: `label of ${resource}` }));
+        settlers.set(resource, () => resolve(labelled(resource, `label of ${resource}`)));
       }),
   );
   return settlers;
@@ -62,6 +64,10 @@ function requestsOf(resource: string): number {
     .mock.calls.filter(([requested]) => requested === resource).length;
 }
 
+// every card carries help labels, which link through the router and show tooltips
+config.global.plugins = [router];
+config.global.directives = { tooltip: vTooltip };
+
 describe("annotations", () => {
   afterEach(async () => {
     // the requests a test leaves settling finish first, so they cannot free a queue slot of the
@@ -80,6 +86,23 @@ describe("annotations", () => {
     expect(a).toBe(b);
     await resolveAnnotation(info.resource);
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(1);
+  });
+
+  it("requests a resource with errors again on the next resolve", async () => {
+    const failed = { ...info, errors: ["The Ontology Lookup Service could not be reached."] };
+    vi.mocked(client.getAnnotationResource).mockResolvedValue(failed);
+    const [a, b] = await Promise.all([
+      resolveAnnotation(info.resource),
+      resolveAnnotation(info.resource),
+    ]);
+    expect(a).toBe(failed);
+    expect(b).toBe(failed);
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(1);
+    vi.mocked(client.getAnnotationResource).mockResolvedValue(info);
+    expect(await resolveAnnotation(info.resource)).toBe(info);
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(2);
+    await resolveAnnotation(info.resource);
+    expect(client.getAnnotationResource).toHaveBeenCalledTimes(2);
   });
 
   it("resolves at most MAX_CONCURRENT_RESOLVES resources at the same time and resolves them all", async () => {
@@ -142,7 +165,7 @@ describe("annotations", () => {
 
     await settleAll(settlers);
     expect(requestsOf("urn:shared")).toBe(1);
-    await expect(shared).resolves.toMatchObject({ label: "label of urn:shared" });
+    await expect(shared).resolves.toMatchObject({ ontology: { label: "label of urn:shared" } });
   });
 
   it("rejects a queued resolve with an AbortError once all its callers abort, and requests it again later", async () => {
@@ -172,7 +195,7 @@ describe("annotations", () => {
     // the resource is requestable again, with a fresh request
     const again = resolveAnnotation("urn:queued");
     await settleAll(settlers);
-    await expect(again).resolves.toMatchObject({ label: "label of urn:queued" });
+    await expect(again).resolves.toMatchObject({ ontology: { label: "label of urn:queued" } });
     expect(requestsOf("urn:queued")).toBe(1);
   });
 
@@ -203,8 +226,8 @@ describe("annotations", () => {
 
     await settleAll(settlers);
     expect(requestsOf("urn:queued")).toBe(1);
-    await expect(again).resolves.toMatchObject({ label: "label of urn:queued" });
-    await expect(later).resolves.toMatchObject({ label: "label of urn:queued" });
+    await expect(again).resolves.toMatchObject({ ontology: { label: "label of urn:queued" } });
+    await expect(later).resolves.toMatchObject({ ontology: { label: "label of urn:queued" } });
   });
 
   it("removes the abort listeners of every queued entry on reset, so an old signal cannot drop a later queued resolve of the same resource", async () => {
@@ -228,7 +251,7 @@ describe("annotations", () => {
 
     await settleAll(settlers);
     expect(requestsOf("urn:reset")).toBe(1);
-    await expect(again).resolves.toMatchObject({ label: "label of urn:reset" });
+    await expect(again).resolves.toMatchObject({ ontology: { label: "label of urn:reset" } });
   });
 
   it("keeps a started resolve running and cached when its callers abort", async () => {
@@ -239,7 +262,7 @@ describe("annotations", () => {
     controller.abort();
 
     await settleAll(settlers);
-    await expect(started).resolves.toMatchObject({ label: "label of urn:started" });
+    await expect(started).resolves.toMatchObject({ ontology: { label: "label of urn:started" } });
     await resolveAnnotation("urn:started");
     expect(requestsOf("urn:started")).toBe(1);
   });
@@ -249,11 +272,13 @@ describe("annotations", () => {
     const wrapper = mount(CvTermList, {
       props: { cvterms: [{ qualifier: "BQB_IS", resources: [info.resource] }] },
     });
-    expect(wrapper.text()).toContain("BQB_IS");
+    expect(wrapper.get("[data-testid=annotation-qualifier]").text()).toBe("BQB_IS");
+    expect(wrapper.find("[data-testid=annotation-loading]").exists()).toBe(true);
     await flushPromises();
     const resource = wrapper.get("[data-testid=cvterm-resource]");
-    expect(resource.text()).toContain("water");
-    expect(resource.get("a").attributes("href")).toBe(info.resource);
+    expect(resource.get("[data-testid=annotation-label]").text()).toBe("water");
+    expect(resource.get("[data-testid=annotation-identifier]").attributes("href")).toBe(info.url);
+    expect(resource.find("[data-testid=annotation-loading]").exists()).toBe(false);
   });
 
   it("keeps the resource text when the resolution fails", async () => {
@@ -262,7 +287,12 @@ describe("annotations", () => {
       props: { cvterms: [{ qualifier: "BQB_IS", resources: ["urn:miriam:x"] }] },
     });
     await flushPromises();
-    expect(wrapper.get("[data-testid=cvterm-resource]").text()).toContain("urn:miriam:x");
+    const resource = wrapper.get("[data-testid=cvterm-resource]");
+    expect(resource.get("[data-testid=annotation-identifier]").text()).toBe("urn:miriam:x");
+    expect(resource.get("[data-testid=annotation-identifier]").attributes("href")).toBe(
+      "https://identifiers.org/x",
+    );
+    expect(resource.findAll("[data-testid=annotation-warning]")).toHaveLength(1);
   });
 
   it("requests a rejected resource exactly once, also when show all resolves the rest of its term", async () => {
@@ -396,11 +426,26 @@ describe("annotations", () => {
     await flushPromises();
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(MAX_AUTO_RESOLVES);
     expect(wrapper.get("[data-testid=resolve-all]").text()).toBe("resolve all (50)");
+    // the resources beyond the budget are idle: no loading note, a plain identifier link, no label
+    const beyond = wrapper
+      .findAll("[data-testid=cvterm]")[2]!
+      .findAll("[data-testid=cvterm-resource]");
+    expect(beyond).toHaveLength(50);
+    for (const resource of beyond) {
+      expect(resource.find("[data-testid=annotation-loading]").exists()).toBe(false);
+      expect(resource.find("[data-testid=annotation-identifier]").exists()).toBe(true);
+      expect(resource.find("[data-testid=annotation-label]").exists()).toBe(false);
+    }
 
     await wrapper.get("[data-testid=resolve-all]").trigger("click");
     await flushPromises();
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(150);
     expect(wrapper.find("[data-testid=resolve-all]").exists()).toBe(false);
+    for (const resource of wrapper
+      .findAll("[data-testid=cvterm]")[2]!
+      .findAll("[data-testid=cvterm-resource]")) {
+      expect(resource.get("[data-testid=annotation-label]").text()).toBe("water");
+    }
 
     await wrapper.setProps({ cvterms: termsOf("second") });
     await flushPromises();
@@ -585,7 +630,9 @@ describe("annotations", () => {
     const resources = thirdTerm.findAll("[data-testid=cvterm-resource]");
     expect(resources).toHaveLength(50);
     for (const [index, resource] of resources.entries()) {
-      expect(resource.get("a").text()).toBe(first[2]!.resources[index]);
+      expect(resource.get("[data-testid=annotation-identifier]").text()).toBe(
+        first[2]!.resources[index],
+      );
     }
 
     // resolve all requests nothing new: the resources of the third term are already cached from
@@ -595,7 +642,7 @@ describe("annotations", () => {
     await flushPromises();
     expect(client.getAnnotationResource).toHaveBeenCalledTimes(requestsBefore);
     for (const resource of thirdTerm.findAll("[data-testid=cvterm-resource]")) {
-      expect(resource.get("a").text()).toBe("water");
+      expect(resource.get("[data-testid=annotation-label]").text()).toBe("water");
     }
   });
 

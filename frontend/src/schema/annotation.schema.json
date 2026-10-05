@@ -1,0 +1,376 @@
+{
+  "$defs": {
+    "ChebiInfo": {
+      "description": "The chemical information of a ChEBI compound.",
+      "properties": {
+        "formula": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "charge": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mass": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "structure": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "title": "ChebiInfo",
+      "type": "object"
+    },
+    "Collection": {
+      "description": "The collection of the identifiers.org registry a resource belongs to.",
+      "properties": {
+        "prefix": {
+          "type": "string"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "homepage": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "prefix"
+      ],
+      "title": "Collection",
+      "type": "object"
+    },
+    "CrossReference": {
+      "description": "A cross reference of an ontology term, a link where OLS gives an url.",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "label"
+      ],
+      "title": "CrossReference",
+      "type": "object"
+    },
+    "OntologyTerm": {
+      "description": "The term of a resource in the Ontology Lookup Service.",
+      "properties": {
+        "ontology": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "iri": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "olsUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "synonyms": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "xrefs": {
+          "items": {
+            "$ref": "#/$defs/CrossReference"
+          },
+          "type": "array"
+        }
+      },
+      "title": "OntologyTerm",
+      "type": "object"
+    },
+    "Provider": {
+      "description": "A provider which resolves the identifier of a resource.",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "official": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "official"
+      ],
+      "title": "Provider",
+      "type": "object"
+    },
+    "UniprotInfo": {
+      "description": "The information of a UniProt protein.",
+      "properties": {
+        "entry": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "organism": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "genes": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "length": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "function": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "UniprotInfo",
+      "type": "object"
+    }
+  },
+  "description": "Everything the report shows of one resource of an annotation.",
+  "properties": {
+    "resource": {
+      "type": "string"
+    },
+    "collection": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Collection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "identifier": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "patternMatch": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "providers": {
+      "items": {
+        "$ref": "#/$defs/Provider"
+      },
+      "type": "array"
+    },
+    "ontology": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OntologyTerm"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "chebi": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ChebiInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "uniprot": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/UniprotInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "errors": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "resource"
+  ],
+  "title": "AnnotationResource",
+  "type": "object"
+}

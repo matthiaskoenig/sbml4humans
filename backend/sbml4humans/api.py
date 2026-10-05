@@ -50,7 +50,13 @@ from starlette.responses import Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from sbml4humans import __version__, limits
-from sbml4humans.annotations import annotation_info
+from sbml4humans.annotations import (
+    CHEBI_ID,
+    MAX_RESOURCE_LENGTH,
+    AnnotationResource,
+    ChebiQuery,
+    resource_cache,
+)
 from sbml4humans.download import download
 from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
 from sbml4humans.limits import ContentTooLargeError, format_size
@@ -394,7 +400,56 @@ def report_from_upload(
     return report_for_bytes(store.get(upload_id))
 
 
-@api.get("/api/annotation_resource", tags=["metadata"])
-def annotation_resource(resource: str) -> dict[str, Any]:
-    """Resolve the information of an annotation resource (url or MIRIAM urn)."""
-    return annotation_info(resource)
+@api.get(
+    "/api/annotation_resource",
+    tags=["metadata"],
+    response_model=AnnotationResource,
+)
+def annotation_resource(resource: str, response: Response) -> AnnotationResource:
+    """Resolve the information of an annotation resource (url or MIRIAM urn).
+
+    A resolved resource may stay in the browser for a day, one with warnings (a
+    term the web services do not know) ten minutes, like in `ResourceCache`; one
+    whose web service failed may not, so that the next look at it asks again.
+    """
+    if len(resource) > MAX_RESOURCE_LENGTH:
+        raise ValueError(
+            f"The resource is longer than {MAX_RESOURCE_LENGTH} characters."
+        )
+    value = resource_cache().get(resource)
+    if value.errors:
+        response.headers["Cache-Control"] = "no-store"
+    elif value.warnings:
+        response.headers["Cache-Control"] = "public, max-age=600"
+    else:
+        response.headers["Cache-Control"] = "public, max-age=86400"
+    return value
+
+
+# the structure is an image: the frontend shows it in an `<img>`, the sandbox keeps
+# a script of the svg from running where it is opened as a page of its own
+STRUCTURE_HEADERS = {
+    "Content-Security-Policy": "sandbox; default-src 'none'; style-src 'unsafe-inline'",
+    "X-Content-Type-Options": "nosniff",
+    "Cache-Control": "public, max-age=2592000",
+}
+
+# a 404 is not kept by the browser: the web service of ChEBI may be down only now
+NOT_FOUND_HEADERS = {"Cache-Control": "no-store"}
+
+
+@api.get(
+    "/api/annotation_structure/{chebi}", tags=["metadata"], response_class=Response
+)
+def annotation_structure(chebi: str) -> Response:
+    """The structure of a ChEBI compound as svg, 404 without one.
+
+    The one answer of the api outside the error contract: it is an image and
+    no JSON, and an image which is not there is a 404 the browser understands.
+    """
+    if not CHEBI_ID.fullmatch(chebi):
+        return Response(status_code=404, headers=NOT_FOUND_HEADERS)
+    svg = ChebiQuery.structure(chebi)
+    if svg is None:
+        return Response(status_code=404, headers=NOT_FOUND_HEADERS)
+    return Response(content=svg, media_type="image/svg+xml", headers=STRUCTURE_HEADERS)

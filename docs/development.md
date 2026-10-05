@@ -41,9 +41,11 @@ uv sync
 uv run uvicorn sbml4humans.api:api --reload --port 1444
 ```
 
-`uv sync` creates `backend/.venv` with the pinned dependencies of `uv.lock` and installs `sbml4humans` editable. The api answers on port 1444, e.g. <http://localhost:1444/api/examples>, the OpenAPI documentation on <http://localhost:1444/docs>. With `--reload` the server restarts on changes in `backend/`. A dependency change goes through `uv add`/`uv lock`, commit the updated `uv.lock` with it, the CI installs from the lock. The JSON schema of the api response is generated from the pydantic model into `frontend/src/schema/report.schema.json` with `uv run python -m sbml4humans.schema`.
+`uv sync` creates `backend/.venv` with the pinned dependencies of `uv.lock` and installs `sbml4humans` editable. The api answers on port 1444, e.g. <http://localhost:1444/api/examples>, the OpenAPI documentation on <http://localhost:1444/docs>. With `--reload` the server restarts on changes in `backend/`. A dependency change goes through `uv add`/`uv lock`, commit the updated `uv.lock` with it, the CI installs from the lock. The JSON schema of the api response is generated from the pydantic model into `frontend/src/schema/report.schema.json` (and that of the annotation resource into `annotation.schema.json`) with `uv run python -m sbml4humans.schema`.
 
 `sbml4humans.show` and the command `sbml4humans` ([Reports from python](python.md)) serve the built frontend from inside the package, `backend/sbml4humans/resources/frontend/`, which is git ignored and created by `npm run build:package` in `frontend/`: a production build with the api at the relative address `/api` and without analytics (`frontend/.env.package`). Without it `show` fails with that command. The environment variable `SBML4HUMANS_FRONTEND` serves another build instead, and `SBML4HUMANS_STATE_DIR` moves the state file and the log of the local server out of the cache directory of the user, which is what the tests do.
+
+The environment variable `SBML4HUMANS_CACHE` is the directory of the disk cache of pymetadata, which keeps the answers of OLS, ChEBI, UniProt and the registry; without it the cache is `~/.cache/pymetadata`.
 
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every pull request (see [Branches and pull requests](#branches-and-pull-requests)):
 
