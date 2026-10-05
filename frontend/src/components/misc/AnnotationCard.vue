@@ -231,7 +231,7 @@ function summary(key: string): string | undefined {
       </HelpLabel>
       <!-- the test id sits on the links only: the HelpLabel is an anchor and stays outside -->
       <span data-testid="annotation-xrefs">
-        <template v-for="xref in xrefs" :key="xref.label">
+        <template v-for="(xref, i) in xrefs" :key="i">
           <a
             v-if="xref.url"
             :href="xref.url"
@@ -253,7 +253,7 @@ function summary(key: string): string | undefined {
       </HelpLabel>
       <!-- the test id sits on the links only: the HelpLabel is an anchor and stays outside -->
       <span data-testid="annotation-providers">
-        <template v-for="(provider, i) in providers" :key="provider.url">
+        <template v-for="(provider, i) in providers" :key="i">
           <span v-if="i > 0"> · </span>
           <a
             :href="provider.url"

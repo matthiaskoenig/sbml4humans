@@ -176,4 +176,39 @@ describe("AnnotationCard", () => {
     expect(failed.find("[data-testid=annotation-loading]").exists()).toBe(false);
     expect(failed.findAll("[data-testid=annotation-warning]")).toHaveLength(1);
   });
+
+  it("links the url of a resource outside identifiers.org, which has no collection", () => {
+    const resource = "https://en.wikipedia.org/wiki/Cytosol";
+    const wrapper = card({
+      ...GO,
+      resource,
+      collection: null,
+      identifier: resource,
+      url: null,
+      patternMatch: null,
+      providers: [],
+      ontology: null,
+      warnings: ["No collection."],
+    });
+    expect(wrapper.find("[data-testid=annotation-collection]").exists()).toBe(false);
+    const identifier = wrapper.get("[data-testid=annotation-identifier]");
+    expect(identifier.text()).toBe(resource);
+    expect(identifier.attributes("href")).toBe(resource);
+  });
+
+  it("shows cross references and providers which repeat", () => {
+    const wrapper = card({
+      ...GO,
+      providers: [GO.providers[0]!, GO.providers[0]!],
+      ontology: {
+        ...GO.ontology!,
+        xrefs: [
+          { label: "Wikipedia:Glycolysis", url: null },
+          { label: "Wikipedia:Glycolysis", url: null },
+        ],
+      },
+    });
+    expect(wrapper.findAll("[data-testid=annotation-providers] a")).toHaveLength(2);
+    expect(wrapper.get("[data-testid=annotation-xrefs]").findAll("span")).toHaveLength(2);
+  });
 });
