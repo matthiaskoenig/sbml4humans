@@ -430,6 +430,9 @@ STRUCTURE_HEADERS = {
     "Cache-Control": "public, max-age=2592000",
 }
 
+# a 404 is not kept by the browser: the web service of ChEBI may be down only now
+NOT_FOUND_HEADERS = {"Cache-Control": "no-store"}
+
 
 @api.get(
     "/api/annotation_structure/{chebi}", tags=["metadata"], response_class=Response
@@ -440,9 +443,9 @@ def annotation_structure(chebi: str) -> Response:
     The one answer of the api outside the error contract: it is an image and
     no JSON, and an image which is not there is a 404 the browser understands.
     """
-    if not CHEBI_ID.match(chebi):
-        return Response(status_code=404)
+    if not CHEBI_ID.fullmatch(chebi):
+        return Response(status_code=404, headers=NOT_FOUND_HEADERS)
     svg = ChebiQuery.structure(chebi)
     if svg is None:
-        return Response(status_code=404)
+        return Response(status_code=404, headers=NOT_FOUND_HEADERS)
     return Response(content=svg, media_type="image/svg+xml", headers=STRUCTURE_HEADERS)

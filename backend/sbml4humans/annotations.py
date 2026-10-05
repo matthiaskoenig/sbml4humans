@@ -29,7 +29,7 @@ CACHE_VARIABLE = "SBML4HUMANS_CACHE"
 
 # the longest resource the api resolves, and the form of a ChEBI id it draws
 MAX_RESOURCE_LENGTH = 2000
-CHEBI_ID = re.compile(r"^CHEBI:\d{1,9}$")
+CHEBI_ID = re.compile(r"CHEBI:\d{1,9}")
 
 
 def configure_cache() -> None:

@@ -409,11 +409,14 @@ def test_annotation_structure(
 
 
 @pytest.mark.parametrize(
-    "chebi", ["CHEBI:abc", "15377", "CHEBI:1%2F..", "CHEBI:1234567890"]
+    "chebi", ["CHEBI:abc", "15377", "CHEBI:1%2F..", "CHEBI:1234567890", "CHEBI:1%0A"]
 )
 def test_annotation_structure_invalid(client: TestClient, chebi: str) -> None:
     """An id which is not `CHEBI:<number>` has no structure."""
-    assert client.get(f"/api/annotation_structure/{chebi}").status_code == 404
+    response = client.get(f"/api/annotation_structure/{chebi}")
+    assert response.status_code == 404
+    if "%2F" not in chebi:  # a slash is no route at all, the router answers
+        assert response.headers["cache-control"] == "no-store"
 
 
 def test_annotation_structure_missing(
@@ -423,7 +426,9 @@ def test_annotation_structure_missing(
     monkeypatch.setattr(
         annotations.ChebiQuery, "structure", staticmethod(lambda chebi: None)
     )
-    assert client.get("/api/annotation_structure/CHEBI:1").status_code == 404
+    response = client.get("/api/annotation_structure/CHEBI:1")
+    assert response.status_code == 404
+    assert response.headers["cache-control"] == "no-store"
 
 
 @pytest.mark.parametrize(
