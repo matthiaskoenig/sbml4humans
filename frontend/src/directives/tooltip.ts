@@ -18,7 +18,7 @@ interface TooltipTarget {
   text: TooltipValue;
   placement: Placement;
   mono: boolean;
-  show: () => void;
+  show: (event: MouseEvent) => void;
   focus: () => void;
   hide: () => void;
 }
@@ -81,8 +81,26 @@ function onScroll(): void {
  * A device with both follows the pointer in use, the mouse hovers again as soon as it moves. */
 let touching = false;
 
+/** Where the pointer moved last. A pointer which moves onto an element enters it before its move
+ * there is reported, so the `mouseenter` of a hover stands somewhere else than the last move. A
+ * pointer which rests while the page changes under it, the dialog it closed by its button or a
+ * pane which opens where it is, is entered into whatever is now there at the very place it
+ * rested: that is no hover, and its tooltip would stand on the report unasked. */
+let rest: { x: number; y: number } | undefined;
+
+/** The element a resting pointer was entered into, whose tooltip is shown once the pointer moves
+ * on it: it is already inside, and no `mouseenter` follows. */
+let entered: HTMLElement | null = null;
+
 function onPointer(event: Event): void {
-  touching = (event as PointerEvent).pointerType === "touch";
+  const pointer = event as PointerEvent;
+  touching = pointer.pointerType === "touch";
+  rest = pointer.clientX === undefined ? undefined : { x: pointer.clientX, y: pointer.clientY };
+  if (entered && !touching && event.type === "pointermove") {
+    const el = entered;
+    entered = null;
+    if (el.contains(event.target as Node | null)) show(el);
+  }
 }
 
 if (typeof document !== "undefined") {
@@ -90,9 +108,16 @@ if (typeof document !== "undefined") {
   document.addEventListener("pointermove", onPointer, { capture: true, passive: true });
 }
 
-/** Show the tooltip for a hover, which a pointer that hovers alone is shown one for. */
-function hover(el: HTMLElement): void {
-  if (!touching) show(el);
+/** Show the tooltip for a hover, which a pointer that hovers alone is shown one for, and only
+ * when it moved onto the element. */
+function hover(el: HTMLElement, event: MouseEvent): void {
+  if (touching) return;
+  // a pointer event places the pointer to a fraction of a pixel, a mouse event to whole pixels
+  if (rest && Math.abs(event.clientX - rest.x) < 1 && Math.abs(event.clientY - rest.y) < 1) {
+    entered = el;
+    return;
+  }
+  show(el);
 }
 
 function show(el: HTMLElement): void {
@@ -128,6 +153,7 @@ function focus(el: HTMLElement): void {
 
 /** Hide the tooltip; with an element only when it is shown for that element. */
 function hide(el?: HTMLElement): void {
+  if (el && entered === el) entered = null;
   if (el && owner !== el) return;
   if (tooltip) tooltip.hidden = true;
   owner?.removeAttribute("aria-describedby");
@@ -145,7 +171,7 @@ export const vTooltip: Directive<HTMLElement, TooltipValue> = {
       text: binding.value,
       placement: placementOf(binding),
       mono: binding.modifiers.mono === true,
-      show: () => hover(el),
+      show: (event: MouseEvent) => hover(el, event),
       focus: () => focus(el),
       hide: () => hide(el),
     };
