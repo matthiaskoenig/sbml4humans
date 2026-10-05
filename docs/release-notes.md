@@ -10,6 +10,8 @@ A report says what is wrong with a model: the errors and warnings of the validat
 - the report shows the validation of libsbml: errors and warnings in the app bar, at the rows and the types, in the inspector of an element and as one list in the inspector of the document ([#3](https://github.com/matthiaskoenig/sbml4humans/issues/3))
 - the number of the rule of an issue opens the explanation which states the text of that rule, where the glossary cites it
 - the validation of a document of the comp package checks its external model definitions against the documents of the report alone; it reads no other file and fetches no url
+- a document whose main model expands to more than 1,000 comp submodel instances is not validated, so that its report does not take minutes; the report says "not validated" and lists the errors of reading the file
+- the document, the model and the external model definitions carry the mark of their issues in the type bar
 
 ## 0.10.0
 
