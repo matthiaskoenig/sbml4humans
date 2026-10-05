@@ -45,7 +45,9 @@ const packages = computed(() => props.index.document.packages?.map((pkg) => pkg.
     <span v-else class="truncate font-mono text-gray-700 max-md:hidden" data-testid="model-name">{{
       model.id
     }}</span>
-    <span class="whitespace-nowrap text-gray-500" data-testid="document-info">
+    <!-- a phone leaves the level, the version and the packages to the inspector of the document,
+    the row has no room for them next to the selects -->
+    <span class="whitespace-nowrap text-gray-500 max-sm:hidden" data-testid="document-info">
       L{{ index.document.level }}V{{ index.document.version }}
       <span
         v-for="pkg in packages"

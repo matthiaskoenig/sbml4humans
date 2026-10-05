@@ -129,7 +129,9 @@ function summary(key: string): string | undefined {
     </p>
 
     <template v-if="info?.ontology">
-      <div class="mt-1">
+      <!-- a flex row, so that an IRI which does not fit next to the label starts its own line at
+      the left edge, and breaks only where it is wider than the card -->
+      <div class="mt-1 flex flex-wrap items-baseline gap-x-1">
         <a
           v-if="info.ontology.ontology"
           v-tooltip.bottom="summary('annotationOntology')"
@@ -140,13 +142,13 @@ function summary(key: string): string | undefined {
           data-testid="annotation-ontology"
           >{{ info.ontology.ontology.toUpperCase() }}</a
         >
-        <b class="ml-1" data-testid="annotation-label">{{ info.ontology.label }}</b>
+        <b data-testid="annotation-label">{{ info.ontology.label }}</b>
         <a
           v-if="info.ontology.iri"
           :href="info.ontology.iri"
           target="_blank"
           rel="noopener"
-          class="ml-1 text-xs break-all text-gray-500 hover:underline"
+          class="max-w-full text-xs break-all text-gray-500 hover:underline"
           data-testid="annotation-iri"
           >{{ info.ontology.iri }}</a
         >
@@ -235,10 +237,12 @@ function summary(key: string): string | undefined {
             :href="xref.url"
             target="_blank"
             rel="noopener"
-            class="mr-2 font-mono text-xs text-link hover:underline"
+            class="mr-2 inline-block max-w-full font-mono text-xs text-link hover:underline"
             >{{ xref.label }}</a
           >
-          <span v-else class="mr-2 font-mono text-xs">{{ xref.label }}</span>
+          <span v-else class="mr-2 inline-block max-w-full font-mono text-xs">{{
+            xref.label
+          }}</span>
         </template>
       </span>
     </div>
@@ -271,6 +275,6 @@ function summary(key: string): string | undefined {
   @apply inline-block rounded-sm px-1.5 align-[1px] text-[11px] leading-[17px] whitespace-nowrap text-white;
 }
 .section-label {
-  @apply mr-1 text-xs font-semibold tracking-wide text-gray-500 uppercase;
+  @apply mr-1 text-xs font-semibold tracking-wide whitespace-nowrap text-gray-500 uppercase;
 }
 </style>

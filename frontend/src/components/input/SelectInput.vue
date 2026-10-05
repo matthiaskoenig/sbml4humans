@@ -9,11 +9,13 @@ const model = defineModel<string>({ required: true });
 </script>
 
 <template>
-  <span class="relative inline-flex items-center">
+  <!-- the select shrinks below the width of its longest option and truncates it, so that the bar
+  of a narrow window keeps its menu button in view -->
+  <span class="relative inline-flex min-w-0 items-center">
     <select
       v-bind="$attrs"
       v-model="model"
-      class="max-w-72 cursor-pointer appearance-none truncate rounded border border-gray-300 bg-white py-1 pr-7 pl-2 text-sm hover:border-gray-400 focus:border-link focus:outline-none"
+      class="max-w-72 min-w-0 cursor-pointer appearance-none truncate rounded border border-gray-300 bg-white py-1 pr-7 pl-2 text-sm hover:border-gray-400 focus:border-link focus:outline-none"
     >
       <option v-for="option in options" :key="option.value" :value="option.value">
         {{ option.label }}
