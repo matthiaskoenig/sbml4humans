@@ -52,7 +52,7 @@ from starlette.responses import PlainTextResponse, Response
 from starlette.staticfiles import StaticFiles
 from starlette.types import Receive, Scope, Send
 
-from sbml4humans import __version__
+from sbml4humans import __version__, isolation
 from sbml4humans.api import (
     GZIP_LEVEL,
     GZIP_MINIMUM_SIZE,
@@ -360,6 +360,8 @@ def serve(port: int, secret: str, idle_timeout: float = IDLE_TIMEOUT) -> None:
         FrontendMissingError: if the package holds no build of the frontend.
     """
     app = LocalApp(port=port, secret=secret, frontend=frontend_dir())
+    # the first validation does not wait for the imports of the forkserver
+    isolation.start_forkserver()
     server = uvicorn.Server(uvicorn.Config(app, host=HOST, port=port))
     state = state_file()
 

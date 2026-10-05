@@ -895,6 +895,41 @@ def test_a_validation_beyond_the_admission_is_busy_at_once(
     assert elapsed < 2.0
 
 
+def test_a_busy_validation_of_a_url_downloads_nothing(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A validation is admitted before its source is downloaded."""
+    from sbml4humans import isolation
+
+    urls: list[str] = []
+
+    def download(url: str) -> bytes:
+        urls.append(url)
+        return COMP_DELETION.read_bytes()
+
+    monkeypatch.setattr(api, "download", download)
+    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
+    monkeypatch.setattr(isolation, "MAX_WAITING_VALIDATIONS", 0)
+    url = "https://example.org/comp_deletion.xml"
+    with isolation.admission() as admitted:
+        assert admitted
+        data = client.get("/api/validation/url", params={"url": url}).json()
+    assert data == {"entries": {}, "skipped": "busy"}
+    assert urls == []
+
+
+def test_the_forkserver_is_started_with_the_api(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The children of the first validation do not wait for the forkserver."""
+    from sbml4humans import isolation
+
+    started: list[bool] = []
+    monkeypatch.setattr(isolation, "start_forkserver", lambda: started.append(True))
+    with TestClient(api.api, raise_server_exceptions=False):
+        assert started == [True]
+
+
 def test_reports_are_answered_while_validations_are_saturated(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

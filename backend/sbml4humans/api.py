@@ -129,9 +129,11 @@ async def remove_expired_uploads(store: UploadStore) -> None:
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     """Read the examples on startup, and delete the expired uploads while the api runs.
 
-    The examples are read on startup, so that the first requests are fast.
+    The examples are read and the forkserver of the validations is started on
+    startup, so that the first requests are fast.
     """
     load_examples()
+    isolation.start_forkserver()
     cleanup = asyncio.create_task(remove_expired_uploads(upload_store()))
     try:
         yield
@@ -533,9 +535,17 @@ async def validation_of_file(source: UploadFile) -> ValidationResponse:
     response_model_by_alias=True,
 )
 async def validation_of_url(url: str) -> ValidationResponse:
-    """Validate an SBML file or COMBINE archive behind a url."""
-    content = await run_in_threadpool(download, url)
-    return await run_validation(validation_for_bytes, content)
+    """Validate an SBML file or COMBINE archive behind a url.
+
+    The validation is admitted before the download, a busy server downloads
+    nothing.
+    """
+    return await run_validation(validation_of_download, url)
+
+
+def validation_of_download(url: str) -> ValidationResponse:
+    """Download the source behind a url and validate it."""
+    return validation_for_bytes(download(url))
 
 
 @api.post(
