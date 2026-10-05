@@ -47,7 +47,7 @@ uv run uvicorn sbml4humans.api:api --reload --port 1444
 
 The environment variable `SBML4HUMANS_CACHE` is the directory of the disk cache of pymetadata, which keeps the answers of OLS, ChEBI, UniProt and the registry; without it the cache is `~/.cache/pymetadata`.
 
-The environment variable `SBML4HUMANS_VALIDATIONS` is the number of validations which run at a time, each in a child process of its own; without it half the cpus the backend may use. Twice as many validations wait for a child, a further one is answered at once as busy.
+The environment variable `SBML4HUMANS_VALIDATIONS` is the number of validations which run at a time, each in a child process of its own which may use up to 2 GiB of memory; without it half the cpus the backend may run on (`os.process_cpu_count()`, its cpu affinity: in a container all cpus of the host unless `--cpuset-cpus` restricts them, a cpu quota such as `--cpus` does not change it). Twice as many validations wait for a child, a further one is answered at once as busy. The numbers hold per server process, `uvicorn --workers N` multiplies them by N.
 
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every pull request (see [Branches and pull requests](#branches-and-pull-requests)):
 

@@ -17,7 +17,7 @@ A report says what is wrong with a model: the errors and warnings of the validat
 - the api answers the validation of a source apart from its report, at `GET /api/validation/examples/{id}`, `GET /api/validation/url`, `POST /api/validation/file`, `POST /api/validation/content` and `GET /api/validation/upload/{id}`, described by its own JSON schema
 
 ### Deployment
-- the validations run in child processes of the backend, at most half the cpus of the container at a time unless `SBML4HUMANS_VALIDATIONS` sets their number
+- the validations run in child processes of the backend, each of which may use up to 2 GiB of memory; `SBML4HUMANS_VALIDATIONS` sets how many run at a time, 2 in `docker-compose-production.yml`, without it half the cpus the backend may run on (in a container all cpus of the host unless `--cpuset-cpus` restricts them)
 
 ## 0.10.0
 

@@ -68,8 +68,10 @@ VALIDATIONS_VARIABLE = "SBML4HUMANS_VALIDATIONS"
 def _concurrent_validations() -> int:
     """The children which validate at a time: the environment, else half the cpus.
 
-    `os.process_cpu_count` counts the cpus this process may use, which a
-    container limits.
+    `os.process_cpu_count` counts the cpus this process may run on, its cpu
+    affinity: in a container all cpus of the host unless a cpuset restricts
+    them, a cpu quota does not change it. Each child may use up to
+    `VALIDATION_MEMORY`, so a server sets the number to what its memory allows.
     """
     value = os.environ.get(VALIDATIONS_VARIABLE, "")
     if value.isdigit() and int(value) > 0:
