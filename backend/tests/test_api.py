@@ -693,10 +693,14 @@ def test_validation_of_an_example_with_a_timeout_is_not_kept(
     """A validation which was ended by its limits is tried again next time."""
     from sbml4humans import isolation
 
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 0.0)
+    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
+    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 0.2)
     api.example_validations.clear()
-    data = client.get("/api/validation/examples/species (species.xml)").json()
-    assert data["skipped"] == "timeout"
+    # another validation holds the one child
+    semaphore = isolation._semaphore()
+    with semaphore:
+        data = client.get("/api/validation/examples/species (species.xml)").json()
+    assert data["skipped"] == "busy"
     monkeypatch.undo()
     data = client.get("/api/validation/examples/species (species.xml)").json()
     assert next(iter(data["entries"].values()))["skipped"] is None
@@ -866,52 +870,33 @@ def test_a_validation_beyond_the_admission_is_busy_at_once(
     assert elapsed < 2.0
 
 
-def _slow_content() -> bytes:
-    """A document whose validation takes more than 20 seconds without the budget."""
-    submodels = "".join(
-        f'<comp:submodel comp:id="s{i}" comp:modelRef="d"/>' for i in range(1000)
-    )
-    species = "".join(
-        f'<species id="x{k}" compartment="c" initialAmount="1" '
-        'hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>'
-        for k in range(20)
-    )
-    return (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" '
-        'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" '
-        'level="3" version="1" comp:required="true">'
-        f'<model id="m"><comp:listOfSubmodels>{submodels}</comp:listOfSubmodels>'
-        '</model><comp:listOfModelDefinitions><comp:modelDefinition id="d">'
-        '<listOfCompartments><compartment id="c" constant="true"/>'
-        f"</listOfCompartments><listOfSpecies>{species}</listOfSpecies>"
-        "</comp:modelDefinition></comp:listOfModelDefinitions></sbml>"
-    ).encode()
-
-
 def test_reports_are_answered_while_validations_are_saturated(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Validations never hold a thread of the other endpoints.
 
-    The threadpool of the other endpoints is one thread here: two validations,
-    one running and one waiting for the child, leave it free for a report, and
-    a third validation is busy at once.
+    The threadpool of the other endpoints is one thread here, the one child is
+    held by the test: two validations waiting for it leave the thread free for
+    a report, and a third validation is busy at once. The two waiting ones get
+    no child before their timeout and are busy as well.
     """
     from anyio import to_thread
 
-    from sbml4humans import isolation, validation
+    from sbml4humans import isolation
 
-    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 10**9)
     monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
     monkeypatch.setattr(isolation, "MAX_WAITING_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 5.0)
-    content = _slow_content()
+    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 3.0)
+    content = REPRESSILATOR_SBML.read_bytes()
 
     async def one_thread() -> None:
         to_thread.current_default_thread_limiter().total_tokens = 1
 
-    with TestClient(api.api, raise_server_exceptions=False) as local_client:
+    semaphore = isolation._semaphore()
+    with (
+        semaphore,
+        TestClient(api.api, raise_server_exceptions=False) as local_client,
+    ):
         assert local_client.portal is not None
         local_client.portal.call(one_thread)
         answers: list[dict[str, Any]] = []
@@ -929,15 +914,12 @@ def test_reports_are_answered_while_validations_are_saturated(
         assert isolation._admitted == 2
 
         start = time.perf_counter()
-        report = local_client.post(
-            "/api/content", content=REPRESSILATOR_SBML.read_bytes()
-        )
+        report = local_client.post("/api/content", content=content)
         busy = local_client.post("/api/validation/content", content=content)
         elapsed = time.perf_counter() - start
         _check_report(report.json())
         assert busy.json() == {"entries": {}, "skipped": "busy"}
-        assert elapsed < 3.0
+        assert elapsed < 2.5
         for thread in threads:
             thread.join()
-    # the first ran out of time in its child, the second got no child in time
-    assert sorted(answer["skipped"] for answer in answers) == ["busy", "timeout"]
+    assert answers == [{"entries": {}, "skipped": "busy"}] * 2

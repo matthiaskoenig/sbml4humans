@@ -9,8 +9,9 @@ bytes, and at most `MAX_CONCURRENT_VALIDATIONS` children run at a time.
 
 A server admits at most `MAX_CONCURRENT_VALIDATIONS + MAX_WAITING_VALIDATIONS`
 validations at a time (`admission`), a request beyond them is answered at once
-as `"busy"`, and so is one which got no child before its timeout: a validation
-is `"timeout"` only when its child ran out of time.
+as `"busy"`, and so is one which got no child while at least `MIN_CHILD_TIME`
+of its timeout was left: a validation is `"timeout"` only when its child ran
+out of time.
 
 The children are forked by the forkserver of `multiprocessing`, a process of
 its own which imported the report and the validation once and is single
@@ -74,6 +75,8 @@ VALIDATION_MEMORY = 2 * 1024**3
 MAX_CONCURRENT_VALIDATIONS = _concurrent_validations()
 # the validations which may wait for a child, beyond them a request is busy
 MAX_WAITING_VALIDATIONS = 2 * MAX_CONCURRENT_VALIDATIONS
+# the time a child has at least, a validation which got a child later is busy
+MIN_CHILD_TIME = 1.0
 
 Interruption = Literal["timeout", "memory", "busy"]
 
@@ -285,7 +288,8 @@ def run_isolated(
     The function yields its results as pairs of a key and a value; it and its
     argument are pickled, so the function is one of a module the child imports.
     The time counts from the call on, the wait for a free child included; a
-    call which gets no child before its timeout is busy.
+    call which gets no child before less than `MIN_CHILD_TIME` of its timeout
+    is left is busy, without a child.
 
     Args:
         function: what the child runs.
@@ -301,8 +305,13 @@ def run_isolated(
     """
     deadline = time.monotonic() + VALIDATION_TIMEOUT
     semaphore = _semaphore()
-    if not semaphore.acquire(timeout=VALIDATION_TIMEOUT):
+    if not semaphore.acquire(timeout=max(0.0, deadline - time.monotonic())):
         logger.warning("no child was free for a validation before its timeout")
+        return IsolatedRun(interruption="busy")
+    if deadline - time.monotonic() < MIN_CHILD_TIME:
+        # a child which got next to no time would only run out of it
+        semaphore.release()
+        logger.warning("a child was free for a validation too late before its timeout")
         return IsolatedRun(interruption="busy")
     try:
         return _run_child(function, argument, deadline)

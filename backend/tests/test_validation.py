@@ -702,6 +702,7 @@ def _gone(pid: int) -> bool:
 def test_timeout_terminates_the_child(monkeypatch: pytest.MonkeyPatch) -> None:
     """A validation beyond the timeout is ended and its entry skipped."""
     content = _slow(monkeypatch)
+    monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 1.0)
     pids = _spy_children(monkeypatch)
     start = time.perf_counter()
@@ -721,6 +722,7 @@ def test_timeout_keeps_the_entries_validated_before(
 ) -> None:
     """The entries the child validated before the timeout keep their issues."""
     content = _slow(monkeypatch)
+    monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 3.0)
     documents = {
         "a.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
@@ -866,6 +868,30 @@ def test_waiting_beyond_the_timeout_is_busy(monkeypatch: pytest.MonkeyPatch) -> 
     assert response.entries == {}
     assert 1.0 <= elapsed < 4.0
     assert pids == []
+
+
+def test_a_child_free_too_late_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A child which gets free shortly before the timeout is not started."""
+    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
+    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 2.0)
+    monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 1.0)
+    pids = _spy_children(monkeypatch)
+    # another request holds the one child and frees it 1.5 s from now
+    semaphore = isolation._semaphore()
+    semaphore.acquire()
+    release = threading.Timer(1.5, semaphore.release)
+    release.start()
+    start = time.perf_counter()
+    response = validation_for_path(EXAMPLES_DIR / "validation.xml")
+    elapsed = time.perf_counter() - start
+    release.join()
+    assert response.skipped == "busy"
+    assert response.entries == {}
+    assert 1.5 <= elapsed < 4.0
+    assert pids == []
+    # the child is free again
+    assert semaphore.acquire(timeout=0)
+    semaphore.release()
 
 
 def test_a_document_without_a_model_is_an_error() -> None:
