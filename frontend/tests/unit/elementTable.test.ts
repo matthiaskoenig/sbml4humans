@@ -59,7 +59,7 @@ function mountTable(
   reportIndex: ReportIndex = index,
 ) {
   wrapper = mount(ElementTable, {
-    props: { type, rows },
+    props: { type, model: reportIndex.mainModel!.id!, rows },
     attachTo: document.body,
     global: {
       plugins: [router],
@@ -162,7 +162,11 @@ describe("ElementTable", () => {
     const qual = new ReportIndex(loadReport("qual_example"));
     await router.push("/examples/qual_example");
     wrapper = mount(ElementTable, {
-      props: { type: "Transition", rows: qual.byType("qual_example").get("Transition")! },
+      props: {
+        type: "Transition",
+        model: "qual_example",
+        rows: qual.byType("qual_example").get("Transition")!,
+      },
       attachTo: document.body,
       global: {
         plugins: [router],
@@ -205,7 +209,7 @@ describe("ElementTable", () => {
     await router.push("/examples/BIOMD0000000012");
     const rules = index.byType("BIOMD0000000012").get("AssignmentRule")!;
     wrapper = mount(ElementTable, {
-      props: { type: "AssignmentRule", rows: rules },
+      props: { type: "AssignmentRule", model: "BIOMD0000000012", rows: rules },
       attachTo: document.body,
       global: {
         plugins: [router],
@@ -467,12 +471,28 @@ describe("ElementTable of a document with issues", () => {
     expect(document.getElementById("app-tooltip")?.textContent).toContain("10703");
   });
 
+  it("keeps the place of the mark in an unmarked row of a table with issues", async () => {
+    // the parameter x has no issue of its own: the slot in front of its type mark lines its id up
+    // with the id of k1, which carries the mark
+    await router.push({ path: "/report", query: {} });
+    const parameters = validation.byType(modelId).get("Parameter")!;
+    const x = parameters.find((parameter) => parameter.id === "x")!;
+    const table = mountTable(parameters, "Parameter", validation);
+    const row = rowOf(table, x.pk);
+    expect(row.find("[data-testid=row-issue]").exists()).toBe(false);
+    const slot = row.get("[data-testid=row-issue-slot]");
+    expect(slot.attributes("aria-hidden")).toBe("true");
+    expect(slot.classes()).toEqual(expect.arrayContaining(["size-3.5", "shrink-0"]));
+  });
+
   it("leaves the id of a row without an issue unmarked", async () => {
     await router.push({ path: "/report", query: {} });
     const rows = validation.byType(modelId).get("Species")!;
     const a = rows.find((row) => (row as Species).id === "A")!;
     const table = mountTable(rows, "Species", validation);
     expect(rowOf(table, a.pk).find("[data-testid=row-issue]").exists()).toBe(false);
+    // no species has an issue, so the table keeps its narrow width without the slot
+    expect(table.find("[data-testid=row-issue-slot]").exists()).toBe(false);
   });
 });
 

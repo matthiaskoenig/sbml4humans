@@ -101,14 +101,16 @@ const model = computed(() => {
 const sections = computed(() => {
   const current = index.value;
   const currentModel = model.value;
-  if (!current || !currentModel?.id) return [];
-  const byType = current.byType(currentModel.id);
+  const modelId = currentModel?.id;
+  if (!current || !currentModel || !modelId) return [];
+  const byType = current.byType(modelId);
   const { q, types } = view.state.value;
   return ELEMENT_TYPES.map((info) => {
     const all = byType.get(info.type) ?? [];
     const rows = q.trim() ? all.filter((element) => matches(element, q, current)) : all;
     return {
       type: info.type,
+      model: modelId,
       rows,
       all,
       total: all.length,

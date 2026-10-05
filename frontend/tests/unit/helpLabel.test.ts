@@ -122,7 +122,13 @@ describe("ElementSection", () => {
   it("explains its type next to the heading, not inside it", async () => {
     await router.push("/examples/BIOMD0000000012");
     wrapper = mount(ElementSection, {
-      props: { type: "Species", rows: species, allRows: species, total: species.length },
+      props: {
+        type: "Species",
+        model: "BIOMD0000000012",
+        rows: species,
+        allRows: species,
+        total: species.length,
+      },
       attachTo: document.body,
       global: {
         plugins: [router],
@@ -141,7 +147,13 @@ describe("ElementSection", () => {
   it("names the heading by the type alone, not by the help which explains it", async () => {
     await router.push("/examples/BIOMD0000000012");
     wrapper = mount(ElementSection, {
-      props: { type: "Species", rows: species, allRows: species, total: species.length },
+      props: {
+        type: "Species",
+        model: "BIOMD0000000012",
+        rows: species,
+        allRows: species,
+        total: species.length,
+      },
       attachTo: document.body,
       global: {
         plugins: [router],

@@ -32,6 +32,8 @@ const INTERACTIVE = "a, button, input, select, textarea, [contenteditable]";
 
 const props = defineProps<{
   type: ElementType;
+  /** The id of the model the rows belong to. */
+  model: string;
   rows: SbmlElement[];
   /** Every row of the type, which decides the optional columns; the rows of a search are a
    * part of it and would let a column come and go while a reader types. */
@@ -42,6 +44,13 @@ const narrow = useNarrow();
 const index = useReportIndex();
 
 const columns = computed(() => visibleColumns(props.type, props.allRows ?? props.rows));
+/** A table of a type with an error or a warning in its model keeps the place of the mark in the
+ * id of every row, so that the ids of the marked and the unmarked rows line up; a table without
+ * one keeps its narrow width. */
+const issueSlot = computed(() => {
+  const worst = index.value?.worstSeverityOfType(props.type, props.model) ?? null;
+  return worst === "error" || worst === "warning";
+});
 const sort = ref<SortState | null>(null);
 
 /** The value a row sorts by in a column: its field, and in the id column the name a row the
@@ -366,9 +375,9 @@ const pinnedHeader = computed(
               :style="{ height: `${ROW_HEIGHT - 1}px` }"
               data-testid="virtual-cell"
             >
-              <ElementCell :row="row" :column="column" />
+              <ElementCell :row="row" :column="column" :issue-slot="issueSlot" />
             </div>
-            <ElementCell v-else :row="row" :column="column" />
+            <ElementCell v-else :row="row" :column="column" :issue-slot="issueSlot" />
           </td>
         </tr>
         <tr v-if="range.after > 0" aria-hidden="true" data-testid="spacer-after">

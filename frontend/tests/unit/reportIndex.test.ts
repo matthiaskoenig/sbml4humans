@@ -46,9 +46,19 @@ describe("ReportIndex", () => {
     expect(validation.worstSeverity(validation.mainModel!.pk)).toBe("error");
     expect(validation.issueCounts.error).toBe(1);
     expect(validation.issueCounts.warning).toBeGreaterThan(3);
-    expect(validation.worstSeverityOfType("Parameter")).toBe("warning");
-    expect(validation.worstSeverityOfType("Species")).toBeNull();
+    const modelId = validation.mainModel!.id!;
+    expect(validation.worstSeverityOfType("Parameter", modelId)).toBe("warning");
+    expect(validation.worstSeverityOfType("Species", modelId)).toBeNull();
     expect(repressilator.issuesOf(repressilator.document.pk)).toEqual([]);
+  });
+
+  it("scopes the worst severity of a type to one model", () => {
+    // both models of the fixture state a species, the warnings concern the species of m1 alone
+    const main = definitions.mainModel!.id!;
+    expect(main).not.toBe("m1");
+    expect(definitions.byType(main).get("Species")?.length).toBeGreaterThan(0);
+    expect(definitions.worstSeverityOfType("Species", "m1")).toBe("warning");
+    expect(definitions.worstSeverityOfType("Species", main)).toBeNull();
   });
 
   it("indexes the document, the models and every element by pk", () => {

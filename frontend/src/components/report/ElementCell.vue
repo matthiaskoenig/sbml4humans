@@ -31,7 +31,13 @@ import { geneAssociationText } from "@/report/geneAssociation";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
 import { transitionTerms } from "@/report/transitionTerms";
 
-const props = defineProps<{ row: SbmlElement; column: ColumnDef }>();
+const props = defineProps<{
+  row: SbmlElement;
+  column: ColumnDef;
+  /** The table marks the issues of some of its rows: a row without one keeps the place of the
+   * mark in its id, so that the ids line up. */
+  issueSlot?: boolean;
+}>();
 const index = useReportIndex();
 
 const value = computed(() => fieldValue(props.row, props.column.field));
@@ -144,6 +150,12 @@ function signOf(influence: Input | Output): string | null | undefined {
     <span v-if="severity" v-tooltip="issueTip" class="flex" data-testid="row-issue">
       <SeverityIcon :severity="severity" />
     </span>
+    <span
+      v-else-if="issueSlot"
+      class="size-3.5 shrink-0"
+      aria-hidden="true"
+      data-testid="row-issue-slot"
+    />
     <TypeMark v-if="row.sbmlType" :type="row.sbmlType" />
     <span v-if="text" class="min-w-0 truncate font-mono font-medium">{{ text }}</span>
     <span

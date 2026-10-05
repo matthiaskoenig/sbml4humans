@@ -7,7 +7,6 @@ import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import { ELEMENT_TYPES, type ElementTypeInfo } from "@/data/sbmlTypes";
 import type { ReportIndex } from "@/report/index";
-import type { Severity } from "@/report/validation";
 import { useReportView } from "@/report/view";
 
 export interface TypeCount {
@@ -72,12 +71,17 @@ async function scrollTo(type: ElementType): Promise<void> {
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-/** The worst severity of the issues of the elements of a type, which its entry marks; a note
- * alone is no mark. */
-function severityOf(type: ElementType): Severity | null {
-  const worst = props.index.worstSeverityOfType(type);
-  return worst === "info" ? null : worst;
-}
+/** The entries of the bar, each type with the worst severity of the issues of its elements in
+ * the model of the bar, which the entry marks; a note alone is no mark. The lookup runs once per
+ * type and model, not once per render of an entry. */
+const entries = computed(() =>
+  types.value.map((info) => {
+    const worst = props.model.id
+      ? props.index.worstSeverityOfType(info.type, props.model.id)
+      : null;
+    return { info, severity: worst === "info" ? null : worst };
+  }),
+);
 
 function selectedClass(pk: string): string {
   return view.state.value.pk === pk ? "bg-selected" : "hover:bg-gray-100";
@@ -153,7 +157,7 @@ function selectedClass(pk: string): string {
       :class="open ? 'max-md:flex' : 'max-md:hidden'"
     >
       <span
-        v-for="info in types"
+        v-for="{ info, severity } in entries"
         :key="info.type"
         class="flex items-center gap-1.5 text-gray-800 max-md:py-1.5"
         :data-testid="`bar-type-${info.type}`"
@@ -181,8 +185,8 @@ function selectedClass(pk: string): string {
           >{{ counts.get(info.type)?.total ?? 0 }}
         </span>
         <!-- the test id of the type sits on a span of its own, the icon keeps its own one -->
-        <span v-if="severityOf(info.type)" class="flex" :data-testid="`bar-issue-${info.type}`">
-          <SeverityIcon :severity="severityOf(info.type)!" />
+        <span v-if="severity" class="flex" :data-testid="`bar-issue-${info.type}`">
+          <SeverityIcon :severity="severity" />
         </span>
       </span>
     </div>

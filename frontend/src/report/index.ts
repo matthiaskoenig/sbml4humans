@@ -143,11 +143,13 @@ export class ReportIndex {
     return this.worstByPk.get(pk) ?? null;
   }
 
-  /** The worst severity of the elements of a type in every model of the entry. */
-  worstSeverityOfType(type: ElementType): Severity | null {
+  /** The worst severity of the elements of a type in one model: the type bar and the tables
+   * show one model, and an issue of another model is not theirs. */
+  worstSeverityOfType(type: ElementType, modelId: string): Severity | null {
     let worst: Severity | null = null;
-    for (const [pk, severity] of this.worstByPk) {
-      if (this.elements.get(pk)?.sbmlType === type) worst = worse(worst, severity);
+    for (const element of this.byType(modelId).get(type) ?? []) {
+      const severity = this.worstByPk.get(element.pk);
+      if (severity) worst = worse(worst, severity);
     }
     return worst;
   }

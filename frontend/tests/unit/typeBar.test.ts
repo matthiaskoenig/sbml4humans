@@ -1,7 +1,7 @@
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 
-import type { ElementType } from "@/api/types";
+import type { ElementType, Model } from "@/api/types";
 import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
 import { ReportIndex } from "@/report/index";
 import { router } from "@/router";
@@ -127,5 +127,26 @@ describe("TypeBar", () => {
     const species = wrapper.get("[data-testid=bar-type-Species]");
     expect(species.find("[data-testid^=severity-]").exists()).toBe(false);
     wrapper.unmount();
+  });
+
+  it("marks a type for the issues of the model of the bar alone", async () => {
+    // both models of the fixture state a species, the warnings concern the species of m1 alone
+    const definitions = new ReportIndex(loadReport("model_definitions"));
+    await router.push({ path: "/report", query: {} });
+    const markOf = (model: Model) => {
+      const counts = new Map<ElementType, TypeCount>();
+      for (const [type, elements] of definitions.byType(model.id!)) {
+        counts.set(type, { total: elements.length, matched: elements.length });
+      }
+      const wrapper = mount(TypeBar, {
+        props: { index: definitions, model, counts },
+        global: { plugins: [router] },
+      });
+      const marked = wrapper.find("[data-testid=bar-issue-Species]").exists();
+      wrapper.unmount();
+      return marked;
+    };
+    expect(markOf(definitions.mainModel!)).toBe(false);
+    expect(markOf(definitions.model("m1")!)).toBe(true);
   });
 });
