@@ -1,6 +1,6 @@
 import { expect, test, type Locator } from "@playwright/test";
 
-import { openExample, search } from "./helpers";
+import { expectReport, openExample, search } from "./helpers";
 
 /** The cells of the nested tables of the inspector whose content covers more than one line. */
 function wrappedCells(column: Locator): Promise<string[]> {
@@ -112,7 +112,7 @@ test("the local parameters of a kinetic law keep an identifier on one line", asy
   await page.getByTestId("home-tab-paste").click();
   await page.getByTestId("paste-input").fill(LOCAL_PARAMETERS_MODEL);
   await page.getByTestId("paste-submit").click();
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
 
   // the kinetic law of the reaction, whose local parameters are a nested table of their own
   await page.getByTestId("table-Reaction").locator("tbody tr[data-pk]").first().click();

@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { expectReport } from "./helpers";
+
 import type { AnnotationResource } from "../../src/types/annotation";
 
 // a species annotated with a compound, a term and a protein
@@ -115,7 +117,7 @@ test("the inspector shows a card for each resource of an annotation", async ({ p
   await page.getByTestId("home-tab-paste").click();
   await page.getByTestId("paste-input").fill(ANNOTATED_MODEL);
   await page.getByTestId("paste-submit").click();
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
   await page.getByTestId("table-Species").locator("tbody tr[data-pk]").first().click();
 
   const inspector = page.getByTestId("inspector");

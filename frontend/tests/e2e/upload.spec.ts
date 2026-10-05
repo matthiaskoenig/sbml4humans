@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
-import { REPOSITORY, query } from "./helpers";
+import { expectReport, query, REPOSITORY } from "./helpers";
 
 // `/report?upload=<id>` is the address other tools (cy3sbml) open after `POST /api/upload`: the
 // backend keeps the upload for 24 hours. The test answers the endpoint itself.
@@ -16,7 +16,7 @@ test("the report of an upload keeps its id while it is read and after a reload",
     await route.fulfill({ contentType: "application/json", body: REPORT });
   });
   await page.goto("/report?upload=upload1");
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
   expect(requested).toEqual(["/api/upload/upload1"]);
 
   await page.locator('tbody tr[data-pk$="Submodel:unit_library"] td').first().click();
@@ -24,7 +24,7 @@ test("the report of an upload keeps its id while it is read and after a reload",
   expect(requested).toHaveLength(1);
 
   await page.reload();
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
   expect(requested).toHaveLength(2);
 });
 

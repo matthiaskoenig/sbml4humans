@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
-import { REPOSITORY, query } from "./helpers";
+import { expectReport, query, REPOSITORY } from "./helpers";
 
 // `/report?local=<token>` is the address `sbml4humans.show` of the python package opens: the
 // report of a file of the machine, which its local server built and holds under the token. The
@@ -18,7 +18,7 @@ test("the report of a local token is shown and keeps its token while it is read"
     await route.fulfill({ contentType: "application/json", body: REPORT });
   });
   await page.goto("/report?local=token1");
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
   expect(requested).toEqual(["/api/local/reports/token1"]);
   // the file of the user and the file next to it which its external model definition names
   const entries = page.getByRole("combobox", { name: "archive entry", exact: true });
@@ -38,7 +38,7 @@ test("the report of a local token is shown and keeps its token while it is read"
 
   // a reload reads the report again: it lives on the local server and not in the page
   await page.reload();
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
   expect(requested).toHaveLength(2);
 });
 

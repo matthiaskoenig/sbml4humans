@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+import { expectReport } from "./helpers";
+
 test("a page opened from a report receives only the origin as its referrer", async ({ page }) => {
   await page.goto("/examples/BIOMD0000000012?q=abc");
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
 
   // a full navigation, as a link opened in a new tab does, not a navigation of the router; the
   // expressions are strings, since the end to end tests are type checked without the DOM types

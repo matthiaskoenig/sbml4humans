@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { expectReport } from "./helpers";
+
 /** An assignment rule whose math sums TERM_COUNT `<ci>` terms: the backend turns it into 11,090
  * characters of LaTeX, well past MAX_LATEX_LENGTH, so the assignment rule table must show it as
  * text instead of rendering it with KaTeX. The backend's conversion of the math to LaTeX fails
@@ -40,7 +42,7 @@ test("an assignment rule whose latex is too long to render shows text instead of
   await page.getByTestId("home-tab-paste").click();
   await page.getByTestId("paste-input").fill(MODEL);
   await page.getByTestId("paste-submit").click();
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
 
   const table = page.getByTestId("table-AssignmentRule");
   const row = table.locator("tbody tr[data-pk]").first();

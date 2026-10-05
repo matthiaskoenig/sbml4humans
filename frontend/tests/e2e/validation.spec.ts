@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { openExample, query } from "./helpers";
+import { expectReport, openExample, query } from "./helpers";
 
 const EXAMPLE = "validation (validation.xml)";
 
@@ -86,7 +86,7 @@ test.describe("validation", () => {
     await page.getByTestId("home-tab-paste").click();
     await page.getByTestId("paste-input").fill(fanOut(5, 10));
     await page.getByTestId("paste-submit").click();
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expectReport(page);
 
     const skipped = page.getByTestId("validation-summary").getByTestId("validation-skipped");
     await expect(skipped).toHaveText("not validated");

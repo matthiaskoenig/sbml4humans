@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { expectReport } from "./helpers";
+
 test("the examples page lists the examples and opens one", async ({ page }) => {
   await page.goto("/examples");
   const cards = page.getByTestId("example-card");
@@ -9,7 +11,7 @@ test("the examples page lists the examples and opens one", async ({ page }) => {
   await expect(cards).toHaveCount(2);
   await cards.first().click();
   await expect(page).toHaveURL(/\/examples\/BIOMD0000000012/);
-  await expect(page.getByTestId("report-page")).toBeVisible();
+  await expectReport(page);
 });
 
 test("an unknown example shows the api error", async ({ page }) => {
