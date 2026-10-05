@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import type { AnnotationResource } from "../../src/types/annotation";
+
 // a species annotated with a compound, a term and a protein
 const ANNOTATED_MODEL = `<?xml version="1.0" encoding="UTF-8"?>
 <sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
@@ -54,7 +56,7 @@ const GO = {
   uniprot: null,
   warnings: [],
   errors: [],
-};
+} satisfies AnnotationResource;
 
 const CHEBI = {
   ...GO,
@@ -65,7 +67,7 @@ const CHEBI = {
   providers: [],
   ontology: null,
   chebi: { formula: "C43H47N2O6S2.Na", charge: 0, mass: "774.981", structure: true },
-};
+} satisfies AnnotationResource;
 
 const UNIPROT = {
   ...GO,
@@ -83,7 +85,7 @@ const UNIPROT = {
     length: 142,
     function: "Oxygen transport.",
   },
-};
+} satisfies AnnotationResource;
 
 const RESOURCES = [GO, CHEBI, UNIPROT];
 
