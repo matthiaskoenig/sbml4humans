@@ -199,7 +199,7 @@ describe("AnnotationCard", () => {
   it("shows cross references and providers which repeat", () => {
     const wrapper = card({
       ...GO,
-      providers: [GO.providers[0]!, GO.providers[0]!],
+      providers: [GO.providers![0]!, GO.providers![0]!],
       ontology: {
         ...GO.ontology!,
         xrefs: [
