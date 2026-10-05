@@ -1,6 +1,7 @@
 """Tests of the JSON schema export."""
 
 import json
+from pathlib import Path
 
 from sbml4humans.schema import SCHEMA_PATH, schema_json
 
@@ -52,3 +53,24 @@ def test_committed_schema_is_current() -> None:
     assert SCHEMA_PATH.read_text(encoding="utf-8") == schema_json(), (
         "run `uv run python -m sbml4humans.schema` and commit the schema"
     )
+
+
+def test_annotation_schema_is_current() -> None:
+    """The committed schema of the annotation resource is the one the model generates."""
+    from sbml4humans.schema import ANNOTATION_SCHEMA_PATH, annotation_schema_json
+
+    assert (
+        ANNOTATION_SCHEMA_PATH.read_text(encoding="utf-8") == annotation_schema_json()
+    )
+
+
+def test_main_writes_both_schemas_into_the_directory(tmp_path: Path) -> None:
+    """`main` writes the report and the annotation schema into the given directory."""
+    from sbml4humans.schema import annotation_schema_json, main
+
+    main(["schema", str(tmp_path / "out")])
+    out = tmp_path / "out"
+    assert (out / "report.schema.json").read_text(encoding="utf-8") == schema_json()
+    assert (out / "annotation.schema.json").read_text(
+        encoding="utf-8"
+    ) == annotation_schema_json()

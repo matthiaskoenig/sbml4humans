@@ -11,6 +11,7 @@ export default defineConfig([
       "dist/",
       "node_modules/",
       "src/types/report.ts",
+      "src/types/annotation.ts",
       "playwright-report/",
       "test-results/",
     ],

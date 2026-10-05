@@ -31,7 +31,7 @@ npm run lint         # eslint and prettier --check
 npm run format       # prettier --write
 npm run test:unit    # vitest
 npm run test:e2e     # playwright against the running backend (npx playwright install chromium once)
-npm run types        # regenerate src/types/report.ts from src/schema/report.schema.json
+npm run types        # regenerate src/types/report.ts and annotation.ts from src/schema/*.schema.json
 npm run fixtures     # record tests/fixtures/*.json from the running backend
 npm run screenshots  # retake docs/images/*.png against the running backend and the dev server
 ```

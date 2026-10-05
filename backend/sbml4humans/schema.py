@@ -1,8 +1,8 @@
-"""The JSON schema of the api response.
+"""The JSON schemas of the api: the report response and the annotation resource.
 
 The frontend generates its TypeScript types from the schema, which mirrors the
 pydantic model by construction. Run `python -m sbml4humans.schema` after a
-change of the model and commit the schema.
+change of a model and commit the schemas.
 """
 
 import json
@@ -10,18 +10,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from pydantic import BaseModel
 from pydantic.json_schema import GenerateJsonSchema
 
+from sbml4humans.annotations import AnnotationResource
 from sbml4humans.model import ReportResponse
 
 
-SCHEMA_PATH = (
-    Path(__file__).resolve().parents[2]
-    / "frontend"
-    / "src"
-    / "schema"
-    / "report.schema.json"
-)
+SCHEMA_DIR = Path(__file__).resolve().parents[2] / "frontend" / "src" / "schema"
+SCHEMA_PATH = SCHEMA_DIR / "report.schema.json"
+ANNOTATION_SCHEMA_PATH = SCHEMA_DIR / "annotation.schema.json"
 
 
 class _GenerateJsonSchemaWithoutPropertyTitles(GenerateJsonSchema):
@@ -38,20 +36,34 @@ class _GenerateJsonSchemaWithoutPropertyTitles(GenerateJsonSchema):
         return False
 
 
-def schema_json() -> str:
-    """The JSON schema of `ReportResponse` with camelCase properties."""
-    schema = ReportResponse.model_json_schema(
+def _schema_json(model: type[BaseModel]) -> str:
+    """The JSON schema of a model with camelCase properties."""
+    schema = model.model_json_schema(
         by_alias=True, schema_generator=_GenerateJsonSchemaWithoutPropertyTitles
     )
     return json.dumps(schema, indent=2, ensure_ascii=False) + "\n"
 
 
+def schema_json() -> str:
+    """The JSON schema of `ReportResponse` with camelCase properties."""
+    return _schema_json(ReportResponse)
+
+
+def annotation_schema_json() -> str:
+    """The JSON schema of `AnnotationResource` with camelCase properties."""
+    return _schema_json(AnnotationResource)
+
+
 def main(argv: list[str]) -> None:
-    """Write the schema to the given path or to `SCHEMA_PATH`."""
-    path = Path(argv[1]) if len(argv) > 1 else SCHEMA_PATH
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(schema_json(), encoding="utf-8")
-    print(f"schema written to {path}")
+    """Write both schemas into the given directory or into `SCHEMA_DIR`."""
+    directory = Path(argv[1]) if len(argv) > 1 else SCHEMA_DIR
+    directory.mkdir(parents=True, exist_ok=True)
+    for name, text in (
+        (SCHEMA_PATH.name, schema_json()),
+        (ANNOTATION_SCHEMA_PATH.name, annotation_schema_json()),
+    ):
+        (directory / name).write_text(text, encoding="utf-8")
+        print(f"schema written to {directory / name}")
 
 
 if __name__ == "__main__":

@@ -60,8 +60,8 @@ jobs:
       - name: Check that the committed JSON schema is current
         working-directory: backend
         run: |
-          uv run python -m sbml4humans.schema /tmp/report.schema.json
-          diff /tmp/report.schema.json ../frontend/src/schema/report.schema.json
+          uv run python -m sbml4humans.schema /tmp/schema
+          diff -r /tmp/schema ../frontend/src/schema
 
   frontend:
     # required by the branch protection, see .github/rulesets/develop.json
@@ -84,7 +84,7 @@ jobs:
         working-directory: frontend
         run: |
           npm run types
-          git diff --exit-code -- src/types/report.ts
+          git diff --exit-code -- src/types/report.ts src/types/annotation.ts
       - name: Lint
         working-directory: frontend
         run: npm run lint
