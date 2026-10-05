@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
   <!-- a narrow window wraps the bar: the logo, the context and the menu are its first row and the
   search of the report page a second one, as wide as the window -->
   <header
-    class="flex min-h-12 shrink-0 flex-wrap items-center gap-x-4 border-b border-gray-200 bg-white px-4 md:flex-nowrap"
+    class="group flex min-h-12 shrink-0 flex-wrap items-center gap-x-4 border-b border-gray-200 bg-white px-4 md:flex-nowrap"
     data-testid="app-bar"
   >
     <RouterLink
@@ -62,7 +62,9 @@ onBeforeUnmount(() => {
       class="flex shrink-0 items-center gap-2 text-base font-semibold tracking-tight text-gray-900 hover:text-link"
     >
       <img :src="logo" alt="The logo of SBML4Humans" class="size-6" data-testid="app-logo" />
-      SBML4Humans
+      <!-- a phone leaves the name to the logo where the context of a report holds a select, the
+      entry of an archive or the model, which the counts of the validation already crowd -->
+      <span class="max-sm:group-has-[select]:sr-only">SBML4Humans</span>
     </RouterLink>
     <div class="order-last w-full empty:hidden max-md:pb-2 md:order-none md:w-auto">
       <slot name="search" />

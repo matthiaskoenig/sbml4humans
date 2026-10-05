@@ -2,6 +2,15 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.11.0
+
+A report says what is wrong with a model: the errors and warnings of the validation of libsbml stand next to the elements they concern.
+
+### New
+- the report shows the validation of libsbml: errors and warnings in the app bar, at the rows and the types, in the inspector of an element and as one list in the inspector of the document ([#3](https://github.com/matthiaskoenig/sbml4humans/issues/3))
+- the number of the rule of an issue opens the explanation which states the text of that rule, where the glossary cites it
+- the validation of a document of the comp package checks its external model definitions against the documents of the report alone; it reads no other file and fetches no url
+
 ## 0.10.0
 
 An annotation tells what it points to: every resource is a card with its collection, its identifier, the term of its ontology with synonyms, description and cross references, and for a ChEBI compound or a UniProt protein the information of that database. The inspector stands at the right of the tables.

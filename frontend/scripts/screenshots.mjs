@@ -582,6 +582,36 @@ try {
   await shotFitted("inspector-external-model", parts, parts.getByTestId("inspector"));
   await parts.setViewportSize(PARTS_VIEWPORT);
 
+  // inspector-validation.png: the inspector of the document with the errors and warnings of
+  // libsbml, one group per rule. The validation example holds an error of the model and warnings
+  // of several elements; the group of rule 99505 is opened, which lists the two elements whose
+  // units could not be checked. The chip of the errors in the app bar selects the document. The
+  // picture is the inspector from its header to the end of the list, which stands above the
+  // attributes of the document.
+  await open(parts, "validation (validation.xml)");
+  await parts.getByTestId("validation-errors").click();
+  const validationList = parts.getByTestId("validation-list");
+  await expect(validationList).toBeVisible();
+  const unitsGroup = validationList.getByTestId("validation-group").filter({ hasText: "99505" });
+  await unitsGroup.locator("summary").click();
+  await expect(unitsGroup.getByTestId("element-link").first()).toBeVisible();
+  await fitInspector(parts);
+  await restPointer(parts);
+  const validationInspector = await parts.getByTestId("inspector").boundingBox();
+  // the picture ends 8 px below the last group of the list, short of the attributes, which
+  // follow it closer than the margin of the list
+  const listBox = await validationList.boundingBox();
+  const validationEnd = listBox.y + listBox.height + 8;
+  await shot("inspector-validation", parts, {
+    clip: {
+      x: validationInspector.x,
+      y: validationInspector.y,
+      width: validationInspector.width,
+      height: Math.ceil(validationEnd - validationInspector.y),
+    },
+  });
+  await parts.setViewportSize(PARTS_VIEWPORT);
+
   // archive-entries.png: the context of a COMBINE archive report in the app bar, a strip of the
   // bar from the select of the entries on, as wide as the article column. The bar from the logo
   // on is wider than that since the search box sits between the logo and the context, and the

@@ -36,6 +36,17 @@ test.describe("the pages fit a phone", () => {
     const viewport = page.viewportSize();
     expect(search!.x + search!.width).toBeLessThanOrEqual(viewport!.width);
   });
+
+  test("the bar of an archive keeps its entry readable next to the counts of the validation", async ({
+    page,
+  }) => {
+    await openExample(page, "CompModels");
+    await expect(page.getByTestId("validation-summary")).toBeVisible();
+    await expectNoOverflow(page);
+    // the bar leaves the name to the logo, so that the select shows more than its first letters
+    const select = await page.getByTestId("entry-select").boundingBox();
+    expect(select!.width).toBeGreaterThanOrEqual(150);
+  });
 });
 
 test.describe("the menu of the app bar", () => {

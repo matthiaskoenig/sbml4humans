@@ -86,6 +86,7 @@ function toggle(severity: Severity): void {
           v-model="chosenCategory"
           v-tooltip.bottom="category?.summary"
           :options="categoryOptions"
+          size="xs"
           :aria-label="category?.label"
           data-testid="validation-filter-category"
         />

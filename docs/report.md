@@ -99,6 +99,24 @@ The notes of the element follow where it has any, rendered as the XHTML the auth
 
 The "XML" button in the header replaces the three sections by the SBML of the element as it stands in the file, with a button which copies it. It is there for what a report cannot show better than the file itself: an annotation in a format the report does not read, an element of a package it does not support, or simply the exact text. The button is there for every element, including the document and the model, whose XML would be the whole file: for those two the view shows their annotation element alone, under a caption which says so, because that is where a tool writes what a file says about itself, and it says that the element carries no annotation where there is none.
 
+## Validation
+
+The report runs the consistency checks of [libsbml](https://sbml.org/software/libsbml/) on the document and shows the errors and warnings it finds where the elements they concern are shown. What the [validation](reference/concepts.md#validation) checks is explained in the reference.
+
+A document with errors or warnings shows their counts as two chips in the bar of the report, a red one for the errors and an amber one for the warnings; a valid document shows none. A click on a chip selects the document, whose inspector lists them all. On a phone the chips keep their counts and leave out the words.
+
+An element with an issue carries the mark of its worst severity in front of its id in the tables, and hovering the mark shows the rule and the message of every issue of the element. A table whose type has issues in the shown model keeps the place of the mark empty in the other rows, so that the ids stand under each other. The type bar marks a type which has issues in the shown model with the same mark after its count.
+
+[![The inspector of the document of the validation example: the error of the model and the warnings of libsbml, one group per rule, the group of rule 99505 opened to the two elements whose units could not be checked](images/inspector-validation.png)](images/inspector-validation.png)
+
+The inspector of an element lists its issues above its attributes, the errors first: the short message of libsbml, the number of the rule, the category and the severity, and the full message behind "more". The number of a rule opens the explanation which states the text of that rule where the [reference](reference/index.md) cites it. The inspector of the document lists every issue of the document, one group per rule with the number of its issues, and a group opens to links to the elements it concerns. Checkboxes filter the list by severity and, where the issues fall into several categories, a select by category.
+
+libsbml checks in stages and stops after the first stage which finds an error: a document with an error of its identifiers shows none of its unit warnings until that error is fixed.
+
+libsbml reports where in the file an issue is, not which element it concerns, so the report gives an issue to the element which starts closest before that position, and to the document when none does. For a document of the comp package libsbml instantiates the submodels to check them and says itself that its line numbers are unreliable, so the element of such an issue can be the wrong one.
+
+The [external model definitions](reference/externalmodeldefinition.md) of a document are checked only against the documents which are part of the report, the other entries of its archive; the validation reads no other file and fetches no url.
+
 ## Explanations
 
 Every name the report shows is explained: a type, an attribute, the header of a column and the kind of a link. Hovering the name shows the one sentence which says what it is, and a click on it opens the explanation itself, in a dialog over the report.
