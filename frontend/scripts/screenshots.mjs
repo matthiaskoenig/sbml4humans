@@ -188,15 +188,33 @@ try {
     await expect(page.getByTestId("inspector-id")).toHaveText(id);
   }
 
-  /** Waits for the label of the SBO term of the species `PX` of the repressilator, which is
-   * resolved in a request of its own: the height of the annotations depends on it, and without
-   * the wait the picture and the height of the window below differ from run to run. */
-  function resolvedSboTerm(page) {
-    return expect(
-      page
-        .getByTestId("annotations-column")
-        .locator('a[href="https://identifiers.org/SBO:0000252"]'),
-    ).toHaveText("polypeptide chain");
+  /** Waits until every annotation card of the inspector is resolved: each card asks the backend
+   * in a request of its own, the height of the annotations depends on the answers, and without
+   * the wait the picture and the height of the window below differ from run to run. `labels` are
+   * the labels of the terms the cards have to show, a structure of ChEBI has to be loaded. */
+  async function resolvedCards(page, labels) {
+    const column = page.getByTestId("annotations-column");
+    await expect(column.getByTestId("annotation-card").first()).toBeVisible();
+    for (const label of labels) {
+      await expect(
+        column
+          .getByTestId("annotation-label")
+          .filter({ hasText: new RegExp(`^${escaped(label)}$`) }),
+      ).toHaveCount(1);
+    }
+    await expect(column.getByTestId("annotation-loading")).toHaveCount(0);
+    for (const structure of await column.getByTestId("annotation-structure").all()) {
+      await expect
+        .poll(() => structure.evaluate((image) => image.complete && image.naturalWidth > 0))
+        .toBe(true);
+    }
+  }
+
+  /** Waits for the annotations of the species `PX` of the repressilator, its SBO term and its
+   * protein of UniProt. */
+  async function resolvedSboTerm(page) {
+    await resolvedCards(page, ["polypeptide chain"]);
+    await expect(page.getByTestId("annotation-uniprot")).toBeVisible();
   }
 
   /** The height of everything the report page shows above and below its two panes: the app bar,
@@ -505,26 +523,18 @@ try {
   await shotFitted("inspector-species", parts, parts.getByTestId("inspector"));
   await parts.setViewportSize(PARTS_VIEWPORT);
 
-  // inspector-annotations.png: an element with resolved annotation labels. icg_body carries an
-  // indocyanine green species whose SBO, CHEBI and NCIt resources resolve to a name (the
-  // InChIKey resource has no label to resolve to, and stays a plain link).
+  // inspector-annotations.png: the annotation cards of an element. icg_body carries an
+  // indocyanine green species whose SBO, ChEBI and NCIt resources resolve to a term, the ChEBI
+  // compound with its structure, formula, charge and mass (the InChIKey resource has no term to
+  // resolve to, and shows its badges and providers alone).
   await open(parts, "icg_body (icg_body.xml)");
   await parts.getByTestId("search-input").fill("Cre_plasma_icg");
   await selectRow(parts, parts.getByTestId("table-Species"), "Cre_plasma_icg");
   const annotationsColumn = parts.getByTestId("annotations-column");
-  // every resource which resolves has to carry its label before the shot is taken, otherwise a
-  // rerun catches a different set of answers and produces a different image. An unresolved
-  // resource shows the resource itself as the text of its link.
-  for (const resource of [
-    "https://identifiers.org/SBO:0000247",
-    "https://identifiers.org/CHEBI:31696",
-    "https://identifiers.org/ncit/C65913",
-  ]) {
-    await expect(annotationsColumn.locator(`a[href="${resource}"]`)).not.toHaveText(resource);
-  }
-  await expect(
-    annotationsColumn.locator('a[href="https://identifiers.org/CHEBI:31696"]'),
-  ).toHaveText("indocyanine green");
+  // every card has to be resolved before the shot is taken, otherwise a rerun catches a
+  // different set of answers and produces a different image
+  await resolvedCards(parts, ["simple chemical", "indocyanine green", "Indocyanine Green"]);
+  await expect(annotationsColumn.getByTestId("annotation-chebi")).toBeVisible();
   await restPointer(parts);
   // the annotations of the section alone: the notes and the history follow below it, and the
   // section is scrolled into view of the panel before it is captured
