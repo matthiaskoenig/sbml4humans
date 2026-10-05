@@ -6,6 +6,7 @@ references) for the identifiers in the annotations of a model.
 
 import functools
 import os
+import re
 import threading
 import time
 from collections import OrderedDict
@@ -25,6 +26,10 @@ from sbml4humans.model import ReportModel
 
 
 CACHE_VARIABLE = "SBML4HUMANS_CACHE"
+
+# the longest resource the api resolves, and the form of a ChEBI id it draws
+MAX_RESOURCE_LENGTH = 2000
+CHEBI_ID = re.compile(r"^CHEBI:\d{1,9}$")
 
 
 def configure_cache() -> None:
@@ -239,18 +244,6 @@ def resolve_resource(resource: str) -> AnnotationResource:
         warnings=warnings,
         errors=_messages(data.errors),
     )
-
-
-def annotation_info(resource: str) -> dict[str, Any]:
-    """Resolve the information of an annotation resource as JSON.
-
-    Args:
-        resource: identifier of the resource (url or MIRIAM urn).
-
-    Returns:
-        The camelCase JSON form of `resolve_resource`.
-    """
-    return resolve_resource(resource).model_dump(by_alias=True)
 
 
 class ResourceCache:
