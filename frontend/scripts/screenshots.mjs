@@ -161,10 +161,18 @@ try {
     await expect(page.getByRole("tooltip")).toHaveCount(0);
   }
 
-  /** Opens the report of an example and waits for the tables. */
+  /** Waits for the report and for its validation, which is answered after the report: its
+   * counts and marks belong to every picture of a report, the chip "validating" to none. */
+  async function reportShown(page) {
+    await expect(page.getByTestId("report-page")).toBeVisible();
+    await expect(page.getByTestId("validation-pending")).toHaveCount(0, { timeout: 60_000 });
+    await expect(page.getByTestId("validation-failed")).toHaveCount(0);
+  }
+
+  /** Opens the report of an example and waits for the tables and the validation. */
   async function open(page, id) {
     await page.goto(`${BASE_URL}/examples/${encodeURIComponent(id)}`);
-    await expect(page.getByTestId("report-page")).toBeVisible();
+    await reportShown(page);
   }
 
   /** Escapes the characters a regular expression gives a meaning to, so that an id such as
@@ -578,7 +586,7 @@ try {
   await parts.goto(
     `${BASE_URL}/examples/CompModels?entry=${encodeURIComponent("./models/omex_comp.xml")}`,
   );
-  await expect(parts.getByTestId("report-page")).toBeVisible();
+  await reportShown(parts);
   await selectRow(parts, parts.getByTestId("table-Species"), "S0");
   await expect(parts.getByTestId("element-link-entry").first()).toBeVisible();
   await fitInspector(parts);
