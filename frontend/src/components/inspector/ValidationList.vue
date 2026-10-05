@@ -13,7 +13,8 @@ import {
   VALIDATION_LINK_LIMIT,
   type Severity,
 } from "@/report/validation";
-import type { EntrySkip, ValidationIndex } from "@/report/validationIndex";
+import type { ValidationIndex } from "@/report/validationIndex";
+import { skipWords } from "@/report/validationWords";
 
 /** Every issue of the document in the inspector of the document, a rule once with the elements it
  * concerns, filtered by severity and by category. A link selects the element, and the back button
@@ -72,28 +73,10 @@ function linksOf(rule: number, pks: string[]): string[] {
   return expanded.value.has(rule) ? pks : pks.slice(0, VALIDATION_LINK_LIMIT);
 }
 
-/** Why libsbml did not check the document, at length: the chip of the app bar says it briefly. A
- * busy server is asked again by a reload, unless the source is a file or pasted content, which a
- * reload loses. */
-const SKIPPED: Record<Exclude<EntrySkip, "busy">, string> = {
-  expandedSize:
-    "libsbml did not check this document: its comp submodels expand it to more elements than are checked in a bounded time. Only the errors of reading the file are listed.",
-  timeout:
-    "libsbml did not check this document: the check did not end in the time a validation may take.",
-  memory:
-    "libsbml did not check this document: the check needed more memory than a validation may use.",
-  crashed:
-    "libsbml did not check this document: the process of the check ended abnormally on the server.",
-  unanswered:
-    "libsbml did not check this document: the answer of the validation left it out, so nothing is known of its consistency.",
-};
+/** Why libsbml did not check the document, at length: the chip of the app bar says it briefly. */
 const skippedText = computed(() => {
   const reason = props.validation.skipped;
-  if (reason === null) return null;
-  if (reason !== "busy") return SKIPPED[reason];
-  return props.validation.reloadable
-    ? "libsbml did not check this document: the server was busy with other validations. Reload the report later to try again."
-    : "libsbml did not check this document: the server was busy with other validations. Load it again later to try again.";
+  return reason === null ? null : skipWords(reason, props.validation.reloadable).long;
 });
 
 function toggle(severity: Severity): void {

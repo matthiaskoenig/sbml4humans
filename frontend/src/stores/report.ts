@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { computed, markRaw, ref, shallowRef } from "vue";
 
 import {
-  type ApiError,
+  ApiError,
   getExample,
   getExampleValidation,
   getLocal,
@@ -12,6 +12,7 @@ import {
   getUrl,
   getUrlValidation,
   postContent,
+  TOO_MANY_REQUESTS,
   postContentValidation,
   postFile,
   postFileValidation,
@@ -99,7 +100,9 @@ export const useReportStore = defineStore("report", () => {
 
   /** Request the validation of the report which has just loaded, with the same source. An entry
    * the answer leaves out was not reached and takes the reason of the answer; one the answer
-   * leaves out without a reason is `unanswered`, never a valid document. */
+   * leaves out without a reason is `unanswered`, never a valid document. A request the proxy
+   * refuses for the rate limit of the client (429) is answered as `busy`, like the backend which
+   * has no room for it: the reader tries again later. */
   async function validate(
     reports: Map<string, ReportIndex>,
     request: (signal: AbortSignal) => Promise<ValidationResponse>,
@@ -109,7 +112,13 @@ export const useReportStore = defineStore("report", () => {
     validationController = controller;
     validationState.value = "pending";
     try {
-      const result = await request(controller.signal);
+      let result: ValidationResponse;
+      try {
+        result = await request(controller.signal);
+      } catch (caught) {
+        if (!(caught instanceof ApiError) || caught.status !== TOO_MANY_REQUESTS) throw caught;
+        result = { entries: {}, skipped: "busy" };
+      }
       if (controller.signal.aborted) return;
       const next = new Map<string, ValidationIndex>();
       for (const [location, report] of reports) {

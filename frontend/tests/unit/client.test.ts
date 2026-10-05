@@ -86,6 +86,33 @@ describe("api client", () => {
     expect((error as ApiError).message).toMatch(/502/);
   });
 
+  it("throws ApiError with the status of a rate limit, whose body is not read", async () => {
+    // the proxy answers a client beyond its limits with 429 and a page of its own
+    const response = new Response("<html><body>429 Too Many Requests</body></html>", {
+      status: 429,
+      headers: { "Content-Type": "text/html" },
+    });
+    const json = vi.spyOn(response, "json");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
+    const error = await getExampleValidation("x").catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(429);
+    expect((error as ApiError).message).toMatch(/too many requests/i);
+    expect(json).not.toHaveBeenCalled();
+  });
+
+  it("keeps the status of a failure, and none of the error contract or an unreachable backend", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("<html>", { status: 502 })));
+    expect(((await getExamples().catch((e: unknown) => e)) as ApiError).status).toBe(502);
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(jsonResponse({ errors: ["failed"], warnings: [], info: {} })),
+    );
+    expect(((await getExamples().catch((e: unknown) => e)) as ApiError).status).toBeNull();
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+    expect(((await getExamples().catch((e: unknown) => e)) as ApiError).status).toBeNull();
+  });
+
   it("posts the file as multipart field source", async () => {
     const fetchMock = vi
       .fn()

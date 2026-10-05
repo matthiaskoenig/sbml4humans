@@ -7,8 +7,8 @@ import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import { useValidationIndex } from "@/report/context";
 import { conceptEntry } from "@/report/glossary";
 import type { ReportIndex } from "@/report/index";
-import type { EntrySkip } from "@/report/validationIndex";
 import { useReportView } from "@/report/view";
+import { skipWords } from "@/report/validationWords";
 import type { ValidationState } from "@/stores/report";
 
 /** The counts of the errors and the warnings of the document; a click opens their list, which
@@ -27,24 +27,12 @@ const counts = computed(() => validation.value?.issueCounts ?? { error: 0, warni
 const skipped = computed(() => validation.value?.skipped ?? null);
 const tooltip = computed(() => conceptEntry("validation")?.summary);
 
-/** Why libsbml did not check the document, in the words of the chip: no severity of libsbml, the
- * check did not run. The inspector of the document says it at length. A busy server is asked again
- * by a reload, unless the source is a file or pasted content, which a reload loses. */
-const SKIPPED: Record<Exclude<EntrySkip, "busy">, string> = {
-  expandedSize:
-    "libsbml did not check this document: its comp submodels expand it beyond the size which is checked",
-  timeout: "libsbml did not check this document: the check did not end in time",
-  memory: "libsbml did not check this document: the check needed more memory than it may use",
-  crashed: "libsbml did not check this document: the check ended abnormally",
-  unanswered: "libsbml did not check this document: the validation answered nothing for it",
-};
+/** Why libsbml did not check the document, in the short words of the chip; the inspector of the
+ * document says it at length. */
 const skippedText = computed(() => {
   const reason = skipped.value;
   if (reason === null) return undefined;
-  if (reason !== "busy") return SKIPPED[reason];
-  return validation.value?.reloadable === false
-    ? "libsbml did not check this document: the server was busy, load it again later to try again"
-    : "libsbml did not check this document: the server was busy, reload the report later to try again";
+  return skipWords(reason, validation.value?.reloadable !== false).short;
 });
 
 /** "error" and "warning" are the severities of libsbml, the values the glossary lists for

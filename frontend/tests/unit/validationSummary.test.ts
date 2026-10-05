@@ -90,7 +90,14 @@ describe("ValidationSummary", () => {
   it("says that a document which was not validated was not, and why, rather than nothing", async () => {
     await router.push({ path: "/report", query: {} });
     const tips = new Set<string>();
-    for (const reason of ["expandedSize", "timeout", "memory", "busy", "unanswered"] as const) {
+    for (const reason of [
+      "expandedSize",
+      "timeout",
+      "memory",
+      "crashed",
+      "busy",
+      "unanswered",
+    ] as const) {
       const skipped = new ValidationIndex(constraintEvent, withIssues([], reason));
       const summary = mountSummary(skipped);
       const chip = summary.get("[data-testid=validation-skipped]");
@@ -105,7 +112,7 @@ describe("ValidationSummary", () => {
       summary.unmount();
       wrapper = null;
     }
-    expect(tips.size).toBe(5);
+    expect(tips.size).toBe(6);
     expect([...tips].find((tip) => tip.includes("busy"))).toContain("reload the report later");
   });
 
