@@ -17,7 +17,7 @@ import SearchBox from "@/components/report/SearchBox.vue";
 import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 import { useNarrow } from "@/narrow";
-import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
+import { ReportIndexKey, ValidationFailureKey, ValidationIndexKey } from "@/report/context";
 import { matches } from "@/report/search";
 import { useReportView } from "@/report/view";
 import { LOCAL_PING_INTERVAL, useReportStore } from "@/stores/report";
@@ -91,6 +91,11 @@ provide(ReportIndexKey, index);
 /** The validation of the entry, which arrives after its report. */
 const validation = computed(() => (entry.value ? store.validationFor(entry.value) : null));
 provide(ValidationIndexKey, validation);
+/** The failure of the validation, which the inspector of the document shows with its details. */
+const validationFailure = computed(() =>
+  store.validationState === "failed" ? store.validationError : null,
+);
+provide(ValidationFailureKey, validationFailure);
 
 /** The model of the route if it exists in the entry, else the main model. */
 const model = computed(() => {

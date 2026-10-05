@@ -136,7 +136,10 @@ function toggle(severity: Severity): void {
           data-testid="validation-filter-category"
         />
       </div>
-      <ul class="divide-y divide-gray-100 text-sm">
+      <p v-if="groups.length === 0" class="text-sm text-gray-600" data-testid="validation-no-match">
+        No issues match the filters.
+      </p>
+      <ul v-else class="divide-y divide-gray-100 text-sm">
         <li v-for="group in groups" :key="group.rule" class="py-1.5" data-testid="validation-group">
           <details @toggle="onToggle(group.rule, $event)">
             <summary class="flex cursor-pointer items-start gap-2">

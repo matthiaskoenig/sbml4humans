@@ -15,7 +15,8 @@ import type { ValidationState } from "@/stores/report";
  * is the inspector of the document. A valid document shows nothing, a document libsbml did not
  * check says so, so that the missing counts are not read as a valid document. The validation is
  * answered after the report: while it runs a quiet chip says so, and a validation which failed
- * says that it failed, with the message of the failure as its tooltip. */
+ * says that it failed, with the message of the failure as its tooltip; a click opens the inspector
+ * of the document, which shows the failure with its details. */
 defineProps<{
   index: ReportIndex;
   state: ValidationState | null;
@@ -56,18 +57,19 @@ function words(count: number, severity: "error" | "warning"): string {
   >
     <LoaderCircleIcon class="size-3.5 animate-spin" /><span class="max-md:hidden">validating</span>
   </span>
-  <span
+  <button
     v-else-if="state === 'failed'"
     v-tooltip.bottom="error?.message"
-    tabindex="0"
-    class="flex shrink-0 items-center gap-1 rounded-full border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs whitespace-nowrap text-gray-700"
+    type="button"
+    class="flex shrink-0 items-center gap-1 rounded-full border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs whitespace-nowrap text-gray-700 hover:bg-gray-100"
     aria-label="validation failed"
     data-testid="validation-failed"
+    @click="view.select(index.document.pk)"
   >
     <CircleOffIcon class="size-3.5 text-gray-500" /><span class="max-md:hidden"
       >validation failed</span
     >
-  </span>
+  </button>
   <span
     v-else-if="skipped || counts.error + counts.warning > 0"
     class="flex shrink-0 items-center gap-1"

@@ -152,6 +152,11 @@ describe("ValidationSummary", () => {
       "The backend at /api is not reachable",
     );
     expect(summary.find("[data-testid=validation-pending]").exists()).toBe(false);
+    // the inspector of the document shows the failure with its details
+    expect(chip.element.tagName).toBe("BUTTON");
+    await chip.trigger("click");
+    await flushPromises();
+    expect(router.currentRoute.value.query.pk).toBe(validationReport.document.pk);
   });
 
   it("shows nothing without a report", async () => {
