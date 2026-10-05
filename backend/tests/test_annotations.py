@@ -6,66 +6,140 @@ from typing import Any
 import pytest
 from pymetadata.core.annotation import RDFAnnotationData
 
-from sbml4humans.annotations import annotation_info
+from sbml4humans import annotations
+from sbml4humans.annotations import resolve_resource
 
 
-def _ols(label: Any, description: Any) -> Any:
-    """A replacement of the OLS query which fills in label and description."""
+def _ols(**fields: Any) -> Any:
+    """A replacement of the OLS query which sets the given fields."""
 
     def query_ols(self: RDFAnnotationData) -> dict[str, Any]:
-        self.label = label
-        self.description = description
+        for key, value in fields.items():
+            setattr(self, key, value)
         return {}
 
     return query_ols
 
 
-def test_resolved_information(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Label and description of a resolved resource are reported as text."""
+GO = {
+    "label": "glycolytic process",
+    "description": "The chemical reactions and pathways resulting in the breakdown of a carbohydrate.",
+    "synonyms": [{"name": "glycolysis"}, {"name": "glycolysis"}, {"name": "  "}],
+    "xrefs": [
+        {
+            "database": "MetaCyc",
+            "id": "GLYCOLYSIS-VARIANTS",
+            "url": "https://biocyc.org/x",
+        },
+        {"database": None, "id": "Wikipedia:Glycolysis", "url": None},
+    ],
+    "ontology": "go",
+    "iri": "http://purl.obolibrary.org/obo/GO_0006096",
+    "ols_url": "https://www.ebi.ac.uk/ols4/ontologies/go/classes?iri=x",
+}
+
+
+def test_ontology_term(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A GO term carries its collection, its providers and its OLS term."""
+    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols(**GO))
+    info = resolve_resource("https://identifiers.org/GO:0006096")
+    assert info.identifier == "GO:0006096"
+    assert info.collection is not None and info.collection.prefix == "go"
+    assert info.collection.name
+    assert info.providers and info.url == info.providers[0].url
+    assert info.pattern_match is True
+    assert info.ontology is not None
+    assert info.ontology.label == "glycolytic process"
+    assert info.ontology.synonyms == ["glycolysis"]
+    assert [x.label for x in info.ontology.xrefs] == [
+        "MetaCyc:GLYCOLYSIS-VARIANTS",
+        "Wikipedia:Glycolysis",
+    ]
+    assert info.ontology.xrefs[1].url is None
+    assert info.chebi is None and info.uniprot is None
+    assert info.warnings == [] and info.errors == []
+
+
+def test_empty_ols_fields_are_no_term(monkeypatch: pytest.MonkeyPatch) -> None:
+    """OLS reports a missing definition as an empty list; no label and no IRI is no term."""
     monkeypatch.setattr(
-        RDFAnnotationData, "query_ols", _ols("glucose", "An aldohexose.")
+        RDFAnnotationData, "query_ols", _ols(label=" ", description=[], iri=None)
     )
-    info = annotation_info("chebi/CHEBI:17234")
-    assert info["term"] == "CHEBI:17234"
-    assert info["label"] == "glucose"
-    assert info["description"] == "An aldohexose."
+    assert resolve_resource("https://identifiers.org/pubmed/10659856").ontology is None
 
 
-def test_empty_description(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A term without a definition has no description.
+def test_chebi(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A ChEBI compound carries formula, charge, mass and whether it has a structure."""
+    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols(label="indocyanine green"))
+    monkeypatch.setattr(
+        annotations.ChebiQuery,
+        "query",
+        staticmethod(
+            lambda chebi: {
+                "formula": "C43H47N2O6S2.Na",
+                "charge": 0,
+                "mass": "774.981",
+                "inchikey": "MOFV",
+            }
+        ),
+    )
+    info = resolve_resource("https://identifiers.org/CHEBI:31696")
+    assert info.chebi is not None
+    assert (
+        info.chebi.formula,
+        info.chebi.charge,
+        info.chebi.mass,
+        info.chebi.structure,
+    ) == ("C43H47N2O6S2.Na", 0, "774.981", True)
 
-    The Ontology Lookup Service reports the missing definition of CHEBI:31696
-    (indocyanine green) as an empty list, which the report showed verbatim.
-    """
-    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols("indocyanine green", []))
-    info = annotation_info("chebi/CHEBI:31696")
-    assert info["label"] == "indocyanine green"
-    assert info["description"] is None
+
+def test_unknown_chebi_is_a_warning(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A compound ChEBI does not know is a warning."""
+    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols())
+    monkeypatch.setattr(annotations.ChebiQuery, "query", staticmethod(lambda chebi: {}))
+    info = resolve_resource("https://identifiers.org/CHEBI:999999999")
+    assert info.chebi is None
+    assert info.warnings == ["Term 'CHEBI:999999999' is not on ChEBI."]
 
 
-def test_blank_label(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A label of whitespace only is no label."""
-    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols("  ", "  "))
-    info = annotation_info("chebi/CHEBI:17234")
-    assert info["label"] is None
-    assert info["description"] is None
+def test_uniprot(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A protein carries the information of UniProt."""
+    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols())
+    monkeypatch.setattr(
+        annotations.UniprotQuery,
+        "query",
+        staticmethod(
+            lambda accession: {
+                "accession": "P69905",
+                "entry": "HBA_HUMAN",
+                "name": "Hemoglobin subunit alpha",
+                "organism": "Homo sapiens",
+                "genes": ["HBA1", "HBA2"],
+                "length": 142,
+                "function": "Involved in oxygen transport.",
+            }
+        ),
+    )
+    info = resolve_resource("https://identifiers.org/uniprot/P69905")
+    assert info.uniprot is not None and info.uniprot.entry == "HBA_HUMAN"
+    assert info.uniprot.genes == ["HBA1", "HBA2"]
+    assert info.url is not None and "uniprot.org" in info.url
 
 
-def test_messages_are_text(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Errors and warnings are reported as text.
+def test_errors_and_warnings_are_text(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A failing request of OLS is reported as the text of the error."""
+    monkeypatch.setattr(
+        RDFAnnotationData, "query_ols", _ols(errors=[OSError("OLS down")], warnings=[1])
+    )
+    info = resolve_resource("https://identifiers.org/GO:0006096")
+    assert info.errors == ["OLS down"]
+    assert info.warnings == ["1"]
 
-    A failing OLS request collects the request error itself, which is not
-    part of the JSON of the response.
-    """
 
-    def query_ols(self: RDFAnnotationData) -> dict[str, Any]:
-        self.errors.append(ValueError("404 Client Error"))
-        return {}
-
-    monkeypatch.setattr(RDFAnnotationData, "query_ols", query_ols)
-    info = annotation_info("chebi/CHEBI:17234")
-    assert info["errors"] == ["404 Client Error"]
-    assert info["warnings"] == []
+def test_unknown_collection() -> None:
+    """A collection which is not in the registry raises."""
+    with pytest.raises(ValueError):
+        resolve_resource("https://identifiers.org/notacollection:123")
 
 
 def test_cache_directory_from_environment(
