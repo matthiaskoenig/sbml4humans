@@ -1,4 +1,4 @@
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { ref } from "vue";
 
@@ -1327,6 +1327,93 @@ describe("inspector", () => {
         .findAll("[data-testid=element-link]")
         .find((l) => l.attributes("data-entry") === MINIMAL);
       expect(link?.attributes("data-pk")).toBe("omex_minimal/Model:omex_minimal");
+    });
+  });
+
+  describe("the validation issues", () => {
+    const validation = new ReportIndex(loadReport("validation"));
+    const k1 = "validation/Parameter:k1";
+
+    it("shows the issues of an element above its attributes", () => {
+      const wrapper = mountWith(InspectorPanel, { pk: k1 }, validation);
+      const block = wrapper.get("[data-testid=inspector-validation]");
+      const items = block.findAll("[data-testid=validation-issue]");
+      expect(items).toHaveLength(validation.issuesOf(k1).length);
+      expect(items).toHaveLength(3);
+      for (const issue of validation.issuesOf(k1)) {
+        const item = items.find((i) => i.text().includes(String(issue.rule)));
+        expect(item, String(issue.rule)).toBeDefined();
+        expect(item!.text()).toContain(issue.shortMessage);
+        expect(item!.find("[data-testid=severity-warning]").exists()).toBe(true);
+      }
+      expect(block.get("[data-testid=help-label]").text()).toBe("validation");
+      expect(helpKeyOf(block.get("[data-testid=help-label]").attributes("href"))).toBe(
+        "concepts/validation",
+      );
+      // the block comes before the attributes
+      const body = wrapper.get("[data-testid=inspector-body]").html();
+      expect(body.indexOf("inspector-validation")).toBeLessThan(body.indexOf("attributes-column"));
+    });
+
+    it("shows no block for an element without issues", () => {
+      const wrapper = mountWith(InspectorPanel, { pk: "validation/Species:A" }, validation);
+      expect(wrapper.find("[data-testid=inspector-validation]").exists()).toBe(false);
+      expect(wrapper.find("[data-testid=validation-list]").exists()).toBe(false);
+    });
+
+    it("keeps the full message of an issue behind more", () => {
+      const wrapper = mountWith(InspectorPanel, { pk: k1 }, validation);
+      const issue = validation.issuesOf(k1)[0]!;
+      const details = wrapper.get("[data-testid=validation-issue] details");
+      expect(details.get("summary").text()).toBe("more");
+      expect(details.get("p").element.textContent).toBe(issue.message);
+    });
+
+    it("lists every issue of the document in the inspector of the document", async () => {
+      const wrapper = mountWith(InspectorPanel, { pk: validation.document.pk }, validation);
+      const list = wrapper.get("[data-testid=validation-list]");
+      const groups = () => list.findAll("[data-testid=validation-group]");
+      expect(groups()[0]!.text()).toContain("10601");
+      expect(groups()[0]!.find("[data-testid=severity-error]").exists()).toBe(true);
+      const rules = groups().map((g) => g.get("[data-testid=validation-rule]").text());
+      // the error first, then the warnings by the number of their rule
+      expect(rules).toEqual(["10601", "10703", "10712", "20702", "99505", "99508"]);
+      const shared = groups().find(
+        (g) => g.get("[data-testid=validation-rule]").text() === "99505",
+      );
+      expect(shared!.get("[data-testid=validation-group-count]").text()).toBe("2");
+
+      await list.get("[data-testid=validation-filter-warning]").setValue(false);
+      expect(groups().map((g) => g.get("[data-testid=validation-rule]").text())).toEqual(["10601"]);
+      await list.get("[data-testid=validation-filter-warning]").setValue(true);
+
+      await list.get("[data-testid=validation-filter-category]").setValue("SBO term consistency");
+      const sbo = groups().map((g) => g.get("[data-testid=validation-rule]").text());
+      expect(sbo).toEqual(["10703", "10712"]);
+    });
+
+    it("says that a document without issues has none", () => {
+      const wrapper = mountWith(
+        InspectorPanel,
+        { pk: constraintEvent.document.pk },
+        constraintEvent,
+      );
+      const list = wrapper.get("[data-testid=validation-list]");
+      expect(list.find("[data-testid=no-validation-issues]").exists()).toBe(true);
+      expect(list.find("[data-testid=validation-group]").exists()).toBe(false);
+    });
+
+    it("selects an element of a rule from the list", async () => {
+      await router.push("/examples/x");
+      const wrapper = mountWith(InspectorPanel, { pk: validation.document.pk }, validation);
+      const group = wrapper
+        .findAll("[data-testid=validation-group]")
+        .find((g) => g.get("[data-testid=validation-rule]").text() === "10712")!;
+      const link = group.get("[data-testid=element-link]");
+      expect(link.text()).toBe("cell");
+      await link.trigger("click");
+      await flushPromises();
+      expect(router.currentRoute.value.query.pk).toBe("validation/Compartment:cell");
     });
   });
 });

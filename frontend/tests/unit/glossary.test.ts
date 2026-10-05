@@ -12,6 +12,7 @@ import {
   attributeKey,
   attributeLabel,
   conceptEntry,
+  conceptKey,
   entryOfKey,
   linkEntry,
   linkKey,
@@ -183,6 +184,12 @@ describe("glossary", () => {
       "types/Reaction/kineticLaw.derivedUnits",
     );
     expect(attributeKey("Species", "nope")).toBeUndefined();
+  });
+
+  it("keys a concept which has an entry and no other", () => {
+    expect(conceptKey("validation")).toBe("concepts/validation");
+    expect(entryOfKey(conceptKey("validation")!)).toEqual(conceptEntry("validation"));
+    expect(conceptKey("nope")).toBeUndefined();
   });
 
   it("answers entryOfKey with the label and summary a key's own lookup would give", () => {

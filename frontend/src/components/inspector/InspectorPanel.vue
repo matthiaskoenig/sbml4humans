@@ -6,6 +6,8 @@ import HelpLabel from "@/components/help/HelpLabel.vue";
 import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
+import ValidationBlock from "@/components/inspector/ValidationBlock.vue";
+import ValidationList from "@/components/inspector/ValidationList.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import XmlView from "@/components/misc/XmlView.vue";
 import { useReportIndex } from "@/report/context";
@@ -29,6 +31,10 @@ const typeHelp = computed(() => {
 });
 /** The element is named as every link to it names it; the type is already named next to it. */
 const name = computed(() => elementLabel(index.value, props.pk) ?? "");
+/** The issues of the element above its attributes; the document holds, below its own, the list of
+ * every issue, where the summary of the app bar leads. */
+const issues = computed(() => index.value?.issuesOf(props.pk) ?? []);
+const isDocument = computed(() => element.value?.sbmlType === "SBMLDocument");
 const showXml = ref(false);
 watch(
   () => props.pk,
@@ -147,6 +153,8 @@ const xmlEmptyMessage = computed(() =>
         class="grid h-full grid-cols-1 content-start divide-y divide-gray-200 overflow-y-auto @4xl:grid-cols-3 @4xl:content-stretch @4xl:divide-x @4xl:divide-y-0 @4xl:overflow-hidden"
       >
         <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
+          <ValidationBlock :issues="issues" />
+          <ValidationList v-if="isDocument && index" :index="index" />
           <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             Attributes
           </h3>

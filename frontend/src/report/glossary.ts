@@ -98,6 +98,11 @@ export function conceptEntry(key: string): GlossaryEntry | undefined {
   return glossary.concepts[key];
 }
 
+/** The key of a concept, `concepts/<key>`, `undefined` where the concept has no entry. */
+export function conceptKey(key: string): string | undefined {
+  return conceptEntry(key) ? `concepts/${key}` : undefined;
+}
+
 /** The label and the summary of any key the help dialog can open, from the eager glossary: the
  * header of the dialog while the long description and the technical detail of
  * `glossary-details.json` are still loading. A key of a type, an attribute, a link kind or a
