@@ -31,9 +31,13 @@ const typeHelp = computed(() => {
 });
 /** The element is named as every link to it names it; the type is already named next to it. */
 const name = computed(() => elementLabel(index.value, props.pk) ?? "");
-/** The issues of the element above its attributes; the document holds, below its own, the list of
- * every issue, where the summary of the app bar leads. */
-const issues = computed(() => index.value?.issuesOf(props.pk) ?? []);
+/** The issues of the element above its attributes, then those of the elements it holds without a
+ * row of their own, which mark its row; the document holds, below its own, the list of every
+ * issue, where the summary of the app bar leads. */
+const issues = computed(() => [
+  ...(index.value?.issuesOf(props.pk) ?? []),
+  ...(index.value?.heldIssuesOf(props.pk) ?? []),
+]);
 const isDocument = computed(() => element.value?.sbmlType === "SBMLDocument");
 const showXml = ref(false);
 watch(
@@ -153,7 +157,7 @@ const xmlEmptyMessage = computed(() =>
         class="grid h-full grid-cols-1 content-start divide-y divide-gray-200 overflow-y-auto @4xl:grid-cols-3 @4xl:content-stretch @4xl:divide-x @4xl:divide-y-0 @4xl:overflow-hidden"
       >
         <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
-          <ValidationBlock :issues="issues" />
+          <ValidationBlock :pk="pk" :issues="issues" />
           <ValidationList v-if="isDocument && index" :index="index" />
           <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             Attributes

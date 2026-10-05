@@ -471,6 +471,18 @@ describe("ElementTable of a document with issues", () => {
     expect(document.getElementById("app-tooltip")?.textContent).toContain("10703");
   });
 
+  it("marks the row of a reaction by the issue of its kinetic law, named in the tooltip", async () => {
+    await router.push({ path: "/report", query: {} });
+    const reactions = validation.byType(modelId).get("Reaction")!;
+    const r1 = reactions.find((reaction) => reaction.id === "R1")! as Reaction;
+    const table = mountTable(reactions, "Reaction", validation);
+    const issue = rowOf(table, r1.pk).find("[data-testid=row-issue]");
+    expect(issue.find("[data-testid=severity-warning]").exists()).toBe(true);
+    await issue.trigger("mouseenter");
+    const label = elementLabel(validation, r1.kineticLaw!.pk);
+    expect(document.getElementById("app-tooltip")?.textContent).toContain(`${label}: 99505`);
+  });
+
   it("keeps the place of the mark in an unmarked row of a table with issues", async () => {
     // the parameter x has no issue of its own: the slot in front of its type mark lines its id up
     // with the id of k1, which carries the mark

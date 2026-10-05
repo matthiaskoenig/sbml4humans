@@ -42,6 +42,13 @@ test.describe("validation", () => {
     await expect(
       page.getByTestId("bar-type-Parameter").getByTestId("severity-warning"),
     ).toBeVisible();
+    // the reaction R1 has no issue of its own, the issue of its kinetic law marks its row
+    await expect(
+      page.locator('tbody tr[data-pk$="Reaction:R1"]').getByTestId("row-issue"),
+    ).toBeVisible();
+    await expect(
+      page.getByTestId("bar-type-Reaction").getByTestId("severity-warning"),
+    ).toBeVisible();
   });
 
   test("a valid model shows no summary", async ({ page }) => {

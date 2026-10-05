@@ -105,7 +105,7 @@ The report runs the consistency checks of [libsbml](https://sbml.org/software/li
 
 A document with errors or warnings shows their counts as two chips in the bar of the report, a red one for the errors and an amber one for the warnings; a valid document shows none. A click on a chip selects the document, whose inspector lists them all. On a phone the chips keep their counts and leave out the words.
 
-An element with an issue carries the mark of its worst severity in front of its id in the tables, and hovering the mark shows the rule and the message of every issue of the element. A table whose type has issues in the shown model keeps the place of the mark empty in the other rows, so that the ids stand under each other. The type bar marks a type which has issues in the shown model with the same mark after its count.
+An element with an issue carries the mark of its worst severity in front of its id in the tables, and hovering the mark shows the rule and the message of every issue of the element. The issue of an element without a row of its own, the kinetic law of a reaction or the trigger of an event, marks the row which holds it, and the tooltip and the inspector of that row name the element it concerns. A table whose type has issues in the shown model keeps the place of the mark empty in the other rows, so that the ids stand under each other. The type bar marks a type which has issues in the shown model with the same mark after its count.
 
 [![The inspector of the document of the validation example: the error of the model and the warnings of libsbml, one group per rule, the group of rule 99505 opened to the two elements whose units could not be checked](images/inspector-validation.png)](images/inspector-validation.png)
 

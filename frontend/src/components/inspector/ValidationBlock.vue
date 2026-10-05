@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import type { ValidationIssue } from "@/api/types";
 import HelpLabel from "@/components/help/HelpLabel.vue";
+import ElementLink from "@/components/misc/ElementLink.vue";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import { useReportIndex } from "@/report/context";
 import { conceptEntry, conceptKey, ruleKey } from "@/report/glossary";
 
 /** The issues of one element, errors first: the short message, the rule, the category and the
- * severity, and the full message of libsbml behind "more". */
-defineProps<{ issues: ValidationIssue[] }>();
+ * severity, and the full message of libsbml behind "more". An issue of an element which the
+ * element holds without a row of its own, its kinetic law or its trigger, names that element by
+ * a link in front of its rule. */
+defineProps<{ pk: string; issues: ValidationIssue[] }>();
 const index = useReportIndex();
 /** The entry which states the text of the rule of an issue, the one of its element first. */
 function helpOf(issue: ValidationIssue): string | undefined {
@@ -42,6 +45,12 @@ const BOX = {
           <span class="min-w-0 flex-1">
             <span class="font-medium">{{ issue.shortMessage }}</span>
             <span class="block text-xs text-gray-600">
+              <template v-if="issue.pk !== pk"
+                ><span data-testid="validation-issue-element"
+                  ><ElementLink :pk="issue.pk" mark
+                /></span>
+                ·
+              </template>
               <!-- the number opens the entry which states the text of the rule, where the
               glossary cites it, and is plain text else -->
               <span

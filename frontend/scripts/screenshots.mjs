@@ -3,6 +3,10 @@
 // Usage: start the backend (cd backend && uv run uvicorn sbml4humans.api:api --port 1444) and
 // the dev server (cd frontend && npx vite --port 3456), then `npm run screenshots`. Rerun it
 // after a change of the user interface, the images are committed alongside the documentation.
+// SCREENSHOTS_BASE_URL names another dev server than the one on port 3456: the footer shows the
+// version and the commit a dev server was started with, so a server which has run since an
+// earlier commit is replaced by a fresh one on another port, e.g. `npx vite --port 3457` and
+// `SCREENSHOTS_BASE_URL=http://localhost:3457 npm run screenshots`.
 //
 // The article column of the built site is at most COLUMN_WIDTH wide and shows an image at the
 // width of the column, since every picture here is taken at twice the device scale and carries
@@ -17,7 +21,7 @@ import { chromium, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-const BASE_URL = "http://localhost:3456";
+const BASE_URL = process.env.SCREENSHOTS_BASE_URL ?? "http://localhost:3456";
 const API_URL = "http://localhost:1444/api";
 const OUT_DIR = fileURLToPath(new URL("../../docs/images/", import.meta.url));
 

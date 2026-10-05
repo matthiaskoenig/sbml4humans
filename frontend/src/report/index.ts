@@ -69,6 +69,14 @@ export class ReportIndex {
   readonly issues: readonly ValidationIssue[];
   private readonly issuesByPk = new Map<string, ValidationIssue[]>();
   private readonly worstByPk = new Map<string, Severity>();
+  /** The element with a row of a table which holds an element without one, by the pk of the
+   * nested element: the kinetic law, the species references and the lists of a reaction, the
+   * trigger of an event, and everything else `addElement` adds below an element of a table. */
+  private readonly rowOf = new Map<string, string>();
+  /** The issues of the nested elements without a row, by the pk of the row which holds them. */
+  private readonly heldByPk = new Map<string, ValidationIssue[]>();
+  /** The element of a table whose nested elements `add` is adding, null outside one. */
+  private holder: string | null = null;
   /** The number of issues of each severity. */
   readonly issueCounts: Record<Severity, number> = { error: 0, warning: 0, info: 0 };
 
@@ -100,7 +108,12 @@ export class ReportIndex {
     this.issues = report.validation ?? [];
     for (const issue of this.issues) {
       push(this.issuesByPk, issue.pk, issue);
-      this.worstByPk.set(issue.pk, worse(this.worstByPk.get(issue.pk) ?? null, issue.severity));
+      // the issue of an element without a row marks the row which holds it
+      const row = this.rowOf.get(issue.pk);
+      if (row) push(this.heldByPk, row, issue);
+      for (const marked of row ? [issue.pk, row] : [issue.pk]) {
+        this.worstByPk.set(marked, worse(this.worstByPk.get(marked) ?? null, issue.severity));
+      }
       this.issueCounts[issue.severity] += 1;
     }
   }
@@ -138,7 +151,15 @@ export class ReportIndex {
     return bySeverity(this.issuesByPk.get(pk) ?? []);
   }
 
-  /** The worst severity of the issues of an element, null without one. */
+  /** The issues of the elements an element of a table holds which have no row of their own, the
+   * kinetic law of a reaction or the trigger of an event, errors first; each names its element by
+   * its pk. Empty for every element which is no row of a table. */
+  heldIssuesOf(pk: string): ValidationIssue[] {
+    return bySeverity(this.heldByPk.get(pk) ?? []);
+  }
+
+  /** The worst severity of the issues of an element and of those it holds (`heldIssuesOf`), null
+   * without one: the mark of its row. */
   worstSeverity(pk: string): Severity | null {
     return this.worstByPk.get(pk) ?? null;
   }
@@ -296,6 +317,7 @@ export class ReportIndex {
    * so the lists of the document, of a model and of a nested element are found alike. */
   private add(element: SBase): void {
     this.elements.set(element.pk, element);
+    if (this.holder !== null && element.pk !== this.holder) this.rowOf.set(element.pk, this.holder);
     for (const list of element.lists ?? []) this.add(list);
     for (const uncertainty of element.uncertainties ?? []) this.addUncertainty(uncertainty);
     if (element.comp?.replacedBy) this.add(element.comp.replacedBy);
@@ -335,7 +357,14 @@ export class ReportIndex {
     }
   }
 
+  /** An element of a table and the elements nested in it, which the issues they have mark it. */
   private addElement(element: SbmlElement): void {
+    this.holder = element.pk;
+    this.addNested(element);
+    this.holder = null;
+  }
+
+  private addNested(element: SbmlElement): void {
     this.add(element);
     switch (element.sbmlType) {
       case "Reaction":

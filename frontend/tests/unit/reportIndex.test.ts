@@ -52,6 +52,24 @@ describe("ReportIndex", () => {
     expect(repressilator.issuesOf(repressilator.document.pk)).toEqual([]);
   });
 
+  it("marks the row which holds an element without a row of its own by the issues of it", () => {
+    // the kinetic law of R1 has a warning of its own, it has no table and marks the reaction
+    const r1 = validation.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    const law = r1.kineticLaw!.pk;
+    const lawIssues = validation.issuesOf(law);
+    expect(lawIssues.map((i) => i.rule)).toEqual([99505]);
+    expect(validation.issuesOf(r1.pk)).toEqual([]);
+    expect(validation.heldIssuesOf(r1.pk)).toEqual(lawIssues);
+    expect(validation.worstSeverity(r1.pk)).toBe("warning");
+    expect(validation.worstSeverityOfType("Reaction", validation.mainModel!.id!)).toBe("warning");
+    // the kinetic law keeps its own issues and its own severity, and holds nothing
+    expect(validation.worstSeverity(law)).toBe("warning");
+    expect(validation.heldIssuesOf(law)).toEqual([]);
+    // an element of a table holds nothing of another element of a table
+    const k1 = validation.mainModel!.listOfParameters!.find((p) => p.id === "k1")!;
+    expect(validation.heldIssuesOf(k1.pk)).toEqual([]);
+  });
+
   it("scopes the worst severity of a type to one model", () => {
     // both models of the fixture state a species, the warnings concern the species of m1 alone
     const main = definitions.mainModel!.id!;

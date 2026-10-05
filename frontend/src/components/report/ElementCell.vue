@@ -58,8 +58,10 @@ const reportName = computed(() =>
   props.column.kind === "id" && !text.value ? elementLabel(index.value, props.row.pk) : null,
 );
 
-/** Kind "id": the worst severity of the issues of the row, which its id marks; a note alone is
- * no mark. The tooltip lists the issues of the row, errors first, by rule and short message. */
+/** Kind "id": the worst severity of the issues of the row, which its id marks, those of the
+ * elements it holds without a row of their own (its kinetic law, its trigger) among them; a note
+ * alone is no mark. The tooltip lists the issues of the row, errors first, by rule and short
+ * message, then those of the elements it holds, each named by its element. */
 const severity = computed(() => {
   if (props.column.kind !== "id") return null;
   const worst = index.value?.worstSeverity(props.row.pk) ?? null;
@@ -67,9 +69,15 @@ const severity = computed(() => {
 });
 const issueTip = computed(() =>
   severity.value
-    ? (index.value?.issuesOf(props.row.pk) ?? [])
-        .map((issue) => `${issue.rule} ${issue.shortMessage}`)
-        .join(" · ")
+    ? [
+        ...(index.value?.issuesOf(props.row.pk) ?? []).map(
+          (issue) => `${issue.rule} ${issue.shortMessage}`,
+        ),
+        ...(index.value?.heldIssuesOf(props.row.pk) ?? []).map(
+          (issue) =>
+            `${elementLabel(index.value, issue.pk) ?? issue.pk}: ${issue.rule} ${issue.shortMessage}`,
+        ),
+      ].join(" · ")
     : undefined,
 );
 

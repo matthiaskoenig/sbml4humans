@@ -35,6 +35,7 @@ import { ReportIndexKey } from "@/report/context";
 import { attributeEntry, linkEntry } from "@/report/glossary";
 import { ASSOCIATION_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
+import { elementLabel } from "@/report/label";
 import { router } from "@/router";
 
 import { loadFixture, loadReport } from "./fixtures";
@@ -1353,6 +1354,26 @@ describe("inspector", () => {
       // the block comes before the attributes
       const body = wrapper.get("[data-testid=inspector-body]").html();
       expect(body.indexOf("inspector-validation")).toBeLessThan(body.indexOf("attributes-column"));
+    });
+
+    it("lists the issues of the kinetic law of a reaction, named by it, in the reaction", () => {
+      const r1 = "validation/Reaction:R1";
+      const law = validation.heldIssuesOf(r1)[0]!;
+      expect(law.rule).toBe(99505);
+      const wrapper = mountWith(InspectorPanel, { pk: r1 }, validation);
+      const items = wrapper
+        .get("[data-testid=inspector-validation]")
+        .findAll("[data-testid=validation-issue]");
+      expect(items).toHaveLength(1);
+      expect(items[0]!.text()).toContain("99505");
+      const named = items[0]!.get("[data-testid=validation-issue-element]");
+      expect(named.text()).toBe(elementLabel(validation, law.pk));
+      expect(named.get("[data-testid=element-link]").attributes("data-pk")).toBe(law.pk);
+    });
+
+    it("names no element in front of an issue of the element itself", () => {
+      const wrapper = mountWith(InspectorPanel, { pk: k1 }, validation);
+      expect(wrapper.find("[data-testid=validation-issue-element]").exists()).toBe(false);
     });
 
     it("shows no block for an element without issues", () => {
