@@ -8,7 +8,7 @@ the report of a local file in the browser:
     show("model.xml")
 """
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 from sbml4humans.viewer import show, stop
 
