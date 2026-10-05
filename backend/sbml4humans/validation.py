@@ -28,7 +28,6 @@ of urls or another one which was registered before is gone.
 """
 
 import bisect
-import logging
 from collections.abc import Mapping
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -38,8 +37,6 @@ import libsbml
 from sbml4humans.external import normalize_location, resolve_source
 from sbml4humans.model import Model, Report, Severity, ValidationIssue
 
-
-logger = logging.getLogger(__name__)
 
 # the elements a document with comp submodel instances may expand to and still
 # be validated: 3,000 elements with issues are checked in half a second, 10,000
