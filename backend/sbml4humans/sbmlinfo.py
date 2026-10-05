@@ -9,6 +9,7 @@ graph (`sbml4humans.links`).
 import hashlib
 import logging
 import math
+from collections import Counter
 from collections.abc import Callable, Iterable, Sequence
 from functools import partial
 from pathlib import Path
@@ -252,6 +253,8 @@ class SBMLDocumentInfo:
         symbols: the symbols of every math, keyed by the pk of the object
             carrying the math (kinetic law, rule, event, ...).
         units: the units the numbers of every math name, keyed the same way.
+        elements: the number of elements of the report by the scope of their
+            pk, which is the key of the model an element belongs to.
     """
 
     def __init__(self, doc: libsbml.SBMLDocument):
@@ -268,6 +271,7 @@ class SBMLDocumentInfo:
         self.scope = DOCUMENT_SCOPE
         # where every element of the report starts, for the issues of libsbml
         self.positions = ElementPositions(DOCUMENT_PK)
+        self.elements: Counter[str] = Counter()
         self.report: Report
 
     @staticmethod
@@ -409,6 +413,7 @@ class SBMLDocumentInfo:
         elif key is None:
             key = pk
         self.positions.add(sbase, pk)
+        self.elements[pk.partition("/")[0]] += 1
         xml = None
         # a model definition of comp is a model with a type code of its own
         if with_xml and not isinstance(sbase, (libsbml.SBMLDocument, libsbml.Model)):

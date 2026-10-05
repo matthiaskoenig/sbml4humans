@@ -12,7 +12,7 @@ from sbml4humans import __version__
 from sbml4humans import local as local_module
 from sbml4humans.local import MAX_REPORTS, LocalApp, ReportStore
 from sbml4humans.localstate import SECRET_HEADER, read_state
-from sbml4humans.model import ReportResponse
+from sbml4humans.model import ReportResponse, ValidationResponse
 from sbml4humans.report import report_for_path
 from sbml4humans.resources import EXAMPLES_DIR, REPRESSILATOR_SBML
 
@@ -77,12 +77,13 @@ def test_store_keeps_the_last_reports() -> None:
     """A token names a report until too many newer ones were added."""
     report = report_for_path(REPRESSILATOR_SBML)
     store = ReportStore()
-    first = store.add(report)
-    tokens = [store.add(report) for _ in range(MAX_REPORTS - 1)]
-    assert store.get(first) is report
+    first = store.add(report, REPRESSILATOR_SBML)
+    tokens = [store.add(report, REPRESSILATOR_SBML) for _ in range(MAX_REPORTS - 1)]
+    assert store.get(first).report is report
+    assert store.get(first).path == REPRESSILATOR_SBML
     # the first one was read last, so the next report pushes out the second one
-    store.add(report)
-    assert store.get(first) is report
+    store.add(report, REPRESSILATOR_SBML)
+    assert store.get(first).report is report
     with pytest.raises(KeyError):
         store.get(tokens[0])
     assert len({first, *tokens}) == MAX_REPORTS
@@ -165,6 +166,24 @@ def test_the_files_next_to_a_model_are_read(local: TestClient) -> None:
     answer = _post_report(local, EXAMPLES_DIR / "comp_deletion.xml")
     body = local.get(f"/api/local/reports/{answer['token']}").json()
     assert list(body["reports"]) == ["./comp_deletion.xml", "./unit_definitions.xml"]
+
+
+def test_the_validation_is_read_by_the_token_of_the_report(local: TestClient) -> None:
+    """The path of a report is validated trusted, with the files next to it."""
+    answer = _post_report(local, EXAMPLES_DIR / "comp_deletion.xml")
+    body = local.get(f"/api/local/validation/{answer['token']}").json()
+    validation = ValidationResponse.model_validate(body)
+    assert list(validation.entries) == ["./comp_deletion.xml", "./unit_definitions.xml"]
+    entry = validation.entries["./comp_deletion.xml"]
+    assert entry.skipped is None
+    assert 1090101 not in {issue.rule for issue in entry.issues}
+
+
+def test_the_validation_of_an_unknown_token_is_an_error(local: TestClient) -> None:
+    """A token without report has no validation either."""
+    unknown = local.get("/api/local/validation/unknown")
+    assert unknown.status_code == 200
+    assert "no report for the token" in unknown.json()["errors"][0]
 
 
 def test_errors_follow_the_contract_of_the_api(

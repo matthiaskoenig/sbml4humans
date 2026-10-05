@@ -1,0 +1,93 @@
+{
+  "$defs": {
+    "EntryValidation": {
+      "description": "The validation of libsbml of one SBML entry of a report.\n\n`skipped` says why the consistency of the document was not checked, in\nwhich case `issues` holds the issues of reading it alone, or none:\n`expandedSize`, the comp submodels of the document expand to more elements\nthan are checked in a bounded time, with the read issues; `timeout`, the\ncheck did not end in time; `memory`, the check needed more memory than it\nmay use.",
+      "properties": {
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          },
+          "type": "array"
+        },
+        "skipped": {
+          "anyOf": [
+            {
+              "enum": [
+                "expandedSize",
+                "timeout",
+                "memory"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "EntryValidation",
+      "type": "object"
+    },
+    "ValidationIssue": {
+      "description": "An error, a warning or a note of the validation of libsbml.\n\nlibsbml reports the line and the column of an issue, not its element: the\npk is the element which starts closest before that position (the document\nwhen none does). The texts are those of libsbml.",
+      "properties": {
+        "rule": {
+          "type": "integer"
+        },
+        "severity": {
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "shortMessage": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        },
+        "pk": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule",
+        "severity",
+        "category",
+        "shortMessage",
+        "message",
+        "line",
+        "column",
+        "pk"
+      ],
+      "title": "ValidationIssue",
+      "type": "object"
+    }
+  },
+  "description": "The response of a validation endpoint: one validation per SBML entry.\n\nThe entries are keyed and ordered like the reports of the report response\nof the same source.",
+  "properties": {
+    "entries": {
+      "additionalProperties": {
+        "$ref": "#/$defs/EntryValidation"
+      },
+      "type": "object"
+    }
+  },
+  "required": [
+    "entries"
+  ],
+  "title": "ValidationResponse",
+  "type": "object"
+}

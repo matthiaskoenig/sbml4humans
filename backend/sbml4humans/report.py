@@ -17,6 +17,11 @@ when the report is built. The content of a request is read within the limits of
 `limits.py`: a gzipped model is decompressed up to `MAX_CONTENT_SIZE`, and an
 archive is checked for the number, the size and the compression of its entries
 before it is extracted.
+
+The validation of libsbml is not part of the report: `validation_for_path`
+reads the entries of a source the same way, without their link graph, and
+checks them in a child process (`isolation.py`), so that the report is answered
+as fast as it is built and its validation when it is finished.
 """
 
 import gzip
@@ -26,30 +31,34 @@ import tempfile
 import time
 import uuid
 import zipfile
-from contextlib import ExitStack
+from collections.abc import Iterator
+from contextlib import ExitStack, contextmanager
+from dataclasses import dataclass
 from pathlib import Path
 
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
-from sbml4humans import limits
+from sbml4humans import isolation, limits, validation
 from sbml4humans.external import ExternalModels, normalize_location, resolve_source
 from sbml4humans.limits import ContentTooLargeError, format_size
 from sbml4humans.links import LinkSource, build_link_graphs
 from sbml4humans.model import (
     Debug,
+    EntryValidation,
     Manifest,
     ManifestEntry,
     ReportEntry,
     ReportResponse,
+    ValidationIssue,
+    ValidationResponse,
 )
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 from sbml4humans.validation import (
-    MAX_SUBMODEL_INSTANCES,
-    ReportDocuments,
+    ValidationJob,
+    expanded_size,
     issues_of,
-    submodel_instances,
-    validate,
+    validate_entries,
 )
 
 
@@ -110,22 +119,34 @@ def report_for_sbml(source: Path | str, uid: str = "") -> ReportEntry:
         ValueError: if no model could be read from the source.
     """
     entry = _Entry(source, uid=uid)
-    _link({SBML_LOCATION: entry}, checksums={}, locations=[])
+    external = _resolve({SBML_LOCATION: entry}, checksums={}, locations=[])
+    _link({SBML_LOCATION: entry}, external)
     return entry.report_entry
 
 
-def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
-    """Create the reports of an SBML file or a COMBINE archive.
+@dataclass
+class _Read:
+    """The SBML entries of a source, read and resolved against each other.
 
-    Returns the archive manifest and one report per SBML entry of the archive.
+    Attributes:
+        omex: the archive of the source, whose files are there while it is open.
+        entries: the report of every SBML entry by its location, in the order
+            of the manifest and then of the files next to a trusted file.
+        external: the external model definitions resolved to the entries.
+        uid: the identifier of the request, for the log.
+    """
 
-    Args:
-        path: the SBML file, plain or gzipped, or the COMBINE archive.
-        trusted: the directory of the path was chosen by the operator or the
-            user, so the files in it which the external model definitions of a
-            single SBML file name are read as further entries. Never set for a
-            path which holds the content of a request. The content of a path
-            which is not trusted is read within the limits of `limits.py`.
+    omex: Omex
+    entries: dict[str, _Entry]
+    external: ExternalModels
+    uid: str
+
+
+@contextmanager
+def _read(path: Path, trusted: bool) -> Iterator[_Read]:
+    """Read the SBML entries of a path and resolve them against each other.
+
+    The archive of the path is extracted for the time of the context.
 
     Raises:
         ValueError: if no model could be read from an SBML entry.
@@ -156,8 +177,30 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
             checksums = {
                 location: _md5(omex.get_path(location)) for location in entries
             }
-        _link(entries, checksums, [*locations, *unreadable])
+        external = _resolve(entries, checksums, [*locations, *unreadable])
+        yield _Read(omex=omex, entries=entries, external=external, uid=uid)
 
+
+def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
+    """Create the reports of an SBML file or a COMBINE archive.
+
+    Returns the archive manifest and one report per SBML entry of the archive.
+
+    Args:
+        path: the SBML file, plain or gzipped, or the COMBINE archive.
+        trusted: the directory of the path was chosen by the operator or the
+            user, so the files in it which the external model definitions of a
+            single SBML file name are read as further entries. Never set for a
+            path which holds the content of a request. The content of a path
+            which is not trusted is read within the limits of `limits.py`.
+
+    Raises:
+        ValueError: if no model could be read from an SBML entry.
+        ContentTooLargeError: if the content of an untrusted path exceeds the
+            limits.
+    """
+    with _read(path, trusted) as read:
+        _link(read.entries, read.external)
         manifest = Manifest(
             entries=[
                 ManifestEntry(
@@ -165,41 +208,105 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
                     format=str(entry.format),
                     master=entry.master,
                 )
-                for entry in omex.manifest.entries
+                for entry in read.omex.manifest.entries
             ]
         )
-    reports = {location: entry.report_entry for location, entry in entries.items()}
-    return ReportResponse(uid=uid, manifest=manifest, reports=reports)
+    reports = {location: entry.report_entry for location, entry in read.entries.items()}
+    return ReportResponse(uid=read.uid, manifest=manifest, reports=reports)
 
 
-def _link(
+def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse:
+    """Validate the SBML entries of an SBML file or a COMBINE archive.
+
+    The entries are read as `report_for_path` reads them, with the same trust
+    and the same limits, so that the pks of the issues are those of the report
+    of the path. An entry whose comp submodels expand it to more than
+    `MAX_EXPANDED_ELEMENTS` elements is skipped with the issues of reading it,
+    the others are checked in a child process (`isolation.run_isolated`),
+    bounded in time and memory, which reads the files of the archive while it
+    is extracted.
+
+    Args:
+        path: the SBML file, plain or gzipped, or the COMBINE archive.
+        trusted: as for `report_for_path`.
+
+    Raises:
+        ValueError: if no model could be read from an SBML entry.
+        ContentTooLargeError: if the content of an untrusted path exceeds the
+            limits.
+        ValidationProcessError: if the child process ended unexpectedly.
+    """
+    with _read(path, trusted) as read:
+        reports = {
+            location: entry.info.report for location, entry in read.entries.items()
+        }
+        elements = {
+            location: entry.info.elements for location, entry in read.entries.items()
+        }
+        skipped: dict[str, EntryValidation] = {}
+        targets: dict[str, validation.ElementPositions] = {}
+        budget = validation.MAX_EXPANDED_ELEMENTS
+        for location, entry in read.entries.items():
+            size = expanded_size(reports, elements, location)
+            # a flat document is checked in a time linear in its size, which
+            # the timeout bounds, so only instances count against the budget
+            if size > budget and size > sum(entry.info.elements.values()):
+                logger.warning(
+                    "'%s' is not validated: it expands to %s elements, more than %s",
+                    location,
+                    size,
+                    budget,
+                )
+                skipped[location] = EntryValidation(
+                    issues=issues_of(entry.info.doc, entry.info.positions),
+                    skipped="expandedSize",
+                )
+            else:
+                targets[location] = entry.info.positions
+        results: dict[str, list[ValidationIssue] | isolation.Interruption] = {}
+        if targets:
+            start = time.perf_counter()
+            job = ValidationJob(
+                paths={
+                    location: str(read.omex.get_path(location))
+                    for location in read.entries
+                },
+                targets=targets,
+            )
+            results = isolation.run_isolated(validate_entries, job, list(targets))
+            logger.info(
+                "validation of '%s' in %s s",
+                read.uid,
+                round(time.perf_counter() - start, 3),
+            )
+    entries: dict[str, EntryValidation] = {}
+    for location in read.entries:
+        if location in skipped:
+            entries[location] = skipped[location]
+            continue
+        result = results[location]
+        if isinstance(result, list):
+            entries[location] = EntryValidation(issues=result)
+        else:
+            entries[location] = EntryValidation(skipped=result)
+    return ValidationResponse(entries=entries)
+
+
+def _resolve(
     entries: dict[str, _Entry], checksums: dict[str, str], locations: list[str]
-) -> None:
-    """Resolve the external model definitions and build the graph of every entry."""
+) -> ExternalModels:
+    """Resolve the external model definitions of the entries against each other."""
     reports = {location: entry.info.report for location, entry in entries.items()}
     external = ExternalModels(reports, checksums=checksums, locations=locations)
     external.resolve_all()
+    return external
+
+
+def _link(entries: dict[str, _Entry], external: ExternalModels) -> None:
+    """Build the graph of every entry, along the resolved external models."""
     build_link_graphs(
         {location: entry.link_source for location, entry in entries.items()}, external
     )
-    documents = ReportDocuments(
-        {location: entry.info.doc for location, entry in entries.items()}
-    )
-    for location, entry in entries.items():
-        report = entry.info.report
-        if submodel_instances(reports, location) > MAX_SUBMODEL_INSTANCES:
-            logger.warning(
-                "'%s' is not validated: its main model expands to more than %s "
-                "submodel instances",
-                location,
-                MAX_SUBMODEL_INSTANCES,
-            )
-            report.validation_skipped = "submodelInstances"
-            report.validation = issues_of(entry.info.doc, entry.info.positions)
-            continue
-        report.validation = validate(
-            entry.info.doc, entry.info.positions, documents, location
-        )
 
 
 def _md5(path: Path) -> str:
@@ -264,6 +371,18 @@ def report_for_bytes(content: bytes) -> ReportResponse:
         path = Path(tmp_dir) / "model"
         path.write_bytes(content)
         return report_for_path(path)
+
+
+def validation_for_bytes(content: bytes) -> ValidationResponse:
+    """Validate the content of an SBML file or COMBINE archive.
+
+    The content is written to a temporary file like for `report_for_bytes`,
+    which is there until the validation has ended.
+    """
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        path = Path(tmp_dir) / "model"
+        path.write_bytes(content)
+        return validation_for_path(path)
 
 
 def _omex_for_path(path: Path, named: bool = False, limited: bool = False) -> Omex:

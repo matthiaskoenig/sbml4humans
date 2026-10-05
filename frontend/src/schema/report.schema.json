@@ -6676,7 +6676,7 @@
       "type": "object"
     },
     "Report": {
-      "description": "The report of one SBML document.\n\n`validation_skipped` says why the consistency of the document was not\nchecked, in which case `validation` holds the issues of reading it alone:\n`submodelInstances`, its main model expands to more comp submodel\ninstances than the validation instantiates in a bounded time.",
+      "description": "The report of one SBML document.\n\nThe validation of the document is not part of its report: it is answered\napart from it (`ValidationResponse`), when it is finished.",
       "properties": {
         "document": {
           "$ref": "#/$defs/SBMLDocument"
@@ -6695,24 +6695,6 @@
         },
         "linkGraph": {
           "$ref": "#/$defs/LinkGraph"
-        },
-        "validation": {
-          "items": {
-            "$ref": "#/$defs/ValidationIssue"
-          },
-          "type": "array"
-        },
-        "validationSkipped": {
-          "anyOf": [
-            {
-              "const": "submodelInstances",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null
         }
       },
       "required": [
@@ -9227,52 +9209,6 @@
         "pk"
       ],
       "title": "UserDefinedConstraintComponent",
-      "type": "object"
-    },
-    "ValidationIssue": {
-      "description": "An error, a warning or a note of the validation of libsbml.\n\nlibsbml reports the line and the column of an issue, not its element: the\npk is the element which starts closest before that position (the document\nwhen none does). The texts are those of libsbml.",
-      "properties": {
-        "rule": {
-          "type": "integer"
-        },
-        "severity": {
-          "enum": [
-            "error",
-            "warning",
-            "info"
-          ],
-          "type": "string"
-        },
-        "category": {
-          "type": "string"
-        },
-        "shortMessage": {
-          "type": "string"
-        },
-        "message": {
-          "type": "string"
-        },
-        "line": {
-          "type": "integer"
-        },
-        "column": {
-          "type": "integer"
-        },
-        "pk": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "rule",
-        "severity",
-        "category",
-        "shortMessage",
-        "message",
-        "line",
-        "column",
-        "pk"
-      ],
-      "title": "ValidationIssue",
       "type": "object"
     }
   },

@@ -20,6 +20,13 @@ client which accepts it. The report of an example is built once and kept
 gzipped (`example_report_gzip`), so that a request for it is answered without
 building or compressing it again.
 
+The validation of libsbml of a source is answered by endpoints of its own below
+`/api/validation/`, which take the sources of the report endpoints with their
+limits and their trust and answer a `ValidationResponse`, so that a report is
+shown before its validation has ended. The validation runs in a child process
+bounded in time and memory (`isolation.py`). The validation of an example is
+kept (`example_validations`) unless a limit ended it.
+
 A report endpoint returns its `ReportResponse` as it is. FastAPI takes an
 instance of the response model without validating it again and writes its JSON
 in one pass of pydantic, which applies the configuration of the model: camelCase
@@ -31,7 +38,9 @@ import asyncio
 import contextlib
 import gzip
 import logging
+import threading
 import traceback
+from collections import OrderedDict
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime
@@ -58,10 +67,15 @@ from sbml4humans.annotations import (
     resource_cache,
 )
 from sbml4humans.download import download
-from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
+from sbml4humans.examples import (
+    ExampleMetaData,
+    load_examples,
+    report_for_example,
+    validation_for_example,
+)
 from sbml4humans.limits import ContentTooLargeError, format_size
-from sbml4humans.model import ReportResponse
-from sbml4humans.report import report_for_bytes
+from sbml4humans.model import ReportResponse, ValidationResponse
+from sbml4humans.report import report_for_bytes, validation_for_bytes
 from sbml4humans.uploads import CLEANUP_INTERVAL, UploadStore, upload_store
 
 
@@ -139,6 +153,10 @@ api = FastAPI(
     openapi_tags=[
         {"name": "examples", "description": "Query examples."},
         {"name": "reports", "description": "Create report data."},
+        {
+            "name": "validation",
+            "description": "Validate the source of a report with libsbml.",
+        },
         {"name": "metadata", "description": "Query metadata."},
     ],
     lifespan=lifespan,
@@ -398,6 +416,115 @@ def report_from_upload(
 ) -> ReportResponse:
     """Create the report data of an upload."""
     return report_for_bytes(store.get(upload_id))
+
+
+class ExampleValidations:
+    """The validations of the examples, the most recent `EXAMPLE_CACHE_SIZE`.
+
+    An example does not change while the server runs, so its validation is kept
+    unless the timeout or the memory limit ended it, which depends on the load
+    of the server and is tried again on the next request.
+    """
+
+    def __init__(self, limit: int = EXAMPLE_CACHE_SIZE) -> None:
+        """Create an empty store."""
+        self.limit = limit
+        self._lock = threading.Lock()
+        self._validations: OrderedDict[str, ValidationResponse] = OrderedDict()
+
+    def get(self, example_id: str) -> ValidationResponse | None:
+        """The kept validation of an example, None without one."""
+        with self._lock:
+            validation = self._validations.get(example_id)
+            if validation is not None:
+                self._validations.move_to_end(example_id)
+            return validation
+
+    def put(self, example_id: str, validation: ValidationResponse) -> None:
+        """Keep the validation of an example, unless a limit ended it."""
+        if any(
+            entry.skipped in ("timeout", "memory")
+            for entry in validation.entries.values()
+        ):
+            return
+        with self._lock:
+            self._validations[example_id] = validation
+            while len(self._validations) > self.limit:
+                self._validations.popitem(last=False)
+
+    def clear(self) -> None:
+        """Forget every validation."""
+        with self._lock:
+            self._validations.clear()
+
+
+example_validations = ExampleValidations()
+
+
+@api.get(
+    "/api/validation/examples/{example_id}",
+    tags=["validation"],
+    response_model=ValidationResponse,
+    response_model_by_alias=True,
+)
+def validation_of_example(example_id: str) -> ValidationResponse:
+    """The validation of an example, kept after the first request for it."""
+    validation = example_validations.get(example_id)
+    if validation is not None:
+        return validation
+    example: ExampleMetaData | None = load_examples().get(example_id)
+    if example is None:
+        raise ExampleNotFoundError(example_id)
+    validation = validation_for_example(example)
+    example_validations.put(example_id, validation)
+    return validation
+
+
+@api.post(
+    "/api/validation/file",
+    tags=["validation"],
+    response_model=ValidationResponse,
+    response_model_by_alias=True,
+)
+def validation_of_file(source: UploadFile) -> ValidationResponse:
+    """Validate an uploaded SBML file or COMBINE archive."""
+    return validation_for_bytes(source.file.read())
+
+
+@api.get(
+    "/api/validation/url",
+    tags=["validation"],
+    response_model=ValidationResponse,
+    response_model_by_alias=True,
+)
+def validation_of_url(url: str) -> ValidationResponse:
+    """Validate an SBML file or COMBINE archive behind a url."""
+    return validation_for_bytes(download(url))
+
+
+@api.post(
+    "/api/validation/content",
+    tags=["validation"],
+    response_model=ValidationResponse,
+    response_model_by_alias=True,
+)
+async def validation_of_content(request: Request) -> ValidationResponse:
+    """Validate the SBML content in the request body."""
+    content = await request.body()
+    return await run_in_threadpool(validation_for_bytes, content)
+
+
+@api.get(
+    "/api/validation/upload/{upload_id}",
+    tags=["validation"],
+    response_model=ValidationResponse,
+    response_model_by_alias=True,
+)
+def validation_of_upload(
+    upload_id: str, store: Annotated[UploadStore, Depends(upload_store)]
+) -> ValidationResponse:
+    """Validate an upload."""
+    return validation_for_bytes(store.get(upload_id))
 
 
 @api.get(

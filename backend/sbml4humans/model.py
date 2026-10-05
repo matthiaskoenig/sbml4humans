@@ -971,16 +971,11 @@ class ValidationIssue(ReportModel):
     pk: str
 
 
-ValidationSkipped = Literal["submodelInstances"]
-
-
 class Report(ReportModel):
     """The report of one SBML document.
 
-    `validation_skipped` says why the consistency of the document was not
-    checked, in which case `validation` holds the issues of reading it alone:
-    `submodelInstances`, its main model expands to more comp submodel
-    instances than the validation instantiates in a bounded time.
+    The validation of the document is not part of its report: it is answered
+    apart from it (`ValidationResponse`), when it is finished.
     """
 
     document: SBMLDocument
@@ -989,8 +984,6 @@ class Report(ReportModel):
         default_factory=list
     )
     link_graph: LinkGraph = Field(default_factory=LinkGraph)
-    validation: list[ValidationIssue] = Field(default_factory=list)
-    validation_skipped: ValidationSkipped | None = None
 
 
 class ManifestEntry(ReportModel):
@@ -1026,3 +1019,34 @@ class ReportResponse(ReportModel):
     uid: str
     manifest: Manifest
     reports: dict[str, ReportEntry]
+
+
+# -------------------------------------------------------------------------------------
+# validation
+# -------------------------------------------------------------------------------------
+SkipReason = Literal["expandedSize", "timeout", "memory"]
+
+
+class EntryValidation(ReportModel):
+    """The validation of libsbml of one SBML entry of a report.
+
+    `skipped` says why the consistency of the document was not checked, in
+    which case `issues` holds the issues of reading it alone, or none:
+    `expandedSize`, the comp submodels of the document expand to more elements
+    than are checked in a bounded time, with the read issues; `timeout`, the
+    check did not end in time; `memory`, the check needed more memory than it
+    may use.
+    """
+
+    issues: list[ValidationIssue] = Field(default_factory=list)
+    skipped: SkipReason | None = None
+
+
+class ValidationResponse(ReportModel):
+    """The response of a validation endpoint: one validation per SBML entry.
+
+    The entries are keyed and ordered like the reports of the report response
+    of the same source.
+    """
+
+    entries: dict[str, EntryValidation]

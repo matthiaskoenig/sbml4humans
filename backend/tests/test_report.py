@@ -157,8 +157,6 @@ def test_report_json_is_camel_case() -> None:
         "models",
         "externalModelDefinitions",
         "linkGraph",
-        "validation",
-        "validationSkipped",
     }
     assert report["models"][0]["listOfSpecies"][0]["sbmlType"] == "Species"
     assert data["reports"]["./model.xml"]["debug"]["jsonReportTime"].endswith(" [s]")

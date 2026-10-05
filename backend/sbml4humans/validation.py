@@ -6,10 +6,15 @@ goes to the element which starts closest before it.
 
 The comp validator instantiates every submodel of the main model, along the
 whole tree of the model definitions and the external model definitions it
-names, which grows with the product of the submodels of every level. A
-document whose main model expands to more than `MAX_SUBMODEL_INSTANCES`
-instances (`submodel_instances`) is not validated, only the issues of reading
-it are reported.
+names, and checks the instantiated elements; its time grows with the number of
+them, and faster than that once they have issues. A document whose submodels
+expand it to more than `MAX_EXPANDED_ELEMENTS` elements (`expanded_size`) is
+not validated, only the issues of reading it are reported. A document without
+submodel instances is always validated, its check takes a time linear in its
+size, which the timeout of the child process bounds.
+
+The validation runs in a child process (`isolation.py`), which reads the files
+of the documents again (`validate_entries`) and sends the issues back.
 
 Importing this module replaces the resolvers of the process-wide resolver
 registry of libsbml by `ReportResolver`, for every user of libsbml in the
@@ -20,7 +25,7 @@ of urls or another one which was registered before is gone.
 
 import bisect
 import logging
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 from contextvars import ContextVar
 from dataclasses import dataclass
 
@@ -32,10 +37,10 @@ from sbml4humans.model import Model, Report, Severity, ValidationIssue
 
 logger = logging.getLogger(__name__)
 
-# the submodel instances of a main model which are validated; 1,000 instances
-# (three levels of ten submodels) are checked within a fifth of a second, ten
-# times as many take seconds and a hundred times as many more than a minute
-MAX_SUBMODEL_INSTANCES = 1000
+# the elements a document may expand to by its comp submodels and still be
+# validated: 3,000 elements with issues are checked in half a second, 10,000 in
+# about 6 seconds, and the time grows faster than the elements beyond
+MAX_EXPANDED_ELEMENTS = 10_000
 
 _ERRORS = frozenset(
     {
@@ -296,24 +301,37 @@ def validate(
     return issues_of(doc, positions)
 
 
-def submodel_instances(reports: Mapping[str, Report], location: str) -> int:
-    """The comp submodel instances the main model of an entry expands to.
+def expanded_size(
+    reports: Mapping[str, Report],
+    elements: Mapping[str, Mapping[str, int]],
+    location: str,
+) -> int:
+    """The elements the comp validator checks in an entry, its submodels expanded.
 
-    The model a submodel instantiates is a model definition of its document or
-    the model an external model definition of it names, as `ExternalModels`
-    resolved it to another entry of the report; an instance counts with the
-    instances of its model. A model which instantiates itself, directly or
-    along a chain, counts its instances up to the cycle, which libsbml reports
-    as an error of its own.
+    These are the elements of the document and, for every submodel instance of
+    its main model, the elements of the model it instantiates, along every
+    level of instances. The model a submodel instantiates is a model definition
+    of its document or the model an external model definition of it names, as
+    `ExternalModels` resolved it to another entry of the report; a model which
+    is instantiated more than once counts for every instance. A model which
+    instantiates itself, directly or along a chain, counts up to the cycle,
+    which libsbml reports as an error of its own.
 
     Args:
         reports: the report of every entry by its location.
+        elements: the number of elements of every entry by the scope of their
+            pk (`SBMLDocumentInfo.elements`), the key of their model.
         location: the location of the entry.
 
     Returns:
-        The number of submodel instances, 0 for a document without a main model.
+        The number of elements, the elements of the document for a document
+        without submodels.
     """
-    counted: dict[tuple[str, str], int] = {}
+    expanded: dict[tuple[str, str], int] = {}
+
+    def size(entry: str, model: Model) -> int:
+        """The elements of a model of an entry, the model with them."""
+        return elements[entry].get(model.pk.partition("/")[0], 0)
 
     def target(entry: str, model_ref: str) -> tuple[str, Model] | None:
         """The entry and the model a submodel of a model of `entry` names."""
@@ -330,21 +348,61 @@ def submodel_instances(reports: Mapping[str, Report], location: str) -> int:
                     return other, model
         return None
 
-    def instances(entry: str, model: Model, chain: frozenset[tuple[str, str]]) -> int:
-        """The instances of the submodels of a model, along a chain of models."""
+    def instantiated(
+        entry: str, model: Model, chain: frozenset[tuple[str, str]]
+    ) -> int:
+        """The elements the submodels of a model instantiate, along a chain."""
         key = (entry, model.pk)
-        if key in counted:
-            return counted[key]
+        if key in expanded:
+            return expanded[key]
         total = 0
         for submodel in model.list_of_submodels:
-            total += 1
             found = target(entry, submodel.model_ref)
             if found is not None and (found[0], found[1].pk) not in chain | {key}:
-                total += instances(*found, chain | {key})
-        counted[key] = total
+                total += size(*found) + instantiated(*found, chain | {key})
+        expanded[key] = total
         return total
 
+    total = sum(elements[location].values())
     for model in reports[location].models:
         if model.kind == "model":
-            return instances(location, model, frozenset())
-    return 0
+            total += instantiated(location, model, frozenset())
+    return total
+
+
+@dataclass(frozen=True)
+class ValidationJob:
+    """What the child process of a validation validates.
+
+    Attributes:
+        paths: the file of every SBML entry of the report by its location, the
+            documents the comp validator may resolve.
+        targets: the positions of the elements of every entry to validate, by
+            its location, in the order of the report.
+    """
+
+    paths: dict[str, str]
+    targets: dict[str, ElementPositions]
+
+
+def validate_entries(
+    job: ValidationJob,
+) -> Iterator[tuple[str, list[ValidationIssue]]]:
+    """Read the documents of a report and validate the targets, one at a time.
+
+    This is what the child process of a validation runs. libsbml reads a file
+    the same way twice, so the lines of the issues are those of the elements
+    of the report built from the same file.
+
+    Args:
+        job: the files and the entries to validate.
+
+    Yields:
+        The location of an entry and its issues, in the order of the targets.
+    """
+    docs: dict[str, libsbml.SBMLDocument] = {
+        location: libsbml.readSBMLFromFile(path) for location, path in job.paths.items()
+    }
+    documents = ReportDocuments(docs)
+    for location, positions in job.targets.items():
+        yield location, validate(docs[location], positions, documents, location)

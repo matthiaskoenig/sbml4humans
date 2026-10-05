@@ -16,7 +16,7 @@ from sbml4humans import __version__, annotations, api, limits
 from sbml4humans.annotations import AnnotationResource, OntologyTerm
 from sbml4humans.examples import load_examples, report_for_example
 from sbml4humans.model import ReportResponse
-from sbml4humans.resources import OMEX_ICGMODEL, REPRESSILATOR_SBML
+from sbml4humans.resources import EXAMPLES_DIR, OMEX_ICGMODEL, REPRESSILATOR_SBML
 from sbml4humans.uploads import UploadStore, upload_store
 
 
@@ -44,6 +44,31 @@ def _check_error(data: dict[str, Any], info: dict[str, str] | None = None) -> No
         assert data["info"] == info
 
 
+def _check_validation(data: dict[str, Any], entries: int = 1) -> None:
+    """Check validation data returned by the api."""
+    assert "errors" not in data
+    assert set(data) == {"entries"}
+    assert len(data["entries"]) == entries
+    for entry in data["entries"].values():
+        assert set(entry) == {"issues", "skipped"}
+        for issue in entry["issues"]:
+            assert set(issue) == {
+                "rule",
+                "severity",
+                "category",
+                "shortMessage",
+                "message",
+                "line",
+                "column",
+                "pk",
+            }
+
+
+def _rules(data: dict[str, Any], location: str = "./model.xml") -> set[int]:
+    """The rules of the issues of an entry of validation data."""
+    return {issue["rule"] for issue in data["entries"][location]["issues"]}
+
+
 def _check_report(data: dict[str, Any]) -> None:
     """Check report data returned by the api."""
     assert "errors" not in data
@@ -58,8 +83,6 @@ def _check_report(data: dict[str, Any]) -> None:
             "models",
             "externalModelDefinitions",
             "linkGraph",
-            "validation",
-            "validationSkipped",
         }
 
 
@@ -81,6 +104,17 @@ def test_openapi(client: TestClient) -> None:
         content = schema["paths"][path][method]["responses"]["200"]["content"]
         assert content["application/json"]["schema"] == {
             "$ref": "#/components/schemas/ReportResponse"
+        }
+    for path, method in [
+        ("/api/validation/examples/{example_id}", "get"),
+        ("/api/validation/file", "post"),
+        ("/api/validation/url", "get"),
+        ("/api/validation/content", "post"),
+        ("/api/validation/upload/{upload_id}", "get"),
+    ]:
+        content = schema["paths"][path][method]["responses"]["200"]["content"]
+        assert content["application/json"]["schema"] == {
+            "$ref": "#/components/schemas/ValidationResponse"
         }
 
 
@@ -606,3 +640,205 @@ def test_cleanup_continues_after_a_failure(
     asyncio.run(run())
     assert len(calls) > 1
     assert "not allowed" in caplog.text
+
+
+# -------------------------------------------------------------------------------------
+# validation
+# -------------------------------------------------------------------------------------
+VALIDATION_EXAMPLE = "validation (validation.xml)"
+COMP_DELETION = EXAMPLES_DIR / "comp_deletion.xml"
+
+
+def test_validation_of_an_example(client: TestClient) -> None:
+    """The issues of an example are answered per entry, on the pks of its report."""
+    response = client.get(f"/api/validation/examples/{VALIDATION_EXAMPLE}")
+    assert response.status_code == 200
+    data = response.json()
+    _check_validation(data)
+    report = client.get(f"/api/examples/{VALIDATION_EXAMPLE}").json()
+    assert list(data["entries"]) == list(report["reports"])
+    entry = next(iter(data["entries"].values()))
+    assert entry["skipped"] is None
+    pks = {(issue["rule"], issue["pk"]) for issue in entry["issues"]}
+    assert (10601, "validation/Model:validation") in pks
+    assert (10712, "validation/Compartment:cell") in pks
+    assert (10703, "validation/Parameter:k1") in pks
+
+
+def test_validation_of_an_example_is_kept(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An example is validated once, its validation does not change."""
+    calls: list[str] = []
+    validation_for_example = api.validation_for_example
+
+    def spy(example: Any) -> Any:
+        calls.append(example.id)
+        return validation_for_example(example)
+
+    monkeypatch.setattr(api, "validation_for_example", spy)
+    api.example_validations.clear()
+    for _ in range(2):
+        response = client.get("/api/validation/examples/species (species.xml)")
+        _check_validation(response.json())
+    assert calls == ["species (species.xml)"]
+
+
+def test_validation_of_an_example_with_a_timeout_is_not_kept(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A validation which was ended by its limits is tried again next time."""
+    from sbml4humans import isolation
+
+    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 0.0)
+    api.example_validations.clear()
+    data = client.get("/api/validation/examples/species (species.xml)").json()
+    assert next(iter(data["entries"].values()))["skipped"] == "timeout"
+    monkeypatch.undo()
+    data = client.get("/api/validation/examples/species (species.xml)").json()
+    assert next(iter(data["entries"].values()))["skipped"] is None
+
+
+def test_validation_of_an_example_is_trusted(client: TestClient) -> None:
+    """An example reads the files next to it, like its report."""
+    data = client.get("/api/validation/examples/comp_deletion (comp_deletion.xml)")
+    data = data.json()
+    _check_validation(data, entries=2)
+    assert 1090101 not in _rules(data, "./comp_deletion.xml")
+
+
+def test_validation_of_a_missing_example(client: TestClient) -> None:
+    """An unknown example results in an error payload."""
+    response = client.get("/api/validation/examples/does_not_exist")
+    data = response.json()
+    _check_error(data, info={})
+    assert "does_not_exist" in data["errors"][0]
+
+
+def test_validation_of_a_file(client: TestClient) -> None:
+    """An uploaded file is validated untrusted: nothing next to it is read."""
+    with COMP_DELETION.open("rb") as f:
+        response = client.post(
+            "/api/validation/file", files={"source": ("comp_deletion.xml", f)}
+        )
+    data = response.json()
+    _check_validation(data)
+    assert 1090101 in _rules(data)
+
+
+def test_validation_of_an_archive(client: TestClient) -> None:
+    """Every SBML entry of an archive is validated, keyed like its report."""
+    with OMEX_ICGMODEL.open("rb") as f:
+        response = client.post("/api/validation/file", files={"source": ("m.omex", f)})
+    data = response.json()
+    _check_validation(data, entries=3)
+    with OMEX_ICGMODEL.open("rb") as f:
+        report = client.post("/api/file", files={"source": ("m.omex", f)}).json()
+    assert list(data["entries"]) == list(report["reports"])
+
+
+def test_validation_of_content(client: TestClient) -> None:
+    """Pasted content is validated untrusted."""
+    response = client.post(
+        "/api/validation/content", content=COMP_DELETION.read_bytes()
+    )
+    data = response.json()
+    _check_validation(data)
+    assert 1090101 in _rules(data)
+
+
+def test_validation_of_content_without_a_model(client: TestClient) -> None:
+    """A document without a model is an error, as for its report."""
+    content = (
+        b'<?xml version="1.0" encoding="UTF-8"?><sbml xmlns="http://www.sbml.org/'
+        b'sbml/level3/version1/core" level="3" version="1"></sbml>'
+    )
+    data = client.post("/api/validation/content", content=content).json()
+    _check_error(data, info={})
+    assert "No SBML model" in data["errors"][0]
+
+
+def test_validation_of_invalid_content(client: TestClient) -> None:
+    """Content which is no SBML is an error."""
+    data = client.post("/api/validation/content", content=b"garbage").json()
+    _check_error(data, info={})
+
+
+def test_validation_of_content_beyond_the_limit(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The body of a validation is limited like the body of a report."""
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
+    data = client.post("/api/validation/content", content=b"x" * 2048).json()
+    _check_error(data, info={})
+    assert "larger than" in data["errors"][0]
+
+
+def test_validation_of_a_url(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A model behind a url is downloaded and validated untrusted."""
+    urls: list[str] = []
+
+    def download(url: str) -> bytes:
+        urls.append(url)
+        return COMP_DELETION.read_bytes()
+
+    monkeypatch.setattr(api, "download", download)
+    url = "https://example.org/comp_deletion.xml"
+    data = client.get("/api/validation/url", params={"url": url}).json()
+    assert urls == [url]
+    _check_validation(data)
+    assert 1090101 in _rules(data)
+
+
+def test_validation_of_a_url_of_the_internal_network(client: TestClient) -> None:
+    """The download of a validation is the one of a report, public addresses only."""
+    url = "http://127.0.0.1:1/model.xml"
+    data = client.get("/api/validation/url", params={"url": url}).json()
+    _check_error(data, info={"url": url})
+
+
+def test_validation_of_an_upload(client: TestClient, uploads: UploadStore) -> None:
+    """An upload is validated untrusted by its id."""
+    with COMP_DELETION.open("rb") as f:
+        response = client.post("/api/upload", files={"source": ("model.xml", f)})
+    upload_id = response.json()["id"]
+    data = client.get(f"/api/validation/upload/{upload_id}").json()
+    _check_validation(data)
+    assert 1090101 in _rules(data)
+
+
+def test_validation_of_an_unknown_upload(
+    client: TestClient, uploads: UploadStore
+) -> None:
+    """An unknown id is an error which says how long uploads are kept."""
+    data = client.get("/api/validation/upload/unknown_id_of_22_chars").json()
+    _check_error(data, info={})
+    assert "kept for 24 hours" in data["errors"][0]
+
+
+def test_a_skipped_validation_is_answered(client: TestClient) -> None:
+    """A document beyond the budget is answered with its reason."""
+    submodels = "".join(
+        f'<comp:submodel comp:id="s{i}" comp:modelRef="d"/>' for i in range(1000)
+    )
+    species = "".join(
+        f'<species id="x{k}" compartment="c" initialAmount="1" '
+        'hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>'
+        for k in range(20)
+    )
+    content = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" '
+        'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" '
+        'level="3" version="1" comp:required="true">'
+        f'<model id="m"><comp:listOfSubmodels>{submodels}</comp:listOfSubmodels>'
+        '</model><comp:listOfModelDefinitions><comp:modelDefinition id="d">'
+        '<listOfCompartments><compartment id="c" constant="true"/>'
+        f"</listOfCompartments><listOfSpecies>{species}</listOfSpecies>"
+        "</comp:modelDefinition></comp:listOfModelDefinitions></sbml>"
+    )
+    data = client.post("/api/validation/content", content=content.encode()).json()
+    _check_validation(data)
+    assert data["entries"]["./model.xml"]["skipped"] == "expandedSize"

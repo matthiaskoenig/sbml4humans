@@ -20,6 +20,10 @@ is no request of a current browser but of the client of `sbml4humans.show`, and
 is answered for the endpoints of this module alone, which the secret or the
 token of a report guard.
 
+The server keeps the path of a report with it, so that the page validates the
+report by its token (`/api/local/validation/{token}`), the file read again and
+trusted like for its report.
+
 The client of the server is the user of the machine, so an error response
 carries the traceback of the failure (`TRACEBACK_STATE`), which the public api
 keeps to itself.
@@ -35,6 +39,7 @@ import os
 import secrets
 import time
 from collections import OrderedDict
+from dataclasses import dataclass
 from pathlib import Path
 
 import uvicorn
@@ -65,8 +70,8 @@ from sbml4humans.localstate import (
     state_file,
     write_state,
 )
-from sbml4humans.model import ReportResponse
-from sbml4humans.report import report_for_path
+from sbml4humans.model import ReportResponse, ValidationResponse
+from sbml4humans.report import report_for_path, validation_for_path
 
 
 logger = logging.getLogger(__name__)
@@ -82,27 +87,35 @@ API_PAGES = ("/docs", "/redoc", "/openapi.json")
 FETCH_SITES = ("same-origin", "none")
 
 
+@dataclass(frozen=True)
+class LocalReport:
+    """A report of the server and the path it was built from, to validate it."""
+
+    report: ReportResponse
+    path: Path
+
+
 class ReportStore:
     """The reports of the server by their token, the most recent `MAX_REPORTS`.
 
-    A token is the address of a report: whoever has it reads the report, so it
-    is 128 random bits.
+    A token is the address of a report: whoever has it reads the report and its
+    validation, so it is 128 random bits.
     """
 
     def __init__(self, limit: int = MAX_REPORTS) -> None:
         """Create an empty store."""
         self.limit = limit
-        self._reports: OrderedDict[str, ReportResponse] = OrderedDict()
+        self._reports: OrderedDict[str, LocalReport] = OrderedDict()
 
-    def add(self, report: ReportResponse) -> str:
-        """Keep the report and return its token."""
+    def add(self, report: ReportResponse, path: Path) -> str:
+        """Keep the report of a path and return its token."""
         token = secrets.token_hex(16)
-        self._reports[token] = report
+        self._reports[token] = LocalReport(report=report, path=path)
         while len(self._reports) > self.limit:
             self._reports.popitem(last=False)
         return token
 
-    def get(self, token: str) -> ReportResponse:
+    def get(self, token: str) -> LocalReport:
         """The report of the token, which counts as a use of it.
 
         Raises:
@@ -265,7 +278,7 @@ class LocalApp:
             # the path was chosen by the user of this machine, so the files next
             # to it which its external model definitions name are read as well
             report = await run_in_threadpool(report_for_path, path, trusted=True)
-            token = self.reports.add(report)
+            token = self.reports.add(report, path)
             return {
                 "token": token,
                 "url": f"http://{HOST}:{self.port}/report?local={token}",
@@ -279,9 +292,25 @@ class LocalApp:
         def read_report(token: str) -> ReportResponse:
             """The report of a token."""
             try:
-                return self.reports.get(token)
+                return self.reports.get(token).report
             except KeyError:
                 raise ReportNotFoundError(token) from None
+
+        @local.get(
+            "/api/local/validation/{token}",
+            response_model=ValidationResponse,
+            response_model_by_alias=True,
+        )
+        def read_validation(token: str) -> ValidationResponse:
+            """Validate the path of the report of a token, trusted like its report.
+
+            The file is read again, as it is now on the disk of the user.
+            """
+            try:
+                path = self.reports.get(token).path
+            except KeyError:
+                raise ReportNotFoundError(token) from None
+            return validation_for_path(path, trusted=True)
 
         @local.post("/api/local/shutdown")
         def shutdown(
