@@ -1,12 +1,13 @@
 """Tests of the resolution of annotation resources."""
 
+import logging
 import threading
 from concurrent.futures import Future
 from pathlib import Path
 from typing import Any
 
 import pytest
-from pymetadata.core.annotation import RDFAnnotationData
+from pymetadata.core.annotation import Provider, RDFAnnotationData
 
 from sbml4humans import annotations
 from sbml4humans.annotations import AnnotationResource, ResourceCache, resolve_resource
@@ -147,14 +148,112 @@ def test_uniprot(monkeypatch: pytest.MonkeyPatch) -> None:
     assert info.url is not None and "uniprot.org" in info.url
 
 
-def test_errors_and_warnings_are_text(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A failing request of OLS is reported as the text of the error."""
+def test_errors_are_a_short_text_and_logged(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A failing request of OLS is shown as a short text, its raw message is logged."""
+    raw = (
+        "Service is not reachable for 'https://www.ebi.ac.uk/ols4/api/x': "
+        "HTTPSConnectionPool(host='www.ebi.ac.uk', port=443)"
+    )
     monkeypatch.setattr(
-        RDFAnnotationData, "query_ols", _ols(errors=[OSError("OLS down")], warnings=[1])
+        RDFAnnotationData,
+        "query_ols",
+        _ols(errors=[OSError(raw), raw], warnings=[1]),
+    )
+    with caplog.at_level(logging.WARNING, logger="sbml4humans.annotations"):
+        info = resolve_resource("https://identifiers.org/GO:0006096")
+    assert info.errors == ["The Ontology Lookup Service could not be reached."]
+    assert info.warnings == ["1"]
+    assert "HTTPSConnectionPool" in caplog.text
+
+
+@pytest.mark.parametrize(
+    "url", ["javascript:alert(1)", "JavaScript:alert(1)", "data:text/html,x", "ftp://x"]
+)
+def test_urls_which_are_not_http_are_dropped(
+    monkeypatch: pytest.MonkeyPatch, url: str
+) -> None:
+    """An url of OLS, the registry or a provider which is not http(s) is no link."""
+    monkeypatch.setattr(
+        RDFAnnotationData,
+        "query_ols",
+        _ols(
+            label="glycolytic process",
+            iri=url,
+            ols_url=url,
+            xrefs=[{"database": "MetaCyc", "id": "X", "url": url}],
+            url=url,
+            collection_homepage=url,
+            providers=[
+                Provider(name="evil", url=url, official=True),
+                Provider(name="good", url="https://example.org/x", official=False),
+            ],
+        ),
     )
     info = resolve_resource("https://identifiers.org/GO:0006096")
-    assert info.errors == ["OLS down"]
-    assert info.warnings == ["1"]
+    assert info.url is None
+    assert info.collection is not None and info.collection.homepage is None
+    assert [(p.name, p.url) for p in info.providers] == [
+        ("good", "https://example.org/x")
+    ]
+    assert info.ontology is not None
+    assert info.ontology.iri is None and info.ontology.ols_url is None
+    assert [(x.label, x.url) for x in info.ontology.xrefs] == [("MetaCyc:X", None)]
+
+
+def test_taxonomy(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A taxon carries its collection, its providers and the label of OLS."""
+    monkeypatch.setattr(
+        RDFAnnotationData,
+        "query_ols",
+        _ols(
+            label="Homo sapiens",
+            ontology="ncbitaxon",
+            iri="http://purl.obolibrary.org/obo/NCBITaxon_9606",
+        ),
+    )
+    info = resolve_resource("https://identifiers.org/taxonomy/9606")
+    assert info.collection is not None and info.collection.prefix == "taxonomy"
+    assert info.identifier == "9606"
+    assert info.pattern_match is True
+    assert info.providers and info.url == info.providers[0].url
+    assert info.ontology is not None and info.ontology.label == "Homo sapiens"
+    assert info.chebi is None and info.uniprot is None
+
+
+def test_pubmed_has_no_ontology_term(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A publication is no term of OLS, it has its providers only."""
+    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols())
+    info = resolve_resource("https://identifiers.org/pubmed/10659856")
+    assert info.collection is not None and info.collection.prefix == "pubmed"
+    assert info.identifier == "10659856"
+    assert info.ontology is None
+    assert info.providers and info.url == info.providers[0].url
+    assert info.warnings == [] and info.errors == []
+
+
+def test_pattern_mismatch(monkeypatch: pytest.MonkeyPatch) -> None:
+    """An identifier which violates the pattern of its collection is resolved, unmatched."""
+    monkeypatch.setattr(RDFAnnotationData, "query_ols", _ols())
+    info = resolve_resource("https://identifiers.org/GO:abc")
+    assert info.identifier == "GO:abc"
+    assert info.pattern_match is False
+    assert info.collection is not None and info.collection.prefix == "go"
+
+
+def test_url_of_another_site() -> None:
+    """An url which is not of identifiers.org has no collection, the url is its identifier.
+
+    OLS is not asked without a collection, pymetadata answers a warning instead.
+    """
+    resource = "https://en.wikipedia.org/wiki/Cytosol"
+    info = resolve_resource(resource)
+    assert info.collection is None
+    assert info.identifier == resource
+    assert info.url is None and info.providers == []
+    assert info.pattern_match is None and info.ontology is None
+    assert info.warnings == ["No collection."] and info.errors == []
 
 
 def test_unknown_collection() -> None:

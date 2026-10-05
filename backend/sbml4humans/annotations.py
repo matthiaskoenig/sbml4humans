@@ -5,6 +5,7 @@ references) for the identifiers in the annotations of a model.
 """
 
 import functools
+import logging
 import os
 import re
 import threading
@@ -25,6 +26,8 @@ from pymetadata.webservices.uniprot import UniprotQuery
 from sbml4humans.model import ReportModel
 
 
+logger = logging.getLogger(__name__)
+
 CACHE_VARIABLE = "SBML4HUMANS_CACHE"
 
 # the longest resource the api resolves, and the form of a ChEBI id it draws
@@ -33,6 +36,10 @@ CHEBI_ID = re.compile(r"CHEBI:\d{1,9}")
 # an html tag in a text of OLS, `<small>D</small>-galactose` in a definition of ChEBI; a `<`
 # which no name follows directly, as in `a < b`, is no tag
 HTML_TAG = re.compile(r"</?[A-Za-z][A-Za-z0-9]*(?:\s[^<>]*)?/?>")
+# the schemes of an url the report links; an url of another scheme (`javascript:`) is dropped
+URL_SCHEMES = ("http://", "https://")
+# what the card says where a web service failed; the raw message stays in the log
+OLS_ERROR = "The Ontology Lookup Service could not be reached."
 
 
 def configure_cache() -> None:
@@ -58,8 +65,22 @@ def _text(value: Any) -> str | None:
     return None
 
 
+def _url(value: Any) -> str | None:
+    """Convert a field to an url the report links, an http(s) url only."""
+    text = _text(value)
+    if text and text.lower().startswith(URL_SCHEMES):
+        return text
+    return None
+
+
 def _plain(value: Any) -> str | None:
-    """Convert a text of OLS to plain text, without the html tags some terms carry."""
+    """Convert a text of OLS to plain text, without the html tags some terms carry.
+
+    `HTML_TAG` is a pattern and no html parser: a text like `a <b and c> d` loses
+    the bracketed part, as if it were a tag. Html entities (`&amp;`) are not
+    unescaped; the frontend shows the text as Vue text, so nothing of it is
+    interpreted as markup.
+    """
     text = _text(value)
     return _text(HTML_TAG.sub("", text)) if text else None
 
@@ -163,7 +184,7 @@ def _xrefs(values: Any) -> list[CrossReference]:
             continue
         database = _text(value.get("database"))
         label = f"{database}:{identifier}" if database else identifier
-        xrefs.append(CrossReference(label=label, url=_text(value.get("url"))))
+        xrefs.append(CrossReference(label=label, url=_url(value.get("url"))))
     return xrefs
 
 
@@ -216,16 +237,20 @@ def resolve_resource(resource: str) -> AnnotationResource:
         annotation=RDFAnnotation(qualifier=BQB.IS, resource=resource)
     )
     warnings = _messages(data.warnings)
+    # the errors of a resource are those of OLS: logged as they are, shown as a short text
+    errors = _messages(data.errors)
+    if errors:
+        logger.warning("OLS failed for '%s': %s", resource, errors)
     term = _text(data.term)
     label = _plain(data.label)
-    iri = _text(data.iri)
+    iri = _url(data.iri)
     ontology = None
     if label or iri:
         ontology = OntologyTerm(
             ontology=_text(data.ontology),
             label=label,
             iri=iri,
-            ols_url=_text(data.ols_url),
+            ols_url=_url(data.ols_url),
             description=_plain(data.description),
             synonyms=_synonyms(data.synonyms),
             xrefs=_xrefs(data.xrefs),
@@ -236,22 +261,23 @@ def resolve_resource(resource: str) -> AnnotationResource:
         collection=Collection(
             prefix=collection,
             name=_text(data.collection_name),
-            homepage=_text(data.collection_homepage),
+            homepage=_url(data.collection_homepage),
         )
         if collection
         else None,
         identifier=term,
-        url=_text(data.url),
+        url=_url(data.url),
         pattern_match=data.pattern_match,
         providers=[
-            Provider(name=p.name, url=p.url, official=p.official)
+            Provider(name=p.name, url=url, official=p.official)
             for p in data.providers
+            if (url := _url(p.url))
         ],
         ontology=ontology,
         chebi=_chebi(term, warnings) if collection == "chebi" and term else None,
         uniprot=_uniprot(term, warnings) if collection == "uniprot" and term else None,
         warnings=warnings,
-        errors=_messages(data.errors),
+        errors=[OLS_ERROR] if errors else [],
     )
 
 
