@@ -4,6 +4,30 @@ import { openExample, query } from "./helpers";
 
 const EXAMPLE = "validation (validation.xml)";
 
+/** A comp document whose main model expands to `n` submodels on each of `depth` levels. */
+function fanOut(depth: number, n: number): string {
+  const submodels = (ref: string) =>
+    "<comp:listOfSubmodels>" +
+    Array.from(
+      { length: n },
+      (_, i) => `<comp:submodel comp:id="s${i}" comp:modelRef="${ref}"/>`,
+    ).join("") +
+    "</comp:listOfSubmodels>";
+  const definitions = Array.from({ length: depth }, (_, k) =>
+    k === 0
+      ? '<comp:modelDefinition id="d0"/>'
+      : `<comp:modelDefinition id="d${k}">${submodels(`d${k - 1}`)}</comp:modelDefinition>`,
+  ).join("");
+  return (
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" ' +
+    'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" ' +
+    'level="3" version="1" comp:required="true">' +
+    `<model id="m">${submodels(`d${depth - 1}`)}</model>` +
+    `<comp:listOfModelDefinitions>${definitions}</comp:listOfModelDefinitions></sbml>`
+  );
+}
+
 test.describe("validation", () => {
   test.beforeEach(async ({ page }) => {
     await openExample(page, EXAMPLE);
@@ -53,6 +77,24 @@ test.describe("validation", () => {
     // the error of the example is an issue of the model, whose entry of the type bar is its row
     await expect(page.getByTestId("bar-model").getByTestId("severity-error")).toBeVisible();
     await expect(page.getByTestId("bar-document").getByTestId("bar-issue-document")).toHaveCount(0);
+  });
+
+  test("a document beyond the budget of submodel instances says it was not validated", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await page.getByTestId("home-tab-paste").click();
+    await page.getByTestId("paste-input").fill(fanOut(5, 10));
+    await page.getByTestId("paste-submit").click();
+    await expect(page.getByTestId("report-page")).toBeVisible();
+
+    const skipped = page.getByTestId("validation-summary").getByTestId("validation-skipped");
+    await expect(skipped).toHaveText("not validated");
+    await expect(page.getByTestId("validation-errors")).toHaveCount(0);
+    await skipped.click();
+    const list = page.getByTestId("inspector").getByTestId("validation-list");
+    await expect(list.getByTestId("validation-skipped")).toBeVisible();
+    await expect(list.getByTestId("no-validation-issues")).toHaveCount(0);
   });
 
   test("a valid model shows no summary", async ({ page }) => {
