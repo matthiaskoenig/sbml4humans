@@ -13,7 +13,7 @@ export interface ValidationResponse {
   entries: {
     [k: string]: EntryValidation;
   };
-  skipped: ("expandedSize" | "timeout" | "memory" | "busy") | null;
+  skipped: ("expandedSize" | "timeout" | "memory" | "crashed" | "busy") | null;
 }
 /**
  * The validation of libsbml of one SBML entry of a report.
@@ -23,11 +23,13 @@ export interface ValidationResponse {
  * `expandedSize`, the document expands by its comp submodels to more
  * elements than are checked in a bounded time, with the read issues;
  * `timeout`, the check did not end in time; `memory`, the check needed more
- * memory than it may use; `busy`, the server had no room for the check.
+ * memory than it may use; `crashed`, the process of the check ended
+ * abnormally for another reason; `busy`, the server had no room for the
+ * check.
  */
 export interface EntryValidation {
   issues: ValidationIssue[];
-  skipped: ("expandedSize" | "timeout" | "memory" | "busy") | null;
+  skipped: ("expandedSize" | "timeout" | "memory" | "crashed" | "busy") | null;
 }
 /**
  * An error, a warning or a note of the validation of libsbml.

@@ -1,7 +1,7 @@
 {
   "$defs": {
     "EntryValidation": {
-      "description": "The validation of libsbml of one SBML entry of a report.\n\n`skipped` says why the consistency of the document was not checked, in\nwhich case `issues` holds the issues of reading it alone, or none:\n`expandedSize`, the document expands by its comp submodels to more\nelements than are checked in a bounded time, with the read issues;\n`timeout`, the check did not end in time; `memory`, the check needed more\nmemory than it may use; `busy`, the server had no room for the check.",
+      "description": "The validation of libsbml of one SBML entry of a report.\n\n`skipped` says why the consistency of the document was not checked, in\nwhich case `issues` holds the issues of reading it alone, or none:\n`expandedSize`, the document expands by its comp submodels to more\nelements than are checked in a bounded time, with the read issues;\n`timeout`, the check did not end in time; `memory`, the check needed more\nmemory than it may use; `crashed`, the process of the check ended\nabnormally for another reason; `busy`, the server had no room for the\ncheck.",
       "properties": {
         "issues": {
           "items": {
@@ -16,6 +16,7 @@
                 "expandedSize",
                 "timeout",
                 "memory",
+                "crashed",
                 "busy"
               ],
               "type": "string"
@@ -96,6 +97,7 @@
             "expandedSize",
             "timeout",
             "memory",
+            "crashed",
             "busy"
           ],
           "type": "string"

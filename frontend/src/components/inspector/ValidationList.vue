@@ -82,6 +82,8 @@ const SKIPPED: Record<Exclude<EntrySkip, "busy">, string> = {
     "libsbml did not check this document: the check did not end in the time a validation may take.",
   memory:
     "libsbml did not check this document: the check needed more memory than a validation may use.",
+  crashed:
+    "libsbml did not check this document: the process of the check ended abnormally on the server.",
   unanswered:
     "libsbml did not check this document: the answer of the validation left it out, so nothing is known of its consistency.",
 };

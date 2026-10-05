@@ -315,7 +315,6 @@ def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse
         ValueError: if no model could be read from an SBML entry.
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
-        ValidationProcessError: if the child process ended unexpectedly.
     """
     start = time.perf_counter()
     job = SourceJob(

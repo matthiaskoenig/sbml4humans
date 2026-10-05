@@ -35,6 +35,7 @@ const SKIPPED: Record<Exclude<EntrySkip, "busy">, string> = {
     "libsbml did not check this document: its comp submodels expand it beyond the size which is checked",
   timeout: "libsbml did not check this document: the check did not end in time",
   memory: "libsbml did not check this document: the check needed more memory than it may use",
+  crashed: "libsbml did not check this document: the check ended abnormally",
   unanswered: "libsbml did not check this document: the validation answered nothing for it",
 };
 const skippedText = computed(() => {

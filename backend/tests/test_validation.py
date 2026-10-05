@@ -1,5 +1,6 @@
 """Tests of the validation of a document and the mapping of its issues."""
 
+import functools
 import http.server
 import os
 import signal
@@ -977,19 +978,95 @@ def test_a_document_without_a_model_is_an_error() -> None:
         report_for_bytes(content)
 
 
-def test_an_unexpected_end_of_the_child_is_an_error(
+def _ends_after_first_entry(end: str, job: SourceJob) -> Iterator[tuple[str, Any]]:
+    """Validate the source, end the child abnormally after its first entry."""
+    for n, result in enumerate(validate_source(job)):
+        yield result
+        # the locations come first, then the first entry
+        if n == 1:
+            break
+    if end == "kill":
+        # what the OOM killer of the kernel does
+        os.kill(os.getpid(), signal.SIGKILL)
+    elif end == "abort":
+        # an abort of another cause than memory, e.g. a failed assertion
+        os.write(2, b"python: assertion failed\n")
+        os.abort()
+    elif end == "bad_alloc":
+        # what libstdc++ writes when libsbml does not catch a std::bad_alloc
+        os.write(
+            2,
+            b"terminate called after throwing an instance of 'std::bad_alloc'\n"
+            b"  what():  std::bad_alloc\n",
+        )
+        os.abort()
+    elif end == "segv":
+        os.kill(os.getpid(), signal.SIGSEGV)
+    elif end == "exit":
+        os._exit(3)
+    elif end == "silent":
+        # ends without an error and without saying it is done
+        os._exit(0)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
+@pytest.mark.parametrize(
+    ("end", "reason"),
+    [
+        ("kill", "crashed"),
+        ("abort", "crashed"),
+        ("segv", "crashed"),
+        ("exit", "crashed"),
+        ("silent", "crashed"),
+        ("bad_alloc", "memory"),
+    ],
+)
+def test_an_abnormal_end_keeps_the_entries_validated_before(
+    tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    end: str,
+    reason: str,
 ) -> None:
-    """A child which ends without a result and without a known cause fails."""
-    monkeypatch.setattr(report, "validate_source", _crash)
-    with pytest.raises(isolation.ValidationProcessError, match="ended unexpectedly"):
-        validation_for_path(EXAMPLES_DIR / "validation.xml")
+    """A child which ends abnormally keeps what it sent, the rest is skipped.
+
+    Only an abort for a `std::bad_alloc` is for lack of memory, any other
+    abnormal end of the child is `crashed`.
+    """
+    monkeypatch.setattr(
+        report, "validate_source", functools.partial(_ends_after_first_entry, end)
+    )
+    documents = {
+        "a.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
+        "b.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
+    }
+    with _leaves_nothing(tmp_path / "tmp", monkeypatch):
+        response = validation_for_path(_archive(tmp_path / "two.omex", documents))
+    assert response.skipped == reason
+    assert response.entries["./a.xml"].skipped is None
+    assert 10601 in {i.rule for i in response.entries["./a.xml"].issues}
+    assert response.entries["./b.xml"] == EntryValidation(skipped=reason)
+    # what the child wrote before its end is in the log of the server
+    written = {"abort": "assertion failed", "bad_alloc": "std::bad_alloc"}
+    if end in written:
+        assert written[end] in caplog.text
 
 
 def _crash(job: SourceJob) -> Iterator[tuple[str, list[Any]]]:
-    """End the child process by a signal no limit sends."""
+    """End the child process by a signal no limit sends, before any result."""
     os.kill(os.getpid(), signal.SIGSEGV)
     yield from ()
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
+def test_a_crash_before_the_entries_skips_the_validation(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A child which crashes before it read the source answers no entry."""
+    monkeypatch.setattr(report, "validate_source", _crash)
+    response = validation_for_path(EXAMPLES_DIR / "validation.xml")
+    assert response == ValidationResponse(skipped="crashed")
+    assert "exit code -11" in caplog.text
 
 
 def _status(_: object) -> Iterator[tuple[str, int]]:

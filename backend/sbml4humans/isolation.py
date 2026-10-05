@@ -26,7 +26,15 @@ with the traceback of the child as a note.
 
 A child which runs out of memory either raises `MemoryError` in python or is
 aborted by the `std::bad_alloc` libsbml does not catch, both end what is left
-of it as `"memory"`.
+of it as `"memory"`. The abort is told apart from one of another cause by what
+the C++ runtime writes to the standard error before it aborts: libstdc++ (and
+libc++) names the `std::bad_alloc` which ended the program. The child writes
+its standard error to a file of its temporary directory, which the server
+reads and logs after the child has ended. Any other abnormal end of a child, a
+signal (also the SIGKILL of the OOM killer of the kernel, which leaves no trace
+the server could read), another abort or an exit without its results, keeps
+the results the child sent before and ends what is left of it as
+`"crashed"`.
 
 A child keeps its temporary files, the archive of the source extracted by
 pymetadata among them, in a temporary directory the server makes for it (also
@@ -42,12 +50,14 @@ imports the validation itself, and where the address space cannot be limited
 (Windows, macOS) the child runs without the memory limit.
 """
 
+import faulthandler
 import logging
 import math
 import multiprocessing
 import os
 import shutil
 import signal
+import sys
 import tempfile
 import threading
 import time
@@ -91,7 +101,7 @@ MAX_WAITING_VALIDATIONS = 2 * MAX_CONCURRENT_VALIDATIONS
 # the time a child has at least, a validation which got a child later is busy
 MIN_CHILD_TIME = 1.0
 
-Interruption = Literal["timeout", "memory", "busy"]
+Interruption = Literal["timeout", "memory", "busy", "crashed"]
 
 if "forkserver" in multiprocessing.get_all_start_methods():
     _CONTEXT = multiprocessing.get_context("forkserver")
@@ -99,13 +109,16 @@ if "forkserver" in multiprocessing.get_all_start_methods():
 else:
     _CONTEXT = multiprocessing.get_context("spawn")
 
+# the file of the temporary directory of a child which holds its standard error
+_STDERR = "stderr.txt"
+# the bytes of the end of the standard error of a child the server reads
+_STDERR_TAIL = 64 * 1024
+# what the C++ runtime writes when an uncaught std::bad_alloc aborts the child
+_BAD_ALLOC = "bad_alloc"
+
 _SEMAPHORES: dict[int, threading.BoundedSemaphore] = {}
 _LOCK = threading.Lock()
 _admitted = 0
-
-
-class ValidationProcessError(RuntimeError):
-    """Raised when a child ends without its results for another reason."""
 
 
 @dataclass
@@ -115,7 +128,8 @@ class IsolatedRun:
     Attributes:
         results: the pairs the function yielded, in their order.
         interruption: None when the function ran to its end, else `"timeout"`,
-            `"memory"` or `"busy"` (it did not run at all).
+            `"memory"`, `"crashed"` (the child ended abnormally for another
+            reason) or `"busy"` (it did not run at all).
     """
 
     results: list[tuple[str, Any]] = field(default_factory=list)
@@ -230,8 +244,18 @@ def _child(
     removes: those of python by `tempfile` and those of native libraries by
     the variables of the environment they read (`TMPDIR`, `TEMP`, `TMP`). The cpu time is limited to `cpu` seconds and the address space to
     `memory`; when python runs out of memory, the limit is lifted again so that
-    the child can say so. Another exception is sent with its traceback.
+    the child can say so. Another exception is sent with its traceback. The
+    standard error goes to the file `_STDERR` of `tempdir`, which the server
+    reads after the end of the child, together with the traceback of python
+    `faulthandler` writes when the child ends by a fatal signal.
     """
+    sys.stderr.flush()
+    stderr = os.open(
+        os.path.join(tempdir, _STDERR), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600
+    )
+    os.dup2(stderr, 2)
+    os.close(stderr)
+    faulthandler.enable()
     tempfile.tempdir = tempdir
     for variable in ("TMPDIR", "TEMP", "TMP"):
         os.environ[variable] = tempdir
@@ -285,8 +309,6 @@ def _run_child(
     """Run the function in a child until it is done or the deadline has passed.
 
     Raises:
-        ValidationProcessError: if the child ended without its results, neither by
-            the deadline nor for lack of memory.
         Exception: the exception the function raised in the child.
     """
     # the temporary directory of the child, which the server removes after the
@@ -307,8 +329,6 @@ def _communicate(
     """Start the child of `_run_child` and receive its results until it has ended.
 
     Raises:
-        ValidationProcessError: if the child ended without its results, neither by
-            the deadline nor for lack of memory.
         Exception: the exception the function raised in the child.
     """
     run = IsolatedRun()
@@ -322,6 +342,7 @@ def _communicate(
         # the child holds the sending end, which the server closes so that it
         # reads the end of the pipe when the child has ended
         sender.close()
+    ended = False
     try:
         while True:
             remaining = deadline - time.monotonic()
@@ -332,14 +353,8 @@ def _communicate(
             try:
                 message = receiver.recv()
             except EOFError:
-                process.join()
-                if process.exitcode != -signal.SIGABRT:
-                    raise ValidationProcessError(
-                        "The validation ended unexpectedly (exit code "
-                        f"{process.exitcode})."
-                    ) from None
-                logger.warning("the validation was aborted, out of memory")
-                run.interruption = "memory"
+                # the child ended without saying it is done
+                ended = True
                 break
             if message == _DONE:
                 break
@@ -357,7 +372,36 @@ def _communicate(
         if process.is_alive():
             process.kill()
         process.join()
+        written = _written(tempdir)
+        if written:
+            logger.warning("the child of the validation wrote:\n%s", written)
+    if ended:
+        run.interruption = _abnormal_end(process.exitcode, written)
     return run
+
+
+def _written(tempdir: str) -> str:
+    """The end of what a child wrote to its standard error, `_STDERR_TAIL` at most."""
+    try:
+        with open(os.path.join(tempdir, _STDERR), "rb") as f:
+            size = f.seek(0, os.SEEK_END)
+            f.seek(max(0, size - _STDERR_TAIL))
+            return f.read().decode(errors="replace").strip()
+    except OSError:
+        return ""
+
+
+def _abnormal_end(exitcode: int | None, written: str) -> Interruption:
+    """Why a child ended without its results: `"memory"` or `"crashed"`.
+
+    An abort is for lack of memory when the C++ runtime wrote that a
+    `std::bad_alloc` ended the child, every other end is `"crashed"`.
+    """
+    if exitcode == -signal.SIGABRT and _BAD_ALLOC in written:
+        logger.warning("the validation was aborted, out of memory")
+        return "memory"
+    logger.warning("the validation ended unexpectedly (exit code %s)", exitcode)
+    return "crashed"
 
 
 def run_isolated(
@@ -379,8 +423,6 @@ def run_isolated(
         The results the function yielded, and why it stopped early if it did.
 
     Raises:
-        ValidationProcessError: if the child ended without its results for
-            another reason.
         Exception: the exception the function raised in the child.
     """
     deadline = time.monotonic() + VALIDATION_TIMEOUT
