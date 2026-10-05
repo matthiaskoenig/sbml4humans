@@ -81,7 +81,7 @@ def test_validation_schema_describes_the_response() -> None:
     assert schema["title"] == "ValidationResponse"
     assert set(schema["properties"]) == {"entries", "skipped"}
     entry = schema["$defs"]["EntryValidation"]
-    reasons = ["expandedSize", "timeout", "memory", "busy"]
+    reasons = ["expandedSize", "timeout", "memory", "crashed", "busy"]
     assert {"enum": reasons, "type": "string"} in entry["properties"]["skipped"][
         "anyOf"
     ]

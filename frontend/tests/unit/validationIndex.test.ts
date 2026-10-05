@@ -115,6 +115,71 @@ describe("ValidationIndex", () => {
     expect(index.worstSeverityOfType("Species", validationReport.mainModel!.id!)).toBeNull();
   });
 
+  it("folds the issues of elements nested several levels deep into the row which holds them", () => {
+    const events = new ReportIndex(loadReport("constraint_event"));
+    const fbc = new ReportIndex(loadReport("fbc_constraints_v3"));
+    // a local parameter of the kinetic law of a reaction, the trigger and an assignment of an event
+    const parameter = "constraint_event/LocalParameter:R1.kineticLaw.Vmax";
+    const trigger = "constraint_event/Trigger:E1_trigger";
+    const assignment = "constraint_event/EventAssignment:E1_switch";
+    const reaction = "constraint_event/Reaction:R1";
+    const event = "constraint_event/Event:E1";
+    const nested = new ValidationIndex(
+      events,
+      withIssues([
+        { pk: parameter, severity: "warning", rule: 21121 },
+        { pk: trigger, severity: "error", rule: 21202 },
+        { pk: assignment, severity: "warning", rule: 21211 },
+      ]),
+    );
+    expect(events.holderOf(parameter)).toBe(reaction);
+    expect(nested.heldIssuesOf(reaction).map((i) => i.pk)).toEqual([parameter]);
+    expect(nested.worstSeverity(reaction)).toBe("warning");
+    expect(nested.heldIssuesOf(event).map((i) => i.pk)).toEqual([trigger, assignment]);
+    expect(nested.rowIssuesOf(event).map((i) => i.rule)).toEqual([21202, 21211]);
+    expect(nested.worstSeverity(event)).toBe("error");
+    const model = events.mainModel!.id!;
+    expect(nested.worstSeverityOfType("Event", model)).toBe("error");
+    expect(nested.worstSeverityOfType("Reaction", model)).toBe("warning");
+    // the nested elements hold nothing themselves
+    expect(nested.heldIssuesOf(trigger)).toEqual([]);
+
+    // a gene product reference of an and below an or of the association of a reaction, and the
+    // and itself
+    const ref = "fbc_constraints_v3/GeneProductRef:gpa_v1.association.0.1";
+    const and = "fbc_constraints_v3/And:gpa_v1.association.0";
+    const v1 = "fbc_constraints_v3/Reaction:v1";
+    const association = new ValidationIndex(
+      fbc,
+      withIssues([
+        { pk: ref, severity: "warning", rule: 10501 },
+        { pk: and, severity: "error", rule: 21201 },
+      ]),
+    );
+    expect(fbc.holderOf(ref)).toBe(v1);
+    expect(fbc.holderOf(and)).toBe(v1);
+    expect(association.rowIssuesOf(v1).map((i) => i.pk)).toEqual([and, ref]);
+    expect(association.worstSeverity(v1)).toBe("error");
+    expect(association.worstSeverityOfType("Reaction", fbc.mainModel!.id!)).toBe("error");
+  });
+
+  it("marks no type by an issue of an element of another entry", () => {
+    // the pk of an element of another report: the answer of a local server reads the files again
+    const events = new ReportIndex(loadReport("constraint_event"));
+    const foreign = repressilatorReport.mainModel!.listOfSpecies![0]!.pk;
+    expect(events.get(foreign)).toBeUndefined();
+    const index = new ValidationIndex(
+      events,
+      withIssues([{ pk: foreign, severity: "error", rule: 20601 }]),
+    );
+    expect(index.issueCounts.error).toBe(1);
+    expect(index.worstSeverityOfType("Species", events.mainModel!.id!)).toBeNull();
+    expect(index.worstSeverityOfType("Species", repressilatorReport.mainModel!.id!)).toBeNull();
+    for (const species of events.byType(events.mainModel!.id!).get("Species") ?? []) {
+      expect(index.worstSeverity(species.pk)).toBeNull();
+    }
+  });
+
   it("keeps why the document was not validated", () => {
     const fanOut = new ReportIndex(loadReport("fan_out"));
     const index = new ValidationIndex(fanOut, loadValidation("fan_out"));

@@ -7,6 +7,13 @@ after `VALIDATION_TIMEOUT` seconds from the call on, the wait for a free child
 included. The address space of a child is limited to `VALIDATION_MEMORY`
 bytes, and at most `MAX_CONCURRENT_VALIDATIONS` children run at a time.
 
+A child is a boundary of resources, not a sandbox: it bounds the time, the
+memory and the temporary files of a validation and keeps a crash of libsbml
+out of the server, but it runs as the user of the server, with its file
+system and its network. What a validation may read is confined by the code it
+runs (the resolver of the report in `validation.py`, the limits of the content
+in `limits.py`), not by the process.
+
 A server admits at most `MAX_CONCURRENT_VALIDATIONS + MAX_WAITING_VALIDATIONS`
 validations at a time (`admission`), a request beyond them is answered at once
 as `"busy"`, and so is one which got no child while at least `MIN_CHILD_TIME`
@@ -26,14 +33,27 @@ with the traceback of the child as a note.
 
 A child which runs out of memory either raises `MemoryError` in python or is
 aborted by the `std::bad_alloc` libsbml does not catch, both end what is left
-of it as `"memory"`.
+of it as `"memory"`. The abort is told apart from one of another cause by what
+the C++ runtime writes to the standard error before it aborts: libstdc++ (and
+libc++) names the `std::bad_alloc` which ended the program. The child writes
+its standard error to a file of its temporary directory, which the server
+reads and logs after the child has ended. Any other abnormal end of a child, a
+signal (also the SIGKILL of the OOM killer of the kernel, which leaves no trace
+the server could read), another abort or an exit without its results, keeps
+the results the child sent before and ends what is left of it as
+`"crashed"`.
 
 A child keeps its temporary files, the archive of the source extracted by
-pymetadata among them, in a temporary directory the server makes for it and
+pymetadata among them, in a temporary directory the server makes for it (also
+its `TMPDIR`, `TEMP` and `TMP`, for native libraries) and
 removes when it has ended, so that a child which was killed or aborted leaves
 nothing of the content on the server. The cpu time of a child is limited to
 twice the timeout, so that a child ends itself also when its server died
 without ending it.
+
+A validation is cancelled when nobody waits for it any more, its client left
+(`run_cancellable`): it stops waiting for a child, or its child is killed, at
+once, which frees the child, the admission and the temporary directory.
 
 The python interface runs the same server on the machine of the user: where
 there is no forkserver (Windows) a child is spawned, a fresh interpreter which
@@ -41,18 +61,21 @@ imports the validation itself, and where the address space cannot be limited
 (Windows, macOS) the child runs without the memory limit.
 """
 
+import faulthandler
 import logging
 import math
 import multiprocessing
 import os
 import shutil
 import signal
+import sys
 import tempfile
 import threading
 import time
 import traceback
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from multiprocessing.connection import Connection
 from multiprocessing.process import BaseProcess
@@ -89,8 +112,10 @@ MAX_CONCURRENT_VALIDATIONS = _concurrent_validations()
 MAX_WAITING_VALIDATIONS = 2 * MAX_CONCURRENT_VALIDATIONS
 # the time a child has at least, a validation which got a child later is busy
 MIN_CHILD_TIME = 1.0
+# the interval in which a waiting validation looks whether it was cancelled, s
+CANCEL_INTERVAL = 0.1
 
-Interruption = Literal["timeout", "memory", "busy"]
+Interruption = Literal["timeout", "memory", "busy", "crashed"]
 
 if "forkserver" in multiprocessing.get_all_start_methods():
     _CONTEXT = multiprocessing.get_context("forkserver")
@@ -98,13 +123,57 @@ if "forkserver" in multiprocessing.get_all_start_methods():
 else:
     _CONTEXT = multiprocessing.get_context("spawn")
 
+# the file of the temporary directory of a child which holds its standard error
+_STDERR = "stderr.txt"
+# the bytes of the end of the standard error of a child the server reads
+_STDERR_TAIL = 64 * 1024
+# the characters of the end of the standard error of a child the server logs
+_STDERR_LOGGED = 4 * 1024
+# what the C++ runtime writes when an uncaught std::bad_alloc aborts the child:
+# libstdc++ (the name mangled when it cannot demangle it) and libc++
+_BAD_ALLOC = (
+    "terminate called after throwing an instance of 'std::bad_alloc'",
+    "terminate called after throwing an instance of 'St9bad_alloc'",
+    "uncaught exception of type std::bad_alloc",
+)
+
+# the cancellation of the validation of this thread, None where none can cancel
+_CANCEL: ContextVar[threading.Event | None] = ContextVar("cancel", default=None)
+
 _SEMAPHORES: dict[int, threading.BoundedSemaphore] = {}
 _LOCK = threading.Lock()
 _admitted = 0
 
 
-class ValidationProcessError(RuntimeError):
-    """Raised when a child ends without its results for another reason."""
+class ValidationCancelledError(Exception):
+    """Raised by a validation which was cancelled, nobody waits for it any more."""
+
+
+def run_cancellable[R](
+    cancel: threading.Event, function: Callable[..., R], *args: Any
+) -> R:
+    """Run a function whose `run_isolated` ends as soon as `cancel` is set.
+
+    Raises:
+        ValidationCancelledError: if `cancel` was set before the end.
+    """
+    token = _CANCEL.set(cancel)
+    try:
+        return function(*args)
+    finally:
+        _CANCEL.reset(token)
+
+
+def _check_cancelled() -> None:
+    """Raise if the validation of this thread was cancelled.
+
+    Raises:
+        ValidationCancelledError: if it was.
+    """
+    cancel = _CANCEL.get()
+    if cancel is not None and cancel.is_set():
+        logger.info("a validation was cancelled")
+        raise ValidationCancelledError
 
 
 @dataclass
@@ -114,7 +183,8 @@ class IsolatedRun:
     Attributes:
         results: the pairs the function yielded, in their order.
         interruption: None when the function ran to its end, else `"timeout"`,
-            `"memory"` or `"busy"` (it did not run at all).
+            `"memory"`, `"crashed"` (the child ended abnormally for another
+            reason) or `"busy"` (it did not run at all).
     """
 
     results: list[tuple[str, Any]] = field(default_factory=list)
@@ -226,11 +296,28 @@ def _child(
     """Run in the child: send every result of the function, then `_DONE`.
 
     The temporary files of the child go to `tempdir`, which the server
-    removes. The cpu time is limited to `cpu` seconds and the address space to
+    removes: those of python by `tempfile` and those of native libraries by
+    the variables of the environment they read (`TMPDIR`, `TEMP`, `TMP`). The cpu time is limited to `cpu` seconds and the address space to
     `memory`; when python runs out of memory, the limit is lifted again so that
-    the child can say so. Another exception is sent with its traceback.
+    the child can say so. Another exception is sent with its traceback. The
+    standard error goes to the file `_STDERR` of `tempdir`, which the server
+    reads after the end of the child, together with the traceback of python
+    `faulthandler` writes when the child ends by a fatal signal.
     """
+    if (
+        sys.stderr is not None
+    ):  # None in a child of a parent without a console (pythonw)
+        sys.stderr.flush()
+    stderr = os.open(
+        os.path.join(tempdir, _STDERR), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600
+    )
+    os.dup2(stderr, 2)
+    os.close(stderr)
+    # an explicit file: without one faulthandler needs sys.stderr, which may be None
+    faulthandler.enable(file=os.fdopen(2, "w", closefd=False))
     tempfile.tempdir = tempdir
+    for variable in ("TMPDIR", "TEMP", "TMP"):
+        os.environ[variable] = tempdir
     _limit_cpu(cpu)
     lift = _limit_memory(memory)
     try:
@@ -281,8 +368,6 @@ def _run_child(
     """Run the function in a child until it is done or the deadline has passed.
 
     Raises:
-        ValidationProcessError: if the child ended without its results, neither by
-            the deadline nor for lack of memory.
         Exception: the exception the function raised in the child.
     """
     # the temporary directory of the child, which the server removes after the
@@ -303,8 +388,7 @@ def _communicate(
     """Start the child of `_run_child` and receive its results until it has ended.
 
     Raises:
-        ValidationProcessError: if the child ended without its results, neither by
-            the deadline nor for lack of memory.
+        ValidationCancelledError: if the validation was cancelled.
         Exception: the exception the function raised in the child.
     """
     run = IsolatedRun()
@@ -318,24 +402,23 @@ def _communicate(
         # the child holds the sending end, which the server closes so that it
         # reads the end of the pipe when the child has ended
         sender.close()
+    ended = False
     try:
         while True:
             remaining = deadline - time.monotonic()
-            if remaining <= 0 or not receiver.poll(remaining):
+            if remaining <= 0:
                 logger.warning("the validation was ended after its timeout")
                 run.interruption = "timeout"
                 break
+            if not receiver.poll(min(remaining, CANCEL_INTERVAL)):
+                # the child is killed below
+                _check_cancelled()
+                continue
             try:
                 message = receiver.recv()
             except EOFError:
-                process.join()
-                if process.exitcode != -signal.SIGABRT:
-                    raise ValidationProcessError(
-                        "The validation ended unexpectedly (exit code "
-                        f"{process.exitcode})."
-                    ) from None
-                logger.warning("the validation was aborted, out of memory")
-                run.interruption = "memory"
+                # the child ended without saying it is done
+                ended = True
                 break
             if message == _DONE:
                 break
@@ -353,7 +436,40 @@ def _communicate(
         if process.is_alive():
             process.kill()
         process.join()
+        written = _written(tempdir)
+        if written:
+            # the end of it, its control characters escaped, so that the child
+            # cannot write lines of its own into the log
+            logger.warning(
+                "the child of the validation wrote: %r", written[-_STDERR_LOGGED:]
+            )
+    if ended:
+        run.interruption = _abnormal_end(process.exitcode, written)
     return run
+
+
+def _written(tempdir: str) -> str:
+    """The end of what a child wrote to its standard error, `_STDERR_TAIL` at most."""
+    try:
+        with open(os.path.join(tempdir, _STDERR), "rb") as f:
+            size = f.seek(0, os.SEEK_END)
+            f.seek(max(0, size - _STDERR_TAIL))
+            return f.read().decode(errors="replace").strip()
+    except OSError:
+        return ""
+
+
+def _abnormal_end(exitcode: int | None, written: str) -> Interruption:
+    """Why a child ended without its results: `"memory"` or `"crashed"`.
+
+    An abort is for lack of memory when the C++ runtime wrote that a
+    `std::bad_alloc` ended the child, every other end is `"crashed"`.
+    """
+    if exitcode == -signal.SIGABRT and any(text in written for text in _BAD_ALLOC):
+        logger.warning("the validation was aborted, out of memory")
+        return "memory"
+    logger.warning("the validation ended unexpectedly (exit code %s)", exitcode)
+    return "crashed"
 
 
 def run_isolated(
@@ -375,15 +491,22 @@ def run_isolated(
         The results the function yielded, and why it stopped early if it did.
 
     Raises:
-        ValidationProcessError: if the child ended without its results for
-            another reason.
+        ValidationCancelledError: if the validation was cancelled
+            (`run_cancellable`), while it waited for a child or while its
+            child ran, which is killed.
         Exception: the exception the function raised in the child.
     """
     deadline = time.monotonic() + VALIDATION_TIMEOUT
+    _check_cancelled()
     semaphore = _semaphore()
-    if not semaphore.acquire(timeout=max(0.0, deadline - time.monotonic())):
-        logger.warning("no child was free for a validation before its timeout")
-        return IsolatedRun(interruption="busy")
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            logger.warning("no child was free for a validation before its timeout")
+            return IsolatedRun(interruption="busy")
+        if semaphore.acquire(timeout=min(remaining, CANCEL_INTERVAL)):
+            break
+        _check_cancelled()
     if deadline - time.monotonic() < MIN_CHILD_TIME:
         # a child which got next to no time would only run out of it
         semaphore.release()

@@ -7,10 +7,11 @@ import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import ValidationBlock from "@/components/inspector/ValidationBlock.vue";
+import ValidationFailure from "@/components/inspector/ValidationFailure.vue";
 import ValidationList from "@/components/inspector/ValidationList.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import XmlView from "@/components/misc/XmlView.vue";
-import { useReportIndex, useValidationIndex } from "@/report/context";
+import { useReportIndex, useValidationFailure, useValidationIndex } from "@/report/context";
 import { useNarrow } from "@/narrow";
 import { typeEntry, typeKey } from "@/report/glossary";
 import { elementLabel, REPORT_NAME_HINT } from "@/report/label";
@@ -19,6 +20,7 @@ import { useReportView } from "@/report/view";
 const props = defineProps<{ pk: string }>();
 const index = useReportIndex();
 const validation = useValidationIndex();
+const failure = useValidationFailure();
 const view = useReportView();
 const narrow = useNarrow();
 
@@ -157,6 +159,7 @@ const xmlEmptyMessage = computed(() =>
         <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
           <ValidationBlock :pk="pk" :issues="issues" />
           <ValidationList v-if="isDocument && validation" :validation="validation" />
+          <ValidationFailure v-else-if="isDocument && failure" :error="failure" />
           <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             Attributes
           </h3>

@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["src/**/*", "src/**/*.vue", "tests/unit/**/*"],
+  "include": ["src/**/*", "src/**/*.vue", "tests/unit/**/*", "chunkSizeLimit.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,

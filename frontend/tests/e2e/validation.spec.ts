@@ -81,6 +81,55 @@ test.describe("validation", () => {
     await expect(inspector.getByTestId("validation-list")).toBeVisible();
   });
 
+  test("says that no issue matches filters which leave none", async ({ page }) => {
+    await page.getByTestId("validation-errors").click();
+    const list = page.getByTestId("inspector").getByTestId("validation-list");
+    await list.getByTestId("validation-filter-error").uncheck();
+    await list.getByTestId("validation-filter-warning").uncheck();
+    await expect(list.getByTestId("validation-group")).toHaveCount(0);
+    await expect(list.getByTestId("validation-no-match")).toHaveText(
+      "No issues match the filters.",
+    );
+    await list.getByTestId("validation-filter-error").check();
+    await expect(list.getByTestId("validation-no-match")).toHaveCount(0);
+    await expect(list.getByTestId("validation-group")).toHaveCount(1);
+  });
+
+  test("reaches the issues of a row by the keyboard, at the row and not at its mark", async ({
+    page,
+  }) => {
+    // the arrow keys move the focus from the last row of the parameters up to the row of k1
+    const rows = page.locator('tbody tr[data-pk*="/Parameter:"]');
+    const row = page.locator('tbody tr[data-pk$="Parameter:k1"]');
+    const last = rows.last();
+    await expect(last).not.toHaveAttribute("data-pk", /Parameter:k1$/);
+    await last.focus();
+    await expect(last).toBeFocused();
+    for (let step = 1; step < (await rows.count()); step += 1) {
+      await page.keyboard.press("ArrowUp");
+    }
+    await expect(row).toBeFocused();
+    // the focused row is read with the name of its mark, which names the issues
+    await expect(row).toHaveAccessibleName(/warning: \d+ issues?: .*10703/);
+    await expect(row.getByTestId("row-issue").getByRole("img")).toHaveAccessibleName(
+      /^warning: \d+ issues?: .*10703/,
+    );
+    // Enter opens the inspector of the row, which lists them
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("inspector").getByTestId("inspector-validation")).toContainText(
+      "10703",
+    );
+    // the mark is no stop of the keyboard: Tab leaves the row for what follows it
+    await row.focus();
+    await page.keyboard.press("Tab");
+    await expect(row).not.toBeFocused();
+    expect(
+      await row
+        .getByTestId("row-issue")
+        .evaluate((mark) => mark.contains(mark.ownerDocument.activeElement)),
+    ).toBe(false);
+  });
+
   test("marks the rows and the types with issues", async ({ page }) => {
     await expect(
       page.locator('tbody tr[data-pk$="Parameter:k1"]').getByTestId("row-issue"),
@@ -102,7 +151,10 @@ test.describe("validation", () => {
     await expect(page.getByTestId("bar-model").getByTestId("severity-error")).toBeVisible();
     await expect(page.getByTestId("bar-document").getByTestId("bar-issue-document")).toHaveCount(0);
   });
+});
 
+// these tests open documents of their own, not the validation example of the tests above
+test.describe("the validation of other documents", () => {
   test("a document beyond the expanded size which is checked says it was not validated", async ({
     page,
   }) => {
@@ -179,6 +231,68 @@ test.describe("the validation answered after the report", () => {
     await expect(page.getByTestId("validation-summary")).toHaveCount(0);
     await expect(page.getByTestId("row-issue")).toHaveCount(0);
     await expect(page.locator('tbody tr[data-pk$="Parameter:k1"]')).toBeVisible();
+  });
+
+  test("a validation which failed shows its details in the inspector of the document", async ({
+    page,
+  }) => {
+    await page.route("**/api/validation/examples/**", (route) =>
+      route.fulfill({
+        status: 200,
+        json: {
+          errors: ["the validation of the test failed", "Traceback (most recent call last)"],
+          warnings: [],
+          info: {},
+        },
+      }),
+    );
+    await openExample(page, EXAMPLE);
+
+    await page.getByTestId("validation-failed").click();
+    const failure = page.getByTestId("inspector").getByTestId("validation-failure");
+    await expect(failure.getByTestId("validation-failure-message")).toContainText(
+      "the validation of the test failed",
+    );
+    await expect(failure.getByTestId("validation-failure-traceback")).toHaveCount(0);
+    await failure.getByTestId("validation-failure-toggle").click();
+    await expect(failure.getByTestId("validation-failure-traceback")).toHaveText(
+      "Traceback (most recent call last)",
+    );
+  });
+
+  test("a validation the proxy refuses for its rate limit is busy", async ({ page }) => {
+    // nginx answers a client beyond its limits with 429 and a page of its own
+    await page.route("**/api/validation/examples/**", (route) =>
+      route.fulfill({
+        status: 429,
+        contentType: "text/html",
+        body: "<html><head><title>429 Too Many Requests</title></head></html>",
+      }),
+    );
+    await openExample(page, EXAMPLE);
+
+    const skipped = page.getByTestId("validation-summary").getByTestId("validation-skipped");
+    await expect(skipped).toHaveAttribute("data-reason", "busy");
+    await expect(page.getByTestId("validation-failed")).toHaveCount(0);
+    expect(await tooltipOf(page, "validation-skipped")).toContain("reload the report later");
+  });
+
+  test("a check which crashed says that it ended abnormally", async ({ page }) => {
+    await page.route("**/api/validation/examples/**", (route) =>
+      route.fulfill({ status: 200, json: { entries: {}, skipped: "crashed" } }),
+    );
+    await openExample(page, EXAMPLE);
+
+    const skipped = page.getByTestId("validation-summary").getByTestId("validation-skipped");
+    await expect(skipped).toHaveAttribute("data-reason", "crashed");
+    expect(await tooltipOf(page, "validation-skipped")).toContain("ended abnormally");
+    await skipped.click();
+    await expect(
+      page
+        .getByTestId("inspector")
+        .getByTestId("validation-list")
+        .getByTestId("validation-skipped"),
+    ).toContainText("ended abnormally");
   });
 
   test("a busy server asks to reload the report of an example later", async ({ page }) => {

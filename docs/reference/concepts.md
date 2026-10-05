@@ -235,7 +235,7 @@ libsbml reports where in the file an issue is, not which element it concerns, so
 
 The external model definitions are checked against the documents which are part of the report; the validation reads no other file and fetches no url.
 
-The validation runs apart from the report, in a process of its own on the server: the report appears first, and the errors and warnings appear when the validation is done, while a chip "validating" stands in the place of the counts. A validation which failed says so in that place, with the message of the failure.
+The validation runs apart from the report, in a process of its own on the server: the report appears first, and the errors and warnings appear when the validation is done, while a chip "validating" stands in the place of the counts. A validation which failed says so in that place, with the message of the failure, and a click on it opens the inspector of the document, which shows the failure with its details.
 
 To check a model of the comp package libsbml instantiates every submodel of its main model, the submodels of those in turn, along the [model](model.md) definitions and the [external model definitions](externalmodeldefinition.md), so the work grows with the product of the submodels of every level. A document with submodels which expands to more than 10,000 elements, its own and those of every instance, is not validated, and only the errors libsbml finds while it reads the file are listed; a document without submodels is never skipped for its size.
 

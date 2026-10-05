@@ -94,7 +94,7 @@ jobs:
       - name: Unit tests
         working-directory: frontend
         run: npm run test:unit
-      - name: Build
+      - name: Build, which fails on a chunk above 500 kB (frontend/chunkSizeLimit.ts)
         working-directory: frontend
         run: npm run build
 

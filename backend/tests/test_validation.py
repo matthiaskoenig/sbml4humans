@@ -1,8 +1,10 @@
 """Tests of the validation of a document and the mapping of its issues."""
 
+import functools
 import http.server
 import os
 import signal
+import socket
 import sys
 import tempfile
 import threading
@@ -15,6 +17,7 @@ from typing import Any
 
 import libsbml
 import pytest
+import uvicorn
 
 from sbml4humans import isolation, limits, report, validation
 from sbml4humans.model import EntryValidation, ValidationResponse
@@ -107,8 +110,13 @@ def test_duplicates_are_dropped() -> None:
     info.build_report()
     info.doc.checkConsistency()
     log: libsbml.SBMLErrorLog = info.doc.getErrorLog()
+    logged = log.getNumErrors()
+    assert logged > 0
     log.add(info.doc.getError(0))
+    # libsbml logs the issue a second time
+    assert log.getNumErrors() == logged + 1
     issues = issues_of(info.doc, info.positions)
+    assert len(issues) < log.getNumErrors()
     keys = [(i.rule, i.line, i.column, i.message) for i in issues]
     assert len(keys) == len(set(keys))
 
@@ -439,6 +447,87 @@ def test_resolver_delegates_outside_validation(monkeypatch: pytest.MonkeyPatch) 
     assert resolved is not None
 
 
+def test_the_registry_owns_the_resolver() -> None:
+    """The registry took the C++ side of the resolver, python keeps its proxy."""
+    registry = libsbml.SBMLResolverRegistry.getInstance()
+    assert registry.getNumResolvers() == 1
+    assert _RESOLVER.thisown is False
+    assert _RESOLVER.clone() is _RESOLVER
+
+
+def _sbml(model_id: str) -> str:
+    """A document of an empty model."""
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        f'version="1"><model id="{model_id}"/></sbml>'
+    )
+
+
+def test_report_documents_keep_the_first_of_a_location(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Of two locations which normalize the same the first document is kept."""
+    first: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("first"))
+    second: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("second"))
+    documents = ReportDocuments({"./a.xml": first, "a.xml": second})
+    found = documents.find("a.xml", "b.xml")
+    assert found is not None
+    assert found.getModel().getId() == "first"
+    [record] = [r for r in caplog.records if r.levelname == "WARNING"]
+    assert "'./a.xml'" in record.getMessage()
+    assert "'a.xml'" in record.getMessage()
+
+
+@contextmanager
+def _validating(documents: ReportDocuments, location: str, uri: str) -> Iterator[None]:
+    """The resolver answers as in the validation of the document at `location`."""
+    token = validation._VALIDATION.set(validation._Validation(documents, location, uri))
+    try:
+        yield
+    finally:
+        validation._VALIDATION.reset(token)
+
+
+def test_resolve_uri_without_a_uri_of_the_document_is_none() -> None:
+    """A document without a location uri of its own has no uri to answer."""
+    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
+    target: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("target"))
+    assert target.getLocationURI() == ""
+    documents = ReportDocuments({"a.xml": main, "b.xml": target})
+    with _validating(documents, "a.xml", ""):
+        # the document is found, its uri is not the source it was asked for
+        assert _RESOLVER.resolve("b.xml", "") is not None
+        assert _RESOLVER.resolveUri("b.xml", "") is None
+
+
+def test_resolve_uri_of_a_shared_uri_is_none(tmp_path: Path) -> None:
+    """A location uri which two documents of the report share names neither."""
+    path = tmp_path / "shared.xml"
+    path.write_text(_sbml("shared"))
+    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
+    one: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
+    other: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
+    assert one.getLocationURI() == other.getLocationURI() != ""
+    documents = ReportDocuments({"a.xml": main, "b.xml": one, "c.xml": other})
+    with _validating(documents, "a.xml", ""):
+        assert _RESOLVER.resolve("b.xml", "") is not None
+        assert _RESOLVER.resolveUri("b.xml", "") is None
+
+
+def test_resolve_uri_of_a_document_is_its_location_uri(tmp_path: Path) -> None:
+    """The uri of a document of the report is its own location uri."""
+    path = tmp_path / "target.xml"
+    path.write_text(_sbml("target"))
+    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
+    target: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
+    documents = ReportDocuments({"a.xml": main, "b.xml": target})
+    with _validating(documents, "a.xml", ""):
+        resolved = _RESOLVER.resolveUri("b.xml", "")
+        assert resolved is not None
+        assert resolved.getUri() == target.getLocationURI()
+
+
 # -------------------------------------------------------------------------------------
 # the expanded-size budget
 # -------------------------------------------------------------------------------------
@@ -722,9 +811,11 @@ def _leaves_nothing(root: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[Non
     assert set(system.glob("pymetadata_omex_*")) - before == set()
 
 
-def _tempdir(_: object) -> Iterator[tuple[str, str]]:
-    """The temporary directory of the child process."""
+def _tempdir(_: object) -> Iterator[tuple[str, str | None]]:
+    """The temporary directory of the child process, of python and of the system."""
     yield "tempdir", tempfile.gettempdir()
+    for variable in ("TMPDIR", "TEMP", "TMP"):
+        yield variable, os.environ.get(variable)
 
 
 def test_a_child_has_a_temporary_directory_of_its_own(
@@ -733,9 +824,13 @@ def test_a_child_has_a_temporary_directory_of_its_own(
     """The server makes the temporary directory of a child and removes it."""
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
         run = isolation.run_isolated(_tempdir, None)
-    tempdir = Path(dict(run.results)["tempdir"])
+    results = dict(run.results)
+    tempdir = Path(results["tempdir"])
     assert tempdir.parent == tmp_path / "tmp"
     assert not tempdir.exists()
+    # native libraries which make temporary files find it in the environment
+    for variable in ("TMPDIR", "TEMP", "TMP"):
+        assert results[variable] == str(tempdir)
 
 
 def _cpu_limit(_: object) -> Iterator[tuple[str, int]]:
@@ -960,6 +1055,88 @@ def test_a_child_free_too_late_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
     semaphore.release()
 
 
+@contextmanager
+def _live_server() -> Iterator[int]:
+    """The api served by uvicorn on a free port of the loopback interface."""
+    from sbml4humans.api import api
+
+    server = uvicorn.Server(
+        uvicorn.Config(api, host="127.0.0.1", port=0, log_level="warning")
+    )
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    started = time.monotonic() + 20
+    while not server.started:
+        assert time.monotonic() < started, "the server did not start"
+        time.sleep(0.05)
+    try:
+        yield server.servers[0].sockets[0].getsockname()[1]
+    finally:
+        server.should_exit = True
+        thread.join(10)
+
+
+def _post_and_leave(port: int, content: bytes, until: Callable[[], bool]) -> None:
+    """Post a validation of the content, close the connection once `until` holds."""
+    with socket.create_connection(("127.0.0.1", port)) as connection:
+        connection.sendall(
+            b"POST /api/validation/content HTTP/1.1\r\nHost: 127.0.0.1\r\n"
+            b"Content-Type: application/octet-stream\r\n"
+            + f"Content-Length: {len(content)}\r\n\r\n".encode()
+            + content
+        )
+        limit = time.monotonic() + 20
+        while not until():
+            assert time.monotonic() < limit, "the validation did not start"
+            time.sleep(0.05)
+
+
+def _until_gone(condition: Callable[[], bool], seconds: float) -> bool:
+    """Whether the condition holds within some seconds."""
+    limit = time.monotonic() + seconds
+    while not condition():
+        if time.monotonic() > limit:
+            return False
+        time.sleep(0.05)
+    return True
+
+
+def test_a_client_which_leaves_ends_its_validation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A client which disconnects mid-validation frees the child and the admission."""
+    content = _slow(monkeypatch)
+    pids = _spy_children(monkeypatch)
+    # the server keeps its uploads in the temporary directory it started with
+    with _live_server() as port, _leaves_nothing(tmp_path / "tmp", monkeypatch):
+        _post_and_leave(port, content, lambda: bool(pids))
+        left = time.monotonic()
+        assert _until_gone(lambda: _gone(pids[0]), 3.0)
+        assert _until_gone(lambda: isolation._admitted == 0, 3.0)
+        assert time.monotonic() - left < 3.0
+        # the run directory of the child is gone with it
+        assert _until_gone(lambda: list((tmp_path / "tmp").iterdir()) == [], 3.0)
+
+
+def test_a_client_which_leaves_while_waiting_frees_its_admission(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A validation waiting for a child ends when its client disconnects."""
+    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
+    pids = _spy_children(monkeypatch)
+    content = (EXAMPLES_DIR / "validation.xml").read_bytes()
+    # another request holds the one child
+    semaphore = isolation._semaphore()
+    semaphore.acquire()
+    try:
+        with _live_server() as port:
+            _post_and_leave(port, content, lambda: isolation._admitted == 1)
+            assert _until_gone(lambda: isolation._admitted == 0, 3.0)
+    finally:
+        semaphore.release()
+    assert pids == []
+
+
 def test_a_document_without_a_model_is_an_error() -> None:
     """The validation of a source without a model fails like its report."""
     content = _COMP.format("").encode()
@@ -971,19 +1148,117 @@ def test_a_document_without_a_model_is_an_error() -> None:
         report_for_bytes(content)
 
 
-def test_an_unexpected_end_of_the_child_is_an_error(
+def _ends_after_first_entry(end: str, job: SourceJob) -> Iterator[tuple[str, Any]]:
+    """Validate the source, end the child abnormally after its first entry."""
+    for n, result in enumerate(validate_source(job)):
+        yield result
+        # the locations come first, then the first entry
+        if n == 1:
+            break
+    if end == "kill":
+        # what the OOM killer of the kernel does
+        os.kill(os.getpid(), signal.SIGKILL)
+    elif end == "abort":
+        # an abort of another cause than memory, e.g. a failed assertion
+        os.write(2, b"python: assertion failed\n")
+        os.abort()
+    elif end == "bad_alloc":
+        # what libstdc++ writes when libsbml does not catch a std::bad_alloc
+        os.write(
+            2,
+            b"terminate called after throwing an instance of 'std::bad_alloc'\n"
+            b"  what():  std::bad_alloc\n",
+        )
+        os.abort()
+    elif end == "segv":
+        os.kill(os.getpid(), signal.SIGSEGV)
+    elif end == "exit":
+        os._exit(3)
+    elif end == "silent":
+        # ends without an error and without saying it is done
+        os._exit(0)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
+@pytest.mark.parametrize(
+    ("end", "reason"),
+    [
+        ("kill", "crashed"),
+        ("abort", "crashed"),
+        ("segv", "crashed"),
+        ("exit", "crashed"),
+        ("silent", "crashed"),
+        ("bad_alloc", "memory"),
+    ],
+)
+def test_an_abnormal_end_keeps_the_entries_validated_before(
+    tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    end: str,
+    reason: str,
 ) -> None:
-    """A child which ends without a result and without a known cause fails."""
-    monkeypatch.setattr(report, "validate_source", _crash)
-    with pytest.raises(isolation.ValidationProcessError, match="ended unexpectedly"):
-        validation_for_path(EXAMPLES_DIR / "validation.xml")
+    """A child which ends abnormally keeps what it sent, the rest is skipped.
+
+    Only an abort for a `std::bad_alloc` is for lack of memory, any other
+    abnormal end of the child is `crashed`.
+    """
+    monkeypatch.setattr(
+        report, "validate_source", functools.partial(_ends_after_first_entry, end)
+    )
+    documents = {
+        "a.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
+        "b.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
+    }
+    with _leaves_nothing(tmp_path / "tmp", monkeypatch):
+        response = validation_for_path(_archive(tmp_path / "two.omex", documents))
+    assert response.skipped == reason
+    assert response.entries["./a.xml"].skipped is None
+    assert 10601 in {i.rule for i in response.entries["./a.xml"].issues}
+    assert response.entries["./b.xml"] == EntryValidation(skipped=reason)
+    # what the child wrote before its end is in the log of the server
+    written = {"abort": "assertion failed", "bad_alloc": "std::bad_alloc"}
+    if end in written:
+        assert written[end] in caplog.text
+
+
+def _noisy(_: object) -> Iterator[tuple[str, int]]:
+    """Write much and control characters to the standard error, then end well."""
+    os.write(2, b"x" * 10_000 + b"\x1b[31m\r\nforged line\n" + b"the end")
+    yield "done", 1
+
+
+def test_the_standard_error_of_a_child_is_logged_escaped(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The log gets the end of what a child wrote, its control characters escaped."""
+    run = isolation.run_isolated(_noisy, None)
+    assert run.results == [("done", 1)]
+    [record] = [r for r in caplog.records if "wrote" in r.getMessage()]
+    message = record.getMessage()
+    assert "the end" in message
+    assert "\x1b" not in message
+    assert "\r" not in message
+    assert "\n" not in message
+    assert "\\x1b" in message
+    assert len(message) < 4096 + 200
 
 
 def _crash(job: SourceJob) -> Iterator[tuple[str, list[Any]]]:
-    """End the child process by a signal no limit sends."""
+    """End the child process by a signal no limit sends, before any result."""
     os.kill(os.getpid(), signal.SIGSEGV)
     yield from ()
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
+def test_a_crash_before_the_entries_skips_the_validation(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A child which crashes before it read the source answers no entry."""
+    monkeypatch.setattr(report, "validate_source", _crash)
+    response = validation_for_path(EXAMPLES_DIR / "validation.xml")
+    assert response == ValidationResponse(skipped="crashed")
+    assert "exit code -11" in caplog.text
 
 
 def _status(_: object) -> Iterator[tuple[str, int]]:

@@ -7,15 +7,16 @@ import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import { useValidationIndex } from "@/report/context";
 import { conceptEntry } from "@/report/glossary";
 import type { ReportIndex } from "@/report/index";
-import type { EntrySkip } from "@/report/validationIndex";
 import { useReportView } from "@/report/view";
+import { skipWords } from "@/report/validationWords";
 import type { ValidationState } from "@/stores/report";
 
 /** The counts of the errors and the warnings of the document; a click opens their list, which
  * is the inspector of the document. A valid document shows nothing, a document libsbml did not
  * check says so, so that the missing counts are not read as a valid document. The validation is
  * answered after the report: while it runs a quiet chip says so, and a validation which failed
- * says that it failed, with the message of the failure as its tooltip. */
+ * says that it failed, with the message of the failure as its tooltip; a click opens the inspector
+ * of the document, which shows the failure with its details. */
 defineProps<{
   index: ReportIndex;
   state: ValidationState | null;
@@ -27,23 +28,12 @@ const counts = computed(() => validation.value?.issueCounts ?? { error: 0, warni
 const skipped = computed(() => validation.value?.skipped ?? null);
 const tooltip = computed(() => conceptEntry("validation")?.summary);
 
-/** Why libsbml did not check the document, in the words of the chip: no severity of libsbml, the
- * check did not run. The inspector of the document says it at length. A busy server is asked again
- * by a reload, unless the source is a file or pasted content, which a reload loses. */
-const SKIPPED: Record<Exclude<EntrySkip, "busy">, string> = {
-  expandedSize:
-    "libsbml did not check this document: its comp submodels expand it beyond the size which is checked",
-  timeout: "libsbml did not check this document: the check did not end in time",
-  memory: "libsbml did not check this document: the check needed more memory than it may use",
-  unanswered: "libsbml did not check this document: the validation answered nothing for it",
-};
+/** Why libsbml did not check the document, in the short words of the chip; the inspector of the
+ * document says it at length. */
 const skippedText = computed(() => {
   const reason = skipped.value;
   if (reason === null) return undefined;
-  if (reason !== "busy") return SKIPPED[reason];
-  return validation.value?.reloadable === false
-    ? "libsbml did not check this document: the server was busy, load it again later to try again"
-    : "libsbml did not check this document: the server was busy, reload the report later to try again";
+  return skipWords(reason, validation.value?.reloadable !== false).short;
 });
 
 /** "error" and "warning" are the severities of libsbml, the values the glossary lists for
@@ -67,18 +57,19 @@ function words(count: number, severity: "error" | "warning"): string {
   >
     <LoaderCircleIcon class="size-3.5 animate-spin" /><span class="max-md:hidden">validating</span>
   </span>
-  <span
+  <button
     v-else-if="state === 'failed'"
     v-tooltip.bottom="error?.message"
-    tabindex="0"
-    class="flex shrink-0 items-center gap-1 rounded-full border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs whitespace-nowrap text-gray-700"
+    type="button"
+    class="flex shrink-0 items-center gap-1 rounded-full border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs whitespace-nowrap text-gray-700 hover:bg-gray-100"
     aria-label="validation failed"
     data-testid="validation-failed"
+    @click="view.select(index.document.pk)"
   >
     <CircleOffIcon class="size-3.5 text-gray-500" /><span class="max-md:hidden"
       >validation failed</span
     >
-  </span>
+  </button>
   <span
     v-else-if="skipped || counts.error + counts.warning > 0"
     class="flex shrink-0 items-center gap-1"

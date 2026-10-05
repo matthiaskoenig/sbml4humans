@@ -18,7 +18,9 @@ instances is always validated, in a time linear in its size, which the
 timeout of the child process bounds.
 
 The validation runs in a child process (`isolation.py`), from reading the
-source on (`report.validate_source`).
+source on (`report.validate_source`). The child bounds its resources, it is no
+sandbox: that the comp validator reads nothing but the documents of the report
+is the work of `ReportResolver`.
 
 Importing this module replaces the resolvers of the process-wide resolver
 registry of libsbml by `ReportResolver`, for every user of libsbml in the
@@ -28,6 +30,7 @@ of urls or another one which was registered before is gone.
 """
 
 import bisect
+import logging
 from collections.abc import Mapping
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -37,6 +40,8 @@ import libsbml
 from sbml4humans.external import normalize_location, resolve_source
 from sbml4humans.model import Model, Report, Severity, ValidationIssue
 
+
+logger = logging.getLogger(__name__)
 
 # the elements a document with comp submodel instances may expand to and still
 # be validated: 3,000 elements with issues are checked in half a second, 10,000
@@ -143,17 +148,29 @@ class ReportDocuments:
     The base is the location uri of a document of the report, as libsbml read
     it or as the resolver answered it, so a source is resolved against the
     location of that document in the report (`resolve_source`), the way the
-    report resolves it, also along a chain of external model definitions.
+    report resolves it, also along a chain of external model definitions. Of
+    two locations which name the same entry (`./a.xml` and `a.xml`) the first
+    is kept.
     """
 
     def __init__(self, documents: Mapping[str, libsbml.SBMLDocument]) -> None:
         """The documents of a report keyed by their location in it."""
         self._documents: dict[str, libsbml.SBMLDocument] = {}
+        names: dict[str, str] = {}
         by_uri: dict[str, list[str]] = {}
         for location, doc in documents.items():
             normalized = normalize_location(location)
             if normalized is None:
                 continue
+            if normalized in self._documents:
+                logger.warning(
+                    "the locations '%s' and '%s' of the report name one entry, "
+                    "the document of the first is resolved",
+                    names[normalized],
+                    location,
+                )
+                continue
+            names[normalized] = location
             self._documents[normalized] = doc
             uri = doc.getLocationURI()
             if uri:
@@ -166,7 +183,10 @@ class ReportDocuments:
         }
 
     def location_of(self, uri: str) -> str | None:
-        """The location in the report of the document with a location uri."""
+        """The location in the report of the document with a location uri.
+
+        None for a uri which no document or more than one has.
+        """
         return self._locations.get(uri)
 
     def find(self, source: str, base: str | None) -> libsbml.SBMLDocument | None:
@@ -229,7 +249,10 @@ class ReportResolver(libsbml.SBMLResolver):
         doc = validation.find(uri, baseUri)
         if doc is None:
             return None
-        # the caller of a resolver owns the document it returns
+        # the caller of a resolver owns the document it returns and deletes it:
+        # the document of the report is cloned and python gives up the clone
+        # (`thisown`), so that python does not delete it under libsbml when its
+        # proxy is collected
         clone: libsbml.SBMLDocument = doc.clone()
         clone.thisown = False
         return clone
@@ -242,7 +265,10 @@ class ReportResolver(libsbml.SBMLResolver):
         """The uri of a document: one of the report while validating.
 
         The uri of a document of the report is its location uri, which libsbml
-        gives as the base of the sources of that document.
+        gives as the base of the sources of that document. A document whose
+        location uri is empty or shared with another document of the report
+        has no uri which names it, and is answered None: its sources could not
+        be resolved against it, so a chain through it fails at once.
         """
         validation = _VALIDATION.get()
         if validation is None:
@@ -250,7 +276,11 @@ class ReportResolver(libsbml.SBMLResolver):
         doc = validation.find(uri, baseUri)
         if doc is None:
             return None
-        resolved = libsbml.SBMLUri(doc.getLocationURI() or uri)
+        location_uri = doc.getLocationURI()
+        if validation.documents.location_of(location_uri) is None:
+            return None
+        # the caller owns the uri it gets, as the document of `resolve`
+        resolved = libsbml.SBMLUri(location_uri)
         resolved.thisown = False
         return resolved
 
@@ -269,7 +299,12 @@ def _install_resolver() -> ReportResolver:
     return resolver
 
 
-# kept referenced, so that python does not collect the director libsbml calls
+# The ownership of the resolver: `addResolver` takes the C++ side of the
+# resolver from python (`thisown` is False after it) and stores what `clone()`
+# answers, which is this instance, so the registry owns it for the life of the
+# process. libsbml calls the python methods through the SWIG director, whose
+# python object `_RESOLVER` keeps referenced, so that python never collects it
+# while the registry may call it; it is never removed from the registry.
 _RESOLVER = _install_resolver()
 
 _NO_DOCUMENTS = ReportDocuments({})

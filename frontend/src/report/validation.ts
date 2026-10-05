@@ -9,6 +9,10 @@ export const SEVERITY_ORDER: readonly Severity[] = ["error", "warning", "info"];
  * one rule of a genome scale model concerns thousands of them. */
 export const VALIDATION_LINK_LIMIT = 100;
 
+/** The issues the accessible name of the mark of a row names, which a screen reader reads at
+ * every focus of the row; the tooltip and the inspector list all of them. */
+export const ROW_ISSUE_NAME_LIMIT = 3;
+
 const RANK: Record<Severity, number> = { error: 0, warning: 1, info: 2 };
 
 /** The worse of two severities, where null is no issue at all. */

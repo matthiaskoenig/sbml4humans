@@ -99,6 +99,27 @@ describe("ReportPage", () => {
     expect(page.find("[data-testid=row-issue]").exists()).toBe(true);
   });
 
+  it("leads from a failed validation to its details in the inspector of the document", async () => {
+    vi.mocked(client.getExample).mockResolvedValue(loadFixture("validation"));
+    vi.mocked(client.getExampleValidation).mockRejectedValue(
+      new client.ApiError("the validation failed", "Traceback (most recent call last)"),
+    );
+    await router.push("/examples/validation");
+    wrapper = mount(ReportPage, {
+      global: { plugins: [router], directives: { tooltip: vTooltip } },
+    });
+    await flushPromises();
+    const page = wrapper;
+    await page.get("[data-testid=validation-failed]").trigger("click");
+    await flushPromises();
+    const failure = page.get("[data-testid=validation-failure]");
+    expect(failure.text()).toContain("the validation failed");
+    await failure.get("[data-testid=validation-failure-toggle]").trigger("click");
+    expect(failure.get("[data-testid=validation-failure-traceback]").text()).toBe(
+      "Traceback (most recent call last)",
+    );
+  });
+
   it("shows the empty state on /report with an empty url", async () => {
     vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();

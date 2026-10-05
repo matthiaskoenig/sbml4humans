@@ -43,7 +43,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -302,7 +302,7 @@ class LocalApp:
             response_model=ValidationResponse,
             response_model_by_alias=True,
         )
-        async def read_validation(token: str) -> ValidationResponse:
+        async def read_validation(token: str, request: Request) -> ValidationResponse:
             """Validate the path of the report of a token, trusted like its report.
 
             The file is read again, as it is now on the disk of the user.
@@ -311,7 +311,7 @@ class LocalApp:
                 path = self.reports.get(token).path
             except KeyError:
                 raise ReportNotFoundError(token) from None
-            return await run_validation(validation_for_path, path, True)
+            return await run_validation(request, validation_for_path, path, True)
 
         @local.post("/api/local/shutdown")
         def shutdown(

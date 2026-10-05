@@ -320,6 +320,40 @@ describe("report store", () => {
       expect(store.validationFor("./model.xml")?.skipped).toBe("busy");
     });
 
+    it("marks every entry busy when the proxy refuses the validation for its rate limit", async () => {
+      vi.mocked(client.getExample).mockResolvedValue(loadFixture("comp_models"));
+      vi.mocked(client.getExampleValidation).mockRejectedValue(
+        new client.ApiError(
+          "The server answered with status 429: too many requests",
+          null,
+          [],
+          429,
+        ),
+      );
+      const store = useReportStore();
+      await store.loadExample("CompModels");
+      await flushPromises();
+      expect(store.validationState).toBe("done");
+      expect(store.validationError).toBeNull();
+      for (const location of store.entries) {
+        expect(store.validationFor(location)?.skipped).toBe("busy");
+        expect(store.validationFor(location)?.issues).toEqual([]);
+        expect(store.validationFor(location)?.reloadable).toBe(true);
+      }
+    });
+
+    it("keeps any other status of a refused validation as its failure", async () => {
+      vi.mocked(client.getExample).mockResolvedValue(loadFixture("validation"));
+      vi.mocked(client.getExampleValidation).mockRejectedValue(
+        new client.ApiError("The backend answered with status 502", null, [], 502),
+      );
+      const store = useReportStore();
+      await store.loadExample("validation");
+      await flushPromises();
+      expect(store.validationState).toBe("failed");
+      expect(store.validationError?.status).toBe(502);
+    });
+
     it("does not read an entry the answer leaves out without a reason as valid", async () => {
       vi.mocked(client.getExample).mockResolvedValue(loadFixture("comp_models"));
       vi.mocked(client.getExampleValidation).mockResolvedValue({

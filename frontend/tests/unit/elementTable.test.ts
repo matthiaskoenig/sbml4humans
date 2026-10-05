@@ -19,6 +19,7 @@ import { attributeEntry } from "@/report/glossary";
 import type * as Glossary from "@/report/glossary";
 import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
+import { ROW_ISSUE_NAME_LIMIT } from "@/report/validation";
 import { ValidationIndex } from "@/report/validationIndex";
 import { elementLabel } from "@/report/label";
 import { router } from "@/router";
@@ -514,6 +515,59 @@ describe("ElementTable of a document with issues", () => {
     const label = elementLabel(report, r1.kineticLaw!.pk);
     expect(tip.indexOf(`${label}: 99505`)).toBeGreaterThanOrEqual(0);
     expect(tip.indexOf(`${label}: 99505`)).toBeLessThan(tip.indexOf("10501"));
+  });
+
+  it("names the issues of a row in the accessible name of its mark, which is no tab stop", async () => {
+    // a reader on the keyboard focuses the row, not the mark, and is read the name of the mark
+    await router.push({ path: "/report", query: {} });
+    const r1 = report.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    const held = new ValidationIndex(
+      report,
+      withIssues([
+        { pk: r1.pk, severity: "warning", rule: 10501 },
+        { pk: r1.kineticLaw!.pk, severity: "error", rule: 99505 },
+      ]),
+    );
+    const reactions = report.byType(modelId).get("Reaction")!;
+    const table = mountTable(reactions, "Reaction", report, held);
+    const row = rowOf(table, r1.pk);
+    const mark = row.get("[data-testid=row-issue] [role=img]");
+    const name = mark.attributes("aria-label") ?? "";
+    const label = elementLabel(report, r1.kineticLaw!.pk);
+    expect(name).toMatch(/^error: /);
+    expect(name).toContain(`${label}: 99505`);
+    expect(name).toContain("10501");
+    expect(name.indexOf("99505")).toBeLessThan(name.indexOf("10501"));
+    expect(row.find("[data-testid=row-issue] [tabindex]").exists()).toBe(false);
+    expect(row.get("[data-testid=row-issue]").attributes("tabindex")).toBeUndefined();
+  });
+
+  it("caps the accessible name of the mark of a row with many issues, which the tooltip lists all of", async () => {
+    await router.push({ path: "/report", query: {} });
+    const r1 = report.mainModel!.listOfReactions!.find((r) => r.id === "R1")! as Reaction;
+    const many = new ValidationIndex(
+      report,
+      withIssues(
+        Array.from({ length: 14 }, (_, k) => ({
+          pk: r1.pk,
+          severity: k === 0 ? ("error" as const) : ("warning" as const),
+          rule: 10500 + k,
+          shortMessage: `message ${k}`,
+        })),
+      ),
+    );
+    const reactions = report.byType(modelId).get("Reaction")!;
+    const table = mountTable(reactions, "Reaction", report, many);
+    const issue = rowOf(table, r1.pk).get("[data-testid=row-issue]");
+    const name = issue.get("[role=img]").attributes("aria-label") ?? "";
+    expect(ROW_ISSUE_NAME_LIMIT).toBe(3);
+    expect(name).toBe(
+      "error: 14 issues: 10500 message 0 · 10501 message 1 · 10502 message 2, and 11 more",
+    );
+    // the tooltip keeps every issue
+    await issue.trigger("mouseenter");
+    const tip = document.getElementById("app-tooltip")?.textContent ?? "";
+    expect(tip).toContain("10513 message 13");
   });
 
   it("keeps the place of the mark in an unmarked row of a table with issues", async () => {

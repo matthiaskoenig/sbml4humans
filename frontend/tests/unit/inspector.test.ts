@@ -14,6 +14,7 @@ import type {
   Uncertainty,
   UnitDefinition,
 } from "@/api/types";
+import { ApiError } from "@/api/client";
 import AttributeRow from "@/components/inspector/AttributeRow.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import InspectorPanel from "@/components/inspector/InspectorPanel.vue";
@@ -31,7 +32,7 @@ import TransitionAttributes from "@/components/inspector/attributes/TransitionAt
 import UncertaintyAttributes from "@/components/inspector/attributes/UncertaintyAttributes.vue";
 import { ELEMENT_TYPES, DOCUMENT_TYPES, NESTED_TYPES } from "@/data/sbmlTypes";
 import { vTooltip } from "@/directives/tooltip";
-import { ReportIndexKey, ValidationIndexKey } from "@/report/context";
+import { ReportIndexKey, ValidationFailureKey, ValidationIndexKey } from "@/report/context";
 import { attributeEntry, linkEntry } from "@/report/glossary";
 import { ASSOCIATION_LIMIT } from "@/report/geneAssociation";
 import { ReportIndex } from "@/report/index";
@@ -82,6 +83,7 @@ function mountWith(
   props: Record<string, unknown>,
   index: ReportIndex,
   validation: ValidationIndex | null = null,
+  failure: ApiError | null = null,
 ) {
   return mount(
     component as never,
@@ -93,6 +95,7 @@ function mountWith(
         provide: {
           [ReportIndexKey as symbol]: ref(index),
           [ValidationIndexKey as symbol]: ref(validation),
+          [ValidationFailureKey as symbol]: ref(failure),
         },
       },
     } as never,
@@ -1512,7 +1515,14 @@ describe("inspector", () => {
     it("says why a document was not validated, and not that it has no issues", () => {
       const constraints = new ReportIndex(loadReport("constraint_event"));
       const notes: Record<string, string> = {};
-      for (const reason of ["expandedSize", "timeout", "memory", "busy", "unanswered"] as const) {
+      for (const reason of [
+        "expandedSize",
+        "timeout",
+        "memory",
+        "crashed",
+        "busy",
+        "unanswered",
+      ] as const) {
         const skipped = new ValidationIndex(constraints, withIssues([], reason));
         const wrapper = mountIssues(constraints.document.pk, skipped);
         const list = wrapper.get("[data-testid=validation-list]");
@@ -1524,9 +1534,10 @@ describe("inspector", () => {
       expect(notes.expandedSize).toContain("submodels");
       expect(notes.timeout).toContain("time");
       expect(notes.memory).toContain("memory");
+      expect(notes.crashed).toContain("ended abnormally");
       expect(notes.busy).toContain("Reload the report later");
       expect(notes.unanswered).toContain("left it out");
-      expect(new Set(Object.values(notes)).size).toBe(5);
+      expect(new Set(Object.values(notes)).size).toBe(6);
     });
 
     it("asks to load a file or pasted content again when the server was busy", () => {
@@ -1561,6 +1572,60 @@ describe("inspector", () => {
       const list = wrapper.get("[data-testid=validation-list]");
       expect(list.find("[data-testid=validation-skipped]").exists()).toBe(true);
       expect(list.findAll("[data-testid=validation-group]")).toHaveLength(1);
+    });
+
+    it("says that no issue matches the filters rather than showing an empty list", async () => {
+      const wrapper = mountIssues(report.document.pk);
+      const list = wrapper.get("[data-testid=validation-list]");
+      expect(list.find("[data-testid=validation-no-match]").exists()).toBe(false);
+      await list.get("[data-testid=validation-filter-error]").setValue(false);
+      await list.get("[data-testid=validation-filter-warning]").setValue(false);
+      expect(list.findAll("[data-testid=validation-group]")).toHaveLength(0);
+      expect(list.find("ul").exists()).toBe(false);
+      expect(list.get("[data-testid=validation-no-match]").text()).toBe(
+        "No issues match the filters.",
+      );
+      // the filters stay, so that the reader can widen them again
+      await list.get("[data-testid=validation-filter-warning]").setValue(true);
+      expect(list.find("[data-testid=validation-no-match]").exists()).toBe(false);
+      expect(list.findAll("[data-testid=validation-group]").length).toBeGreaterThan(0);
+
+      // a category whose issues the severity filter hides
+      await list.get("[data-testid=validation-filter-category]").setValue("SBO term consistency");
+      await list.get("[data-testid=validation-filter-warning]").setValue(false);
+      expect(list.find("[data-testid=validation-no-match]").exists()).toBe(true);
+    });
+
+    it("shows the failure of the validation in the inspector of the document, its details behind a toggle", async () => {
+      const failure = new ApiError("the validation failed", "Traceback (most recent call last)");
+      const wrapper = mountWith(InspectorPanel, { pk: report.document.pk }, report, null, failure);
+      const block = wrapper.get("[data-testid=validation-failure]");
+      expect(block.get("[data-testid=validation-failure-message]").text()).toContain(
+        "the validation failed",
+      );
+      expect(block.find("[data-testid=validation-failure-traceback]").exists()).toBe(false);
+      const toggle = block.get("[data-testid=validation-failure-toggle]");
+      expect(toggle.text()).toBe("Show details");
+      expect(toggle.attributes("aria-expanded")).toBe("false");
+      await toggle.trigger("click");
+      expect(toggle.text()).toBe("Hide details");
+      expect(toggle.attributes("aria-expanded")).toBe("true");
+      expect(block.get("[data-testid=validation-failure-traceback]").text()).toBe(
+        "Traceback (most recent call last)",
+      );
+      await toggle.trigger("click");
+      expect(block.find("[data-testid=validation-failure-traceback]").exists()).toBe(false);
+      expect(wrapper.find("[data-testid=validation-list]").exists()).toBe(false);
+    });
+
+    it("shows the failure without a toggle where it carries no details, and on the document alone", () => {
+      const failure = new ApiError("The backend at /api is not reachable");
+      const document = mountWith(InspectorPanel, { pk: report.document.pk }, report, null, failure);
+      const block = document.get("[data-testid=validation-failure]");
+      expect(block.text()).toContain("The backend at /api is not reachable");
+      expect(block.find("[data-testid=validation-failure-toggle]").exists()).toBe(false);
+      const element = mountWith(InspectorPanel, { pk: k1 }, report, null, failure);
+      expect(element.find("[data-testid=validation-failure]").exists()).toBe(false);
     });
 
     it("shows no validation while it is pending", () => {

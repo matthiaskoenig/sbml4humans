@@ -3,16 +3,29 @@ import type { AnnotationResource } from "@/types/annotation";
 
 const API_URL: string = import.meta.env.VITE_API_URL;
 
-/** A failure reported by the backend or a failure to reach it. */
+/** The status of a response which refuses a client beyond the limits of the proxy in front of
+ * the backend (`nginx/`): the proxy answers it, outside the error contract of the backend. */
+export const TOO_MANY_REQUESTS = 429;
+
+/** A failure reported by the backend or a failure to reach it. `status` is the http status of a
+ * response which is not the error contract (which always answers 200), null for the error
+ * contract and where no response arrived. */
 export class ApiError extends Error {
   readonly traceback: string | null;
   readonly warnings: string[];
+  readonly status: number | null;
 
-  constructor(message: string, traceback: string | null = null, warnings: string[] = []) {
+  constructor(
+    message: string,
+    traceback: string | null = null,
+    warnings: string[] = [],
+    status: number | null = null,
+  ) {
     super(message);
     this.name = "ApiError";
     this.traceback = traceback;
     this.warnings = warnings;
+    this.status = status;
   }
 }
 
@@ -52,17 +65,36 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
       error instanceof Error ? error.message : null,
     );
   }
+  // the proxy answers a rate limit with a page of its own, which is not read
+  if (response.status === TOO_MANY_REQUESTS) {
+    throw new ApiError(
+      "The server answered with status 429: too many requests from this address, try again later",
+      null,
+      [],
+      response.status,
+    );
+  }
   let body: unknown;
   try {
     body = await response.json();
   } catch {
-    throw new ApiError(`The backend answered with status ${response.status} and no JSON body`);
+    throw new ApiError(
+      `The backend answered with status ${response.status} and no JSON body`,
+      null,
+      [],
+      response.status,
+    );
   }
   if (isErrorBody(body)) {
     throw new ApiError(body.errors[0] ?? "Unknown error", body.errors[1] ?? null, body.warnings);
   }
   if (!response.ok) {
-    throw new ApiError(`The backend answered with status ${response.status}`);
+    throw new ApiError(
+      `The backend answered with status ${response.status}`,
+      null,
+      [],
+      response.status,
+    );
   }
   return body as T;
 }
