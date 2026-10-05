@@ -260,12 +260,14 @@ class WaiterFuture(Future[AnnotationResource]):
     waiting = 0
     all_waiting = threading.Event()
     expected = 3
+    guard = threading.Lock()
 
     def result(self, timeout: float | None = None) -> AnnotationResource:
         """Register the waiter, then wait for the result."""
-        WaiterFuture.waiting += 1
-        if WaiterFuture.waiting >= WaiterFuture.expected:
-            WaiterFuture.all_waiting.set()
+        with WaiterFuture.guard:
+            WaiterFuture.waiting += 1
+            if WaiterFuture.waiting >= WaiterFuture.expected:
+                WaiterFuture.all_waiting.set()
         return super().result(timeout)
 
 
@@ -280,7 +282,7 @@ def _run_requests(
         except BaseException as err:
             outcomes.append(err)
 
-    threads = [threading.Thread(target=request) for _ in range(count)]
+    threads = [threading.Thread(target=request, daemon=True) for _ in range(count)]
     threads[0].start()
     assert started.wait(5)
     for thread in threads[1:]:
@@ -316,6 +318,7 @@ def test_concurrent_requests_share_one_lookup(
     _run_requests(ResourceCache(resolve), started, outcomes)
     assert len(calls) == 1
     assert len(outcomes) == 4
+    assert isinstance(outcomes[0], AnnotationResource)
     assert all(outcome == outcomes[0] for outcome in outcomes)
 
 
@@ -360,10 +363,15 @@ def test_waiters_do_not_hang_when_the_cache_fails(
 
 
 def test_expired_entry_is_dropped() -> None:
-    """An expired entry is removed when it is found."""
+    """An expired entry is removed when it is found, even if the new lookup is not kept."""
     now = [0.0]
-    cache = ResourceCache(Resolver(), clock=lambda: now[0])
-    cache.get("a")
-    now[0] = 86401.0
+    answers = [
+        AnnotationResource(resource="a"),
+        AnnotationResource(resource="a", errors=["down"]),
+    ]
+    cache = ResourceCache(lambda resource: answers.pop(0), clock=lambda: now[0])
     cache.get("a")
     assert len(cache._entries) == 1
+    now[0] = 86401.0
+    cache.get("a")
+    assert len(cache._entries) == 0
