@@ -2,7 +2,15 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 
-import type { Event, Parameter, Reaction, SbmlElement, Species, Transition } from "@/api/types";
+import type {
+  ElementType,
+  Event,
+  Parameter,
+  Reaction,
+  SbmlElement,
+  Species,
+  Transition,
+} from "@/api/types";
 import ElementCell from "@/components/report/ElementCell.vue";
 import ElementTable from "@/components/report/ElementTable.vue";
 import { vTooltip } from "@/directives/tooltip";
@@ -45,14 +53,18 @@ const cellCycle = new ReportIndex(loadReport("cell_cycle"));
 
 let wrapper: ReturnType<typeof mount> | null = null;
 
-function mountTable(rows: SbmlElement[]) {
+function mountTable(
+  rows: SbmlElement[],
+  type: ElementType = "Species",
+  reportIndex: ReportIndex = index,
+) {
   wrapper = mount(ElementTable, {
-    props: { type: "Species", rows },
+    props: { type, rows },
     attachTo: document.body,
     global: {
       plugins: [router],
       directives: { tooltip: vTooltip },
-      provide: { [ReportIndexKey as symbol]: ref(index) },
+      provide: { [ReportIndexKey as symbol]: ref(reportIndex) },
     },
   });
   return wrapper;
@@ -434,6 +446,33 @@ describe("ElementTable windowing", () => {
     const rows = table.findAll("tbody tr[data-pk]");
     expect(rows[0]!.attributes("data-pk")).toBe("virtual:0");
     expect(table.find("[data-testid=spacer-before]").exists()).toBe(false);
+  });
+});
+
+describe("ElementTable of a document with issues", () => {
+  const validation = new ReportIndex(loadReport("validation"));
+  const modelId = validation.mainModel!.id!;
+  const rowOf = (table: ReturnType<typeof mount>, pk: string) =>
+    table.get(`tbody tr[data-pk="${pk}"]`);
+
+  it("marks the id of a row with an issue by its worst severity, the issues in its tooltip", async () => {
+    await router.push({ path: "/report", query: {} });
+    const parameters = validation.byType(modelId).get("Parameter")!;
+    const k1 = parameters.find((parameter) => parameter.id === "k1")!;
+    const table = mountTable(parameters, "Parameter", validation);
+    const issue = rowOf(table, k1.pk).find("[data-testid=row-issue]");
+    expect(issue.exists()).toBe(true);
+    expect(issue.find("[data-testid=severity-warning]").exists()).toBe(true);
+    await issue.trigger("mouseenter");
+    expect(document.getElementById("app-tooltip")?.textContent).toContain("10703");
+  });
+
+  it("leaves the id of a row without an issue unmarked", async () => {
+    await router.push({ path: "/report", query: {} });
+    const rows = validation.byType(modelId).get("Species")!;
+    const a = rows.find((row) => (row as Species).id === "A")!;
+    const table = mountTable(rows, "Species", validation);
+    expect(rowOf(table, a.pk).find("[data-testid=row-issue]").exists()).toBe(false);
   });
 });
 

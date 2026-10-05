@@ -108,4 +108,24 @@ describe("TypeBar", () => {
     );
     wrapper.unmount();
   });
+
+  it("marks a type with an issue by the worst severity of its elements", async () => {
+    const validation = new ReportIndex(loadReport("validation"));
+    const counts = new Map<ElementType, TypeCount>();
+    for (const [type, elements] of validation.byType(validation.mainModel!.id!)) {
+      counts.set(type, { total: elements.length, matched: elements.length });
+    }
+    await router.push({ path: "/report", query: {} });
+    const wrapper = mount(TypeBar, {
+      props: { index: validation, model: validation.mainModel!, counts },
+      global: { plugins: [router] },
+    });
+    const parameter = wrapper.get("[data-testid=bar-type-Parameter]");
+    expect(parameter.find("[data-testid=severity-warning]").exists()).toBe(true);
+    expect(parameter.find("[data-testid=bar-issue-Parameter]").exists()).toBe(true);
+    // the species of the fixture have no issue, so their entry carries no mark
+    const species = wrapper.get("[data-testid=bar-type-Species]");
+    expect(species.find("[data-testid^=severity-]").exists()).toBe(false);
+    wrapper.unmount();
+  });
 });

@@ -3,9 +3,11 @@ import { ChevronDownIcon } from "@lucide/vue";
 import { computed, nextTick, ref } from "vue";
 
 import type { ElementType, Model } from "@/api/types";
+import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
 import { ELEMENT_TYPES, type ElementTypeInfo } from "@/data/sbmlTypes";
 import type { ReportIndex } from "@/report/index";
+import type { Severity } from "@/report/validation";
 import { useReportView } from "@/report/view";
 
 export interface TypeCount {
@@ -68,6 +70,13 @@ async function scrollTo(type: ElementType): Promise<void> {
   document
     .getElementById(`section-${type}`)
     ?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/** The worst severity of the issues of the elements of a type, which its entry marks; a note
+ * alone is no mark. */
+function severityOf(type: ElementType): Severity | null {
+  const worst = props.index.worstSeverityOfType(type);
+  return worst === "info" ? null : worst;
 }
 
 function selectedClass(pk: string): string {
@@ -170,6 +179,10 @@ function selectedClass(pk: string): string {
         >
           <template v-if="searching">{{ counts.get(info.type)?.matched ?? 0 }} / </template
           >{{ counts.get(info.type)?.total ?? 0 }}
+        </span>
+        <!-- the test id of the type sits on a span of its own, the icon keeps its own one -->
+        <span v-if="severityOf(info.type)" class="flex" :data-testid="`bar-issue-${info.type}`">
+          <SeverityIcon :severity="severityOf(info.type)!" />
         </span>
       </span>
     </div>

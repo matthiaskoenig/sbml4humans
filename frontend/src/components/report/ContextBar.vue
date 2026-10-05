@@ -3,6 +3,7 @@ import { computed } from "vue";
 
 import type { Model } from "@/api/types";
 import SelectInput from "@/components/input/SelectInput.vue";
+import ValidationSummary from "@/components/report/ValidationSummary.vue";
 import type { ReportIndex } from "@/report/index";
 import { useReportView } from "@/report/view";
 
@@ -56,5 +57,6 @@ const packages = computed(() => props.index.document.packages?.map((pkg) => pkg.
         >{{ pkg }}</span
       >
     </span>
+    <ValidationSummary :index="index" />
   </div>
 </template>

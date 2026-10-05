@@ -17,6 +17,7 @@ import BooleanMark from "@/components/misc/BooleanMark.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import MathView from "@/components/misc/MathView.vue";
 import QualSignMark from "@/components/misc/QualSignMark.vue";
+import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import TermsView from "@/components/misc/TermsView.vue";
 import TransitionTermsView from "@/components/misc/TransitionTermsView.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
@@ -49,6 +50,21 @@ const mathValue = computed(() => (value.value as Math | null | undefined) ?? nul
  * place of an algebraic rule. */
 const reportName = computed(() =>
   props.column.kind === "id" && !text.value ? elementLabel(index.value, props.row.pk) : null,
+);
+
+/** Kind "id": the worst severity of the issues of the row, which its id marks; a note alone is
+ * no mark. The tooltip lists the issues of the row, errors first, by rule and short message. */
+const severity = computed(() => {
+  if (props.column.kind !== "id") return null;
+  const worst = index.value?.worstSeverity(props.row.pk) ?? null;
+  return worst === "info" ? null : worst;
+});
+const issueTip = computed(() =>
+  severity.value
+    ? (index.value?.issuesOf(props.row.pk) ?? [])
+        .map((issue) => `${issue.rule} ${issue.shortMessage}`)
+        .join(" · ")
+    : undefined,
 );
 
 /** Kind "link": the pk of the referenced element, resolved through the edges of the row. */
@@ -124,6 +140,10 @@ function signOf(influence: Input | Output): string | null | undefined {
   id is pinned while its table scrolls sideways, so on a narrow window a long id is cut off
   before it takes the width the other columns are read in; the inspector shows it whole -->
   <span v-if="column.kind === 'id'" class="flex items-center gap-1.5 max-md:max-w-[40vw]">
+    <!-- the worst severity of the issues of the row, in front of the mark of its type -->
+    <span v-if="severity" v-tooltip="issueTip" class="flex" data-testid="row-issue">
+      <SeverityIcon :severity="severity" />
+    </span>
     <TypeMark v-if="row.sbmlType" :type="row.sbmlType" />
     <span v-if="text" class="min-w-0 truncate font-mono font-medium">{{ text }}</span>
     <span
