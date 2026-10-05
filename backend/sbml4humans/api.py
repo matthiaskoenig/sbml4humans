@@ -408,17 +408,21 @@ def report_from_upload(
 def annotation_resource(resource: str, response: Response) -> AnnotationResource:
     """Resolve the information of an annotation resource (url or MIRIAM urn).
 
-    A resolved resource may stay in the browser for a day; one whose web
-    service failed may not, so that the next look at it asks again.
+    A resolved resource may stay in the browser for a day, one with warnings (a
+    term the web services do not know) ten minutes, like in `ResourceCache`; one
+    whose web service failed may not, so that the next look at it asks again.
     """
     if len(resource) > MAX_RESOURCE_LENGTH:
         raise ValueError(
             f"The resource is longer than {MAX_RESOURCE_LENGTH} characters."
         )
     value = resource_cache().get(resource)
-    response.headers["Cache-Control"] = (
-        "no-store" if value.errors else "public, max-age=86400"
-    )
+    if value.errors:
+        response.headers["Cache-Control"] = "no-store"
+    elif value.warnings:
+        response.headers["Cache-Control"] = "public, max-age=600"
+    else:
+        response.headers["Cache-Control"] = "public, max-age=86400"
     return value
 
 

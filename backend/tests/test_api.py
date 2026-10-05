@@ -376,6 +376,20 @@ def test_annotation_resource_with_errors_is_not_cached(
     assert response.headers["cache-control"] == "no-store"
 
 
+def test_annotation_resource_with_warnings_is_cached_ten_minutes(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A resource the web services do not know stays in the browser ten minutes."""
+    value = AnnotationResource(
+        resource="CHEBI:999999999", warnings=["Term 'CHEBI:999999999' is not on ChEBI."]
+    )
+    monkeypatch.setattr(annotations.resource_cache(), "get", lambda resource: value)
+    response = client.get(
+        "/api/annotation_resource", params={"resource": "CHEBI:999999999"}
+    )
+    assert response.headers["cache-control"] == "public, max-age=600"
+
+
 def test_annotation_resource_too_long(client: TestClient) -> None:
     """A resource longer than 2,000 characters is refused by the error contract."""
     response = client.get("/api/annotation_resource", params={"resource": "x" * 2001})
