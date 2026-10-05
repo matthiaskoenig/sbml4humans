@@ -4,14 +4,20 @@ What changed in every version of SBML4Humans, the newest first. The notes of a v
 
 ## 0.11.0
 
-A report says what is wrong with a model: the errors and warnings of the validation of libsbml stand next to the elements they concern.
+A report says what is wrong with a model: the errors and warnings of the validation of libsbml stand next to the elements they concern, and they arrive after the report, which appears as fast as before.
 
 ### New
 - the report shows the validation of libsbml: errors and warnings in the app bar, at the rows and the types, in the inspector of an element and as one list in the inspector of the document ([#3](https://github.com/matthiaskoenig/sbml4humans/issues/3))
+- the validation runs apart from the report, in a process of its own on the server: the report appears first, a quiet chip "validating" shows while the validation runs, and its counts and marks appear when it is done; a validation which failed says so, with its message as the tooltip
 - the number of the rule of an issue opens the explanation which states the text of that rule, where the glossary cites it
 - the validation of a document of the comp package checks its external model definitions against the documents of the report alone; it reads no other file and fetches no url
-- a document whose main model expands to more than 1,000 comp submodel instances is not validated, so that its report does not take minutes; the report says "not validated" and lists the errors of reading the file
+- a document of the comp package which expands to more than 10,000 elements, its own and those of its submodel instances, is not validated; the report says "not validated" and lists the errors of reading the file
+- a validation may take 60 seconds and reserve 2 GiB of memory; one which runs out of either, or which the server has no room for at the moment, says "not validated" and why. Close to the memory limit libsbml may report fewer issues than a document has
 - the document, the model and the external model definitions carry the mark of their issues in the type bar
+- the api answers the validation of a source apart from its report, at `GET /api/validation/examples/{id}`, `GET /api/validation/url`, `POST /api/validation/file`, `POST /api/validation/content` and `GET /api/validation/upload/{id}`, described by its own JSON schema
+
+### Deployment
+- the validations run in child processes of the backend, at most half the cpus of the container at a time unless `SBML4HUMANS_VALIDATIONS` sets their number
 
 ## 0.10.0
 

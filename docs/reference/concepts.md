@@ -227,7 +227,7 @@ Such a link shows the file name of the other entry next to the element, and foll
 
 The errors and warnings libsbml finds in the document.
 
-The report runs the consistency checks of [libsbml](https://sbml.org/software/libsbml/) on every document with the categories libsbml checks by default: the identifiers, the general rules of the specification and of its packages, the SBO terms, the math, the units, whether the model is overdetermined and the modelling practice. The errors libsbml finds while it reads the file are part of it too.
+sbml4humans runs the consistency checks of [libsbml](https://sbml.org/software/libsbml/) on every document with the categories libsbml checks by default: the identifiers, the general rules of the specification and of its packages, the SBO terms, the math, the units, whether the model is overdetermined and the modelling practice. The errors libsbml finds while it reads the file are part of it too.
 
 libsbml checks in stages and stops after the first stage which finds an error, so a document with an error of its identifiers shows none of its unit warnings until that error is fixed.
 
@@ -235,7 +235,11 @@ libsbml reports where in the file an issue is, not which element it concerns, so
 
 The external model definitions are checked against the documents which are part of the report; the validation reads no other file and fetches no url.
 
-To check a model of the comp package libsbml instantiates every submodel of its main model, the submodels of those in turn, along the [model](model.md) definitions and the [external model definitions](externalmodeldefinition.md), so the work grows with the product of the submodels of every level. A document whose main model expands to more than 1,000 submodel instances is not validated: the report says so in the place of the counts and in the inspector of the document, and lists only the errors libsbml finds while it reads the file.
+The validation runs apart from the report, in a process of its own on the server: the report appears first, and the errors and warnings appear when the validation is done, while a chip "validating" stands in the place of the counts. A validation which failed says so in that place, with the message of the failure.
+
+To check a model of the comp package libsbml instantiates every submodel of its main model, the submodels of those in turn, along the [model](model.md) definitions and the [external model definitions](externalmodeldefinition.md), so the work grows with the product of the submodels of every level. A document with submodels which expands to more than 10,000 elements, its own and those of every instance, is not validated, and only the errors libsbml finds while it reads the file are listed; a document without submodels is never skipped for its size.
+
+A validation may take 60 seconds and its process may reserve 2 GiB of memory; one which runs out of either is stopped, and close to the memory limit libsbml may report fewer issues than the document has. The server runs a few validations at a time, and one it has no room for is not run: reloading the report later tries again. A document which was not validated says so and why in the place of the counts and in the inspector of the document. These limits keep the server responsive, they do not make a validation complete.
 
 ## rule
 
