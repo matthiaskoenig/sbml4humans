@@ -80,9 +80,9 @@ const unresolvedCount = computed(() =>
   <template v-else>
     <ul class="flex flex-col gap-2">
       <li v-for="(term, i) in shownTerms" :key="i" data-testid="cvterm">
-        <p class="font-mono text-xs text-gray-500">{{ term.qualifier }}</p>
         <CvTermResourceList
           :resources="term.resources"
+          :qualifier="term.qualifier"
           :auto-resolve-limit="autoResolveLimit(i)"
           @show-all="expandedTerms.add(i)"
         />

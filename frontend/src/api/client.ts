@@ -1,4 +1,5 @@
-import type { AnnotationInfo, ExampleMetaData, ReportResponse } from "@/api/types";
+import type { ExampleMetaData, ReportResponse } from "@/api/types";
+import type { AnnotationResource } from "@/types/annotation";
 
 const API_URL: string = import.meta.env.VITE_API_URL;
 
@@ -117,8 +118,16 @@ export async function pingLocal(): Promise<void> {
 /** Resolve an annotation resource (identifiers.org and similar) via pymetadata. Aborts after 15
  * seconds, so a request the annotation service never answers still fails like any other error
  * instead of holding its resolve queue slot forever. */
-export function getAnnotationResource(resource: string): Promise<AnnotationInfo> {
-  return request<AnnotationInfo>(`/annotation_resource?resource=${encodeURIComponent(resource)}`, {
-    signal: AbortSignal.timeout(15_000),
-  });
+export function getAnnotationResource(resource: string): Promise<AnnotationResource> {
+  return request<AnnotationResource>(
+    `/annotation_resource?resource=${encodeURIComponent(resource)}`,
+    {
+      signal: AbortSignal.timeout(15_000),
+    },
+  );
+}
+
+/** The url of the structure of a ChEBI compound, the source of an `<img>`. */
+export function annotationStructureUrl(chebi: string): string {
+  return `${API_URL}/annotation_structure/${encodeURIComponent(chebi)}`;
 }

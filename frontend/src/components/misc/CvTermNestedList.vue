@@ -12,8 +12,11 @@ defineProps<{ terms: CVTerm[]; autoResolveLimit: number }>();
 <template>
   <ul class="mt-1 ml-2 flex flex-col gap-1 border-l border-gray-200 pl-2">
     <li v-for="(term, i) in terms" :key="i" data-testid="cvterm-nested">
-      <p class="font-mono text-xs text-gray-500">{{ term.qualifier }}</p>
-      <CvTermResourceList :resources="term.resources" :auto-resolve-limit="autoResolveLimit" />
+      <CvTermResourceList
+        :resources="term.resources"
+        :qualifier="term.qualifier"
+        :auto-resolve-limit="autoResolveLimit"
+      />
       <CvTermNestedList
         v-if="term.nested?.length"
         :terms="term.nested"

@@ -2,34 +2,40 @@
 import { onBeforeUnmount, reactive, watch, watchEffect } from "vue";
 
 import { resolveAnnotation } from "@/api/annotations";
-import type { AnnotationInfo } from "@/api/types";
+import AnnotationCard, { type AnnotationCardState } from "@/components/misc/AnnotationCard.vue";
 import ShowAllButton from "@/components/misc/ShowAllButton.vue";
 import { useLimitedList } from "@/report/limitedList";
-import { isHttpUrl } from "@/report/text";
+import type { AnnotationResource } from "@/types/annotation";
 
 /** The resources of one CV term of `CvTermList`, shown and resolved up to LIST_LIMIT at a time:
  * a reaction of Recon3D carries up to 258 of them. Only the first `autoResolveLimit` shown
  * resources resolve, in order: a resource shown beyond the limit renders as an unresolved link,
  * without a label, until `CvTermList` lifts the limit, which it does for a click on this term's
  * own "show all" (emitted as `showAll`) or on the element's "resolve all". */
-const props = withDefaults(defineProps<{ resources: string[]; autoResolveLimit?: number }>(), {
-  autoResolveLimit: Infinity,
-});
+const props = withDefaults(
+  defineProps<{ resources: string[]; qualifier: string; autoResolveLimit?: number }>(),
+  {
+    autoResolveLimit: Infinity,
+  },
+);
 const emit = defineEmits<{ showAll: [] }>();
-const resolved = reactive(new Map<string, AnnotationInfo | null>());
+const resolved = reactive(new Map<string, AnnotationResource>());
+// the resources whose resolve failed, which the card says
+const failed = reactive(new Set<string>());
 // Non reactive: which resources were already requested, so a display reset can never re-trigger
 // a fetch. Keyed by the resource itself, so a component instance the inspector reuses for another
 // element still requests that element's resources, since they are not in this set yet.
 const started = new Set<string>();
 // The AbortController of every resource requested for the current list, so a resolve that has
 // not started an actual request yet can be cancelled once the list moves on.
-const controllers = new Map<string, AbortController>();
+const controllers = reactive(new Map<string, AbortController>());
 
 function cancelPending(): void {
   for (const controller of controllers.values()) controller.abort();
   controllers.clear();
   started.clear();
   resolved.clear();
+  failed.clear();
 }
 
 // cancel the not yet started resolves of the previous list, forget what it requested and drop
@@ -59,40 +65,31 @@ watchEffect(() => {
     const current = (): boolean => controllers.get(resource) === controller;
     resolveAnnotation(resource, controller.signal)
       .then((info) => resolved.set(resource, info))
-      .catch(() => undefined)
+      .catch(() => {
+        if (current() && !controller.signal.aborted) failed.add(resource);
+      })
       .finally(() => {
         if (current()) controllers.delete(resource);
       });
   });
 });
 
-function href(resource: string): string {
-  return isHttpUrl(resource)
-    ? resource
-    : `https://identifiers.org/${resource.replace(/^urn:miriam:/, "")}`;
+function stateOf(resource: string): AnnotationCardState {
+  if (resolved.has(resource)) return "resolved";
+  if (failed.has(resource)) return "failed";
+  return controllers.has(resource) ? "loading" : "idle";
 }
 </script>
 
 <template>
-  <ul class="ml-2 flex flex-col gap-0.5">
+  <ul class="flex flex-col gap-2">
     <li v-for="resource in shown" :key="resource" data-testid="cvterm-resource">
-      <a
-        :href="href(resource)"
-        target="_blank"
-        rel="noopener"
-        class="break-words text-link hover:underline"
-      >
-        <template v-if="resolved.get(resource)?.label">{{
-          resolved.get(resource)!.label
-        }}</template>
-        <template v-else>{{ resource }}</template>
-      </a>
-      <span v-if="resolved.get(resource)?.label" class="ml-1 font-mono text-xs text-gray-500">{{
-        resolved.get(resource)!.term ?? resource
-      }}</span>
-      <p v-if="resolved.get(resource)?.description" class="text-xs text-gray-600">
-        {{ resolved.get(resource)!.description }}
-      </p>
+      <AnnotationCard
+        :resource="resource"
+        :qualifier="qualifier"
+        :info="resolved.get(resource)"
+        :state="stateOf(resource)"
+      />
     </li>
   </ul>
   <ShowAllButton

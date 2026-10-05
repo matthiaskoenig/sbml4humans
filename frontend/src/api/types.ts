@@ -133,20 +133,3 @@ export interface ExampleMetaData {
   description: string | null;
   packages: string[];
 }
-
-/** `GET /api/annotation_resource` body (snake_case, as pymetadata returns it). */
-export interface AnnotationInfo {
-  resource: string;
-  resource_normalized: string | null;
-  collection: string | null;
-  term: string | null;
-  label: string | null;
-  description: string | null;
-  url: string | null;
-  /** synonyms and cross references of the term, as objects of the ontology service; the report
-   * shows neither of them. */
-  synonyms: unknown[];
-  xrefs: unknown[];
-  errors: string[];
-  warnings: string[];
-}

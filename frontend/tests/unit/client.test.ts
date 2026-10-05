@@ -108,23 +108,21 @@ describe("api client", () => {
       vi.fn().mockResolvedValue(
         jsonResponse({
           resource: "https://identifiers.org/chebi/CHEBI:15377",
-          label: "water",
+          ontology: { label: "water" },
           errors: ["no ols"],
           warnings: [],
         }),
       ),
     );
     const info = await getAnnotationResource("https://identifiers.org/chebi/CHEBI:15377");
-    expect(info.label).toBe("water");
+    expect(info.ontology?.label).toBe("water");
   });
 
   it("aborts an annotation resource request after 15 seconds", async () => {
     const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
     const fetchMock = vi
       .fn()
-      .mockResolvedValue(
-        jsonResponse({ resource: "https://identifiers.org/chebi/CHEBI:15377", label: "water" }),
-      );
+      .mockResolvedValue(jsonResponse({ resource: "https://identifiers.org/chebi/CHEBI:15377" }));
     vi.stubGlobal("fetch", fetchMock);
     await getAnnotationResource("https://identifiers.org/chebi/CHEBI:15377");
     expect(timeoutSpy).toHaveBeenCalledWith(15_000);
