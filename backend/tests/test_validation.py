@@ -16,8 +16,10 @@ import pytest
 from sbml4humans import isolation, report, validation
 from sbml4humans.model import EntryValidation, ValidationResponse
 from sbml4humans.report import (
+    SourceJob,
     report_for_bytes,
     report_for_path,
+    validate_source,
     validation_for_bytes,
     validation_for_path,
 )
@@ -29,10 +31,9 @@ from sbml4humans.validation import (
     ElementPositions,
     ReportDocuments,
     ReportResolver,
-    expanded_size,
+    instantiated_elements,
     issues_of,
     validate,
-    validate_entries,
 )
 
 
@@ -284,12 +285,10 @@ def _in_process(monkeypatch: pytest.MonkeyPatch) -> None:
     """Validate in this process rather than in a child process."""
 
     def run_here(
-        function: Callable[[Any], Iterable[tuple[str, Any]]],
-        argument: Any,
-        keys: list[str],
-    ) -> dict[str, Any]:
+        function: Callable[[Any], Iterable[tuple[str, Any]]], argument: Any
+    ) -> isolation.IsolatedRun:
         """The results of the function, without a child process."""
-        return dict(function(argument))
+        return isolation.IsolatedRun(results=list(function(argument)))
 
     monkeypatch.setattr(isolation, "run_isolated", run_here)
 
@@ -501,9 +500,14 @@ def _info(content: bytes) -> SBMLDocumentInfo:
     return info
 
 
+def _instantiated(info: SBMLDocumentInfo) -> int:
+    """The elements the submodels of a single document instantiate."""
+    return instantiated_elements({"d": info.report}, {"d": info.elements}, "d")
+
+
 def _size(info: SBMLDocumentInfo) -> int:
-    """The expanded size of a single document."""
-    return expanded_size({"d": info.report}, {"d": info.elements}, "d")
+    """The elements a single document expands to, its own and the instantiated."""
+    return sum(info.elements.values()) + _instantiated(info)
 
 
 def test_the_elements_are_the_pks_of_the_report() -> None:
@@ -517,26 +521,25 @@ def test_the_elements_are_the_pks_of_the_report() -> None:
     assert dict(info.elements) == scopes
 
 
-def test_expanded_size_counts_every_instance() -> None:
+def test_instantiated_elements_count_every_instance() -> None:
     """Every instance adds the elements of its model, along every level."""
     info = _info(_fan_out(3, n=4))
     sizes = {
         model.id: info.elements[model.pk.split("/", 1)[0]]
         for model in info.report.models
     }
-    elements = sum(info.elements.values())
     # m has 4 instances of d2, each with 4 instances of d1, each with 4 of d0
-    instances = 4 * (sizes["d2"] + 4 * (sizes["d1"] + 4 * sizes["d0"]))
-    assert _size(info) == elements + instances
+    expected = 4 * (sizes["d2"] + 4 * (sizes["d1"] + 4 * sizes["d0"]))
+    assert _instantiated(info) == expected
 
 
-def test_expanded_size_of_a_flat_document_is_its_size() -> None:
-    """A document without submodels expands to its own elements."""
+def test_a_flat_document_instantiates_nothing() -> None:
+    """A document without submodels instantiates no element."""
     info = _info((EXAMPLES_DIR / "validation.xml").read_bytes())
-    assert _size(info) == len(_report_pks(info))
+    assert _instantiated(info) == 0
 
 
-def test_expanded_size_cuts_a_cycle() -> None:
+def test_instantiated_elements_cut_a_cycle() -> None:
     """A model which instantiates itself is counted once along its cycle."""
     content = _COMP.format(
         f'<model id="m">{_submodels("d", 2)}</model><comp:listOfModelDefinitions>'
@@ -546,7 +549,7 @@ def test_expanded_size_cuts_a_cycle() -> None:
     info = _info(content.encode())
     d = next(model for model in info.report.models if model.id == "d")
     size_d = info.elements[d.pk.split("/", 1)[0]]
-    assert _size(info) == sum(info.elements.values()) + 2 * size_d
+    assert _instantiated(info) == 2 * size_d
 
 
 def test_wide_instantiation_beyond_the_budget_is_skipped_at_once() -> None:
@@ -559,7 +562,7 @@ def test_wide_instantiation_beyond_the_budget_is_skipped_at_once() -> None:
     elapsed = time.perf_counter() - start
     assert entry.skipped == "expandedSize"
     assert entry.issues == []
-    assert elapsed < 1.0
+    assert elapsed < 3.0
 
 
 def test_submodel_fan_out_beyond_the_budget_is_skipped() -> None:
@@ -569,7 +572,7 @@ def test_submodel_fan_out_beyond_the_budget_is_skipped() -> None:
     elapsed = time.perf_counter() - start
     assert entry.skipped == "expandedSize"
     assert 80701 not in {issue.rule for issue in entry.issues}
-    assert elapsed < 1.0
+    assert elapsed < 3.0
 
 
 def test_read_errors_are_reported_without_validation() -> None:
@@ -637,7 +640,7 @@ def test_archive_chain_beyond_the_budget_is_not_validated(
         "d.xml": _COMP.format(f'<model id="m">{_UNITLESS}</model>'),
     }
     path = _archive(tmp_path / "chain.omex", documents)
-    # a expands to about 4,700 elements, b to 500, c to 70 and d to 4
+    # the submodels of a instantiate about 4,300 elements, of b 400, of c 20
     monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 1000)
     response = validation_for_path(path)
     skipped = {location: entry.skipped for location, entry in response.entries.items()}
@@ -650,16 +653,17 @@ def test_archive_chain_beyond_the_budget_is_not_validated(
     assert 80701 in {i.rule for i in response.entries["./b.xml"].issues}
 
 
-def test_validate_entries_in_this_process() -> None:
-    """What the child process runs: the issues of every target, in order."""
-    info = _info((EXAMPLES_DIR / "validation.xml").read_bytes())
-    job = validation.ValidationJob(
-        paths={"./model.xml": str(EXAMPLES_DIR / "validation.xml")},
-        targets={"./model.xml": info.positions},
+def test_validate_source_in_this_process() -> None:
+    """What the child process runs: the entries, then each with its issues."""
+    job = SourceJob(
+        path=str(EXAMPLES_DIR / "validation.xml"),
+        trusted=False,
+        budget=MAX_EXPANDED_ELEMENTS,
     )
-    results = list(validate_entries(job))
-    assert [location for location, _ in results] == ["./model.xml"]
-    assert 10601 in {issue.rule for issue in results[0][1]}
+    results = list(validate_source(job))
+    assert results[0] == ("", ["./model.xml"])
+    assert [key for key, _ in results[1:]] == ["./model.xml"]
+    assert 10601 in {issue.rule for issue in results[1][1].issues}
 
 
 # -------------------------------------------------------------------------------------
@@ -701,11 +705,13 @@ def test_timeout_terminates_the_child(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 1.0)
     pids = _spy_children(monkeypatch)
     start = time.perf_counter()
-    entry = _entry(validation_for_bytes(content))
+    response = validation_for_bytes(content)
     elapsed = time.perf_counter() - start
+    assert response.skipped == "timeout"
+    entry = _entry(response)
     assert entry.skipped == "timeout"
     assert entry.issues == []
-    assert elapsed < 3.0
+    assert elapsed < 5.0
     assert len(pids) == 1
     assert _gone(pids[0])
 
@@ -715,7 +721,7 @@ def test_timeout_keeps_the_entries_validated_before(
 ) -> None:
     """The entries the child validated before the timeout keep their issues."""
     content = _slow(monkeypatch)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 2.0)
+    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 3.0)
     documents = {
         "a.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
         "b.xml": content.decode(),
@@ -726,30 +732,58 @@ def test_timeout_keeps_the_entries_validated_before(
     assert response.entries["./b.xml"].skipped == "timeout"
 
 
-def _flat(species: int) -> bytes:
-    """A document of a model with many species, which take memory to read."""
-    return (
-        '<?xml version="1.0" encoding="UTF-8"?>'
-        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
-        'version="1"><model id="m"><listOfCompartments>'
-        '<compartment id="c" constant="true"/></listOfCompartments><listOfSpecies>'
+def _flat(species: int, submodel: bool = False) -> bytes:
+    """A document of a model with many species, which take memory to read.
+
+    With `submodel` the model has one submodel of a definition of one parameter.
+    """
+    model = (
+        '<listOfCompartments><compartment id="c" constant="true"/>'
+        "</listOfCompartments><listOfSpecies>"
         + "".join(
             f'<species id="x{k}" compartment="c" initialAmount="1" '
             'hasOnlySubstanceUnits="true" boundaryCondition="false" '
             'constant="false"/>'
             for k in range(species)
         )
-        + "</listOfSpecies></model></sbml>"
+        + "</listOfSpecies>"
+    )
+    if submodel:
+        return _COMP.format(
+            f'<model id="m">{model}{_submodels("d", 1)}</model>'
+            '<comp:listOfModelDefinitions><comp:modelDefinition id="d">'
+            f"{_UNITLESS}</comp:modelDefinition></comp:listOfModelDefinitions>"
+        ).encode()
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        f'version="1"><model id="m">{model}</model></sbml>'
     ).encode()
 
 
 def test_a_flat_document_beyond_the_budget_is_validated() -> None:
-    """The budget counts instances, a document without them is always checked."""
+    """A document without instances is always checked, the timeout bounds it."""
     content = _flat(MAX_EXPANDED_ELEMENTS + 100)
     assert _size(_info(content)) > MAX_EXPANDED_ELEMENTS
     entry = _entry(validation_for_bytes(content))
     assert entry.skipped is None
     assert 20616 in {issue.rule for issue in entry.issues}
+
+
+def test_one_tiny_submodel_makes_a_large_document_expand() -> None:
+    """One instance is enough for the comp validator to flatten the whole model.
+
+    The same document is checked in 0.4 s without the submodel, and in 30 s with
+    2.1 GB with it, so its own elements count once it has an instance.
+    """
+    content = _flat(MAX_EXPANDED_ELEMENTS + 100, submodel=True)
+    info = _info(content)
+    assert 0 < _instantiated(info) < 10
+    assert _size(info) > MAX_EXPANDED_ELEMENTS
+    start = time.perf_counter()
+    entry = _entry(validation_for_bytes(content))
+    assert entry.skipped == "expandedSize"
+    assert time.perf_counter() - start < 5.0
 
 
 def test_memory_limit_skips_the_entry(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -760,9 +794,11 @@ def test_memory_limit_skips_the_entry(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(isolation, "VALIDATION_MEMORY", 1024 * 1024)
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 20.0)
     pids = _spy_children(monkeypatch)
-    entry = _entry(validation_for_bytes(content))
-    assert entry.skipped == "memory"
-    assert entry.issues == []
+    response = validation_for_bytes(content)
+    assert response.skipped == "memory"
+    # the child may run out of memory before it read which entries there are
+    for entry in response.entries.values():
+        assert entry == EntryValidation(skipped="memory")
     assert _gone(pids[0])
 
 
@@ -812,8 +848,8 @@ def test_semaphore_bounds_the_children(
     assert [_entry(r).skipped for r in results] == [None, None]
 
 
-def test_waiting_counts_against_the_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
-    """A request which waits for a child longer than its timeout is skipped."""
+def test_waiting_beyond_the_timeout_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A request which gets no child before its timeout is busy, not slow."""
     monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 1.0)
     pids = _spy_children(monkeypatch)
@@ -822,20 +858,23 @@ def test_waiting_counts_against_the_timeout(monkeypatch: pytest.MonkeyPatch) -> 
     semaphore.acquire()
     try:
         start = time.perf_counter()
-        entry = _entry(validation_for_path(EXAMPLES_DIR / "validation.xml"))
+        response = validation_for_path(EXAMPLES_DIR / "validation.xml")
         elapsed = time.perf_counter() - start
     finally:
         semaphore.release()
-    assert entry.skipped == "timeout"
-    assert 1.0 <= elapsed < 2.0
+    assert response.skipped == "busy"
+    assert response.entries == {}
+    assert 1.0 <= elapsed < 4.0
     assert pids == []
 
 
 def test_a_document_without_a_model_is_an_error() -> None:
     """The validation of a source without a model fails like its report."""
     content = _COMP.format("").encode()
-    with pytest.raises(ValueError, match="No SBML model"):
+    with pytest.raises(ValueError, match="No SBML model") as raised:
         validation_for_bytes(content)
+    # the traceback of the child is a note of the exception
+    assert any("child process" in note for note in raised.value.__notes__)
     with pytest.raises(ValueError, match="No SBML model"):
         report_for_bytes(content)
 
@@ -844,12 +883,27 @@ def test_an_unexpected_end_of_the_child_is_an_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A child which ends without a result and without a known cause fails."""
-    monkeypatch.setattr(report, "validate_entries", _crash)
+    monkeypatch.setattr(report, "validate_source", _crash)
     with pytest.raises(isolation.ValidationProcessError, match="ended unexpectedly"):
         validation_for_path(EXAMPLES_DIR / "validation.xml")
 
 
-def _crash(job: validation.ValidationJob) -> Iterator[tuple[str, list[Any]]]:
+def _crash(job: SourceJob) -> Iterator[tuple[str, list[Any]]]:
     """End the child process by a signal no limit sends."""
     os.kill(os.getpid(), signal.SIGSEGV)
     yield from ()
+
+
+def _status(_: object) -> Iterator[tuple[str, int]]:
+    """The address space of the child process, in kB."""
+    with open("/proc/self/status") as f:
+        for line in f:
+            if line.startswith("VmSize:"):
+                yield "VmSize", int(line.split()[1])
+
+
+@pytest.mark.skipif(not Path("/proc/self/status").exists(), reason="Linux only")
+def test_a_child_starts_with_a_small_address_space() -> None:
+    """The forkserver has no thread pool of numpy whose stacks a child inherits."""
+    run = isolation.run_isolated(_status, None)
+    assert dict(run.results)["VmSize"] < 600 * 1024

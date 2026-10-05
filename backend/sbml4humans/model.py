@@ -1024,29 +1024,42 @@ class ReportResponse(ReportModel):
 # -------------------------------------------------------------------------------------
 # validation
 # -------------------------------------------------------------------------------------
-SkipReason = Literal["expandedSize", "timeout", "memory"]
+SkipReason = Literal["expandedSize", "timeout", "memory", "busy"]
 
 
-class EntryValidation(ReportModel):
+class ValidationModel(ReportModel):
+    """Base of the classes of the validation, which the api always writes in full.
+
+    Every field is required in the schema of serialization, so the types of the
+    frontend state that a value, `null` included, is always there.
+    """
+
+    model_config = ConfigDict(json_schema_serialization_defaults_required=True)
+
+
+class EntryValidation(ValidationModel):
     """The validation of libsbml of one SBML entry of a report.
 
     `skipped` says why the consistency of the document was not checked, in
     which case `issues` holds the issues of reading it alone, or none:
-    `expandedSize`, the comp submodels of the document expand to more elements
-    than are checked in a bounded time, with the read issues; `timeout`, the
-    check did not end in time; `memory`, the check needed more memory than it
-    may use.
+    `expandedSize`, the document expands by its comp submodels to more
+    elements than are checked in a bounded time, with the read issues;
+    `timeout`, the check did not end in time; `memory`, the check needed more
+    memory than it may use; `busy`, the server had no room for the check.
     """
 
     issues: list[ValidationIssue] = Field(default_factory=list)
     skipped: SkipReason | None = None
 
 
-class ValidationResponse(ReportModel):
+class ValidationResponse(ValidationModel):
     """The response of a validation endpoint: one validation per SBML entry.
 
     The entries are keyed and ordered like the reports of the report response
-    of the same source.
+    of the same source. `skipped` says why the validation stopped early, which
+    is also the reason of every entry it did not reach; an entry it did not
+    even read is missing from `entries` (all of them for `busy`).
     """
 
-    entries: dict[str, EntryValidation]
+    entries: dict[str, EntryValidation] = Field(default_factory=dict)
+    skipped: SkipReason | None = None

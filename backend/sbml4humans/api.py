@@ -24,8 +24,11 @@ The validation of libsbml of a source is answered by endpoints of its own below
 `/api/validation/`, which take the sources of the report endpoints with their
 limits and their trust and answer a `ValidationResponse`, so that a report is
 shown before its validation has ended. The validation runs in a child process
-bounded in time and memory (`isolation.py`). The validation of an example is
-kept (`example_validations`) unless a limit ended it.
+bounded in time and memory (`isolation.py`), waited for in a thread of its own
+(`validation_limiter`), so that it never holds a thread of the other endpoints;
+a validation beyond the admission of the server is answered at once as busy.
+The validation of an example is kept (`example_validations`) unless a limit
+ended it.
 
 A report endpoint returns its `ReportResponse` as it is. FastAPI takes an
 instance of the response model without validating it again and writes its JSON
@@ -41,12 +44,14 @@ import logging
 import threading
 import traceback
 from collections import OrderedDict
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from datetime import datetime
 from functools import lru_cache
 from typing import Annotated, Any
 
+from anyio import CapacityLimiter, to_thread
+from anyio.lowlevel import RunVar
 from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
@@ -58,7 +63,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from starlette.responses import Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from sbml4humans import __version__, limits
+from sbml4humans import __version__, isolation, limits
 from sbml4humans.annotations import (
     CHEBI_ID,
     MAX_RESOURCE_LENGTH,
@@ -422,8 +427,8 @@ class ExampleValidations:
     """The validations of the examples, the most recent `EXAMPLE_CACHE_SIZE`.
 
     An example does not change while the server runs, so its validation is kept
-    unless the timeout or the memory limit ended it, which depends on the load
-    of the server and is tried again on the next request.
+    unless the timeout, the memory limit or a busy server ended it, which
+    depends on the load of the server and is tried again on the next request.
     """
 
     def __init__(self, limit: int = EXAMPLE_CACHE_SIZE) -> None:
@@ -442,10 +447,7 @@ class ExampleValidations:
 
     def put(self, example_id: str, validation: ValidationResponse) -> None:
         """Keep the validation of an example, unless a limit ended it."""
-        if any(
-            entry.skipped in ("timeout", "memory")
-            for entry in validation.entries.values()
-        ):
+        if validation.skipped is not None:
             return
         with self._lock:
             self._validations[example_id] = validation
@@ -460,6 +462,39 @@ class ExampleValidations:
 
 example_validations = ExampleValidations()
 
+# the threads of the validations, one per admitted validation, apart from the
+# threadpool of the other endpoints, which a validation waiting for its child
+# would otherwise hold
+_VALIDATION_LIMITER: RunVar[tuple[int, CapacityLimiter]] = RunVar("validations")
+
+
+def validation_limiter() -> CapacityLimiter:
+    """The limiter of the threads of the validations of this event loop."""
+    capacity = isolation.admission_capacity()
+    try:
+        total, limiter = _VALIDATION_LIMITER.get()
+    except LookupError:
+        total, limiter = -1, None
+    if limiter is None or total != capacity:
+        limiter = CapacityLimiter(capacity)
+        _VALIDATION_LIMITER.set((capacity, limiter))
+    return limiter
+
+
+async def run_validation(
+    function: Callable[..., ValidationResponse], *args: Any
+) -> ValidationResponse:
+    """Validate in a thread of the validations, if the server admits it.
+
+    A validation beyond `isolation.admission_capacity()` is answered at once as
+    busy, without an entry, and never holds a thread of the other endpoints.
+    """
+    with isolation.admission() as admitted:
+        if not admitted:
+            logger.warning("a validation was refused, the server is busy")
+            return ValidationResponse(skipped="busy")
+        return await to_thread.run_sync(function, *args, limiter=validation_limiter())
+
 
 @api.get(
     "/api/validation/examples/{example_id}",
@@ -467,7 +502,7 @@ example_validations = ExampleValidations()
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-def validation_of_example(example_id: str) -> ValidationResponse:
+async def validation_of_example(example_id: str) -> ValidationResponse:
     """The validation of an example, kept after the first request for it."""
     validation = example_validations.get(example_id)
     if validation is not None:
@@ -475,7 +510,7 @@ def validation_of_example(example_id: str) -> ValidationResponse:
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    validation = validation_for_example(example)
+    validation = await run_validation(validation_for_example, example)
     example_validations.put(example_id, validation)
     return validation
 
@@ -486,9 +521,9 @@ def validation_of_example(example_id: str) -> ValidationResponse:
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-def validation_of_file(source: UploadFile) -> ValidationResponse:
+async def validation_of_file(source: UploadFile) -> ValidationResponse:
     """Validate an uploaded SBML file or COMBINE archive."""
-    return validation_for_bytes(source.file.read())
+    return await run_validation(validation_for_bytes, await source.read())
 
 
 @api.get(
@@ -497,9 +532,10 @@ def validation_of_file(source: UploadFile) -> ValidationResponse:
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-def validation_of_url(url: str) -> ValidationResponse:
+async def validation_of_url(url: str) -> ValidationResponse:
     """Validate an SBML file or COMBINE archive behind a url."""
-    return validation_for_bytes(download(url))
+    content = await run_in_threadpool(download, url)
+    return await run_validation(validation_for_bytes, content)
 
 
 @api.post(
@@ -510,8 +546,7 @@ def validation_of_url(url: str) -> ValidationResponse:
 )
 async def validation_of_content(request: Request) -> ValidationResponse:
     """Validate the SBML content in the request body."""
-    content = await request.body()
-    return await run_in_threadpool(validation_for_bytes, content)
+    return await run_validation(validation_for_bytes, await request.body())
 
 
 @api.get(
@@ -520,11 +555,12 @@ async def validation_of_content(request: Request) -> ValidationResponse:
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-def validation_of_upload(
+async def validation_of_upload(
     upload_id: str, store: Annotated[UploadStore, Depends(upload_store)]
 ) -> ValidationResponse:
     """Validate an upload."""
-    return validation_for_bytes(store.get(upload_id))
+    content = await run_in_threadpool(store.get, upload_id)
+    return await run_validation(validation_for_bytes, content)
 
 
 @api.get(

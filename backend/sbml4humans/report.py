@@ -20,8 +20,8 @@ before it is extracted.
 
 The validation of libsbml is not part of the report: `validation_for_path`
 reads the entries of a source the same way, without their link graph, and
-checks them in a child process (`isolation.py`), so that the report is answered
-as fast as it is built and its validation when it is finished.
+checks them, all of it in a child process (`isolation.py`), so that the report
+is answered as fast as it is built and its validation when it is finished.
 """
 
 import gzip
@@ -35,6 +35,7 @@ from collections.abc import Iterator
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
@@ -50,15 +51,14 @@ from sbml4humans.model import (
     ManifestEntry,
     ReportEntry,
     ReportResponse,
-    ValidationIssue,
     ValidationResponse,
 )
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 from sbml4humans.validation import (
-    ValidationJob,
-    expanded_size,
+    ReportDocuments,
+    instantiated_elements,
     issues_of,
-    validate_entries,
+    validate,
 )
 
 
@@ -215,20 +215,98 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
     return ReportResponse(uid=read.uid, manifest=manifest, reports=reports)
 
 
+@dataclass(frozen=True)
+class SourceJob:
+    """What the child process of a validation validates.
+
+    Attributes:
+        path: the file of the source, which the server keeps until the child
+            has ended.
+        trusted: as for `report_for_path`.
+        budget: the elements an entry with submodel instances may expand to,
+            read by the server when the validation is asked for.
+    """
+
+    path: str
+    trusted: bool
+    budget: int
+
+
+# the key of the result which names the entries, which no location is
+_LOCATIONS = ""
+
+
+def validate_source(job: SourceJob) -> Iterator[tuple[str, Any]]:
+    """Read a source and validate its entries, what the child process runs.
+
+    The source is read as `report_for_path` reads it, with the same trust and
+    the same limits, so that the pks of the issues are those of its report.
+    An entry with comp submodel instances which expands to more than
+    `job.budget` elements, its own and those its submodels instantiate, is
+    skipped with the issues of reading it. As soon as one submodel is
+    instantiated, the comp validator checks the whole flattened model, whose
+    cost grows faster than its size; a document without instances is checked
+    in a time linear in its size, which the timeout bounds.
+
+    Args:
+        job: the source and the budget.
+
+    Yields:
+        First `("", locations)`, the entries in their order, then the location
+        and the `EntryValidation` of every entry, in that order.
+
+    Raises:
+        ValueError: if no model could be read from an SBML entry.
+        ContentTooLargeError: if the content of an untrusted path exceeds the
+            limits.
+    """
+    with _read(Path(job.path), job.trusted) as read:
+        yield _LOCATIONS, list(read.entries)
+        reports = {
+            location: entry.info.report for location, entry in read.entries.items()
+        }
+        elements = {
+            location: entry.info.elements for location, entry in read.entries.items()
+        }
+        documents = ReportDocuments(
+            {location: entry.info.doc for location, entry in read.entries.items()}
+        )
+        for location, entry in read.entries.items():
+            instantiated = instantiated_elements(reports, elements, location)
+            size = sum(entry.info.elements.values()) + instantiated
+            if instantiated > 0 and size > job.budget:
+                logger.warning(
+                    "'%s' is not validated: it expands to %s elements, more than %s",
+                    location,
+                    size,
+                    job.budget,
+                )
+                yield (
+                    location,
+                    EntryValidation(
+                        issues=issues_of(entry.info.doc, entry.info.positions),
+                        skipped="expandedSize",
+                    ),
+                )
+                continue
+            issues = validate(entry.info.doc, entry.info.positions, documents, location)
+            yield location, EntryValidation(issues=issues)
+
+
 def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse:
     """Validate the SBML entries of an SBML file or a COMBINE archive.
 
-    The entries are read as `report_for_path` reads them, with the same trust
-    and the same limits, so that the pks of the issues are those of the report
-    of the path. An entry whose comp submodels expand it to more than
-    `MAX_EXPANDED_ELEMENTS` elements is skipped with the issues of reading it,
-    the others are checked in a child process (`isolation.run_isolated`),
-    bounded in time and memory, which reads the files of the archive while it
-    is extracted.
+    Every touch of libsbml, from reading the source on, is in a child process
+    (`validate_source` run by `isolation.run_isolated`), bounded in time and
+    memory; the path has to be there until this returns.
 
     Args:
         path: the SBML file, plain or gzipped, or the COMBINE archive.
         trusted: as for `report_for_path`.
+
+    Returns:
+        The validation of every entry; when it stopped early, its reason as
+        the reason of the response and of every entry it did not reach.
 
     Raises:
         ValueError: if no model could be read from an SBML entry.
@@ -236,60 +314,29 @@ def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse
             limits.
         ValidationProcessError: if the child process ended unexpectedly.
     """
-    with _read(path, trusted) as read:
-        reports = {
-            location: entry.info.report for location, entry in read.entries.items()
-        }
-        elements = {
-            location: entry.info.elements for location, entry in read.entries.items()
-        }
-        skipped: dict[str, EntryValidation] = {}
-        targets: dict[str, validation.ElementPositions] = {}
-        budget = validation.MAX_EXPANDED_ELEMENTS
-        for location, entry in read.entries.items():
-            size = expanded_size(reports, elements, location)
-            # a flat document is checked in a time linear in its size, which
-            # the timeout bounds, so only instances count against the budget
-            if size > budget and size > sum(entry.info.elements.values()):
-                logger.warning(
-                    "'%s' is not validated: it expands to %s elements, more than %s",
-                    location,
-                    size,
-                    budget,
-                )
-                skipped[location] = EntryValidation(
-                    issues=issues_of(entry.info.doc, entry.info.positions),
-                    skipped="expandedSize",
-                )
-            else:
-                targets[location] = entry.info.positions
-        results: dict[str, list[ValidationIssue] | isolation.Interruption] = {}
-        if targets:
-            start = time.perf_counter()
-            job = ValidationJob(
-                paths={
-                    location: str(read.omex.get_path(location))
-                    for location in read.entries
-                },
-                targets=targets,
-            )
-            results = isolation.run_isolated(validate_entries, job, list(targets))
-            logger.info(
-                "validation of '%s' in %s s",
-                read.uid,
-                round(time.perf_counter() - start, 3),
-            )
-    entries: dict[str, EntryValidation] = {}
-    for location in read.entries:
-        if location in skipped:
-            entries[location] = skipped[location]
-            continue
-        result = results[location]
-        if isinstance(result, list):
-            entries[location] = EntryValidation(issues=result)
+    start = time.perf_counter()
+    job = SourceJob(
+        path=str(path), trusted=trusted, budget=validation.MAX_EXPANDED_ELEMENTS
+    )
+    run = isolation.run_isolated(validate_source, job)
+    locations: list[str] = []
+    validated: dict[str, EntryValidation] = {}
+    for key, value in run.results:
+        if key == _LOCATIONS:
+            locations = value
         else:
-            entries[location] = EntryValidation(skipped=result)
-    return ValidationResponse(entries=entries)
+            validated[key] = value
+    entries = {
+        location: validated.get(location, EntryValidation(skipped=run.interruption))
+        for location in locations
+    }
+    logger.info(
+        "validation of '%s' in %s s%s",
+        path.name,
+        round(time.perf_counter() - start, 3),
+        f", {run.interruption}" if run.interruption else "",
+    )
+    return ValidationResponse(entries=entries, skipped=run.interruption)
 
 
 def _resolve(

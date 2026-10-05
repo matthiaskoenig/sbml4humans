@@ -4,6 +4,8 @@ import asyncio
 import contextlib
 import io
 import json
+import threading
+import time
 from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
@@ -47,7 +49,8 @@ def _check_error(data: dict[str, Any], info: dict[str, str] | None = None) -> No
 def _check_validation(data: dict[str, Any], entries: int = 1) -> None:
     """Check validation data returned by the api."""
     assert "errors" not in data
-    assert set(data) == {"entries"}
+    assert set(data) == {"entries", "skipped"}
+    assert data["skipped"] is None
     assert len(data["entries"]) == entries
     for entry in data["entries"].values():
         assert set(entry) == {"issues", "skipped"}
@@ -693,7 +696,7 @@ def test_validation_of_an_example_with_a_timeout_is_not_kept(
     monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 0.0)
     api.example_validations.clear()
     data = client.get("/api/validation/examples/species (species.xml)").json()
-    assert next(iter(data["entries"].values()))["skipped"] == "timeout"
+    assert data["skipped"] == "timeout"
     monkeypatch.undo()
     data = client.get("/api/validation/examples/species (species.xml)").json()
     assert next(iter(data["entries"].values()))["skipped"] is None
@@ -842,3 +845,99 @@ def test_a_skipped_validation_is_answered(client: TestClient) -> None:
     data = client.post("/api/validation/content", content=content.encode()).json()
     _check_validation(data)
     assert data["entries"]["./model.xml"]["skipped"] == "expandedSize"
+
+
+def test_a_validation_beyond_the_admission_is_busy_at_once(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A server full of validations answers a further one at once as busy."""
+    from sbml4humans import isolation
+
+    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
+    monkeypatch.setattr(isolation, "MAX_WAITING_VALIDATIONS", 0)
+    with isolation.admission() as admitted:
+        assert admitted
+        start = time.perf_counter()
+        response = client.post(
+            "/api/validation/content", content=REPRESSILATOR_SBML.read_bytes()
+        )
+        elapsed = time.perf_counter() - start
+    assert response.json() == {"entries": {}, "skipped": "busy"}
+    assert elapsed < 2.0
+
+
+def _slow_content() -> bytes:
+    """A document whose validation takes more than 20 seconds without the budget."""
+    submodels = "".join(
+        f'<comp:submodel comp:id="s{i}" comp:modelRef="d"/>' for i in range(1000)
+    )
+    species = "".join(
+        f'<species id="x{k}" compartment="c" initialAmount="1" '
+        'hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false"/>'
+        for k in range(20)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" '
+        'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" '
+        'level="3" version="1" comp:required="true">'
+        f'<model id="m"><comp:listOfSubmodels>{submodels}</comp:listOfSubmodels>'
+        '</model><comp:listOfModelDefinitions><comp:modelDefinition id="d">'
+        '<listOfCompartments><compartment id="c" constant="true"/>'
+        f"</listOfCompartments><listOfSpecies>{species}</listOfSpecies>"
+        "</comp:modelDefinition></comp:listOfModelDefinitions></sbml>"
+    ).encode()
+
+
+def test_reports_are_answered_while_validations_are_saturated(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Validations never hold a thread of the other endpoints.
+
+    The threadpool of the other endpoints is one thread here: two validations,
+    one running and one waiting for the child, leave it free for a report, and
+    a third validation is busy at once.
+    """
+    from anyio import to_thread
+
+    from sbml4humans import isolation, validation
+
+    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 10**9)
+    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
+    monkeypatch.setattr(isolation, "MAX_WAITING_VALIDATIONS", 1)
+    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 5.0)
+    content = _slow_content()
+
+    async def one_thread() -> None:
+        to_thread.current_default_thread_limiter().total_tokens = 1
+
+    with TestClient(api.api, raise_server_exceptions=False) as local_client:
+        assert local_client.portal is not None
+        local_client.portal.call(one_thread)
+        answers: list[dict[str, Any]] = []
+
+        def validate() -> None:
+            response = local_client.post("/api/validation/content", content=content)
+            answers.append(response.json())
+
+        threads = [threading.Thread(target=validate) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        waited = time.perf_counter()
+        while isolation._admitted < 2 and time.perf_counter() - waited < 10:
+            time.sleep(0.01)
+        assert isolation._admitted == 2
+
+        start = time.perf_counter()
+        report = local_client.post(
+            "/api/content", content=REPRESSILATOR_SBML.read_bytes()
+        )
+        busy = local_client.post("/api/validation/content", content=content)
+        elapsed = time.perf_counter() - start
+        _check_report(report.json())
+        assert busy.json() == {"entries": {}, "skipped": "busy"}
+        assert elapsed < 3.0
+        for thread in threads:
+            thread.join()
+    # the first ran out of time in its child, the second got no child in time
+    assert sorted(answer["skipped"] for answer in answers) == ["busy", "timeout"]

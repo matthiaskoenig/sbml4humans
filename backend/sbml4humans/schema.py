@@ -8,7 +8,7 @@ change of a model and commit the schemas.
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 from pydantic.json_schema import GenerateJsonSchema
@@ -37,10 +37,14 @@ class _GenerateJsonSchemaWithoutPropertyTitles(GenerateJsonSchema):
         return False
 
 
-def _schema_json(model: type[BaseModel]) -> str:
+def _schema_json(
+    model: type[BaseModel], mode: Literal["validation", "serialization"] = "validation"
+) -> str:
     """The JSON schema of a model with camelCase properties."""
     schema = model.model_json_schema(
-        by_alias=True, schema_generator=_GenerateJsonSchemaWithoutPropertyTitles
+        by_alias=True,
+        schema_generator=_GenerateJsonSchemaWithoutPropertyTitles,
+        mode=mode,
     )
     return json.dumps(schema, indent=2, ensure_ascii=False) + "\n"
 
@@ -56,8 +60,12 @@ def annotation_schema_json() -> str:
 
 
 def validation_schema_json() -> str:
-    """The JSON schema of `ValidationResponse` with camelCase properties."""
-    return _schema_json(ValidationResponse)
+    """The JSON schema of `ValidationResponse` as the api writes it.
+
+    The schema of serialization, in which every field is required: the api
+    always writes all of them.
+    """
+    return _schema_json(ValidationResponse, mode="serialization")
 
 
 def main(argv: list[str]) -> None:

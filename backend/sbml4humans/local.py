@@ -60,6 +60,7 @@ from sbml4humans.api import (
     add_error_contract,
     add_gzip,
     api,
+    run_validation,
 )
 from sbml4humans.localstate import (
     HOST,
@@ -301,7 +302,7 @@ class LocalApp:
             response_model=ValidationResponse,
             response_model_by_alias=True,
         )
-        def read_validation(token: str) -> ValidationResponse:
+        async def read_validation(token: str) -> ValidationResponse:
             """Validate the path of the report of a token, trusted like its report.
 
             The file is read again, as it is now on the disk of the user.
@@ -310,7 +311,7 @@ class LocalApp:
                 path = self.reports.get(token).path
             except KeyError:
                 raise ReportNotFoundError(token) from None
-            return validation_for_path(path, trusted=True)
+            return await run_validation(validation_for_path, path, True)
 
         @local.post("/api/local/shutdown")
         def shutdown(

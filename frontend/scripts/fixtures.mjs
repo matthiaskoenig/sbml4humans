@@ -29,41 +29,47 @@ const EXAMPLES = {
   list_of: "list_of (list_of.xml)",
 };
 
+const COMP_SBML =
+  '<?xml version="1.0" encoding="UTF-8"?>' +
+  '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" ' +
+  'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" ' +
+  'level="3" version="1" comp:required="true">';
+
+/** A list of `n` submodels of one model. */
+function submodels(modelRef, n) {
+  const items = Array.from(
+    { length: n },
+    (_, i) => `<comp:submodel comp:id="s${i}" comp:modelRef="${modelRef}"/>`,
+  );
+  return `<comp:listOfSubmodels>${items.join("")}</comp:listOfSubmodels>`;
+}
+
 /**
- * A main model of 1,000 submodels of a model definition of 20 species without units: its
- * submodels expand it beyond the budget of the validation, which skips it.
+ * A main model of ten submodels on five levels, 3 KB which expand to more than 100,000
+ * instances: beyond the budget of the validation, which skips it.
  */
-function wideComp() {
-  const species = Array.from(
-    { length: 20 },
-    (_, k) =>
-      `<species id="x${k}" compartment="c" initialAmount="1" hasOnlySubstanceUnits="true" ` +
-      `boundaryCondition="false" constant="false"/>`,
-  ).join("");
-  const submodels = Array.from(
-    { length: 1000 },
-    (_, i) => `<comp:submodel comp:id="s${i}" comp:modelRef="d"/>`,
-  ).join("");
+function fanOut() {
+  const definitions = ['<comp:modelDefinition id="d0"/>'];
+  for (let k = 1; k < 5; k++) {
+    definitions.push(
+      `<comp:modelDefinition id="d${k}">${submodels(`d${k - 1}`, 10)}</comp:modelDefinition>`,
+    );
+  }
   return (
-    '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" ' +
-    'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" ' +
-    'level="3" version="1" comp:required="true">' +
-    `<model id="m"><comp:listOfSubmodels>${submodels}</comp:listOfSubmodels></model>` +
-    '<comp:listOfModelDefinitions><comp:modelDefinition id="d">' +
-    '<listOfCompartments><compartment id="c" constant="true"/></listOfCompartments>' +
-    `<listOfSpecies>${species}</listOfSpecies>` +
-    "</comp:modelDefinition></comp:listOfModelDefinitions></sbml>"
+    COMP_SBML +
+    '<model id="m"><listOfParameters><parameter id="p" value="1" constant="true"/>' +
+    `</listOfParameters>${submodels("d4", 10)}</model>` +
+    `<comp:listOfModelDefinitions>${definitions.join("")}</comp:listOfModelDefinitions></sbml>`
   );
 }
 
 /** fixture name -> SBML content, posted to the content endpoints */
 const CONTENTS = {
-  wide_comp: wideComp,
+  fan_out: fanOut,
 };
 
 /** the fixtures whose validation is recorded as well */
-const VALIDATED = new Set(["validation", "repressilator", "wide_comp"]);
+const VALIDATED = new Set(["validation", "repressilator", "fan_out"]);
 
 const KNOWN = [...Object.keys(EXAMPLES), ...Object.keys(CONTENTS)];
 const requested = process.argv.slice(2);

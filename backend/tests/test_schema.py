@@ -79,11 +79,15 @@ def test_validation_schema_describes_the_response() -> None:
 
     schema = json.loads(validation_schema_json())
     assert schema["title"] == "ValidationResponse"
-    assert set(schema["properties"]) == {"entries"}
-    skipped = schema["$defs"]["EntryValidation"]["properties"]["skipped"]
-    assert {"enum": ["expandedSize", "timeout", "memory"], "type": "string"} in (
-        skipped["anyOf"]
-    )
+    assert set(schema["properties"]) == {"entries", "skipped"}
+    entry = schema["$defs"]["EntryValidation"]
+    reasons = ["expandedSize", "timeout", "memory", "busy"]
+    assert {"enum": reasons, "type": "string"} in entry["properties"]["skipped"][
+        "anyOf"
+    ]
+    # the api always writes every field, so none is optional in the types
+    assert schema["required"] == ["entries", "skipped"]
+    assert entry["required"] == ["issues", "skipped"]
 
 
 def test_the_report_schema_has_no_validation() -> None:
