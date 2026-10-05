@@ -2,6 +2,9 @@
 
 Design approved on 2026-10-05. Prototype of the user interface: `.lavish/issue-3-validation.html` (git ignored), option C (the list of all issues in the inspector of the document), unit consistency checks on and grouped by rule, a severity icon in the id cell of a row.
 
+
+**Amended 2026-10-05 (after the final review):** the validation runs in a separate process behind validation endpoints which mirror the report endpoints, the report no longer carries it, the user interface updates when it arrives, and an expanded-size budget plus time and memory limits bound it. The design is Part 2 of `specs/2026-10-05-validation-plan.md`; where this document says the report carries the validation, Part 2 wins.
+
 ## Goal
 
 The report shows the validation of libsbml: every error and warning of a document, attached to the element it concerns, as hints in the tables and in the inspector, and as one list of all issues. The reader sees at a glance whether a model is valid, which elements have issues and what they are.
