@@ -129,7 +129,9 @@ test("the inspector shows a card for each resource of an annotation", async ({ p
   const structure = chebi.getByTestId("annotation-structure");
   await expect(structure).toBeVisible();
   await expect
-    .poll(() => structure.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .poll(() =>
+      structure.evaluate((img) => (img as unknown as { naturalWidth: number }).naturalWidth),
+    )
     .toBeGreaterThan(0);
 
   await expect(cards.filter({ hasText: "P69905" }).getByTestId("annotation-uniprot")).toContainText(
