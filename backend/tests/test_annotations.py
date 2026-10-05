@@ -1,6 +1,7 @@
 """Tests of the resolution of annotation resources."""
 
 import threading
+from concurrent.futures import Future
 from pathlib import Path
 from typing import Any
 
@@ -253,60 +254,116 @@ def test_oldest_entry_is_evicted() -> None:
     assert resolver.calls == 4
 
 
-def test_concurrent_requests_share_one_lookup() -> None:
+class WaiterFuture(Future[AnnotationResource]):
+    """A future which counts the requests waiting in `result`."""
+
+    waiting = 0
+    all_waiting = threading.Event()
+    expected = 3
+
+    def result(self, timeout: float | None = None) -> AnnotationResource:
+        """Register the waiter, then wait for the result."""
+        WaiterFuture.waiting += 1
+        if WaiterFuture.waiting >= WaiterFuture.expected:
+            WaiterFuture.all_waiting.set()
+        return super().result(timeout)
+
+
+def _run_requests(
+    cache: ResourceCache, started: threading.Event, outcomes: list[Any], count: int = 4
+) -> None:
+    """Run `count` requests of "a", the first one owns the lookup."""
+
+    def request() -> None:
+        try:
+            outcomes.append(cache.get("a"))
+        except BaseException as err:
+            outcomes.append(err)
+
+    threads = [threading.Thread(target=request) for _ in range(count)]
+    threads[0].start()
+    assert started.wait(5)
+    for thread in threads[1:]:
+        thread.start()
+    for thread in threads:
+        thread.join(5)
+        assert not thread.is_alive()
+
+
+@pytest.fixture
+def waiter_future(monkeypatch: pytest.MonkeyPatch) -> type[WaiterFuture]:
+    """Replace the future of the cache by one which counts its waiters."""
+    WaiterFuture.waiting = 0
+    WaiterFuture.all_waiting = threading.Event()
+    monkeypatch.setattr(annotations, "Future", WaiterFuture)
+    return WaiterFuture
+
+
+def test_concurrent_requests_share_one_lookup(
+    waiter_future: type[WaiterFuture],
+) -> None:
     """Requests of one resource while it resolves wait for that one lookup."""
     started = threading.Event()
-    release = threading.Event()
     calls = []
 
     def resolve(resource: str) -> AnnotationResource:
         calls.append(resource)
         started.set()
-        release.wait(5)
+        assert waiter_future.all_waiting.wait(5)
         return AnnotationResource(resource=resource)
 
-    cache = ResourceCache(resolve)
-    results: list[AnnotationResource] = []
-    threads = [
-        threading.Thread(target=lambda: results.append(cache.get("a")))
-        for _ in range(4)
-    ]
-    threads[0].start()
-    assert started.wait(5)
-    for thread in threads[1:]:
-        thread.start()
-    release.set()
-    for thread in threads:
-        thread.join(5)
+    outcomes: list[Any] = []
+    _run_requests(ResourceCache(resolve), started, outcomes)
     assert len(calls) == 1
-    assert len(results) == 4
+    assert len(outcomes) == 4
+    assert all(outcome == outcomes[0] for outcome in outcomes)
 
 
-def test_waiters_get_the_exception_of_the_owner() -> None:
+def test_waiters_get_the_exception_of_the_owner(
+    waiter_future: type[WaiterFuture],
+) -> None:
     """Requests which wait for a lookup which raises get its exception, and do not hang."""
     started = threading.Event()
-    release = threading.Event()
+    calls = []
+
+    def resolve(resource: str) -> AnnotationResource:
+        calls.append(resource)
+        started.set()
+        assert waiter_future.all_waiting.wait(5)
+        raise ValueError("unknown collection")
+
+    outcomes: list[Any] = []
+    _run_requests(ResourceCache(resolve), started, outcomes)
+    assert len(calls) == 1
+    assert len(outcomes) == 4
+    assert all(isinstance(outcome, ValueError) for outcome in outcomes)
+
+
+def test_waiters_do_not_hang_when_the_cache_fails(
+    waiter_future: type[WaiterFuture],
+) -> None:
+    """A failure after the lookup completes the waiters with that failure."""
+    started = threading.Event()
+
+    def clock() -> float:
+        raise RuntimeError("clock broke")
 
     def resolve(resource: str) -> AnnotationResource:
         started.set()
-        release.wait(5)
-        raise ValueError("unknown collection")
+        assert waiter_future.all_waiting.wait(5)
+        return AnnotationResource(resource=resource)
 
-    cache = ResourceCache(resolve)
-    raised: list[BaseException] = []
+    outcomes: list[Any] = []
+    _run_requests(ResourceCache(resolve, clock=clock), started, outcomes)
+    assert len(outcomes) == 4
+    assert all(isinstance(outcome, RuntimeError) for outcome in outcomes)
 
-    def request() -> None:
-        try:
-            cache.get("a")
-        except ValueError as err:
-            raised.append(err)
 
-    threads = [threading.Thread(target=request) for _ in range(3)]
-    threads[0].start()
-    assert started.wait(5)
-    for thread in threads[1:]:
-        thread.start()
-    release.set()
-    for thread in threads:
-        thread.join(5)
-    assert len(raised) == 3
+def test_expired_entry_is_dropped() -> None:
+    """An expired entry is removed when it is found."""
+    now = [0.0]
+    cache = ResourceCache(Resolver(), clock=lambda: now[0])
+    cache.get("a")
+    now[0] = 86401.0
+    cache.get("a")
+    assert len(cache._entries) == 1

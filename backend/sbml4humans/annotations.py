@@ -294,9 +294,11 @@ class ResourceCache:
         """The resolved resource, from the cache while it lives."""
         with self._lock:
             entry = self._entries.get(resource)
-            if entry is not None and entry[0] > self._clock():
-                self._entries.move_to_end(resource)
-                return entry[1]
+            if entry is not None:
+                if entry[0] > self._clock():
+                    self._entries.move_to_end(resource)
+                    return entry[1]
+                del self._entries[resource]
             future = self._pending.get(resource)
             owner = future is None
             if future is None:
@@ -306,19 +308,20 @@ class ResourceCache:
             return future.result()
         try:
             value = self._resolve(resource)
-        except BaseException as err:
-            future.set_exception(err)
-            raise
-        finally:
+            lifetime = self._lifetime(value)
             with self._lock:
                 self._pending.pop(resource, None)
-        lifetime = self._lifetime(value)
-        if lifetime is not None:
+                if lifetime is not None:
+                    self._entries[resource] = (self._clock() + lifetime, value)
+                    self._entries.move_to_end(resource)
+                    while len(self._entries) > self._max_entries:
+                        self._entries.popitem(last=False)
+        except BaseException as err:
             with self._lock:
-                self._entries[resource] = (self._clock() + lifetime, value)
-                self._entries.move_to_end(resource)
-                while len(self._entries) > self._max_entries:
-                    self._entries.popitem(last=False)
+                if self._pending.get(resource) is future:
+                    del self._pending[resource]
+            future.set_exception(err)
+            raise
         future.set_result(value)
         return value
 
