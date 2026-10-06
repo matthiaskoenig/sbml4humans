@@ -38,7 +38,20 @@ The three imports of sbmlutils outside the package are replaced:
 
 The models of the tests which come from sbmlutils' resources (the SBML test suite, the repressilator, the demo models) are copied into `tests/data/` where they are small; the SBML test suite (56 MB) is downloaded by the test of the test suite into a cache directory and the test is skipped offline, as `sbmlutils.biomodels` does.
 
-The project follows the conventions of sbmlutils and sbml4humans: uv with a committed `uv.lock`, ruff, ty with `error-on-warning`, google docstrings, `ci-cd.yml` with the jobs test, ruff, ty and the release to PyPI through the trusted publisher on a tag, bump-my-version, release notes in `release-notes/<version>.md`, MIT license. The python versions are those of sbmlutils.
+### Project
+
+sbmlode is set up as sbmlutils and sbml4humans are, from their files, adapted and not reinvented:
+
+- **Packaging:** `pyproject.toml` (hatchling, src layout), uv with a committed `uv.lock`, the python versions of sbmlutils (3.11 to 3.15), `tox.ini` with the envs of the python versions, `lowest` (the lowest versions of the dependencies, `lowest-overrides.txt`) and `ty`, plus the ODE envs moved from sbmlutils (`julia`, `r`, `latex`, the docker tests), MIT `LICENSE`, `README.md`, `CITATION.cff` and `.zenodo.json`.
+- **Code quality:** ruff with the rule set of sbmlutils (google docstrings, isort, pyupgrade, bugbear, lazy logging), ty with `error-on-warning = true`, every module, class and function annotated and documented; the workflows `ruff.yml` and `ty.yml`.
+- **CI/CD:** `ci-cd.yml` with the jobs `test` (the matrix of python versions and operating systems), `tests` (the result of the matrix, the required check), `julia`, `r` and `latex` (moved from sbmlutils with their installation of julia, R with deSolve, tectonic and typst), `build`, `publish` (PyPI through the trusted publisher on a tag), `github-release` (the body from `release-notes/<version>.md`) and `sync-main`, which fast-forwards `main` to a release.
+- **Documentation:** a zensical site (`zensical.toml`, `docs/`): the overview, the formats with examples (the repressilator in every format, the images of `docs/images/ode/`), the typed target and its `wrap`, the API reference, the design, the release notes generated from `release-notes/` (`sbmlode.releasenotes`, as in sbml4humans) and the development and release steps. The workflow `docs.yml` builds it strictly on every pull request and its `deploy` job publishes it from `develop` to GitHub Pages, <https://matthiaskoenig.github.io/sbmlode/>; the `github-pages` environment allows `develop`.
+- **Repository rules:** `.github/rulesets/` (`develop.json`, `main.json`, `tags.json`, `tag-creation.json`, `apply.sh`) as in sbmlutils: every change of `develop` through a pull request with the required checks `tests`, `julia`, `r`, `latex`, `ruff`, `ty` and `docs`, squash or rebase merges only, `main` moved only by `sync-main`, tags neither moved nor deleted. `develop` is the default branch.
+- **Releases:** bump-my-version (`tag = false`), which updates the version in `pyproject.toml`, `__init__.py`, `CITATION.cff` and regenerates the release notes as a hook; the release notes of a version are written before the bump, the tag is created on `develop` after the merge of the bump.
+- **Agent instructions:** `CLAUDE.md` with the commands, the architecture (the three layers, the typed target) and the conventions.
+- **Tests:** all of the heavy testing of the ODE export lives here: the numerical tests against the SBML test suite, the golden files, the generated code run with python, julia and R, the documents compiled with tectonic and typst, the safety tests.
+
+Done by the user: enabling the Zenodo integration of the repository (for the DOI of `CITATION.cff`) and applying the rulesets with `apply.sh` if the token of the agent cannot.
 
 ### Typed target
 
@@ -59,6 +72,7 @@ sbmlode 0.1.0 on PyPI.
 ## Part 2: sbmlutils
 
 - `sbmlode>=0.1.0` is a dependency, the moved code, templates and tests are removed.
+- The testing of the ODE export leaves sbmlutils, which makes its CI faster: the jobs `julia`, `r` and `latex` of `ci-cd.yml`, the tox envs `julia`, `r` and `latex`, `tests/converters/ode/` (with the docker and julia files), the dependencies only these tests need (the typst package, scipy for the simulator, ...) and the required checks of these jobs in `.github/rulesets/develop.json`, applied again with `apply.sh`.
 - `sbmlutils.converters.ode` re-exports the public API of sbmlode (`OdeSystem`, `FORMATS`, `Format`, `render`, `write`, `render_template`), so code which uses it keeps working; its docstring and `docs/ode.md` point to sbmlode.
 - Release 0.15.0. The tag 0.14.0 is pushed but 0.14.0 is not on PyPI; its release workflow is checked and fixed first.
 
@@ -151,7 +165,7 @@ Size: a model with thousands of reactions adds its equations to the report, roug
 ## Testing
 
 - sbmlode: the moved tests of the export (unit, golden, numerical against the SBML test suite, the code in docker and julia), tests of `typeset` (every symbol is passed to `wrap`, made up symbols with their element, `Symbol.local`, output without `wrap` unchanged), the golden files.
-- sbmlutils: a test that `sbmlutils.converters.ode` re-exports sbmlode.
+- sbmlutils: one light test that `sbmlutils.converters.ode` re-exports sbmlode and renders the repressilator; nothing else of the export is tested there.
 - sbml4humans backend: `odes.py` on the repressilator (6 ODEs, 12 rates, 9 rules, every symbol of a species, parameter and reaction wrapped with its pk), a model with concentrations in compartments and a conversion factor, a model with events, a comp model (a submodel symbol is unwrapped), a model with an algebraic rule (unsupported, linked), a local parameter (linked to the local parameter), a document whose analysis raises (`ode_error`, the report is complete otherwise); the download routes for every source and format, a failure in the error contract; schema, `report.ts` and fixtures regenerated.
 - sbml4humans frontend: unit tests (vitest) of `query.ts` (`view`), of the `links` option of `renderLatex` (`\htmlData` renders, `\href` and `\url` do not) and of `equationOf`; an e2e test on the repressilator example: switch to the equations, the sections and their counts, a click on `v_Reaction1` opens Reaction1 in the inspector, the inspector of `X` shows its ODE and "show in equations" selects its row, a reload keeps the view, a search switches to the tables, the python download is a file with the right hand side; the e2e test of a model with an algebraic rule shows the notice.
 - The rendering of every LaTeX sbmlode writes by KaTeX: a vitest test renders the equations of all fixtures with `throwOnError: true`.
