@@ -6,7 +6,8 @@
 // SCREENSHOTS_BASE_URL names another dev server than the one on port 3456: the footer shows the
 // version and the commit a dev server was started with, so a server which has run since an
 // earlier commit is replaced by a fresh one on another port, e.g. `npx vite --port 3457` and
-// `SCREENSHOTS_BASE_URL=http://localhost:3457 npm run screenshots`.
+// `SCREENSHOTS_BASE_URL=http://localhost:3457 npm run screenshots`. SCREENSHOTS_API_URL names the
+// backend that dev server talks to where it is not the one on port 1444.
 //
 // The article column of the built site is at most COLUMN_WIDTH wide and shows an image at the
 // width of the column, since every picture here is taken at twice the device scale and carries
@@ -22,7 +23,7 @@ import { mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 const BASE_URL = process.env.SCREENSHOTS_BASE_URL ?? "http://localhost:3456";
-const API_URL = "http://localhost:1444/api";
+const API_URL = process.env.SCREENSHOTS_API_URL ?? "http://localhost:1444/api";
 const OUT_DIR = fileURLToPath(new URL("../../docs/images/", import.meta.url));
 
 // the width of the article column of the built site, in CSS pixels
@@ -430,6 +431,22 @@ try {
   );
   await shot("report-search", report, {
     clip: { x: 0, y: 0, width: REPORT_VIEWPORT.width, height: Math.ceil(filled) + 16 },
+  });
+
+  // report-equations.png: the differential equations of the repressilator next to the inspector
+  // of the species PX: its symbol is marked in every equation, its ODE is the marked row, and the
+  // inspector shows the equation of the species. The picture is the window, the view begins with
+  // the ODE system and the reaction rates.
+  await report.goto(
+    `${BASE_URL}/examples/BIOMD0000000012?view=equations&pk=${encodeURIComponent("BIOMD0000000012/Species:PX")}`,
+  );
+  await reportShown(report);
+  await expect(
+    report.getByTestId("equations-view").getByTestId("equation-lhs").first(),
+  ).toBeVisible();
+  await restPointer(report);
+  await shot("report-equations", report, {
+    clip: { x: 0, y: 0, width: REPORT_VIEWPORT.width, height: REPORT_VIEWPORT.height },
   });
 
   await report.close();
