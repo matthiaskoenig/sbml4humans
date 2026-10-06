@@ -87,6 +87,8 @@ def _check_report(data: dict[str, Any]) -> None:
             "models",
             "externalModelDefinitions",
             "linkGraph",
+            "odeSystem",
+            "odeError",
         }
 
 

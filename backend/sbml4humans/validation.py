@@ -31,7 +31,8 @@ of urls or another one which was registered before is gone.
 
 import bisect
 import logging
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
 
@@ -310,6 +311,33 @@ _RESOLVER = _install_resolver()
 _NO_DOCUMENTS = ReportDocuments({})
 
 
+@contextmanager
+def resolving_within(
+    doc: libsbml.SBMLDocument,
+    documents: ReportDocuments = _NO_DOCUMENTS,
+    location: str = "",
+) -> Iterator[None]:
+    """Confine the resolver of libsbml to the documents of a report.
+
+    Within the context, libsbml resolves the source of an external model
+    definition of the document, or of a document it resolved, to a document of
+    the report alone and never reads a file or a url: the comp validator and the
+    flattening of comp (`sbmlode`) read what the report holds, whatever the
+    content of a request names.
+
+    Args:
+        doc: the document whose external model definitions are resolved.
+        documents: the documents of the report, the only ones libsbml can read.
+        location: the location of the document in the report, against which its
+            sources are resolved.
+    """
+    token = _VALIDATION.set(_Validation(documents, location, doc.getLocationURI()))
+    try:
+        yield
+    finally:
+        _VALIDATION.reset(token)
+
+
 def validate(
     doc: libsbml.SBMLDocument,
     positions: ElementPositions,
@@ -329,11 +357,8 @@ def validate(
     Returns:
         The issues of the document, in the order of libsbml.
     """
-    token = _VALIDATION.set(_Validation(documents, location, doc.getLocationURI()))
-    try:
+    with resolving_within(doc, documents, location):
         doc.checkConsistency()
-    finally:
-        _VALIDATION.reset(token)
     return issues_of(doc, positions)
 
 

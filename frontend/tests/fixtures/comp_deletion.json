@@ -1,5 +1,5 @@
 {
-  "uid": "fbf48273cbad472d89a5a5d6dbb73672",
+  "uid": "c895d0d571574bce88b8456c42c9d553",
   "manifest": {
     "entries": [
       {
@@ -2061,10 +2061,63 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "comp_deletion/Species:glc",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=comp_deletion/Species:glc}{\\mathrm{glc}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-v_{\\mathrm{cell2\\_\\_sink}}}{\\htmlData{pk=comp_deletion/Compartment:medium}{\\mathrm{medium}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} \\,\\mathrm{tissue1}_{\\mathrm{\\_cell\\_in\\_tissue\\_\\_glc}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-v_{\\mathrm{tissue1\\_\\_cell\\_in\\_tissue\\_\\_sink}}}{\\htmlData{pk=comp_deletion/Compartment:medium}{\\mathrm{medium}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{cell2\\_\\_sink}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=comp_deletion/Parameter:f_extent}{f_{\\mathrm{extent}}}}{\\htmlData{pk=comp_deletion/Parameter:f_time}{f_{\\mathrm{time}}}} \\cdot \\mathopen{}\\left(\\mathrm{cell2}_{\\mathrm{\\_k}} \\cdot \\htmlData{pk=comp_deletion/Species:glc}{\\mathrm{glc}} \\cdot \\htmlData{pk=comp_deletion/Compartment:medium}{\\mathrm{medium}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{tissue1\\_\\_cell\\_in\\_tissue\\_\\_sink}}",
+              "lines": [
+                "\\mathrm{tissue1}_{\\mathrm{\\_cell\\_in\\_tissue\\_\\_k}} \\cdot \\mathrm{tissue1}_{\\mathrm{\\_cell\\_in\\_tissue\\_\\_glc}} \\cdot \\htmlData{pk=comp_deletion/Compartment:medium}{\\mathrm{medium}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [
+            {
+              "variable": "comp_deletion/Parameter:glc_amount",
+              "lhs": "\\htmlData{pk=comp_deletion/Parameter:glc_amount}{\\mathrm{glc}_{\\mathrm{amount}}}",
+              "lines": [
+                "\\htmlData{pk=comp_deletion/Species:glc}{\\mathrm{glc}} \\cdot \\htmlData{pk=comp_deletion/Compartment:medium}{\\mathrm{medium}}"
+              ],
+              "origin": "assignment_rule"
+            }
+          ],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.011 [s]"
+        "jsonReportTime": "0.012 [s]"
       }
     },
     "./unit_definitions.xml": {
@@ -3589,7 +3642,17 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [],
+          "reactions": [],
+          "assignments": [],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
         "jsonReportTime": "0.003 [s]"

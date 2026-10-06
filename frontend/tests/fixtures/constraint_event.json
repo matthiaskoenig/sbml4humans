@@ -1,5 +1,5 @@
 {
-  "uid": "dfdb7dbeecf84e149d83de91f586179b",
+  "uid": "237c62361f544458b3d0f5e79ebb8bc1",
   "manifest": {
     "entries": [
       {
@@ -1217,10 +1217,75 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "constraint_event/Species:S1",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=constraint_event/Species:S1}{S_{1}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-\\htmlData{pk=constraint_event/Reaction:R1}{v_{\\mathrm{R1}}}}{\\htmlData{pk=constraint_event/Compartment:cell}{\\mathrm{cell}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "constraint_event/Species:S2",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=constraint_event/Species:S2}{S_{2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=constraint_event/Reaction:R1}{v_{\\mathrm{R1}}}}{\\htmlData{pk=constraint_event/Compartment:cell}{\\mathrm{cell}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "constraint_event/Reaction:R1",
+              "lhs": "\\htmlData{pk=constraint_event/Reaction:R1}{v_{\\mathrm{R1}}}",
+              "lines": [
+                "\\htmlData{pk=constraint_event/Parameter:active}{\\mathrm{active}} \\cdot \\htmlData{pk=constraint_event/Compartment:cell}{\\mathrm{cell}} \\cdot \\frac{\\htmlData{pk=constraint_event/LocalParameter:R1.kineticLaw.Vmax}{\\mathrm{R1}_{\\mathrm{Vmax}}} \\cdot \\htmlData{pk=constraint_event/Species:S1}{S_{1}}}{\\htmlData{pk=constraint_event/LocalParameter:R1.kineticLaw.Km}{\\mathrm{R1}_{\\mathrm{Km}}} + \\htmlData{pk=constraint_event/Species:S1}{S_{1}}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [],
+          "functions": [],
+          "initial": [],
+          "events": [
+            {
+              "event": "constraint_event/Event:E1",
+              "label": "E1",
+              "trigger": "t \\geq \\htmlData{pk=constraint_event/Parameter:t_dose}{t_{\\mathrm{dose}}}",
+              "delay": "\\htmlData{pk=constraint_event/Parameter:t_delay}{t_{\\mathrm{delay}}}",
+              "priority": "1",
+              "initialValue": false,
+              "persistent": true,
+              "useValuesFromTriggerTime": false,
+              "assignments": [
+                {
+                  "variable": "constraint_event/Species:S1",
+                  "lhs": "\\htmlData{pk=constraint_event/Species:S1}{S_{1}}",
+                  "lines": [
+                    "\\htmlData{pk=constraint_event/Species:S1}{S_{1}} + \\htmlData{pk=constraint_event/Parameter:dose}{\\mathrm{dose}}"
+                  ],
+                  "origin": "event"
+                },
+                {
+                  "variable": "constraint_event/Parameter:active",
+                  "lhs": "\\htmlData{pk=constraint_event/Parameter:active}{\\mathrm{active}}",
+                  "lines": [
+                    "0"
+                  ],
+                  "origin": "event"
+                }
+              ]
+            }
+          ],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.007 [s]"
+        "jsonReportTime": "0.008 [s]"
       }
     }
   }

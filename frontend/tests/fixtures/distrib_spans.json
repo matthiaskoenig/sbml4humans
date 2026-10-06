@@ -1,5 +1,5 @@
 {
-  "uid": "975a635b09c04779b7d09a43e0603559",
+  "uid": "b39fa708efa747ba925035c1ec5d9b1a",
   "manifest": {
     "entries": [
       {
@@ -1409,10 +1409,29 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [],
+          "reactions": [],
+          "assignments": [
+            {
+              "variable": "distrib_spans/Parameter:v",
+              "lhs": "\\htmlData{pk=distrib_spans/Parameter:v}{v}",
+              "lines": [
+                "\\frac{\\htmlData{pk=distrib_spans/Parameter:Vmax}{\\mathrm{Vmax}} \\cdot \\htmlData{pk=distrib_spans/Species:S}{S}}{\\htmlData{pk=distrib_spans/Parameter:Km}{\\mathrm{Km}} + \\htmlData{pk=distrib_spans/Species:S}{S}}"
+              ],
+              "origin": "assignment_rule"
+            }
+          ],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.006 [s]"
+        "jsonReportTime": "0.007 [s]"
       }
     }
   }

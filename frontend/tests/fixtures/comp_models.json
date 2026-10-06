@@ -1,5 +1,5 @@
 {
-  "uid": "c04b08423f2642dba04484bfa7f206ae",
+  "uid": "060f08d51b1d417a9b443579d2a15d1c",
   "manifest": {
     "entries": [
       {
@@ -2082,10 +2082,174 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "omex_comp/Species:S0",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S0}{S_{0}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-\\htmlData{pk=omex_comp/Reaction:J0}{v_{\\mathrm{J0}}} - v_{\\mathrm{submodel0\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell0}{\\mathrm{cell}_{0}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S1",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S1}{S_{1}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J0}{v_{\\mathrm{J0}}} - \\htmlData{pk=omex_comp/Reaction:J1}{v_{\\mathrm{J1}}} - v_{\\mathrm{submodel1\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell1}{\\mathrm{cell}_{1}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S2",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S2}{S_{2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J1}{v_{\\mathrm{J1}}} - \\htmlData{pk=omex_comp/Reaction:J2}{v_{\\mathrm{J2}}} - v_{\\mathrm{submodel2\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell2}{\\mathrm{cell}_{2}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S3",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S3}{S_{3}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J2}{v_{\\mathrm{J2}}} - \\htmlData{pk=omex_comp/Reaction:J3}{v_{\\mathrm{J3}}} - v_{\\mathrm{submodel3\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell3}{\\mathrm{cell}_{3}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S4",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S4}{S_{4}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J3}{v_{\\mathrm{J3}}} - v_{\\mathrm{submodel4\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell4}{\\mathrm{cell}_{4}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} \\,\\mathrm{submodel0}_{\\mathrm{\\_S2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{v_{\\mathrm{submodel0\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell0}{\\mathrm{cell}_{0}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} \\,\\mathrm{submodel1}_{\\mathrm{\\_S2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{v_{\\mathrm{submodel1\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell1}{\\mathrm{cell}_{1}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} \\,\\mathrm{submodel2}_{\\mathrm{\\_S2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{v_{\\mathrm{submodel2\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell2}{\\mathrm{cell}_{2}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} \\,\\mathrm{submodel3}_{\\mathrm{\\_S2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{v_{\\mathrm{submodel3\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell3}{\\mathrm{cell}_{3}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} \\,\\mathrm{submodel4}_{\\mathrm{\\_S2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{v_{\\mathrm{submodel4\\_\\_J0}}}{\\htmlData{pk=omex_comp/Compartment:cell4}{\\mathrm{cell}_{4}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "omex_comp/Reaction:J0",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J0}{v_{\\mathrm{J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S0}{S_{0}} - \\htmlData{pk=omex_comp/Species:S1}{S_{1}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:J1",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J1}{v_{\\mathrm{J1}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S1}{S_{1}} - \\htmlData{pk=omex_comp/Species:S2}{S_{2}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:J2",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J2}{v_{\\mathrm{J2}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S2}{S_{2}} - \\htmlData{pk=omex_comp/Species:S3}{S_{3}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:J3",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J3}{v_{\\mathrm{J3}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S3}{S_{3}} - \\htmlData{pk=omex_comp/Species:S4}{S_{4}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{submodel0\\_\\_J0}}",
+              "lines": [
+                "\\mathrm{submodel0}_{\\mathrm{\\_k1}} \\cdot \\mathrm{submodel0}_{\\mathrm{\\_S2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{submodel1\\_\\_J0}}",
+              "lines": [
+                "\\mathrm{submodel1}_{\\mathrm{\\_k1}} \\cdot \\mathrm{submodel1}_{\\mathrm{\\_S2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{submodel2\\_\\_J0}}",
+              "lines": [
+                "\\mathrm{submodel2}_{\\mathrm{\\_k1}} \\cdot \\mathrm{submodel2}_{\\mathrm{\\_S2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{submodel3\\_\\_J0}}",
+              "lines": [
+                "\\mathrm{submodel3}_{\\mathrm{\\_k1}} \\cdot \\mathrm{submodel3}_{\\mathrm{\\_S2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{submodel4\\_\\_J0}}",
+              "lines": [
+                "\\mathrm{submodel4}_{\\mathrm{\\_k1}} \\cdot \\mathrm{submodel4}_{\\mathrm{\\_S2}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.008 [s]"
+        "jsonReportTime": "0.007 [s]"
       }
     },
     "./models/omex_comp_flat.xml": {
@@ -4341,10 +4505,174 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "omex_comp/Species:S0",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S0}{S_{0}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-\\htmlData{pk=omex_comp/Reaction:J0}{v_{\\mathrm{J0}}} - \\htmlData{pk=omex_comp/Reaction:submodel0__J0}{v_{\\mathrm{submodel0\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell0}{\\mathrm{cell}_{0}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S1",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S1}{S_{1}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J0}{v_{\\mathrm{J0}}} - \\htmlData{pk=omex_comp/Reaction:J1}{v_{\\mathrm{J1}}} - \\htmlData{pk=omex_comp/Reaction:submodel1__J0}{v_{\\mathrm{submodel1\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell1}{\\mathrm{cell}_{1}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S2",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S2}{S_{2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J1}{v_{\\mathrm{J1}}} - \\htmlData{pk=omex_comp/Reaction:J2}{v_{\\mathrm{J2}}} - \\htmlData{pk=omex_comp/Reaction:submodel2__J0}{v_{\\mathrm{submodel2\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell2}{\\mathrm{cell}_{2}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S3",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S3}{S_{3}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J2}{v_{\\mathrm{J2}}} - \\htmlData{pk=omex_comp/Reaction:J3}{v_{\\mathrm{J3}}} - \\htmlData{pk=omex_comp/Reaction:submodel3__J0}{v_{\\mathrm{submodel3\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell3}{\\mathrm{cell}_{3}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:S4",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_comp/Species:S4}{S_{4}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:J3}{v_{\\mathrm{J3}}} - \\htmlData{pk=omex_comp/Reaction:submodel4__J0}{v_{\\mathrm{submodel4\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell4}{\\mathrm{cell}_{4}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:submodel0__S2",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=omex_comp/Species:submodel0__S2}{\\mathrm{submodel0}_{\\mathrm{\\_S2}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:submodel0__J0}{v_{\\mathrm{submodel0\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell0}{\\mathrm{cell}_{0}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:submodel1__S2",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=omex_comp/Species:submodel1__S2}{\\mathrm{submodel1}_{\\mathrm{\\_S2}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:submodel1__J0}{v_{\\mathrm{submodel1\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell1}{\\mathrm{cell}_{1}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:submodel2__S2",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=omex_comp/Species:submodel2__S2}{\\mathrm{submodel2}_{\\mathrm{\\_S2}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:submodel2__J0}{v_{\\mathrm{submodel2\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell2}{\\mathrm{cell}_{2}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:submodel3__S2",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=omex_comp/Species:submodel3__S2}{\\mathrm{submodel3}_{\\mathrm{\\_S2}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:submodel3__J0}{v_{\\mathrm{submodel3\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell3}{\\mathrm{cell}_{3}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_comp/Species:submodel4__S2",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=omex_comp/Species:submodel4__S2}{\\mathrm{submodel4}_{\\mathrm{\\_S2}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_comp/Reaction:submodel4__J0}{v_{\\mathrm{submodel4\\_\\_J0}}}}{\\htmlData{pk=omex_comp/Compartment:cell4}{\\mathrm{cell}_{4}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "omex_comp/Reaction:J0",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J0}{v_{\\mathrm{J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S0}{S_{0}} - \\htmlData{pk=omex_comp/Species:S1}{S_{1}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:J1",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J1}{v_{\\mathrm{J1}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S1}{S_{1}} - \\htmlData{pk=omex_comp/Species:S2}{S_{2}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:J2",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J2}{v_{\\mathrm{J2}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S2}{S_{2}} - \\htmlData{pk=omex_comp/Species:S3}{S_{3}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:J3",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:J3}{v_{\\mathrm{J3}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:D}{D} \\cdot \\mathopen{}\\left(\\htmlData{pk=omex_comp/Species:S3}{S_{3}} - \\htmlData{pk=omex_comp/Species:S4}{S_{4}}\\right)"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:submodel0__J0",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:submodel0__J0}{v_{\\mathrm{submodel0\\_\\_J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:submodel0__k1}{\\mathrm{submodel0}_{\\mathrm{\\_k1}}} \\cdot \\htmlData{pk=omex_comp/Species:submodel0__S2}{\\mathrm{submodel0}_{\\mathrm{\\_S2}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:submodel1__J0",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:submodel1__J0}{v_{\\mathrm{submodel1\\_\\_J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:submodel1__k1}{\\mathrm{submodel1}_{\\mathrm{\\_k1}}} \\cdot \\htmlData{pk=omex_comp/Species:submodel1__S2}{\\mathrm{submodel1}_{\\mathrm{\\_S2}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:submodel2__J0",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:submodel2__J0}{v_{\\mathrm{submodel2\\_\\_J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:submodel2__k1}{\\mathrm{submodel2}_{\\mathrm{\\_k1}}} \\cdot \\htmlData{pk=omex_comp/Species:submodel2__S2}{\\mathrm{submodel2}_{\\mathrm{\\_S2}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:submodel3__J0",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:submodel3__J0}{v_{\\mathrm{submodel3\\_\\_J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:submodel3__k1}{\\mathrm{submodel3}_{\\mathrm{\\_k1}}} \\cdot \\htmlData{pk=omex_comp/Species:submodel3__S2}{\\mathrm{submodel3}_{\\mathrm{\\_S2}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "omex_comp/Reaction:submodel4__J0",
+              "lhs": "\\htmlData{pk=omex_comp/Reaction:submodel4__J0}{v_{\\mathrm{submodel4\\_\\_J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_comp/Parameter:submodel4__k1}{\\mathrm{submodel4}_{\\mathrm{\\_k1}}} \\cdot \\htmlData{pk=omex_comp/Species:submodel4__S2}{\\mathrm{submodel4}_{\\mathrm{\\_S2}}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.01 [s]"
+        "jsonReportTime": "0.011 [s]"
       }
     },
     "./models/omex_minimal.xml": {
@@ -4854,7 +5182,43 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "omex_minimal/Species:S1",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_minimal/Species:S1}{S_{1}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-\\htmlData{pk=omex_minimal/Reaction:J0}{v_{\\mathrm{J0}}}}{\\htmlData{pk=omex_minimal/Compartment:cell}{\\mathrm{cell}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "omex_minimal/Species:S2",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=omex_minimal/Species:S2}{S_{2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=omex_minimal/Reaction:J0}{v_{\\mathrm{J0}}}}{\\htmlData{pk=omex_minimal/Compartment:cell}{\\mathrm{cell}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "omex_minimal/Reaction:J0",
+              "lhs": "\\htmlData{pk=omex_minimal/Reaction:J0}{v_{\\mathrm{J0}}}",
+              "lines": [
+                "\\htmlData{pk=omex_minimal/Parameter:k1}{k_{1}} \\cdot \\htmlData{pk=omex_minimal/Species:S2}{S_{2}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
         "jsonReportTime": "0.002 [s]"

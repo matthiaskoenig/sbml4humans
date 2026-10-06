@@ -106,6 +106,8 @@ export interface Report {
   models?: Model[];
   externalModelDefinitions?: ExternalModelDefinition[];
   linkGraph?: LinkGraph;
+  odeSystem?: OdeSystem | null;
+  odeError?: string | null;
 }
 /**
  * The document: level, version and the packages it uses.
@@ -1455,6 +1457,65 @@ export interface Edge {
   target: string;
   kind: EdgeKind;
   targetEntry?: string | null;
+}
+/**
+ * The ordinary differential equations of the model of a document.
+ *
+ * The system of the model, flattened if it has submodels, as sbmlode writes it:
+ * the ODE of every state, the rates of the reactions, the assignment rules in
+ * the order of their dependencies, the function definitions, the initial values
+ * which are no number, the events and the constructs it does not hold.
+ */
+export interface OdeSystem {
+  odes?: OdeEquation[];
+  reactions?: OdeEquation[];
+  assignments?: OdeEquation[];
+  functions?: OdeEquation[];
+  initial?: OdeEquation[];
+  events?: OdeEvent[];
+  unsupported?: OdeUnsupported[];
+}
+/**
+ * An equation of the ODE system of a model, typeset as LaTeX.
+ *
+ * Every symbol of the math which is an element of the report is a link of
+ * KaTeX, `\htmlData{pk=<pk>}{<symbol>}`.
+ */
+export interface OdeEquation {
+  variable?: string | null;
+  lhs: string;
+  lines: string[];
+  origin:
+    | "reactions"
+    | "rate_rule"
+    | "assignment_rule"
+    | "concentration"
+    | "initial_assignment"
+    | "initial_value"
+    | "reaction"
+    | "function"
+    | "event";
+}
+/**
+ * An event of the ODE system: its trigger, delay, priority and assignments.
+ */
+export interface OdeEvent {
+  event?: string | null;
+  label: string;
+  trigger: string;
+  delay?: string | null;
+  priority?: string | null;
+  initialValue: boolean;
+  persistent: boolean;
+  useValuesFromTriggerTime: boolean;
+  assignments?: OdeEquation[];
+}
+/**
+ * A construct of the model which the ODE system does not hold.
+ */
+export interface OdeUnsupported {
+  kind: string;
+  element?: string | null;
 }
 /**
  * Timing information of a report.

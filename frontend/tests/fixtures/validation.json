@@ -1,5 +1,5 @@
 {
-  "uid": "f09d9f035fc147ef9e4388a47b6aa953",
+  "uid": "3f61e94694254916b49190155522e7d8",
   "manifest": {
     "entries": [
       {
@@ -531,7 +531,57 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "validation/Species:A",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=validation/Species:A}{A}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=validation/Reaction:R1}{v_{\\mathrm{R1}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "validation/Species:B",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=validation/Species:B}{B}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=validation/Reaction:R1}{v_{\\mathrm{R1}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "validation/Reaction:R1",
+              "lhs": "\\htmlData{pk=validation/Reaction:R1}{v_{\\mathrm{R1}}}",
+              "lines": [
+                "\\htmlData{pk=validation/Parameter:k1}{k_{1}} \\cdot \\htmlData{pk=validation/Species:A}{A}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [
+            {
+              "variable": "validation/Parameter:x",
+              "lhs": "\\htmlData{pk=validation/Parameter:x}{x}",
+              "lines": [
+                "1"
+              ],
+              "origin": "assignment_rule"
+            }
+          ],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": [
+            {
+              "kind": "algebraic rule",
+              "element": null
+            }
+          ]
+        },
+        "odeError": null
       },
       "debug": {
         "jsonReportTime": "0.003 [s]"

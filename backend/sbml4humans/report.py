@@ -53,6 +53,7 @@ from sbml4humans.model import (
     ReportResponse,
     ValidationResponse,
 )
+from sbml4humans.odes import ode_system
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 from sbml4humans.validation import (
     ReportDocuments,
@@ -121,6 +122,7 @@ def report_for_sbml(source: Path | str, uid: str = "") -> ReportEntry:
     entry = _Entry(source, uid=uid)
     external = _resolve({SBML_LOCATION: entry}, checksums={}, locations=[])
     _link({SBML_LOCATION: entry}, external)
+    _odes({SBML_LOCATION: entry})
     return entry.report_entry
 
 
@@ -201,6 +203,7 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
     """
     with _read(path, trusted) as read:
         _link(read.entries, read.external)
+        _odes(read.entries)
         manifest = Manifest(
             entries=[
                 ManifestEntry(
@@ -359,6 +362,25 @@ def _link(entries: dict[str, _Entry], external: ExternalModels) -> None:
     build_link_graphs(
         {location: entry.link_source for location, entry in entries.items()}, external
     )
+
+
+def _odes(entries: dict[str, _Entry]) -> None:
+    """Build the ODE system of every entry, its submodels flattened within the report.
+
+    An external model definition of an entry resolves to another entry of the
+    report alone, as in the validation, see `odes.ode_system`.
+    """
+    documents = ReportDocuments(
+        {location: entry.info.doc for location, entry in entries.items()}
+    )
+    for location, entry in entries.items():
+        report = entry.info.report
+        main = next((m for m in report.models if m.kind == "model"), None)
+        if main is None:
+            continue
+        report.ode_system, report.ode_error = ode_system(
+            entry.info.doc, main, documents, location
+        )
 
 
 def _md5(path: Path) -> str:
