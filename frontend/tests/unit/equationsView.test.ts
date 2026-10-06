@@ -37,7 +37,49 @@ describe("EquationsView", () => {
     expect(wrapper.find("[data-testid=equations-odeEvents]").exists()).toBe(false);
     expect(wrapper.findAll("[data-testid=equation-row]")).toHaveLength(27);
     expect(wrapper.find("[data-testid=equations-unsupported]").exists()).toBe(false);
-    expect(wrapper.find("[data-testid=ode-download]").exists()).toBe(true);
+    expect(wrapper.find("[data-testid=equations-tabs]").exists()).toBe(true);
+    wrapper.unmount();
+  });
+
+  it("orders the sections from the definitions to the system", async () => {
+    await router.push({ path: "/examples/BIOMD0000000012", query: { view: "equations" } });
+    const index = new ReportIndex({
+      ...report,
+      odeSystem: {
+        ...report.odeSystem!,
+        functions: [{ variable: null, lhs: "f(x)", lines: ["x"], origin: "function" }],
+        initial: [{ variable: null, lhs: "y", lines: ["1 + 2"], origin: "initial_assignment" }],
+      },
+    });
+    const wrapper = mountView(index);
+    const order = wrapper
+      .findAll("section[data-testid^=equations-]")
+      .map((section) => section.attributes("data-testid"));
+    expect(order).toEqual([
+      "equations-odeFunctions",
+      "equations-odeAssignments",
+      "equations-reactionRates",
+      "equations-odeSystem",
+      "equations-odeInitial",
+    ]);
+    wrapper.unmount();
+  });
+
+  it("shows the code of a format in place of the math", async () => {
+    await router.push({
+      path: "/examples/BIOMD0000000012",
+      query: { view: "equations", code: "julia" },
+    });
+    const wrapper = mountView(repressilator);
+    expect(wrapper.find("[data-testid=equations-code]").exists()).toBe(true);
+    expect(wrapper.find("[data-testid=equation-row]").exists()).toBe(false);
+    expect(wrapper.get("[data-testid=equations-tab-julia]").attributes("aria-selected")).toBe(
+      "true",
+    );
+    await wrapper.get("[data-testid=equations-tab-math]").trigger("click");
+    await flushPromises();
+    expect(router.currentRoute.value.query.code).toBeUndefined();
+    expect(wrapper.find("[data-testid=equation-row]").exists()).toBe(true);
     wrapper.unmount();
   });
 
@@ -75,7 +117,7 @@ describe("EquationsView", () => {
     const wrapper = mountView(index);
     expect(wrapper.get("[data-testid=error-message]").text()).toBe("could not flatten");
     expect(wrapper.find("[data-testid=equation-row]").exists()).toBe(false);
-    expect(wrapper.find("[data-testid=ode-download]").exists()).toBe(false);
+    expect(wrapper.find("[data-testid=equations-tabs]").exists()).toBe(false);
     wrapper.unmount();
   });
 });

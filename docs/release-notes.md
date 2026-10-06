@@ -2,6 +2,21 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.12.1
+
+The differential equations of a model are written in the native quantities of its state variables, read from the definitions to the system, and show the code of every format of sbmlode next to the math.
+
+### The equations
+- a species is a state in the quantity the model declares, its amount or its concentration, also in a compartment whose size changes: its rate of change is divided by the size and diluted by the rate of the size, as SBML Level 3 Version 2 (section 3.4.6) describes it; the rate of a size with an assignment rule is the derivative of the rule, an assignment of its own, and an event which changes a size converts the concentrations in it ([#114](https://github.com/matthiaskoenig/sbml4humans/issues/114))
+- the sections read from the definitions to the system: function definitions, assignment rules, reaction rates, ODE system, initial assignments, events
+- the tabs Math, Python, Julia, R, LaTeX, Typst and Markdown show the math or the code of the system, highlighted, to copy or to download; the tab is part of the url (`code=python`)
+- the code is the ODE system alone, the initial values, the rates of change and the assigned values, without the integrator; the toolbar links the formats of sbmlode for custom exports
+- the example `variable_compartment` shows compartments whose size changes by a rate rule, an assignment rule and an event
+- the fractions of a long equation are no longer cut at the bottom of its row
+
+### Dependencies
+- sbmlode 0.2.0, which writes the native quantities; Shiki and tm-grammars highlight the code, loaded with the first code shown
+
 ## 0.12.0
 
 A report shows the differential equations of its model: the switch "Tables | Equations" writes the model as the system of ordinary differential equations it describes, every symbol linked to its element, and downloads it as code which simulates the model.

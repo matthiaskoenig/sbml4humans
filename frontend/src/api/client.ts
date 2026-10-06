@@ -111,6 +111,11 @@ export const ODE_FORMATS = {
 } as const;
 export type OdeFormat = keyof typeof ODE_FORMATS;
 
+/** Whether a string is a format of sbmlode, e.g. a value of the query. */
+export function isOdeFormat(value: string): value is OdeFormat {
+  return Object.hasOwn(ODE_FORMATS, value);
+}
+
 /** The differential equations of a model in a format, a file to save. */
 export interface OdeDownloadFile {
   filename: string;

@@ -29,7 +29,7 @@ dependencies = [
     # pint formats the units, pymetadata handles combine archives and annotations,
     # sbmlode typesets the differential equations of a model
     "python-libsbml>=5.21.2",
-    "sbmlode>=0.1.0",
+    "sbmlode>=0.2.0",
     "lxml>=6.0.0",
     "numpy>=2.2.2",
     "pint>=0.26.1",

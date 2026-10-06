@@ -972,16 +972,19 @@ class ValidationIssue(ReportModel):
 
 
 #: where an equation of the ODE system comes from: an ODE is written with the rates
-#: of the `reactions` or is a `rate_rule`; an assignment is an `assignment_rule` or
-#: the `concentration` of a species which the system holds as amount; an initial
-#: value is an `initial_assignment` or an `initial_value` which converts between
-#: amount and concentration; `reaction` is the rate of a reaction, `function` a
-#: function definition, `event` an event assignment
+#: of the `reactions`, is a `rate_rule` or the `dilution` alone of a species in
+#: concentration in a compartment whose size changes; an assignment is an
+#: `assignment_rule` or the `size_rate`, the rate of change of the size of a
+#: compartment with an assignment rule; an initial value is an
+#: `initial_assignment` or an `initial_value` which converts between amount and
+#: concentration; `reaction` is the rate of a reaction, `function` a function
+#: definition, `event` an event assignment
 OdeOrigin = Literal[
     "reactions",
     "rate_rule",
+    "dilution",
     "assignment_rule",
-    "concentration",
+    "size_rate",
     "initial_assignment",
     "initial_value",
     "reaction",

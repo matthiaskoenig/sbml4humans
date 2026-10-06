@@ -1,5 +1,6 @@
 import type { LocationQuery, LocationQueryRaw, LocationQueryValue } from "vue-router";
 
+import { isOdeFormat, type OdeFormat } from "@/api/client";
 import type { ElementType } from "@/api/types";
 import { isElementType } from "@/data/sbmlTypes";
 
@@ -20,6 +21,8 @@ export interface ViewState {
   /** What the report page shows next to the inspector: the element tables or the
    * differential equations of the model. */
   view: ReportViewKind;
+  /** The format of sbmlode whose code the equations show, null = the math. */
+  code: OdeFormat | null;
 }
 
 /** The views of the report page. */
@@ -40,6 +43,7 @@ export function parseQuery(query: LocationQuery): ViewState {
     types: types === null ? null : types.split(",").filter(isElementType),
     help: first(query.help),
     view: first(query.view) === "equations" ? "equations" : "tables",
+    code: isOdeFormat(first(query.code) ?? "") ? (first(query.code) as OdeFormat) : null,
   };
 }
 
@@ -52,5 +56,7 @@ export function toQuery(state: ViewState): LocationQueryRaw {
   if (state.types !== null) query.types = state.types.join(",");
   if (state.help) query.help = state.help;
   if (state.view === "equations") query.view = state.view;
+  // the code is a tab of the equations
+  if (state.view === "equations" && state.code) query.code = state.code;
   return query;
 }

@@ -100,7 +100,7 @@
       "kind": "concept",
       "label": "equations",
       "summary": "the model as its system of ordinary differential equations",
-      "description": "A model in SBML describes a system of ordinary differential equations, but it is not written as one: the equations follow from the reactions, the rules, the events and the units of the model. The view \"equations\" shows this system as it would be printed in a paper: the [ODE system](glossary:concepts/odeSystem) of the states, the [reaction rates](glossary:concepts/reactionRates) it is written with, the [assignment rules](glossary:concepts/odeAssignments), the [function definitions](glossary:concepts/odeFunctions), the [initial values](glossary:concepts/odeInitial) and the [events](glossary:concepts/odeEvents).\n\nEvery symbol of an equation stands for an element of the model: a click on it opens the element in the inspector, and the inspector of a species, a reaction, a parameter or a compartment shows the equation of the element with a link to it in the view. The symbols are written from the identifiers, a subscript after an underscore and a greek letter where an identifier is one, `tau_mRNA` as τ with the subscript mRNA; the rate of a reaction is `v` with the identifier of the reaction as subscript.\n\nThe system is the one of the model of the document; a model with submodels is flattened first, and a symbol which the flattening makes up, the identifier of a submodel joined to the identifier of its element, links to no element. The equations are written by [sbmlode](https://matthiaskoenig.github.io/sbmlode/), which also writes the system as python, julia and R code which simulates the model and as LaTeX, typst and markdown documents, the [downloads](glossary:concepts/odeDownload) of the view.",
+      "description": "A model in SBML describes a system of ordinary differential equations, but it is not written as one: the equations follow from the reactions, the rules, the events and the units of the model. The view \"equations\" shows this system as it would be printed in a paper, from the definitions to the system: the [function definitions](glossary:concepts/odeFunctions), the [assignment rules](glossary:concepts/odeAssignments), the [reaction rates](glossary:concepts/reactionRates), the [ODE system](glossary:concepts/odeSystem) of the states, the [initial assignments](glossary:concepts/odeInitial) and the [events](glossary:concepts/odeEvents).\n\nEvery symbol of an equation stands for an element of the model: a click on it opens the element in the inspector, and the inspector of a species, a reaction, a parameter or a compartment shows the equation of the element with a link to it in the view. The symbols are written from the identifiers, a subscript after an underscore and a greek letter where an identifier is one, `tau_mRNA` as τ with the subscript mRNA; the rate of a reaction is `v` with the identifier of the reaction as subscript.\n\nThe system is the one of the model of the document; a model with submodels is flattened first, and a symbol which the flattening makes up, the identifier of a submodel joined to the identifier of its element, links to no element. The equations are written by [sbmlode](https://matthiaskoenig.github.io/sbmlode/), which also writes the system as python, julia and R code and as LaTeX, typst and markdown documents: the tabs of the view show the [code](glossary:concepts/odeDownload) of each format next to the math.",
       "package": "core",
       "docs": "reference/concepts/#equations"
     },
@@ -140,23 +140,23 @@
       "kind": "concept",
       "label": "assignment rules",
       "summary": "the quantities which are given by a formula at every time",
-      "description": "An assignment rule gives a quantity by a formula at every time, which is evaluated before the derivatives: the rate of a reaction or the derivative of a state may use it. The rules are listed in the order of their dependencies, a rule after the rules it uses. A species which the system integrates as its amount has its concentration as an assignment, the amount divided by the size of its compartment.",
+      "description": "An assignment rule gives a quantity by a formula at every time, which is evaluated before the derivatives: the rate of a reaction or the derivative of a state may use it. The rules are listed in the order of their dependencies, a rule after the rules it uses. The size of a compartment with an assignment rule which changes in time has its rate of change as an assignment of its own, the derivative of the rule in time with the rates of the states it depends on, which dilutes the species in concentration in the compartment; the rate of a size with a rate rule is the rate rule itself.",
       "package": "core",
       "docs": "reference/concepts/#assignment-rules"
     },
     "concepts/odeDownload": {
       "kind": "concept",
-      "label": "download",
-      "summary": "the equations as code which simulates the model or as a document",
-      "description": "The equations of the view can be downloaded in the formats of [sbmlode](https://matthiaskoenig.github.io/sbmlode/): as python (numpy and scipy), julia (OrdinaryDiffEq) or R (deSolve) code, which simulates the model and is verified against libroadrunner over the SBML test suite, and as a LaTeX, typst or markdown document with the units, the tables and the equations of the model. A model with an unsupported construct is written as a document, but not as code.",
+      "label": "code",
+      "summary": "the equations as code or as a document, to copy or download",
+      "description": "The tabs of the view show the equations in the formats of [sbmlode](https://matthiaskoenig.github.io/sbmlode/), to copy or to download: as python (numpy), julia or R code, the ODE system as functions of the time, the states and the constants (the initial values, the rates of change and the assigned values), and as a LaTeX, typst or markdown document with the units, the tables and the equations of the model. A model with an unsupported construct is written as a document, but not as code.\n\nThe code holds the system alone. sbmlode writes more: code which integrates the model with scipy, OrdinaryDiffEq or deSolve and is verified against libroadrunner over the SBML test suite, documents with the names of the elements as symbols, and formats of templates of one's own. These custom exports are made with sbmlode itself, see its [formats](https://matthiaskoenig.github.io/sbmlode/formats/).",
       "package": "core",
-      "docs": "reference/concepts/#download"
+      "docs": "reference/concepts/#code"
     },
     "concepts/odeEvents": {
       "kind": "concept",
       "label": "events",
       "summary": "the changes of the model at the moment a condition becomes true",
-      "description": "An event changes the values of the model at the moment its trigger becomes true, after its delay if it has one; events at the same moment are carried out by their priority. An assignment of an event to a species in concentration which the system integrates as its amount assigns the amount, the concentration times the size of the compartment, and an event which changes the size of a compartment keeps the amounts of the species in it, so that their concentrations change.",
+      "description": "An event changes the values of the model at the moment its trigger becomes true, after its delay if it has one; events at the same moment are carried out by their priority. An event which changes the size of a compartment, directly or through a parameter of the assignment rule of the size, keeps the amounts of the species in it, so that their concentrations are converted from the size before the event to the size after it.",
       "package": "core",
       "docs": "reference/concepts/#events"
     },
@@ -170,17 +170,17 @@
     },
     "concepts/odeInitial": {
       "kind": "concept",
-      "label": "initial values",
+      "label": "initial assignments",
       "summary": "the values at the start which are given by a formula",
-      "description": "The value of a quantity at the start, at time zero, is its value in the file, unless an initial assignment gives it by a formula or an assignment rule gives it at every time. The list holds the initial assignments and the initial values which convert between amount and concentration, the initial amount of a species which the system integrates as its amount; a value which is a number stands in the tables.",
+      "description": "The value of a quantity at the start, at time zero, is its value in the file, unless an initial assignment gives it by a formula or an assignment rule gives it at every time. The list holds the initial assignments and the initial values which convert between amount and concentration, the initial amount of a species in concentration divided by the size of its compartment and the reverse; a value which is a number stands in the tables.",
       "package": "core",
-      "docs": "reference/concepts/#initial-values"
+      "docs": "reference/concepts/#initial-assignments"
     },
     "concepts/odeSystem": {
       "kind": "concept",
       "label": "ODE system",
       "summary": "the rate of change of every state of the model",
-      "description": "A state is a quantity of the model which changes in time and is not given by an assignment rule: a species which takes part in reactions and is no boundary condition, or a species, a compartment, a parameter or a species reference with a rate rule. Its derivative in time is either written by its rate rule, or is the sum of the rates of the reactions it takes part in, each times its stoichiometry, negative as a reactant and positive as a product.\n\nA reaction changes the amount of a species. The rate of change of a species in concentration is therefore divided by the size of its compartment, and a species in a compartment whose size changes is integrated as its amount, `n` with the identifier of the species as subscript, whose concentration is then an assignment. A conversion factor of the species, else of the model, multiplies the rates of its reactions.",
+      "description": "A state is a quantity of the model which changes in time and is not given by an assignment rule: a species which takes part in reactions and is no boundary condition, or a species, a compartment, a parameter or a species reference with a rate rule. Its derivative in time is either written by its rate rule, or is the sum of the rates of the reactions it takes part in, each times its stoichiometry, negative as a reactant and positive as a product.\n\nEvery species is a state in the quantity the model declares, its amount if it has only substance units, else its concentration. A reaction changes the amount of a species, so the rate of change of a species in concentration is divided by the size of its compartment. If the size changes as well, the concentration changes with it while the amount stays: the derivative is the one of SBML Level 3 Version 2, section 3.4.6, `d[S]/dt = (1/V) dS/dt - ([S]/V) dV/dt`, the rates of the reactions divided by the size minus the dilution by the rate of the size. A boundary, constant or not reacting species in such a compartment keeps its amount and is diluted alone. A conversion factor of the species, else of the model, multiplies the rates of its reactions.",
       "package": "core",
       "docs": "reference/concepts/#ode-system"
     },
@@ -188,7 +188,7 @@
       "kind": "concept",
       "label": "unsupported constructs",
       "summary": "the parts of the model which the ODE system does not hold",
-      "description": "An algebraic rule makes the system a system of differential algebraic equations, a `delay` function makes it a system of delay differential equations, and a fast reaction is in equilibrium at every time. None of them is part of an ODE system, so the equations are shown without them and say which elements they leave out: the system they show is not the whole model.",
+      "description": "An algebraic rule makes the system a system of differential algebraic equations, a `delay` function makes it a system of delay differential equations, and a fast reaction is in equilibrium at every time. None of them is part of an ODE system, so the equations are shown without them and say which elements they leave out: the system they show is not the whole model. The size of a compartment whose assignment rule has no derivative, for example a rule with `rem`, has no rate of change, which the dilution of its species needs.",
       "package": "core",
       "docs": "reference/concepts/#unsupported-constructs"
     },

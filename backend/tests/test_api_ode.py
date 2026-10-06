@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from sbml4humans import api
+from sbml4humans.report import ode_for_path
 from sbml4humans.resources import EXAMPLES_DIR, OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
@@ -154,3 +155,14 @@ def test_ode_filename_is_readable_across_origins(client: TestClient) -> None:
         "content-disposition"
         in response.headers["access-control-expose-headers"].lower()
     )
+
+
+def test_code_is_the_ode_system_without_simulator() -> None:
+    """The code of a download holds the ODE system, `simulator` adds the integrator."""
+    plain = ode_for_path(REPRESSILATOR_SBML, "python")
+    assert "def f_dxdt(" in plain.content
+    assert "def simulate(" not in plain.content
+    full = ode_for_path(REPRESSILATOR_SBML, "python", simulator=True)
+    assert "def simulate(" in full.content
+    document = ode_for_path(REPRESSILATOR_SBML, "latex")
+    assert r"\begin{document}" in document.content

@@ -103,6 +103,7 @@ EXAMPLE_IDS: list[str] = [
     "unit_definitions",
     "units_namespace",
     "validation",
+    "variable_compartment",
 ]
 
 API_EXAMPLES_MODEL: list[Path] = [
