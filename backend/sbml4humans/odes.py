@@ -19,6 +19,7 @@ never from names, see `sbmlode.text.check_sid`.
 """
 
 import logging
+import threading
 from typing import cast
 
 import libsbml
@@ -39,7 +40,40 @@ from sbml4humans.validation import ReportDocuments, resolving_within
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["ode_system"]
+__all__ = ["analyse", "ode_system"]
+
+#: libsbml aborts the process when two threads flatten comp models at once (the
+#: `CompFlatteningConverter`, seen under concurrent reports of comp models), so the analysis
+#: of sbmlode, which flattens a model with submodels, runs in one thread at a time
+_ANALYSIS_LOCK = threading.Lock()
+
+
+def analyse(
+    doc: libsbml.SBMLDocument,
+    documents: ReportDocuments | None = None,
+    location: str = "",
+) -> sbmlode.OdeSystem:
+    """The ODE system of a document, analysed by sbmlode within the report.
+
+    The external model definitions of the document resolve to the documents of the
+    report alone (`resolving_within`), and one analysis runs at a time
+    (`_ANALYSIS_LOCK`).
+
+    Args:
+        doc: the document, which is not changed
+        documents: the documents of the report, which an external model definition
+            may name; none if `None`
+        location: the location of the document in the report
+
+    Raises:
+        ValueError: for a model sbmlode cannot analyse, e.g. one whose external
+            model is not in the report
+    """
+    with (
+        _ANALYSIS_LOCK,
+        resolving_within(doc, documents or ReportDocuments({}), location),
+    ):
+        return sbmlode.OdeSystem.from_sbml(doc)
 
 
 class _Links:
@@ -187,8 +221,7 @@ def ode_system(
     """
     links = _Links(model)
     try:
-        with resolving_within(doc, documents or ReportDocuments({}), location):
-            analysed = sbmlode.OdeSystem.from_sbml(doc)
+        analysed = analyse(doc, documents, location)
         typeset = analysed.typeset("latex", "id", links.wrap)
         system = _system(links, typeset)
     except Exception as err:

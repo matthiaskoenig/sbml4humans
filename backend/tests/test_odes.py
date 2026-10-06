@@ -1,11 +1,13 @@
 """The differential equations of a model in its report, `Report.ode_system`."""
 
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import libsbml
 import pytest
 import sbmlode
 
+from sbml4humans.examples import load_examples, report_for_example
 from sbml4humans.model import Report
 from sbml4humans.report import report_for_bytes, report_for_path
 from sbml4humans.resources import EXAMPLES_DIR, REPRESSILATOR_SBML
@@ -195,3 +197,21 @@ def test_analysis_error_is_contained(monkeypatch: pytest.MonkeyPatch) -> None:
     assert report.ode_system is None
     assert report.ode_error == "the analysis failed"
     assert report.models[0].list_of_species
+
+
+def test_concurrent_analyses_of_comp_models() -> None:
+    """Reports of comp models in parallel threads, as the threadpool of the api builds them.
+
+    libsbml aborts the process when two threads flatten a comp model at once, so the analysis
+    runs in one thread at a time (`odes._ANALYSIS_LOCK`). The crash is a race: without the lock
+    this test ends the session in about one run out of three, with it never.
+    """
+    examples = [
+        e
+        for e in load_examples().values()
+        if e.file.suffix == ".omex" or "comp" in e.id.lower()
+    ]
+    assert examples
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        reports = list(pool.map(report_for_example, examples * 6))
+    assert all(r.reports for r in reports)

@@ -54,7 +54,7 @@ from sbml4humans.model import (
     ReportResponse,
     ValidationResponse,
 )
-from sbml4humans.odes import ode_system
+from sbml4humans.odes import analyse, ode_system
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 from sbml4humans.validation import (
     ReportDocuments,
@@ -490,9 +490,7 @@ def ode_for_path(
             {loc: e.info.doc for loc, e in read.entries.items()}
         )
         doc = entry.info.doc
-        with validation.resolving_within(doc, documents, location):
-            system = sbmlode.OdeSystem.from_sbml(doc)
-        content = system.render(fmt)
+        content = analyse(doc, documents, location).render(fmt)
     model_id = doc.getModel().getId() or "model"
     return OdeFile(filename=f"{model_id}{format_.suffixes[0]}", content=content)
 

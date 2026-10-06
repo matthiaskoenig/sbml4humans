@@ -44,16 +44,19 @@ function onClick(event: MouseEvent): void {
 <template>
   <section
     v-if="equations.length"
-    class="flex flex-col gap-1"
+    class="flex flex-col gap-1 pt-4"
     data-testid="equation-block"
     @click="onClick"
   >
-    <div class="flex items-baseline gap-2 text-xs font-semibold text-gray-600">
-      <span class="first-letter:uppercase">{{ entry?.label }}</span>
+    <div class="flex items-baseline gap-2">
+      <!-- the heading of the attributes above it, the words of the glossary -->
+      <h3 class="text-xs font-semibold tracking-wide text-gray-500 uppercase">
+        {{ entry?.label }}
+      </h3>
       <button
         v-if="view.state.value.view !== 'equations'"
         type="button"
-        class="font-normal text-link hover:underline"
+        class="text-xs text-link hover:underline"
         data-testid="equation-block-show"
         @click="show"
       >

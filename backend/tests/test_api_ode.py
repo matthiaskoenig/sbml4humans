@@ -150,6 +150,7 @@ def test_ode_filename_is_readable_across_origins(client: TestClient) -> None:
         params={"format": "python"},
         headers={"Origin": "https://example.org"},
     )
-    assert "content-disposition" in response.headers[
-        "access-control-expose-headers"
-    ].lower()
+    assert (
+        "content-disposition"
+        in response.headers["access-control-expose-headers"].lower()
+    )

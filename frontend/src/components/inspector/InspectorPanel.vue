@@ -161,11 +161,11 @@ const xmlEmptyMessage = computed(() =>
           <ValidationBlock :pk="pk" :issues="issues" />
           <ValidationList v-if="isDocument && validation" :validation="validation" />
           <ValidationFailure v-else-if="isDocument && failure" :error="failure" />
-          <EquationBlock :pk="element.pk" class="mb-3" />
           <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             Attributes
           </h3>
           <AttributesColumn :element="element" />
+          <EquationBlock :pk="element.pk" />
         </div>
         <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto"><LinksColumn :pk="element.pk" /></div>
         <div class="p-3 @4xl:min-h-0 @4xl:overflow-y-auto">
