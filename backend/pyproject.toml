@@ -158,7 +158,3 @@ include = ["sbml4humans", "tests"]
 [tool.ty.terminal]
 # warnings are failures: keep the codebase free of any diagnostic
 error-on-warning = true
-
-[tool.uv.sources]
-# the release of sbmlode 0.2.0 replaces the local checkout before the merge
-sbmlode = { path = "../../sbmlode", editable = true }
