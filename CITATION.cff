@@ -13,10 +13,10 @@ identifiers:
     value: 10.5281/zenodo.22827237
     description: the concept doi of all versions
   - type: doi
-    value: 10.5281/zenodo.23173777
-    description: the doi of version 0.11.1
+    value: 10.5281/zenodo.23179812
+    description: the doi of version 0.12.0
 repository-code: "https://github.com/matthiaskoenig/sbml4humans"
 url: "https://sbml4humans.de"
 license: MIT
-version: 0.11.1
+version: 0.12.0
 date-released: "2026-10-06"
