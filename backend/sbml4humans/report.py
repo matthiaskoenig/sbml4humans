@@ -37,6 +37,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import libsbml
 import sbmlode
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
@@ -80,10 +81,16 @@ class _Entry:
         """Read the document and build its report, without the link graph.
 
         Raises:
+            MemoryError: if libsbml ran out of memory reading the source, an error of
+                the memory as a `MemoryError` of python, see `isolation`.
             ValueError: if no model could be read from the source.
         """
         start = time.perf_counter()
         self.info = SBMLDocumentInfo(SBMLDocumentInfo.read(source))
+        log: libsbml.SBMLErrorLog = self.info.doc.getErrorLog()
+        if log.contains(libsbml.XMLOutOfMemory):
+            # libsbml catches the failed allocation of its parser and logs it
+            raise MemoryError(f"libsbml ran out of memory:\n{log.toString()}")
         if self.info.doc.getModel() is None:
             # the message reaches the user, who can act on the errors of libsbml
             # but not on the temporary path the file was read from; `read_sbml`

@@ -71,7 +71,7 @@ class CVTerm(ReportModel):
 
     qualifier: str
     resources: list[str]
-    nested: list[CVTerm] = Field(default_factory=list)
+    nested: list["CVTerm"] = Field(default_factory=list)
 
 
 class Creator(ReportModel):
@@ -122,10 +122,10 @@ class SBase(ReportModel):
     cvterms: list[CVTerm] = Field(default_factory=list)
     history: ModelHistory | None = None
     xml: str | None = None
-    comp: CompSBase | None = None
-    uncertainties: list[Uncertainty] = Field(default_factory=list)
-    key_value_pairs: list[KeyValuePair] = Field(default_factory=list)
-    lists: list[ListOf] = Field(default_factory=list)
+    comp: "CompSBase | None" = None
+    uncertainties: list["Uncertainty"] = Field(default_factory=list)
+    key_value_pairs: list["KeyValuePair"] = Field(default_factory=list)
+    lists: list["ListOf"] = Field(default_factory=list)
 
 
 class ListOf(SBase):
@@ -178,7 +178,7 @@ class UncertParameter(SBase):
     units: str | None = None
     definition_url: str | None = None
     math: Math | None = None
-    uncert_parameters: list[UncertMeasure] = Field(default_factory=list)
+    uncert_parameters: list["UncertMeasure"] = Field(default_factory=list)
 
 
 class UncertSpan(UncertParameter):
@@ -207,7 +207,7 @@ class Uncertainty(SBase):
     """A distrib uncertainty of an element."""
 
     sbml_type: Literal["Uncertainty"] = "Uncertainty"
-    uncert_parameters: list[UncertMeasure] = Field(default_factory=list)
+    uncert_parameters: list["UncertMeasure"] = Field(default_factory=list)
 
 
 # -------------------------------------------------------------------------------------
@@ -229,7 +229,7 @@ class SBaseRefFields(SBase):
     id_ref: str | None = None
     unit_ref: str | None = None
     meta_id_ref: str | None = None
-    sbase_ref: SBaseRef | None = None
+    sbase_ref: "SBaseRef | None" = None
 
 
 class SBaseRef(SBaseRefFields):
@@ -468,7 +468,7 @@ class ReactionFbc(ReportModel):
 
     lower_flux_bound: str | None = None
     upper_flux_bound: str | None = None
-    gene_product_association: GeneProductAssociation | None = None
+    gene_product_association: "GeneProductAssociation | None" = None
 
 
 class Reaction(SBase):
@@ -639,14 +639,14 @@ class And(AssociationNode):
     """Associations which are all needed at once: the subunits of a complex."""
 
     sbml_type: Literal["And"] = "And"
-    associations: list[Association] = Field(default_factory=list)
+    associations: list["Association"] = Field(default_factory=list)
 
 
 class Or(AssociationNode):
     """Associations of which one suffices: the isozymes of a reaction."""
 
     sbml_type: Literal["Or"] = "Or"
-    associations: list[Association] = Field(default_factory=list)
+    associations: list["Association"] = Field(default_factory=list)
 
 
 # an association is a gene product, a conjunction or a disjunction of

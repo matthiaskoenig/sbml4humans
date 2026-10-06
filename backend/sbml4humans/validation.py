@@ -285,7 +285,7 @@ class ReportResolver(libsbml.SBMLResolver):
         resolved.thisown = False
         return resolved
 
-    def clone(self) -> ReportResolver:
+    def clone(self) -> "ReportResolver":
         """The registry keeps the one instance, so a clone is the instance."""
         return self
 

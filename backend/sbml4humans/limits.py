@@ -58,7 +58,7 @@ class ContentLimits:
     compression_ratio_min_size: int
 
     @classmethod
-    def current(cls) -> ContentLimits:
+    def current(cls) -> "ContentLimits":
         """The limits of this module as they are now."""
         return cls(
             max_content_size=MAX_CONTENT_SIZE,

@@ -188,7 +188,7 @@ class Entry:
     spec: SpecRef | None = None
     type: str | None = None
     related: tuple[str, ...] = ()
-    attributes: Mapping[str, Entry] = field(default_factory=dict)
+    attributes: Mapping[str, "Entry"] = field(default_factory=dict)
     required: bool | None = None
     default: str | None = None
     rules: tuple[int, ...] = ()

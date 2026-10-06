@@ -104,7 +104,7 @@ def _ping(port: int) -> str | None:
             f"http://{HOST}:{port}/api/local/ping", timeout=PING_TIMEOUT
         )
         version = response.json().get("version")
-    except httpx.HTTPError, ValueError, AttributeError:
+    except (httpx.HTTPError, ValueError, AttributeError):
         return None
     return version if isinstance(version, str) else None
 
