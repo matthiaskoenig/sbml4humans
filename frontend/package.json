@@ -1,6 +1,6 @@
 {
   "name": "sbml4humans",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "type": "module",
   "author": "Matthias König <konigmatt@googlemail.com> (https://livermetabolism.com)",
