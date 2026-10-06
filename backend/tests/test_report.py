@@ -7,6 +7,7 @@ import zipfile
 from collections import Counter
 from pathlib import Path
 
+import libsbml
 import pytest
 from pydantic import BaseModel
 from pymetadata.omex import Omex
@@ -431,3 +432,25 @@ def test_a_link_out_of_the_trusted_directory_is_not_followed(tmp_path: Path) -> 
     (directory / "body.xml").write_text(_body("liver.xml"))
     response = report_for_path(directory / "body.xml", trusted=True)
     assert list(response.reports) == ["./body.xml"]
+
+
+def test_out_of_memory_of_libsbml_is_a_memory_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A read which libsbml ends out of memory raises `MemoryError`, no read error.
+
+    libsbml catches the failed allocation of the parser itself and logs the error
+    `XMLOutOfMemory`; the child of a validation reports it as `memory` like a
+    `MemoryError` of python.
+    """
+    from sbml4humans import report
+    from sbml4humans.sbmlinfo import SBMLDocumentInfo
+
+    def out_of_memory(source: Path | str) -> libsbml.SBMLDocument:
+        doc = libsbml.SBMLDocument(3, 2)
+        doc.getErrorLog().add(libsbml.SBMLError(libsbml.XMLOutOfMemory))
+        return doc
+
+    monkeypatch.setattr(SBMLDocumentInfo, "read", staticmethod(out_of_memory))
+    with pytest.raises(MemoryError, match="Out of memory"):
+        report._Entry(REPRESSILATOR_SBML)
