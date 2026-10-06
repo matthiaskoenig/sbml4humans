@@ -267,3 +267,25 @@ def test_symbol_is_never_linked_by_a_metaid() -> None:
     report = _report_of_doc(doc)
     assert report.ode_system is not None
     assert [e.event for e in report.ode_system.events] == [None]
+
+
+def test_concentrations_in_variable_compartments() -> None:
+    """A species in a compartment whose size changes is diluted by the rate of the size.
+
+    The rate of a size with a rate rule is linked to its compartment in the ODE of the
+    species, the rate of a size with an assignment rule is an assignment of origin
+    `size_rate` whose variable is the compartment.
+    """
+    report = _report_of_path(EXAMPLES_DIR / "variable_compartment.xml")
+    ode = report.ode_system
+    assert ode is not None
+    assert ode.unsupported == []
+    by_variable = {e.variable: e for e in ode.odes}
+    s1 = by_variable["variable_compartment/Species:S1"]
+    assert s1.origin == "reactions"
+    # the dilution, the rate of the size of Vc links to Vc
+    rate = r"\htmlData{pk=variable_compartment/Compartment:Vc}{\frac{\mathrm{d}"
+    assert rate in s1.lines[-1]
+    assert by_variable["variable_compartment/Species:B"].origin == "dilution"
+    size_rates = [a for a in ode.assignments if a.origin == "size_rate"]
+    assert [a.variable for a in size_rates] == ["variable_compartment/Compartment:Va"]

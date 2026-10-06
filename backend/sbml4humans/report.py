@@ -451,12 +451,19 @@ class OdeFile:
 
 
 def ode_for_path(
-    path: Path, fmt: str, location: str | None = None, trusted: bool = False
+    path: Path,
+    fmt: str,
+    location: str | None = None,
+    trusted: bool = False,
+    simulator: bool = False,
 ) -> OdeFile:
     """Write the ODE system of the model of an SBML entry in a format of sbmlode.
 
     The source is read like for its report, and an external model definition is
-    resolved to the entries of the report alone, see `odes.ode_system`.
+    resolved to the entries of the report alone, see `odes.ode_system`. Code is
+    the ODE system alone (the initial values, the rates of change and the assigned
+    values), without the simulator of sbmlode unless `simulator` is set; a
+    document is standalone with the ids as symbols, the defaults of sbmlode.
 
     Args:
         path: an SBML file or COMBINE archive.
@@ -465,6 +472,8 @@ def ode_for_path(
             the first one.
         trusted: whether the files next to a single SBML file are read, see
             `report_for_path`.
+        simulator: whether code holds the simulator of sbmlode, which integrates
+            the model.
 
     Raises:
         ValueError: for an unknown format or location, a source without a model,
@@ -490,7 +499,11 @@ def ode_for_path(
             {loc: e.info.doc for loc, e in read.entries.items()}
         )
         doc = entry.info.doc
-        content = analyse(doc, documents, location).render(fmt)
+        system = analyse(doc, documents, location)
+        if format_.kind == "code":
+            content = system.render(fmt, simulator=simulator)
+        else:
+            content = system.render(fmt)
     model_id = doc.getModel().getId() or "model"
     return OdeFile(filename=f"{model_id}{format_.suffixes[0]}", content=content)
 

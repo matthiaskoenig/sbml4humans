@@ -1665,8 +1665,8 @@
       "summary": "the quantities which are given by a formula at every time"
     },
     "odeDownload": {
-      "label": "download",
-      "summary": "the equations as code which simulates the model or as a document"
+      "label": "code",
+      "summary": "the equations as code or as a document, to copy or download"
     },
     "odeEvents": {
       "label": "events",
@@ -1677,7 +1677,7 @@
       "summary": "the functions the math of the model calls"
     },
     "odeInitial": {
-      "label": "initial values",
+      "label": "initial assignments",
       "summary": "the values at the start which are given by a formula"
     },
     "odeSystem": {

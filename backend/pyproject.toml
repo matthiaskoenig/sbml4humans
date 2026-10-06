@@ -29,7 +29,7 @@ dependencies = [
     # pint formats the units, pymetadata handles combine archives and annotations,
     # sbmlode typesets the differential equations of a model
     "python-libsbml>=5.21.2",
-    "sbmlode>=0.1.0",
+    "sbmlode>=0.2.0",
     "lxml>=6.0.0",
     "numpy>=2.2.2",
     "pint>=0.26.1",
@@ -158,3 +158,7 @@ include = ["sbml4humans", "tests"]
 [tool.ty.terminal]
 # warnings are failures: keep the codebase free of any diagnostic
 error-on-warning = true
+
+[tool.uv.sources]
+# the release of sbmlode 0.2.0 replaces the local checkout before the merge
+sbmlode = { path = "../../sbmlode", editable = true }
