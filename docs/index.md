@@ -58,7 +58,7 @@ If you use SBML4Humans please cite the archived software on [Zenodo](https://doi
   author    = {König, Matthias and Das, Sankha},
   title     = {SBML4Humans: interactive reports of SBML models},
   year      = {2026},
-  month     = sep,
+  month     = oct,
   version   = {0.12.0},
   publisher = {Zenodo},
   doi       = {10.5281/zenodo.23179812},
