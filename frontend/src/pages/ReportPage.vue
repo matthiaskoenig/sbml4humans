@@ -11,6 +11,7 @@ import AppFooter from "@/components/layout/AppFooter.vue";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import LoadingState from "@/components/layout/LoadingState.vue";
 import SplitPane from "@/components/layout/SplitPane.vue";
+import EquationsView from "@/components/equations/EquationsView.vue";
 import ContextBar from "@/components/report/ContextBar.vue";
 import ReportTables from "@/components/report/ReportTables.vue";
 import SearchBox from "@/components/report/SearchBox.vue";
@@ -144,6 +145,15 @@ const emptyMessage = computed(() =>
 
 const selectedPk = computed(() => view.state.value.pk);
 
+/** The view of the equations, for a report which has the differential equations of its model or
+ * the failure to build them; a route which names it for a report without them shows the tables. */
+const showsEquations = computed(
+  () =>
+    view.state.value.view === "equations" &&
+    index.value !== null &&
+    (index.value.odeSystem !== null || index.value.odeError !== null),
+);
+
 /** A report opens with its model in the inspector, and so does the model a reader switches to:
  * the model says what the report is about, its name, its notes, its units and its annotations,
  * and a page which opens with the tables alone does not show that there is an inspector. The
@@ -216,7 +226,8 @@ watch([selectedPk, index], ([pk, current]) => {
       :collapsed="!selectedPk"
     >
       <template #first>
-        <ReportTables :sections="visibleSections" :empty-message="emptyMessage" />
+        <EquationsView v-if="showsEquations && entry" :index="index" :location="entry" />
+        <ReportTables v-else :sections="visibleSections" :empty-message="emptyMessage" />
       </template>
       <template #second>
         <InspectorPanel v-if="selectedPk" :pk="selectedPk" />
@@ -227,7 +238,15 @@ watch([selectedPk, index], ([pk, current]) => {
     mounted below it, so that they are where the reader left them -->
     <div v-else class="flex min-h-0 flex-1 flex-col" data-testid="report-stack">
       <InspectorPanel v-if="selectedPk" :pk="selectedPk" class="min-h-0 flex-1" />
+      <EquationsView
+        v-if="showsEquations && entry"
+        v-show="!selectedPk"
+        class="min-h-0 flex-1"
+        :index="index"
+        :location="entry"
+      />
       <ReportTables
+        v-else
         v-show="!selectedPk"
         class="min-h-0 flex-1"
         :sections="visibleSections"

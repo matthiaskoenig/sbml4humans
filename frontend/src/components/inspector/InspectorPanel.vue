@@ -4,6 +4,7 @@ import { computed, ref, watch } from "vue";
 
 import HelpLabel from "@/components/help/HelpLabel.vue";
 import AnnotationsColumn from "@/components/inspector/AnnotationsColumn.vue";
+import EquationBlock from "@/components/equations/EquationBlock.vue";
 import AttributesColumn from "@/components/inspector/AttributesColumn.vue";
 import LinksColumn from "@/components/inspector/LinksColumn.vue";
 import ValidationBlock from "@/components/inspector/ValidationBlock.vue";
@@ -160,6 +161,7 @@ const xmlEmptyMessage = computed(() =>
           <ValidationBlock :pk="pk" :issues="issues" />
           <ValidationList v-if="isDocument && validation" :validation="validation" />
           <ValidationFailure v-else-if="isDocument && failure" :error="failure" />
+          <EquationBlock :pk="element.pk" class="mb-3" />
           <h3 class="mb-1 text-xs font-semibold tracking-wide text-gray-500 uppercase">
             Attributes
           </h3>

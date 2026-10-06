@@ -141,3 +141,15 @@ def test_ode_routes_are_documented(client: TestClient) -> None:
         "/api/ode/upload/{upload_id}",
     ]:
         assert path in paths
+
+
+def test_ode_filename_is_readable_across_origins(client: TestClient) -> None:
+    """A page of another origin reads the name of the file, CORS exposes it."""
+    response = client.get(
+        f"/api/ode/examples/{EXAMPLE}",
+        params={"format": "python"},
+        headers={"Origin": "https://example.org"},
+    )
+    assert "content-disposition" in response.headers[
+        "access-control-expose-headers"
+    ].lower()

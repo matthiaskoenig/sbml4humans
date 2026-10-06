@@ -1640,6 +1640,10 @@
       "label": "equation",
       "summary": "the reaction written as a chemical equation"
     },
+    "equations": {
+      "label": "equations",
+      "summary": "the model as its system of ordinary differential equations"
+    },
     "manifest": {
       "label": "manifest",
       "summary": "the entries of the COMBINE archive a report was built from"
@@ -1656,13 +1660,49 @@
       "label": "number",
       "summary": "how the report shows a number which is infinite or not a number"
     },
+    "odeAssignments": {
+      "label": "assignment rules",
+      "summary": "the quantities which are given by a formula at every time"
+    },
+    "odeDownload": {
+      "label": "download",
+      "summary": "the equations as code which simulates the model or as a document"
+    },
+    "odeEvents": {
+      "label": "events",
+      "summary": "the changes of the model at the moment a condition becomes true"
+    },
+    "odeFunctions": {
+      "label": "function definitions",
+      "summary": "the functions the math of the model calls"
+    },
+    "odeInitial": {
+      "label": "initial values",
+      "summary": "the values at the start which are given by a formula"
+    },
+    "odeSystem": {
+      "label": "ODE system",
+      "summary": "the rate of change of every state of the model"
+    },
+    "odeUnsupported": {
+      "label": "unsupported constructs",
+      "summary": "the parts of the model which the ODE system does not hold"
+    },
     "pk": {
       "label": "primary key",
       "summary": "the identifier the report gives to every element it shows"
     },
+    "reactionRates": {
+      "label": "reaction rates",
+      "summary": "the kinetic law of every reaction, the rate the ODE system is written with"
+    },
     "sbmlType": {
       "label": "sbml type",
       "summary": "the kind of element, which decides how the report shows it"
+    },
+    "tables": {
+      "label": "tables",
+      "summary": "the elements of the model in one table per type"
     },
     "targetEntry": {
       "label": "link into another document",

@@ -8,6 +8,8 @@ import type {
   ListOf,
   Model,
   Node,
+  OdeEquation,
+  OdeSystem,
   Report,
   SBMLDocument,
   SBase,
@@ -51,6 +53,15 @@ export interface CrossEdge {
 }
 
 /** Lookups over one report: every element by pk, the elements of a model by type, the edges in both directions. */
+/** The sections of the differential equations of a model, `OdeSystem` without `unsupported`. */
+export type OdeSection = "odes" | "reactions" | "assignments" | "functions" | "initial" | "events";
+
+/** An equation of the differential equations with the section it stands in. */
+export interface EquationOf {
+  section: OdeSection;
+  equation: OdeEquation;
+}
+
 export class ReportIndex {
   readonly report: Report;
   /** The manifest location of the entry of the report, null for a report on its own. */
@@ -67,6 +78,8 @@ export class ReportIndex {
    * nested element: the kinetic law, the species references and the lists of a reaction, the
    * trigger of an event, and everything else `addElement` adds below an element of a table. */
   private readonly holders = new Map<string, string>();
+  /** The equations by the pk of their left hand side, built on the first `equationsOf`. */
+  private equationIndex: Map<string, EquationOf[]> | null = null;
   /** The element of a table whose nested elements `add` is adding, null outside one. */
   private holder: string | null = null;
 
@@ -146,6 +159,46 @@ export class ReportIndex {
 
   get externalModelDefinitions(): ExternalModelDefinition[] {
     return this.report.externalModelDefinitions ?? [];
+  }
+
+  /** The ordinary differential equations of the model of the document, null without a model
+   * or when they could not be built, see `odeError`. */
+  get odeSystem(): OdeSystem | null {
+    return this.report.odeSystem ?? null;
+  }
+
+  /** Why the differential equations of the model could not be built, null when they were. */
+  get odeError(): string | null {
+    return this.report.odeError ?? null;
+  }
+
+  /** The equations whose left hand side is the element of a pk, in the order of the sections of
+   * the system: the ODE of a state, the rate of a reaction, an assignment, a function definition,
+   * an initial value and the assignments of events. */
+  equationsOf(pk: string): EquationOf[] {
+    if (this.equationIndex === null) {
+      const index = new Map<string, EquationOf[]>();
+      const system = this.odeSystem;
+      const add = (section: OdeSection, equation: OdeEquation): void => {
+        if (equation.variable) push(index, equation.variable, { section, equation });
+      };
+      if (system) {
+        for (const section of [
+          "odes",
+          "reactions",
+          "assignments",
+          "functions",
+          "initial",
+        ] as const) {
+          for (const equation of system[section] ?? []) add(section, equation);
+        }
+        for (const event of system.events ?? []) {
+          for (const equation of event.assignments ?? []) add("events", equation);
+        }
+      }
+      this.equationIndex = index;
+    }
+    return this.equationIndex.get(pk) ?? [];
   }
 
   /** The model of kind "model", else the first model definition. */

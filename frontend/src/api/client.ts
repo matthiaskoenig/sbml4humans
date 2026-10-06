@@ -99,6 +99,135 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return body as T;
 }
 
+/** The formats sbmlode writes the differential equations of a model in, with the suffix of a
+ * file of each. */
+export const ODE_FORMATS = {
+  python: ".py",
+  julia: ".jl",
+  r: ".R",
+  latex: ".tex",
+  typst: ".typ",
+  markdown: ".md",
+} as const;
+export type OdeFormat = keyof typeof ODE_FORMATS;
+
+/** The differential equations of a model in a format, a file to save. */
+export interface OdeDownloadFile {
+  filename: string;
+  blob: Blob;
+}
+
+/** The name of the file in the `Content-Disposition` of a download, null without one. */
+function filenameOf(response: Response): string | null {
+  const disposition = response.headers.get("Content-Disposition") ?? "";
+  return /filename="([^"]+)"/.exec(disposition)?.[1] ?? null;
+}
+
+/** A download of the backend: the file, or the error of the error contract, which answers with
+ * JSON where the file would be. */
+async function requestFile(
+  path: string,
+  format: OdeFormat,
+  init: RequestInit = {},
+): Promise<OdeDownloadFile> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${path}`, init);
+  } catch (error) {
+    throw new ApiError(
+      `The backend at ${API_URL} is not reachable`,
+      error instanceof Error ? error.message : null,
+    );
+  }
+  const type = response.headers.get("Content-Type") ?? "";
+  if (type.startsWith("application/json") || !response.ok) {
+    let body: unknown = null;
+    try {
+      body = await response.json();
+    } catch {
+      // a page of the proxy, a rate limit for example, is no error of the contract
+    }
+    if (isErrorBody(body)) {
+      throw new ApiError(body.errors[0] ?? "Unknown error", body.errors[1] ?? null, body.warnings);
+    }
+    throw new ApiError(
+      `The backend answered with status ${response.status}`,
+      null,
+      [],
+      response.status,
+    );
+  }
+  const filename = filenameOf(response) ?? `model${ODE_FORMATS[format]}`;
+  return { filename, blob: await response.blob() };
+}
+
+/** The query of a download: the format and the SBML entry of an archive. */
+function odeQuery(
+  format: OdeFormat,
+  location?: string | null,
+  extra?: Record<string, string>,
+): string {
+  const params = new URLSearchParams(extra);
+  params.set("format", format);
+  if (location) params.set("location", location);
+  return params.toString();
+}
+
+export function getExampleOde(id: string, format: OdeFormat): Promise<OdeDownloadFile> {
+  return requestFile(`/ode/examples/${encodeURIComponent(id)}?${odeQuery(format)}`, format);
+}
+
+export function getUrlOde(
+  url: string,
+  format: OdeFormat,
+  location?: string | null,
+): Promise<OdeDownloadFile> {
+  return requestFile(`/ode/url?${odeQuery(format, location, { url })}`, format);
+}
+
+export function getUploadOde(
+  id: string,
+  format: OdeFormat,
+  location?: string | null,
+): Promise<OdeDownloadFile> {
+  return requestFile(`/ode/upload/${encodeURIComponent(id)}?${odeQuery(format, location)}`, format);
+}
+
+export function getLocalOde(
+  token: string,
+  format: OdeFormat,
+  location?: string | null,
+): Promise<OdeDownloadFile> {
+  return requestFile(
+    `/local/ode/${encodeURIComponent(token)}?${odeQuery(format, location)}`,
+    format,
+  );
+}
+
+export function postFileOde(
+  file: File,
+  format: OdeFormat,
+  location?: string | null,
+): Promise<OdeDownloadFile> {
+  const form = new FormData();
+  form.append("source", file);
+  return requestFile(`/ode/file?${odeQuery(format, location)}`, format, {
+    method: "POST",
+    body: form,
+  });
+}
+
+export function postContentOde(
+  text: string,
+  format: OdeFormat,
+  location?: string | null,
+): Promise<OdeDownloadFile> {
+  return requestFile(`/ode/content?${odeQuery(format, location)}`, format, {
+    method: "POST",
+    body: text,
+  });
+}
+
 /** Fetch the metadata of the examples the backend ships. */
 export async function getExamples(): Promise<ExampleMetaData[]> {
   const body = await request<{ examples: ExampleMetaData[] }>("/examples");

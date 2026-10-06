@@ -308,6 +308,8 @@ api.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
+    # the frontend of another origin names a download of the ODE system after its file
+    expose_headers=["Content-Disposition"],
     allow_headers=["*"],
 )
 add_gzip(api)
