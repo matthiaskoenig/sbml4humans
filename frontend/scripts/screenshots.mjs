@@ -433,12 +433,13 @@ try {
     clip: { x: 0, y: 0, width: REPORT_VIEWPORT.width, height: Math.ceil(filled) + 16 },
   });
 
-  // report-equations.png: the differential equations of the repressilator next to the inspector
-  // of the species PX: its symbol is marked in every equation, its ODE is the marked row, and the
-  // inspector shows the equation of the species. The picture is the window, the view begins with
-  // the ODE system and the reaction rates.
+  // report-equations.png: the differential equations of the example of variable compartments
+  // next to the inspector of the species S1: its symbol is marked in every equation, its ODE is
+  // the marked row, and the inspector shows the equation of the species. The sections read from
+  // the assignment rules (the rate of the size of Va among them) to the ODE system, whose
+  // concentrations are diluted by the rates of the sizes. The picture is the window.
   await report.goto(
-    `${BASE_URL}/examples/BIOMD0000000012?view=equations&pk=${encodeURIComponent("BIOMD0000000012/Species:PX")}`,
+    `${BASE_URL}/examples/${encodeURIComponent("variable_compartment (variable_compartment.xml)")}?view=equations&pk=${encodeURIComponent("variable_compartment/Species:S1")}`,
   );
   await reportShown(report);
   await expect(
@@ -446,6 +447,17 @@ try {
   ).toBeVisible();
   await restPointer(report);
   await shot("report-equations", report, {
+    clip: { x: 0, y: 0, width: REPORT_VIEWPORT.width, height: REPORT_VIEWPORT.height },
+  });
+
+  // report-equations-code.png: the tab Python of the equations of the repressilator, the ODE
+  // system as code with its toolbar (copy, download and the custom exports of sbmlode). The
+  // picture is the window.
+  await report.goto(`${BASE_URL}/examples/BIOMD0000000012?view=equations&code=python`);
+  await reportShown(report);
+  await expect(report.getByTestId("equations-code-text").locator("pre")).toBeVisible();
+  await restPointer(report);
+  await shot("report-equations-code", report, {
     clip: { x: 0, y: 0, width: REPORT_VIEWPORT.width, height: REPORT_VIEWPORT.height },
   });
 

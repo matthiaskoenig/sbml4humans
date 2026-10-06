@@ -82,8 +82,7 @@ onBeforeUnmount(() => clearTimeout(copiedTimer));
       <span class="font-mono text-gray-700" data-testid="equations-code-filename">{{
         code?.filename ?? ""
       }}</span>
-      <span class="flex items-center gap-1 text-gray-500">
-        <span class="first-letter:uppercase">{{ entry?.summary }}</span>
+      <span v-tooltip.bottom="entry?.summary" class="inline-flex">
         <HelpButton v-if="helpKey" :help-key="helpKey" :label="entry?.label ?? ''" size="sm" />
       </span>
       <span class="ml-auto flex items-center gap-2">
