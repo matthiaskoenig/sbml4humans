@@ -7,7 +7,7 @@ name = "sbml4humans"
 dynamic = ["version"]
 description = "Interactive, human readable reports of SBML models, in the browser and from python."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 license = "MIT"
 # a copy of the LICENSE of the repository: a build only sees this directory, and the
 # license has to travel with the wheel and the sdist (tests/test_package.py compares them)
@@ -18,7 +18,10 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 authors = [
@@ -120,7 +123,7 @@ addopts = "-ra"
 
 [tool.ruff]
 line-length = 88
-target-version = "py314"
+target-version = "py312"
 
 [tool.ruff.lint]
 # Pyflakes (`F`) and a subset of pycodestyle (`E`), plus:

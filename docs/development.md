@@ -33,7 +33,7 @@ The frontend answers on <http://localhost:8083>, the api on <http://localhost:14
 
 ## Backend
 
-The backend is the `sbml4humans` Python package in `backend/`, it requires Python 3.14 and [uv](https://docs.astral.sh/uv/). The report is created with libsbml, lxml (the math), pint (the units) and pymetadata (COMBINE archives and annotations); the example models are part of the package (`backend/sbml4humans/resources/`).
+The backend is the `sbml4humans` Python package in `backend/`, it supports Python 3.12 to 3.15, is developed on 3.14 (`backend/.python-version`) and needs [uv](https://docs.astral.sh/uv/). The report is created with libsbml, lxml (the math), pint (the units) and pymetadata (COMBINE archives and annotations); the example models are part of the package (`backend/sbml4humans/resources/`).
 
 ```bash
 cd backend
@@ -160,13 +160,15 @@ A pull request can only be merged once the required checks are green:
 
 | check      | workflow    | content                                                                                     |
 | ---------- | ----------- | ------------------------------------------------------------------------------------------- |
-| `test`     | `ci-cd.yml` | `pytest` of the backend                                                                     |
+| `test`     | `ci-cd.yml` | `pytest` of the backend on Python 3.14                                                      |
 | `schema`   | `ci-cd.yml` | the committed JSON schema of the report is current                                          |
 | `frontend` | `ci-cd.yml` | the generated types are current, lint, type check, unit tests and the build of the frontend, which fails on a chunk above 500 kB |
 | `e2e`      | `ci-cd.yml` | the Playwright end to end tests against the backend                                         |
 | `ruff`     | `ruff.yml`  | `ruff check` and `ruff format --check` of the backend                                       |
 | `ty`       | `ty.yml`    | `ty check` of the backend                                                                   |
 | `docs`     | `docs.yml`  | the documentation site builds                                                               |
+
+The other supported Python versions, 3.12, 3.13 and 3.15, are tested for a release only: the job `versions` of `ci-cd.yml` runs `pytest` of the backend on each of them for the pull request of a branch `release/x.y.z`, for the tag and for a manual run (`workflow_dispatch`), and the GitHub release and the upload to PyPI wait for it. It is no required check, a pull request of any other branch skips it. `ty` checks against the lowest supported version, the `requires-python` of `backend/pyproject.toml`, and `ruff` targets it as well, so that code which needs a newer Python fails before a release.
 
 Further rules of a pull request:
 

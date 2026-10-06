@@ -74,6 +74,6 @@ def read_state(path: Path) -> dict[str, Any] | None:
     """The state of the file, None without a file which can be read."""
     try:
         state = json.loads(path.read_text(encoding="utf-8"))
-    except OSError, ValueError:
+    except (OSError, ValueError):
         return None
     return state if isinstance(state, dict) else None

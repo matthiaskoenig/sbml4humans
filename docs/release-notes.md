@@ -2,6 +2,15 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.12.2
+
+The python package supports Python 3.12, 3.13, 3.14 and 3.15.
+
+### Python versions
+- `pip install sbml4humans` installs on Python 3.12 to 3.15, formerly 3.14 only: the forward references of the report model and of the backend are quoted, which Python before 3.14 evaluates at import, two `except` clauses are parenthesized, and the number of cpus of the validation is read without `os.process_cpu_count` on Python 3.12
+- every pull request tests the backend on Python 3.14; a release tests it on 3.12, 3.13 and 3.15 as well (`versions` of `ci-cd.yml`), on the pull request of the release, the tag and a manual run, and publishes only after it passed
+- ruff and ty check the backend against Python 3.12, the lowest supported version
+
 ## 0.12.1
 
 The differential equations of a model are written in the native quantities of its state variables, read from the definitions to the system, and show the code of every format of sbmlode next to the math.

@@ -99,7 +99,20 @@ def _concurrent_validations() -> int:
     value = os.environ.get(VALIDATIONS_VARIABLE, "")
     if value.isdigit() and int(value) > 0:
         return int(value)
-    return max(1, (os.process_cpu_count() or 1) // 2)
+    return max(1, _process_cpu_count() // 2)
+
+
+def _process_cpu_count() -> int:
+    """The cpus this process may run on, `os.process_cpu_count` from python 3.13.
+
+    Python 3.12 has the affinity of the process where the platform has it (Linux),
+    else the cpus of the machine.
+    """
+    if sys.version_info >= (3, 13):
+        return os.process_cpu_count() or 1
+    if hasattr(os, "sched_getaffinity"):
+        return len(os.sched_getaffinity(0)) or 1
+    return os.cpu_count() or 1
 
 
 # the time a validation may take from its call on, in seconds

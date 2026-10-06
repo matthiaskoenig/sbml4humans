@@ -40,6 +40,36 @@ jobs:
         working-directory: backend
         run: uv run pytest
 
+  versions:
+    # the other supported python versions, which `test` (3.14) leaves to a release: the pull
+    # request of a release branch, the tag and a manual run test the backend on each of them
+    name: test (python ${{ matrix.python-version }})
+    if: >-
+      startsWith(github.ref, 'refs/tags/')
+      || github.event_name == 'workflow_dispatch'
+      || startsWith(github.head_ref, 'release/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13", "3.15"]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - name: Install the backend
+        working-directory: backend
+        run: uv sync
+      - name: Test the backend
+        working-directory: backend
+        run: uv run pytest
+
   schema:
     # required by the branch protection, see .github/rulesets/develop.json
     name: schema
@@ -195,7 +225,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    needs: [test, schema, frontend, e2e]
+    needs: [test, versions, schema, frontend, e2e]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -233,7 +263,7 @@ jobs:
     # the package on PyPI, by trusted publishing: the project on PyPI names this repository,
     # this workflow and the environment `pypi` as its publisher, see docs/development.md.
     # Next to the GitHub release and not before it: main follows the release either way.
-    needs: [test, schema, frontend, e2e, package]
+    needs: [test, versions, schema, frontend, e2e, package]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     timeout-minutes: 10

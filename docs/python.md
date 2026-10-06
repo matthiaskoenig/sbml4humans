@@ -18,7 +18,7 @@ The path is an SBML file, plain or gzipped, or a COMBINE archive, the [formats](
 
 ## Installation
 
-The package needs python 3.14 or newer:
+The package supports python 3.12 to 3.15:
 
 ```bash
 pip install sbml4humans

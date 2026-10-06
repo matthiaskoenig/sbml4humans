@@ -68,7 +68,7 @@ class ModelIndex:
     which of them it means, so each has its own index.
     """
 
-    def __init__(self, model: Model, entry: EntryIndex | None = None) -> None:
+    def __init__(self, model: Model, entry: "EntryIndex | None" = None) -> None:
         """Index the elements of the model by their identifiers.
 
         Args:
