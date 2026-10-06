@@ -9,8 +9,8 @@ Every symbol of the math which stands for an element of the report is wrapped as
 `\htmlData{pk=<pk>}{<symbol>}`, which KaTeX renders as an element with the
 attribute `data-pk`, so that the frontend links it without building a pk. The pk is
 resolved with the identifiers of the model of the report (`links.ModelIndex`): an
-SId, a local parameter through the kinetic law of its reaction, an element without
-an id through its metaid. A symbol without an element of the report, an id which
+SId or a local parameter through the kinetic law of its reaction; the element of a
+construct sbmlode does not support also through its metaid (`_Links.unsupported`). A symbol without an element of the report, an id which
 the flattening of comp makes up (`submodel__x`), stays as it is.
 
 A pk consists of SIds (or metaids), `/` and `:`, so it holds no character which ends
@@ -76,6 +76,15 @@ def analyse(
         return sbmlode.OdeSystem.from_sbml(doc)
 
 
+#: the type of the element of an unsupported construct, where the construct names one
+_CONSTRUCT_TYPES = {"algebraic rule": "AlgebraicRule", "fast reaction": "Reaction"}
+
+
+def _type_of(pk: str) -> str:
+    """The type of the element of a pk, `Species` of `m/Species:S` (`sbmlinfo` writes it)."""
+    return pk.partition("/")[2].partition(":")[0]
+
+
 class _Links:
     """The pks of the symbols of sbmlode in the report of a model."""
 
@@ -108,6 +117,9 @@ class _Links:
     def element(self, source: tuple[str, ...]) -> str | None:
         """The pk of an element of the model, `(sid,)` or `(reaction, local id)`.
 
+        A symbol of sbmlode is an SId, so it is resolved in the SIds alone: a metaid of
+        the same text names another element.
+
         Args:
             source: what `sbmlode.system.Symbol.source` names
 
@@ -119,8 +131,29 @@ class _Links:
             return (
                 None if law is None else self.index.locals.get(law, {}).get(source[1])
             )
-        sid = source[0]
-        return self.index.resolve(sid) or self.index.meta_ids.get(sid)
+        return self.index.resolve(source[0])
+
+    def unsupported(self, construct: str, label: str) -> str | None:
+        """The pk of the element of a construct sbmlode does not support.
+
+        sbmlode labels the element by its id, else by its metaid, else by a label of its
+        own (`rule<k>`, the position of a rule), which may be the id of another element:
+        the label is looked up as a metaid first and as an SId second, and an element
+        of another type than the construct names (an algebraic rule, a fast reaction) is
+        no element of it.
+
+        Args:
+            construct: the construct, `algebraic rule`, `fast reaction` or `delay`
+            label: the label of its element
+
+        Returns:
+            the pk, `None` if the label names no element of the construct
+        """
+        expected = _CONSTRUCT_TYPES.get(construct)
+        for pk in (self.index.meta_ids.get(label), self.index.resolve(label)):
+            if pk is not None and (expected is None or _type_of(pk) == expected):
+                return pk
+        return None
 
     def wrap(self, symbol: sbmlode.system.Symbol, typeset: str) -> str:
         """A symbol as a link of KaTeX to its element, unchanged without one.
@@ -188,7 +221,9 @@ def _system(links: _Links, typeset: TypesetSystem) -> OdeSystem:
             for event in typeset.events
         ],
         unsupported=[
-            OdeUnsupported(kind=u.construct, element=links.element((u.element,)))
+            OdeUnsupported(
+                kind=u.construct, element=links.unsupported(u.construct, u.element)
+            )
             for u in typeset.unsupported
         ],
     )

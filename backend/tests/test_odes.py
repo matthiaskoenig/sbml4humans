@@ -215,3 +215,55 @@ def test_concurrent_analyses_of_comp_models() -> None:
     with ThreadPoolExecutor(max_workers=16) as pool:
         reports = list(pool.map(report_for_example, examples * 6))
     assert all(r.reports for r in reports)
+
+
+def test_unsupported_rule_does_not_link_to_an_element_of_its_label() -> None:
+    """An algebraic rule without id and metaid links no element.
+
+    sbmlode labels it `rule<k>`, which can be the id of another element, here a parameter.
+    """
+    doc, model = _document()
+    parameter: libsbml.Parameter = model.createParameter()
+    parameter.setId("rule0")
+    parameter.setValue(1.0)
+    parameter.setConstant(True)
+    rule: libsbml.AlgebraicRule = model.createAlgebraicRule()
+    rule.setMath(libsbml.parseL3Formula("S - 1"))
+    report = _report_of_doc(doc)
+    assert report.ode_system is not None
+    assert [(u.kind, u.element) for u in report.ode_system.unsupported] == [
+        ("algebraic rule", None)
+    ]
+
+
+def test_unsupported_rule_links_by_its_metaid_before_an_id() -> None:
+    """A rule whose metaid is the id of a species links to the rule."""
+    doc, model = _document()
+    rule: libsbml.AlgebraicRule = model.createAlgebraicRule()
+    rule.setMetaId("S")
+    rule.setMath(libsbml.parseL3Formula("S - 1"))
+    report = _report_of_doc(doc)
+    assert report.ode_system is not None
+    pk = report.models[0].list_of_rules[0].pk
+    assert [u.element for u in report.ode_system.unsupported] == [pk]
+
+
+def test_symbol_is_never_linked_by_a_metaid() -> None:
+    """A symbol is an SId; the metaid of another element with its text names no symbol.
+
+    sbmlode names an event without an id `event0`, which here is the metaid of the compartment.
+    """
+    doc, model = _document()
+    model.getCompartment("c").setMetaId("event0")
+    event: libsbml.Event = model.createEvent()
+    event.setUseValuesFromTriggerTime(True)
+    trigger: libsbml.Trigger = event.createTrigger()
+    trigger.setMath(libsbml.parseL3Formula("time > 1"))
+    trigger.setInitialValue(False)
+    trigger.setPersistent(True)
+    assignment: libsbml.EventAssignment = event.createEventAssignment()
+    assignment.setVariable("S")
+    assignment.setMath(libsbml.parseL3Formula("1"))
+    report = _report_of_doc(doc)
+    assert report.ode_system is not None
+    assert [e.event for e in report.ode_system.events] == [None]
