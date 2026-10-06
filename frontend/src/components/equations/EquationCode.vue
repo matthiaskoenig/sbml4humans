@@ -52,9 +52,18 @@ watch(
   { immediate: true },
 );
 
+/** The clipboard of the browser, which a page outside a secure context (http on another host
+ * than localhost) does not have: the copy button is left out there. */
+const canCopy = typeof navigator !== "undefined" && navigator.clipboard !== undefined;
+
 async function copy(): Promise<void> {
   if (!code.value) return;
-  await navigator.clipboard.writeText(code.value.text);
+  try {
+    await navigator.clipboard.writeText(code.value.text);
+  } catch {
+    // the browser refused the clipboard, the download still works
+    return;
+  }
   copied.value = true;
   clearTimeout(copiedTimer);
   copiedTimer = setTimeout(() => (copied.value = false), 1200);
@@ -95,6 +104,7 @@ onBeforeUnmount(() => clearTimeout(copiedTimer));
           >Custom exports with sbmlode<ExternalLinkIcon class="size-3" aria-hidden="true"
         /></a>
         <button
+          v-if="canCopy"
           type="button"
           class="inline-flex items-center gap-1 rounded border border-gray-300 bg-white px-2 py-0.5 hover:bg-gray-100 disabled:opacity-50"
           :disabled="!code"

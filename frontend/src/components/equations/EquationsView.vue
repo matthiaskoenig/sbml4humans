@@ -8,6 +8,7 @@ import EquationEvent from "@/components/equations/EquationEvent.vue";
 import EquationRow from "@/components/equations/EquationRow.vue";
 import EquationSection from "@/components/equations/EquationSection.vue";
 import EquationTabs from "@/components/equations/EquationTabs.vue";
+import { tabId } from "@/components/equations/tabId";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import HelpButton from "@/components/help/HelpButton.vue";
@@ -116,6 +117,7 @@ onMounted(async () => {
         v-if="system"
         class="ml-auto"
         :code="code"
+        panel="equations-panel"
         @select="(next) => void view.setCode(next)"
       />
     </div>
@@ -142,35 +144,42 @@ onMounted(async () => {
           </li>
         </ul>
       </div>
-      <EquationCode v-if="code" :format="code" :location="location" />
-      <template v-else>
-        <EquationSection
-          v-for="section in sections"
-          :key="section.field"
-          :concept="section.concept"
-          :count="section.equations.length"
-        >
-          <EquationRow
-            v-for="(equation, k) in section.equations"
-            :key="k"
-            :equation="equation"
-            :selected="!!selected && equation.variable === selected"
-            :show-origin="section.mixed"
-          />
-        </EquationSection>
-        <EquationSection
-          v-if="system.events?.length"
-          concept="odeEvents"
-          :count="system.events.length"
-        >
-          <EquationEvent
-            v-for="(event, k) in system.events"
-            :key="k"
-            :event="event"
-            :selected="selected"
-          />
-        </EquationSection>
-      </template>
+      <div
+        id="equations-panel"
+        class="flex min-h-0 flex-1 flex-col"
+        role="tabpanel"
+        :aria-labelledby="tabId(code)"
+      >
+        <EquationCode v-if="code" :format="code" :location="location" />
+        <template v-else>
+          <EquationSection
+            v-for="section in sections"
+            :key="section.field"
+            :concept="section.concept"
+            :count="section.equations.length"
+          >
+            <EquationRow
+              v-for="(equation, k) in section.equations"
+              :key="k"
+              :equation="equation"
+              :selected="!!selected && equation.variable === selected"
+              :show-origin="section.mixed"
+            />
+          </EquationSection>
+          <EquationSection
+            v-if="system.events?.length"
+            concept="odeEvents"
+            :count="system.events.length"
+          >
+            <EquationEvent
+              v-for="(event, k) in system.events"
+              :key="k"
+              :event="event"
+              :selected="selected"
+            />
+          </EquationSection>
+        </template>
+      </div>
     </template>
   </div>
 </template>
