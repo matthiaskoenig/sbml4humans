@@ -2,7 +2,7 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
-## 0.13.0
+## 0.12.1
 
 The differential equations of a model are written in the native quantities of its state variables, read from the definitions to the system, and show the code of every format of sbmlode next to the math.
 
