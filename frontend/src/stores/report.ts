@@ -4,23 +4,34 @@ import { computed, markRaw, ref, shallowRef } from "vue";
 import {
   ApiError,
   getExample,
+  getExampleOde,
   getExampleValidation,
   getLocal,
+  getLocalOde,
   getLocalValidation,
   getUpload,
+  getUploadOde,
   getUploadValidation,
   getUrl,
+  getUrlOde,
   getUrlValidation,
+  type OdeDownloadFile,
+  type OdeFormat,
   postContent,
-  TOO_MANY_REQUESTS,
+  postContentOde,
   postContentValidation,
   postFile,
+  postFileOde,
   postFileValidation,
   toApiError,
+  TOO_MANY_REQUESTS,
 } from "@/api/client";
 import type { ReportResponse, ValidationResponse } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 import { ValidationIndex } from "@/report/validationIndex";
+
+/** The download of the differential equations of a report in a format, see `downloadOde`. */
+type OdeDownload = (format: OdeFormat, location: string) => Promise<OdeDownloadFile>;
 
 /** `local` is the report of a file of this machine, which `sbml4humans.show` of the python
  * package created on its local server and which the page reads by its token. `upload` is the
@@ -140,13 +151,25 @@ export const useReportStore = defineStore("report", () => {
     }
   }
 
+  /** The download of the differential equations of the source of the report, null without one:
+   * a file and pasted content are sent again like for the validation. */
+  let download: OdeDownload | null = null;
+
+  /** The differential equations of an entry of the report in a format of sbmlode, a file. */
+  function downloadOde(format: OdeFormat, location: string): Promise<OdeDownloadFile> {
+    if (download === null) return Promise.reject(new ApiError("No report is loaded"));
+    return download(format, location);
+  }
+
   async function load(
     next: ReportSource,
     request: () => Promise<ReportResponse>,
     validation: (signal: AbortSignal) => Promise<ValidationResponse>,
+    ode: OdeDownload,
   ): Promise<void> {
     if (response.value && source.value && sameSource(source.value, next)) return;
     const current = ++generation;
+    download = ode;
     resetValidation();
     loading.value = true;
     error.value = null;
@@ -176,40 +199,47 @@ export const useReportStore = defineStore("report", () => {
       { kind: "example", id, name: id },
       () => getExample(id),
       (signal) => getExampleValidation(id, signal),
+      (format) => getExampleOde(id, format),
     );
   const loadUrl = (url: string) =>
     load(
       { kind: "url", url, name: url },
       () => getUrl(url),
       (signal) => getUrlValidation(url, signal),
+      (format, location) => getUrlOde(url, format, location),
     );
   const loadLocal = (token: string) =>
     load(
       { kind: "local", token, name: "local report" },
       () => getLocal(token),
       (signal) => getLocalValidation(token, signal),
+      (format, location) => getLocalOde(token, format, location),
     );
   const loadUpload = (id: string) =>
     load(
       { kind: "upload", id, name: "uploaded model" },
       () => getUpload(id),
       (signal) => getUploadValidation(id, signal),
+      (format, location) => getUploadOde(id, format, location),
     );
   const loadFile = (file: File) =>
     load(
       { kind: "file", name: file.name },
       () => postFile(file),
       (signal) => postFileValidation(file, signal),
+      (format, location) => postFileOde(file, format, location),
     );
   const loadContent = (text: string) =>
     load(
       { kind: "content", name: "pasted SBML" },
       () => postContent(text),
       (signal) => postContentValidation(text, signal),
+      (format, location) => postContentOde(text, format, location),
     );
 
   function clear(): void {
     generation += 1;
+    download = null;
     resetValidation();
     loading.value = false;
     response.value = null;
@@ -235,6 +265,7 @@ export const useReportStore = defineStore("report", () => {
     loadUpload,
     loadFile,
     loadContent,
+    downloadOde,
     clear,
   };
 });

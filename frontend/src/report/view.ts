@@ -2,7 +2,7 @@ import { computed, type ComputedRef } from "vue";
 import { useRoute, useRouter, type LocationQueryRaw, type RouteLocationRaw } from "vue-router";
 
 import type { ElementType } from "@/api/types";
-import { parseQuery, toQuery, type ViewState } from "@/report/query";
+import { parseQuery, toQuery, type ReportViewKind, type ViewState } from "@/report/query";
 
 type Mode = "push" | "replace";
 
@@ -16,6 +16,7 @@ export function useReportView(): {
   state: ComputedRef<ViewState>;
   select(pk: string | null, mode?: Mode): Promise<unknown>;
   setSearch(q: string): Promise<unknown>;
+  setView(view: ReportViewKind): Promise<unknown>;
   setTypes(types: ElementType[] | null): Promise<unknown>;
   setEntry(entry: string | null): Promise<unknown>;
   setModel(model: string | null): Promise<unknown>;
@@ -45,7 +46,9 @@ export function useReportView(): {
   return {
     state,
     select: (pk, mode = "push") => update({ pk }, mode),
-    setSearch: (q) => update({ q }, "replace"),
+    // a search filters the tables, so it shows them
+    setSearch: (q) => update(q ? { q, view: "tables" } : { q }, "replace"),
+    setView: (view) => update({ view }),
     setTypes: (types) => update({ types }),
     setEntry: (entry) => update({ entry, model: null, pk: null, help: null }),
     setModel: (model) => update({ model, pk: null, help: null }),
@@ -54,7 +57,15 @@ export function useReportView(): {
     // that one
     routeFor: (pk, across) => {
       const next = across
-        ? { entry: across.entry, model: across.model, pk, q: "", types: null, help: null }
+        ? {
+            entry: across.entry,
+            model: across.model,
+            pk,
+            q: "",
+            types: null,
+            help: null,
+            view: state.value.view,
+          }
         : { ...state.value, pk };
       return { path: route.path, query: queryOf(next) };
     },

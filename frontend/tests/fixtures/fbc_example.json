@@ -1,5 +1,5 @@
 {
-  "uid": "b2bbd95e9e584a35ab1dd6f7c5fed806",
+  "uid": "c50e5ebc940048e195b5a70e482b456a",
   "manifest": {
     "entries": [
       {
@@ -2050,10 +2050,119 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "fbc_example/Species:Glcxt",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=fbc_example/Species:Glcxt}{\\mathrm{Glcxt}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-9.46 \\cdot \\htmlData{pk=fbc_example/Reaction:v2}{v_{\\mathrm{v2}}} - 9.84 \\cdot \\htmlData{pk=fbc_example/Reaction:v3}{v_{\\mathrm{v3}}} - 19.23 \\cdot \\htmlData{pk=fbc_example/Reaction:v4}{v_{\\mathrm{v4}}} - \\htmlData{pk=fbc_example/Reaction:EX_Glcxt}{v_{\\mathrm{EX\\_Glcxt}}}}{\\htmlData{pk=fbc_example/Compartment:bioreactor}{\\mathrm{bioreactor}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "fbc_example/Species:Ac",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=fbc_example/Species:Ac}{\\mathrm{Ac}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-39.43 \\cdot \\htmlData{pk=fbc_example/Reaction:v1}{v_{\\mathrm{v1}}} + 1.24 \\cdot \\htmlData{pk=fbc_example/Reaction:v3}{v_{\\mathrm{v3}}} + 12.12 \\cdot \\htmlData{pk=fbc_example/Reaction:v4}{v_{\\mathrm{v4}}} - \\htmlData{pk=fbc_example/Reaction:EX_Ac}{v_{\\mathrm{EX\\_Ac}}}}{\\htmlData{pk=fbc_example/Compartment:bioreactor}{\\mathrm{bioreactor}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "fbc_example/Species:O2",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=fbc_example/Species:O2}{O_{2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-35 \\cdot \\htmlData{pk=fbc_example/Reaction:v1}{v_{\\mathrm{v1}}} - 12.92 \\cdot \\htmlData{pk=fbc_example/Reaction:v2}{v_{\\mathrm{v2}}} - 12.73 \\cdot \\htmlData{pk=fbc_example/Reaction:v3}{v_{\\mathrm{v3}}} - \\htmlData{pk=fbc_example/Reaction:EX_O2}{v_{\\mathrm{EX\\_O2}}}}{\\htmlData{pk=fbc_example/Compartment:bioreactor}{\\mathrm{bioreactor}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "fbc_example/Species:X",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=fbc_example/Species:X}{X}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{1}{\\htmlData{pk=fbc_example/Compartment:bioreactor}{\\mathrm{bioreactor}}} \\Bigl( \\htmlData{pk=fbc_example/Reaction:v1}{v_{\\mathrm{v1}}} + \\htmlData{pk=fbc_example/Reaction:v2}{v_{\\mathrm{v2}}} + \\htmlData{pk=fbc_example/Reaction:v3}{v_{\\mathrm{v3}}} + \\htmlData{pk=fbc_example/Reaction:v4}{v_{\\mathrm{v4}}}",
+                "- \\htmlData{pk=fbc_example/Reaction:EX_X}{v_{\\mathrm{EX\\_X}}} \\Bigr)"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "fbc_example/Reaction:v1",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:v1}{v_{\\mathrm{v1}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "fbc_example/Reaction:v2",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:v2}{v_{\\mathrm{v2}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "fbc_example/Reaction:v3",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:v3}{v_{\\mathrm{v3}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "fbc_example/Reaction:v4",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:v4}{v_{\\mathrm{v4}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "fbc_example/Reaction:EX_Ac",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:EX_Ac}{v_{\\mathrm{EX\\_Ac}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "fbc_example/Reaction:EX_O2",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:EX_O2}{v_{\\mathrm{EX\\_O2}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "fbc_example/Reaction:EX_Glcxt",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:EX_Glcxt}{v_{\\mathrm{EX\\_Glcxt}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "fbc_example/Reaction:EX_X",
+              "lhs": "\\htmlData{pk=fbc_example/Reaction:EX_X}{v_{\\mathrm{EX\\_X}}}",
+              "lines": [
+                "0"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.005 [s]"
+        "jsonReportTime": "0.006 [s]"
       }
     }
   }

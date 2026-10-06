@@ -60,6 +60,7 @@ from sbml4humans.api import (
     add_error_contract,
     add_gzip,
     api,
+    ode_response,
     run_validation,
 )
 from sbml4humans.localstate import (
@@ -72,7 +73,7 @@ from sbml4humans.localstate import (
     write_state,
 )
 from sbml4humans.model import ReportResponse, ValidationResponse
-from sbml4humans.report import report_for_path, validation_for_path
+from sbml4humans.report import ode_for_path, report_for_path, validation_for_path
 
 
 logger = logging.getLogger(__name__)
@@ -312,6 +313,22 @@ class LocalApp:
             except KeyError:
                 raise ReportNotFoundError(token) from None
             return await run_validation(request, validation_for_path, path, True)
+
+        @local.get("/api/local/ode/{token}", response_class=PlainTextResponse)
+        def read_ode(
+            token: str,
+            format: str,
+            location: str | None = None,
+        ) -> Response:
+            """The ODE system of the path of the report of a token, as a file.
+
+            The file is read again and trusted, like for the report.
+            """
+            try:
+                path = self.reports.get(token).path
+            except KeyError:
+                raise ReportNotFoundError(token) from None
+            return ode_response(ode_for_path(path, format, location, trusted=True))
 
         @local.post("/api/local/shutdown")
         def shutdown(

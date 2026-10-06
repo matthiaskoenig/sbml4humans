@@ -1,5 +1,5 @@
 {
-  "uid": "84e33c9769b2474c98b20bae4fe1bee7",
+  "uid": "d123682c620d40609e3c4557ead90bb2",
   "manifest": {
     "entries": [
       {
@@ -11789,10 +11789,883 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "icg_body/Species:Cre_plasma_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Cre_plasma_icg}{n_{\\mathrm{Cre}_{\\mathrm{plasma\\_icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Reaction:Flow_ar_arre_icg}{v_{\\mathrm{Flow\\_ar\\_arre\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_re_ve_icg}{v_{\\mathrm{Flow\\_re\\_ve\\_icg}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Cgi_plasma_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Cgi_plasma_icg}{n_{\\mathrm{Cgi}_{\\mathrm{plasma\\_icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Reaction:Flow_ar_argi_icg}{v_{\\mathrm{Flow\\_ar\\_argi\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_gi_po_icg}{v_{\\mathrm{Flow\\_gi\\_po\\_icg}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Cli_plasma_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Cli_plasma_icg}{n_{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Reaction:Flow_arli_li_icg}{v_{\\mathrm{Flow\\_arli\\_li\\_icg}}} + \\htmlData{pk=icg_body/Reaction:Flow_po_li_icg}{v_{\\mathrm{Flow\\_po\\_li\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_li_hv_icg}{v_{\\mathrm{Flow\\_li\\_hv\\_icg}}} - v_{\\mathrm{LI\\_\\_ICGIM}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Clu_plasma_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Clu_plasma_icg}{n_{\\mathrm{Clu}_{\\mathrm{plasma\\_icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Reaction:Flow_ve_lu_icg}{v_{\\mathrm{Flow\\_ve\\_lu\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_lu_ar_icg}{v_{\\mathrm{Flow\\_lu\\_ar\\_icg}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Cve_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Cve_icg}{n_{\\mathrm{Cve}_{\\mathrm{icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Reaction:iv_icg}{v_{\\mathrm{iv\\_icg}}} + \\htmlData{pk=icg_body/Reaction:Flow_re_ve_icg}{v_{\\mathrm{Flow\\_re\\_ve\\_icg}}} + \\htmlData{pk=icg_body/Reaction:Flow_hv_ve_icg}{v_{\\mathrm{Flow\\_hv\\_ve\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_ve_lu_icg}{v_{\\mathrm{Flow\\_ve\\_lu\\_icg}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Car_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Car_icg}{n_{\\mathrm{Car}_{\\mathrm{icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=icg_body/Reaction:Flow_ar_arre_icg}{v_{\\mathrm{Flow\\_ar\\_arre\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_ar_argi_icg}{v_{\\mathrm{Flow\\_ar\\_argi\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_arli_li_icg}{v_{\\mathrm{Flow\\_arli\\_li\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_arli_hv_icg}{v_{\\mathrm{Flow\\_arli\\_hv\\_icg}}}",
+                "+ \\htmlData{pk=icg_body/Reaction:Flow_lu_ar_icg}{v_{\\mathrm{Flow\\_lu\\_ar\\_icg}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Cpo_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Cpo_icg}{n_{\\mathrm{Cpo}_{\\mathrm{icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Reaction:Flow_gi_po_icg}{v_{\\mathrm{Flow\\_gi\\_po\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_po_li_icg}{v_{\\mathrm{Flow\\_po\\_li\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_po_hv_icg}{v_{\\mathrm{Flow\\_po\\_hv\\_icg}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Chv_icg",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=icg_body/Species:Chv_icg}{n_{\\mathrm{Chv}_{\\mathrm{icg}}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Reaction:Flow_arli_hv_icg}{v_{\\mathrm{Flow\\_arli\\_hv\\_icg}}} + \\htmlData{pk=icg_body/Reaction:Flow_po_hv_icg}{v_{\\mathrm{Flow\\_po\\_hv\\_icg}}} + \\htmlData{pk=icg_body/Reaction:Flow_li_hv_icg}{v_{\\mathrm{Flow\\_li\\_hv\\_icg}}} - \\htmlData{pk=icg_body/Reaction:Flow_hv_ve_icg}{v_{\\mathrm{Flow\\_hv\\_ve\\_icg}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Species:Afeces_icg",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=icg_body/Species:Afeces_icg}{\\mathrm{Afeces}_{\\mathrm{icg}}}}{\\mathrm{d} t}",
+              "lines": [
+                "v_{\\mathrm{LI\\_\\_ICGLI2BI}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} n_{\\mathrm{LI}_{\\mathrm{\\_icg}}}}{\\mathrm{d} t}",
+              "lines": [
+                "v_{\\mathrm{LI\\_\\_ICGIM}} - v_{\\mathrm{LI\\_\\_ICGLI2CA}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": null,
+              "lhs": "\\frac{\\mathrm{d} n_{\\mathrm{LI}_{\\mathrm{\\_icg\\_bi}}}}{\\mathrm{d} t}",
+              "lines": [
+                "v_{\\mathrm{LI\\_\\_ICGLI2CA}} - v_{\\mathrm{LI\\_\\_ICGLI2BI}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_body/Parameter:IVDOSE_icg",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=icg_body/Parameter:IVDOSE_icg}{\\mathrm{IVDOSE}_{\\mathrm{icg}}}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=icg_body/Reaction:iv_icg}{v_{\\mathrm{iv\\_icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}} + \\htmlData{pk=icg_body/Parameter:Ri_icg}{\\mathrm{Ri}_{\\mathrm{icg}}}"
+              ],
+              "origin": "rate_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:cum_dose_icg",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=icg_body/Parameter:cum_dose_icg}{\\mathrm{cum}_{\\mathrm{dose\\_icg}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Ri_icg}{\\mathrm{Ri}_{\\mathrm{icg}}}"
+              ],
+              "origin": "rate_rule"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "icg_body/Reaction:iv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:iv_icg}{v_{\\mathrm{iv\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Ki_icg}{\\mathrm{Ki}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:IVDOSE_icg}{\\mathrm{IVDOSE}_{\\mathrm{icg}}}}{\\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_ar_arre_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_ar_arre_icg}{v_{\\mathrm{Flow\\_ar\\_arre\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qre}{\\mathrm{Qre}} \\cdot \\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_re_ve_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_re_ve_icg}{v_{\\mathrm{Flow\\_re\\_ve\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qre}{\\mathrm{Qre}} \\cdot \\htmlData{pk=icg_body/Species:Cre_plasma_icg}{\\mathrm{Cre}_{\\mathrm{plasma\\_icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_ar_argi_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_ar_argi_icg}{v_{\\mathrm{Flow\\_ar\\_argi\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qgi}{\\mathrm{Qgi}} \\cdot \\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_gi_po_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_gi_po_icg}{v_{\\mathrm{Flow\\_gi\\_po\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qgi}{\\mathrm{Qgi}} \\cdot \\htmlData{pk=icg_body/Species:Cgi_plasma_icg}{\\mathrm{Cgi}_{\\mathrm{plasma\\_icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_arli_li_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_arli_li_icg}{v_{\\mathrm{Flow\\_arli\\_li\\_icg}}}",
+              "lines": [
+                "\\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:f_shunts}{f_{\\mathrm{shunts}}}\\right) \\cdot \\htmlData{pk=icg_body/Parameter:Qha}{\\mathrm{Qha}} \\cdot \\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_arli_hv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_arli_hv_icg}{v_{\\mathrm{Flow\\_arli\\_hv\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:f_shunts}{f_{\\mathrm{shunts}}} \\cdot \\htmlData{pk=icg_body/Parameter:Qha}{\\mathrm{Qha}} \\cdot \\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_po_li_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_po_li_icg}{v_{\\mathrm{Flow\\_po\\_li\\_icg}}}",
+              "lines": [
+                "\\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:f_shunts}{f_{\\mathrm{shunts}}}\\right) \\cdot \\htmlData{pk=icg_body/Parameter:Qpo}{\\mathrm{Qpo}} \\cdot \\htmlData{pk=icg_body/Species:Cpo_icg}{\\mathrm{Cpo}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_po_hv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_po_hv_icg}{v_{\\mathrm{Flow\\_po\\_hv\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:f_shunts}{f_{\\mathrm{shunts}}} \\cdot \\htmlData{pk=icg_body/Parameter:Qpo}{\\mathrm{Qpo}} \\cdot \\htmlData{pk=icg_body/Species:Cpo_icg}{\\mathrm{Cpo}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_li_hv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_li_hv_icg}{v_{\\mathrm{Flow\\_li\\_hv\\_icg}}}",
+              "lines": [
+                "\\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:f_shunts}{f_{\\mathrm{shunts}}}\\right) \\cdot \\mathopen{}\\left(\\htmlData{pk=icg_body/Parameter:Qpo}{\\mathrm{Qpo}} + \\htmlData{pk=icg_body/Parameter:Qha}{\\mathrm{Qha}}\\right) \\cdot \\htmlData{pk=icg_body/Species:Cli_plasma_icg}{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_hv_ve_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_hv_ve_icg}{v_{\\mathrm{Flow\\_hv\\_ve\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qh}{\\mathrm{Qh}} \\cdot \\htmlData{pk=icg_body/Species:Chv_icg}{\\mathrm{Chv}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_ve_lu_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_ve_lu_icg}{v_{\\mathrm{Flow\\_ve\\_lu\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qlu}{\\mathrm{Qlu}} \\cdot \\htmlData{pk=icg_body/Species:Cve_icg}{\\mathrm{Cve}_{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_body/Reaction:Flow_lu_ar_icg",
+              "lhs": "\\htmlData{pk=icg_body/Reaction:Flow_lu_ar_icg}{v_{\\mathrm{Flow\\_lu\\_ar\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qlu}{\\mathrm{Qlu}} \\cdot \\htmlData{pk=icg_body/Species:Clu_plasma_icg}{\\mathrm{Clu}_{\\mathrm{plasma\\_icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{LI\\_\\_ICGIM}}",
+              "lines": [
+                "\\frac{\\mathrm{LI}_{\\mathrm{\\_f\\_oatp1b3}} \\cdot \\mathrm{LI}_{\\mathrm{\\_ICGIM\\_Vmax}} \\cdot \\htmlData{pk=icg_body/Compartment:Vli_tissue}{\\mathrm{Vli}_{\\mathrm{tissue}}} \\cdot \\htmlData{pk=icg_body/Species:Cli_plasma_icg}{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}}}{\\mathrm{LI}_{\\mathrm{\\_ICGIM\\_Km}} \\cdot \\mathopen{}\\left(1 + \\frac{\\mathrm{LI}_{\\mathrm{\\_bil\\_ext}}}{\\mathrm{LI}_{\\mathrm{\\_ICGIM\\_ki\\_bil}}}\\right) + \\htmlData{pk=icg_body/Species:Cli_plasma_icg}{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{LI\\_\\_ICGLI2CA}}",
+              "lines": [
+                "\\frac{\\mathrm{LI}_{\\mathrm{\\_ICGLI2CA\\_Vmax}} \\cdot \\htmlData{pk=icg_body/Compartment:Vli_tissue}{\\mathrm{Vli}_{\\mathrm{tissue}}} \\cdot \\mathrm{LI}_{\\mathrm{\\_icg}}}{\\mathrm{LI}_{\\mathrm{\\_ICGLI2CA\\_Km}} + \\mathrm{LI}_{\\mathrm{\\_icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": null,
+              "lhs": "v_{\\mathrm{LI\\_\\_ICGLI2BI}}",
+              "lines": [
+                "\\mathrm{LI}_{\\mathrm{\\_ICGLI2BI\\_Vmax}} \\cdot \\htmlData{pk=icg_body/Compartment:Vli_tissue}{\\mathrm{Vli}_{\\mathrm{tissue}}} \\cdot \\mathrm{LI}_{\\mathrm{\\_icg\\_bi}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [
+            {
+              "variable": "icg_body/Parameter:FVre",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:FVre}{\\mathrm{FVre}}",
+              "lines": [
+                "1 - \\htmlData{pk=icg_body/Parameter:FVbi}{\\mathrm{FVbi}} - \\htmlData{pk=icg_body/Parameter:FVgi}{\\mathrm{FVgi}} - \\htmlData{pk=icg_body/Parameter:FVli}{\\mathrm{FVli}}",
+                "- \\htmlData{pk=icg_body/Parameter:FVlu}{\\mathrm{FVlu}} - \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} - \\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} - \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}}",
+                "- \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:BSA",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:BSA}{\\mathrm{BSA}}",
+              "lines": [
+                "0.024265 \\cdot \\mathopen{}\\left(\\frac{\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}}}{1}\\right)^{0.5378} \\cdot \\mathopen{}\\left(\\frac{\\htmlData{pk=icg_body/Parameter:HEIGHT}{\\mathrm{HEIGHT}}}{1}\\right)^{0.3964}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:CO",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:CO}{\\mathrm{CO}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:COBW}{\\mathrm{COBW}} \\cdot \\htmlData{pk=icg_body/Parameter:f_cardiac_output}{f_{\\mathrm{cardiac\\_output}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:QC",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:QC}{\\mathrm{QC}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:CO}{\\mathrm{CO}}}{1000} \\cdot 60"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vbi",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vbi}{\\mathrm{Vbi}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVbi}{\\mathrm{FVbi}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": null,
+              "lhs": "\\mathrm{LI}_{\\mathrm{\\_icg\\_bi}}",
+              "lines": [
+                "\\frac{n_{\\mathrm{LI}_{\\mathrm{\\_icg\\_bi}}}}{\\htmlData{pk=icg_body/Compartment:Vbi}{\\mathrm{Vbi}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vgi",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vgi}{\\mathrm{Vgi}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVgi}{\\mathrm{FVgi}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vli",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vli}{\\mathrm{Vli}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVli}{\\mathrm{FVli}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:resection_rate}{\\mathrm{resection}_{\\mathrm{rate}}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vlu",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vlu}{\\mathrm{Vlu}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVlu}{\\mathrm{FVlu}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vre",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vre}{\\mathrm{Vre}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVre}{\\mathrm{FVre}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vve",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vve}{\\mathrm{Vve}}",
+              "lines": [
+                "\\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right) \\cdot \\mathopen{}\\left(\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} - \\frac{\\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}}}{\\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} + \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} + \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} + \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}} \\cdot \\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} - \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} - \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} - \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}\\right)\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Cve_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cve_icg}{\\mathrm{Cve}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Cve_icg}{n_{\\mathrm{Cve}_{\\mathrm{icg}}}}}{\\htmlData{pk=icg_body/Compartment:Vve}{\\mathrm{Vve}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Var",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Var}{\\mathrm{Var}}",
+              "lines": [
+                "\\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right) \\cdot \\mathopen{}\\left(\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} - \\frac{\\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}}}{\\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} + \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} + \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} + \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}} \\cdot \\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} - \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} - \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} - \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}\\right)\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Car_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Car_icg}{n_{\\mathrm{Car}_{\\mathrm{icg}}}}}{\\htmlData{pk=icg_body/Compartment:Var}{\\mathrm{Var}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vpo",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vpo}{\\mathrm{Vpo}}",
+              "lines": [
+                "\\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right) \\cdot \\mathopen{}\\left(\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} - \\frac{\\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}}}{\\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} + \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} + \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} + \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}} \\cdot \\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} - \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} - \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} - \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}\\right)\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Cpo_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cpo_icg}{\\mathrm{Cpo}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Cpo_icg}{n_{\\mathrm{Cpo}_{\\mathrm{icg}}}}}{\\htmlData{pk=icg_body/Compartment:Vpo}{\\mathrm{Vpo}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vhv",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vhv}{\\mathrm{Vhv}}",
+              "lines": [
+                "\\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right) \\cdot \\mathopen{}\\left(\\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}} - \\frac{\\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}}{\\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} + \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} + \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} + \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}} \\cdot \\htmlData{pk=icg_body/Parameter:BW}{\\mathrm{BW}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:FVar}{\\mathrm{FVar}} - \\htmlData{pk=icg_body/Parameter:FVve}{\\mathrm{FVve}} - \\htmlData{pk=icg_body/Parameter:FVpo}{\\mathrm{FVpo}} - \\htmlData{pk=icg_body/Parameter:FVhv}{\\mathrm{FVhv}}\\right)\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Chv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Chv_icg}{\\mathrm{Chv}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Chv_icg}{n_{\\mathrm{Chv}_{\\mathrm{icg}}}}}{\\htmlData{pk=icg_body/Compartment:Vhv}{\\mathrm{Vhv}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Parameter:Qlu",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Qlu}{\\mathrm{Qlu}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:QC}{\\mathrm{QC}} \\cdot \\htmlData{pk=icg_body/Parameter:FQlu}{\\mathrm{FQlu}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Qh",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Qh}{\\mathrm{Qh}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:QC}{\\mathrm{QC}} \\cdot \\htmlData{pk=icg_body/Parameter:FQh}{\\mathrm{FQh}} \\cdot \\htmlData{pk=icg_body/Parameter:f_bloodflow}{f_{\\mathrm{bloodflow}}} \\cdot \\htmlData{pk=icg_body/Parameter:f_exercise}{f_{\\mathrm{exercise}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:FQre",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:FQre}{\\mathrm{FQre}}",
+              "lines": [
+                "1 - \\frac{\\htmlData{pk=icg_body/Parameter:Qh}{\\mathrm{Qh}}}{\\htmlData{pk=icg_body/Parameter:Qlu}{\\mathrm{Qlu}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Qre",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Qre}{\\mathrm{Qre}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:QC}{\\mathrm{QC}} \\cdot \\htmlData{pk=icg_body/Parameter:FQre}{\\mathrm{FQre}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Qgi",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Qgi}{\\mathrm{Qgi}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:QC}{\\mathrm{QC}} \\cdot \\htmlData{pk=icg_body/Parameter:FQgi}{\\mathrm{FQgi}} \\cdot \\htmlData{pk=icg_body/Parameter:f_bloodflow}{f_{\\mathrm{bloodflow}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Qpo",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Qpo}{\\mathrm{Qpo}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qgi}{\\mathrm{Qgi}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Qha",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Qha}{\\mathrm{Qha}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Qh}{\\mathrm{Qh}} - \\htmlData{pk=icg_body/Parameter:Qpo}{\\mathrm{Qpo}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vre_plasma",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vre_plasma}{\\mathrm{Vre}_{\\mathrm{plasma}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vre}{\\mathrm{Vre}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Cre_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cre_plasma_icg}{\\mathrm{Cre}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Cre_plasma_icg}{n_{\\mathrm{Cre}_{\\mathrm{plasma\\_icg}}}}}{\\htmlData{pk=icg_body/Compartment:Vre_plasma}{\\mathrm{Vre}_{\\mathrm{plasma}}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vre_tissue",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vre_tissue}{\\mathrm{Vre}_{\\mathrm{tissue}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vre}{\\mathrm{Vre}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vgi_plasma",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vgi_plasma}{\\mathrm{Vgi}_{\\mathrm{plasma}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vgi}{\\mathrm{Vgi}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Cgi_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cgi_plasma_icg}{\\mathrm{Cgi}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Cgi_plasma_icg}{n_{\\mathrm{Cgi}_{\\mathrm{plasma\\_icg}}}}}{\\htmlData{pk=icg_body/Compartment:Vgi_plasma}{\\mathrm{Vgi}_{\\mathrm{plasma}}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vgi_tissue",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vgi_tissue}{\\mathrm{Vgi}_{\\mathrm{tissue}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vgi}{\\mathrm{Vgi}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Compartment:Vli_plasma",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vli_plasma}{\\mathrm{Vli}_{\\mathrm{plasma}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vli}{\\mathrm{Vli}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Cli_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cli_plasma_icg}{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Cli_plasma_icg}{n_{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}}}}{\\htmlData{pk=icg_body/Compartment:Vli_plasma}{\\mathrm{Vli}_{\\mathrm{plasma}}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": null,
+              "lhs": "\\mathrm{LI}_{\\mathrm{\\_bil\\_ext}}",
+              "lines": [
+                "\\frac{n_{\\mathrm{LI}_{\\mathrm{\\_bil\\_ext}}}}{\\htmlData{pk=icg_body/Compartment:Vli_plasma}{\\mathrm{Vli}_{\\mathrm{plasma}}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vli_tissue",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vli_tissue}{\\mathrm{Vli}_{\\mathrm{tissue}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vli}{\\mathrm{Vli}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:f_tissue_loss}{f_{\\mathrm{tissue\\_loss}}}\\right) \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": null,
+              "lhs": "\\mathrm{LI}_{\\mathrm{\\_icg}}",
+              "lines": [
+                "\\frac{n_{\\mathrm{LI}_{\\mathrm{\\_icg}}}}{\\htmlData{pk=icg_body/Compartment:Vli_tissue}{\\mathrm{Vli}_{\\mathrm{tissue}}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vlu_plasma",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vlu_plasma}{\\mathrm{Vlu}_{\\mathrm{plasma}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vlu}{\\mathrm{Vlu}} \\cdot \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:HCT}{\\mathrm{HCT}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Species:Clu_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Clu_plasma_icg}{\\mathrm{Clu}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Clu_plasma_icg}{n_{\\mathrm{Clu}_{\\mathrm{plasma\\_icg}}}}}{\\htmlData{pk=icg_body/Compartment:Vlu_plasma}{\\mathrm{Vlu}_{\\mathrm{plasma}}}}"
+              ],
+              "origin": "concentration"
+            },
+            {
+              "variable": "icg_body/Compartment:Vlu_tissue",
+              "lhs": "\\htmlData{pk=icg_body/Compartment:Vlu_tissue}{\\mathrm{Vlu}_{\\mathrm{tissue}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Compartment:Vlu}{\\mathrm{Vlu}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=icg_body/Parameter:Fblood}{\\mathrm{Fblood}}\\right)"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Ki_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Ki_icg}{\\mathrm{Ki}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{0.693}{\\htmlData{pk=icg_body/Parameter:ti_icg}{\\mathrm{ti}_{\\mathrm{icg}}}} \\cdot 60"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Are_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Are_plasma_icg}{\\mathrm{Are}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cre_plasma_icg}{\\mathrm{Cre}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vre_plasma}{\\mathrm{Vre}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xre_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xre_plasma_icg}{\\mathrm{Xre}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Are_plasma_icg}{\\mathrm{Are}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mre_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mre_plasma_icg}{\\mathrm{Mre}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Are_plasma_icg}{\\mathrm{Are}_{\\mathrm{plasma\\_icg}}}}{\\htmlData{pk=icg_body/Compartment:Vre_plasma}{\\mathrm{Vre}_{\\mathrm{plasma}}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Agi_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Agi_plasma_icg}{\\mathrm{Agi}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cgi_plasma_icg}{\\mathrm{Cgi}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vgi_plasma}{\\mathrm{Vgi}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xgi_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xgi_plasma_icg}{\\mathrm{Xgi}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Agi_plasma_icg}{\\mathrm{Agi}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mgi_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mgi_plasma_icg}{\\mathrm{Mgi}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Agi_plasma_icg}{\\mathrm{Agi}_{\\mathrm{plasma\\_icg}}}}{\\htmlData{pk=icg_body/Compartment:Vgi_plasma}{\\mathrm{Vgi}_{\\mathrm{plasma}}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Ali_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Ali_plasma_icg}{\\mathrm{Ali}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cli_plasma_icg}{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vli_plasma}{\\mathrm{Vli}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xli_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xli_plasma_icg}{\\mathrm{Xli}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Ali_plasma_icg}{\\mathrm{Ali}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mli_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mli_plasma_icg}{\\mathrm{Mli}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Ali_plasma_icg}{\\mathrm{Ali}_{\\mathrm{plasma\\_icg}}}}{\\htmlData{pk=icg_body/Compartment:Vli_plasma}{\\mathrm{Vli}_{\\mathrm{plasma}}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Alu_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Alu_plasma_icg}{\\mathrm{Alu}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Clu_plasma_icg}{\\mathrm{Clu}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vlu_plasma}{\\mathrm{Vlu}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xlu_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xlu_plasma_icg}{\\mathrm{Xlu}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Alu_plasma_icg}{\\mathrm{Alu}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mlu_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mlu_plasma_icg}{\\mathrm{Mlu}_{\\mathrm{plasma\\_icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Alu_plasma_icg}{\\mathrm{Alu}_{\\mathrm{plasma\\_icg}}}}{\\htmlData{pk=icg_body/Compartment:Vlu_plasma}{\\mathrm{Vlu}_{\\mathrm{plasma}}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Ave_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Ave_icg}{\\mathrm{Ave}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cve_icg}{\\mathrm{Cve}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vve}{\\mathrm{Vve}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xve_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xve_icg}{\\mathrm{Xve}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Ave_icg}{\\mathrm{Ave}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mve_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mve_icg}{\\mathrm{Mve}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Ave_icg}{\\mathrm{Ave}_{\\mathrm{icg}}}}{\\htmlData{pk=icg_body/Compartment:Vve}{\\mathrm{Vve}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Aar_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Aar_icg}{\\mathrm{Aar}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Var}{\\mathrm{Var}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xar_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xar_icg}{\\mathrm{Xar}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Aar_icg}{\\mathrm{Aar}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mar_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mar_icg}{\\mathrm{Mar}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Aar_icg}{\\mathrm{Aar}_{\\mathrm{icg}}}}{\\htmlData{pk=icg_body/Compartment:Var}{\\mathrm{Var}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Apo_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Apo_icg}{\\mathrm{Apo}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cpo_icg}{\\mathrm{Cpo}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vpo}{\\mathrm{Vpo}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xpo_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xpo_icg}{\\mathrm{Xpo}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Apo_icg}{\\mathrm{Apo}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mpo_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mpo_icg}{\\mathrm{Mpo}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Apo_icg}{\\mathrm{Apo}_{\\mathrm{icg}}}}{\\htmlData{pk=icg_body/Compartment:Vpo}{\\mathrm{Vpo}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Ahv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Ahv_icg}{\\mathrm{Ahv}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Chv_icg}{\\mathrm{Chv}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vhv}{\\mathrm{Vhv}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Xhv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Xhv_icg}{\\mathrm{Xhv}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Parameter:Ahv_icg}{\\mathrm{Ahv}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:Mhv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:Mhv_icg}{\\mathrm{Mhv}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Parameter:Ahv_icg}{\\mathrm{Ahv}_{\\mathrm{icg}}}}{\\htmlData{pk=icg_body/Compartment:Vhv}{\\mathrm{Vhv}}} \\cdot \\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:ER_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:ER_icg}{\\mathrm{ER}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}} + 10^{-7} - \\htmlData{pk=icg_body/Species:Chv_icg}{\\mathrm{Chv}_{\\mathrm{icg}}} - 10^{-7}}{\\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}} + 10^{-7}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "icg_body/Parameter:CLinfusion_icg",
+              "lhs": "\\htmlData{pk=icg_body/Parameter:CLinfusion_icg}{\\mathrm{CLinfusion}_{\\mathrm{icg}}}",
+              "lines": [
+                "\\frac{\\frac{\\htmlData{pk=icg_body/Parameter:Ri_icg}{\\mathrm{Ri}_{\\mathrm{icg}}}}{\\htmlData{pk=icg_body/Parameter:Mr_icg}{\\mathrm{Mr}_{\\mathrm{icg}}}}}{\\htmlData{pk=icg_body/Species:Cve_icg}{\\mathrm{Cve}_{\\mathrm{icg}}} + 10^{-12}}"
+              ],
+              "origin": "assignment_rule"
+            }
+          ],
+          "functions": [],
+          "initial": [
+            {
+              "variable": "icg_body/Species:Cgi_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cgi_plasma_icg}{n_{\\mathrm{Cgi}_{\\mathrm{plasma\\_icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cgi_plasma_icg}{\\mathrm{Cgi}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vgi_plasma}{\\mathrm{Vgi}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Cli_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cli_plasma_icg}{n_{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cli_plasma_icg}{\\mathrm{Cli}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vli_plasma}{\\mathrm{Vli}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Clu_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Clu_plasma_icg}{n_{\\mathrm{Clu}_{\\mathrm{plasma\\_icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Clu_plasma_icg}{\\mathrm{Clu}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vlu_plasma}{\\mathrm{Vlu}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Cve_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cve_icg}{n_{\\mathrm{Cve}_{\\mathrm{icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cve_icg}{\\mathrm{Cve}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vve}{\\mathrm{Vve}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Car_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Car_icg}{n_{\\mathrm{Car}_{\\mathrm{icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Car_icg}{\\mathrm{Car}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Var}{\\mathrm{Var}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Cpo_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cpo_icg}{n_{\\mathrm{Cpo}_{\\mathrm{icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cpo_icg}{\\mathrm{Cpo}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vpo}{\\mathrm{Vpo}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Chv_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Chv_icg}{n_{\\mathrm{Chv}_{\\mathrm{icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Chv_icg}{\\mathrm{Chv}_{\\mathrm{icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vhv}{\\mathrm{Vhv}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Afeces_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Afeces_icg}{\\mathrm{Afeces}_{\\mathrm{icg}}}",
+              "lines": [
+                "0 \\cdot \\htmlData{pk=icg_body/Compartment:Vfeces}{\\mathrm{Vfeces}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": null,
+              "lhs": "n_{\\mathrm{LI}_{\\mathrm{\\_bil\\_ext}}}",
+              "lines": [
+                "\\mathrm{LI}_{\\mathrm{\\_bil\\_ext}} \\cdot \\htmlData{pk=icg_body/Compartment:Vli_plasma}{\\mathrm{Vli}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": null,
+              "lhs": "n_{\\mathrm{LI}_{\\mathrm{\\_icg}}}",
+              "lines": [
+                "\\mathrm{LI}_{\\mathrm{\\_icg}} \\cdot \\htmlData{pk=icg_body/Compartment:Vli_tissue}{\\mathrm{Vli}_{\\mathrm{tissue}}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": null,
+              "lhs": "n_{\\mathrm{LI}_{\\mathrm{\\_icg\\_bi}}}",
+              "lines": [
+                "\\mathrm{LI}_{\\mathrm{\\_icg\\_bi}} \\cdot \\htmlData{pk=icg_body/Compartment:Vbi}{\\mathrm{Vbi}}"
+              ],
+              "origin": "initial_value"
+            },
+            {
+              "variable": "icg_body/Species:Cre_plasma_icg",
+              "lhs": "\\htmlData{pk=icg_body/Species:Cre_plasma_icg}{n_{\\mathrm{Cre}_{\\mathrm{plasma\\_icg}}}}",
+              "lines": [
+                "\\htmlData{pk=icg_body/Species:Cre_plasma_icg}{\\mathrm{Cre}_{\\mathrm{plasma\\_icg}}} \\cdot \\htmlData{pk=icg_body/Compartment:Vre_plasma}{\\mathrm{Vre}_{\\mathrm{plasma}}}"
+              ],
+              "origin": "initial_value"
+            }
+          ],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.114 [s]"
+        "jsonReportTime": "0.117 [s]"
       }
     },
     "./icg_liver.xml": {
@@ -13785,10 +14658,87 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "icg_liver/Species:icg_ext",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=icg_liver/Species:icg_ext}{\\mathrm{icg}_{\\mathrm{ext}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{-\\htmlData{pk=icg_liver/Reaction:ICGIM}{v_{\\mathrm{ICGIM}}}}{\\htmlData{pk=icg_liver/Compartment:Vext}{\\mathrm{Vext}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_liver/Species:icg",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=icg_liver/Species:icg}{\\mathrm{icg}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_liver/Reaction:ICGIM}{v_{\\mathrm{ICGIM}}} - \\htmlData{pk=icg_liver/Reaction:ICGLI2CA}{v_{\\mathrm{ICGLI2CA}}}}{\\htmlData{pk=icg_liver/Compartment:Vli}{\\mathrm{Vli}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_liver/Species:icg_bi",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=icg_liver/Species:icg_bi}{\\mathrm{icg}_{\\mathrm{bi}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_liver/Reaction:ICGLI2CA}{v_{\\mathrm{ICGLI2CA}}} - \\htmlData{pk=icg_liver/Reaction:ICGLI2BI}{v_{\\mathrm{ICGLI2BI}}}}{\\htmlData{pk=icg_liver/Compartment:Vbi}{\\mathrm{Vbi}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "icg_liver/Species:icg_feces",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=icg_liver/Species:icg_feces}{\\mathrm{icg}_{\\mathrm{feces}}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=icg_liver/Reaction:ICGLI2BI}{v_{\\mathrm{ICGLI2BI}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "icg_liver/Reaction:ICGIM",
+              "lhs": "\\htmlData{pk=icg_liver/Reaction:ICGIM}{v_{\\mathrm{ICGIM}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_liver/Parameter:f_oatp1b3}{f_{\\mathrm{oatp1b3}}} \\cdot \\htmlData{pk=icg_liver/Parameter:ICGIM_Vmax}{\\mathrm{ICGIM}_{\\mathrm{Vmax}}} \\cdot \\htmlData{pk=icg_liver/Compartment:Vli}{\\mathrm{Vli}} \\cdot \\htmlData{pk=icg_liver/Species:icg_ext}{\\mathrm{icg}_{\\mathrm{ext}}}}{\\htmlData{pk=icg_liver/Parameter:ICGIM_Km}{\\mathrm{ICGIM}_{\\mathrm{Km}}} \\cdot \\mathopen{}\\left(1 + \\frac{\\htmlData{pk=icg_liver/Species:bil_ext}{\\mathrm{bil}_{\\mathrm{ext}}}}{\\htmlData{pk=icg_liver/Parameter:ICGIM_ki_bil}{\\mathrm{ICGIM}_{\\mathrm{ki\\_bil}}}}\\right) + \\htmlData{pk=icg_liver/Species:icg_ext}{\\mathrm{icg}_{\\mathrm{ext}}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_liver/Reaction:ICGLI2CA",
+              "lhs": "\\htmlData{pk=icg_liver/Reaction:ICGLI2CA}{v_{\\mathrm{ICGLI2CA}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=icg_liver/Parameter:ICGLI2CA_Vmax}{\\mathrm{ICGLI2CA}_{\\mathrm{Vmax}}} \\cdot \\htmlData{pk=icg_liver/Compartment:Vli}{\\mathrm{Vli}} \\cdot \\htmlData{pk=icg_liver/Species:icg}{\\mathrm{icg}}}{\\htmlData{pk=icg_liver/Parameter:ICGLI2CA_Km}{\\mathrm{ICGLI2CA}_{\\mathrm{Km}}} + \\htmlData{pk=icg_liver/Species:icg}{\\mathrm{icg}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "icg_liver/Reaction:ICGLI2BI",
+              "lhs": "\\htmlData{pk=icg_liver/Reaction:ICGLI2BI}{v_{\\mathrm{ICGLI2BI}}}",
+              "lines": [
+                "\\htmlData{pk=icg_liver/Parameter:ICGLI2BI_Vmax}{\\mathrm{ICGLI2BI}_{\\mathrm{Vmax}}} \\cdot \\htmlData{pk=icg_liver/Compartment:Vli}{\\mathrm{Vli}} \\cdot \\htmlData{pk=icg_liver/Species:icg_bi}{\\mathrm{icg}_{\\mathrm{bi}}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [],
+          "functions": [],
+          "initial": [
+            {
+              "variable": "icg_liver/Species:icg_feces",
+              "lhs": "\\htmlData{pk=icg_liver/Species:icg_feces}{\\mathrm{icg}_{\\mathrm{feces}}}",
+              "lines": [
+                "0 \\cdot \\htmlData{pk=icg_liver/Compartment:Vfeces}{\\mathrm{Vfeces}}"
+              ],
+              "origin": "initial_value"
+            }
+          ],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.012 [s]"
+        "jsonReportTime": "0.011 [s]"
       }
     }
   }

@@ -971,6 +971,77 @@ class ValidationIssue(ReportModel):
     pk: str
 
 
+#: where an equation of the ODE system comes from: an ODE is written with the rates
+#: of the `reactions` or is a `rate_rule`; an assignment is an `assignment_rule` or
+#: the `concentration` of a species which the system holds as amount; an initial
+#: value is an `initial_assignment` or an `initial_value` which converts between
+#: amount and concentration; `reaction` is the rate of a reaction, `function` a
+#: function definition, `event` an event assignment
+OdeOrigin = Literal[
+    "reactions",
+    "rate_rule",
+    "assignment_rule",
+    "concentration",
+    "initial_assignment",
+    "initial_value",
+    "reaction",
+    "function",
+    "event",
+]
+
+
+class OdeEquation(ReportModel):
+    r"""An equation of the ODE system of a model, typeset as LaTeX.
+
+    Every symbol of the math which is an element of the report is a link of
+    KaTeX, `\htmlData{pk=<pk>}{<symbol>}`.
+    """
+
+    variable: str | None = None
+    lhs: str
+    lines: list[str]
+    origin: OdeOrigin
+
+
+class OdeEvent(ReportModel):
+    """An event of the ODE system: its trigger, delay, priority and assignments."""
+
+    event: str | None = None
+    label: str
+    trigger: str
+    delay: str | None = None
+    priority: str | None = None
+    initial_value: bool
+    persistent: bool
+    use_values_from_trigger_time: bool
+    assignments: list[OdeEquation] = Field(default_factory=list)
+
+
+class OdeUnsupported(ReportModel):
+    """A construct of the model which the ODE system does not hold."""
+
+    kind: str
+    element: str | None = None
+
+
+class OdeSystem(ReportModel):
+    """The ordinary differential equations of the model of a document.
+
+    The system of the model, flattened if it has submodels, as sbmlode writes it:
+    the ODE of every state, the rates of the reactions, the assignment rules in
+    the order of their dependencies, the function definitions, the initial values
+    which are no number, the events and the constructs it does not hold.
+    """
+
+    odes: list[OdeEquation] = Field(default_factory=list)
+    reactions: list[OdeEquation] = Field(default_factory=list)
+    assignments: list[OdeEquation] = Field(default_factory=list)
+    functions: list[OdeEquation] = Field(default_factory=list)
+    initial: list[OdeEquation] = Field(default_factory=list)
+    events: list[OdeEvent] = Field(default_factory=list)
+    unsupported: list[OdeUnsupported] = Field(default_factory=list)
+
+
 class Report(ReportModel):
     """The report of one SBML document.
 
@@ -984,6 +1055,8 @@ class Report(ReportModel):
         default_factory=list
     )
     link_graph: LinkGraph = Field(default_factory=LinkGraph)
+    ode_system: OdeSystem | None = None
+    ode_error: str | None = None
 
 
 class ManifestEntry(ReportModel):

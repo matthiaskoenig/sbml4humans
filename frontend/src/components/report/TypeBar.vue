@@ -5,6 +5,7 @@ import { computed, nextTick, ref } from "vue";
 import type { ElementType, Model } from "@/api/types";
 import SeverityIcon from "@/components/misc/SeverityIcon.vue";
 import TypeMark from "@/components/misc/TypeMark.vue";
+import ViewSwitch from "@/components/report/ViewSwitch.vue";
 import { ELEMENT_TYPES, type ElementTypeInfo } from "@/data/sbmlTypes";
 import { useValidationIndex } from "@/report/context";
 import type { ReportIndex } from "@/report/index";
@@ -27,17 +28,29 @@ const packages = computed(
   () => new Set(props.index.document.packages?.map((pkg) => pkg.prefix) ?? []),
 );
 
+/** Whether the report has the differential equations of its model, or the failure to build
+ * them, which the view of the equations shows: only then the bar offers the two views. */
+const hasEquations = computed(
+  () => props.index.odeSystem !== null || props.index.odeError !== null,
+);
+
+/** The equations are no table: the types, which filter and scroll the tables, are no entries of
+ * the bar while they are shown, a filter which filters nothing would mislead. */
+const showsEquations = computed(() => hasEquations.value && view.state.value.view === "equations");
+
 /** The types the model has elements of, in the order of the specification with the unit
  * definitions last, which is the order of `ELEMENT_TYPES`: a type of a package
  * the document does not declare, and a type the model states no element of, is not an entry of
  * the bar at all. The count of a type is its number of elements, which a search does not change,
  * so the entries of the bar stay the same while a search runs. */
 const types = computed<ElementTypeInfo[]>(() =>
-  ELEMENT_TYPES.filter(
-    (info) =>
-      (info.pkg === "core" || packages.value.has(info.pkg)) &&
-      (props.counts.get(info.type)?.total ?? 0) > 0,
-  ),
+  showsEquations.value
+    ? []
+    : ELEMENT_TYPES.filter(
+        (info) =>
+          (info.pkg === "core" || packages.value.has(info.pkg)) &&
+          (props.counts.get(info.type)?.total ?? 0) > 0,
+      ),
 );
 
 const visible = computed(() => view.state.value.types);
@@ -105,6 +118,7 @@ function selectedClass(pk: string): string {
     class="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-1 border-b border-gray-200 px-4 py-1.5 text-sm max-md:gap-x-3"
     data-testid="type-bar"
   >
+    <ViewSwitch v-if="hasEquations" />
     <button
       type="button"
       class="flex items-center gap-1.5 rounded px-1 py-0.5 max-md:py-1.5"

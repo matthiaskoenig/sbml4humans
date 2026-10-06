@@ -260,3 +260,69 @@ Whether an issue is an error, a warning or a note.
 Which check of libsbml found the issue.
 
 libsbml groups its checks in categories, such as the unit consistency, the identifier consistency or the consistency of a package. The list of all issues can be filtered by them.
+
+## tables
+
+The elements of the model in one table per type.
+
+The report shows the elements of a model in one table per type, the compartments, the species, the reactions and every other type the model uses, in the order of the specification. The type bar above them filters the tables by type, the search filters their rows, and a click on a row opens the element in the inspector. The tables are one of the two views of a model, next to the [equations](#equations).
+
+## equations
+
+The model as its system of ordinary differential equations.
+
+A model in SBML describes a system of ordinary differential equations, but it is not written as one: the equations follow from the reactions, the rules, the events and the units of the model. The view "equations" shows this system as it would be printed in a paper: the [ODE system](#ode-system) of the states, the [reaction rates](#reaction-rates) it is written with, the [assignment rules](#assignment-rules), the [function definitions](#function-definitions), the [initial values](#initial-values) and the [events](#events).
+
+Every symbol of an equation stands for an element of the model: a click on it opens the element in the inspector, and the inspector of a species, a reaction, a parameter or a compartment shows the equation of the element with a link to it in the view. The symbols are written from the identifiers, a subscript after an underscore and a greek letter where an identifier is one, `tau_mRNA` as τ with the subscript mRNA; the rate of a reaction is `v` with the identifier of the reaction as subscript.
+
+The system is the one of the model of the document; a model with submodels is flattened first, and a symbol which the flattening makes up, the identifier of a submodel joined to the identifier of its element, links to no element. The equations are written by [sbmlode](https://matthiaskoenig.github.io/sbmlode/), which also writes the system as python, julia and R code which simulates the model and as LaTeX, typst and markdown documents, the [downloads](#download) of the view.
+
+## ODE system
+
+The rate of change of every state of the model.
+
+A state is a quantity of the model which changes in time and is not given by an assignment rule: a species which takes part in reactions and is no boundary condition, or a species, a compartment, a parameter or a species reference with a rate rule. Its derivative in time is either written by its rate rule, or is the sum of the rates of the reactions it takes part in, each times its stoichiometry, negative as a reactant and positive as a product.
+
+A reaction changes the amount of a species. The rate of change of a species in concentration is therefore divided by the size of its compartment, and a species in a compartment whose size changes is integrated as its amount, `n` with the identifier of the species as subscript, whose concentration is then an assignment. A conversion factor of the species, else of the model, multiplies the rates of its reactions.
+
+## reaction rates
+
+The kinetic law of every reaction, the rate the ODE system is written with.
+
+The rate of a reaction is its kinetic law, a rate of change of the extent of the reaction, in the units of extent per time. The [ODE system](#ode-system) is written with the rates, `v` with the identifier of the reaction as subscript, so that it stays as short as the network of the model. A local parameter of a kinetic law is written with the identifier of its reaction in front of its own, which keeps it apart from a parameter of the model of the same identifier. A reaction without a kinetic law has the rate zero.
+
+## assignment rules
+
+The quantities which are given by a formula at every time.
+
+An assignment rule gives a quantity by a formula at every time, which is evaluated before the derivatives: the rate of a reaction or the derivative of a state may use it. The rules are listed in the order of their dependencies, a rule after the rules it uses. A species which the system integrates as its amount has its concentration as an assignment, the amount divided by the size of its compartment.
+
+## function definitions
+
+The functions the math of the model calls.
+
+A function definition names a formula of its arguments, which every other math of the model can call like a function of the math itself. Its arguments are its own symbols, they stand for no element of the model.
+
+## initial values
+
+The values at the start which are given by a formula.
+
+The value of a quantity at the start, at time zero, is its value in the file, unless an initial assignment gives it by a formula or an assignment rule gives it at every time. The list holds the initial assignments and the initial values which convert between amount and concentration, the initial amount of a species which the system integrates as its amount; a value which is a number stands in the tables.
+
+## events
+
+The changes of the model at the moment a condition becomes true.
+
+An event changes the values of the model at the moment its trigger becomes true, after its delay if it has one; events at the same moment are carried out by their priority. An assignment of an event to a species in concentration which the system integrates as its amount assigns the amount, the concentration times the size of the compartment, and an event which changes the size of a compartment keeps the amounts of the species in it, so that their concentrations change.
+
+## unsupported constructs
+
+The parts of the model which the ODE system does not hold.
+
+An algebraic rule makes the system a system of differential algebraic equations, a `delay` function makes it a system of delay differential equations, and a fast reaction is in equilibrium at every time. None of them is part of an ODE system, so the equations are shown without them and say which elements they leave out: the system they show is not the whole model.
+
+## download
+
+The equations as code which simulates the model or as a document.
+
+The equations of the view can be downloaded in the formats of [sbmlode](https://matthiaskoenig.github.io/sbmlode/): as python (numpy and scipy), julia (OrdinaryDiffEq) or R (deSolve) code, which simulates the model and is verified against libroadrunner over the SBML test suite, and as a LaTeX, typst or markdown document with the units, the tables and the equations of the model. A model with an unsupported construct is written as a document, but not as code.

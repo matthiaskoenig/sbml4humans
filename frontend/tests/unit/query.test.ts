@@ -11,6 +11,7 @@ describe("view state query", () => {
       q: "",
       types: null,
       help: null,
+      view: "tables",
     });
   });
 
@@ -23,6 +24,7 @@ describe("view state query", () => {
         q: "laci",
         types: "Species,Reaction",
         help: "types/Species",
+        view: "equations",
       }),
     ).toEqual({
       entry: "./model.xml",
@@ -31,6 +33,7 @@ describe("view state query", () => {
       q: "laci",
       types: ["Species", "Reaction"],
       help: "types/Species",
+      view: "equations",
     });
   });
 
@@ -46,10 +49,23 @@ describe("view state query", () => {
     expect(parseQuery({ help: "" }).help).toBeNull();
   });
 
+  it("shows the tables for a view which is not the equations", () => {
+    expect(parseQuery({ view: "nope" }).view).toBe("tables");
+    expect(parseQuery({ view: "tables" }).view).toBe("tables");
+  });
+
   it("writes only the non default values", () => {
-    expect(toQuery({ entry: null, model: null, pk: null, q: "", types: null, help: null })).toEqual(
-      {},
-    );
+    expect(
+      toQuery({
+        entry: null,
+        model: null,
+        pk: null,
+        q: "",
+        types: null,
+        help: null,
+        view: "tables",
+      }),
+    ).toEqual({});
     expect(
       toQuery({
         entry: "./m.xml",
@@ -58,6 +74,7 @@ describe("view state query", () => {
         q: "x",
         types: ["Species"],
         help: "types/Species",
+        view: "equations",
       }),
     ).toEqual({
       entry: "./m.xml",
@@ -66,6 +83,7 @@ describe("view state query", () => {
       q: "x",
       types: "Species",
       help: "types/Species",
+      view: "equations",
     });
   });
 
@@ -77,6 +95,7 @@ describe("view state query", () => {
       q: "a&b",
       types: ["Species" as const],
       help: "types/Species",
+      view: "equations" as const,
     };
     expect(parseQuery(toQuery(state) as Record<string, string>)).toEqual(state);
   });

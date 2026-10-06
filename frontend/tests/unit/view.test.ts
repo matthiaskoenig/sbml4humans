@@ -144,4 +144,26 @@ describe("useReportView", () => {
     expect((target as { query: Record<string, unknown> }).query.help).toBeUndefined();
     wrapper.unmount();
   });
+
+  it("switches the view and keeps the selection, a search shows the tables", async () => {
+    const pk = "BIOMD0000000012/Species:PX";
+    await router.push({ path: "/examples/BIOMD0000000012", query: { pk } });
+    const wrapper = mount(Probe, { global: { plugins: [router] } });
+
+    await view.setView("equations");
+    expect(router.currentRoute.value.query.view).toBe("equations");
+    expect(router.currentRoute.value.query.pk).toBe(pk);
+
+    await view.setSearch("laci");
+    expect(router.currentRoute.value.query.view).toBeUndefined();
+    expect(router.currentRoute.value.query.q).toBe("laci");
+
+    await view.setView("equations");
+    await view.setSearch("");
+    expect(router.currentRoute.value.query.view).toBe("equations");
+
+    await view.setView("tables");
+    expect(router.currentRoute.value.query.view).toBeUndefined();
+    wrapper.unmount();
+  });
 });

@@ -15,7 +15,12 @@ from pydantic import BaseModel, Field, FilePath
 from pymetadata.omex import ManifestEntry, Omex
 
 from sbml4humans.model import ReportResponse, ValidationResponse
-from sbml4humans.report import report_for_path, validation_for_path
+from sbml4humans.report import (
+    OdeFile,
+    ode_for_path,
+    report_for_path,
+    validation_for_path,
+)
 from sbml4humans.resources import (
     API_EXAMPLES_MODEL,
     API_EXAMPLES_OMEX,
@@ -190,6 +195,14 @@ def report_for_example(example: ExampleMetaData) -> ReportResponse:
         return report_for_path(example.file, trusted=True)
     with Omex.from_omex(example.file) as omex:
         return report_for_path(omex.get_path(example.location), trusted=True)
+
+
+def ode_for_example(example: ExampleMetaData, fmt: str) -> OdeFile:
+    """Write the ODE system of an example in a format, read trusted like its report."""
+    if example.location is None:
+        return ode_for_path(example.file, fmt, trusted=True)
+    with Omex.from_omex(example.file) as omex:
+        return ode_for_path(omex.get_path(example.location), fmt, trusted=True)
 
 
 def validation_for_example(example: ExampleMetaData) -> ValidationResponse:

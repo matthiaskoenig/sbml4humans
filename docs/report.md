@@ -61,6 +61,18 @@ The search box next to the logo filters every table at once. It matches the text
 
 While a search is active, every table shows only the matching rows, a type without a match disappears from the tables, and the type bar counts the matches of every type in front of its total. `Esc` in the box clears the search. The search text is part of the url of the report.
 
+## The equations
+
+A model of SBML describes a system of ordinary differential equations, and the switch "Tables | Equations" at the start of the type bar shows it in place of the tables. The view writes the model as it would be printed in a paper: first the constructs the system leaves out, if there are any, then the [ODE system](reference/concepts.md#ode-system) with the rate of change of every state, the [reaction rates](reference/concepts.md#reaction-rates) it is written with, the [assignment rules](reference/concepts.md#assignment-rules) in the order of their dependencies, the [function definitions](reference/concepts.md#function-definitions), the [initial values](reference/concepts.md#initial-values) which are given by a formula and the [events](reference/concepts.md#events). A section without an equation is left out.
+
+[![The differential equations of the repressilator next to the inspector of the species PX, whose symbol is marked in every equation](images/report-equations.png)](images/report-equations.png)
+
+Every symbol of an equation stands for an element of the model: a click on it opens the element in the inspector, and the symbols of the selected element are marked in every equation, so that where a species or a parameter is used shows at a glance. The inspector of a species, a reaction, a parameter or a compartment shows the equation of the element below its attributes, with a link which opens it in the view. The rate of change of a species in concentration is divided by the size of its compartment, a conversion factor multiplies the rates of its reactions, and a species in a compartment whose size changes is integrated as its amount, all of it as the equations say it.
+
+A model with an algebraic rule, a `delay` or a fast reaction is no ODE system, and the view names these constructs above the equations, which are then not the whole model. A model with submodels is flattened first; an external model is read from the other files of the report, never from anywhere else. Where the system cannot be built, the view says why in place of the equations, and the tables are not affected.
+
+The buttons at the top of the view download the system as python, julia or R code which simulates the model, or as a LaTeX, typst or markdown document; the equations and the files are written by [sbmlode](https://matthiaskoenig.github.io/sbmlode/). The view is part of the url of the report (`view=equations`), and a search, which filters the tables, switches back to them.
+
 ## The inspector
 
 The inspector opens at the right of the tables for the selected element and shows everything the report has about it. A report opens with its model selected, so the first thing a reader sees next to the tables is what the model is: its name, its units, its annotations and its notes. The cross of the inspector closes it, and it stays closed until an element is selected.
@@ -186,13 +198,14 @@ A table which is wider than the window scrolls sideways inside its frame, and th
 
 ## The url of a report
 
-The state of a report is part of its address, so a report can be linked in the state it is in: a selected element, a search, a filter of types, one entry of an archive and one model of a document.
+The state of a report is part of its address, so a report can be linked in the state it is in: a selected element, a search, a filter of types, the view of the equations, one entry of an archive and one model of a document.
 
 | parameter | meaning |
 | --- | --- |
 | `pk` | the selected element, given by its [primary key](reference/concepts.md#primary-key), which the report builds for every element because not every element of SBML has an id |
 | `q` | the text of the search |
 | `types` | the types the tables show, separated by commas; without the parameter every type is shown |
+| `view` | `equations` for the [equations](#the-equations) of the model in place of the tables; without the parameter the tables are shown |
 | `help` | the entry whose explanation is open, given by its key, `types/Species`, `types/Species/initialAmount`, `links/compartment`, `datatypes/SIdRef` or `concepts/derivedUnits` |
 | `entry` | the location of the SBML entry inside the COMBINE archive |
 | `model` | the id of the model or of the model definition |

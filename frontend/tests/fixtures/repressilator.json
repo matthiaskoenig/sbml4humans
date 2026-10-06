@@ -1,5 +1,5 @@
 {
-  "uid": "9a237715a2bf4c5b97ab92a1964ac3b0",
+  "uid": "6d51a618e1c94eacb91a6a593f82a83e",
   "manifest": {
     "entries": [
       {
@@ -3690,10 +3690,239 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "BIOMD0000000012/Species:PX",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000012/Species:PX}{\\mathrm{PX}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction4}{v_{\\mathrm{Reaction4}}} - \\htmlData{pk=BIOMD0000000012/Reaction:Reaction7}{v_{\\mathrm{Reaction7}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000012/Species:PY",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000012/Species:PY}{\\mathrm{PY}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction5}{v_{\\mathrm{Reaction5}}} - \\htmlData{pk=BIOMD0000000012/Reaction:Reaction8}{v_{\\mathrm{Reaction8}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000012/Species:PZ",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000012/Species:PZ}{\\mathrm{PZ}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction6}{v_{\\mathrm{Reaction6}}} - \\htmlData{pk=BIOMD0000000012/Reaction:Reaction9}{v_{\\mathrm{Reaction9}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000012/Species:X",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=BIOMD0000000012/Species:X}{X}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=BIOMD0000000012/Reaction:Reaction1}{v_{\\mathrm{Reaction1}}} + \\htmlData{pk=BIOMD0000000012/Reaction:Reaction10}{v_{\\mathrm{Reaction10}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000012/Species:Y",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=BIOMD0000000012/Species:Y}{Y}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=BIOMD0000000012/Reaction:Reaction2}{v_{\\mathrm{Reaction2}}} + \\htmlData{pk=BIOMD0000000012/Reaction:Reaction11}{v_{\\mathrm{Reaction11}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000012/Species:Z",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=BIOMD0000000012/Species:Z}{Z}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=BIOMD0000000012/Reaction:Reaction3}{v_{\\mathrm{Reaction3}}} + \\htmlData{pk=BIOMD0000000012/Reaction:Reaction12}{v_{\\mathrm{Reaction12}}}"
+              ],
+              "origin": "reactions"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction1",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction1}{v_{\\mathrm{Reaction1}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:kd_mRNA}{\\mathrm{kd}_{\\mathrm{mRNA}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:X}{X}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction2",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction2}{v_{\\mathrm{Reaction2}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:kd_mRNA}{\\mathrm{kd}_{\\mathrm{mRNA}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:Y}{Y}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction3",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction3}{v_{\\mathrm{Reaction3}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:kd_mRNA}{\\mathrm{kd}_{\\mathrm{mRNA}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:Z}{Z}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction4",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction4}{v_{\\mathrm{Reaction4}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:k_tl}{k_{\\mathrm{tl}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:X}{X}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction5",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction5}{v_{\\mathrm{Reaction5}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:k_tl}{k_{\\mathrm{tl}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:Y}{Y}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction6",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction6}{v_{\\mathrm{Reaction6}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:k_tl}{k_{\\mathrm{tl}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:Z}{Z}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction7",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction7}{v_{\\mathrm{Reaction7}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:kd_prot}{\\mathrm{kd}_{\\mathrm{prot}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:PX}{\\mathrm{PX}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction8",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction8}{v_{\\mathrm{Reaction8}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:kd_prot}{\\mathrm{kd}_{\\mathrm{prot}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:PY}{\\mathrm{PY}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction9",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction9}{v_{\\mathrm{Reaction9}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:kd_prot}{\\mathrm{kd}_{\\mathrm{prot}}} \\cdot \\htmlData{pk=BIOMD0000000012/Species:PZ}{\\mathrm{PZ}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction10",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction10}{v_{\\mathrm{Reaction10}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:a0_tr}{\\mathrm{a0}_{\\mathrm{tr}}} + \\frac{\\htmlData{pk=BIOMD0000000012/Parameter:a_tr}{a_{\\mathrm{tr}}} \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}}}{\\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}} + \\htmlData{pk=BIOMD0000000012/Species:PZ}{\\mathrm{PZ}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction11",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction11}{v_{\\mathrm{Reaction11}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:a0_tr}{\\mathrm{a0}_{\\mathrm{tr}}} + \\frac{\\htmlData{pk=BIOMD0000000012/Parameter:a_tr}{a_{\\mathrm{tr}}} \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}}}{\\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}} + \\htmlData{pk=BIOMD0000000012/Species:PX}{\\mathrm{PX}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000012/Reaction:Reaction12",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Reaction:Reaction12}{v_{\\mathrm{Reaction12}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:a0_tr}{\\mathrm{a0}_{\\mathrm{tr}}} + \\frac{\\htmlData{pk=BIOMD0000000012/Parameter:a_tr}{a_{\\mathrm{tr}}} \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}}}{\\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}} + \\htmlData{pk=BIOMD0000000012/Species:PY}{\\mathrm{PY}}^{\\htmlData{pk=BIOMD0000000012/Parameter:n}{n}}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [
+            {
+              "variable": "BIOMD0000000012/Parameter:t_ave",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:t_ave}{t_{\\mathrm{ave}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000012/Parameter:tau_mRNA}{\\tau_{\\mathrm{mRNA}}}}{\\ln\\mathopen{}\\left(2\\right)}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:beta",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:beta}{\\beta}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000012/Parameter:tau_mRNA}{\\tau_{\\mathrm{mRNA}}}}{\\htmlData{pk=BIOMD0000000012/Parameter:tau_prot}{\\tau_{\\mathrm{prot}}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:k_tl",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:k_tl}{k_{\\mathrm{tl}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000012/Parameter:eff}{\\mathrm{eff}}}{\\htmlData{pk=BIOMD0000000012/Parameter:t_ave}{t_{\\mathrm{ave}}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:a_tr",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:a_tr}{a_{\\mathrm{tr}}}",
+              "lines": [
+                "\\mathopen{}\\left(\\htmlData{pk=BIOMD0000000012/Parameter:ps_a}{\\mathrm{ps}_{\\mathrm{a}}} - \\htmlData{pk=BIOMD0000000012/Parameter:ps_0}{\\mathrm{ps}_{0}}\\right) \\cdot 60"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:a0_tr",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:a0_tr}{\\mathrm{a0}_{\\mathrm{tr}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000012/Parameter:ps_0}{\\mathrm{ps}_{0}} \\cdot 60"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:kd_prot",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:kd_prot}{\\mathrm{kd}_{\\mathrm{prot}}}",
+              "lines": [
+                "\\frac{\\ln\\mathopen{}\\left(2\\right)}{\\htmlData{pk=BIOMD0000000012/Parameter:tau_prot}{\\tau_{\\mathrm{prot}}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:kd_mRNA",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:kd_mRNA}{\\mathrm{kd}_{\\mathrm{mRNA}}}",
+              "lines": [
+                "\\frac{\\ln\\mathopen{}\\left(2\\right)}{\\htmlData{pk=BIOMD0000000012/Parameter:tau_mRNA}{\\tau_{\\mathrm{mRNA}}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:alpha",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:alpha}{\\alpha}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000012/Parameter:a_tr}{a_{\\mathrm{tr}}} \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:eff}{\\mathrm{eff}} \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:tau_prot}{\\tau_{\\mathrm{prot}}}}{\\ln\\mathopen{}\\left(2\\right) \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000012/Parameter:alpha0",
+              "lhs": "\\htmlData{pk=BIOMD0000000012/Parameter:alpha0}{\\alpha_{0}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000012/Parameter:a0_tr}{\\mathrm{a0}_{\\mathrm{tr}}} \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:eff}{\\mathrm{eff}} \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:tau_prot}{\\tau_{\\mathrm{prot}}}}{\\ln\\mathopen{}\\left(2\\right) \\cdot \\htmlData{pk=BIOMD0000000012/Parameter:KM}{\\mathrm{KM}}}"
+              ],
+              "origin": "assignment_rule"
+            }
+          ],
+          "functions": [],
+          "initial": [],
+          "events": [],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.034 [s]"
+        "jsonReportTime": "0.044 [s]"
       }
     }
   }

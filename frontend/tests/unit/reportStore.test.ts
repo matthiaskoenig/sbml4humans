@@ -23,6 +23,8 @@ vi.mock("@/api/client", async (importOriginal) => {
     getUploadValidation: vi.fn(),
     postFileValidation: vi.fn(),
     postContentValidation: vi.fn(),
+    getExampleOde: vi.fn(),
+    postContentOde: vi.fn(),
   };
 });
 
@@ -397,5 +399,25 @@ describe("report store", () => {
       await flushPromises();
       expect(store.validationFor("./model.xml")?.skipped).toBe("expandedSize");
     });
+  });
+
+  it("downloads the differential equations of the source of the report", async () => {
+    const store = useReportStore();
+    vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
+    const file = { filename: "m.py", blob: new Blob(["x"]) };
+    vi.mocked(client.getExampleOde).mockResolvedValue(file);
+    await store.loadExample("BIOMD0000000012");
+    expect(await store.downloadOde("python", "./model.xml")).toBe(file);
+    expect(client.getExampleOde).toHaveBeenCalledWith("BIOMD0000000012", "python");
+
+    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(client.postContentOde).mockResolvedValue(file);
+    await store.loadContent("<sbml/>");
+    await store.downloadOde("markdown", "./model.xml");
+    // pasted content is sent again, the backend keeps nothing of a request
+    expect(client.postContentOde).toHaveBeenCalledWith("<sbml/>", "markdown", "./model.xml");
+
+    store.clear();
+    await expect(store.downloadOde("python", "./model.xml")).rejects.toThrow();
   });
 });

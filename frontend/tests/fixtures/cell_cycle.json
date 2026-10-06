@@ -1,5 +1,5 @@
 {
-  "uid": "ad15dd4134d84799b1345fe886ddb32c",
+  "uid": "497f8bf1aee34493bac146e595fdbb58",
   "manifest": {
     "entries": [
       {
@@ -8332,10 +8332,491 @@
               "targetEntry": null
             }
           ]
-        }
+        },
+        "odeSystem": {
+          "odes": [
+            {
+              "variable": "BIOMD0000000007/Species:UbE",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:UbE}{\\mathrm{UbE}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:UbE_Reaction}{v_{\\mathrm{UbE\\_Reaction}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:UbE2",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:UbE2}{\\mathrm{UbE}_{2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:UbE2_Reaction}{v_{\\mathrm{UbE2\\_Reaction}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:Wee1",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:Wee1}{\\mathrm{Wee}_{1}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:Wee1_Reaction}{v_{\\mathrm{Wee1\\_Reaction}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:Cdc25",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:Cdc25}{\\mathrm{Cdc}_{25}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:Cdc25_Reaction}{v_{\\mathrm{Cdc25\\_Reaction}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:G2K",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:G2K}{\\mathrm{G2K}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:G2K_Creation}{v_{\\mathrm{G2K\\_Creation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:Cdc2Phos}{v_{\\mathrm{Cdc2Phos}}} - \\htmlData{pk=BIOMD0000000007/Reaction:G2R_Creation}{v_{\\mathrm{G2R\\_Creation}}} + \\htmlData{pk=BIOMD0000000007/Reaction:Rum1DegInG2R}{v_{\\mathrm{Rum1DegInG2R}}}",
+                "- \\htmlData{pk=BIOMD0000000007/Reaction:G2K_dissoc}{v_{\\mathrm{G2K\\_dissoc}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:R",
+              "lhs": "\\frac{\\mathrm{d} \\htmlData{pk=BIOMD0000000007/Species:R}{R}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=BIOMD0000000007/Reaction:G2R_Creation}{v_{\\mathrm{G2R\\_Creation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Creation}{v_{\\mathrm{PG2R\\_Creation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:Rum1Deg}{v_{\\mathrm{Rum1Deg}}} + \\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Dissociation}{v_{\\mathrm{PG2R\\_Dissociation}}}",
+                "+ \\htmlData{pk=BIOMD0000000007/Reaction:G2R_Dissociation}{v_{\\mathrm{G2R\\_Dissociation}}} + \\htmlData{pk=BIOMD0000000007/Reaction:G1R_Dissociation}{v_{\\mathrm{G1R\\_Dissociation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:G1R_Binding}{v_{\\mathrm{G1R\\_Binding}}} + \\htmlData{pk=BIOMD0000000007/Reaction:G2R_Dissociation_UbE}{v_{\\mathrm{G2R\\_Dissociation\\_UbE}}}",
+                "+ \\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Dissociation_UbE}{v_{\\mathrm{PG2R\\_Dissociation\\_UbE}}} + \\htmlData{pk=BIOMD0000000007/Reaction:Rum1_Production}{v_{\\mathrm{Rum1\\_Production}}} - \\htmlData{pk=BIOMD0000000007/Reaction:Rum1_Deg_SPF}{v_{\\mathrm{Rum1\\_Deg\\_SPF}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:G1K",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:G1K}{\\mathrm{G1K}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:G1K_Creation}{v_{\\mathrm{G1K\\_Creation}}} + \\htmlData{pk=BIOMD0000000007/Reaction:RumDegInG1R}{v_{\\mathrm{RumDegInG1R}}} - \\htmlData{pk=BIOMD0000000007/Reaction:G1K_Dissociation}{v_{\\mathrm{G1K\\_Dissociation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:G1R_Binding}{v_{\\mathrm{G1R\\_Binding}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:IE",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:IE}{\\mathrm{IE}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:IE_Reaction}{v_{\\mathrm{IE\\_Reaction}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:PG2",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:PG2}{\\mathrm{PG}_{2}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:Cdc2Phos}{v_{\\mathrm{Cdc2Phos}}} - \\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Creation}{v_{\\mathrm{PG2R\\_Creation}}} + \\htmlData{pk=BIOMD0000000007/Reaction:Rum1DegInPG2R}{v_{\\mathrm{Rum1DegInPG2R}}} - \\htmlData{pk=BIOMD0000000007/Reaction:PG2_dissoc}{v_{\\mathrm{PG2\\_dissoc}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:G1R",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:G1R}{\\mathrm{G1R}}}{\\mathrm{d} t}",
+              "lines": [
+                "-\\htmlData{pk=BIOMD0000000007/Reaction:RumDegInG1R}{v_{\\mathrm{RumDegInG1R}}} - \\htmlData{pk=BIOMD0000000007/Reaction:G1R_Dissociation}{v_{\\mathrm{G1R\\_Dissociation}}} + \\htmlData{pk=BIOMD0000000007/Reaction:G1R_Binding}{v_{\\mathrm{G1R\\_Binding}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:G2R",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:G2R}{\\mathrm{G2R}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:G2R_Creation}{v_{\\mathrm{G2R\\_Creation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:Rum1DegInG2R}{v_{\\mathrm{Rum1DegInG2R}}} - \\htmlData{pk=BIOMD0000000007/Reaction:G2R_Dissociation}{v_{\\mathrm{G2R\\_Dissociation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:G2R_Dissociation_UbE}{v_{\\mathrm{G2R\\_Dissociation\\_UbE}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:PG2R",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Species:PG2R}{\\mathrm{PG2R}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Creation}{v_{\\mathrm{PG2R\\_Creation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:Rum1DegInPG2R}{v_{\\mathrm{Rum1DegInPG2R}}} - \\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Dissociation}{v_{\\mathrm{PG2R\\_Dissociation}}} - \\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Dissociation_UbE}{v_{\\mathrm{PG2R\\_Dissociation\\_UbE}}}"
+              ],
+              "origin": "reactions"
+            },
+            {
+              "variable": "BIOMD0000000007/Parameter:Mass",
+              "lhs": "\\frac{\\mathrm{d} \\,\\htmlData{pk=BIOMD0000000007/Parameter:Mass}{\\mathrm{Mass}}}{\\mathrm{d} t}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:Mass}{\\mathrm{Mass}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:mu}{\\mu}"
+              ],
+              "origin": "rate_rule"
+            }
+          ],
+          "reactions": [
+            {
+              "variable": "BIOMD0000000007/Reaction:G2K_Creation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G2K_Creation}{v_{\\mathrm{G2K\\_Creation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k1}{k_{1}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G1K_Creation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G1K_Creation}{v_{\\mathrm{G1K\\_Creation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k5}{k_{5}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Cdc2Phos",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Cdc2Phos}{v_{\\mathrm{Cdc2Phos}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2K}{\\mathrm{G2K}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:kwee}{\\mathrm{kwee}} - \\htmlData{pk=BIOMD0000000007/Parameter:k25}{k_{25}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2}{\\mathrm{PG}_{2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G2R_Creation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G2R_Creation}{v_{\\mathrm{G2R\\_Creation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2K}{\\mathrm{G2K}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k7}{k_{7}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:R}{R} - \\htmlData{pk=BIOMD0000000007/Species:G2R}{\\mathrm{G2R}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k7r}{\\mathrm{k7r}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:PG2R_Creation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Creation}{v_{\\mathrm{PG2R\\_Creation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k7}{k_{7}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2}{\\mathrm{PG}_{2}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:R}{R} - \\htmlData{pk=BIOMD0000000007/Parameter:k7r}{\\mathrm{k7r}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2R}{\\mathrm{PG2R}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Rum1DegInG2R",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Rum1DegInG2R}{v_{\\mathrm{Rum1DegInG2R}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2R}{\\mathrm{G2R}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k4}{k_{4}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Rum1Deg",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Rum1Deg}{v_{\\mathrm{Rum1Deg}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k4}{k_{4}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:R}{R}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Rum1DegInPG2R",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Rum1DegInPG2R}{v_{\\mathrm{Rum1DegInPG2R}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k4}{k_{4}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2R}{\\mathrm{PG2R}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:RumDegInG1R",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:RumDegInG1R}{v_{\\mathrm{RumDegInG1R}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G1R}{\\mathrm{G1R}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k4}{k_{4}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G2K_dissoc",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G2K_dissoc}{v_{\\mathrm{G2K\\_dissoc}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2K}{\\mathrm{G2K}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k2}{k_{2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:PG2_dissoc",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:PG2_dissoc}{v_{\\mathrm{PG2\\_dissoc}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k2}{k_{2}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2}{\\mathrm{PG}_{2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G1K_Dissociation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G1K_Dissociation}{v_{\\mathrm{G1K\\_Dissociation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G1K}{\\mathrm{G1K}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k6}{k_{6}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:PG2R_Dissociation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Dissociation}{v_{\\mathrm{PG2R\\_Dissociation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k2prime}{\\mathrm{k2prime}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2R}{\\mathrm{PG2R}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G2R_Dissociation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G2R_Dissociation}{v_{\\mathrm{G2R\\_Dissociation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2R}{\\mathrm{G2R}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k2prime}{\\mathrm{k2prime}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G1R_Dissociation",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G1R_Dissociation}{v_{\\mathrm{G1R\\_Dissociation}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G1R}{\\mathrm{G1R}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k6prime}{\\mathrm{k6prime}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G1R_Binding",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G1R_Binding}{v_{\\mathrm{G1R\\_Binding}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G1K}{\\mathrm{G1K}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k8}{k_{8}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:R}{R} - \\htmlData{pk=BIOMD0000000007/Species:G1R}{\\mathrm{G1R}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k8r}{\\mathrm{k8r}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:G2R_Dissociation_UbE",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:G2R_Dissociation_UbE}{v_{\\mathrm{G2R\\_Dissociation\\_UbE}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2R}{\\mathrm{G2R}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:k2}{k_{2}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:PG2R_Dissociation_UbE",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:PG2R_Dissociation_UbE}{v_{\\mathrm{PG2R\\_Dissociation\\_UbE}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k2}{k_{2}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2R}{\\mathrm{PG2R}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Rum1_Production",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Rum1_Production}{v_{\\mathrm{Rum1\\_Production}}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:k3}{k_{3}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Rum1_Deg_SPF",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Rum1_Deg_SPF}{v_{\\mathrm{Rum1\\_Deg\\_SPF}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000007/Parameter:kp}{\\mathrm{kp}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:Mass}{\\mathrm{Mass}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:R}{R} \\cdot \\htmlData{pk=BIOMD0000000007/Species:SPF}{\\mathrm{SPF}}}{\\htmlData{pk=BIOMD0000000007/Parameter:Kmp}{\\mathrm{Kmp}} + \\htmlData{pk=BIOMD0000000007/Species:R}{R}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:IE_Reaction",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:IE_Reaction}{v_{\\mathrm{IE\\_Reaction}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000007/Species:IEB}{\\mathrm{IEB}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:ki}{\\mathrm{ki}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:MPF}{\\mathrm{MPF}}}{\\htmlData{pk=BIOMD0000000007/Species:IEB}{\\mathrm{IEB}} + \\htmlData{pk=BIOMD0000000007/Parameter:Kmi}{\\mathrm{Kmi}}} - \\frac{\\htmlData{pk=BIOMD0000000007/Species:IE}{\\mathrm{IE}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:kir}{\\mathrm{kir}}}{\\htmlData{pk=BIOMD0000000007/Species:IE}{\\mathrm{IE}} + \\htmlData{pk=BIOMD0000000007/Parameter:Kmir}{\\mathrm{Kmir}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:UbE_Reaction",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:UbE_Reaction}{v_{\\mathrm{UbE\\_Reaction}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000007/Species:IE}{\\mathrm{IE}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:ku}{\\mathrm{ku}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:UbEB}{\\mathrm{UbEB}}}{\\htmlData{pk=BIOMD0000000007/Parameter:Kmu}{\\mathrm{Kmu}} + \\htmlData{pk=BIOMD0000000007/Species:UbEB}{\\mathrm{UbEB}}} - \\frac{\\htmlData{pk=BIOMD0000000007/Parameter:kur}{\\mathrm{kur}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:UbE}{\\mathrm{UbE}}}{\\htmlData{pk=BIOMD0000000007/Parameter:Kmur}{\\mathrm{Kmur}} + \\htmlData{pk=BIOMD0000000007/Species:UbE}{\\mathrm{UbE}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:UbE2_Reaction",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:UbE2_Reaction}{v_{\\mathrm{UbE2\\_Reaction}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000007/Parameter:ku2}{\\mathrm{ku}_{2}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:MPF}{\\mathrm{MPF}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:UbE2B}{\\mathrm{UbE2B}}}{\\htmlData{pk=BIOMD0000000007/Parameter:Kmu2}{\\mathrm{Kmu}_{2}} + \\htmlData{pk=BIOMD0000000007/Species:UbE2B}{\\mathrm{UbE2B}}} - \\frac{\\htmlData{pk=BIOMD0000000007/Parameter:kur2}{\\mathrm{kur}_{2}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:UbE2}{\\mathrm{UbE}_{2}}}{\\htmlData{pk=BIOMD0000000007/Parameter:Kmur2}{\\mathrm{Kmur}_{2}} + \\htmlData{pk=BIOMD0000000007/Species:UbE2}{\\mathrm{UbE}_{2}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Wee1_Reaction",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Wee1_Reaction}{v_{\\mathrm{Wee1\\_Reaction}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000007/Parameter:kwr}{\\mathrm{kwr}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:Wee1B}{\\mathrm{Wee1B}}}{\\htmlData{pk=BIOMD0000000007/Parameter:Kmwr}{\\mathrm{Kmwr}} + \\htmlData{pk=BIOMD0000000007/Species:Wee1B}{\\mathrm{Wee1B}}} - \\frac{\\htmlData{pk=BIOMD0000000007/Parameter:kw}{\\mathrm{kw}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:MPF}{\\mathrm{MPF}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:Wee1}{\\mathrm{Wee}_{1}}}{\\htmlData{pk=BIOMD0000000007/Parameter:Kmw}{\\mathrm{Kmw}} + \\htmlData{pk=BIOMD0000000007/Species:Wee1}{\\mathrm{Wee}_{1}}}"
+              ],
+              "origin": "reaction"
+            },
+            {
+              "variable": "BIOMD0000000007/Reaction:Cdc25_Reaction",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Reaction:Cdc25_Reaction}{v_{\\mathrm{Cdc25\\_Reaction}}}",
+              "lines": [
+                "\\frac{\\htmlData{pk=BIOMD0000000007/Species:Cdc25B}{\\mathrm{Cdc25B}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:kc}{\\mathrm{kc}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:MPF}{\\mathrm{MPF}}}{\\htmlData{pk=BIOMD0000000007/Species:Cdc25B}{\\mathrm{Cdc25B}} + \\htmlData{pk=BIOMD0000000007/Parameter:Kmc}{\\mathrm{Kmc}}} - \\frac{\\htmlData{pk=BIOMD0000000007/Species:Cdc25}{\\mathrm{Cdc}_{25}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:kcr}{\\mathrm{kcr}}}{\\htmlData{pk=BIOMD0000000007/Species:Cdc25}{\\mathrm{Cdc}_{25}} + \\htmlData{pk=BIOMD0000000007/Parameter:Kmcr}{\\mathrm{Kmcr}}}"
+              ],
+              "origin": "reaction"
+            }
+          ],
+          "assignments": [
+            {
+              "variable": "BIOMD0000000007/Species:IEB",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:IEB}{\\mathrm{IEB}}",
+              "lines": [
+                "1 - \\htmlData{pk=BIOMD0000000007/Species:IE}{\\mathrm{IE}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:UbEB",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:UbEB}{\\mathrm{UbEB}}",
+              "lines": [
+                "1 - \\htmlData{pk=BIOMD0000000007/Species:UbE}{\\mathrm{UbE}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:UbE2B",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:UbE2B}{\\mathrm{UbE2B}}",
+              "lines": [
+                "1 - \\htmlData{pk=BIOMD0000000007/Species:UbE2}{\\mathrm{UbE}_{2}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:Wee1B",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:Wee1B}{\\mathrm{Wee1B}}",
+              "lines": [
+                "1 - \\htmlData{pk=BIOMD0000000007/Species:Wee1}{\\mathrm{Wee}_{1}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:Cdc25B",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:Cdc25B}{\\mathrm{Cdc25B}}",
+              "lines": [
+                "1 - \\htmlData{pk=BIOMD0000000007/Species:Cdc25}{\\mathrm{Cdc}_{25}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:Rum1Total",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:Rum1Total}{\\mathrm{Rum1Total}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G1R}{\\mathrm{G1R}} + \\htmlData{pk=BIOMD0000000007/Species:G2R}{\\mathrm{G2R}} + \\htmlData{pk=BIOMD0000000007/Species:PG2R}{\\mathrm{PG2R}} + \\htmlData{pk=BIOMD0000000007/Species:R}{R}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:Cdc13Total",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:Cdc13Total}{\\mathrm{Cdc13Total}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2K}{\\mathrm{G2K}} + \\htmlData{pk=BIOMD0000000007/Species:G2R}{\\mathrm{G2R}} + \\htmlData{pk=BIOMD0000000007/Species:PG2}{\\mathrm{PG}_{2}} + \\htmlData{pk=BIOMD0000000007/Species:PG2R}{\\mathrm{PG2R}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:Cig2Total",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:Cig2Total}{\\mathrm{Cig2Total}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G1K}{\\mathrm{G1K}} + \\htmlData{pk=BIOMD0000000007/Species:G1R}{\\mathrm{G1R}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Parameter:k2",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Parameter:k2}{k_{2}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:UbE}{\\mathrm{UbE}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:V2}{V_{2}} + \\mathopen{}\\left(1 - \\htmlData{pk=BIOMD0000000007/Species:UbE}{\\mathrm{UbE}}\\right) \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:V2prime}{\\mathrm{V2prime}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Parameter:k6",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Parameter:k6}{k_{6}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:UbE2}{\\mathrm{UbE}_{2}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:V6}{V_{6}} + \\mathopen{}\\left(1 - \\htmlData{pk=BIOMD0000000007/Species:UbE2}{\\mathrm{UbE}_{2}}\\right) \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:V6prime}{\\mathrm{V6prime}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Parameter:kwee",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Parameter:kwee}{\\mathrm{kwee}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:Vwprime}{\\mathrm{Vwprime}} \\cdot \\mathopen{}\\left(1 - \\htmlData{pk=BIOMD0000000007/Species:Wee1}{\\mathrm{Wee}_{1}}\\right) + \\htmlData{pk=BIOMD0000000007/Parameter:Vw}{\\mathrm{Vw}} \\cdot \\htmlData{pk=BIOMD0000000007/Species:Wee1}{\\mathrm{Wee}_{1}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Parameter:k25",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Parameter:k25}{k_{25}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:Cdc25}{\\mathrm{Cdc}_{25}} \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:V25}{V_{25}} + \\mathopen{}\\left(1 - \\htmlData{pk=BIOMD0000000007/Species:Cdc25}{\\mathrm{Cdc}_{25}}\\right) \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:V25prime}{\\mathrm{V25prime}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:MPF",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:MPF}{\\mathrm{MPF}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Species:G2K}{\\mathrm{G2K}} + \\htmlData{pk=BIOMD0000000007/Parameter:beta}{\\beta} \\cdot \\htmlData{pk=BIOMD0000000007/Species:PG2}{\\mathrm{PG}_{2}}"
+              ],
+              "origin": "assignment_rule"
+            },
+            {
+              "variable": "BIOMD0000000007/Species:SPF",
+              "lhs": "\\htmlData{pk=BIOMD0000000007/Species:SPF}{\\mathrm{SPF}}",
+              "lines": [
+                "\\htmlData{pk=BIOMD0000000007/Parameter:Cig1}{\\mathrm{Cig}_{1}} + \\htmlData{pk=BIOMD0000000007/Parameter:alpha}{\\alpha} \\cdot \\htmlData{pk=BIOMD0000000007/Species:G1K}{\\mathrm{G1K}} + \\htmlData{pk=BIOMD0000000007/Species:MPF}{\\mathrm{MPF}}"
+              ],
+              "origin": "assignment_rule"
+            }
+          ],
+          "functions": [],
+          "initial": [],
+          "events": [
+            {
+              "event": "BIOMD0000000007/Event:Start",
+              "label": "Start",
+              "trigger": "\\htmlData{pk=BIOMD0000000007/Species:SPF}{\\mathrm{SPF}} \\geq 0.1",
+              "delay": "60",
+              "priority": null,
+              "initialValue": true,
+              "persistent": true,
+              "useValuesFromTriggerTime": true,
+              "assignments": [
+                {
+                  "variable": "BIOMD0000000007/Parameter:kp",
+                  "lhs": "\\htmlData{pk=BIOMD0000000007/Parameter:kp}{\\mathrm{kp}}",
+                  "lines": [
+                    "\\frac{\\htmlData{pk=BIOMD0000000007/Parameter:kp}{\\mathrm{kp}}}{2}"
+                  ],
+                  "origin": "event"
+                }
+              ]
+            },
+            {
+              "event": "BIOMD0000000007/Event:Division",
+              "label": "Division",
+              "trigger": "\\htmlData{pk=BIOMD0000000007/Species:UbE}{\\mathrm{UbE}} \\leq 0.1",
+              "delay": null,
+              "priority": null,
+              "initialValue": true,
+              "persistent": true,
+              "useValuesFromTriggerTime": true,
+              "assignments": [
+                {
+                  "variable": "BIOMD0000000007/Parameter:kp",
+                  "lhs": "\\htmlData{pk=BIOMD0000000007/Parameter:kp}{\\mathrm{kp}}",
+                  "lines": [
+                    "2 \\cdot \\htmlData{pk=BIOMD0000000007/Parameter:kp}{\\mathrm{kp}}"
+                  ],
+                  "origin": "event"
+                },
+                {
+                  "variable": "BIOMD0000000007/Parameter:Mass",
+                  "lhs": "\\htmlData{pk=BIOMD0000000007/Parameter:Mass}{\\mathrm{Mass}}",
+                  "lines": [
+                    "\\frac{\\htmlData{pk=BIOMD0000000007/Parameter:Mass}{\\mathrm{Mass}}}{2}"
+                  ],
+                  "origin": "event"
+                }
+              ]
+            }
+          ],
+          "unsupported": []
+        },
+        "odeError": null
       },
       "debug": {
-        "jsonReportTime": "0.118 [s]"
+        "jsonReportTime": "0.053 [s]"
       }
     }
   }

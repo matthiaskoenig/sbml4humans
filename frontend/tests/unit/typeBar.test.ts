@@ -237,4 +237,33 @@ describe("TypeBar", () => {
     expect(wrapper.find("[data-testid^=severity-]").exists()).toBe(false);
     wrapper.unmount();
   });
+
+  it("switches between the tables and the equations, which hide the types", async () => {
+    await router.push({ path: "/examples/BIOMD0000000012", query: {} });
+    const wrapper = mountBar();
+    expect(wrapper.get("[data-testid=view-tables]").attributes("aria-selected")).toBe("true");
+    expect(wrapper.get("[data-testid=view-tables]").text()).toBe("tables");
+    expect(listedTypes(wrapper)).toContain("Species");
+
+    await wrapper.get("[data-testid=view-equations]").trigger("click");
+    await flushPromises();
+    expect(router.currentRoute.value.query.view).toBe("equations");
+    expect(wrapper.get("[data-testid=view-equations]").attributes("aria-selected")).toBe("true");
+    expect(listedTypes(wrapper)).toEqual([]);
+    // the document and the model stay, they open the inspector
+    expect(wrapper.find("[data-testid=bar-model]").exists()).toBe(true);
+    wrapper.unmount();
+  });
+
+  it("offers no equations for a report without them", async () => {
+    await router.push({ path: "/examples/BIOMD0000000012", query: {} });
+    const report = loadReport("repressilator");
+    const without = new ReportIndex({ ...report, odeSystem: null, odeError: null });
+    const wrapper = mount(TypeBar, {
+      props: { index: without, model: without.mainModel!, counts: countsOf() },
+      global: globalWith(),
+    });
+    expect(wrapper.find("[data-testid=view-switch]").exists()).toBe(false);
+    wrapper.unmount();
+  });
 });

@@ -51,4 +51,34 @@ describe("renderLatex", () => {
     const latex = "\u00b5".repeat(MAX_LATEX_LENGTH - 10);
     expect(renderLatex(latex, { unlimited: true })).not.toBeNull();
   });
+
+  it("renders the links of the symbols of an equation with links", () => {
+    const html = renderLatex("\\htmlData{pk=m/Species:S}{S} + 1", { links: true });
+    expect(html).toContain('data-pk="m/Species:S"');
+  });
+
+  it("renders no link without the option", () => {
+    const html = renderLatex("\\htmlData{pk=m/Species:S}{S}");
+    expect(html).not.toBeNull();
+    expect(html).not.toContain("data-pk");
+  });
+
+  it("trusts nothing but the pk of htmlData with links", () => {
+    for (const latex of [
+      "\\href{https://example.invalid}{x}",
+      "\\url{https://example.invalid}",
+      "\\htmlClass{evil}{x}",
+      "\\htmlStyle{color:red}{x}",
+      "\\htmlId{x}{x}",
+    ]) {
+      const html = renderLatex(latex, { links: true });
+      expect(html).not.toBeNull();
+      expect(html).not.toContain("<a");
+      expect(html).not.toContain("evil");
+      expect(html).not.toContain("color:red");
+      expect(html).not.toContain('id="x"');
+    }
+    const other = renderLatex("\\htmlData{onclick=alert(1)}{x}", { links: true });
+    expect(other).not.toContain("data-onclick");
+  });
 });

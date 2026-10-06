@@ -37,6 +37,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import sbmlode
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
@@ -53,6 +54,7 @@ from sbml4humans.model import (
     ReportResponse,
     ValidationResponse,
 )
+from sbml4humans.odes import analyse, ode_system
 from sbml4humans.sbmlinfo import SBMLDocumentInfo
 from sbml4humans.validation import (
     ReportDocuments,
@@ -121,6 +123,7 @@ def report_for_sbml(source: Path | str, uid: str = "") -> ReportEntry:
     entry = _Entry(source, uid=uid)
     external = _resolve({SBML_LOCATION: entry}, checksums={}, locations=[])
     _link({SBML_LOCATION: entry}, external)
+    _odes({SBML_LOCATION: entry})
     return entry.report_entry
 
 
@@ -201,6 +204,7 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
     """
     with _read(path, trusted) as read:
         _link(read.entries, read.external)
+        _odes(read.entries)
         manifest = Manifest(
             entries=[
                 ManifestEntry(
@@ -361,6 +365,25 @@ def _link(entries: dict[str, _Entry], external: ExternalModels) -> None:
     )
 
 
+def _odes(entries: dict[str, _Entry]) -> None:
+    """Build the ODE system of every entry, its submodels flattened within the report.
+
+    An external model definition of an entry resolves to another entry of the
+    report alone, as in the validation, see `odes.ode_system`.
+    """
+    documents = ReportDocuments(
+        {location: entry.info.doc for location, entry in entries.items()}
+    )
+    for location, entry in entries.items():
+        report = entry.info.report
+        main = next((m for m in report.models if m.kind == "model"), None)
+        if main is None:
+            continue
+        report.ode_system, report.ode_error = ode_system(
+            entry.info.doc, main, documents, location
+        )
+
+
 def _md5(path: Path) -> str:
     """The md5 of a file, which an external model definition states (comp §3.3.2)."""
     with path.open("rb") as f:
@@ -411,6 +434,77 @@ def _add_files_of_directory(
             entries[added] = entry
             pending.append(added)
     return unreadable
+
+
+@dataclass(frozen=True)
+class OdeFile:
+    """The ODE system of a model in a format of sbmlode, as a file.
+
+    Attributes:
+        filename: the name of the file, the id of the model with the suffix of the
+            format, `BIOMD0000000012.py`
+        content: the code or the document
+    """
+
+    filename: str
+    content: str
+
+
+def ode_for_path(
+    path: Path, fmt: str, location: str | None = None, trusted: bool = False
+) -> OdeFile:
+    """Write the ODE system of the model of an SBML entry in a format of sbmlode.
+
+    The source is read like for its report, and an external model definition is
+    resolved to the entries of the report alone, see `odes.ode_system`.
+
+    Args:
+        path: an SBML file or COMBINE archive.
+        fmt: the format, a key of `sbmlode.FORMATS`.
+        location: the SBML entry of an archive, by default its master entry or
+            the first one.
+        trusted: whether the files next to a single SBML file are read, see
+            `report_for_path`.
+
+    Raises:
+        ValueError: for an unknown format or location, a source without a model,
+            or a model sbmlode cannot write in the format.
+        ContentTooLargeError: if the content of an untrusted path exceeds the
+            limits.
+    """
+    format_ = sbmlode.FORMATS.get(fmt)
+    if format_ is None:
+        raise ValueError(
+            f"The format '{fmt}' is none of {', '.join(sorted(sbmlode.FORMATS))}."
+        )
+    with _read(path, trusted) as read:
+        if location is None:
+            masters = [e.location for e in read.omex.manifest.entries if e.master]
+            location = next(
+                (m for m in masters if m in read.entries), next(iter(read.entries))
+            )
+        entry = read.entries.get(location)
+        if entry is None:
+            raise ValueError(f"The source has no SBML entry '{location}'.")
+        documents = ReportDocuments(
+            {loc: e.info.doc for loc, e in read.entries.items()}
+        )
+        doc = entry.info.doc
+        content = analyse(doc, documents, location).render(fmt)
+    model_id = doc.getModel().getId() or "model"
+    return OdeFile(filename=f"{model_id}{format_.suffixes[0]}", content=content)
+
+
+def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeFile:
+    """Write the ODE system of the content of an SBML file or COMBINE archive.
+
+    The content is untrusted, written to a temporary file like for
+    `report_for_bytes`.
+    """
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        path = Path(tmp_dir) / "model"
+        path.write_bytes(content)
+        return ode_for_path(path, fmt, location)
 
 
 def report_for_bytes(content: bytes) -> ReportResponse:

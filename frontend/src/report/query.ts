@@ -17,7 +17,13 @@ export interface ViewState {
   types: ElementType[] | null;
   /** Key of the glossary entry the help dialog shows, null = dialog closed. */
   help: string | null;
+  /** What the report page shows next to the inspector: the element tables or the
+   * differential equations of the model. */
+  view: ReportViewKind;
 }
+
+/** The views of the report page. */
+export type ReportViewKind = "tables" | "equations";
 
 function first(value: LocationQueryValue | LocationQueryValue[] | undefined): string | null {
   const single = Array.isArray(value) ? value[0] : value;
@@ -33,6 +39,7 @@ export function parseQuery(query: LocationQuery): ViewState {
     q: first(query.q) ?? "",
     types: types === null ? null : types.split(",").filter(isElementType),
     help: first(query.help),
+    view: first(query.view) === "equations" ? "equations" : "tables",
   };
 }
 
@@ -44,5 +51,6 @@ export function toQuery(state: ViewState): LocationQueryRaw {
   if (state.q) query.q = state.q;
   if (state.types !== null) query.types = state.types.join(",");
   if (state.help) query.help = state.help;
+  if (state.view === "equations") query.view = state.view;
   return query;
 }
