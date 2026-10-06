@@ -43,7 +43,9 @@ test("the equations of a model, linked to the inspector", async ({ page }) => {
 });
 
 test("the inspector of a species shows its equation and opens it in the view", async ({ page }) => {
-  await page.goto(`/examples/${REPRESSILATOR}?pk=${encodeURIComponent("BIOMD0000000012/Species:X")}`);
+  await page.goto(
+    `/examples/${REPRESSILATOR}?pk=${encodeURIComponent("BIOMD0000000012/Species:X")}`,
+  );
   await expectReport(page);
   const block = page.getByTestId("equation-block");
   await expect(block.getByTestId("equation-row")).toHaveCount(1);
