@@ -58,7 +58,7 @@ from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.middleware.gzip import GZipMiddleware
@@ -77,12 +77,18 @@ from sbml4humans.download import download
 from sbml4humans.examples import (
     ExampleMetaData,
     load_examples,
+    ode_for_example,
     report_for_example,
     validation_for_example,
 )
 from sbml4humans.limits import ContentTooLargeError, format_size
 from sbml4humans.model import ReportResponse, ValidationResponse
-from sbml4humans.report import report_for_bytes, validation_for_bytes
+from sbml4humans.report import (
+    OdeFile,
+    ode_for_bytes,
+    report_for_bytes,
+    validation_for_bytes,
+)
 from sbml4humans.uploads import CLEANUP_INTERVAL, UploadStore, upload_store
 
 
@@ -618,6 +624,71 @@ async def validation_of_upload(
     """Validate an upload."""
     content = await run_in_threadpool(store.get, upload_id)
     return await run_validation(request, validation_for_bytes, content)
+
+
+def ode_response(ode: OdeFile) -> Response:
+    """The ODE system of a model as a file to download."""
+    return Response(
+        content=ode.content,
+        media_type="text/plain; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{ode.filename}"'},
+    )
+
+
+@api.get(
+    "/api/ode/examples/{example_id}",
+    tags=["ode"],
+    response_class=PlainTextResponse,
+)
+def ode_of_example(example_id: str, format: str) -> Response:
+    """The ODE system of an example in a format of sbmlode, as a file."""
+    example: ExampleMetaData | None = load_examples().get(example_id)
+    if example is None:
+        raise ExampleNotFoundError(example_id)
+    return ode_response(ode_for_example(example, format))
+
+
+@api.post("/api/ode/file", tags=["ode"], response_class=PlainTextResponse)
+def ode_of_file(
+    source: UploadFile,
+    format: str,
+    location: str | None = None,
+) -> Response:
+    """The ODE system of an uploaded SBML file or COMBINE archive, as a file."""
+    return ode_response(ode_for_bytes(source.file.read(), format, location))
+
+
+@api.get("/api/ode/url", tags=["ode"], response_class=PlainTextResponse)
+def ode_of_url(
+    url: str,
+    format: str,
+    location: str | None = None,
+) -> Response:
+    """The ODE system of an SBML file or COMBINE archive behind a url, as a file."""
+    return ode_response(ode_for_bytes(download(url), format, location))
+
+
+@api.post("/api/ode/content", tags=["ode"], response_class=PlainTextResponse)
+async def ode_of_content(
+    request: Request,
+    format: str,
+    location: str | None = None,
+) -> Response:
+    """The ODE system of the SBML content in the request body, as a file."""
+    content = await request.body()
+    ode = await run_in_threadpool(ode_for_bytes, content, format, location)
+    return ode_response(ode)
+
+
+@api.get("/api/ode/upload/{upload_id}", tags=["ode"], response_class=PlainTextResponse)
+def ode_of_upload(
+    upload_id: str,
+    store: Annotated[UploadStore, Depends(upload_store)],
+    format: str,
+    location: str | None = None,
+) -> Response:
+    """The ODE system of an upload, as a file."""
+    return ode_response(ode_for_bytes(store.get(upload_id), format, location))
 
 
 @api.get(

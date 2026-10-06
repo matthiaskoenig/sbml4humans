@@ -186,6 +186,22 @@ def test_the_validation_of_an_unknown_token_is_an_error(local: TestClient) -> No
     assert "no report for the token" in unknown.json()["errors"][0]
 
 
+def test_the_ode_system_is_read_by_the_token_of_the_report(local: TestClient) -> None:
+    """The ODE system of the path of a report, trusted, a file to download."""
+    answer = _post_report(local, REPRESSILATOR_SBML)
+    response = local.get(
+        f"/api/local/ode/{answer['token']}", params={"format": "python"}
+    )
+    assert response.status_code == 200
+    assert (
+        response.headers["content-disposition"]
+        == 'attachment; filename="BIOMD0000000012.py"'
+    )
+    assert "def f_dxdt(" in response.text
+    unknown = local.get("/api/local/ode/unknown", params={"format": "python"})
+    assert "no report for the token" in unknown.json()["errors"][0]
+
+
 def test_errors_follow_the_contract_of_the_api(
     local: TestClient, tmp_path: Path
 ) -> None:
