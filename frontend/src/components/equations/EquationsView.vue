@@ -3,10 +3,11 @@ import { computed, nextTick, onMounted, ref } from "vue";
 
 import { ApiError } from "@/api/client";
 import type { OdeEquation } from "@/api/types";
+import EquationCode from "@/components/equations/EquationCode.vue";
 import EquationEvent from "@/components/equations/EquationEvent.vue";
 import EquationRow from "@/components/equations/EquationRow.vue";
 import EquationSection from "@/components/equations/EquationSection.vue";
-import OdeDownload from "@/components/equations/OdeDownload.vue";
+import EquationTabs from "@/components/equations/EquationTabs.vue";
 import ErrorState from "@/components/layout/ErrorState.vue";
 import ElementLink from "@/components/misc/ElementLink.vue";
 import HelpButton from "@/components/help/HelpButton.vue";
@@ -15,11 +16,13 @@ import type { ReportIndex } from "@/report/index";
 import { elementLabel } from "@/report/label";
 import { useReportView } from "@/report/view";
 
-/** The differential equations of the model of the document, the view next to the tables: the
- * constructs the system leaves out first, then the ODE system, the reaction rates, the
- * assignment rules, the function definitions, the initial values and the events, a section
- * without an equation left out. A click on a symbol selects its element, the symbols of the
- * selected element are marked in every equation and the row of its own equation is marked. */
+/** The differential equations of the model of the document, the view next to the tables. The
+ * tabs of its header show the math or the code of a format of sbmlode (`code` of the query). The
+ * math reads from the definitions to the system: the constructs the system leaves out first, then
+ * the function definitions, the assignment rules, the reaction rates, the ODE system, the initial
+ * assignments and the events, a section without an equation left out. A click on a symbol selects
+ * its element, the symbols of the selected element are marked in every equation and the row of
+ * its own equation is marked. */
 const props = defineProps<{ index: ReportIndex; location: string }>();
 const view = useReportView();
 
@@ -35,12 +38,15 @@ const unsupported = conceptEntry("odeUnsupported");
 const unsupportedKey = conceptKey("odeUnsupported");
 
 const SECTIONS = [
-  ["odes", "odeSystem"],
-  ["reactions", "reactionRates"],
-  ["assignments", "odeAssignments"],
   ["functions", "odeFunctions"],
+  ["assignments", "odeAssignments"],
+  ["reactions", "reactionRates"],
+  ["odes", "odeSystem"],
   ["initial", "odeInitial"],
 ] as const;
+
+/** The format whose code the view shows, null for the math. */
+const code = computed(() => view.state.value.code);
 
 const sections = computed(() =>
   SECTIONS.map(([field, concept]) => ({
@@ -93,7 +99,8 @@ onMounted(async () => {
 <template>
   <div
     ref="root"
-    class="flex min-h-0 flex-1 flex-col overflow-y-auto"
+    class="flex min-h-0 flex-1 flex-col"
+    :class="code ? 'overflow-hidden' : 'overflow-y-auto'"
     data-testid="equations-view"
     @click="onClick"
     @mouseover="onOver"
@@ -105,7 +112,12 @@ onMounted(async () => {
       <span class="font-semibold first-letter:uppercase">{{ equations?.label }}</span>
       <HelpButton v-if="equationsKey" :help-key="equationsKey" :label="equations?.label ?? ''" />
       <ElementLink v-if="index.mainModel" :pk="index.mainModel.pk" :label="modelId" mark />
-      <OdeDownload v-if="system" class="ml-auto" :location="location" />
+      <EquationTabs
+        v-if="system"
+        class="ml-auto"
+        :code="code"
+        @select="(next) => void view.setCode(next)"
+      />
     </div>
     <ErrorState v-if="failure" :error="failure" />
     <template v-else-if="system">
@@ -130,32 +142,35 @@ onMounted(async () => {
           </li>
         </ul>
       </div>
-      <EquationSection
-        v-for="section in sections"
-        :key="section.field"
-        :concept="section.concept"
-        :count="section.equations.length"
-      >
-        <EquationRow
-          v-for="(equation, k) in section.equations"
-          :key="k"
-          :equation="equation"
-          :selected="!!selected && equation.variable === selected"
-          :show-origin="section.mixed"
-        />
-      </EquationSection>
-      <EquationSection
-        v-if="system.events?.length"
-        concept="odeEvents"
-        :count="system.events.length"
-      >
-        <EquationEvent
-          v-for="(event, k) in system.events"
-          :key="k"
-          :event="event"
-          :selected="selected"
-        />
-      </EquationSection>
+      <EquationCode v-if="code" :format="code" :location="location" />
+      <template v-else>
+        <EquationSection
+          v-for="section in sections"
+          :key="section.field"
+          :concept="section.concept"
+          :count="section.equations.length"
+        >
+          <EquationRow
+            v-for="(equation, k) in section.equations"
+            :key="k"
+            :equation="equation"
+            :selected="!!selected && equation.variable === selected"
+            :show-origin="section.mixed"
+          />
+        </EquationSection>
+        <EquationSection
+          v-if="system.events?.length"
+          concept="odeEvents"
+          :count="system.events.length"
+        >
+          <EquationEvent
+            v-for="(event, k) in system.events"
+            :key="k"
+            :event="event"
+            :selected="selected"
+          />
+        </EquationSection>
+      </template>
     </template>
   </div>
 </template>

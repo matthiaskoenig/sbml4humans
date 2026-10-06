@@ -401,23 +401,51 @@ describe("report store", () => {
     });
   });
 
-  it("downloads the differential equations of the source of the report", async () => {
+  it("fetches the code of the differential equations of the source of the report", async () => {
     const store = useReportStore();
     vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
-    const file = { filename: "m.py", blob: new Blob(["x"]) };
-    vi.mocked(client.getExampleOde).mockResolvedValue(file);
+    vi.mocked(client.getExampleOde).mockResolvedValue({
+      filename: "m.py",
+      blob: new Blob(["x = 1"]),
+    });
     await store.loadExample("BIOMD0000000012");
-    expect(await store.downloadOde("python", "./model.xml")).toBe(file);
+    expect(await store.odeCode("python", "./model.xml")).toEqual({
+      filename: "m.py",
+      text: "x = 1",
+    });
     expect(client.getExampleOde).toHaveBeenCalledWith("BIOMD0000000012", "python");
 
     vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
-    vi.mocked(client.postContentOde).mockResolvedValue(file);
+    vi.mocked(client.postContentOde).mockResolvedValue({
+      filename: "m.md",
+      blob: new Blob(["$$"]),
+    });
     await store.loadContent("<sbml/>");
-    await store.downloadOde("markdown", "./model.xml");
+    await store.odeCode("markdown", "./model.xml");
     // pasted content is sent again, the backend keeps nothing of a request
     expect(client.postContentOde).toHaveBeenCalledWith("<sbml/>", "markdown", "./model.xml");
 
     store.clear();
-    await expect(store.downloadOde("python", "./model.xml")).rejects.toThrow();
+    await expect(store.odeCode("python", "./model.xml")).rejects.toThrow();
+  });
+
+  it("fetches the code of a format once per entry, again after a failure", async () => {
+    const store = useReportStore();
+    vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(client.getExampleOde).mockResolvedValue({
+      filename: "m.jl",
+      blob: new Blob(["f() = 1"]),
+    });
+    await store.loadExample("BIOMD0000000012");
+    await store.odeCode("julia", "./model.xml");
+    await store.odeCode("julia", "./model.xml");
+    expect(client.getExampleOde).toHaveBeenCalledTimes(1);
+    await store.odeCode("r", "./model.xml");
+    expect(client.getExampleOde).toHaveBeenCalledTimes(2);
+
+    vi.mocked(client.getExampleOde).mockRejectedValueOnce(new client.ApiError("algebraic rule"));
+    await expect(store.odeCode("latex", "./model.xml")).rejects.toThrow("algebraic rule");
+    await store.odeCode("latex", "./model.xml");
+    expect(client.getExampleOde).toHaveBeenCalledTimes(4);
   });
 });

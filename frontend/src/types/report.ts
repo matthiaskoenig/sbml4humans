@@ -1488,8 +1488,9 @@ export interface OdeEquation {
   origin:
     | "reactions"
     | "rate_rule"
+    | "dilution"
     | "assignment_rule"
-    | "concentration"
+    | "size_rate"
     | "initial_assignment"
     | "initial_value"
     | "reaction"

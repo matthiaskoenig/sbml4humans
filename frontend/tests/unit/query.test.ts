@@ -12,6 +12,7 @@ describe("view state query", () => {
       types: null,
       help: null,
       view: "tables",
+      code: null,
     });
   });
 
@@ -25,6 +26,7 @@ describe("view state query", () => {
         types: "Species,Reaction",
         help: "types/Species",
         view: "equations",
+        code: "julia",
       }),
     ).toEqual({
       entry: "./model.xml",
@@ -34,6 +36,7 @@ describe("view state query", () => {
       types: ["Species", "Reaction"],
       help: "types/Species",
       view: "equations",
+      code: "julia",
     });
   });
 
@@ -64,6 +67,7 @@ describe("view state query", () => {
         types: null,
         help: null,
         view: "tables",
+        code: null,
       }),
     ).toEqual({});
     expect(
@@ -75,6 +79,7 @@ describe("view state query", () => {
         types: ["Species"],
         help: "types/Species",
         view: "equations",
+        code: null,
       }),
     ).toEqual({
       entry: "./m.xml",
@@ -96,7 +101,20 @@ describe("view state query", () => {
       types: ["Species" as const],
       help: "types/Species",
       view: "equations" as const,
+      code: "python" as const,
     };
     expect(parseQuery(toQuery(state) as Record<string, string>)).toEqual(state);
+  });
+
+  it("reads an unknown format of the code of the equations as the math", () => {
+    expect(parseQuery({ view: "equations", code: "cobol" }).code).toBeNull();
+  });
+
+  it("keeps the code only with the equations", () => {
+    expect(toQuery({ ...parseQuery({ code: "r" }), view: "tables" })).not.toHaveProperty("code");
+    expect(toQuery(parseQuery({ view: "equations", code: "r" }))).toMatchObject({
+      view: "equations",
+      code: "r",
+    });
   });
 });

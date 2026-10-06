@@ -30,8 +30,15 @@ import type { ReportResponse, ValidationResponse } from "@/api/types";
 import { ReportIndex } from "@/report/index";
 import { ValidationIndex } from "@/report/validationIndex";
 
-/** The download of the differential equations of a report in a format, see `downloadOde`. */
+/** The download of the differential equations of a report in a format, see `odeCode`. */
 type OdeDownload = (format: OdeFormat, location: string) => Promise<OdeDownloadFile>;
+
+/** The differential equations of an entry in a format of sbmlode: the code or the document and
+ * the name of its file. */
+export interface OdeCode {
+  filename: string;
+  text: string;
+}
 
 /** `local` is the report of a file of this machine, which `sbml4humans.show` of the python
  * package created on its local server and which the page reads by its token. `upload` is the
@@ -155,10 +162,29 @@ export const useReportStore = defineStore("report", () => {
    * a file and pasted content are sent again like for the validation. */
   let download: OdeDownload | null = null;
 
-  /** The differential equations of an entry of the report in a format of sbmlode, a file. */
-  function downloadOde(format: OdeFormat, location: string): Promise<OdeDownloadFile> {
-    if (download === null) return Promise.reject(new ApiError("No report is loaded"));
-    return download(format, location);
+  /** The code of each entry and format which was asked for, a promise each; a failed one is
+   * dropped, so that the next view asks again. */
+  let codes = new Map<string, Promise<OdeCode>>();
+
+  /** The differential equations of an entry of the report in a format of sbmlode, the code and
+   * the name of its file, fetched once per report. */
+  function odeCode(format: OdeFormat, location: string): Promise<OdeCode> {
+    const request = download;
+    if (request === null) return Promise.reject(new ApiError("No report is loaded"));
+    const key = `${location}\n${format}`;
+    let code = codes.get(key);
+    if (code === undefined) {
+      const current = codes;
+      code = request(format, location).then(async (file) => ({
+        filename: file.filename,
+        text: await file.blob.text(),
+      }));
+      code.catch(() => {
+        if (current.get(key) === code) current.delete(key);
+      });
+      codes.set(key, code);
+    }
+    return code;
   }
 
   async function load(
@@ -170,6 +196,7 @@ export const useReportStore = defineStore("report", () => {
     if (response.value && source.value && sameSource(source.value, next)) return;
     const current = ++generation;
     download = ode;
+    codes = new Map();
     resetValidation();
     loading.value = true;
     error.value = null;
@@ -240,6 +267,7 @@ export const useReportStore = defineStore("report", () => {
   function clear(): void {
     generation += 1;
     download = null;
+    codes = new Map();
     resetValidation();
     loading.value = false;
     response.value = null;
@@ -265,7 +293,7 @@ export const useReportStore = defineStore("report", () => {
     loadUpload,
     loadFile,
     loadContent,
-    downloadOde,
+    odeCode,
     clear,
   };
 });
