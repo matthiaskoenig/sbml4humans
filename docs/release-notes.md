@@ -7,7 +7,7 @@ What changed in every version of SBML4Humans, the newest first. The notes of a v
 The python package supports Python 3.12, 3.13, 3.14 and 3.15.
 
 ### Python versions
-- `pip install sbml4humans` installs on Python 3.12 to 3.15, formerly 3.14 only: the forward references of the report model and of the backend are quoted, which Python before 3.14 evaluates at import, two `except` clauses are parenthesized, and the number of cpus of the validation is read without `os.process_cpu_count` on Python 3.12
+- `pip install sbml4humans` installs on Python 3.12 to 3.15, formerly 3.14 only: the forward references of the report model and of the backend are quoted, which Python before 3.14 evaluates at import, two `except` clauses are parenthesized, the number of cpus of the validation is read without `os.process_cpu_count` on Python 3.12, and an IPv4 mapped address of a url is judged by its IPv4 address alone, which Python before 3.12.4 counted as not global, so that a model at such an address of the internet loads
 - every pull request tests the backend on Python 3.14; a release tests it on 3.12, 3.13 and 3.15 as well (`versions` of `ci-cd.yml`), on the pull request of the release, the tag and a manual run, and publishes only after it passed
 - ruff and ty check the backend against Python 3.12, the lowest supported version
 

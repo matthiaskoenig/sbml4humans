@@ -111,8 +111,12 @@ def is_public(address: IPAddress) -> bool:
 
     Loopback, private, link local (the cloud metadata service), shared (carrier
     grade NAT), reserved, multicast and unspecified addresses are not, and
-    neither is an IPv6 address which carries an IPv4 address which is not.
+    neither is an IPv6 address which carries an IPv4 address which is not. An IPv4
+    mapped address is its IPv4 address alone: Python before 3.12.4 and 3.13 counts
+    the whole range `::ffff:0:0/96` as not global.
     """
+    if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped is not None:
+        return is_public(address.ipv4_mapped)
     embedded = _embedded_ipv4(address)
     if embedded is not None and not is_public(embedded):
         return False
