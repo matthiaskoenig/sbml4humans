@@ -104,7 +104,8 @@ test("the code downloads and copies the ODE system without the simulator", async
   expect(code).not.toContain("def simulate(");
   await page.getByTestId("equations-code-copy").click();
   await expect(page.getByTestId("equations-code-copy")).toHaveText("Copied");
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(code);
+  // an expression of the page, the tests are typed without the DOM
+  expect(await page.evaluate("navigator.clipboard.readText()")).toBe(code);
   await expect(page.getByTestId("equations-code-sbmlode")).toHaveAttribute(
     "href",
     "https://matthiaskoenig.github.io/sbmlode/formats/",
