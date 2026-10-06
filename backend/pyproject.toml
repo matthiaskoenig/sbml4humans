@@ -158,7 +158,3 @@ include = ["sbml4humans", "tests"]
 [tool.ty.terminal]
 # warnings are failures: keep the codebase free of any diagnostic
 error-on-warning = true
-
-# TEMPORARY until sbmlode 0.1.0 is on PyPI: remove and run `uv lock`
-[tool.uv.sources]
-sbmlode = { path = "../../sbmlode", editable = true }
