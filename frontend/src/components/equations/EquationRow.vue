@@ -66,7 +66,7 @@ const origin = computed(() => props.equation.origin.replaceAll("_", " "));
 <template>
   <div
     ref="root"
-    class="grid grid-cols-[minmax(0,max-content)_minmax(0,1fr)_auto] items-center gap-x-2 px-4 py-1.5"
+    class="grid grid-cols-[minmax(0,max-content)_minmax(0,1fr)_auto] items-center gap-x-2 px-4"
     :class="selected ? 'bg-selected' : 'hover:bg-gray-50'"
     :data-equation-of="equation.variable ?? undefined"
     data-testid="equation-row"
@@ -74,8 +74,10 @@ const origin = computed(() => props.equation.origin.replaceAll("_", " "));
     <template v-if="rendered">
       <!-- eslint-disable-next-line vue/no-v-html -->
       <span class="text-right" data-testid="equation-lhs" v-html="lhsHtml" />
+      <!-- a scroll box clips both axes: its padding holds the fractions of KaTeX, which reach
+      beyond the line box -->
       <!-- eslint-disable-next-line vue/no-v-html -->
-      <span class="min-w-0 overflow-x-auto" data-testid="equation-rhs" v-html="rhsHtml" />
+      <span class="min-w-0 overflow-x-auto py-1.5" data-testid="equation-rhs" v-html="rhsHtml" />
     </template>
     <template v-else>
       <span class="truncate text-right font-mono text-xs text-gray-400">{{ equation.lhs }} =</span>

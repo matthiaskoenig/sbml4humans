@@ -57,15 +57,74 @@ test("the inspector of a species shows its equation and opens it in the view", a
   await expect(block.getByTestId("equation-block-show")).toHaveCount(0);
 });
 
-test("the equations download as python code", async ({ page }) => {
+test("the code of the equations in tabs, kept in the url", async ({ page }) => {
   await page.goto(`/examples/${REPRESSILATOR}?view=equations`);
   await expectReport(page);
+  const view = page.getByTestId("equations-view");
+  // the math reads from the definitions to the system
+  const sections = view.locator("section[data-testid^=equations-]");
+  await expect(sections).toHaveCount(3);
+  expect(
+    await sections.evaluateAll((all) => all.map((s) => s.getAttribute("data-testid"))),
+  ).toEqual(["equations-odeAssignments", "equations-reactionRates", "equations-odeSystem"]);
+
+  await page.getByTestId("equations-tab-julia").click();
+  await expect.poll(() => query(page, "code")).toBe("julia");
+  await expect(page.getByTestId("equations-code-text")).toContainText("function f!(dx, x, p, t)");
+  await expect(page.getByTestId("equations-code-filename")).toHaveText("BIOMD0000000012.jl");
+  await expect(view.getByTestId("equation-row")).toHaveCount(0);
+  // a reload keeps the tab
+  await page.reload();
+  await expectReport(page);
+  await expect(page.getByTestId("equations-tab-julia")).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByTestId("equations-code-text")).toContainText("function f!(dx, x, p, t)");
+  // the arrow keys move between the tabs
+  await page.getByTestId("equations-tab-julia").press("ArrowRight");
+  await expect.poll(() => query(page, "code")).toBe("r");
+  await expect(page.getByTestId("equations-tab-r")).toBeFocused();
+  await page.getByTestId("equations-tab-math").click();
+  await expect.poll(() => query(page, "code")).toBeNull();
+  await expect(view.getByTestId("equation-row").first()).toBeVisible();
+});
+
+test("the code downloads and copies the ODE system without the simulator", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(`/examples/${REPRESSILATOR}?view=equations&code=python`);
+  await expectReport(page);
+  await expect(page.getByTestId("equations-code-text")).toContainText("def f_dxdt(");
   const downloading = page.waitForEvent("download");
-  await page.getByTestId("ode-download-python").click();
+  await page.getByTestId("equations-code-download").click();
   const download = await downloading;
   expect(download.suggestedFilename()).toBe("BIOMD0000000012.py");
   const code = readFileSync((await download.path())!, "utf8");
   expect(code).toContain("def f_dxdt(");
+  expect(code).not.toContain("def simulate(");
+  await page.getByTestId("equations-code-copy").click();
+  await expect(page.getByTestId("equations-code-copy")).toHaveText("Copied");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(code);
+  await expect(page.getByTestId("equations-code-sbmlode")).toHaveAttribute(
+    "href",
+    "https://matthiaskoenig.github.io/sbmlode/formats/",
+  );
+});
+
+test("a concentration in a compartment whose size changes is diluted", async ({ page }) => {
+  await openExample(page, "variable_compartment (variable_compartment.xml)");
+  await page.getByTestId("view-equations").click();
+  const view = page.getByTestId("equations-view");
+  const s1 = view.locator('[data-equation-of="variable_compartment/Species:S1"]');
+  // the ODE of S1 ends with the rate of the size of Vc, a link to the compartment
+  await expect(s1.locator('[data-pk="variable_compartment/Compartment:Vc"]').last()).toBeVisible();
+  // the rate of the size of Va, which has an assignment rule, is an assignment
+  await expect(
+    view
+      .getByTestId("equations-odeAssignments")
+      .locator('[data-equation-of="variable_compartment/Compartment:Va"]'),
+  ).toHaveCount(2);
+  await expect(view.getByTestId("equation-origin").filter({ hasText: "size rate" })).toHaveCount(1);
 });
 
 test("a model with an algebraic rule names it as unsupported", async ({ page }) => {
@@ -74,6 +133,8 @@ test("a model with an algebraic rule names it as unsupported", async ({ page }) 
   const notice = page.getByTestId("equations-unsupported");
   await expect(notice).toContainText("algebraic rule");
   // code of a system without its algebraic rule would simulate another model
-  await page.getByTestId("ode-download-python").click();
-  await expect(page.getByTestId("ode-download-error")).toContainText("algebraic rule");
+  await page.getByTestId("equations-tab-python").click();
+  await expect(page.getByTestId("equations-code-error")).toContainText("algebraic rule");
+  // the notice stays above the code
+  await expect(notice).toBeVisible();
 });
