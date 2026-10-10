@@ -154,8 +154,9 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
       - name: End to end tests
+        # the walk over every example is tagged `@slow` and runs locally only
         working-directory: frontend
-        run: npm run test:e2e
+        run: npm run test:e2e -- --grep-invert @slow
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
