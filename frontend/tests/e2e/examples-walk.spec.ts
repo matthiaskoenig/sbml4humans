@@ -7,8 +7,9 @@ import { openExample } from "./helpers";
 // the backend with the parallel workers of the other specs makes the reports arrive late.
 // Every example gets two minutes: the largest one, Recon3D, is a 75 MB gzipped model whose
 // report creation, transfer and indexing take far longer than the configured expect timeout on
-// a two core CI runner.
-test("every example renders its sections", async ({ page, request }) => {
+// a two core CI runner. The walk takes minutes and is tagged `@slow`: it runs locally with every
+// `npm run test:e2e`, continuous integration leaves it out with `--grep-invert @slow`.
+test("every example renders its sections", { tag: "@slow" }, async ({ page, request }) => {
   const response = await request.get("http://localhost:1444/api/examples");
   const { examples } = (await response.json()) as { examples: { id: string }[] };
   test.setTimeout(examples.length * 15_000);

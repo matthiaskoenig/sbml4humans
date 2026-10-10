@@ -30,6 +30,8 @@ jobs:
         with:
           python-version: "3.14"
           enable-cache: true
+          # the interpreter is cached with the packages instead of downloaded by every run
+          cache-python: true
       - name: Install the backend
         working-directory: backend
         run: uv sync

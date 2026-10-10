@@ -164,3 +164,8 @@ pymdownx.superfences = {}
 pymdownx.tabbed.alternate_style = true
 pymdownx.tasklist.custom_checkbox = true
 pymdownx.tilde = {}
+
+# `docs/superpowers` holds the design documents and plans of coding agents,
+# gitignored and no pages
+[project.plugins.exclude]
+glob = ["superpowers/*"]

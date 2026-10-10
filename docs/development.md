@@ -52,9 +52,17 @@ The environment variable `SBML4HUMANS_VALIDATIONS` is the number of validations 
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every pull request (see [Branches and pull requests](#branches-and-pull-requests)):
 
 ```bash
-uv run pytest
+uv run pytest -n auto
 uv run ruff check . && uv run ruff format --check .
 uv run ty check
+```
+
+`-n auto` runs the tests in parallel on every core (pytest-xdist), every worker with a temporary directory of its own (`backend/tests/conftest.py`). A test of minutes, the report of the genome scale model Recon3D, is marked `slow`: it runs locally, continuous integration deselects it with `-m "not slow"` and lists the 15 slowest tests (`--durations=15`), so that a test which becomes slow is seen.
+
+Continuous integration tests Python 3.14 only. The other supported versions are tested locally before a pull request is opened, each in an isolated environment of its own:
+
+```bash
+for version in 3.12 3.13 3.15; do uv run --isolated --python "$version" pytest -n auto || break; done
 ```
 
 ## Frontend
@@ -82,7 +90,7 @@ npm run test:e2e
 
 Every build of the frontend fails when a JavaScript chunk is larger than 500 kB (`CHUNK_SIZE_LIMIT` of `frontend/chunkSizeLimit.ts`, a plugin of `vite.config.ts`), where vite itself only warns: the build of the `frontend` job of the CI is the check. A chunk which grows beyond it is split by the `codeSplitting` of `vite.config.ts` or by a lazy import, the way KaTeX and the renderer of the help dialog are.
 
-The end to end tests need the backend on port 1444, started with `SBML4HUMANS_ALLOW_PRIVATE_URLS=1`, as the CI does: the test of the url input serves its model on `127.0.0.1`, which the backend refuses to download otherwise. Never set the variable for a server which is reachable by others, it lets the backend download from every address of its network. The tests run against a production build of the frontend, which Playwright makes afresh for every run (`npm run build:e2e` with `frontend/.env.e2e`, into the git ignored `frontend/dist-e2e/`) and serves with `vite preview` on port 4173, so a development server on port 3456 can run next to them. Before the specs run, the backend builds the report of every example they open (`tests/e2e/globalSetup.ts`), and the specs run on half the cores.
+The end to end tests need the backend on port 1444, started with `SBML4HUMANS_ALLOW_PRIVATE_URLS=1`, as the CI does: the test of the url input serves its model on `127.0.0.1`, which the backend refuses to download otherwise. Never set the variable for a server which is reachable by others, it lets the backend download from every address of its network. The tests run against a production build of the frontend, which Playwright makes afresh for every run (`npm run build:e2e` with `frontend/.env.e2e`, into the git ignored `frontend/dist-e2e/`) and serves with `vite preview` on port 4173, so a development server on port 3456 can run next to them. Before the specs run, the backend builds the report of every example they open (`tests/e2e/globalSetup.ts`), and the specs run on half the cores. The walk over every example (`examples-walk.spec.ts`) takes minutes and is tagged `@slow`: `npm run test:e2e` runs it, continuous integration leaves it out with `--grep-invert @slow`, so it is run locally before a pull request is opened.
 
 ```bash
 cd backend && SBML4HUMANS_ALLOW_PRIVATE_URLS=1 uv run uvicorn sbml4humans.api:api --port 1444
@@ -168,7 +176,7 @@ A pull request can only be merged once the required checks are green:
 | `ty`       | `ty.yml`    | `ty check` of the backend                                                                   |
 | `docs`     | `docs.yml`  | the documentation site builds                                                               |
 
-The other supported Python versions, 3.12, 3.13 and 3.15, are tested for a release only: the job `versions` of `ci-cd.yml` runs `pytest` of the backend on each of them for the pull request of a branch `release/x.y.z`, for the tag and for a manual run (`workflow_dispatch`), and the GitHub release and the upload to PyPI wait for it. It is no required check, a pull request of any other branch skips it. `ty` checks against the lowest supported version, the `requires-python` of `backend/pyproject.toml`, and `ruff` targets it as well, so that code which needs a newer Python fails before a release.
+Continuous integration is kept small: every workflow cancels its running build when a newer commit of the same branch or pull request arrives, uv caches the packages and the interpreters, npm its packages and the e2e job the browser of Playwright between runs, and the backend is tested on Python 3.14 only, in parallel and without the tests marked `slow`. The other supported Python versions, 3.12, 3.13 and 3.15, and the `slow` tests are tested locally, see [Backend](#backend), before a pull request is opened. `ty` checks against the lowest supported version, the `requires-python` of `backend/pyproject.toml`, and `ruff` targets it as well, so that code which needs a newer Python fails before a release.
 
 Further rules of a pull request:
 
