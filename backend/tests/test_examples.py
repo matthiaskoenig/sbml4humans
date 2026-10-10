@@ -340,6 +340,9 @@ def test_comp_references_reach_elements() -> None:
     """
     named = resolved = across = 0
     for example in load_examples().values():
+        if "comp" not in example.packages and "OMEX" not in example.packages:
+            # without comp there is no reference, without an archive no other entry
+            continue
         response = report_for_example(example)
         for entry in response.reports.values():
             for emd in entry.report.external_model_definitions:

@@ -82,7 +82,17 @@ def _check_report(response: ReportResponse) -> None:
         assert not repeated, f"{location}: repeated edges {repeated}"
 
 
-@pytest.mark.parametrize("example", list(load_examples().values()), ids=lambda e: e.id)
+@pytest.mark.parametrize(
+    "example",
+    [
+        # the genome scale model takes minutes, see the `slow` marker in pyproject.toml
+        pytest.param(e, marks=pytest.mark.slow)
+        if e.file.name == "Recon3D.xml.gz"
+        else e
+        for e in load_examples().values()
+    ],
+    ids=lambda e: e.id,
+)
 def test_report_for_path(example: ExampleMetaData) -> None:
     """Report data, unique pks and a consistent link graph for every example."""
     assert example.file.is_file()

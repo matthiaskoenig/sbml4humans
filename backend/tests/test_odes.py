@@ -206,10 +206,12 @@ def test_concurrent_analyses_of_comp_models() -> None:
     runs in one thread at a time (`odes._ANALYSIS_LOCK`). The crash is a race: without the lock
     this test ends the session in about one run out of three, with it never.
     """
+    # the comp models and the archives which hold them; a biomodel is an archive
+    # without comp, which would only add reports without a flattening
     examples = [
         e
         for e in load_examples().values()
-        if e.file.suffix == ".omex" or "comp" in e.id.lower()
+        if "comp" in e.packages or "OMEX" in e.packages or "comp" in e.id.lower()
     ]
     assert examples
     with ThreadPoolExecutor(max_workers=16) as pool:

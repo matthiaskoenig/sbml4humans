@@ -61,6 +61,8 @@ Repository = "https://github.com/matthiaskoenig/sbml4humans"
 dev = [
     "bump-my-version>=1.5.1",
     "pytest>=9.1.1",
+    # the tests run in parallel in continuous integration, `pytest -n auto`
+    "pytest-xdist>=3.8.0",
     "ruff>=0.16.9",
     "ty>=0.0.84",
     "zensical>=0.0.67",
@@ -120,6 +122,9 @@ packages = ["sbml4humans"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+markers = [
+    "slow: a test of minutes, the report of the genome scale model Recon3D; runs locally, continuous integration deselects it with -m 'not slow'",
+]
 
 [tool.ruff]
 line-length = 88

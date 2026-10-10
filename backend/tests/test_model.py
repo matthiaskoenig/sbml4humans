@@ -273,7 +273,15 @@ def test_report_round_trip() -> None:
     assert Report.model_validate(data) == report
 
 
-@pytest.mark.parametrize("path", API_EXAMPLES_MODEL, ids=lambda path: path.name)
+@pytest.mark.parametrize(
+    "path",
+    [
+        # the genome scale model takes half a minute, see the `slow` marker in pyproject.toml
+        pytest.param(p, marks=pytest.mark.slow) if p.name == "Recon3D.xml.gz" else p
+        for p in API_EXAMPLES_MODEL
+    ],
+    ids=lambda path: path.name,
+)
 def test_examples_round_trip(path: Path) -> None:
     """Every example builds a report which survives the JSON round trip."""
     report = SBMLDocumentInfo.from_sbml(path)
