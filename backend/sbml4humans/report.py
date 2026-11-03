@@ -31,7 +31,7 @@ import tempfile
 import time
 import uuid
 import zipfile
-from collections.abc import Iterator
+from collections.abc import Generator, Iterator
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -153,7 +153,7 @@ class _Read:
 
 
 @contextmanager
-def _read(path: Path, trusted: bool) -> Iterator[_Read]:
+def _read(path: Path, trusted: bool) -> Generator[_Read]:
     """Read the SBML entries of a path and resolve them against each other.
 
     The archive of the path is extracted for the time of the context.

@@ -15,7 +15,7 @@ test can lower them; the child process of a validation reads its source with
 the limits of its server, which it gets as `ContentLimits`.
 """
 
-from collections.abc import Iterator
+from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass
 
@@ -68,7 +68,7 @@ class ContentLimits:
         )
 
     @contextmanager
-    def applied(self) -> Iterator[None]:
+    def applied(self) -> Generator[None]:
         """Set the limits of this module to these for the time of the context."""
         global MAX_CONTENT_SIZE, MAX_ARCHIVE_ENTRIES
         global MAX_COMPRESSION_RATIO, COMPRESSION_RATIO_MIN_SIZE

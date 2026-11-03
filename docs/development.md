@@ -33,7 +33,7 @@ The frontend answers on <http://localhost:8083>, the api on <http://localhost:14
 
 ## Backend
 
-The backend is the `sbml4humans` Python package in `backend/`, it supports Python 3.12 to 3.15, is developed on 3.14 (`backend/.python-version`) and needs [uv](https://docs.astral.sh/uv/). The report is created with libsbml, lxml (the math), pint (the units) and pymetadata (COMBINE archives and annotations); the example models are part of the package (`backend/sbml4humans/resources/`).
+The backend is the `sbml4humans` Python package in `backend/`, it supports Python 3.12 to 3.15, is developed on 3.14 (`backend/.python-version`) and needs [uv](https://docs.astral.sh/uv/) 0.13.7 or later. The report is created with libsbml, lxml (the math), pint (the units) and pymetadata (COMBINE archives and annotations); the example models are part of the package (`backend/sbml4humans/resources/`).
 
 ```bash
 cd backend
@@ -94,6 +94,28 @@ The end to end tests need the backend on port 1444, started with `SBML4HUMANS_AL
 
 ```bash
 cd backend && SBML4HUMANS_ALLOW_PRIVATE_URLS=1 uv run uvicorn sbml4humans.api:api --port 1444
+```
+
+## Dependency security
+
+Run the dependency audits from the repository root:
+
+```bash
+uv audit --project backend --locked
+npm audit --prefix frontend --package-lock-only
+```
+
+The Python audit covers runtime dependencies and every dependency group, including the `build` group which locks Hatchling and its dependencies. The npm audit covers both runtime and development dependencies. The `dependency security` workflow runs both on pushes, pull requests, and every Monday, so newly published advisories are checked even without a dependency change. Both audits fail on any reported vulnerability.
+
+The frontend overrides `minimatch` to version 11.0.4 or later and the `glob` dependency of `js-beautify` to version 14.0.3 or later. The upstream lint and test tools still request older major versions affected by [minimatch globparts amplification](https://github.com/advisories/GHSA-g3hv-75wg-m249) and [glob cancellation bypass](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4). Keep these overrides until their parents require patched releases; verify linting, type generation, and unit tests when changing them.
+
+The production proxy uses nginx 1.30.6, which includes the fixes listed in the [nginx security advisories](https://nginx.org/en/security_advisories.html), and the frontend container uses the supported Alpine 3.24 branch. The package audits above cover Python and npm dependencies; review container base images separately when updating dependencies.
+
+CI and the backend Docker image use uv 0.13.7 and install with `--locked`, so a stale lock fails the build. The package job installs the `build` group and builds without isolation to use the audited build dependencies:
+
+```bash
+uv sync --project backend --locked --only-group build
+uv build --project backend --no-build-isolation --out-dir dist
 ```
 
 ## Documentation

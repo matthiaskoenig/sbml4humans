@@ -10,7 +10,7 @@ import tempfile
 import threading
 import time
 import zipfile
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Generator, Iterable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
@@ -480,7 +480,7 @@ def test_report_documents_keep_the_first_of_a_location(
 
 
 @contextmanager
-def _validating(documents: ReportDocuments, location: str, uri: str) -> Iterator[None]:
+def _validating(documents: ReportDocuments, location: str, uri: str) -> Generator[None]:
     """The resolver answers as in the validation of the document at `location`."""
     token = validation._VALIDATION.set(validation._Validation(documents, location, uri))
     try:
@@ -793,7 +793,7 @@ def _gone(pid: int) -> bool:
 
 
 @contextmanager
-def _leaves_nothing(root: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
+def _leaves_nothing(root: Path, monkeypatch: pytest.MonkeyPatch) -> Generator[None]:
     """Check that the server and its children leave no temporary file behind.
 
     The temporary directory of the server is `root` within the context, which
@@ -1041,8 +1041,8 @@ def test_a_child_free_too_late_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
     semaphore = isolation._semaphore()
     semaphore.acquire()
     release = threading.Timer(1.5, semaphore.release)
-    release.start()
     start = time.perf_counter()
+    release.start()
     response = validation_for_path(EXAMPLES_DIR / "validation.xml")
     elapsed = time.perf_counter() - start
     release.join()
@@ -1056,7 +1056,7 @@ def test_a_child_free_too_late_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @contextmanager
-def _live_server() -> Iterator[int]:
+def _live_server() -> Generator[int]:
     """The api served by uvicorn on a free port of the loopback interface."""
     from sbml4humans.api import api
 

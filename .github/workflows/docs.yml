@@ -28,8 +28,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Install uv and set the python version
-        uses: astral-sh/setup-uv@v10.0.1
+        uses: astral-sh/setup-uv@v10.3.3
         with:
+          version: "0.13.7"
           python-version: "3.14"
           enable-cache: true
           # the interpreter is cached with the packages instead of downloaded by every run
@@ -37,7 +38,7 @@ jobs:
       - name: Install the backend
         # the dev group, which zensical is part of, is installed by default
         working-directory: backend
-        run: uv sync
+        run: uv sync --locked
       - name: Check that the generated reference is current
         run: uv run --project backend python -m sbml4humans.glossary --check
       - name: Check that the release notes page is current
