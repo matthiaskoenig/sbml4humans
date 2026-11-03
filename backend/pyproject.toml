@@ -81,7 +81,7 @@ required-version = ">=0.13.7"
 # follows it. Run from this directory: `uv run bump-my-version bump minor`.
 # No tag: the bump is merged into develop with squash or rebase, which rewrites
 # the commit, so the tag is created on develop after the merge (see docs/development.md)
-current_version = "0.12.2"
+current_version = "0.12.3"
 commit = true
 tag = false
 tag_name = "{new_version}"
