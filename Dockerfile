@@ -5,8 +5,14 @@
 # -------------------------------------------------------------------------------------
 FROM python:3.14-slim
 
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    UV_PYTHON_DOWNLOADS=never \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
 
 WORKDIR /code
 
@@ -19,7 +25,7 @@ RUN apt-get update \
 # and docker-compose-develop.yml mounts the repository over /code (read-only) so that the
 # container serves the working tree
 COPY ./backend /code/backend
-RUN pip install --no-cache-dir --upgrade -e /code/backend
+RUN uv sync --project /code/backend --locked --no-dev --no-cache
 
 # the server runs as an unprivileged user which cannot change the code. It writes only to its
 # home directory, the temporary directory, /uploads and /cache, the mount points of the volumes

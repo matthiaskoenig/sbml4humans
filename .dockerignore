@@ -2,7 +2,6 @@
 .git
 .venv
 backend/.venv
-backend/uv.lock
 frontend
 nginx
 **/__pycache__

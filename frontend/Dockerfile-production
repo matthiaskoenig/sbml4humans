@@ -11,7 +11,7 @@ ENV VITE_COMMIT=$VITE_COMMIT
 RUN npm run build
 
 # production stage: the static files are copied into the nginx volume
-FROM alpine:3.22 AS production-stage
+FROM alpine:3.24 AS production-stage
 RUN mkdir -p /vue
 COPY --from=build-stage /app/dist /vue
 

@@ -46,7 +46,7 @@ import logging
 import threading
 import traceback
 from collections import OrderedDict
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from datetime import datetime
 from functools import lru_cache
@@ -134,7 +134,7 @@ async def remove_expired_uploads(store: UploadStore) -> None:
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
     """Read the examples on startup, and delete the expired uploads while the api runs.
 
     The examples are read and the forkserver of the validations is started on

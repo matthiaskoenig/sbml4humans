@@ -31,7 +31,7 @@ of urls or another one which was registered before is gone.
 
 import bisect
 import logging
-from collections.abc import Iterator, Mapping
+from collections.abc import Generator, Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -316,7 +316,7 @@ def resolving_within(
     doc: libsbml.SBMLDocument,
     documents: ReportDocuments = _NO_DOCUMENTS,
     location: str = "",
-) -> Iterator[None]:
+) -> Generator[None]:
     """Confine the resolver of libsbml to the documents of a report.
 
     Within the context, libsbml resolves the source of an external model

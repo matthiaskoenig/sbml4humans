@@ -4,6 +4,7 @@ import os
 import shutil
 import tempfile
 from collections.abc import Iterator
+from multiprocessing.util import Finalize
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,10 +13,6 @@ from sbml4humans.api import api
 from sbml4humans.model import Report
 from sbml4humans.report import report_for_path
 from sbml4humans.resources import BIOMODELS_CURATED_PATH
-
-
-#: the temporary directory of this worker of pytest-xdist, see `pytest_configure`
-_WORKER_TMPDIR: str | None = None
 
 
 def pytest_configure(config: pytest.Config) -> None:
@@ -27,20 +24,22 @@ def pytest_configure(config: pytest.Config) -> None:
     directory is set in `TMPDIR`, which the forkserver and the children of the
     validation inherit, and is removed at the end of the session.
     """
-    global _WORKER_TMPDIR
     worker = os.environ.get("PYTEST_XDIST_WORKER")
     if worker is None:
         return
-    _WORKER_TMPDIR = tempfile.mkdtemp(prefix=f"sbml4humans_tests_{worker}_")
-    os.environ["TMPDIR"] = _WORKER_TMPDIR
+    worker_tmpdir = tempfile.mkdtemp(prefix=f"sbml4humans_tests_{worker}_")
+    os.environ["TMPDIR"] = worker_tmpdir
     # `gettempdir` caches the directory it found first
     tempfile.tempdir = None
-
-
-def pytest_unconfigure(config: pytest.Config) -> None:
-    """Remove the temporary directory of the worker."""
-    if _WORKER_TMPDIR is not None:
-        shutil.rmtree(_WORKER_TMPDIR, ignore_errors=True)
+    # multiprocessing removes its own directory at priority -100. Removing its
+    # parent in pytest_unconfigure races with that finalizer at process exit.
+    Finalize(
+        None,
+        shutil.rmtree,
+        args=(worker_tmpdir,),
+        kwargs={"ignore_errors": True},
+        exitpriority=-200,
+    )
 
 
 @pytest.fixture(scope="session")

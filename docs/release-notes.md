@@ -2,6 +2,26 @@
 
 What changed in every version of SBML4Humans, the newest first. The notes of a version are the text of its [release on GitHub](https://github.com/matthiaskoenig/sbml4humans/releases), where the source of that version is archived. The footer of the application names the version it runs.
 
+## 0.12.3
+
+This patch updates the dependencies and build tools, fixes known dependency vulnerabilities, and adds recurring security audits.
+
+### Security
+
+- update the Python dependency lock, including pymetadata 0.8.3, certifi 2026.10.23 and opentelemetry-api 1.45.2, fixing the compromised certificate authority trust and tracestate parsing advisories
+- update the frontend dependencies, including DOMPurify 3.4.17, Markdown-it 15.0.3, Vite 8.3.5 and Undici 8.12.3; override the older minimatch and glob versions requested by lint and test tools with patched releases
+- update the production proxy to nginx 1.30.6 and the frontend container to Alpine 3.24
+- audit the Python runtime, development and build dependencies and the npm runtime and development dependencies on pushes, pull requests and every Monday; both audits report zero known vulnerabilities at release preparation
+
+### Build and development
+
+- require uv 0.13.7, update the uv setup and PyPI publishing actions, and lock Hatchling 1.33.0 and its dependencies in a build group
+- install the backend container from the audited uv lock, with its virtual environment outside the read-only development bind mount, and fail CI installations on a stale lock
+- update sbmlode to 0.3.1, FastAPI to 0.162.0, Pydantic to 2.14.2, and the Python and frontend development tools
+- update context manager annotations for the newer type checker and scope the report model's discriminator override exceptions to that module
+- remove test shutdown cleanup errors by letting multiprocessing finish before deleting each worker's temporary directory, and fix the start time of a validation timing assertion
+- keep the regular CI run on Python 3.14 without the slow suites; check Python 3.12, 3.13 and 3.15 and the slow suites locally before releasing
+
 ## 0.12.2
 
 The python package supports Python 3.12, 3.13, 3.14 and 3.15.

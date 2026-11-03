@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.33.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -32,20 +32,20 @@ dependencies = [
     # pint formats the units, pymetadata handles combine archives and annotations,
     # sbmlode typesets the differential equations of a model
     "python-libsbml>=5.21.2",
-    "sbmlode>=0.2.0",
-    "lxml>=6.0.0",
-    "numpy>=2.2.2",
-    "pint>=0.26.1",
-    "pymetadata>=0.8.0",
-    "pydantic>=2.12",
+    "sbmlode>=0.3.1",
+    "lxml>=6.1.3",
+    "numpy>=2.5.4",
+    "pint>=0.26.2",
+    "pymetadata>=0.8.3",
+    "pydantic>=2.14.2",
     # the http api
-    "fastapi>=0.142.2",
+    "fastapi>=0.162.0",
     "uvicorn>=0.54.0",
-    "python-multipart>=0.0.32",
+    "python-multipart>=0.0.33",
     # downloading models from urls, and the client of the local server of `show`
     "httpx>=0.28.1",
     # the state file of the local server of `show`, in the cache directory of the user
-    "platformdirs>=4.4",
+    "platformdirs>=4.14.3",
     "httpcore>=1.0.9",
 ]
 
@@ -58,25 +58,30 @@ Documentation = "https://matthiaskoenig.github.io/sbml4humans/"
 Repository = "https://github.com/matthiaskoenig/sbml4humans"
 
 [dependency-groups]
+# Keep the isolated package build backend in the lock and the dependency audit.
+build = ["hatchling>=1.33.0"]
 dev = [
-    "bump-my-version>=1.5.1",
-    "pytest>=9.1.1",
+    "bump-my-version>=1.8.1",
+    "pytest>=9.2.0",
     # the tests run in parallel in continuous integration, `pytest -n auto`
     "pytest-xdist>=3.8.0",
-    "ruff>=0.16.9",
-    "ty>=0.0.84",
-    "zensical>=0.0.67",
+    "ruff>=0.17.3",
+    "ty>=0.0.96",
+    "zensical>=0.0.74",
 ]
 
 [tool.hatch.version]
 path = "sbml4humans/__init__.py"
+
+[tool.uv]
+required-version = ">=0.13.7"
 
 [tool.bumpversion]
 # the version of sbml4humans is the version of the backend package, the frontend
 # follows it. Run from this directory: `uv run bump-my-version bump minor`.
 # No tag: the bump is merged into develop with squash or rebase, which rewrites
 # the commit, so the tag is created on develop after the merge (see docs/development.md)
-current_version = "0.12.2"
+current_version = "0.12.3"
 commit = true
 tag = false
 tag_name = "{new_version}"
@@ -166,3 +171,12 @@ include = ["sbml4humans", "tests"]
 [tool.ty.terminal]
 # warnings are failures: keep the codebase free of any diagnostic
 error-on-warning = true
+
+[[tool.ty.overrides]]
+include = ["**/sbml4humans/model.py"]
+
+[tool.ty.overrides.rules]
+# Pydantic report subclasses narrow sbml_type to their JSON discriminator.
+# These fields are populated by validation, rather than written through SBase.
+invalid-mutable-override = "ignore"
+invalid-attribute-override = "ignore"

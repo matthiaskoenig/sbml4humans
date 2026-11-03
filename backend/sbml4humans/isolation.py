@@ -73,7 +73,7 @@ import tempfile
 import threading
 import time
 import traceback
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Generator, Iterable
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
@@ -216,7 +216,7 @@ def admission_capacity() -> int:
 
 
 @contextmanager
-def admission() -> Iterator[bool]:
+def admission() -> Generator[bool]:
     """Admit a validation if there is room for it, for the time of the context.
 
     Yields:
