@@ -795,7 +795,9 @@ def test_a_report_beyond_the_admission_is_busy(
     assert response.status_code == 200
     data = response.json()
     _check_error(data, info={})
-    assert "busy" in data["errors"][0]
+    assert data["errors"][0] == (
+        "The server is busy with other reports, try again in a moment."
+    )
     assert elapsed < 2.0
 
 
@@ -834,7 +836,10 @@ def test_a_report_which_crashes_is_an_error_body(
     assert response.status_code == 200
     data = response.json()
     _check_error(data, info={})
-    assert "ended unexpectedly" in data["errors"][0]
+    assert data["errors"][0] == (
+        "The document could not be reported: the process which read it ended "
+        "unexpectedly."
+    )
 
 
 def test_an_upload_whose_report_crashes_is_not_kept(

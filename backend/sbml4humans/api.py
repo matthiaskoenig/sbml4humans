@@ -99,6 +99,7 @@ from sbml4humans.report import (
 from sbml4humans.report import (
     OdeFile,
     ReportInterruptedError,
+    Work,
     ode_for_bytes,
     report_gzip_for_bytes,
     validation_for_bytes,
@@ -506,7 +507,12 @@ async def _cancel_on_disconnect(request: Request, cancel: threading.Event) -> No
     cancel.set()
 
 
-async def run_report[R](request: Request, function: Callable[..., R], *args: Any) -> R:
+async def run_report[R](
+    request: Request,
+    function: Callable[..., R],
+    *args: Any,
+    work: Work = "report",
+) -> R:
     """Build a report in a thread of the reports, if the server admits it.
 
     A report beyond the admission of `isolation.REPORT_BUDGET` is an error of
@@ -514,12 +520,14 @@ async def run_report[R](request: Request, function: Callable[..., R], *args: Any
     of its request, where a busy validation is one part of a page the frontend
     shows without it. A report whose client disconnects is busy as well, which
     nobody reads. The ODE file of a source is admitted as a report and shares
-    the budget of the reports, its child reads the same content.
+    the budget of the reports, its child reads the same content; it says `work`,
+    so that its client reads of the file it asked for and not of a report.
 
     Args:
         request: the request of the report, whose client is watched.
         function: what builds the report, which runs in a thread.
         args: the arguments of the function.
+        work: what the client asked for, of the error of a busy server.
 
     Returns:
         What the function built: the gzipped JSON of a `ReportResponse` or the
@@ -531,13 +539,13 @@ async def run_report[R](request: Request, function: Callable[..., R], *args: Any
     """
     with isolation.admission(isolation.REPORT_BUDGET) as admitted:
         if not admitted:
-            logger.warning("a report was refused, the server is busy")
-            raise ReportInterruptedError("busy")
+            logger.warning("the %s of a request was refused, the server is busy", work)
+            raise ReportInterruptedError("busy", work)
         try:
             return await _run_admitted(request, report_limiter(), function, *args)
         except isolation.IsolatedRunCancelledError as exc:
-            logger.info("a report was cancelled, its client disconnected")
-            raise ReportInterruptedError("busy") from exc
+            logger.info("the %s of a request was cancelled, its client left", work)
+            raise ReportInterruptedError("busy", work) from exc
 
 
 async def run_validation(
@@ -819,7 +827,9 @@ async def ode_of_file(
 ) -> Response:
     """The ODE system of an uploaded SBML file or COMBINE archive, as a file."""
     content = await source.read()
-    ode = await run_report(request, ode_for_bytes, content, format, location)
+    ode = await run_report(
+        request, ode_for_bytes, content, format, location, work="ode system"
+    )
     return ode_response(ode)
 
 
@@ -834,7 +844,9 @@ async def ode_of_url(
 
     The file is admitted before the download, a busy server downloads nothing.
     """
-    ode = await run_report(request, ode_of_download, url, format, location)
+    ode = await run_report(
+        request, ode_of_download, url, format, location, work="ode system"
+    )
     return ode_response(ode)
 
 
@@ -856,7 +868,9 @@ async def ode_of_content(
 ) -> Response:
     """The ODE system of the SBML content in the request body, as a file."""
     content = await request.body()
-    ode = await run_report(request, ode_for_bytes, content, format, location)
+    ode = await run_report(
+        request, ode_for_bytes, content, format, location, work="ode system"
+    )
     return ode_response(ode)
 
 
@@ -870,7 +884,9 @@ async def ode_of_upload(
 ) -> Response:
     """The ODE system of an upload, as a file."""
     content = await run_in_threadpool(store.get, upload_id)
-    ode = await run_report(request, ode_for_bytes, content, format, location)
+    ode = await run_report(
+        request, ode_for_bytes, content, format, location, work="ode system"
+    )
     return ode_response(ode)
 
 

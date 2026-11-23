@@ -929,6 +929,24 @@ def test_the_memory_of_an_interruption_reads_in_its_unit(
     assert reads in str(ReportInterruptedError("memory"))
 
 
+@pytest.mark.parametrize("interruption", ["timeout", "memory", "crashed", "busy"])
+def test_the_sentences_of_an_interruption_name_their_work(
+    interruption: isolation.Interruption,
+) -> None:
+    """Every sentence names the work its client asked for and never the other.
+
+    A client which asked for the ODE system of a document reads of that file,
+    not of a report it never asked for, and the other way around.
+    """
+    of_report = str(ReportInterruptedError(interruption, "report"))
+    of_ode = str(ReportInterruptedError(interruption, "ode system"))
+    assert "ODE" not in of_report
+    assert "report" not in of_ode
+    assert of_report != of_ode
+    # a report is the work of an error which names none
+    assert str(ReportInterruptedError(interruption)) == of_report
+
+
 def test_a_report_which_fails_logs_its_time(caplog: pytest.LogCaptureFixture) -> None:
     """The time of a report is logged also when it raised, which a reader wants most."""
     content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>'
@@ -952,9 +970,12 @@ def test_a_child_killed_while_it_sends_is_an_error(
 ) -> None:
     """A report of which the server got only a part is no report at all."""
     monkeypatch.setattr(report, "report_gzip", _killed_after_first_send)
-    with pytest.raises(ReportInterruptedError, match="ended unexpectedly") as raised:
+    with pytest.raises(
+        ReportInterruptedError, match="The document could not be reported"
+    ) as raised:
         report_gzip_for_bytes(b"<sbml/>")
     assert raised.value.interruption == "crashed"
+    assert raised.value.work == "report"
 
 
 def test_a_report_which_got_no_child_is_an_error(
@@ -967,7 +988,9 @@ def test_a_report_which_got_no_child_is_an_error(
     semaphore = isolation._semaphore(isolation.REPORT_BUDGET)
     semaphore.acquire()
     try:
-        with pytest.raises(ReportInterruptedError, match="busy") as raised:
+        with pytest.raises(
+            ReportInterruptedError, match="busy with other reports"
+        ) as raised:
             report_gzip_for_bytes((EXAMPLES_DIR / "annotation.xml").read_bytes())
     finally:
         semaphore.release()

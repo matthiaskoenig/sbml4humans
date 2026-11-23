@@ -238,14 +238,21 @@ def test_the_ode_file_of_an_example_forks_no_child(
 def test_an_ode_file_whose_child_crashes_is_an_error_body(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A document which ends the process which reads it is an error of its request."""
+    """A document which ends the process which reads it is an error of its request.
+
+    The sentence names the file the client asked for and no report.
+    """
     monkeypatch.setattr(report, "ode_source", _crashing_child)
     response = client.post(
         "/api/ode/content",
         params={"format": "latex"},
         content=REPRESSILATOR_SBML.read_bytes(),
     )
-    _check_error(response, "ended unexpectedly")
+    _check_error(
+        response,
+        "The document could not be written as an ODE system: the process which "
+        "read it ended unexpectedly.",
+    )
 
 
 def test_an_ode_file_which_times_out_is_an_error(
@@ -254,15 +261,23 @@ def test_an_ode_file_which_times_out_is_an_error(
     """A file beyond the timeout of the report budget is an error the client reads."""
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation.REPORT_BUDGET, "timeout", 1.0)
-    with pytest.raises(ReportInterruptedError, match="longer than") as raised:
+    with pytest.raises(
+        ReportInterruptedError,
+        match="The ODE system took longer than the 1 seconds an ODE system may take",
+    ) as raised:
         ode_for_bytes(slow_content, "latex")
     assert raised.value.interruption == "timeout"
+    assert raised.value.work == "ode system"
 
 
 def test_an_ode_file_beyond_the_admission_is_busy(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A download shares the admission of the reports, and is busy with them."""
+    """A download shares the admission of the reports, and is busy with them.
+
+    The sentence of a busy server names no report either: the server is busy
+    with the work of other requests, reports and downloads alike.
+    """
     monkeypatch.setattr(isolation.REPORT_BUDGET, "concurrency", 1)
     monkeypatch.setattr(isolation.REPORT_BUDGET, "waiting", 0)
     with isolation.admission(isolation.REPORT_BUDGET) as admitted:
@@ -272,7 +287,9 @@ def test_an_ode_file_beyond_the_admission_is_busy(
             params={"format": "latex"},
             content=REPRESSILATOR_SBML.read_bytes(),
         )
-    _check_error(response, "busy")
+    _check_error(
+        response, "The server is busy with other requests, try again in a moment."
+    )
 
 
 def test_an_ode_file_which_fails_logs_its_time(

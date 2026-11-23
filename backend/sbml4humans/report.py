@@ -44,7 +44,7 @@ from collections.abc import Generator, Iterator
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import libsbml
 import sbmlode
@@ -290,17 +290,39 @@ def report_gzip(job: ReportJob) -> Iterator[tuple[str, bytes]]:
     )
 
 
-# what a client reads of a report its child did not finish, one sentence each
-_INTERRUPTIONS: dict[isolation.Interruption, str] = {
-    "timeout": (
-        "The report took longer than the {seconds:.0f} seconds a report may take."
-    ),
-    "memory": "The report needed more memory than the {memory} a report may use.",
-    "crashed": (
-        "The document could not be reported: the process which read it ended "
-        "unexpectedly."
-    ),
-    "busy": "The server is busy with other reports, try again in a moment.",
+# the work of a request a child of `isolation.REPORT_BUDGET` does, of which a
+# client reads in the sentence of an interruption: the report of a source, or
+# its ODE system as a file to download. The names read in a log as well
+Work = Literal["report", "ode system"]
+
+# what a client reads of work its child did not finish, one sentence each, which
+# names the work the client asked for and never the other
+_INTERRUPTIONS: dict[Work, dict[isolation.Interruption, str]] = {
+    "report": {
+        "timeout": (
+            "The report took longer than the {seconds:.0f} seconds a report may take."
+        ),
+        "memory": "The report needed more memory than the {memory} a report may use.",
+        "crashed": (
+            "The document could not be reported: the process which read it ended "
+            "unexpectedly."
+        ),
+        "busy": "The server is busy with other reports, try again in a moment.",
+    },
+    "ode system": {
+        "timeout": (
+            "The ODE system took longer than the {seconds:.0f} seconds an ODE "
+            "system may take."
+        ),
+        "memory": (
+            "The ODE system needed more memory than the {memory} an ODE system may use."
+        ),
+        "crashed": (
+            "The document could not be written as an ODE system: the process "
+            "which read it ended unexpectedly."
+        ),
+        "busy": "The server is busy with other requests, try again in a moment.",
+    },
 }
 
 
@@ -322,24 +344,28 @@ def _memory_bound(memory: int) -> str:
 
 
 class ReportInterruptedError(Exception):
-    """Raised for a report the child process did not finish.
+    """Raised for work of the report budget the child process did not finish.
 
-    The sentence of an interruption names the report, also for the ODE file of
-    a source, which a child of the same budget writes.
+    The one error of the reports and of the ODE files, whose message is the
+    sentence of its interruption for the work the client asked for.
 
     Attributes:
-        interruption: why it did not, see `isolation.IsolatedRun`.
+        interruption: why the child did not finish, see `isolation.IsolatedRun`.
+        work: what it did not finish, the report of a source or its ODE system.
     """
 
-    def __init__(self, interruption: isolation.Interruption) -> None:
+    def __init__(
+        self, interruption: isolation.Interruption, work: Work = "report"
+    ) -> None:
         """Create the error of an interruption, whose sentence is its message."""
         super().__init__(
-            _INTERRUPTIONS[interruption].format(
+            _INTERRUPTIONS[work][interruption].format(
                 seconds=isolation.REPORT_BUDGET.timeout,
                 memory=_memory_bound(isolation.REPORT_BUDGET.memory),
             )
         )
         self.interruption = interruption
+        self.work = work
 
 
 def _log_isolated(
@@ -791,7 +817,7 @@ def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeF
         _log_isolated(f"ode system ({fmt})", len(content), start, run)
     if run.interruption is not None or not run.results:
         # a child which ended without its one result ended abnormally
-        raise ReportInterruptedError(run.interruption or "crashed")
+        raise ReportInterruptedError(run.interruption or "crashed", "ode system")
     return run.results[0][1]
 
 
