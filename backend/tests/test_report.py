@@ -1181,14 +1181,15 @@ def _report_gzip_unguarded(job: ReportJob) -> Iterator[tuple[str, bytes]]:
         pytest.param(
             partial(_call_chain_sbml, 200, 200), id="200 definitions called 200 deep"
         ),
-        # 3 MB of xml and no test of minutes: the child dies on the first
-        # element of the model it builds, so this shape costs the read of the
-        # document and the crash alone, as the three cheap ones above do. The
-        # terms are the levels of the recursion and the fewest which overflow
-        # the pinned stack of the child, measured: a sum of 40,000 terms is
-        # reported whole and one of 41,000 crashes libsbml, so 45,000 is the
-        # smallest round number of them which is a crash, not the cheapest
-        pytest.param(partial(_wide_sum_sbml, 45000), id="a sum of 45,000 terms"),
+        # no test of minutes: the child dies on the first element of the model
+        # it builds, so this shape costs the read of the document and the crash
+        # alone, as the three cheap ones above do. The terms are the levels of
+        # the recursion, and against the pinned stack of the child a sum of
+        # 40,000 of them is reported whole while one of 41,000 crashes libsbml,
+        # so the number is twice that threshold: a crash of the document and
+        # not of the version of libsbml which happens to recurse a little
+        # cheaper than the one it was measured against
+        pytest.param(partial(_wide_sum_sbml, 80000), id="a sum of 80,000 terms"),
     ],
 )
 def test_a_document_which_crashes_libsbml_is_an_error_and_the_server_lives(
