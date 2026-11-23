@@ -1,16 +1,30 @@
 """The downloads of the ODE system of a model, `/api/ode/...`."""
 
+import gzip
+import logging
+import os
+from collections.abc import Callable, Iterator
 from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
 
-from sbml4humans import api
-from sbml4humans.report import ode_for_path
+from sbml4humans import api, isolation, limits, report
+from sbml4humans.limits import ContentTooLargeError
+from sbml4humans.report import (
+    OdeFile,
+    ReportInterruptedError,
+    ode_for_bytes,
+    ode_for_path,
+)
 from sbml4humans.resources import EXAMPLES_DIR, OMEX_ICGMODEL, REPRESSILATOR_SBML
 
 
 EXAMPLE = "BIOMD0000000012"
+# the latex document of that model, which the example and the repressilator of
+# the endpoints of a request are both written as
+LATEX_FILE = f"{EXAMPLE}.tex"
+LATEX_CONTENT = r"\begin{document}"
 
 
 def _check_download(response: Any, filename: str, contains: str) -> None:
@@ -131,6 +145,23 @@ def test_ode_of_unsupported_model(client: TestClient) -> None:
     _check_error(response, "algebraic rule")
 
 
+def test_ode_of_a_model_beyond_the_expanded_size(
+    client: TestClient, fan_out_document: Callable[..., bytes]
+) -> None:
+    """A document whose comp submodels expand beyond the budget is an error.
+
+    The download flattens the model as the report does, so it is gated like
+    the report: the client reads why the equations were not built instead of
+    the sentence of a child which ran out of memory.
+    """
+    response = client.post(
+        "/api/ode/content",
+        params={"format": "python"},
+        content=fan_out_document(5),
+    )
+    _check_error(response, "expands by its comp submodels to 222,268 elements")
+
+
 def test_ode_routes_are_documented(client: TestClient) -> None:
     """The routes of the downloads are part of the schema of the api."""
     paths = client.get("/openapi.json").json()["paths"]
@@ -155,6 +186,149 @@ def test_ode_filename_is_readable_across_origins(client: TestClient) -> None:
         "content-disposition"
         in response.headers["access-control-expose-headers"].lower()
     )
+
+
+# -------------------------------------------------------------------------------------
+# the ODE file of an untrusted source, which a child process writes
+# -------------------------------------------------------------------------------------
+def _crashing_child(job: report.OdeJob) -> Iterator[tuple[str, OdeFile]]:
+    """End the child process before it writes the file, as a document of libsbml can.
+
+    `multiprocessing` pickles the function of a child by its name, so the child
+    imports this module and runs this replacement of `report.ode_source`.
+    """
+    os._exit(1)
+
+
+def test_the_ode_file_of_untrusted_content_runs_in_a_child(
+    spy_children: list[int],
+) -> None:
+    """Nothing of an untrusted source is read in the process of the server."""
+    ode = ode_for_bytes(REPRESSILATOR_SBML.read_bytes(), "latex")
+    assert LATEX_CONTENT in ode.content
+    assert ode.filename == LATEX_FILE
+    assert len(spy_children) == 1
+
+
+def test_every_ode_download_runs_in_a_child(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, spy_children: list[int]
+) -> None:
+    """Content, file, url and upload each write their file in a child process."""
+    content = REPRESSILATOR_SBML.read_bytes()
+
+    def download(url: str) -> bytes:
+        return content
+
+    monkeypatch.setattr(api, "download", download)
+    upload_id = client.post(
+        "/api/upload", files={"source": ("model.xml", content)}
+    ).json()["id"]
+    # the upload was reported by a child of its own before the store kept it
+    vetted = len(spy_children)
+    responses = [
+        client.post("/api/ode/content", params={"format": "latex"}, content=content),
+        client.post(
+            "/api/ode/file",
+            params={"format": "latex"},
+            files={"source": ("model.xml", content)},
+        ),
+        client.get(
+            "/api/ode/url",
+            params={"url": "https://example.org/model.xml", "format": "latex"},
+        ),
+        client.get(f"/api/ode/upload/{upload_id}", params={"format": "latex"}),
+    ]
+    for response in responses:
+        _check_download(response, LATEX_FILE, LATEX_CONTENT)
+    assert len(spy_children) == vetted + len(responses)
+
+
+def test_the_ode_file_of_an_example_forks_no_child(
+    client: TestClient, spy_children: list[int]
+) -> None:
+    """A trusted source pays nothing for the isolation of a request."""
+    response = client.get(f"/api/ode/examples/{EXAMPLE}", params={"format": "latex"})
+    _check_download(response, LATEX_FILE, LATEX_CONTENT)
+    assert spy_children == []
+
+
+def test_an_ode_file_whose_child_crashes_is_an_error_body(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A document which ends the process which reads it is an error of its request.
+
+    The sentence names the file the client asked for and no report.
+    """
+    monkeypatch.setattr(report, "ode_source", _crashing_child)
+    response = client.post(
+        "/api/ode/content",
+        params={"format": "latex"},
+        content=REPRESSILATOR_SBML.read_bytes(),
+    )
+    _check_error(
+        response,
+        "The document could not be written as an ODE system: the process which "
+        "read it ended unexpectedly.",
+    )
+
+
+def test_an_ode_file_which_times_out_is_an_error(
+    monkeypatch: pytest.MonkeyPatch, slow_content: bytes
+) -> None:
+    """A file beyond the timeout of the report budget is an error the client reads."""
+    monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "timeout", 1.0)
+    with pytest.raises(
+        ReportInterruptedError,
+        match="The ODE system took longer than the 1 seconds an ODE system may take",
+    ) as raised:
+        ode_for_bytes(slow_content, "latex")
+    assert raised.value.interruption == "timeout"
+    assert raised.value.work == "ode system"
+
+
+def test_an_ode_file_beyond_the_admission_is_busy(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A download shares the admission of the reports, and is busy with them.
+
+    The sentence of a busy server names no report either: the server is busy
+    with the work of other requests, reports and downloads alike.
+    """
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "waiting", 0)
+    with isolation.admission(isolation.REPORT_BUDGET) as admitted:
+        assert admitted
+        response = client.post(
+            "/api/ode/content",
+            params={"format": "latex"},
+            content=REPRESSILATOR_SBML.read_bytes(),
+        )
+    _check_error(
+        response, "The server is busy with other requests, try again in a moment."
+    )
+
+
+def test_an_ode_file_which_fails_logs_its_time(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The time of a file is logged also when it raised, which a reader wants most."""
+    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>'
+    with (
+        caplog.at_level(logging.INFO, logger="sbml4humans.report"),
+        pytest.raises(ValueError, match="No SBML model"),
+    ):
+        ode_for_bytes(content, "latex")
+    assert f"ode system (latex) of {len(content)} bytes in " in caplog.text
+
+
+def test_the_limits_of_the_server_reach_the_child_of_an_ode_file(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A child writes the file within the limits of its server, which it is given."""
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
+    with pytest.raises(ContentTooLargeError, match="1024 bytes"):
+        ode_for_bytes(gzip.compress(b" " * 4096), "latex")
 
 
 def test_code_is_the_ode_system_without_simulator() -> None:

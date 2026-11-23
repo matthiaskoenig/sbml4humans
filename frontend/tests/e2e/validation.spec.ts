@@ -1,46 +1,13 @@
 import { expect, type Page, test } from "@playwright/test";
 
-import { expectReport, openExample, query } from "./helpers";
+import { fanOut, openExample, paste, query } from "./helpers";
 
 const EXAMPLE = "validation (validation.xml)";
-
-/** A comp document whose main model expands to `n` submodels on each of `depth` levels. */
-function fanOut(depth: number, n: number): string {
-  const submodels = (ref: string) =>
-    "<comp:listOfSubmodels>" +
-    Array.from(
-      { length: n },
-      (_, i) => `<comp:submodel comp:id="s${i}" comp:modelRef="${ref}"/>`,
-    ).join("") +
-    "</comp:listOfSubmodels>";
-  const definitions = Array.from({ length: depth }, (_, k) =>
-    k === 0
-      ? '<comp:modelDefinition id="d0"/>'
-      : `<comp:modelDefinition id="d${k}">${submodels(`d${k - 1}`)}</comp:modelDefinition>`,
-  ).join("");
-  return (
-    '<?xml version="1.0" encoding="UTF-8"?>' +
-    '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" ' +
-    'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" ' +
-    'level="3" version="1" comp:required="true">' +
-    `<model id="m">${submodels(`d${depth - 1}`)}</model>` +
-    `<comp:listOfModelDefinitions>${definitions}</comp:listOfModelDefinitions></sbml>`
-  );
-}
 
 /** Wait until the validation, which is answered after the report, has arrived: its marks and
  * chips are complete only then, and an absent mark proves nothing before. */
 async function expectValidated(page: Page): Promise<void> {
   await expect(page.getByTestId("validation-pending")).toHaveCount(0, { timeout: 30_000 });
-}
-
-/** Paste SBML on the home page and wait for its report. */
-async function paste(page: Page, sbml: string): Promise<void> {
-  await page.goto("/");
-  await page.getByTestId("home-tab-paste").click();
-  await page.getByTestId("paste-input").fill(sbml);
-  await page.getByTestId("paste-submit").click();
-  await expectReport(page);
 }
 
 /** The text of the tooltip of an element, which hovering it shows. */

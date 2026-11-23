@@ -1,64 +1,73 @@
-"""The child processes which run the validation, bounded in time and memory.
+"""The child processes which run the work of a request, bounded in time and memory.
 
-The validation of libsbml of untrusted content is not bounded by the size of
-the content, so all of it, from reading the source on, runs in a child process
-of its own, one per request, which the server ends when it takes too long:
-after `VALIDATION_TIMEOUT` seconds from the call on, the wait for a free child
-included. The address space of a child is limited to `VALIDATION_MEMORY`
-bytes, and at most `MAX_CONCURRENT_VALIDATIONS` children run at a time.
+What libsbml does with untrusted content is not bounded by the size of the
+content, neither its validation nor its report, so all of that work, from
+reading the source on, runs in a child process of its own, one per request,
+which the server ends when it takes too long.
+
+Every kind of work has a `Budget` of its own, which holds what one of its
+children may take and how many of them run: `VALIDATION_BUDGET` (60 seconds,
+2 GiB of address space, `SBML4HUMANS_VALIDATIONS` children) and `REPORT_BUDGET`
+(180 seconds, 4 GiB, `SBML4HUMANS_REPORTS` children); without its variable a
+budget runs half the cpus the server may run on. A call of `run_isolated` is
+given the budget of the work it runs, and the children, the admission and the
+semaphore of a budget are counted by its name alone, so that one kind of work
+never starves the other.
 
 A child is a boundary of resources, not a sandbox: it bounds the time, the
-memory and the temporary files of a validation and keeps a crash of libsbml
-out of the server, but it runs as the user of the server, with its file
-system and its network. What a validation may read is confined by the code it
-runs (the resolver of the report in `validation.py`, the limits of the content
-in `limits.py`), not by the process.
+memory and the temporary files of one run and keeps a crash of libsbml out of
+the server, but it runs as the user of the server, with its file system and its
+network. What a run may read is confined by the code it runs (the resolver of
+the report in `validation.py`, the limits of the content in `limits.py`), not by
+the process.
 
-A server admits at most `MAX_CONCURRENT_VALIDATIONS + MAX_WAITING_VALIDATIONS`
-validations at a time (`admission`), a request beyond them is answered at once
-as `"busy"`, and so is one which got no child while at least `MIN_CHILD_TIME`
-of its timeout was left: a validation is `"timeout"` only when its child ran
-out of time.
+A server admits at most `budget.concurrency + budget.waiting` runs of a budget
+at a time (`admission`), a request beyond them is answered at once as `"busy"`,
+and so is one which got no child while at least `MIN_CHILD_TIME` of its timeout
+was left: a run is `"timeout"` only when its child ran out of time.
 
 The children are forked by the forkserver of `multiprocessing`, a process of
 its own which imported the report and the validation once and is single
 threaded (`forkserver.py` keeps the thread pool of numpy out of it), so that a
 child starts at once and small, without the threads of the server and with the
 resolver of the report installed in the registry of libsbml. A child
-gets the function it runs and its argument pickled, which is why the source
-goes to it as the path of a file and not as objects of libsbml, and sends
-every result back as soon as it has it, so that a timeout keeps the results
-before it. An exception of the function is sent back and raised by the server,
-with the traceback of the child as a note.
+gets the function it runs, its argument and its budget pickled, which is why
+the source goes to it as the path of a file and not as objects of libsbml, and
+sends every result back as soon as it has it, so that a timeout keeps the
+results before it. An exception of the function is sent back and raised by the
+server, with the traceback of the child as a note.
 
-A child which runs out of memory either raises `MemoryError` in python or is
-aborted by the `std::bad_alloc` libsbml does not catch, both end what is left
-of it as `"memory"`. The abort is told apart from one of another cause by what
-the C++ runtime writes to the standard error before it aborts: libstdc++ (and
-libc++) names the `std::bad_alloc` which ended the program. The child writes
-its standard error to a file of its temporary directory, which the server
-reads and logs after the child has ended. Any other abnormal end of a child, a
-signal (also the SIGKILL of the OOM killer of the kernel, which leaves no trace
-the server could read), another abort or an exit without its results, keeps
-the results the child sent before and ends what is left of it as
-`"crashed"`.
+A child which runs out of memory raises `MemoryError` in python, is aborted by
+the `std::bad_alloc` libsbml does not catch, or is ended by the C library
+itself, which cannot allocate the thread-local storage of a library it loads
+and exits with the code 127 and no signal; all three end what is left of it as
+`"memory"`. An abort and an exit are told apart from one of another cause by
+what the runtime wrote to the standard error before the end: libstdc++ (and
+libc++) names the `std::bad_alloc` which ended the program, glibc writes a
+fatal line of its loader (`_abnormal_end`, `_BAD_ALLOC` and `_OUT_OF_MEMORY`).
+The child writes its standard error to a file of its temporary directory,
+which the server reads and logs after the child has ended. Any other abnormal
+end of a child, a signal (also the SIGKILL of the OOM killer of the kernel,
+which leaves no trace the server could read), another abort or an exit without
+its results, keeps the results the child sent before and ends what is left of
+it as `"crashed"`.
 
 A child keeps its temporary files, the archive of the source extracted by
 pymetadata among them, in a temporary directory the server makes for it (also
-its `TMPDIR`, `TEMP` and `TMP`, for native libraries) and
-removes when it has ended, so that a child which was killed or aborted leaves
-nothing of the content on the server. The cpu time of a child is limited to
-twice the timeout, so that a child ends itself also when its server died
-without ending it.
+its `TMPDIR`, `TEMP` and `TMP`, for native libraries), names after the budget
+and removes when it has ended, so that a child which was killed or aborted
+leaves nothing of the content on the server. The cpu time of a child is limited
+to twice the timeout of its budget, so that a child ends itself also when its
+server died without ending it.
 
-A validation is cancelled when nobody waits for it any more, its client left
+A run is cancelled when nobody waits for it any more, its client left
 (`run_cancellable`): it stops waiting for a child, or its child is killed, at
 once, which frees the child, the admission and the temporary directory.
 
 The python interface runs the same server on the machine of the user: where
 there is no forkserver (Windows) a child is spawned, a fresh interpreter which
-imports the validation itself, and where the address space cannot be limited
-(Windows, macOS) the child runs without the memory limit.
+imports the code of the work itself, and where the address space cannot be
+limited (Windows, macOS) the child runs without the memory limit.
 """
 
 import faulthandler
@@ -84,19 +93,50 @@ from typing import Any, Literal
 
 logger = logging.getLogger(__name__)
 
-# the environment variable which sets the number of concurrent validations
-VALIDATIONS_VARIABLE = "SBML4HUMANS_VALIDATIONS"
+
+@dataclass
+class Budget:
+    """What one kind of isolated work may take, and how much of it runs at a time.
+
+    A budget is read when it applies and goes to the child as it is, so that a
+    test lowers one of its fields with `monkeypatch.setattr` and the child sees
+    the value of the server; it is therefore not frozen.
+
+    Attributes:
+        name: the kind of work, in the log, in the name of the temporary
+            directory of a child and as the key of its children and of its
+            admission, which it shares with no other budget.
+        timeout: the time one run may take from its call on, in seconds.
+        memory: the address space of one child, in bytes.
+        variable: the environment variable which sets `concurrency`.
+        concurrency: the children which run at a time.
+        waiting: the runs which may wait for a child, beyond them a request is
+            busy.
+    """
+
+    name: str
+    timeout: float
+    memory: int
+    variable: str
+    concurrency: int
+    waiting: int
 
 
-def _concurrent_validations() -> int:
-    """The children which validate at a time: the environment, else half the cpus.
+def budget_concurrency(variable: str) -> int:
+    """The children which run at a time: the environment, else half the cpus.
 
     `os.process_cpu_count` counts the cpus this process may run on, its cpu
     affinity: in a container all cpus of the host unless a cpuset restricts
-    them, a cpu quota does not change it. Each child may use up to
-    `VALIDATION_MEMORY`, so a server sets the number to what its memory allows.
+    them, a cpu quota does not change it. Each child may use up to the memory
+    of its budget, so a server sets the number to what its memory allows.
+
+    Args:
+        variable: the environment variable which holds the number.
+
+    Returns:
+        The number of children, one at least.
     """
-    value = os.environ.get(VALIDATIONS_VARIABLE, "")
+    value = os.environ.get(variable, "")
     if value.isdigit() and int(value) > 0:
         return int(value)
     return max(1, _process_cpu_count() // 2)
@@ -115,17 +155,47 @@ def _process_cpu_count() -> int:
     return os.cpu_count() or 1
 
 
-# the time a validation may take from its call on, in seconds
-VALIDATION_TIMEOUT = 60.0
-# the address space of a child process, in bytes
-VALIDATION_MEMORY = 2 * 1024**3
-# the children which validate at a time
-MAX_CONCURRENT_VALIDATIONS = _concurrent_validations()
-# the validations which may wait for a child, beyond them a request is busy
-MAX_WAITING_VALIDATIONS = 2 * MAX_CONCURRENT_VALIDATIONS
-# the time a child has at least, a validation which got a child later is busy
+def _budget(name: str, timeout: float, memory: int, variable: str) -> Budget:
+    """A budget whose concurrency is read from its variable.
+
+    Args:
+        name: the kind of work.
+        timeout: the time one run may take, in seconds.
+        memory: the address space of one child, in bytes.
+        variable: the environment variable which sets the concurrency.
+
+    Returns:
+        The budget, twice as many runs waiting for a child as children.
+    """
+    concurrency = budget_concurrency(variable)
+    return Budget(
+        name=name,
+        timeout=timeout,
+        memory=memory,
+        variable=variable,
+        concurrency=concurrency,
+        waiting=2 * concurrency,
+    )
+
+
+# the budget of the validation of libsbml of a source
+VALIDATION_BUDGET = _budget(
+    name="validation",
+    timeout=60.0,
+    memory=2 * 1024**3,
+    variable="SBML4HUMANS_VALIDATIONS",
+)
+# the budget of the report of an untrusted source, which takes more of both
+REPORT_BUDGET = _budget(
+    name="report",
+    timeout=180.0,
+    memory=4 * 1024**3,
+    variable="SBML4HUMANS_REPORTS",
+)
+
+# the time a child has at least, a run which got a child later is busy
 MIN_CHILD_TIME = 1.0
-# the interval in which a waiting validation looks whether it was cancelled, s
+# the interval in which a waiting run looks whether it was cancelled, s
 CANCEL_INTERVAL = 0.1
 
 Interruption = Literal["timeout", "memory", "busy", "crashed"]
@@ -149,17 +219,32 @@ _BAD_ALLOC = (
     "terminate called after throwing an instance of 'St9bad_alloc'",
     "uncaught exception of type std::bad_alloc",
 )
+# what the C library writes when it ends the child itself because it could not
+# allocate: the loader of glibc cannot place the thread-local storage of a
+# library the child loads and ends the process with the exit code 127 and no
+# signal (`_dl_fatal_printf` of `elf/dl-tls.c`), so an end for lack of memory
+# is not always an abort. It is a fatal message, a child which wrote it did not
+# go on, and the child of a report at its bound writes this one as often as it
+# is aborted by a `std::bad_alloc`
+_OUT_OF_MEMORY = ("cannot allocate memory for thread-local data",)
 
-# the cancellation of the validation of this thread, None where none can cancel
+# the cancellation of the isolated run of this thread, None where none can cancel
 _CANCEL: ContextVar[threading.Event | None] = ContextVar("cancel", default=None)
 
-_SEMAPHORES: dict[int, threading.BoundedSemaphore] = {}
+# The semaphore of the children of a budget, by its name and its concurrency. The
+# concurrency is part of the key because a `BoundedSemaphore` cannot be resized, so
+# a test which lowers it gets a semaphore of its own, and an entry is never dropped,
+# since a run which holds the old semaphore has to go on counting against it. This is
+# no cache: a server reads the concurrency of a budget once, at the import, so it
+# holds one entry per budget however long it runs.
+_SEMAPHORES: dict[tuple[str, int], threading.BoundedSemaphore] = {}
 _LOCK = threading.Lock()
-_admitted = 0
+# the runs a server admitted, by the name of their budget
+_admitted: dict[str, int] = {}
 
 
-class ValidationCancelledError(Exception):
-    """Raised by a validation which was cancelled, nobody waits for it any more."""
+class IsolatedRunCancelledError(Exception):
+    """Raised by an isolated run which was cancelled, nobody waits for it any more."""
 
 
 def run_cancellable[R](
@@ -168,7 +253,7 @@ def run_cancellable[R](
     """Run a function whose `run_isolated` ends as soon as `cancel` is set.
 
     Raises:
-        ValidationCancelledError: if `cancel` was set before the end.
+        IsolatedRunCancelledError: if `cancel` was set before the end.
     """
     token = _CANCEL.set(cancel)
     try:
@@ -177,16 +262,16 @@ def run_cancellable[R](
         _CANCEL.reset(token)
 
 
-def _check_cancelled() -> None:
-    """Raise if the validation of this thread was cancelled.
+def _check_cancelled(budget: Budget) -> None:
+    """Raise if the run of this thread was cancelled.
 
     Raises:
-        ValidationCancelledError: if it was.
+        IsolatedRunCancelledError: if it was.
     """
     cancel = _CANCEL.get()
     if cancel is not None and cancel.is_set():
-        logger.info("a validation was cancelled")
-        raise ValidationCancelledError
+        logger.info("a %s was cancelled", budget.name)
+        raise IsolatedRunCancelledError
 
 
 @dataclass
@@ -210,37 +295,39 @@ _MEMORY = "memory"
 _ERROR = "error"
 
 
-def admission_capacity() -> int:
-    """The validations a server admits at a time, running or waiting."""
-    return MAX_CONCURRENT_VALIDATIONS + MAX_WAITING_VALIDATIONS
+def admission_capacity(budget: Budget) -> int:
+    """The runs of a budget a server admits at a time, running or waiting."""
+    return budget.concurrency + budget.waiting
 
 
 @contextmanager
-def admission() -> Generator[bool]:
-    """Admit a validation if there is room for it, for the time of the context.
+def admission(budget: Budget) -> Generator[bool]:
+    """Admit a run of a budget if there is room for it, for the time of the context.
+
+    The runs of a budget are counted by its name, so that a budget full of work
+    never refuses the work of another.
 
     Yields:
-        Whether the validation was admitted; one which was not is busy.
+        Whether the run was admitted; one which was not is busy.
     """
-    global _admitted
     with _LOCK:
-        admitted = _admitted < admission_capacity()
+        admitted = _admitted.get(budget.name, 0) < admission_capacity(budget)
         if admitted:
-            _admitted += 1
+            _admitted[budget.name] = _admitted.get(budget.name, 0) + 1
     try:
         yield admitted
     finally:
         if admitted:
             with _LOCK:
-                _admitted -= 1
+                _admitted[budget.name] -= 1
 
 
 def start_forkserver() -> None:
     """Start the forkserver, if the children are forked by one.
 
     The forkserver imports the report and the validation once it runs, which
-    the first validation would otherwise wait for within its timeout. A
-    forkserver which runs already is kept.
+    the first child would otherwise wait for within its timeout. A forkserver
+    which runs already is kept.
     """
     if _CONTEXT.get_start_method() == "forkserver":
         from multiprocessing import forkserver
@@ -248,16 +335,16 @@ def start_forkserver() -> None:
         forkserver.ensure_running()
 
 
-def _semaphore() -> threading.BoundedSemaphore:
-    """The semaphore of `MAX_CONCURRENT_VALIDATIONS`, read when it is used."""
+def _semaphore(budget: Budget) -> threading.BoundedSemaphore:
+    """The semaphore of the children of a budget, read when it is used."""
     with _LOCK:
-        limit = MAX_CONCURRENT_VALIDATIONS
-        if limit not in _SEMAPHORES:
-            _SEMAPHORES[limit] = threading.BoundedSemaphore(limit)
-        return _SEMAPHORES[limit]
+        key = (budget.name, budget.concurrency)
+        if key not in _SEMAPHORES:
+            _SEMAPHORES[key] = threading.BoundedSemaphore(budget.concurrency)
+        return _SEMAPHORES[key]
 
 
-def _limit_memory(memory: int) -> Callable[[], None]:
+def _limit_memory(memory: int, name: str) -> Callable[[], None]:
     """Limit the address space of this process, return how to lift the limit.
 
     Only the soft limit is lowered, which the process may raise again up to the
@@ -271,7 +358,7 @@ def _limit_memory(memory: int) -> Callable[[], None]:
         soft = memory if hard == resource.RLIM_INFINITY else min(memory, hard)
         resource.setrlimit(resource.RLIMIT_AS, (soft, hard))
     except (ImportError, AttributeError, ValueError, OSError) as exc:
-        logger.warning("the memory of the validation is not limited: %s", exc)
+        logger.warning("the memory of the %s is not limited: %s", name, exc)
         return lambda: None
 
     def lift() -> None:
@@ -281,7 +368,7 @@ def _limit_memory(memory: int) -> Callable[[], None]:
     return lift
 
 
-def _limit_cpu(seconds: int) -> None:
+def _limit_cpu(seconds: int, name: str) -> None:
     """Limit the cpu time of this process, after which it is ended by SIGXCPU.
 
     Only the soft limit is lowered. Without a limit of the cpu time nothing is
@@ -295,14 +382,13 @@ def _limit_cpu(seconds: int) -> None:
         soft = seconds if hard == resource.RLIM_INFINITY else min(seconds, hard)
         resource.setrlimit(resource.RLIMIT_CPU, (soft, hard))
     except (ImportError, AttributeError, ValueError, OSError) as exc:
-        logger.warning("the cpu time of the validation is not limited: %s", exc)
+        logger.warning("the cpu time of the %s is not limited: %s", name, exc)
 
 
 def _child(
     function: Callable[[Any], Iterable[tuple[str, Any]]],
     argument: Any,
-    memory: int,
-    cpu: int,
+    budget: Budget,
     tempdir: str,
     connection: Connection,
 ) -> None:
@@ -310,10 +396,11 @@ def _child(
 
     The temporary files of the child go to `tempdir`, which the server
     removes: those of python by `tempfile` and those of native libraries by
-    the variables of the environment they read (`TMPDIR`, `TEMP`, `TMP`). The cpu time is limited to `cpu` seconds and the address space to
-    `memory`; when python runs out of memory, the limit is lifted again so that
-    the child can say so. Another exception is sent with its traceback. The
-    standard error goes to the file `_STDERR` of `tempdir`, which the server
+    the variables of the environment they read (`TMPDIR`, `TEMP`, `TMP`). The
+    cpu time is limited to twice the timeout of the budget and the address space
+    to its memory; when python runs out of memory, the limit is lifted again so
+    that the child can say so. Another exception is sent with its traceback.
+    The standard error goes to the file `_STDERR` of `tempdir`, which the server
     reads after the end of the child, together with the traceback of python
     `faulthandler` writes when the child ends by a fatal signal.
     """
@@ -331,8 +418,8 @@ def _child(
     tempfile.tempdir = tempdir
     for variable in ("TMPDIR", "TEMP", "TMP"):
         os.environ[variable] = tempdir
-    _limit_cpu(cpu)
-    lift = _limit_memory(memory)
+    _limit_cpu(math.ceil(2 * budget.timeout), budget.name)
+    lift = _limit_memory(budget.memory, budget.name)
     try:
         for result in function(argument):
             connection.send(result)
@@ -355,18 +442,18 @@ def _child(
 def _start(
     function: Callable[[Any], Iterable[tuple[str, Any]]],
     argument: Any,
+    budget: Budget,
     tempdir: str,
     connection: Connection,
 ) -> BaseProcess:
     """Start a child which runs the function and sends on the connection.
 
-    The limits of the child are read when it starts: `VALIDATION_MEMORY` and
-    twice `VALIDATION_TIMEOUT` of cpu time.
+    The budget goes to the child as it is, which reads the limits of the child
+    from it when it starts: its memory and twice its timeout of cpu time.
     """
-    cpu = math.ceil(2 * VALIDATION_TIMEOUT)
     process = _CONTEXT.Process(
         target=_child,
-        args=(function, argument, VALIDATION_MEMORY, cpu, tempdir, connection),
+        args=(function, argument, budget, tempdir, connection),
         daemon=True,
     )
     process.start()
@@ -376,6 +463,7 @@ def _start(
 def _run_child(
     function: Callable[[Any], Iterable[tuple[str, Any]]],
     argument: Any,
+    budget: Budget,
     deadline: float,
 ) -> IsolatedRun:
     """Run the function in a child until it is done or the deadline has passed.
@@ -385,9 +473,9 @@ def _run_child(
     """
     # the temporary directory of the child, which the server removes after the
     # child has ended, whether it ended by itself, was killed or aborted
-    tempdir = tempfile.mkdtemp(prefix="sbml4humans_validation_")
+    tempdir = tempfile.mkdtemp(prefix=f"sbml4humans_{budget.name}_")
     try:
-        return _communicate(function, argument, deadline, tempdir)
+        return _communicate(function, argument, budget, deadline, tempdir)
     finally:
         shutil.rmtree(tempdir, ignore_errors=True)
 
@@ -395,19 +483,20 @@ def _run_child(
 def _communicate(
     function: Callable[[Any], Iterable[tuple[str, Any]]],
     argument: Any,
+    budget: Budget,
     deadline: float,
     tempdir: str,
 ) -> IsolatedRun:
     """Start the child of `_run_child` and receive its results until it has ended.
 
     Raises:
-        ValidationCancelledError: if the validation was cancelled.
+        IsolatedRunCancelledError: if the run was cancelled.
         Exception: the exception the function raised in the child.
     """
     run = IsolatedRun()
     receiver, sender = _CONTEXT.Pipe(duplex=False)
     try:
-        process = _start(function, argument, tempdir, sender)
+        process = _start(function, argument, budget, tempdir, sender)
     except BaseException:
         receiver.close()
         raise
@@ -420,12 +509,12 @@ def _communicate(
         while True:
             remaining = deadline - time.monotonic()
             if remaining <= 0:
-                logger.warning("the validation was ended after its timeout")
+                logger.warning("the %s was ended after its timeout", budget.name)
                 run.interruption = "timeout"
                 break
             if not receiver.poll(min(remaining, CANCEL_INTERVAL)):
                 # the child is killed below
-                _check_cancelled()
+                _check_cancelled(budget)
                 continue
             try:
                 message = receiver.recv()
@@ -436,12 +525,12 @@ def _communicate(
             if message == _DONE:
                 break
             if message == _MEMORY:
-                logger.warning("the validation ran out of memory")
+                logger.warning("the %s ran out of memory", budget.name)
                 run.interruption = "memory"
                 break
             if message[0] == _ERROR:
                 _, exc, text = message
-                exc.add_note(f"in the child process of the validation:\n{text}")
+                exc.add_note(f"in the child process of the {budget.name}:\n{text}")
                 raise exc
             run.results.append(message)
     finally:
@@ -454,10 +543,12 @@ def _communicate(
             # the end of it, its control characters escaped, so that the child
             # cannot write lines of its own into the log
             logger.warning(
-                "the child of the validation wrote: %r", written[-_STDERR_LOGGED:]
+                "the child of the %s wrote: %r",
+                budget.name,
+                written[-_STDERR_LOGGED:],
             )
     if ended:
-        run.interruption = _abnormal_end(process.exitcode, written)
+        run.interruption = _abnormal_end(process.exitcode, written, budget.name)
     return run
 
 
@@ -472,60 +563,97 @@ def _written(tempdir: str) -> str:
         return ""
 
 
-def _abnormal_end(exitcode: int | None, written: str) -> Interruption:
+def _end_of(exitcode: int | None) -> str:
+    """How a child ended, as its log reads: a signal, an exit code or neither.
+
+    `multiprocessing` reports the signal which killed a child as the negative
+    of its number, so a log which calls that an exit code says "exit code -6"
+    for an abort.
+
+    Args:
+        exitcode: the `exitcode` of the child process, None where it has none.
+
+    Returns:
+        The signal with its name, the exit code, or that there was neither.
+    """
+    if exitcode is None:
+        return "no exit code"
+    if exitcode >= 0:
+        return f"exit code {exitcode}"
+    number = -exitcode
+    try:
+        return f"signal {number} {signal.Signals(number).name}"
+    except ValueError:
+        # a number which is no signal of this platform, which no child sends
+        return f"signal {number}"
+
+
+def _abnormal_end(exitcode: int | None, written: str, name: str) -> Interruption:
     """Why a child ended without its results: `"memory"` or `"crashed"`.
 
-    An abort is for lack of memory when the C++ runtime wrote that a
-    `std::bad_alloc` ended the child, every other end is `"crashed"`.
+    An end is for lack of memory where the C++ runtime aborted the child with
+    an uncaught `std::bad_alloc` (`_BAD_ALLOC`), and where the C library wrote
+    that it could not allocate and ended the child itself (`_OUT_OF_MEMORY`),
+    which comes with an exit code and not with a signal. Every other end,
+    another signal, another abort or an exit without the results, is
+    `"crashed"`.
     """
-    if exitcode == -signal.SIGABRT and any(text in written for text in _BAD_ALLOC):
-        logger.warning("the validation was aborted, out of memory")
+    aborted = exitcode == -signal.SIGABRT and any(
+        text in written for text in _BAD_ALLOC
+    )
+    if aborted or any(text in written for text in _OUT_OF_MEMORY):
+        logger.warning("the %s ran out of memory (%s)", name, _end_of(exitcode))
         return "memory"
-    logger.warning("the validation ended unexpectedly (exit code %s)", exitcode)
+    logger.warning("the %s ended unexpectedly (%s)", name, _end_of(exitcode))
     return "crashed"
 
 
 def run_isolated(
-    function: Callable[[Any], Iterable[tuple[str, Any]]], argument: Any
+    function: Callable[[Any], Iterable[tuple[str, Any]]],
+    argument: Any,
+    budget: Budget,
 ) -> IsolatedRun:
     """Run a function in a child process, bounded in time, memory and number.
 
-    The function yields its results as pairs of a key and a value; it and its
-    argument are pickled, so the function is one of a module the child imports.
-    The time counts from the call on, the wait for a free child included; a
-    call which gets no child before less than `MIN_CHILD_TIME` of its timeout
-    is left is busy, without a child.
+    The function yields its results as pairs of a key and a value; it, its
+    argument and the budget are pickled, so the function is one of a module the
+    child imports. The time counts from the call on, the wait for a free child
+    included; a call which gets no child before less than `MIN_CHILD_TIME` of
+    its timeout is left is busy, without a child.
 
     Args:
         function: what the child runs.
         argument: the argument of the function.
+        budget: what the run may take and how many of its kind run at a time.
 
     Returns:
         The results the function yielded, and why it stopped early if it did.
 
     Raises:
-        ValidationCancelledError: if the validation was cancelled
+        IsolatedRunCancelledError: if the run was cancelled
             (`run_cancellable`), while it waited for a child or while its
             child ran, which is killed.
         Exception: the exception the function raised in the child.
     """
-    deadline = time.monotonic() + VALIDATION_TIMEOUT
-    _check_cancelled()
-    semaphore = _semaphore()
+    deadline = time.monotonic() + budget.timeout
+    _check_cancelled(budget)
+    semaphore = _semaphore(budget)
     while True:
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            logger.warning("no child was free for a validation before its timeout")
+            logger.warning("no child was free for a %s before its timeout", budget.name)
             return IsolatedRun(interruption="busy")
         if semaphore.acquire(timeout=min(remaining, CANCEL_INTERVAL)):
             break
-        _check_cancelled()
+        _check_cancelled(budget)
     if deadline - time.monotonic() < MIN_CHILD_TIME:
         # a child which got next to no time would only run out of it
         semaphore.release()
-        logger.warning("a child was free for a validation too late before its timeout")
+        logger.warning(
+            "a child was free for a %s too late before its timeout", budget.name
+        )
         return IsolatedRun(interruption="busy")
     try:
-        return _run_child(function, argument, deadline)
+        return _run_child(function, argument, budget, deadline)
     finally:
         semaphore.release()

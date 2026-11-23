@@ -144,6 +144,15 @@ async function requestFile(
       error instanceof Error ? error.message : null,
     );
   }
+  // the proxy answers a rate limit with a page of its own, which is not read
+  if (response.status === TOO_MANY_REQUESTS) {
+    throw new ApiError(
+      "The server answered with status 429: too many requests from this address, try again later",
+      null,
+      [],
+      response.status,
+    );
+  }
   const type = response.headers.get("Content-Type") ?? "";
   if (type.startsWith("application/json") || !response.ok) {
     let body: unknown = null;
