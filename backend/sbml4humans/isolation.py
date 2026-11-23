@@ -231,7 +231,12 @@ _OUT_OF_MEMORY = ("cannot allocate memory for thread-local data",)
 # the cancellation of the isolated run of this thread, None where none can cancel
 _CANCEL: ContextVar[threading.Event | None] = ContextVar("cancel", default=None)
 
-# the semaphore of the children of a budget, by its name and its concurrency
+# The semaphore of the children of a budget, by its name and its concurrency. The
+# concurrency is part of the key because a `BoundedSemaphore` cannot be resized, so
+# a test which lowers it gets a semaphore of its own, and an entry is never dropped,
+# since a run which holds the old semaphore has to go on counting against it. This is
+# no cache: a server reads the concurrency of a budget once, at the import, so it
+# holds one entry per budget however long it runs.
 _SEMAPHORES: dict[tuple[str, int], threading.BoundedSemaphore] = {}
 _LOCK = threading.Lock()
 # the runs a server admitted, by the name of their budget

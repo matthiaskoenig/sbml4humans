@@ -685,7 +685,14 @@ def test_a_report_is_answered_gzipped(client: TestClient) -> None:
 
 
 def test_a_client_without_gzip_reads_plain_json(client: TestClient) -> None:
-    """A client which does not accept gzip reads the JSON of the same report."""
+    """A client which does not accept gzip reads the JSON of the same report.
+
+    The plain response names `Accept-Encoding` in `Vary` as the gzipped one
+    does, which the identity responder of the gzip middleware adds to every
+    body of at least `GZIP_MINIMUM_SIZE` (the report of the repressilator is
+    far larger): without that header a caching proxy in front of the server
+    may hand the gzipped body of another client to one which cannot read it.
+    """
     content = REPRESSILATOR_SBML.read_bytes()
     plain = client.post(
         "/api/content", content=content, headers={"Accept-Encoding": "identity"}
@@ -695,6 +702,8 @@ def test_a_client_without_gzip_reads_plain_json(client: TestClient) -> None:
     )
     assert "content-encoding" not in plain.headers
     assert gzipped.headers["content-encoding"] == "gzip"
+    assert len(plain.content) > api.GZIP_MINIMUM_SIZE
+    assert "Accept-Encoding" in plain.headers["vary"].split(", ")
     assert ReportResponse.model_validate(plain.json()).reports
     # the expanded JSON is the one the gzipped bytes hold, which httpx expands
     assert _without_request(_strict_json(plain.content)) == _without_request(
