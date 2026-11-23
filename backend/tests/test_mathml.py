@@ -1,5 +1,7 @@
 """Tests of the math rendering."""
 
+import sys
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 
 import libsbml
@@ -211,7 +213,7 @@ def test_latex_in_threads() -> None:
     def render(_: int) -> list[str]:
         """Render all formulas without the cache of the results."""
         return [
-            mathml.cmathml_to_latex.__wrapped__(
+            mathml._convert_cmathml(
                 libsbml.writeMathMLToString(astnode).replace(
                     '<?xml version="1.0" encoding="UTF-8"?>', ""
                 )
@@ -363,3 +365,120 @@ def test_a_childless_lambda_is_found_at_the_bottom_of_a_deep_math() -> None:
     assert mathml.math_depth(astnode) == 2001
     assert mathml.unwritable_mathml(astnode) == "it holds a lambda without children"
     assert mathml.math_info(astnode, PK).latex is None
+
+
+# -------------------------------------------------------------------------------------
+# the cache of the latex, which is bounded in bytes
+# -------------------------------------------------------------------------------------
+def _entry_size(key: str, value: str) -> int:
+    """The bytes the cache counts for one entry."""
+    return sys.getsizeof(key) + sys.getsizeof(value)
+
+
+@pytest.fixture
+def latex_cache() -> Iterator[mathml._LatexCache]:
+    """The cache of the module, emptied before and after the test."""
+    mathml._latex_cache.clear()
+    yield mathml._latex_cache
+    mathml._latex_cache.clear()
+
+
+def test_the_latex_of_a_math_is_served_from_the_cache(
+    latex_cache: mathml._LatexCache, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The second conversion of one MathML converts nothing, it reads the cache."""
+    cmathml = (
+        "<math xmlns='http://www.w3.org/1998/Math/MathML'>"
+        "<apply><times/><ci>Vmax</ci><ci>S1</ci></apply></math>"
+    )
+    latex = mathml.cmathml_to_latex(cmathml)
+    assert r"\mathit{Vmax}" in latex
+    assert len(latex_cache) == 1
+    assert cmathml in latex_cache
+    assert latex_cache.nbytes == _entry_size(cmathml, latex)
+
+    def refuse(_: str) -> str:
+        """Fail where the cache should have answered."""
+        raise AssertionError("the math was converted a second time")
+
+    monkeypatch.setattr(mathml, "_convert_cmathml", refuse)
+    assert mathml.cmathml_to_latex(cmathml) == latex
+    assert len(latex_cache) == 1
+
+
+def test_the_cache_stays_under_its_bound_in_bytes() -> None:
+    """More than fits is kept as much as fits, counted in bytes."""
+    value = "x" * 1000
+    cap = 10 * _entry_size("k" * 1000, value)
+    cache = mathml._LatexCache(max_bytes=cap, max_entries=1000)
+    for n in range(100):
+        cache.put(f"{n:04d}" + "k" * 996, value)
+        assert cache.nbytes <= cap
+    assert len(cache) == 10
+    assert cache.nbytes <= cap
+
+
+def test_the_cache_stays_under_its_bound_in_entries() -> None:
+    """A flood of small maths is bounded by the number of entries."""
+    cache = mathml._LatexCache(max_bytes=32 * 1024 * 1024, max_entries=7)
+    for n in range(100):
+        cache.put(str(n), "a")
+    assert len(cache) == 7
+    assert [key in cache for key in ("92", "93", "99")] == [False, True, True]
+
+
+def test_the_cache_evicts_the_least_recently_used_entry() -> None:
+    """Reading an entry saves it, the one not read is the one which goes."""
+    value = "x" * 100
+    cache = mathml._LatexCache(max_bytes=3 * _entry_size("a", value), max_entries=100)
+    for key in ["a", "b", "c"]:
+        cache.put(key, value)
+    # "a" is the oldest, reading it makes "b" the least recently used
+    assert cache.get("a") == value
+    cache.put("d", value)
+    assert len(cache) == 3
+    assert [key in cache for key in ("a", "b", "c", "d")] == [True, False, True, True]
+
+
+def test_the_cache_keeps_no_entry_larger_than_itself() -> None:
+    """A math too large for the whole cache does not empty it either."""
+    value = "x" * 100
+    cache = mathml._LatexCache(max_bytes=4 * _entry_size("a", value), max_entries=100)
+    cache.put("a", value)
+    cache.put("b", "x" * 10_000)
+    assert len(cache) == 1
+    assert "a" in cache
+    assert "b" not in cache
+    assert cache.nbytes == _entry_size("a", value)
+
+
+def test_the_cache_replaces_an_entry_without_counting_it_twice() -> None:
+    """A key put again holds its new value alone, whatever the old one was."""
+    cache = mathml._LatexCache(max_bytes=32 * 1024, max_entries=100)
+    cache.put("a", "x" * 100)
+    cache.put("a", "y" * 10)
+    assert len(cache) == 1
+    assert cache.get("a") == "y" * 10
+    assert cache.nbytes == _entry_size("a", "y" * 10)
+
+
+def test_the_cache_is_used_by_threads_at_once() -> None:
+    """Every thread gets the same latex, whichever of them converted it.
+
+    The cache is the one structure the threads of the threadpool share, unlike
+    the stylesheets, which are compiled per thread.
+    """
+    cache = mathml._LatexCache(max_bytes=1024 * 1024, max_entries=1000)
+    keys = [f"math{n}" for n in range(200)]
+
+    def fill(_: int) -> list[str | None]:
+        """Put every key and read every key back."""
+        for key in keys:
+            cache.put(key, key.upper())
+        return [cache.get(key) for key in keys]
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        for values in executor.map(fill, range(16)):
+            assert values == [key.upper() for key in keys]
+    assert len(cache) == len(keys)
+    assert cache.nbytes == sum(_entry_size(key, key.upper()) for key in keys)

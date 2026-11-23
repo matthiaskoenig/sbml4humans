@@ -6,7 +6,10 @@ latex for a better rendering. The stylesheets live in `sbml4humans.resources`.
 
 Compiling a stylesheet costs about twenty times its application, so each is
 compiled once per thread: an `XSLT` object of lxml must not be shared between
-threads, and the api builds its reports in the threads of its threadpool.
+threads, and the api builds its reports in the threads of its threadpool. The
+latex of a math is the opposite case: one `_LatexCache` which every thread
+shares, so a math which repeats inside a document or between documents is
+converted once, with a lock around what it changes.
 
 Not every math can be typeset: libsbml cannot write the MathML of a node whose
 shape its writer does not expect, and lxml refuses a MathML document deeper
@@ -25,8 +28,9 @@ python of the backend, nothing else below `sbml4humans/` calls `getChild`.
 
 import logging
 import re
+import sys
 import threading
-from functools import lru_cache
+from collections import OrderedDict
 
 import libsbml
 import lxml.etree as ET  # ty: ignore[unresolved-import]
@@ -36,6 +40,17 @@ from sbml4humans.resources import XSLT_DIR
 
 
 logger = logging.getLogger(__name__)
+
+# what the latex of the maths converted so far may hold, the MathML of every
+# math it is keyed by included. A math is as large as the file it comes from
+# allows, and the MathML of a sum of 20,000 terms is about 800 kB of key next
+# to 300 kB of latex, so a bound in entries alone is no bound at all: a client
+# which sends document after document with a different large math in each would
+# keep every one of them for the life of the worker process. The number of
+# entries is bounded as well, so that a flood of small maths cannot grow the
+# bookkeeping of the cache without end
+MAX_LATEX_CACHE_BYTES = 32 * 1024 * 1024
+MAX_LATEX_CACHE_ENTRIES = 10000
 
 xslt_cmml2pmml = ET.parse(str(XSLT_DIR / "ctopff.xsl"))
 xslt_pmml2tex = ET.parse(str(XSLT_DIR / "xsltml" / "mmltex.xsl"))
@@ -51,6 +66,88 @@ class _Transforms(threading.local):
 
 
 _transforms = _Transforms()
+
+
+class _LatexCache:
+    """The latex of a math by its MathML, bounded in bytes and in entries.
+
+    The least recently used entry is evicted until the entries hold no more
+    than `max_bytes` of keys and values together and are no more than
+    `max_entries`. The size of a string is `sys.getsizeof`, the bytes of its
+    characters and the header of the object; the entry of the mapping which
+    holds it is some hundred bytes more, which the bound on the number of
+    entries keeps in hand.
+
+    One instance is shared by every thread which builds a report, so the lock
+    is held for every read as well: the order of the entries is what a read
+    changes.
+    """
+
+    def __init__(self, max_bytes: int, max_entries: int) -> None:
+        """A cache which keeps at most that many bytes in that many entries."""
+        self._max_bytes = max_bytes
+        self._max_entries = max_entries
+        self._entries: OrderedDict[str, str] = OrderedDict()
+        self._bytes = 0
+        self._lock = threading.Lock()
+
+    @staticmethod
+    def _size(key: str, value: str) -> int:
+        """The bytes of one entry: its key and its value."""
+        return sys.getsizeof(key) + sys.getsizeof(value)
+
+    def get(self, key: str) -> str | None:
+        """The latex of this MathML, None where the cache does not hold it."""
+        with self._lock:
+            value = self._entries.get(key)
+            if value is not None:
+                self._entries.move_to_end(key)
+            return value
+
+    def put(self, key: str, value: str) -> None:
+        """Keep the latex of this MathML, evict what no longer fits.
+
+        An entry which is larger than the whole cache is not kept, rather than
+        emptying the cache for one math nothing else fits next to.
+        """
+        size = self._size(key, value)
+        with self._lock:
+            if (held := self._entries.pop(key, None)) is not None:
+                self._bytes -= self._size(key, held)
+            if size > self._max_bytes:
+                return
+            self._entries[key] = value
+            self._bytes += size
+            while (
+                self._bytes > self._max_bytes or len(self._entries) > self._max_entries
+            ):
+                evicted, held = self._entries.popitem(last=False)
+                self._bytes -= self._size(evicted, held)
+
+    def clear(self) -> None:
+        """Forget every entry."""
+        with self._lock:
+            self._entries.clear()
+            self._bytes = 0
+
+    @property
+    def nbytes(self) -> int:
+        """The bytes the keys and the values of the entries hold."""
+        with self._lock:
+            return self._bytes
+
+    def __len__(self) -> int:
+        """The number of entries."""
+        with self._lock:
+            return len(self._entries)
+
+    def __contains__(self, key: str) -> bool:
+        """Whether the cache holds this MathML, without using the entry."""
+        with self._lock:
+            return key in self._entries
+
+
+_latex_cache = _LatexCache(MAX_LATEX_CACHE_BYTES, MAX_LATEX_CACHE_ENTRIES)
 
 # greek symbols rendered in latex, without the small lambda which marks
 # function definitions
@@ -140,8 +237,20 @@ def astnode_to_latex(astnode: libsbml.ASTNode) -> str:
     return cmathml_to_latex(cmml_str)
 
 
-@lru_cache(maxsize=10000)
 def cmathml_to_latex(cmml_str: str) -> str:
+    """Convert content MathML to latex, the result kept by `_LatexCache`.
+
+    A model repeats its maths, within a document and between the documents of
+    a request, and converting one is far more expensive than holding it.
+    """
+    latex = _latex_cache.get(cmml_str)
+    if latex is None:
+        latex = _convert_cmathml(cmml_str)
+        _latex_cache.put(cmml_str, latex)
+    return latex
+
+
+def _convert_cmathml(cmml_str: str) -> str:
     """Convert content MathML to latex with the xslt transformations."""
     cmml_dom = ET.fromstring(cmml_str)
     transforms = _transforms
