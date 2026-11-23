@@ -84,6 +84,21 @@ describe("the downloads of the ODE system", () => {
     await expect(getExampleOde("x", "python")).rejects.toThrow("algebraic rule");
   });
 
+  it("reads a rate limit of the proxy as too many requests, without its page", async () => {
+    // the download is limited per address like the report, and nginx answers it outside the contract
+    const response = new Response("<html><body>429 Too Many Requests</body></html>", {
+      status: 429,
+      headers: { "Content-Type": "text/html" },
+    });
+    const json = vi.spyOn(response, "json");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
+    const error = await getExampleOde("x", "python").catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ApiError);
+    expect((error as ApiError).status).toBe(429);
+    expect((error as ApiError).message).toMatch(/too many requests/i);
+    expect(json).not.toHaveBeenCalled();
+  });
+
   it("names a file without a name of its own after the model", async () => {
     vi.stubGlobal(
       "fetch",

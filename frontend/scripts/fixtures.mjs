@@ -45,8 +45,11 @@ function submodels(modelRef, n) {
 }
 
 /**
- * A main model of ten submodels on five levels, 3 KB which expand to more than 100,000
- * instances: beyond the budget of the validation, which skips it.
+ * A main model of ten submodels on five levels, 3 KB which expand to 222,268 elements:
+ * beyond the budget of the validation, which skips it, and beyond the flattening of the
+ * equations. `_fan_out` of `backend/tests/conftest.py` and `fanOut` of
+ * `tests/e2e/helpers.ts` build the same document byte for byte; a change here is a change
+ * of all three.
  */
 function fanOut() {
   const definitions = ['<comp:modelDefinition id="d0"/>'];

@@ -32,8 +32,9 @@ export async function paste(page: Page, sbml: string): Promise<void> {
 /** A comp document whose main model expands to `n` submodels on each of `depth` levels. Five
  * levels of ten expand 3 KB to 222,268 elements: more than the comp validator checks, and more
  * than the flattening of the equations fits in the memory of the backend. The document is the
- * one of `_fan_out` of `backend/tests/conftest.py`, down to the parameter of its main model, so
- * that both suites state the same number of elements. */
+ * one of `_fan_out` of `backend/tests/conftest.py` and of `fanOut` of `frontend/scripts/fixtures.mjs`,
+ * down to the parameter of its main model, so that every suite states the same number of
+ * elements. */
 export function fanOut(depth: number, n: number): string {
   const submodels = (ref: string) =>
     "<comp:listOfSubmodels>" +

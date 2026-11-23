@@ -25,7 +25,7 @@ A document which crashes libsbml now costs an error message instead of the servi
 
 ### Deployment
 - `SBML4HUMANS_REPORTS` is the number of reports a server builds at a time, 1 in production, and the ODE downloads of a request share those children; without the variable the backend builds as many reports at a time as half the cpus it may run on, and twice as many requests wait for their turn before one is answered as busy
-- a report child may use up to 4 GiB of memory, so a host pays 1 x 4 GiB for the reports on top of the 2 x 2 GiB of the validations and on top of the backend itself, about 8 GiB together: production builds one report at a time until the memory of its host is measured, the arithmetic is in `deploy.md` and in the comment of `docker-compose-production.yml`, read it before raising either number
+- a report child may use up to 4 GiB of memory, so a host pays 1 x 4 GiB for the reports on top of the 2 x 2 GiB of the validations, 8 GiB of children with the backend on top of them: production builds one report at a time until the memory of its host is measured, the arithmetic is in `deploy.md` and in the comment of `docker-compose-production.yml`, read it before raising either number
 - the proxy of sbml4humans.de limits the report requests of one address as it limits the validations, 2 open at a time and 20 a minute, so that one reader cannot hold every report of the server; `nginx/` is copied to the proxy by hand, so this limit reaches the site with that copy and not with the deploy of the containers
 
 ## 0.12.3
