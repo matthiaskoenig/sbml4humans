@@ -1111,6 +1111,11 @@ def test_the_budget_of_the_expanded_size_reaches_the_child(
 # -------------------------------------------------------------------------------------
 # the proof of the isolation: a crash of libsbml is an answer, not an outage
 # -------------------------------------------------------------------------------------
+# the stack the child of `_report_gzip_unguarded` reports within, the default of a
+# linux process; a login shell or a CI runner gives a process far more
+_UNGUARDED_CHILD_STACK = 8 * 1024**2
+
+
 def _derives_units_unguarded(
     self: sbmlinfo.SBMLDocumentInfo, model: libsbml.Model
 ) -> bool:
@@ -1136,12 +1141,33 @@ def _report_gzip_unguarded(job: ReportJob) -> Iterator[tuple[str, bytes]]:
     replacement of `report.report_gzip`, which lifts the guard where libsbml
     runs.
 
+    The stack of the child is pinned to `_UNGUARDED_CHILD_STACK` first, because
+    the depth at which the C++ recursion of libsbml overflows is a property of
+    the stack the process got and not of the document: a child which inherits
+    the stack of the machine crashes on the two shapes whose recursion is
+    deep but finite, a chain of 200 definitions called 200 deep and a sum of
+    45,000 terms, under the 8 MiB of a default linux process and reports them
+    whole under the 64 MiB of a CI runner, which the equations then answer with
+    a `RecursionError` of sbmlode in `ode_error`. Pinning the stack makes the
+    crash a property of the document again. Only the soft limit is lowered and
+    only where it is larger, so a machine with a smaller stack keeps it. The
+    child of a report of the server inherits the stack of its machine, which is
+    right: a larger stack means fewer crashes and not more.
+
     Args:
         job: the source and the limits it is read within.
 
     Yields:
         The one pair of `report.report_gzip`, for a document which survives.
     """
+    # there is no module `resource` on Windows, where this test is skipped
+    import resource
+
+    soft, hard = resource.getrlimit(resource.RLIMIT_STACK)
+    stack = _UNGUARDED_CHILD_STACK
+    if soft != resource.RLIM_INFINITY:
+        stack = min(stack, soft)
+    resource.setrlimit(resource.RLIMIT_STACK, (stack, hard))
     sbmlinfo.SBMLDocumentInfo._derives_units = _derives_units_unguarded
     yield from report.report_gzip(job)
 
@@ -1157,7 +1183,11 @@ def _report_gzip_unguarded(job: ReportJob) -> Iterator[tuple[str, bytes]]:
         ),
         # 3 MB of xml and no test of minutes: the child dies on the first
         # element of the model it builds, so this shape costs the read of the
-        # document and the crash alone, as the three cheap ones above do
+        # document and the crash alone, as the three cheap ones above do. The
+        # terms are the levels of the recursion and the fewest which overflow
+        # the pinned stack of the child, measured: a sum of 40,000 terms is
+        # reported whole and one of 41,000 crashes libsbml, so 45,000 is the
+        # smallest round number of them which is a crash, not the cheapest
         pytest.param(partial(_wide_sum_sbml, 45000), id="a sum of 45,000 terms"),
     ],
 )
