@@ -16,10 +16,11 @@ from pathlib import Path
 
 import libsbml
 import pytest
+from fastapi.testclient import TestClient
 from pydantic import BaseModel
 from pymetadata.omex import Omex
 
-from sbml4humans import isolation, limits, report
+from sbml4humans import isolation, limits, report, sbmlinfo
 from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
 from sbml4humans.limits import ContentTooLargeError
 from sbml4humans.model import EdgeKind, ReportResponse, ResolutionStatus, SBase
@@ -1023,3 +1024,116 @@ def test_a_trusted_path_is_reported_in_this_process(spy_children: list[int]) -> 
     """The examples and the files of the user are read without a child."""
     _check_report(report_for_path(EXAMPLES_DIR / "annotation.xml", trusted=True))
     assert spy_children == []
+
+
+# -------------------------------------------------------------------------------------
+# the proof of the isolation: a crash of libsbml is an answer, not an outage
+# -------------------------------------------------------------------------------------
+def _derives_units_unguarded(
+    self: sbmlinfo.SBMLDocumentInfo, model: libsbml.Model
+) -> bool:
+    """Ask libsbml for the derived units of every model, whatever its math is."""
+    return True
+
+
+def _report_gzip_unguarded(job: ReportJob) -> Iterator[tuple[str, bytes]]:
+    """Report a source in the child, with the guard of the unit inference lifted.
+
+    `SBMLDocumentInfo._derives_units` is the whole guard: it answers false for
+    a model one math of which costs more than `MAX_UNIT_INFERENCE_DEPTH` levels
+    of recursion, every call of a function definition expanded, and for one
+    whose function definitions hold a cycle. A guard which answers true is the
+    report as it was before the guard, which is what the isolation has to
+    survive.
+
+    It is lifted here and not in the server, because a child is forked from a
+    forkserver which imported `sbmlinfo` before any `monkeypatch` of the
+    server, so a patched attribute of the server never reaches the child and
+    the guard would hold inside it. `multiprocessing` pickles the function of a
+    child by its name, so the child imports this module and runs this
+    replacement of `report.report_gzip`, which lifts the guard where libsbml
+    runs.
+
+    Args:
+        job: the source and the limits it is read within.
+
+    Yields:
+        The one pair of `report.report_gzip`, for a document which survives.
+    """
+    sbmlinfo.SBMLDocumentInfo._derives_units = _derives_units_unguarded
+    yield from report.report_gzip(job)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
+@pytest.mark.parametrize(
+    "document",
+    [
+        pytest.param(_self_recursive_sbml, id="a definition which calls itself"),
+        pytest.param(_mutually_recursive_sbml, id="two definitions in a cycle"),
+        pytest.param(
+            partial(_call_chain_sbml, 200, 200), id="200 definitions called 200 deep"
+        ),
+        # 3 MB of xml and no test of minutes: the child dies on the first
+        # element of the model it builds, so this shape costs the read of the
+        # document and the crash alone, as the three cheap ones above do
+        pytest.param(partial(_wide_sum_sbml, 45000), id="a sum of 45,000 terms"),
+    ],
+)
+def test_a_document_which_crashes_libsbml_is_an_error_and_the_server_lives(
+    document: Callable[[], bytes],
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A document which ends the process of libsbml costs its one request.
+
+    Three times a document which libsbml read without a single error ended the
+    process which built its report (issues #127 and #130), and every guard
+    which keeps one of those shapes out of libsbml is narrow by construction:
+    it holds the shape which was measured and says nothing of the next one.
+    With the guard of the unit inference lifted inside the child, each of the
+    shapes of #130 crashes libsbml again, and the client reads the one sentence
+    of an interrupted report while the process which answered it reports the
+    next document. Without the child the crash ends the process which asked for
+    the report, this test process, with SIGSEGV, which no response can answer.
+    """
+    monkeypatch.setattr(report, "report_gzip", _report_gzip_unguarded)
+    with pytest.raises(ReportInterruptedError, match="ended unexpectedly") as raised:
+        report_gzip_for_bytes(document())
+    assert raised.value.interruption == "crashed"
+    assert raised.value.work == "report"
+    # the segmentation fault of libsbml is what ended the child, not an error of
+    # python and not a child which never ran
+    assert f"exit code -{signal.SIGSEGV}" in caplog.text
+    # this process lived: the next document is reported as every other one is,
+    # by a child of the report as the server gives it
+    monkeypatch.undo()
+    packed = report_gzip_for_bytes((EXAMPLES_DIR / "annotation.xml").read_bytes())
+    _check_report(ReportResponse.model_validate_json(gzip.decompress(packed)))
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
+def test_a_crash_of_libsbml_is_an_error_of_the_contract(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A client of the api reads a crash of libsbml as the error of its request.
+
+    The one sentence of the interruption, status 200 like every answer of the
+    contract, no warning and no traceback for a request which sets no
+    `api.TRACEBACK_STATE`, and the next request is answered with its report.
+    """
+    monkeypatch.setattr(report, "report_gzip", _report_gzip_unguarded)
+    response = client.post("/api/content", content=_self_recursive_sbml())
+    assert response.status_code == 200
+    data = response.json()
+    assert set(data) == {"errors", "warnings", "info"}
+    assert data["errors"] == [
+        "The document could not be reported: the process which read it ended "
+        "unexpectedly."
+    ]
+    assert data["warnings"] == []
+    assert data["info"] == {}
+    # the server lived: it answers the next request with the report of its document
+    monkeypatch.undo()
+    answer = client.post("/api/content", content=REPRESSILATOR_SBML.read_bytes())
+    assert answer.status_code == 200
+    _check_report(ReportResponse.model_validate(answer.json()))
