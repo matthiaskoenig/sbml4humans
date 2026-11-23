@@ -131,7 +131,7 @@ def astnode_to_latex(astnode: libsbml.ASTNode) -> str:
             The node is never handed to `writeMathMLToString`, which crashes
             the process rather than raising, so it is checked beforehand.
     """
-    if reason := unwritable_mathml(astnode):
+    if (reason := unwritable_mathml(astnode)) is not None:
         raise UnwritableMathError(
             f"libsbml cannot write the MathML of this math, {reason}"
         )

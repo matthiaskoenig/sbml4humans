@@ -140,6 +140,12 @@ def test_math_symbols_of_nested_lambda() -> None:
     assert mathml.math_symbols(astnode) == {"k"}
 
 
+def test_math_symbols_of_a_bound_variable_which_is_free_outside_its_lambda() -> None:
+    """A name a lambda binds is still a symbol where it occurs outside that lambda."""
+    astnode = libsbml.parseL3Formula("x + lambda(x, x * q)")
+    assert mathml.math_symbols(astnode) == {"q", "x"}
+
+
 @pytest.mark.parametrize(
     "formula, expected",
     [
