@@ -84,6 +84,9 @@ from sbml4humans.examples import (
 from sbml4humans.limits import ContentTooLargeError, format_size
 from sbml4humans.model import ReportResponse, ValidationResponse
 from sbml4humans.report import (
+    REPORT_GZIP_LEVEL as GZIP_LEVEL,
+)
+from sbml4humans.report import (
     OdeFile,
     ode_for_bytes,
     report_for_bytes,
@@ -99,9 +102,6 @@ TRACEBACK_STATE = "sbml4humans_traceback"
 
 # responses below this size are sent as they are, in bytes
 GZIP_MINIMUM_SIZE = 1000
-# a moderate level: the reports compress about 20 fold already at this level,
-# and a higher one costs time on every large report for a few percent
-GZIP_LEVEL = 5
 # the number of example reports kept gzipped, the largest (Recon3D) is 5 MB
 EXAMPLE_CACHE_SIZE = 32
 

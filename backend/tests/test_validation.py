@@ -564,29 +564,6 @@ def _fan_out(depth: int, n: int = 10) -> bytes:
     ).encode()
 
 
-def _wide(instances: int, species: int = 20) -> bytes:
-    """A main model of `instances` submodels of a definition of unitless species.
-
-    With 1,000 instances of 20 species the document has 52 KB, and the check of
-    its consistency takes more than 20 seconds and reports 41,043 issues.
-    """
-    definition = (
-        '<comp:modelDefinition id="d"><listOfCompartments>'
-        '<compartment id="c" constant="true"/></listOfCompartments><listOfSpecies>'
-        + "".join(
-            f'<species id="x{k}" compartment="c" initialAmount="1" '
-            'hasOnlySubstanceUnits="true" boundaryCondition="false" '
-            'constant="false"/>'
-            for k in range(species)
-        )
-        + "</listOfSpecies></comp:modelDefinition>"
-    )
-    return _COMP.format(
-        f'<model id="m">{_submodels("d", instances)}</model>'
-        f"<comp:listOfModelDefinitions>{definition}</comp:listOfModelDefinitions>"
-    ).encode()
-
-
 def _info(content: bytes) -> SBMLDocumentInfo:
     """The report of a document, without its link graph."""
     info = SBMLDocumentInfo(SBMLDocumentInfo.read(content.decode()))
@@ -646,9 +623,11 @@ def test_instantiated_elements_cut_a_cycle() -> None:
     assert _instantiated(info) == 2 * size_d
 
 
-def test_wide_instantiation_beyond_the_budget_is_skipped_at_once() -> None:
+def test_wide_instantiation_beyond_the_budget_is_skipped_at_once(
+    wide_document: Callable[..., bytes],
+) -> None:
     """The 52 KB document of 1,000 instances of 20 species is not validated."""
-    content = _wide(1000)
+    content = wide_document(1000)
     assert 50_000 < len(content) < 60_000
     assert _size(_info(content)) > MAX_EXPANDED_ELEMENTS
     start = time.perf_counter()
@@ -677,9 +656,11 @@ def test_read_errors_are_reported_without_validation() -> None:
     assert 20222 in {issue.rule for issue in entry.issues}
 
 
-def test_a_document_at_the_budget_is_validated(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_a_document_at_the_budget_is_validated(
+    monkeypatch: pytest.MonkeyPatch, wide_document: Callable[..., bytes]
+) -> None:
     """The budget is the largest expanded size which is validated."""
-    content = _wide(30)
+    content = wide_document(30)
     size = _size(_info(content))
     monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", size)
     entry = _entry(validation_for_bytes(content))
@@ -764,27 +745,6 @@ def test_validate_source_in_this_process() -> None:
 # -------------------------------------------------------------------------------------
 # the child process: timeout, memory and concurrency
 # -------------------------------------------------------------------------------------
-def _slow(monkeypatch: pytest.MonkeyPatch) -> bytes:
-    """A document whose validation takes more than 20 seconds, without the budget."""
-    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 10**9)
-    return _wide(1000)
-
-
-def _spy_children(monkeypatch: pytest.MonkeyPatch) -> list[int]:
-    """Record the pid of every child process the validation starts."""
-    pids: list[int] = []
-    start = isolation._start
-
-    def spy(*args: Any) -> Any:
-        process = start(*args)
-        assert process.pid is not None
-        pids.append(process.pid)
-        return process
-
-    monkeypatch.setattr(isolation, "_start", spy)
-    return pids
-
-
 def _gone(pid: int) -> bool:
     """Whether no process of the pid runs any more."""
     try:
@@ -851,7 +811,10 @@ def test_a_child_has_a_cpu_limit(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_timeout_terminates_the_child(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    slow_content: bytes,
+    spy_children: list[int],
 ) -> None:
     """A validation beyond the timeout is ended and every entry of it skipped.
 
@@ -861,13 +824,11 @@ def test_timeout_terminates_the_child(
     missing from the response, which on a loaded machine is every entry of the
     source, since the child is killed before it could name them.
     """
-    content = _slow(monkeypatch)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 1.0)
-    pids = _spy_children(monkeypatch)
     start = time.perf_counter()
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
-        response = validation_for_bytes(content)
+        response = validation_for_bytes(slow_content)
     elapsed = time.perf_counter() - start
     assert response.skipped == "timeout"
     # the one entry of the source, or none of it, and nothing else
@@ -877,20 +838,19 @@ def test_timeout_terminates_the_child(
         for entry in response.entries.values()
     )
     assert elapsed < 5.0
-    assert len(pids) == 1
-    assert _gone(pids[0])
+    assert len(spy_children) == 1
+    assert _gone(spy_children[0])
 
 
 def test_timeout_keeps_the_entries_validated_before(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, slow_content: bytes
 ) -> None:
     """The entries the child validated before the timeout keep their issues."""
-    content = _slow(monkeypatch)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 3.0)
     documents = {
         "a.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
-        "b.xml": content.decode(),
+        "b.xml": slow_content.decode(),
     }
     response = validation_for_path(_archive(tmp_path / "slow.omex", documents))
     assert response.entries["./a.xml"].skipped is None
@@ -953,7 +913,7 @@ def test_one_tiny_submodel_makes_a_large_document_expand() -> None:
 
 
 def test_memory_limit_skips_the_entry(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, spy_children: list[int]
 ) -> None:
     """A validation beyond the memory limit is skipped, the parent answers.
 
@@ -964,14 +924,13 @@ def test_memory_limit_skips_the_entry(
     # page it maps from now on fails
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "memory", 1024 * 1024)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 20.0)
-    pids = _spy_children(monkeypatch)
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
         response = validation_for_bytes(content)
     assert response.skipped == "memory"
     # the child may run out of memory before it read which entries there are
     for entry in response.entries.values():
         assert entry == EntryValidation(skipped="memory")
-    assert _gone(pids[0])
+    assert _gone(spy_children[0])
 
 
 def test_validation_within_the_memory_limit() -> None:
@@ -1020,11 +979,12 @@ def test_semaphore_bounds_the_children(
     assert [_entry(r).skipped for r in results] == [None, None]
 
 
-def test_waiting_beyond_the_timeout_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_waiting_beyond_the_timeout_is_busy(
+    monkeypatch: pytest.MonkeyPatch, spy_children: list[int]
+) -> None:
     """A request which gets no child before its timeout is busy, not slow."""
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 1.0)
-    pids = _spy_children(monkeypatch)
     # another request holds the one child
     semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
@@ -1037,15 +997,16 @@ def test_waiting_beyond_the_timeout_is_busy(monkeypatch: pytest.MonkeyPatch) -> 
     assert response.skipped == "busy"
     assert response.entries == {}
     assert 1.0 <= elapsed < 4.0
-    assert pids == []
+    assert spy_children == []
 
 
-def test_a_child_free_too_late_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_a_child_free_too_late_is_busy(
+    monkeypatch: pytest.MonkeyPatch, spy_children: list[int]
+) -> None:
     """A child which gets free shortly before the timeout is not started."""
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 2.0)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 1.0)
-    pids = _spy_children(monkeypatch)
     # another request holds the one child and frees it 1.5 s from now
     semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
@@ -1058,7 +1019,7 @@ def test_a_child_free_too_late_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
     assert response.skipped == "busy"
     assert response.entries == {}
     assert 1.5 <= elapsed < 4.0
-    assert pids == []
+    assert spy_children == []
     # the child is free again
     assert semaphore.acquire(timeout=0)
     semaphore.release()
@@ -1116,16 +1077,17 @@ def _until_gone(condition: Callable[[], bool], seconds: float) -> bool:
 
 
 def test_a_client_which_leaves_ends_its_validation(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    slow_content: bytes,
+    spy_children: list[int],
 ) -> None:
     """A client which disconnects mid-validation frees the child and the admission."""
-    content = _slow(monkeypatch)
-    pids = _spy_children(monkeypatch)
     # the server keeps its uploads in the temporary directory it started with
     with _live_server() as port, _leaves_nothing(tmp_path / "tmp", monkeypatch):
-        _post_and_leave(port, content, lambda: bool(pids))
+        _post_and_leave(port, slow_content, lambda: bool(spy_children))
         left = time.monotonic()
-        assert _until_gone(lambda: _gone(pids[0]), 3.0)
+        assert _until_gone(lambda: _gone(spy_children[0]), 3.0)
         assert _until_gone(lambda: _validations_admitted() == 0, 3.0)
         assert time.monotonic() - left < 3.0
         # the run directory of the child is gone with it
@@ -1133,11 +1095,10 @@ def test_a_client_which_leaves_ends_its_validation(
 
 
 def test_a_client_which_leaves_while_waiting_frees_its_admission(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, spy_children: list[int]
 ) -> None:
     """A validation waiting for a child ends when its client disconnects."""
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
-    pids = _spy_children(monkeypatch)
     content = (EXAMPLES_DIR / "validation.xml").read_bytes()
     # another request holds the one child
     semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
@@ -1148,7 +1109,7 @@ def test_a_client_which_leaves_while_waiting_frees_its_admission(
             assert _until_gone(lambda: _validations_admitted() == 0, 3.0)
     finally:
         semaphore.release()
-    assert pids == []
+    assert spy_children == []
 
 
 def test_a_document_without_a_model_is_an_error() -> None:

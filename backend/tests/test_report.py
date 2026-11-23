@@ -2,12 +2,14 @@
 
 import contextlib
 import gzip
+import os
+import signal
 import subprocess
 import sys
 import tempfile
 import zipfile
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from functools import partial
 from pathlib import Path
 
@@ -16,14 +18,22 @@ import pytest
 from pydantic import BaseModel
 from pymetadata.omex import Omex
 
-from sbml4humans import limits
+from sbml4humans import isolation, limits, report
 from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
 from sbml4humans.limits import ContentTooLargeError
 from sbml4humans.model import EdgeKind, ReportResponse, ResolutionStatus, SBase
-from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
+from sbml4humans.report import (
+    ReportInterruptedError,
+    ReportJob,
+    report_for_bytes,
+    report_for_path,
+    report_for_sbml,
+    report_gzip_for_bytes,
+)
 from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
     EXAMPLES_DIR,
+    FBC_RECON3D_SBML,
     OMEX_COMPMODELS,
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
@@ -851,3 +861,110 @@ def test_a_model_which_calls_a_function_definition_reports_its_derived_units() -
     (rule,) = model.list_of_rules
     assert rule.derived_units == "mol"
     assert len(model.list_of_function_definitions) == 50
+
+
+# -------------------------------------------------------------------------------------
+# the report of an untrusted source, which a child process builds
+# -------------------------------------------------------------------------------------
+def test_report_gzip_for_bytes_is_the_report_of_the_content() -> None:
+    """The gzipped json of the child is the report of the content."""
+    content = (EXAMPLES_DIR / "annotation.xml").read_bytes()
+    packed = report_gzip_for_bytes(content)
+    _check_report(ReportResponse.model_validate_json(gzip.decompress(packed)))
+
+
+def test_the_report_of_untrusted_content_runs_in_a_child(
+    spy_children: list[int],
+) -> None:
+    """Nothing of an untrusted source is read in the process of the server."""
+    report_gzip_for_bytes((EXAMPLES_DIR / "annotation.xml").read_bytes())
+    assert len(spy_children) == 1
+
+
+def test_a_report_which_times_out_is_an_error(
+    monkeypatch: pytest.MonkeyPatch, slow_content: bytes
+) -> None:
+    """A report beyond the timeout of its budget is an error the client reads."""
+    monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "timeout", 1.0)
+    with pytest.raises(ReportInterruptedError, match="longer than") as raised:
+        report_gzip_for_bytes(slow_content)
+    assert raised.value.interruption == "timeout"
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no resource limits on Windows")
+def test_a_report_beyond_the_memory_of_a_child_is_an_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A report beyond the memory of its budget is an error, not an outage.
+
+    The genome scale model needs far more than the lowered limit to be read,
+    so the child either raises `MemoryError` or is aborted by the
+    `std::bad_alloc` of libsbml, both of which the server answers.
+    """
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "memory", 256 * 1024**2)
+    with pytest.raises(ReportInterruptedError, match="more memory") as raised:
+        report_gzip_for_bytes(FBC_RECON3D_SBML.read_bytes())
+    assert raised.value.interruption == "memory"
+
+
+def _killed_after_first_send(job: ReportJob) -> Iterator[tuple[str, bytes]]:
+    """Send one result, then end the child by the signal of the OOM killer."""
+    yield report._REPORT, b""
+    os.kill(os.getpid(), signal.SIGKILL)
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
+def test_a_child_killed_while_it_sends_is_an_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A report of which the server got only a part is no report at all."""
+    monkeypatch.setattr(report, "report_gzip", _killed_after_first_send)
+    with pytest.raises(ReportInterruptedError, match="ended unexpectedly") as raised:
+        report_gzip_for_bytes(b"<sbml/>")
+    assert raised.value.interruption == "crashed"
+
+
+def test_a_report_which_got_no_child_is_an_error(
+    monkeypatch: pytest.MonkeyPatch, spy_children: list[int]
+) -> None:
+    """A server busy with other reports says so instead of waiting on."""
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "timeout", 1.0)
+    # another request holds the one child
+    semaphore = isolation._semaphore(isolation.REPORT_BUDGET)
+    semaphore.acquire()
+    try:
+        with pytest.raises(ReportInterruptedError, match="busy") as raised:
+            report_gzip_for_bytes((EXAMPLES_DIR / "annotation.xml").read_bytes())
+    finally:
+        semaphore.release()
+    assert raised.value.interruption == "busy"
+    assert spy_children == []
+
+
+def test_a_document_without_a_model_is_an_error_through_the_child() -> None:
+    """The error of the child is raised in the server, with its traceback."""
+    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>'
+    with pytest.raises(ValueError, match="No SBML model") as raised:
+        report_gzip_for_bytes(content)
+    assert any("child process" in note for note in raised.value.__notes__)
+
+
+def test_the_limits_of_the_server_reach_the_child(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A child reads the source within the limits of its server, which it is given.
+
+    A child of the forkserver does not see a `monkeypatch` of the server, so
+    the limits go to it in its job.
+    """
+    monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
+    with pytest.raises(ContentTooLargeError, match="1024 bytes"):
+        report_gzip_for_bytes(gzip.compress(b" " * 4096))
+
+
+def test_a_trusted_path_is_reported_in_this_process(spy_children: list[int]) -> None:
+    """The examples and the files of the user are read without a child."""
+    _check_report(report_for_path(EXAMPLES_DIR / "annotation.xml", trusted=True))
+    assert spy_children == []

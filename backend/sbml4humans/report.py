@@ -18,10 +18,17 @@ when the report is built. The content of a request is read within the limits of
 archive is checked for the number, the size and the compression of its entries
 before it is extracted.
 
+The report of a source which is not trusted is built in a child process
+(`report_gzip` run by `isolation.py`), which answers it as the gzipped JSON the
+server sends, so that a document which ends the process of libsbml is an error
+of one request and not an outage of the server. `report_for_path` builds the
+report in the process which calls it, for a trusted path: the examples and the
+file the user gave the local server of `show`.
+
 The validation of libsbml is not part of the report: `validation_for_path`
 reads the entries of a source the same way, without their link graph, and
-checks them, all of it in a child process (`isolation.py`), so that the report
-is answered as fast as it is built and its validation when it is finished.
+checks them, all of it in a child process as well, so that the report is
+answered as fast as it is built and its validation when it is finished.
 """
 
 import gzip
@@ -72,6 +79,10 @@ SBML_LOCATION = "./model.xml"
 GZIP_MAGIC = b"\x1f\x8b"
 # the bytes decompressed at a time
 CHUNK_SIZE = 1024 * 1024  # [byte]
+# the level the JSON of a report is gzipped at, by the child of a report and by
+# the api. A moderate level: the reports compress about 20 fold already at this
+# level, and a higher one costs time on every large report for a few percent
+REPORT_GZIP_LEVEL = 5
 
 
 class _Entry:
@@ -224,6 +235,128 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
         )
     reports = {location: entry.report_entry for location, entry in read.entries.items()}
     return ReportResponse(uid=read.uid, manifest=manifest, reports=reports)
+
+
+@dataclass(frozen=True)
+class ReportJob:
+    """What the child process of a report reports.
+
+    Attributes:
+        path: the file of the source, which the server keeps until the child
+            has ended.
+        trusted: as for `report_for_path`.
+        limits: the limits of `limits.py` an untrusted source is read within,
+            read by the server when the report is asked for.
+    """
+
+    path: str
+    trusted: bool
+    limits: limits.ContentLimits
+
+
+# the key of the one result of a report, the gzipped json of the whole of it
+_REPORT = "report"
+
+
+def report_gzip(job: ReportJob) -> Iterator[tuple[str, bytes]]:
+    """Report a source as gzipped JSON, what the child process runs.
+
+    The source is read as `report_for_path` reads it, with the same trust and
+    the same limits. The JSON is gzipped in the child, which keeps the largest
+    report in a few megabytes of the pipe to the server instead of a hundred.
+
+    Args:
+        job: the source and the limits it is read within.
+
+    Yields:
+        The one pair of the key of a report and the gzipped JSON of its
+        `ReportResponse`.
+
+    Raises:
+        ValueError: if no model could be read from an SBML entry.
+        ContentTooLargeError: if the content of an untrusted path exceeds the
+            limits.
+    """
+    with job.limits.applied():
+        response = report_for_path(Path(job.path), job.trusted)
+    yield (
+        _REPORT,
+        gzip.compress(
+            response.model_dump_json(by_alias=True).encode(),
+            compresslevel=REPORT_GZIP_LEVEL,
+        ),
+    )
+
+
+# what a client reads of a report its child did not finish, one sentence each
+_INTERRUPTIONS: dict[isolation.Interruption, str] = {
+    "timeout": (
+        "The report took longer than the {seconds:.0f} seconds a report may take."
+    ),
+    "memory": "The report needed more memory than the {gib:.0f} GiB a report may use.",
+    "crashed": (
+        "The document could not be reported: the process which read it ended "
+        "unexpectedly."
+    ),
+    "busy": "The server is busy with other reports, try again in a moment.",
+}
+
+
+class ReportInterruptedError(Exception):
+    """Raised for a report the child process did not finish.
+
+    Attributes:
+        interruption: why it did not, see `isolation.IsolatedRun`.
+    """
+
+    def __init__(self, interruption: isolation.Interruption) -> None:
+        """Create the error of an interruption, whose sentence is its message."""
+        super().__init__(
+            _INTERRUPTIONS[interruption].format(
+                seconds=isolation.REPORT_BUDGET.timeout,
+                gib=isolation.REPORT_BUDGET.memory / 1024**3,
+            )
+        )
+        self.interruption = interruption
+
+
+def report_gzip_for_bytes(content: bytes) -> bytes:
+    """Create the gzipped JSON of the reports of untrusted content.
+
+    The content is written to a temporary file like for `report_for_bytes`,
+    which is there until the child has ended, and reported in a child process
+    (`report_gzip` run by `isolation.run_isolated` with
+    `isolation.REPORT_BUDGET`), bounded in time and memory.
+
+    Args:
+        content: an SBML file, plain or gzipped, or a COMBINE archive.
+
+    Returns:
+        The gzipped JSON of the `ReportResponse`, at `REPORT_GZIP_LEVEL`.
+
+    Raises:
+        ReportInterruptedError: if the child did not finish the report.
+        ValueError: if no model could be read from an SBML entry.
+        ContentTooLargeError: if the content exceeds the limits.
+    """
+    start = time.perf_counter()
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        path = Path(tmp_dir) / "model"
+        path.write_bytes(content)
+        job = ReportJob(
+            path=str(path), trusted=False, limits=limits.ContentLimits.current()
+        )
+        run = isolation.run_isolated(report_gzip, job, isolation.REPORT_BUDGET)
+    logger.info(
+        "report of %s in %s s%s",
+        format_size(len(content)),
+        round(time.perf_counter() - start, 3),
+        f", {run.interruption}" if run.interruption else "",
+    )
+    if run.interruption is not None or not run.results:
+        # a child which ended without its one result ended abnormally
+        raise ReportInterruptedError(run.interruption or "crashed")
+    return run.results[0][1]
 
 
 @dataclass(frozen=True)
