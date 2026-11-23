@@ -49,6 +49,8 @@ The environment variable `SBML4HUMANS_CACHE` is the directory of the disk cache 
 
 The environment variable `SBML4HUMANS_VALIDATIONS` is the number of validations which run at a time, each in a child process of its own which may use up to 2 GiB of memory; without it half the cpus the backend may run on (`os.process_cpu_count()`, its cpu affinity: in a container all cpus of the host unless `--cpuset-cpus` restricts them, a cpu quota such as `--cpus` does not change it). Twice as many validations wait for a child, a further one is answered at once as busy. The numbers hold per server process, `uvicorn --workers N` multiplies them by N.
 
+The environment variable `SBML4HUMANS_REPORTS` is the same for the reports of a request, which are built in child processes of their own, with the ODE downloads of `/api/ode/`: the number which run at a time, each in a child which may run 180 seconds and use up to 4 GiB of memory; without it half the cpus the backend may run on, as for the validations. Twice as many reports wait for a child, a further one is answered at once with the error that the server is busy. The reports and the validations are counted apart, so that neither refuses the other, and the report of an example and every report of the local server of `sbml4humans.show` are built in the server process as before.
+
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every pull request (see [Branches and pull requests](#branches-and-pull-requests)):
 
 ```bash
