@@ -15,7 +15,7 @@ from pymetadata.omex import Omex
 from sbml4humans import limits
 from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
 from sbml4humans.limits import ContentTooLargeError
-from sbml4humans.model import ReportResponse, ResolutionStatus, SBase
+from sbml4humans.model import EdgeKind, ReportResponse, ResolutionStatus, SBase
 from sbml4humans.report import report_for_bytes, report_for_path, report_for_sbml
 from sbml4humans.resources import (
     BIOMODELS_CURATED_PATH,
@@ -531,12 +531,16 @@ def _nested_difference_sbml(depth: int) -> bytes:
     ).encode()
 
 
-@pytest.mark.parametrize(("depth", "has_latex"), [(10, True), (255, False)])
+@pytest.mark.parametrize(
+    ("depth", "has_latex"), [(10, True), (255, False), (1000, False)]
+)
 def test_a_math_too_deep_for_lxml_keeps_the_report(depth: int, has_latex: bool) -> None:
     """A math too deep to convert costs its latex alone, not the whole report.
 
     lxml refuses a document deeper than 256 elements, which the MathML of 255
-    nested applies is, and the report of the document used to fail with it.
+    nested applies is, and the report of the document used to fail with it. A
+    math 1,000 levels deep is past the recursion limit of python as well, so
+    the walks of `mathml.py` over the AST have to be iterative to answer it.
     """
     response = report_for_bytes(_nested_difference_sbml(depth))
     _check_report(response)
@@ -545,3 +549,50 @@ def test_a_math_too_deep_for_lxml_keeps_the_report(depth: int, has_latex: bool) 
     assert rule.math is not None
     assert rule.math.formula.startswith("a - (a - (a")
     assert (rule.math.latex is not None) == has_latex
+
+
+def _wide_sum_sbml(terms: int) -> bytes:
+    """A document whose one assignment rule is the flat sum of `terms` names.
+
+    The MathML reader of libsbml answers a right nested binary tree for a flat
+    sum, so this math is `terms` levels deep: the shape of a real model which
+    a recursive walk over the AST dies on, long before anything refuses the
+    math itself.
+    """
+    parameters = "".join(
+        f'<parameter id="x{k}" value="0" constant="false"/>' for k in range(terms)
+    )
+    cis = "".join(f"<ci> x{k} </ci>" for k in range(terms))
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfParameters>'
+        f'<parameter id="y" value="0" constant="false"/>{parameters}'
+        '</listOfParameters><listOfRules><assignmentRule variable="y">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"<apply><plus/>{cis}</apply></math></assignmentRule>"
+        "</listOfRules></model></sbml>"
+    ).encode()
+
+
+@pytest.mark.parametrize("terms", [800, 1200])
+def test_a_wide_sum_keeps_the_report_and_its_latex(terms: int) -> None:
+    """A sum of a few hundred terms is typeset, and every symbol is linked.
+
+    libsbml writes the nested tree of such a sum as the one flat `apply` it
+    was read from, so the MathML is shallow and the latex is produced; the
+    walks over the AST are what the depth of the tree used to break, at 499
+    levels, which lost the whole report of the document.
+    """
+    response = report_for_bytes(_wide_sum_sbml(terms))
+    _check_report(response)
+    (entry,) = response.reports.values()
+    (rule,) = entry.report.models[0].list_of_rules
+    assert rule.math is not None
+    assert rule.math.latex is not None
+    symbols = {
+        edge.target.split(":")[-1]
+        for edge in entry.report.link_graph.edges
+        if edge.source == rule.pk and edge.kind == EdgeKind.MATH
+    }
+    assert symbols == {f"x{k}" for k in range(terms)}
