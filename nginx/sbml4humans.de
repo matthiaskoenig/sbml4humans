@@ -16,6 +16,17 @@ error_log /var/www/logs/sbml4humans.de_error.log;
 limit_req_zone $binary_remote_addr zone=sbml4humans_validation_rate:10m rate=12r/m;
 limit_conn_zone $binary_remote_addr zone=sbml4humans_validation_open:10m;
 
+# The reports of one client, keyed by its address, as the validations: the backend admits three
+# reports at a time for everyone (`SBML4HUMANS_REPORTS` of docker-compose-production.yml, one
+# child and twice as many requests waiting for it, a running report may take 180 s), and the
+# report is what a reader comes for, so one client may have 2 report requests open at a time,
+# which leaves a place for every other reader, and start 20 a minute, a burst of 20 at once: one
+# page view is one report, the equations of a model are one download per format, six of them, and
+# a reader with a few tabs is normal. A request beyond is answered 429, which the frontend shows
+# as too many requests. Raise both numbers with `SBML4HUMANS_REPORTS`, never above its admission.
+limit_req_zone $binary_remote_addr zone=sbml4humans_report_rate:10m rate=20r/m;
+limit_conn_zone $binary_remote_addr zone=sbml4humans_report_open:10m;
+
 server {
     listen 80;
     listen [::]:80;
@@ -89,6 +100,22 @@ server {
         limit_req zone=sbml4humans_validation_rate burst=12 nodelay;
         limit_req_status 429;
         limit_conn sbml4humans_validation_open 2;
+        limit_conn_status 429;
+        proxy_pass http://192.168.0.132:8084;
+    }
+
+    # the reports of a request and the downloads of their differential equations, limited per
+    # client (the zones at the top): every endpoint which builds the report of a document a
+    # request brings, which the backend admits a few of at a time for everyone. The report of an
+    # example (`/api/examples/`) is not among them, it is built once in the server process and
+    # kept; the ODE download of an example is, it flattens and analyses the model of the example
+    # on every request, in the server process and behind the one lock of sbmlode. A location of a
+    # regular expression wins over a location of a prefix, and this one matches none of the paths
+    # of the locations above, so each of them keeps the requests it had.
+    location ~ ^/api/(file|url|content|upload|ode)(/|$) {
+        limit_req zone=sbml4humans_report_rate burst=20 nodelay;
+        limit_req_status 429;
+        limit_conn sbml4humans_report_open 2;
         limit_conn_status 429;
         proxy_pass http://192.168.0.132:8084;
     }
