@@ -2,6 +2,8 @@
 
 import contextlib
 import gzip
+import subprocess
+import sys
 import tempfile
 import zipfile
 from collections import Counter
@@ -24,6 +26,7 @@ from sbml4humans.resources import (
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
 )
+from sbml4humans.sbmlinfo import MAX_UNIT_INFERENCE_DEPTH
 
 
 # The report of a curated biomodel example is the one of its main SBML entry
@@ -596,3 +599,130 @@ def test_a_wide_sum_keeps_the_report_and_its_latex(terms: int) -> None:
         if edge.source == rule.pk and edge.kind == EdgeKind.MATH
     }
     assert symbols == {f"x{k}" for k in range(terms)}
+
+
+# -------------------------------------------------------------------------------------
+# a math too deep for the unit inference of libsbml costs the derived units
+# -------------------------------------------------------------------------------------
+def _deep_constraint_sbml(depth: int) -> bytes:
+    """A document whose one constraint compares a flat sum of that depth to zero.
+
+    The MathML reader of libsbml answers a right nested binary tree for a flat
+    sum, so the math of the constraint is `depth` levels deep: the comparison
+    and the `depth - 1` terms below it. Its xml stays shallow, so the latex of
+    the math is produced as it is for any other math, and the constraint is no
+    part of the ODE system, so the whole report is there except for what the
+    unit inference answers.
+    """
+    terms = "<ci> a </ci>" * (depth - 1)
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m" substanceUnits="mole" timeUnits="second" '
+        'extentUnits="mole" volumeUnits="litre"><listOfParameters>'
+        '<parameter id="a" value="1" constant="true" units="mole"/>'
+        '<parameter id="x" value="0" constant="false" units="mole"/>'
+        '</listOfParameters><listOfRules><assignmentRule variable="x">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<apply><times/><cn> 2 </cn><ci> a </ci></apply></math></assignmentRule>"
+        "</listOfRules><listOfConstraints><constraint>"
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"<apply><gt/><apply><plus/>{terms}</apply><cn> 0 </cn></apply>"
+        "</math></constraint></listOfConstraints></model></sbml>"
+    ).encode()
+
+
+@pytest.mark.parametrize(
+    ("depth", "derived"),
+    [(MAX_UNIT_INFERENCE_DEPTH, "mol"), (MAX_UNIT_INFERENCE_DEPTH + 1, None)],
+)
+def test_a_math_too_deep_for_the_unit_inference_keeps_the_report(
+    depth: int, derived: str | None
+) -> None:
+    """Past the bound the derived units are absent and nothing else changes.
+
+    The unit inference of libsbml recurses over the math of the whole model on
+    the first element of it which is asked for its derived units, and ends the
+    process with SIGSEGV about 40,200 levels deep (issue #130), which no error
+    response can answer. The report therefore does not ask for the derived
+    units of a model which carries a math deeper than the bound, and the
+    optional attribute stays absent for every element of it. At the bound they
+    are reported, so the guard is no blanket switch of the inference.
+    """
+    response = report_for_bytes(_deep_constraint_sbml(depth))
+    _check_report(response)
+    (entry,) = response.reports.values()
+    model = entry.report.models[0]
+    assert [p.derived_units for p in model.list_of_parameters] == [derived, derived]
+    (rule,) = model.list_of_rules
+    assert rule.derived_units == derived
+    # everything else of the report is there, whichever way the guard went
+    assert [p.id for p in model.list_of_parameters] == ["a", "x"]
+    assert rule.math is not None
+    assert rule.math.latex is not None
+    (constraint,) = model.list_of_constraints
+    assert constraint.math is not None
+    assert constraint.math.latex is not None
+    assert entry.report.ode_error is None
+    assert entry.report.ode_system is not None
+
+
+# the report of a document in a child process, which a crash of libsbml ends
+# with a signal instead of taking the test process down with it
+_REPORT_IN_A_CHILD = """
+import sys
+
+from sbml4humans.report import report_for_bytes
+
+with open(sys.argv[1], "rb") as f:
+    response = report_for_bytes(f.read())
+(entry,) = response.reports.values()
+model = entry.report.models[0]
+print(len(model.list_of_parameters), model.list_of_parameters[0].derived_units)
+"""
+
+
+@pytest.mark.slow
+def test_a_math_which_crashes_the_unit_inference_keeps_the_report(
+    tmp_path: Path,
+) -> None:
+    """The report of the model of issue #130 is answered, in a child process.
+
+    A model whose one assignment rule sums 45,000 parameters is 3 MB of xml,
+    well inside `MAX_CONTENT_SIZE`, and libsbml reads it without a single
+    error. Before the guard the first `getDerivedUnitDefinition()` of the
+    report overflowed the stack of libsbml and the process died with SIGSEGV,
+    which is why the report runs in a child here: a regression ends that child
+    with the signal rather than the test process.
+    """
+    terms = 45000
+    parameters = "".join(
+        f'<parameter id="p{k}" value="1" constant="true" units="mole"/>'
+        for k in range(terms)
+    )
+    cis = "".join(f"<ci> p{k} </ci>" for k in range(terms))
+    sbml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m"><listOfParameters>'
+        f'{parameters}<parameter id="x" value="0" constant="false"/>'
+        '</listOfParameters><listOfRules><assignmentRule variable="x">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"<apply><plus/>{cis}</apply></math></assignmentRule>"
+        "</listOfRules></model></sbml>"
+    ).encode()
+    source = tmp_path / "wide.xml"
+    source.write_bytes(sbml)
+    assert len(sbml) < limits.MAX_CONTENT_SIZE
+
+    child = subprocess.run(
+        [sys.executable, "-c", _REPORT_IN_A_CHILD, str(source)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert child.returncode == 0, (
+        f"the report of the document ended the child with {child.returncode}: "
+        f"{child.stderr[-2000:]}"
+    )
+    assert child.stdout.split() == [str(terms + 1), "None"]

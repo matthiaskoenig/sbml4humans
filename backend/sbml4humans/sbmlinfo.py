@@ -19,7 +19,7 @@ import libsbml
 from pymetadata.core.miriam import BQB, BQM
 
 from sbml4humans.links import build_link_graph
-from sbml4humans.mathml import math_info, math_symbols, math_units
+from sbml4humans.mathml import math_depth, math_info, math_symbols, math_units
 from sbml4humans.model import (
     AlgebraicRule,
     And,
@@ -144,6 +144,21 @@ OUTPUT_TRANSITION_EFFECTS: dict[int, str] = {
 # variable (core §4.8.2, §4.9.1), while two events may assign one variable
 KEYED_BY_TARGET_CLASSES = (libsbml.InitialAssignment, libsbml.Rule)
 
+# the greatest depth of a math of a model whose elements libsbml may be asked
+# for their derived units. Its unit inference recurses over the AST of every
+# math of the model, and the MathML reader of libsbml keeps no flat n-ary
+# operator but a right nested binary tree (`mathml.py`), so a sum of n terms is
+# a tree n levels deep: `getDerivedUnitDefinition()` then overflows the stack
+# and ends the process with SIGSEGV, which no error response can answer.
+# Measured by bisection with libsbml 5.21.2 on a thread with the 8 MiB stack
+# Linux gives by default: 40,156 levels answered, 40,312 crashed. The wall is
+# the stack of libsbml, so it moves with the build of libsbml and with the
+# stack of the thread which asks; 5,000 keeps a factor of eight below the
+# measured cliff and still a factor of two on a thread with a stack of 2 MiB,
+# and it is generous next to the 255 nested applies the latex of a math already
+# gives up at
+MAX_UNIT_INFERENCE_DEPTH = 5000
+
 
 def _identifier(sbase: libsbml.SBase) -> str | None:
     """The id of an element as the file carries it, None when it has none."""
@@ -244,6 +259,52 @@ def _attribute(sbase: Any, key: str) -> Any | None:
     return None
 
 
+def _unit_inference_maths(model: libsbml.Model) -> Iterable[libsbml.ASTNode]:
+    """Every math of a model which the unit inference of libsbml walks.
+
+    libsbml builds the units of a whole model at once, on the first element of
+    it which is asked for its derived units (`Model::populateListFormulaUnitsData`),
+    so the math of any of these elements decides whether any element of the
+    model may be asked at all.
+
+    Every element of the core which carries a math is one of them, each
+    measured on its own at a depth which crashes the inference: the body of a
+    function definition (walked where a math calls the function), an initial
+    assignment, a rule, a constraint, the kinetic law of a reaction, the
+    `stoichiometryMath` of a species reference of Level 2, and the trigger,
+    the delay, the priority and the assignments of an event. The maths a
+    package adds are none of them: the condition of a function term of qual
+    and the math of an uncertainty of distrib are unknown to the inference of
+    the core, and both were measured not to reach it.
+
+    The species references are walked for a document of Level 2 alone, the one
+    level which has a `stoichiometryMath` (core §4.13.3), since a model of
+    Level 3 brings as many of them as it has reactants and products and
+    building a python object for each of them is not free.
+    """
+    # `getMath` is declared by every class which carries one and by no base of
+    # them, so the elements are collected without a common type
+    carriers: list[Any] = [
+        *model.getListOfFunctionDefinitions(),
+        *model.getListOfInitialAssignments(),
+        *model.getListOfRules(),
+        *model.getListOfConstraints(),
+    ]
+    for reaction in model.getListOfReactions():
+        if reaction.isSetKineticLaw():
+            carriers.append(reaction.getKineticLaw())
+        if model.getLevel() == 2:
+            for sr in [*reaction.getListOfReactants(), *reaction.getListOfProducts()]:
+                if sr.isSetStoichiometryMath():
+                    carriers.append(sr.getStoichiometryMath())
+    for event in model.getListOfEvents():
+        for part in ["trigger", "delay", "priority"]:
+            if (child := _attribute(event, part)) is not None:
+                carriers.append(child)
+        carriers.extend(event.getListOfEventAssignments())
+    return (carrier.getMath() for carrier in carriers if carrier.isSetMath())
+
+
 class SBMLDocumentInfo:
     """Builds the `Report` of an `SBMLDocument`.
 
@@ -255,6 +316,9 @@ class SBMLDocumentInfo:
         units: the units the numbers of every math name, keyed the same way.
         elements: the number of elements of the report by the scope of their
             pk, which is the key of the model an element belongs to.
+        derives_units: whether libsbml may be asked for the derived units of
+            the elements of the model which is being built, decided per model
+            by `_derives_units`.
     """
 
     def __init__(self, doc: libsbml.SBMLDocument):
@@ -268,6 +332,7 @@ class SBMLDocumentInfo:
         )
         self.symbols: dict[str, set[str]] = {}
         self.units_of_math: dict[str, set[str]] = {}
+        self.derives_units = True
         self.scope = DOCUMENT_SCOPE
         # where every element of the report starts, for the issues of libsbml
         self.positions = ElementPositions(DOCUMENT_PK)
@@ -620,6 +685,43 @@ class SBMLDocumentInfo:
         """The latex rendering of a unit sid of the model."""
         return udef_to_string(sid, model) if sid else None
 
+    def derived_units(self, sbase: Any) -> str | None:
+        """The units libsbml derives for an element, rendered as latex.
+
+        None where the attribute is left out of the report, because the unit
+        inference of libsbml cannot be asked for this model (`_derives_units`),
+        and None as well where libsbml derives no units.
+        """
+        if not self.derives_units:
+            return None
+        return udef_to_string(sbase.getDerivedUnitDefinition())
+
+    def _derives_units(self, model: libsbml.Model) -> bool:
+        """Whether libsbml may be asked for the derived units of this model.
+
+        It may not where one math of the model is nested deeper than
+        `MAX_UNIT_INFERENCE_DEPTH`, which the unit inference of libsbml
+        recurses over until it overflows the stack and the process dies. It
+        builds the units of the whole model on the first question, whichever
+        element is asked, so the answer holds for every element of the model
+        and is decided before the first of them is built.
+        """
+        depth = max(
+            (math_depth(astnode) for astnode in _unit_inference_maths(model)),
+            default=0,
+        )
+        if depth <= MAX_UNIT_INFERENCE_DEPTH:
+            return True
+        logger.warning(
+            "The elements of the model %s are reported without their derived "
+            "units: one math of it is %s levels deep, more than the %s levels "
+            "the unit inference of libsbml survives",
+            self.scope,
+            depth,
+            MAX_UNIT_INFERENCE_DEPTH,
+        )
+        return False
+
     @staticmethod
     def conversion_factor(sbase: Any, model: libsbml.Model) -> ConversionFactor | None:
         """The conversion factor parameter of a model or species, if set."""
@@ -681,9 +783,14 @@ class SBMLDocumentInfo:
         The model of the document without an id or a metaId is keyed as the
         model, where the digest of its xml moved every primary key of it
         whenever any value of it changed. A model definition carries an id.
+
+        Whether libsbml may be asked for the derived units of the elements of
+        this model is decided here, before the first of them is built: the
+        inference walks the math of the whole model on the first question.
         """
         key = self._main_model_key() if kind == "model" else None
         self.scope = self._key(model, key)
+        self.derives_units = self._derives_units(model)
         fields = self.sbase(
             model, sbml_type="Model", key=key, lists=self._model_lists(model)
         )
@@ -821,7 +928,7 @@ class SBMLDocumentInfo:
             constant=_attribute(c, "constant"),
             units=units,
             units_latex=self.units(units, model),
-            derived_units=udef_to_string(c.getDerivedUnitDefinition()),
+            derived_units=self.derived_units(c),
         )
 
     def species(self, s: libsbml.Species, model: libsbml.Model) -> Species:
@@ -837,7 +944,7 @@ class SBMLDocumentInfo:
             boundary_condition=_attribute(s, "boundaryCondition"),
             constant=_attribute(s, "constant"),
             units_latex=self.units(substance_units, model),
-            derived_units=udef_to_string(s.getDerivedUnitDefinition()),
+            derived_units=self.derived_units(s),
             conversion_factor=self.conversion_factor(s, model),
             fbc=self.species_fbc(s),
         )
@@ -851,7 +958,7 @@ class SBMLDocumentInfo:
             constant=_attribute(p, "constant"),
             units=units,
             units_latex=self.units(units, model),
-            derived_units=udef_to_string(p.getDerivedUnitDefinition()),
+            derived_units=self.derived_units(p),
         )
 
     def initial_assignment(self, ia: libsbml.InitialAssignment) -> InitialAssignment:
@@ -861,7 +968,7 @@ class SBMLDocumentInfo:
             **fields,
             symbol=ia.getSymbol(),
             math=self.math(fields["pk"], _attribute(ia, "math")),
-            derived_units=udef_to_string(ia.getDerivedUnitDefinition()),
+            derived_units=self.derived_units(ia),
         )
 
     def _main_model_key(self) -> str | None:
@@ -903,7 +1010,7 @@ class SBMLDocumentInfo:
         """A rule, by its libsbml class, `key` names it without an identifier."""
         fields = self.sbase(rule, key=key)
         math_ = self.math(fields["pk"], _attribute(rule, "math"))
-        derived = udef_to_string(rule.getDerivedUnitDefinition())
+        derived = self.derived_units(rule)
         if isinstance(rule, libsbml.AssignmentRule):
             return AssignmentRule(
                 **fields, variable=rule.getVariable(), math=math_, derived_units=derived
@@ -1047,13 +1154,13 @@ class SBMLDocumentInfo:
                     value=_attribute(lp, "value"),
                     units=units,
                     units_latex=self.units(units, model),
-                    derived_units=udef_to_string(lp.getDerivedUnitDefinition()),
+                    derived_units=self.derived_units(lp),
                 )
             )
         return KineticLaw(
             **fields,
             math=self.math(fields["pk"], _attribute(klaw, "math")),
-            derived_units=udef_to_string(klaw.getDerivedUnitDefinition()),
+            derived_units=self.derived_units(klaw),
             list_of_local_parameters=local_parameters,
         )
 

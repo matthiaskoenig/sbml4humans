@@ -26,6 +26,8 @@ A model does not have to declare units everywhere: a compartment, a species or a
 
 Derived units are shown in the column "derived units" of the tables, right of the size or the value they belong to, and in the inspector. They are the only units of a table, the units an element declares are a row of the inspector. They are the fastest check whether a kinetic law is dimensionally what it should be, because the derived units of a kinetic law are extent per time when the law is right.
 
+A model whose formulas are too deep has no derived units at all. The units of a model are derived for the whole model at once, by walking every formula of it, and a formula nested more than 5,000 levels deep, which a sum of more than 5,000 terms is, is beyond what that derivation survives. Every element of such a model is reported without its derived units and shows the dash of a value which is not there, while the report of the model and everything else of its every element is the same as without it.
+
 ## number
 
 How the report shows a number which is infinite or not a number.

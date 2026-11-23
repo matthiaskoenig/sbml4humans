@@ -309,24 +309,29 @@ def _wide_sum(terms: int) -> libsbml.ASTNode:
     return astnode
 
 
-def _depth(astnode: libsbml.ASTNode) -> int:
-    """The depth of an AST, counted without recursion."""
-    deepest = 0
-    stack: list[tuple[libsbml.ASTNode, int]] = [(astnode, 1)]
-    while stack:
-        node, depth = stack.pop()
-        deepest = max(deepest, depth)
-        stack.extend(
-            (node.getChild(k), depth + 1) for k in range(node.getNumChildren())
-        )
-    return deepest
-
-
 def test_a_flat_sum_is_read_as_a_deep_tree() -> None:
     """The premise of the walks: a wide sum of MathML is a deep AST."""
     astnode = _wide_sum(800)
     assert astnode.getNumChildren() == 2
-    assert _depth(astnode) == 800
+    assert mathml.math_depth(astnode) == 800
+
+
+@pytest.mark.parametrize(
+    ("formula", "depth"),
+    [("a", 1), ("1 mole", 1), ("-a", 2), ("abs(a)", 2), ("abs(abs(a - 1))", 4)],
+)
+def test_math_depth(formula: str, depth: int) -> None:
+    """The depth of an AST counts its levels, a node without children as one."""
+    astnode = libsbml.parseL3Formula(formula)
+    assert astnode is not None
+    assert mathml.math_depth(astnode) == depth
+
+
+def test_math_depth_of_a_lambda_counts_its_body() -> None:
+    """The deepest branch decides, which is the body of a lambda, not its bvars."""
+    astnode = libsbml.parseL3Formula("lambda(x, y, abs(x - y))")
+    assert astnode is not None
+    assert mathml.math_depth(astnode) == 4
 
 
 def test_the_walks_answer_a_wide_sum() -> None:
@@ -345,7 +350,7 @@ def test_the_walks_answer_a_deep_math() -> None:
         "a - " + "(a - " * (applies - 1) + "1 mole" + ")" * (applies - 1)
     )
     assert astnode is not None
-    assert _depth(astnode) == applies + 1
+    assert mathml.math_depth(astnode) == applies + 1
     assert mathml.unwritable_mathml(astnode) is None
     assert mathml.math_symbols(astnode) == {"a"}
     assert mathml.math_units(astnode) == {"mole"}
@@ -355,6 +360,6 @@ def test_a_childless_lambda_is_found_at_the_bottom_of_a_deep_math() -> None:
     """The guard reaches the whole tree, not the levels a recursion survives."""
     astnode = libsbml.parseFormula("abs(" * 2000 + "lambda()" + ")" * 2000)
     assert astnode is not None
-    assert _depth(astnode) == 2001
+    assert mathml.math_depth(astnode) == 2001
     assert mathml.unwritable_mathml(astnode) == "it holds a lambda without children"
     assert mathml.math_info(astnode, PK).latex is None

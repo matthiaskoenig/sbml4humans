@@ -265,3 +265,23 @@ def math_units(astnode: libsbml.ASTNode) -> set[str]:
             units.add(node.getUnits())
         stack.extend(node.getChild(k) for k in range(node.getNumChildren()))
     return units
+
+
+def math_depth(astnode: libsbml.ASTNode) -> int:
+    """The number of levels of an AST, a node without children counting as one.
+
+    The depth is what a recursion over the math costs, so it is the measure of
+    the math of a model which recursive code of libsbml has to be kept away
+    from (`sbmlinfo.MAX_UNIT_INFERENCE_DEPTH`). A sum of n terms is n levels
+    deep and not two, as the MathML reader of libsbml keeps no flat n-ary
+    operator.
+    """
+    deepest = 0
+    stack: list[tuple[libsbml.ASTNode, int]] = [(astnode, 1)]
+    while stack:
+        node, depth = stack.pop()
+        deepest = max(deepest, depth)
+        stack.extend(
+            (node.getChild(k), depth + 1) for k in range(node.getNumChildren())
+        )
+    return deepest
