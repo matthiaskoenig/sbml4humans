@@ -19,7 +19,13 @@ import libsbml
 from pymetadata.core.miriam import BQB, BQM
 
 from sbml4humans.links import build_link_graph
-from sbml4humans.mathml import math_depth, math_info, math_symbols, math_units
+from sbml4humans.mathml import (
+    function_depths,
+    math_depth,
+    math_info,
+    math_symbols,
+    math_units,
+)
 from sbml4humans.model import (
     AlgebraicRule,
     And,
@@ -144,19 +150,33 @@ OUTPUT_TRANSITION_EFFECTS: dict[int, str] = {
 # variable (core §4.8.2, §4.9.1), while two events may assign one variable
 KEYED_BY_TARGET_CLASSES = (libsbml.InitialAssignment, libsbml.Rule)
 
-# the greatest depth of a math of a model whose elements libsbml may be asked
-# for their derived units. Its unit inference recurses over the AST of every
-# math of the model, and the MathML reader of libsbml keeps no flat n-ary
+# the greatest number of levels a math of a model may cost a recursion for
+# libsbml to be asked for the derived units of the elements of that model, every
+# call of a function definition expanded (`mathml.math_depth`). The unit
+# inference of libsbml recurses over the math of the whole model, and
+# `getDerivedUnitDefinition()` then overflows the stack and ends the process
+# with SIGSEGV, which no error response can answer.
+#
+# Two shapes reach the stack, and the expanded depth is the one measure of both.
+# A math deep as it stands: the MathML reader of libsbml keeps no flat n-ary
 # operator but a right nested binary tree (`mathml.py`), so a sum of n terms is
-# a tree n levels deep: `getDerivedUnitDefinition()` then overflows the stack
-# and ends the process with SIGSEGV, which no error response can answer.
-# Measured by bisection with libsbml 5.21.2 on a thread with the 8 MiB stack
-# Linux gives by default: 40,156 levels answered, 40,312 crashed. The wall is
-# the stack of libsbml, so it moves with the build of libsbml and with the
-# stack of the thread which asks; 5,000 keeps a factor of eight below the
-# measured cliff and still a factor of two on a thread with a stack of 2 MiB,
-# and it is generous next to the 255 nested applies the latex of a math already
-# gives up at
+# a tree n levels deep, and a sum of 40,156 terms was answered while one of
+# 40,312 crashed. A math which calls a function definition: the inference
+# follows the call into the body of the definition, once per call site and
+# without remembering what it measured, so the levels of a chain of definitions
+# multiply with the nesting of the calls. A chain of 200 definitions called 200
+# deep is 40,000 expanded levels in 44 kB of xml and crashes, a chain of 150
+# called 150 deep is 22,500 and is answered, so that cliff lies between 22,500
+# and 30,000 expanded levels. 45,000 independent definitions are no chain and
+# cost nothing. A cycle among the definitions is refused outright, whatever this
+# bound is, since its expansion has no depth (`mathml.function_depths`).
+#
+# Measured with libsbml 5.21.2 on a thread with the 8 MiB stack Linux gives by
+# default. The wall is the stack of libsbml, so it moves with the build of
+# libsbml and with the stack of the thread which asks; 5,000 keeps a factor of
+# four below the lower of the two measured cliffs and still a factor of two on a
+# thread with a stack of 2 MiB, and it is generous next to the 255 nested
+# applies the latex of a math already gives up at
 MAX_UNIT_INFERENCE_DEPTH = 5000
 
 
@@ -318,7 +338,9 @@ class SBMLDocumentInfo:
             pk, which is the key of the model an element belongs to.
         derives_units: whether libsbml may be asked for the derived units of
             the elements of the model which is being built, decided per model
-            by `_derives_units`.
+            by `_derives_units`. It starts closed, so that a builder called
+            without the model which owns its element, as a test calls one, asks
+            libsbml nothing rather than asking it unguarded.
     """
 
     def __init__(self, doc: libsbml.SBMLDocument):
@@ -332,7 +354,7 @@ class SBMLDocumentInfo:
         )
         self.symbols: dict[str, set[str]] = {}
         self.units_of_math: dict[str, set[str]] = {}
-        self.derives_units = True
+        self.derives_units = False
         self.scope = DOCUMENT_SCOPE
         # where every element of the report starts, for the issues of libsbml
         self.positions = ElementPositions(DOCUMENT_PK)
@@ -699,23 +721,45 @@ class SBMLDocumentInfo:
     def _derives_units(self, model: libsbml.Model) -> bool:
         """Whether libsbml may be asked for the derived units of this model.
 
-        It may not where one math of the model is nested deeper than
-        `MAX_UNIT_INFERENCE_DEPTH`, which the unit inference of libsbml
-        recurses over until it overflows the stack and the process dies. It
-        builds the units of the whole model on the first question, whichever
-        element is asked, so the answer holds for every element of the model
-        and is decided before the first of them is built.
+        It may not where one math of the model costs a recursion more than
+        `MAX_UNIT_INFERENCE_DEPTH` levels, nor where the function definitions
+        of the model hold a cycle, whose expansion has no depth at all. The
+        unit inference of libsbml recurses over the math of the model until it
+        overflows the stack and the process dies. It builds the units of the
+        whole model on the first question, whichever element is asked, so the
+        answer holds for every element of the model and is decided before the
+        first of them is built.
         """
+        definitions = {
+            fd.getId(): fd.getMath()
+            for fd in model.getListOfFunctionDefinitions()
+            if fd.isSetId() and fd.isSetMath()
+        }
+        functions = function_depths(definitions)
+        if recursive := sorted(definitions.keys() - functions.keys()):
+            logger.warning(
+                "The elements of the model %s are reported without their "
+                "derived units: its function definitions %s call themselves, "
+                "directly or through one another, which the unit inference of "
+                "libsbml would follow without end",
+                self.scope,
+                ", ".join(recursive),
+            )
+            return False
         depth = max(
-            (math_depth(astnode) for astnode in _unit_inference_maths(model)),
+            (
+                math_depth(astnode, functions)
+                for astnode in _unit_inference_maths(model)
+            ),
             default=0,
         )
         if depth <= MAX_UNIT_INFERENCE_DEPTH:
             return True
         logger.warning(
             "The elements of the model %s are reported without their derived "
-            "units: one math of it is %s levels deep, more than the %s levels "
-            "the unit inference of libsbml survives",
+            "units: one math of it costs %s levels of recursion, every call of "
+            "a function definition expanded, more than the %s levels the unit "
+            "inference of libsbml survives",
             self.scope,
             depth,
             MAX_UNIT_INFERENCE_DEPTH,

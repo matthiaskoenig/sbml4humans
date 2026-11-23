@@ -31,6 +31,7 @@ import re
 import sys
 import threading
 from collections import OrderedDict
+from collections.abc import Mapping
 
 import libsbml
 import lxml.etree as ET  # ty: ignore[unresolved-import]
@@ -42,13 +43,15 @@ from sbml4humans.resources import XSLT_DIR
 logger = logging.getLogger(__name__)
 
 # what the latex of the maths converted so far may hold, the MathML of every
-# math it is keyed by included. A math is as large as the file it comes from
-# allows, and the MathML of a sum of 20,000 terms is about 800 kB of key next
-# to 300 kB of latex, so a bound in entries alone is no bound at all: a client
-# which sends document after document with a different large math in each would
-# keep every one of them for the life of the worker process. The number of
-# entries is bounded as well, so that a flood of small maths cannot grow the
-# bookkeeping of the cache without end
+# math it is keyed by included, per worker process: a server started with
+# `--workers N` has a cache of its own in each of them and costs N times this.
+# A math is as large as the file it comes from allows, and the MathML of a sum
+# of 20,000 terms is 419 kB of key next to 302 kB of latex, so a bound in
+# entries alone is no bound at all: a client which sends document after
+# document with a different large math in each would keep every one of them for
+# the life of the worker process. The number of entries is bounded as well, so
+# that a flood of small maths cannot grow the bookkeeping of the cache without
+# end
 MAX_LATEX_CACHE_BYTES = 32 * 1024 * 1024
 MAX_LATEX_CACHE_ENTRIES = 10000
 
@@ -376,21 +379,82 @@ def math_units(astnode: libsbml.ASTNode) -> set[str]:
     return units
 
 
-def math_depth(astnode: libsbml.ASTNode) -> int:
-    """The number of levels of an AST, a node without children counting as one.
+def math_depth(astnode: libsbml.ASTNode, functions: Mapping[str, int]) -> int:
+    """The levels a recursion over a math costs, every function call expanded.
 
-    The depth is what a recursion over the math costs, so it is the measure of
-    the math of a model which recursive code of libsbml has to be kept away
-    from (`sbmlinfo.MAX_UNIT_INFERENCE_DEPTH`). A sum of n terms is n levels
-    deep and not two, as the MathML reader of libsbml keeps no flat n-ary
-    operator.
+    A node without children counts as one level and a sum of n terms is n
+    levels deep and not two, as the MathML reader of libsbml keeps no flat
+    n-ary operator. A call of a function definition counts as the levels of
+    that definition's body, `functions[name]` as `function_depths` gives them,
+    because the unit inference of libsbml follows the call into the body and
+    walks the arguments of the call below it: a chain of 200 definitions called
+    200 deep is 40,000 levels, not 400, and the measure of the AST as it stands
+    is blind to it (issue #130). The call of a name which `functions` does not
+    hold, a function of MathML or a definition without a body, counts as one
+    level like any other node.
+
+    `functions` is empty where the math calls no function definition of the
+    model, and the measure is then the depth of the AST as it stands.
     """
     deepest = 0
-    stack: list[tuple[libsbml.ASTNode, int]] = [(astnode, 1)]
+    # the node and the levels above it
+    stack: list[tuple[libsbml.ASTNode, int]] = [(astnode, 0)]
     while stack:
-        node, depth = stack.pop()
+        node, above = stack.pop()
+        step = 1
+        if node.isFunction() and node.isUserFunction():
+            step = functions.get(node.getName(), 1)
+        depth = above + step
         deepest = max(deepest, depth)
-        stack.extend(
-            (node.getChild(k), depth + 1) for k in range(node.getNumChildren())
-        )
+        stack.extend((node.getChild(k), depth) for k in range(node.getNumChildren()))
     return deepest
+
+
+def _function_body(math: libsbml.ASTNode) -> libsbml.ASTNode:
+    """The body of the math of a function definition, which is a lambda.
+
+    The body is the last child of the lambda, the ones before it are its bound
+    variables (core §4.3.2). A math which is no lambda, and the lambda without
+    children a Level 1 `formula` can hold (`unwritable_mathml`), have no body
+    of their own and stand for themselves.
+    """
+    children = math.getNumChildren()
+    if math.getType() == libsbml.AST_LAMBDA and children > 0:
+        return math.getChild(children - 1)
+    return math
+
+
+def function_depths(definitions: Mapping[str, libsbml.ASTNode]) -> dict[str, int]:
+    """The levels the body of every function definition costs, by its id.
+
+    `definitions` is the math of the function definitions of a model by their
+    id. A definition whose body calls another one costs the levels of that one
+    as well, so the depths are taken in the order of the calls, every callee
+    before its caller.
+
+    A definition which calls itself, directly or through others, is missing
+    from the result: its expansion has no depth at all, since the unit
+    inference of libsbml follows the calls without end, so there is nothing to
+    measure and the caller has to refuse the whole model (issue #130). The
+    missing ids are therefore the definitions of every cycle and those which
+    call into one. Such a model is invalid SBML, which the reader of libsbml
+    answers all the same, and the report validates nothing.
+    """
+    bodies = {name: _function_body(math) for name, math in definitions.items()}
+    called = {name: math_symbols(body) & bodies.keys() for name, body in bodies.items()}
+    callers: dict[str, set[str]] = {name: set() for name in bodies}
+    for name, callees in called.items():
+        for callee in callees:
+            callers[callee].add(name)
+    # the calls still to be measured before a definition can be
+    waiting = {name: len(callees) for name, callees in called.items()}
+    ready = [name for name, count in waiting.items() if count == 0]
+    depths: dict[str, int] = {}
+    while ready:
+        name = ready.pop()
+        depths[name] = math_depth(bodies[name], depths)
+        for caller in callers[name]:
+            waiting[caller] -= 1
+            if waiting[caller] == 0:
+                ready.append(caller)
+    return depths

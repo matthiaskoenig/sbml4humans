@@ -868,6 +868,8 @@ def test_timeout_terminates_the_child(
         response = validation_for_bytes(content)
     elapsed = time.perf_counter() - start
     assert response.skipped == "timeout"
+    # the one entry of the source, or none of it, and nothing else
+    assert set(response.entries) <= {"./model.xml"}
     assert all(
         entry == EntryValidation(skipped="timeout")
         for entry in response.entries.values()
