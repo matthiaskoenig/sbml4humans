@@ -7,8 +7,15 @@ latex for a better rendering. The stylesheets live in `sbml4humans.resources`.
 Compiling a stylesheet costs about twenty times its application, so each is
 compiled once per thread: an `XSLT` object of lxml must not be shared between
 threads, and the api builds its reports in the threads of its threadpool.
+
+Not every math can be typeset: libsbml cannot write the MathML of a node whose
+shape its writer does not expect, and lxml refuses a MathML document deeper
+than 256 elements. Such a math costs its latex and nothing else, `math_info`
+reports it with the latex absent and the infix formula alone, which libsbml
+writes for any node at any depth.
 """
 
+import logging
 import re
 import threading
 from functools import lru_cache
@@ -19,6 +26,8 @@ import lxml.etree as ET  # ty: ignore[unresolved-import]
 from sbml4humans.model import Math
 from sbml4humans.resources import XSLT_DIR
 
+
+logger = logging.getLogger(__name__)
 
 xslt_cmml2pmml = ET.parse(str(XSLT_DIR / "ctopff.xsl"))
 xslt_pmml2tex = ET.parse(str(XSLT_DIR / "xsltml" / "mmltex.xsl"))
@@ -70,8 +79,46 @@ GREEK_SYMBOLS = [
 ]
 
 
+class UnwritableMathError(ValueError):
+    """A math whose MathML libsbml cannot write, so it cannot be typeset."""
+
+
+def writes_as_mathml(astnode: libsbml.ASTNode) -> bool:
+    """Whether libsbml can write the MathML of a node and of all its children.
+
+    It cannot write a lambda without children: `writeLambda` reads the number
+    of bound variables as the number of children less one, which wraps to
+    `UINT_MAX` for a childless node, and dereferences the null child it then
+    asks for, so `writeMathMLToString` ends the process with SIGSEGV
+    (sbmlteam/libsbml#521). Of the 156 node types of libsbml a childless node
+    crashes the writer for that one alone.
+
+    The shape is invalid SBML, and the MathML reader and the Level 3 parser
+    both refuse it; the Level 1 attribute `formula`, which `KineticLaw.getMath`
+    parses with the Level 1 parser, is the one route into it from a document.
+    It can sit anywhere inside a larger math, `1 + lambda()` crashes the writer
+    just as `lambda()` does, so the whole tree is walked.
+    """
+    if astnode.getType() == libsbml.AST_LAMBDA and astnode.getNumChildren() == 0:
+        return False
+    return all(
+        writes_as_mathml(astnode.getChild(k)) for k in range(astnode.getNumChildren())
+    )
+
+
 def astnode_to_latex(astnode: libsbml.ASTNode) -> str:
-    """Convert an ASTNode to latex."""
+    """Convert an ASTNode to latex.
+
+    Raises:
+        UnwritableMathError: if libsbml cannot write the MathML of the node.
+            The node is never handed to `writeMathMLToString`, which crashes
+            the process rather than raising, so it is checked beforehand.
+    """
+    if not writes_as_mathml(astnode):
+        raise UnwritableMathError(
+            "libsbml cannot write the MathML of this math, it holds a lambda "
+            "without children"
+        )
     cmml_str: str = libsbml.writeMathMLToString(astnode)
     cmml_str = cmml_str.replace('<?xml version="1.0" encoding="UTF-8"?>', "")
     return cmathml_to_latex(cmml_str)
@@ -132,10 +179,26 @@ def _fix_mathit_symbols(tex_str: str) -> str:
 
 
 def math_info(astnode: libsbml.ASTNode) -> Math:
-    """The math of a node as latex and as L3 formula string."""
-    return Math(
-        latex=astnode_to_latex(astnode), formula=libsbml.formulaToL3String(astnode)
-    )
+    """The math of a node as latex and as L3 formula string.
+
+    The latex is absent where it cannot be produced: where libsbml cannot write
+    the MathML of the node, and where the conversion of that MathML fails,
+    which lxml refuses beyond a document depth of 256. The infix formula is
+    written for any node at any depth, so it is always reported, and the report
+    of the document is never lost over one math.
+    """
+    formula: str = libsbml.formulaToL3String(astnode)
+    latex: str | None
+    try:
+        latex = astnode_to_latex(astnode)
+    except (UnwritableMathError, ET.LxmlError) as err:
+        logger.warning(
+            "The math is reported without latex, as its formula alone: %s (%.60s)",
+            err,
+            formula,
+        )
+        latex = None
+    return Math(latex=latex, formula=formula)
 
 
 def math_symbols(astnode: libsbml.ASTNode) -> set[str]:

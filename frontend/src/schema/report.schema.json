@@ -4031,17 +4031,24 @@
       "type": "object"
     },
     "Math": {
-      "description": "The math of an element as latex and as L3 formula string.",
+      "description": "The math of an element as latex and as L3 formula string.\n\nThe latex is absent for a math the backend cannot typeset (`mathml.py`),\nand the report then shows the infix formula alone.",
       "properties": {
         "latex": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "formula": {
           "type": "string"
         }
       },
       "required": [
-        "latex",
         "formula"
       ],
       "title": "Math",

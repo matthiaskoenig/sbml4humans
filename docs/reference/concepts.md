@@ -191,6 +191,8 @@ SBML stores a formula as content MathML, which is precise and unreadable. The re
 
 The rendered formula is the column "math" of the tables of rules, function definitions, constraints and events, the kinetic law of a reaction, and the mathematics shown in the inspector. Where a formula names an element of the model, the report also links that element as a link of the kind "math".
 
+Not every formula can be typeset. A formula too long to render is shown as text until it is rendered on demand, and the few formulas the report cannot typeset at all, a math whose content MathML libsbml refuses to write and a math nested more than 254 levels deep, are shown as the infix text alone. One such formula costs its own rendering and nothing else: the report of the document and of its every other element is the same as without it.
+
 ## rendered units
 
 The units an element declares, rendered as a formula.

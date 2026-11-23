@@ -298,9 +298,12 @@ export interface UncertSpan {
 }
 /**
  * The math of an element as latex and as L3 formula string.
+ *
+ * The latex is absent for a math the backend cannot typeset (`mathml.py`),
+ * and the report then shows the infix formula alone.
  */
 export interface Math {
-  latex: string;
+  latex?: string | null;
   formula: string;
 }
 /**

@@ -115,6 +115,7 @@ def test_math_info() -> None:
     astnode = libsbml.parseL3Formula("k1 * S1 / (KM + S1)")
     info = mathml.math_info(astnode)
     assert info.formula == "k1 * S1 / (KM + S1)"
+    assert info.latex is not None
     assert r"\mathit{S1}" in info.latex
 
 
@@ -155,6 +156,7 @@ def test_logical_connectives_are_rendered_as_operators(
     condition of every function term of a qualitative model is built from.
     """
     latex = mathml.math_info(libsbml.parseL3Formula(formula)).latex
+    assert latex is not None
     assert expected in latex
     assert "and(" not in latex
 
@@ -211,3 +213,68 @@ def test_latex_in_threads() -> None:
     with ThreadPoolExecutor(max_workers=8) as executor:
         for latex in executor.map(render, range(32)):
             assert latex == expected
+
+
+# -------------------------------------------------------------------------------------
+# a math which cannot be typeset
+# -------------------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "formula", ["lambda()", "1 + lambda()", "k * lambda()", "abs(lambda())"]
+)
+def test_a_childless_lambda_is_no_mathml(formula: str) -> None:
+    """A childless lambda is refused wherever it sits in the tree.
+
+    The Level 1 parser accepts `lambda()` as an `AST_LAMBDA` without children,
+    whose MathML libsbml cannot write: `writeMathMLToString` ends the process
+    with SIGSEGV (sbmlteam/libsbml#521), so the node is never handed to it.
+    """
+    astnode = libsbml.parseFormula(formula)
+    assert astnode is not None
+    assert not mathml.writes_as_mathml(astnode)
+    with pytest.raises(mathml.UnwritableMathError, match="lambda without children"):
+        mathml.astnode_to_latex(astnode)
+
+
+@pytest.mark.parametrize(
+    "formula", ["lambda(x)", "lambda(x, x)", "lambda(x, y, x + y)"]
+)
+def test_a_lambda_with_children_is_mathml(formula: str) -> None:
+    """A lambda with children is written and typeset as every other math is."""
+    astnode = libsbml.parseFormula(formula)
+    assert mathml.writes_as_mathml(astnode)
+    assert mathml.astnode_to_latex(astnode)
+
+
+@pytest.mark.parametrize(
+    "formula", ["lambda()", "1 + lambda()", "k * lambda()", "abs(lambda())"]
+)
+def test_math_info_of_an_unwritable_math_is_its_formula(formula: str) -> None:
+    """The math of a node libsbml cannot write is its formula without latex.
+
+    `formulaToL3String` and `formulaToString` write the node without trouble,
+    so the formula side of the report is unaffected.
+    """
+    astnode = libsbml.parseFormula(formula)
+    info = mathml.math_info(astnode)
+    assert info.formula == formula
+    assert info.latex is None
+
+
+@pytest.mark.parametrize(("applies", "has_latex"), [(254, True), (255, False)])
+def test_math_info_of_a_math_too_deep_for_lxml_is_its_formula(
+    applies: int, has_latex: bool
+) -> None:
+    """The math of a node lxml refuses to parse is its formula without latex.
+
+    lxml refuses a document deeper than 256 elements, which the MathML of 255
+    nested applies is; at 254 the latex is still produced. libsbml writes the
+    MathML of either depth, the wall is the parser of lxml.
+    """
+    deep = libsbml.parseL3Formula(
+        "a - " + "(a - " * (applies - 1) + "a" + ")" * (applies - 1)
+    )
+    assert deep is not None
+    assert mathml.writes_as_mathml(deep)
+    info = mathml.math_info(deep)
+    assert info.formula.startswith("a - (a - (a")
+    assert (info.latex is not None) == has_latex

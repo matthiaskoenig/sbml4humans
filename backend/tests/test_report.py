@@ -464,3 +464,84 @@ def test_out_of_memory_of_libsbml_is_a_memory_error(
     monkeypatch.setattr(SBMLDocumentInfo, "read", staticmethod(out_of_memory))
     with pytest.raises(MemoryError, match="Out of memory"):
         report._Entry(REPRESSILATOR_SBML)
+
+
+# -------------------------------------------------------------------------------------
+# a math the backend cannot typeset costs the latex of that math and nothing else
+# -------------------------------------------------------------------------------------
+def _level_1_kinetic_law_sbml(formula: str) -> bytes:
+    """A Level 1 Version 2 document whose one kinetic law carries that formula.
+
+    `KineticLaw::getMath` of a Level 1 document parses the attribute `formula`
+    with the Level 1 parser, which is the one route into an AST the MathML
+    writer of libsbml cannot write: it accepts `lambda()` and answers an
+    `AST_LAMBDA` without children (issue #127).
+    """
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level1" level="1" version="2">'
+        '<model name="crash"><listOfCompartments>'
+        '<compartment name="c" volume="1"/></listOfCompartments><listOfSpecies>'
+        '<species name="S1" compartment="c" initialAmount="1"/></listOfSpecies>'
+        '<listOfReactions><reaction name="R1"><listOfReactants>'
+        '<speciesReference species="S1" stoichiometry="1"/></listOfReactants>'
+        f'<kineticLaw formula="{formula}"/></reaction></listOfReactions>'
+        "</model></sbml>"
+    ).encode()
+
+
+@pytest.mark.parametrize("formula", ["lambda()", "1 + lambda()", "abs(lambda())"])
+def test_a_lambda_without_children_keeps_the_report(formula: str) -> None:
+    """A math which libsbml cannot write as MathML costs its latex alone.
+
+    `writeMathMLToString` of libsbml segfaults on a childless lambda, whether
+    it is the whole math or sits anywhere inside it (sbmlteam/libsbml#521), so
+    the report of the document used to take the server process down with it.
+    `formulaToL3String` writes the node as it was read, at any place.
+    """
+    response = report_for_bytes(_level_1_kinetic_law_sbml(formula))
+    _check_report(response)
+    (entry,) = response.reports.values()
+    kinetic_law = entry.report.models[0].list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    assert kinetic_law.math is not None
+    assert kinetic_law.math.formula == formula
+    assert kinetic_law.math.latex is None
+
+
+def _nested_difference_sbml(depth: int) -> bytes:
+    """A document whose one assignment rule is `a - (a - (a - ...))`.
+
+    The math is `depth` nested `apply` elements, the shape lxml refuses beyond
+    a depth of 254 (issue #128). Every operand is the same parameter, so the
+    model stays small whatever the depth is.
+    """
+    math = "<ci> a </ci>"
+    for _ in range(depth):
+        math = f"<apply><minus/><ci> a </ci>{math}</apply>"
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m"><listOfParameters>'
+        '<parameter id="a" value="1" constant="true"/>'
+        '<parameter id="x" constant="false"/></listOfParameters><listOfRules>'
+        '<assignmentRule variable="x">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"{math}</math></assignmentRule></listOfRules></model></sbml>"
+    ).encode()
+
+
+@pytest.mark.parametrize(("depth", "has_latex"), [(10, True), (255, False)])
+def test_a_math_too_deep_for_lxml_keeps_the_report(depth: int, has_latex: bool) -> None:
+    """A math too deep to convert costs its latex alone, not the whole report.
+
+    lxml refuses a document deeper than 256 elements, which the MathML of 255
+    nested applies is, and the report of the document used to fail with it.
+    """
+    response = report_for_bytes(_nested_difference_sbml(depth))
+    _check_report(response)
+    (entry,) = response.reports.values()
+    (rule,) = entry.report.models[0].list_of_rules
+    assert rule.math is not None
+    assert rule.math.formula.startswith("a - (a - (a")
+    assert (rule.math.latex is not None) == has_latex
