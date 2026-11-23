@@ -907,7 +907,9 @@ def test_one_tiny_submodel_makes_a_large_document_expand() -> None:
     start = time.perf_counter()
     entry = _entry(validation_for_bytes(content))
     assert entry.skipped == "expandedSize"
-    assert time.perf_counter() - start < 5.0
+    # the skipped entry is read in 2.4 s, which takes twice as long while the
+    # workers of the suite read other documents; the flattening takes 30 s
+    assert time.perf_counter() - start < 10.0
 
 
 def test_memory_limit_skips_the_entry(

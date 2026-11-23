@@ -21,9 +21,11 @@ before it is extracted.
 The report of a source which is not trusted is built in a child process
 (`report_gzip` run by `isolation.py`), which answers it as the gzipped JSON the
 server sends, so that a document which ends the process of libsbml is an error
-of one request and not an outage of the server. `report_for_path` builds the
-report in the process which calls it, for a trusted path: the examples and the
-file the user gave the local server of `show`.
+of one request and not an outage of the server. The ODE file of such a source
+is written in a child of its own as well (`ode_source`), which reads the
+content through sbmlode and libsbml the same way. `report_for_path` and
+`ode_for_path` build in the process which calls them, for a trusted path: the
+examples and the file the user gave the local server of `show`.
 
 The validation of libsbml is not part of the report: `validation_for_path`
 reads the entries of a source the same way, without their link graph, and
@@ -293,7 +295,7 @@ _INTERRUPTIONS: dict[isolation.Interruption, str] = {
     "timeout": (
         "The report took longer than the {seconds:.0f} seconds a report may take."
     ),
-    "memory": "The report needed more memory than the {gib:.0f} GiB a report may use.",
+    "memory": "The report needed more memory than the {memory} a report may use.",
     "crashed": (
         "The document could not be reported: the process which read it ended "
         "unexpectedly."
@@ -302,8 +304,28 @@ _INTERRUPTIONS: dict[isolation.Interruption, str] = {
 }
 
 
+def _memory_bound(memory: int) -> str:
+    """The memory a child may use, as a client reads it.
+
+    In GiB, which the 4 GiB of the budget are, and below one GiB in MiB, so
+    that a bound a test lowered does not read as "0 GiB".
+
+    Args:
+        memory: the address space of a child, in bytes.
+
+    Returns:
+        The bound with its unit.
+    """
+    if memory < 1024**3:
+        return f"{memory / 1024**2:.0f} MiB"
+    return f"{memory / 1024**3:.0f} GiB"
+
+
 class ReportInterruptedError(Exception):
     """Raised for a report the child process did not finish.
+
+    The sentence of an interruption names the report, also for the ODE file of
+    a source, which a child of the same budget writes.
 
     Attributes:
         interruption: why it did not, see `isolation.IsolatedRun`.
@@ -314,10 +336,39 @@ class ReportInterruptedError(Exception):
         super().__init__(
             _INTERRUPTIONS[interruption].format(
                 seconds=isolation.REPORT_BUDGET.timeout,
-                gib=isolation.REPORT_BUDGET.memory / 1024**3,
+                memory=_memory_bound(isolation.REPORT_BUDGET.memory),
             )
         )
         self.interruption = interruption
+
+
+def _log_isolated(
+    kind: str, size: int, start: float, run: isolation.IsolatedRun | None
+) -> None:
+    """Log what a child of a source took, also for a run which raised.
+
+    A run which raised is the one whose time a reader wants most, so it is
+    logged where the call leaves, not where it returns.
+
+    Args:
+        kind: what the child built, as the log names it.
+        size: the bytes of the content it built it from.
+        start: the `time.perf_counter()` of the call.
+        run: the run, None where it raised instead of returning one.
+    """
+    if run is None:
+        outcome = ", failed"
+    elif run.interruption is not None:
+        outcome = f", {run.interruption}"
+    else:
+        outcome = ""
+    logger.info(
+        "%s of %s in %s s%s",
+        kind,
+        format_size(size),
+        round(time.perf_counter() - start, 3),
+        outcome,
+    )
 
 
 def report_gzip_for_bytes(content: bytes) -> bytes:
@@ -340,19 +391,17 @@ def report_gzip_for_bytes(content: bytes) -> bytes:
         ContentTooLargeError: if the content exceeds the limits.
     """
     start = time.perf_counter()
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        path = Path(tmp_dir) / "model"
-        path.write_bytes(content)
-        job = ReportJob(
-            path=str(path), trusted=False, limits=limits.ContentLimits.current()
-        )
-        run = isolation.run_isolated(report_gzip, job, isolation.REPORT_BUDGET)
-    logger.info(
-        "report of %s in %s s%s",
-        format_size(len(content)),
-        round(time.perf_counter() - start, 3),
-        f", {run.interruption}" if run.interruption else "",
-    )
+    run: isolation.IsolatedRun | None = None
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "model"
+            path.write_bytes(content)
+            job = ReportJob(
+                path=str(path), trusted=False, limits=limits.ContentLimits.current()
+            )
+            run = isolation.run_isolated(report_gzip, job, isolation.REPORT_BUDGET)
+    finally:
+        _log_isolated("report", len(content), start, run)
     if run.interruption is not None or not run.results:
         # a child which ended without its one result ended abnormally
         raise ReportInterruptedError(run.interruption or "crashed")
@@ -649,16 +698,101 @@ def ode_for_path(
     return OdeFile(filename=f"{model_id}{format_.suffixes[0]}", content=content)
 
 
-def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeFile:
-    """Write the ODE system of the content of an SBML file or COMBINE archive.
+@dataclass(frozen=True)
+class OdeJob:
+    """What the child process of an ODE download writes.
 
-    The content is untrusted, written to a temporary file like for
-    `report_for_bytes`.
+    Attributes:
+        path: the file of the source, which the server keeps until the child
+            has ended.
+        trusted: as for `report_for_path`.
+        limits: the limits of `limits.py` an untrusted source is read within,
+            read by the server when the file is asked for.
+        fmt: the format, a key of `sbmlode.FORMATS`.
+        location: the SBML entry of an archive, by default its master entry or
+            the first one.
     """
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        path = Path(tmp_dir) / "model"
-        path.write_bytes(content)
-        return ode_for_path(path, fmt, location)
+
+    path: str
+    trusted: bool
+    limits: limits.ContentLimits
+    fmt: str
+    location: str | None
+
+
+# the key of the one result of an ODE download, the file of the whole system
+_ODE = "ode"
+
+
+def ode_source(job: OdeJob) -> Iterator[tuple[str, OdeFile]]:
+    """Write the ODE system of a source, what the child process runs.
+
+    The source is read as `ode_for_path` reads it, with the same trust and the
+    same limits. The file holds the system of one model, which is small next to
+    a report, so it crosses the boundary to the server pickled, as the results
+    of a validation do.
+
+    Args:
+        job: the source, the format of the file and the limits it is read
+            within.
+
+    Yields:
+        The one pair of the key of an ODE file and the file.
+
+    Raises:
+        ValueError: for an unknown format or location, a source without a model,
+            or a model sbmlode cannot write in the format.
+        ContentTooLargeError: if the content of an untrusted path exceeds the
+            limits.
+    """
+    with job.limits.applied():
+        yield _ODE, ode_for_path(Path(job.path), job.fmt, job.location, job.trusted)
+
+
+def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeFile:
+    """Write the ODE system of untrusted content in a format of sbmlode.
+
+    The content is written to a temporary file like for `report_gzip_for_bytes`,
+    which is there until the child has ended, and read in a child process
+    (`ode_source` run by `isolation.run_isolated` with
+    `isolation.REPORT_BUDGET`, which the reports and the ODE files of the
+    requests share), bounded in time and memory.
+
+    Args:
+        content: an SBML file, plain or gzipped, or a COMBINE archive.
+        fmt: the format, a key of `sbmlode.FORMATS`.
+        location: the SBML entry of an archive, by default its master entry or
+            the first one.
+
+    Returns:
+        The ODE system of the model of the entry, as a file.
+
+    Raises:
+        ReportInterruptedError: if the child did not finish the file.
+        ValueError: for an unknown format or location, content without a model,
+            or a model sbmlode cannot write in the format.
+        ContentTooLargeError: if the content exceeds the limits.
+    """
+    start = time.perf_counter()
+    run: isolation.IsolatedRun | None = None
+    try:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "model"
+            path.write_bytes(content)
+            job = OdeJob(
+                path=str(path),
+                trusted=False,
+                limits=limits.ContentLimits.current(),
+                fmt=fmt,
+                location=location,
+            )
+            run = isolation.run_isolated(ode_source, job, isolation.REPORT_BUDGET)
+    finally:
+        _log_isolated(f"ode system ({fmt})", len(content), start, run)
+    if run.interruption is not None or not run.results:
+        # a child which ended without its one result ended abnormally
+        raise ReportInterruptedError(run.interruption or "crashed")
+    return run.results[0][1]
 
 
 def report_for_bytes(content: bytes) -> ReportResponse:

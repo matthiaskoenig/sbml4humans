@@ -28,7 +28,11 @@ their client disconnects (`run_report`, `run_validation`): the child is killed
 and the admission freed at once. Work beyond the admission of the server is
 busy: a report says so as an error of the contract, since the report is the
 answer of its request, a validation as a `ValidationResponse` without entries,
-since it is one part of a page the frontend shows without it.
+since it is one part of a page the frontend shows without it. The ODE file of a
+source of a request (`/api/ode/...`) reads that source through sbmlode and
+libsbml as well, so it is admitted, run and cancelled by `run_report` with the
+budget of the reports; the file of an example is written in the process of the
+server, as its report is.
 
 A report endpoint answers the gzipped JSON of its `ReportResponse`, which was
 written once where the report was built: by pydantic in the child of a request
@@ -502,16 +506,15 @@ async def _cancel_on_disconnect(request: Request, cancel: threading.Event) -> No
     cancel.set()
 
 
-async def run_report(
-    request: Request, function: Callable[..., bytes], *args: Any
-) -> bytes:
+async def run_report[R](request: Request, function: Callable[..., R], *args: Any) -> R:
     """Build a report in a thread of the reports, if the server admits it.
 
     A report beyond the admission of `isolation.REPORT_BUDGET` is an error of
     the contract, which says that the server is busy: the report is the answer
     of its request, where a busy validation is one part of a page the frontend
     shows without it. A report whose client disconnects is busy as well, which
-    nobody reads.
+    nobody reads. The ODE file of a source is admitted as a report and shares
+    the budget of the reports, its child reads the same content.
 
     Args:
         request: the request of the report, whose client is watched.
@@ -519,7 +522,8 @@ async def run_report(
         args: the arguments of the function.
 
     Returns:
-        The gzipped JSON of the `ReportResponse` the function built.
+        What the function built: the gzipped JSON of a `ReportResponse` or the
+        `OdeFile` of its source.
 
     Raises:
         ReportInterruptedError: if the server is busy or the client left.
@@ -807,23 +811,41 @@ def ode_of_example(example_id: str, format: str) -> Response:
 
 
 @api.post("/api/ode/file", tags=["ode"], response_class=PlainTextResponse)
-def ode_of_file(
+async def ode_of_file(
     source: UploadFile,
     format: str,
+    request: Request,
     location: str | None = None,
 ) -> Response:
     """The ODE system of an uploaded SBML file or COMBINE archive, as a file."""
-    return ode_response(ode_for_bytes(source.file.read(), format, location))
+    content = await source.read()
+    ode = await run_report(request, ode_for_bytes, content, format, location)
+    return ode_response(ode)
 
 
 @api.get("/api/ode/url", tags=["ode"], response_class=PlainTextResponse)
-def ode_of_url(
+async def ode_of_url(
     url: str,
     format: str,
+    request: Request,
     location: str | None = None,
 ) -> Response:
-    """The ODE system of an SBML file or COMBINE archive behind a url, as a file."""
-    return ode_response(ode_for_bytes(download(url), format, location))
+    """The ODE system of an SBML file or COMBINE archive behind a url, as a file.
+
+    The file is admitted before the download, a busy server downloads nothing.
+    """
+    ode = await run_report(request, ode_of_download, url, format, location)
+    return ode_response(ode)
+
+
+def ode_of_download(url: str, fmt: str, location: str | None) -> OdeFile:
+    """Download the source behind a url and write its ODE system, in its own thread.
+
+    The download is not cancelled when the client leaves, as the one of
+    `report_of_download` is not: the cancellation reaches the child, which is
+    started once the source is there.
+    """
+    return ode_for_bytes(download(url), fmt, location)
 
 
 @api.post("/api/ode/content", tags=["ode"], response_class=PlainTextResponse)
@@ -834,19 +856,22 @@ async def ode_of_content(
 ) -> Response:
     """The ODE system of the SBML content in the request body, as a file."""
     content = await request.body()
-    ode = await run_in_threadpool(ode_for_bytes, content, format, location)
+    ode = await run_report(request, ode_for_bytes, content, format, location)
     return ode_response(ode)
 
 
 @api.get("/api/ode/upload/{upload_id}", tags=["ode"], response_class=PlainTextResponse)
-def ode_of_upload(
+async def ode_of_upload(
     upload_id: str,
     store: Annotated[UploadStore, Depends(upload_store)],
     format: str,
+    request: Request,
     location: str | None = None,
 ) -> Response:
     """The ODE system of an upload, as a file."""
-    return ode_response(ode_for_bytes(store.get(upload_id), format, location))
+    content = await run_in_threadpool(store.get, upload_id)
+    ode = await run_report(request, ode_for_bytes, content, format, location)
+    return ode_response(ode)
 
 
 @api.get(

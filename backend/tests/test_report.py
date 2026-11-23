@@ -2,6 +2,7 @@
 
 import contextlib
 import gzip
+import logging
 import os
 import signal
 import subprocess
@@ -906,6 +907,37 @@ def test_a_report_beyond_the_memory_of_a_child_is_an_error(
     with pytest.raises(ReportInterruptedError, match="more memory") as raised:
         report_gzip_for_bytes(FBC_RECON3D_SBML.read_bytes())
     assert raised.value.interruption == "memory"
+
+
+@pytest.mark.parametrize(
+    ("memory", "reads"),
+    [
+        (4 * 1024**3, "more memory than the 4 GiB a report may use"),
+        (2 * 1024**3, "more memory than the 2 GiB a report may use"),
+        (256 * 1024**2, "more memory than the 256 MiB a report may use"),
+    ],
+)
+def test_the_memory_of_an_interruption_reads_in_its_unit(
+    monkeypatch: pytest.MonkeyPatch, memory: int, reads: str
+) -> None:
+    """The bound of the memory reads in GiB, and below one GiB in MiB.
+
+    The 4 GiB of the budget are the sentence the clients read; a bound a test
+    lowered below one GiB would read as "the 0 GiB" in GiB.
+    """
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "memory", memory)
+    assert reads in str(ReportInterruptedError("memory"))
+
+
+def test_a_report_which_fails_logs_its_time(caplog: pytest.LogCaptureFixture) -> None:
+    """The time of a report is logged also when it raised, which a reader wants most."""
+    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>'
+    with (
+        caplog.at_level(logging.INFO, logger="sbml4humans.report"),
+        pytest.raises(ValueError, match="No SBML model"),
+    ):
+        report_gzip_for_bytes(content)
+    assert f"report of {len(content)} bytes in " in caplog.text
 
 
 def _killed_after_first_send(job: ReportJob) -> Iterator[tuple[str, bytes]]:
