@@ -311,8 +311,9 @@ def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse
     """Validate the SBML entries of an SBML file or a COMBINE archive.
 
     Every touch of libsbml, from reading the source on, is in a child process
-    (`validate_source` run by `isolation.run_isolated`), bounded in time and
-    memory; the path has to be there until this returns.
+    (`validate_source` run by `isolation.run_isolated` with
+    `isolation.VALIDATION_BUDGET`), bounded in time and memory; the path has to
+    be there until this returns.
 
     Args:
         path: the SBML file, plain or gzipped, or the COMBINE archive.
@@ -334,7 +335,7 @@ def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse
         budget=validation.MAX_EXPANDED_ELEMENTS,
         limits=limits.ContentLimits.current(),
     )
-    run = isolation.run_isolated(validate_source, job)
+    run = isolation.run_isolated(validate_source, job, isolation.VALIDATION_BUDGET)
     locations: list[str] = []
     validated: dict[str, EntryValidation] = {}
     for key, value in run.results:

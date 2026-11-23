@@ -482,7 +482,7 @@ _VALIDATION_LIMITER: RunVar[tuple[int, CapacityLimiter]] = RunVar("validations")
 
 def validation_limiter() -> CapacityLimiter:
     """The limiter of the threads of the validations of this event loop."""
-    capacity = isolation.admission_capacity()
+    capacity = isolation.admission_capacity(isolation.VALIDATION_BUDGET)
     try:
         total, limiter = _VALIDATION_LIMITER.get()
     except LookupError:
@@ -498,13 +498,13 @@ async def run_validation(
 ) -> ValidationResponse:
     """Validate in a thread of the validations, if the server admits it.
 
-    A validation beyond `isolation.admission_capacity()` is answered at once as
-    busy, without an entry, and never holds a thread of the other endpoints. A
-    validation whose client disconnects is cancelled: it stops waiting for a
-    child or its child is killed, and its admission is free again; it answers
-    busy, which nobody reads.
+    A validation beyond the admission of `isolation.VALIDATION_BUDGET` is
+    answered at once as busy, without an entry, and never holds a thread of the
+    other endpoints. A validation whose client disconnects is cancelled: it
+    stops waiting for a child or its child is killed, and its admission is free
+    again; it answers busy, which nobody reads.
     """
-    with isolation.admission() as admitted:
+    with isolation.admission(isolation.VALIDATION_BUDGET) as admitted:
         if not admitted:
             logger.warning("a validation was refused, the server is busy")
             return ValidationResponse(skipped="busy")
@@ -521,7 +521,7 @@ async def run_validation(
                     *args,
                     limiter=validation_limiter(),
                 )
-            except isolation.ValidationCancelledError:
+            except isolation.IsolatedRunCancelledError:
                 logger.info("a validation was cancelled, its client disconnected")
                 validation = ValidationResponse(skipped="busy")
             except Exception as exc:

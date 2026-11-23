@@ -296,7 +296,9 @@ def _in_process(monkeypatch: pytest.MonkeyPatch) -> None:
     """Validate in this process rather than in a child process."""
 
     def run_here(
-        function: Callable[[Any], Iterable[tuple[str, Any]]], argument: Any
+        function: Callable[[Any], Iterable[tuple[str, Any]]],
+        argument: Any,
+        budget: isolation.Budget,
     ) -> isolation.IsolatedRun:
         """The results of the function, without a child process."""
         return isolation.IsolatedRun(results=list(function(argument)))
@@ -823,7 +825,7 @@ def test_a_child_has_a_temporary_directory_of_its_own(
 ) -> None:
     """The server makes the temporary directory of a child and removes it."""
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
-        run = isolation.run_isolated(_tempdir, None)
+        run = isolation.run_isolated(_tempdir, None, isolation.VALIDATION_BUDGET)
     results = dict(run.results)
     tempdir = Path(results["tempdir"])
     assert tempdir.parent == tmp_path / "tmp"
@@ -843,8 +845,8 @@ def _cpu_limit(_: object) -> Iterator[tuple[str, int]]:
 @pytest.mark.skipif(sys.platform == "win32", reason="no resource limits on Windows")
 def test_a_child_has_a_cpu_limit(monkeypatch: pytest.MonkeyPatch) -> None:
     """A child ends itself after twice the timeout, if the server did not end it."""
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 10.0)
-    run = isolation.run_isolated(_cpu_limit, None)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 10.0)
+    run = isolation.run_isolated(_cpu_limit, None, isolation.VALIDATION_BUDGET)
     assert dict(run.results)["cpu"] == 20
 
 
@@ -861,7 +863,7 @@ def test_timeout_terminates_the_child(
     """
     content = _slow(monkeypatch)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 1.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 1.0)
     pids = _spy_children(monkeypatch)
     start = time.perf_counter()
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
@@ -885,7 +887,7 @@ def test_timeout_keeps_the_entries_validated_before(
     """The entries the child validated before the timeout keep their issues."""
     content = _slow(monkeypatch)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 3.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 3.0)
     documents = {
         "a.xml": (EXAMPLES_DIR / "validation.xml").read_text(),
         "b.xml": content.decode(),
@@ -960,8 +962,8 @@ def test_memory_limit_skips_the_entry(
     content = _flat(20_000)
     # the address space of the child is far beyond the limit already, so every
     # page it maps from now on fails
-    monkeypatch.setattr(isolation, "VALIDATION_MEMORY", 1024 * 1024)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 20.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "memory", 1024 * 1024)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 20.0)
     pids = _spy_children(monkeypatch)
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
         response = validation_for_bytes(content)
@@ -983,8 +985,8 @@ def test_validation_within_the_memory_limit() -> None:
 def test_semaphore_bounds_the_children(
     monkeypatch: pytest.MonkeyPatch, limit: int
 ) -> None:
-    """At most `MAX_CONCURRENT_VALIDATIONS` children run at a time."""
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", limit)
+    """At most as many children run at a time as the concurrency of the budget."""
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", limit)
     running = 0
     most = 0
     lock = threading.Lock()
@@ -1020,11 +1022,11 @@ def test_semaphore_bounds_the_children(
 
 def test_waiting_beyond_the_timeout_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
     """A request which gets no child before its timeout is busy, not slow."""
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 1.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 1.0)
     pids = _spy_children(monkeypatch)
     # another request holds the one child
-    semaphore = isolation._semaphore()
+    semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
     try:
         start = time.perf_counter()
@@ -1040,12 +1042,12 @@ def test_waiting_beyond_the_timeout_is_busy(monkeypatch: pytest.MonkeyPatch) -> 
 
 def test_a_child_free_too_late_is_busy(monkeypatch: pytest.MonkeyPatch) -> None:
     """A child which gets free shortly before the timeout is not started."""
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 2.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 2.0)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 1.0)
     pids = _spy_children(monkeypatch)
     # another request holds the one child and frees it 1.5 s from now
-    semaphore = isolation._semaphore()
+    semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
     release = threading.Timer(1.5, semaphore.release)
     start = time.perf_counter()
@@ -1098,6 +1100,11 @@ def _post_and_leave(port: int, content: bytes, until: Callable[[], bool]) -> Non
             time.sleep(0.05)
 
 
+def _validations_admitted() -> int:
+    """The validations the server admitted, running or waiting for a child."""
+    return isolation._admitted.get(isolation.VALIDATION_BUDGET.name, 0)
+
+
 def _until_gone(condition: Callable[[], bool], seconds: float) -> bool:
     """Whether the condition holds within some seconds."""
     limit = time.monotonic() + seconds
@@ -1119,7 +1126,7 @@ def test_a_client_which_leaves_ends_its_validation(
         _post_and_leave(port, content, lambda: bool(pids))
         left = time.monotonic()
         assert _until_gone(lambda: _gone(pids[0]), 3.0)
-        assert _until_gone(lambda: isolation._admitted == 0, 3.0)
+        assert _until_gone(lambda: _validations_admitted() == 0, 3.0)
         assert time.monotonic() - left < 3.0
         # the run directory of the child is gone with it
         assert _until_gone(lambda: list((tmp_path / "tmp").iterdir()) == [], 3.0)
@@ -1129,16 +1136,16 @@ def test_a_client_which_leaves_while_waiting_frees_its_admission(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A validation waiting for a child ends when its client disconnects."""
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
     pids = _spy_children(monkeypatch)
     content = (EXAMPLES_DIR / "validation.xml").read_bytes()
     # another request holds the one child
-    semaphore = isolation._semaphore()
+    semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
     try:
         with _live_server() as port:
-            _post_and_leave(port, content, lambda: isolation._admitted == 1)
-            assert _until_gone(lambda: isolation._admitted == 0, 3.0)
+            _post_and_leave(port, content, lambda: _validations_admitted() == 1)
+            assert _until_gone(lambda: _validations_admitted() == 0, 3.0)
     finally:
         semaphore.release()
     assert pids == []
@@ -1239,7 +1246,7 @@ def test_the_standard_error_of_a_child_is_logged_escaped(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """The log gets the end of what a child wrote, its control characters escaped."""
-    run = isolation.run_isolated(_noisy, None)
+    run = isolation.run_isolated(_noisy, None, isolation.VALIDATION_BUDGET)
     assert run.results == [("done", 1)]
     [record] = [r for r in caplog.records if "wrote" in r.getMessage()]
     message = record.getMessage()
@@ -1279,5 +1286,5 @@ def _status(_: object) -> Iterator[tuple[str, int]]:
 @pytest.mark.skipif(not Path("/proc/self/status").exists(), reason="Linux only")
 def test_a_child_starts_with_a_small_address_space() -> None:
     """The forkserver has no thread pool of numpy whose stacks a child inherits."""
-    run = isolation.run_isolated(_status, None)
+    run = isolation.run_isolated(_status, None, isolation.VALIDATION_BUDGET)
     assert dict(run.results)["VmSize"] < 600 * 1024

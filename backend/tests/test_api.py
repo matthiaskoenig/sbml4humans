@@ -696,11 +696,11 @@ def test_validation_of_an_example_with_a_timeout_is_not_kept(
     """A validation which was ended by its limits is tried again next time."""
     from sbml4humans import isolation
 
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 0.2)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 0.2)
     api.example_validations.clear()
     # another validation holds the one child
-    semaphore = isolation._semaphore()
+    semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     with semaphore:
         data = client.get("/api/validation/examples/species (species.xml)").json()
     assert data["skipped"] == "busy"
@@ -884,9 +884,9 @@ def test_a_validation_beyond_the_admission_is_busy_at_once(
     """A server full of validations answers a further one at once as busy."""
     from sbml4humans import isolation
 
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "MAX_WAITING_VALIDATIONS", 0)
-    with isolation.admission() as admitted:
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "waiting", 0)
+    with isolation.admission(isolation.VALIDATION_BUDGET) as admitted:
         assert admitted
         start = time.perf_counter()
         response = client.post(
@@ -910,10 +910,10 @@ def test_a_busy_validation_of_a_url_downloads_nothing(
         return COMP_DELETION.read_bytes()
 
     monkeypatch.setattr(api, "download", download)
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "MAX_WAITING_VALIDATIONS", 0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "waiting", 0)
     url = "https://example.org/comp_deletion.xml"
-    with isolation.admission() as admitted:
+    with isolation.admission(isolation.VALIDATION_BUDGET) as admitted:
         assert admitted
         data = client.get("/api/validation/url", params={"url": url}).json()
     assert data == {"entries": {}, "skipped": "busy"}
@@ -946,15 +946,18 @@ def test_reports_are_answered_while_validations_are_saturated(
 
     from sbml4humans import isolation
 
-    monkeypatch.setattr(isolation, "MAX_CONCURRENT_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "MAX_WAITING_VALIDATIONS", 1)
-    monkeypatch.setattr(isolation, "VALIDATION_TIMEOUT", 3.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "waiting", 1)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 3.0)
     content = REPRESSILATOR_SBML.read_bytes()
 
     async def one_thread() -> None:
         to_thread.current_default_thread_limiter().total_tokens = 1
 
-    semaphore = isolation._semaphore()
+    def validations_admitted() -> int:
+        return isolation._admitted.get(isolation.VALIDATION_BUDGET.name, 0)
+
+    semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     with (
         semaphore,
         TestClient(api.api, raise_server_exceptions=False) as local_client,
@@ -971,9 +974,9 @@ def test_reports_are_answered_while_validations_are_saturated(
         for thread in threads:
             thread.start()
         waited = time.perf_counter()
-        while isolation._admitted < 2 and time.perf_counter() - waited < 10:
+        while validations_admitted() < 2 and time.perf_counter() - waited < 10:
             time.sleep(0.01)
-        assert isolation._admitted == 2
+        assert validations_admitted() == 2
 
         start = time.perf_counter()
         report = local_client.post("/api/content", content=content)
