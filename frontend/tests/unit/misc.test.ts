@@ -167,6 +167,24 @@ describe("misc components", () => {
     expect(wrapper.find(".katex").exists()).toBe(true);
   });
 
+  it("shows a math without latex as text, without a button which could not render it", async () => {
+    // the backend leaves the latex out for a math it cannot typeset, a Level 1 `lambda()`
+    // formula or a math too deep for its xml parser, and the formula is reported alone
+    for (const latex of [null, undefined]) {
+      const wrapper = mount(MathView, {
+        props: { math: { latex, formula: "lambda()" }, display: true },
+        global: { directives: { tooltip: vTooltip } },
+      });
+      const text = wrapper.get("[data-testid=math-text]");
+      expect(text.text()).toBe("lambda()");
+      expect(wrapper.find(".katex").exists()).toBe(false);
+      expect(wrapper.find("[data-testid=math-render]").exists()).toBe(false);
+      await text.trigger("mouseenter");
+      expect(document.getElementById("app-tooltip")?.textContent).toBe("lambda() (click to copy)");
+      await text.trigger("mouseleave");
+    }
+  });
+
   it("resets the render-on-demand state when the math prop changes", async () => {
     const first = sumBeyondLimit("x");
     const second = sumBeyondLimit("y");

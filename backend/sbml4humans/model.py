@@ -56,9 +56,13 @@ Double = Annotated[
 # value types
 # -------------------------------------------------------------------------------------
 class Math(ReportModel):
-    """The math of an element as latex and as L3 formula string."""
+    """The math of an element as latex and as L3 formula string.
 
-    latex: str
+    The latex is absent for a math the backend cannot typeset (`mathml.py`),
+    and the report then shows the infix formula alone.
+    """
+
+    latex: str | None = None
     formula: str
 
 

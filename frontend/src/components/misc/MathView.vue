@@ -18,10 +18,11 @@ watch(
   },
 );
 
-/** Null when the formula is too long to render by default and has not been forced yet, or when
- * KaTeX throws. */
+/** Null when the math carries no latex at all, which the backend leaves out for a math it
+ * cannot typeset, when the formula is too long to render by default and has not been forced
+ * yet, or when KaTeX throws. */
 const html = computed(() =>
-  props.math
+  props.math?.latex != null
     ? renderLatex(props.math.latex, {
         display: props.display ?? false,
         unlimited: forceUnlimited.value,
@@ -66,8 +67,9 @@ function copy(event: MouseEvent): void {
       @click="copy"
       >{{ truncatedFormula }}</span
     >
+    <!-- a math without latex has nothing to render, the button would do nothing -->
     <button
-      v-if="display"
+      v-if="display && math.latex != null"
       type="button"
       class="text-xs text-link hover:underline"
       data-testid="math-render"

@@ -8,6 +8,9 @@ import pytest
 from sbml4humans import mathml
 
 
+# the pk `math_info` names in its log, which a unit test does not read
+PK = "m/AssignmentRule:r"
+
 formulas = [
     "1 dimensionless",
     "power(3, 5) / x * glc",
@@ -113,8 +116,9 @@ def test_symbol_to_latex(symbol: str, expected: str) -> None:
 def test_math_info() -> None:
     """The math of a node is rendered as latex and as formula."""
     astnode = libsbml.parseL3Formula("k1 * S1 / (KM + S1)")
-    info = mathml.math_info(astnode)
+    info = mathml.math_info(astnode, PK)
     assert info.formula == "k1 * S1 / (KM + S1)"
+    assert info.latex is not None
     assert r"\mathit{S1}" in info.latex
 
 
@@ -136,6 +140,12 @@ def test_math_symbols_of_nested_lambda() -> None:
     assert mathml.math_symbols(astnode) == {"k"}
 
 
+def test_math_symbols_of_a_bound_variable_which_is_free_outside_its_lambda() -> None:
+    """A name a lambda binds is still a symbol where it occurs outside that lambda."""
+    astnode = libsbml.parseL3Formula("x + lambda(x, x * q)")
+    assert mathml.math_symbols(astnode) == {"q", "x"}
+
+
 @pytest.mark.parametrize(
     "formula, expected",
     [
@@ -154,7 +164,8 @@ def test_logical_connectives_are_rendered_as_operators(
     up glued to its operands ("(S >= t1)and(P < t2)"), which is what the
     condition of every function term of a qualitative model is built from.
     """
-    latex = mathml.math_info(libsbml.parseL3Formula(formula)).latex
+    latex = mathml.math_info(libsbml.parseL3Formula(formula), PK).latex
+    assert latex is not None
     assert expected in latex
     assert "and(" not in latex
 
@@ -211,3 +222,139 @@ def test_latex_in_threads() -> None:
     with ThreadPoolExecutor(max_workers=8) as executor:
         for latex in executor.map(render, range(32)):
             assert latex == expected
+
+
+# -------------------------------------------------------------------------------------
+# a math which cannot be typeset
+# -------------------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    "formula", ["lambda()", "1 + lambda()", "k * lambda()", "abs(lambda())"]
+)
+def test_a_childless_lambda_is_no_mathml(formula: str) -> None:
+    """A childless lambda is refused wherever it sits in the tree.
+
+    The Level 1 parser accepts `lambda()` as an `AST_LAMBDA` without children,
+    whose MathML libsbml cannot write: `writeMathMLToString` ends the process
+    with SIGSEGV (sbmlteam/libsbml#521), so the node is never handed to it.
+    """
+    astnode = libsbml.parseFormula(formula)
+    assert astnode is not None
+    assert mathml.unwritable_mathml(astnode) == "it holds a lambda without children"
+    with pytest.raises(mathml.UnwritableMathError, match="lambda without children"):
+        mathml.astnode_to_latex(astnode)
+
+
+@pytest.mark.parametrize(
+    "formula", ["lambda(x)", "lambda(x, x)", "lambda(x, y, x + y)"]
+)
+def test_a_lambda_with_children_is_mathml(formula: str) -> None:
+    """A lambda with children is written and typeset as every other math is."""
+    astnode = libsbml.parseFormula(formula)
+    assert mathml.unwritable_mathml(astnode) is None
+    assert mathml.astnode_to_latex(astnode)
+
+
+@pytest.mark.parametrize(
+    "formula", ["lambda()", "1 + lambda()", "k * lambda()", "abs(lambda())"]
+)
+def test_math_info_of_an_unwritable_math_is_its_formula(formula: str) -> None:
+    """The math of a node libsbml cannot write is its formula without latex.
+
+    `formulaToL3String` and `formulaToString` write the node without trouble,
+    so the formula side of the report is unaffected.
+    """
+    astnode = libsbml.parseFormula(formula)
+    info = mathml.math_info(astnode, PK)
+    assert info.formula == formula
+    assert info.latex is None
+
+
+@pytest.mark.parametrize(("applies", "has_latex"), [(254, True), (255, False)])
+def test_math_info_of_a_math_too_deep_for_lxml_is_its_formula(
+    applies: int, has_latex: bool
+) -> None:
+    """The math of a node lxml refuses to parse is its formula without latex.
+
+    lxml refuses a document deeper than 256 elements, which the MathML of 255
+    nested applies is; at 254 the latex is still produced. libsbml writes the
+    MathML of either depth, the wall is the parser of lxml.
+    """
+    deep = libsbml.parseL3Formula(
+        "a - " + "(a - " * (applies - 1) + "a" + ")" * (applies - 1)
+    )
+    assert deep is not None
+    assert mathml.unwritable_mathml(deep) is None
+    info = mathml.math_info(deep, PK)
+    assert info.formula.startswith("a - (a - (a")
+    assert (info.latex is not None) == has_latex
+
+
+# -------------------------------------------------------------------------------------
+# the walks over an AST, which are iterative because an AST is deep
+# -------------------------------------------------------------------------------------
+def _wide_sum(terms: int) -> libsbml.ASTNode:
+    """The AST of a flat MathML sum of `terms` names.
+
+    The MathML reader of libsbml keeps no flat n-ary operator: it answers a
+    right nested binary tree, so the root of a sum of `terms` names has two
+    children and the tree is `terms` levels deep. A sum of a few hundred terms
+    is what a real model brings, and it is what a recursive walk dies on.
+    """
+    cis = "".join(f"<ci> x{k} </ci>" for k in range(terms))
+    astnode = libsbml.readMathMLFromString(
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"<apply><plus/>{cis}</apply></math>"
+    )
+    assert astnode is not None
+    return astnode
+
+
+def _depth(astnode: libsbml.ASTNode) -> int:
+    """The depth of an AST, counted without recursion."""
+    deepest = 0
+    stack: list[tuple[libsbml.ASTNode, int]] = [(astnode, 1)]
+    while stack:
+        node, depth = stack.pop()
+        deepest = max(deepest, depth)
+        stack.extend(
+            (node.getChild(k), depth + 1) for k in range(node.getNumChildren())
+        )
+    return deepest
+
+
+def test_a_flat_sum_is_read_as_a_deep_tree() -> None:
+    """The premise of the walks: a wide sum of MathML is a deep AST."""
+    astnode = _wide_sum(800)
+    assert astnode.getNumChildren() == 2
+    assert _depth(astnode) == 800
+
+
+def test_the_walks_answer_a_wide_sum() -> None:
+    """Every walk answers a sum far beyond the recursion limit of python."""
+    terms = 2000
+    astnode = _wide_sum(terms)
+    assert mathml.unwritable_mathml(astnode) is None
+    assert mathml.math_symbols(astnode) == {f"x{k}" for k in range(terms)}
+    assert mathml.math_units(astnode) == set()
+
+
+def test_the_walks_answer_a_deep_math() -> None:
+    """Every walk answers a math nested far beyond the recursion limit."""
+    applies = 2000
+    astnode = libsbml.parseL3Formula(
+        "a - " + "(a - " * (applies - 1) + "1 mole" + ")" * (applies - 1)
+    )
+    assert astnode is not None
+    assert _depth(astnode) == applies + 1
+    assert mathml.unwritable_mathml(astnode) is None
+    assert mathml.math_symbols(astnode) == {"a"}
+    assert mathml.math_units(astnode) == {"mole"}
+
+
+def test_a_childless_lambda_is_found_at_the_bottom_of_a_deep_math() -> None:
+    """The guard reaches the whole tree, not the levels a recursion survives."""
+    astnode = libsbml.parseFormula("abs(" * 2000 + "lambda()" + ")" * 2000)
+    assert astnode is not None
+    assert _depth(astnode) == 2001
+    assert mathml.unwritable_mathml(astnode) == "it holds a lambda without children"
+    assert mathml.math_info(astnode, PK).latex is None

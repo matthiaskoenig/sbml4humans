@@ -614,7 +614,7 @@ class SBMLDocumentInfo:
         self.symbols.setdefault(owner_pk, set()).update(math_symbols(astnode))
         if units := math_units(astnode):
             self.units_of_math.setdefault(owner_pk, set()).update(units)
-        return math_info(astnode)
+        return math_info(astnode, owner_pk)
 
     def units(self, sid: str | None, model: libsbml.Model) -> str | None:
         """The latex rendering of a unit sid of the model."""

@@ -676,6 +676,8 @@ description = """
 SBML stores a formula as content MathML, which is precise and unreadable. The report turns it into the typeset formula a textbook would print, with fractions, powers, subscripts for the parts of a name and greek letters where a name is one, and keeps the same expression as an infix formula next to it, so that it can be read and copied as text.
 
 The rendered formula is the column "math" of the tables of rules, function definitions, constraints and events, the kinetic law of a reaction, and the mathematics shown in the inspector. Where a formula names an element of the model, the report also links that element as a link of the kind "math".
+
+Not every formula can be typeset. A formula too long to render is shown as text until it is rendered on demand, and the few formulas the report cannot typeset at all, a math whose content MathML libsbml refuses to write and a math nested more than 254 levels deep, are shown as the infix text alone. One such formula costs its own rendering and nothing else: the report of the document and of its every other element is the same as without it.
 """
 
 [concepts.unitsLatex]

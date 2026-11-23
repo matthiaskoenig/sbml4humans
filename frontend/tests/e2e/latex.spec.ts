@@ -4,8 +4,11 @@ import { expectReport } from "./helpers";
 
 /** An assignment rule whose math sums TERM_COUNT `<ci>` terms: the backend turns it into 11,090
  * characters of LaTeX, well past MAX_LATEX_LENGTH, so the assignment rule table must show it as
- * text instead of rendering it with KaTeX. The backend's conversion of the math to LaTeX fails
- * for a flat sum of about 1,000 terms, which keeps the count below that. */
+ * text instead of rendering it with KaTeX. 800 is the smallest round count whose LaTeX clears
+ * the limit, and a larger model only makes the paste and the report slower. libsbml reads such a
+ * sum as a tree as deep as the sum is wide, which no walk of the backend recurses over any more:
+ * `tests/test_report.py::test_a_wide_sum_keeps_the_report_and_its_latex` covers 800 and 1,200
+ * terms without a browser. */
 const TERM_COUNT = 800;
 const parameters = Array.from(
   { length: TERM_COUNT },
