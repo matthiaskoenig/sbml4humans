@@ -2,12 +2,16 @@
 
 import os
 import shutil
+import socket
 import tempfile
+import threading
+import time
 from collections.abc import Callable, Iterator
 from multiprocessing.util import Finalize
 from typing import Any
 
 import pytest
+import uvicorn
 from fastapi.testclient import TestClient
 
 from sbml4humans import isolation, validation
@@ -133,3 +137,64 @@ def spy_children(monkeypatch: pytest.MonkeyPatch) -> list[int]:
 
     monkeypatch.setattr(isolation, "_start", spy)
     return pids
+
+
+# -------------------------------------------------------------------------------------
+# a server a client can leave, which the `TestClient` never does
+# -------------------------------------------------------------------------------------
+@pytest.fixture
+def live_server() -> Iterator[int]:
+    """The port of the api served by uvicorn on the loopback interface."""
+    server = uvicorn.Server(
+        uvicorn.Config(api, host="127.0.0.1", port=0, log_level="warning")
+    )
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    started = time.monotonic() + 20
+    while not server.started:
+        assert time.monotonic() < started, "the server did not start"
+        time.sleep(0.05)
+    try:
+        yield server.servers[0].sockets[0].getsockname()[1]
+    finally:
+        server.should_exit = True
+        thread.join(10)
+
+
+def _post_and_leave(
+    port: int, path: str, content: bytes, until: Callable[[], bool]
+) -> None:
+    """Post the content to a path, close the connection once `until` holds."""
+    with socket.create_connection(("127.0.0.1", port)) as connection:
+        connection.sendall(
+            f"POST {path} HTTP/1.1\r\nHost: 127.0.0.1\r\n".encode()
+            + b"Content-Type: application/octet-stream\r\n"
+            + f"Content-Length: {len(content)}\r\n\r\n".encode()
+            + content
+        )
+        limit = time.monotonic() + 20
+        while not until():
+            assert time.monotonic() < limit, "the request did not start"
+            time.sleep(0.05)
+
+
+@pytest.fixture
+def post_and_leave() -> Callable[..., None]:
+    """Post content to an endpoint of a live server and leave while it works."""
+    return _post_and_leave
+
+
+def _eventually(condition: Callable[[], bool], seconds: float) -> bool:
+    """Whether the condition holds within some seconds."""
+    limit = time.monotonic() + seconds
+    while not condition():
+        if time.monotonic() > limit:
+            return False
+        time.sleep(0.05)
+    return True
+
+
+@pytest.fixture
+def eventually() -> Callable[..., bool]:
+    """Wait for a condition, and say whether it held within its seconds."""
+    return _eventually

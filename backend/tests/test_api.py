@@ -3,19 +3,20 @@
 import asyncio
 import contextlib
 import gzip
-import io
 import json
+import os
 import threading
 import time
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Any
 
 import pytest
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
+from starlette.responses import Response
 
-from sbml4humans import __version__, annotations, api, limits
+from sbml4humans import __version__, annotations, api, isolation, limits, report
 from sbml4humans.annotations import AnnotationResource, OntologyTerm
 from sbml4humans.examples import load_examples, report_for_example
 from sbml4humans.model import ReportResponse
@@ -194,18 +195,22 @@ def test_an_infinite_value_reaches_the_frontend(client: TestClient) -> None:
     assert parameters["lb_inf"] == "-Infinity"
 
 
-def test_a_report_endpoint_returns_the_response_for_fastapi_to_write() -> None:
-    """A report endpoint hands its response to FastAPI, which writes it once.
+def test_a_report_of_a_request_is_the_json_of_its_child(client: TestClient) -> None:
+    """A report endpoint answers the JSON of its child, which wrote it once.
 
     The endpoints dumped the response to a dictionary through its JSON, which
     FastAPI validated into the response model again and wrote a second time:
-    three passes over a report of 100 MB. FastAPI takes the model as it is
-    and writes its JSON in one pass, with the constants of a double which JSON
-    has no literal for as the strings of the model configuration.
+    three passes over a report of 100 MB. The JSON of a report of a request is
+    written once now, by pydantic in the child which built it, which applies
+    the configuration of the model: camelCase keys and the constants of a
+    double which JSON has no literal for as strings.
     """
-    upload = UploadFile(file=io.BytesIO(REPRESSILATOR_SBML.read_bytes()))
-    response = api.report_from_file(upload)
-    assert isinstance(response, ReportResponse)
+    content = (EXAMPLES_DIR / "fbc_bounds_v1.xml").read_bytes()
+    response = client.post("/api/content", content=content)
+    data = next(iter(_strict_json(response.content)["reports"].values()))["report"]
+    assert "linkGraph" in data
+    bounds = {b["id"]: b["value"] for b in data["models"][0]["listOfFluxBounds"]}
+    assert bounds["v1_ub"] == "Infinity"
 
 
 def _without_request(data: dict[str, Any]) -> dict[str, Any]:
@@ -649,6 +654,238 @@ def test_cleanup_continues_after_a_failure(
 
 
 # -------------------------------------------------------------------------------------
+# the report of a request, which a child process builds
+# -------------------------------------------------------------------------------------
+def _crashing_child(job: report.ReportJob) -> Iterator[tuple[str, bytes]]:
+    """End the child process before it reports, as a document of libsbml can.
+
+    `multiprocessing` pickles the function of a child by its name, so the child
+    imports this module and runs this replacement of `report.report_gzip`.
+    """
+    os._exit(1)
+
+
+def _reports_admitted() -> int:
+    """The reports the server admitted, running or waiting for a child."""
+    return isolation._admitted.get(isolation.REPORT_BUDGET.name, 0)
+
+
+def test_a_report_is_answered_gzipped(client: TestClient) -> None:
+    """The gzipped JSON of the child is the body of the response."""
+    response = client.post(
+        "/api/content",
+        content=REPRESSILATOR_SBML.read_bytes(),
+        headers={"Accept-Encoding": "gzip"},
+    )
+    assert response.headers["content-encoding"] == "gzip"
+    # the CORS middleware names `Origin` in `Vary` of every response as well
+    assert "Accept-Encoding" in response.headers["vary"].split(", ")
+    # httpx decompresses the body
+    assert ReportResponse.model_validate(response.json()).reports
+
+
+def test_a_client_without_gzip_reads_plain_json(client: TestClient) -> None:
+    """A client which does not accept gzip reads the JSON of the same report."""
+    content = REPRESSILATOR_SBML.read_bytes()
+    plain = client.post(
+        "/api/content", content=content, headers={"Accept-Encoding": "identity"}
+    )
+    gzipped = client.post(
+        "/api/content", content=content, headers={"Accept-Encoding": "gzip"}
+    )
+    assert "content-encoding" not in plain.headers
+    assert gzipped.headers["content-encoding"] == "gzip"
+    assert ReportResponse.model_validate(plain.json()).reports
+    # the expanded JSON is the one the gzipped bytes hold, which httpx expands
+    assert _without_request(_strict_json(plain.content)) == _without_request(
+        _strict_json(gzipped.content)
+    )
+
+
+def test_a_report_without_gzip_is_not_expanded_on_the_event_loop(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The JSON of a report is expanded in a thread, never on the event loop.
+
+    The largest report expands from 5.8 MB to 109 MB, which would stall every
+    other request of the worker while it runs, the watchers of the clients
+    which left among them.
+    """
+    expand = gzip.decompress
+    threads: list[int] = []
+
+    def spy(data: bytes) -> bytes:
+        """Expand the JSON and record the thread it was expanded in."""
+        threads.append(threading.get_ident())
+        return expand(data)
+
+    packed = gzip.compress(b'{"uid": "the report"}')
+    scope = {
+        "type": "http",
+        "method": "POST",
+        "path": "/api/content",
+        "query_string": b"",
+        "headers": [(b"accept-encoding", b"identity")],
+    }
+
+    async def answer() -> tuple[Response, int]:
+        """The response of the report, and the thread of the event loop."""
+        return (
+            await api.report_response(Request(scope), packed),
+            threading.get_ident(),
+        )
+
+    monkeypatch.setattr(gzip, "decompress", spy)
+    response, loop = asyncio.run(answer())
+    assert response.body == b'{"uid": "the report"}'
+    assert len(threads) == 1
+    assert threads[0] != loop
+
+
+def test_every_report_endpoint_answers_the_same_report(
+    client: TestClient,
+    uploads: UploadStore,
+    monkeypatch: pytest.MonkeyPatch,
+    spy_children: list[int],
+) -> None:
+    """One document is one report through content, file, url and upload.
+
+    Every one of the four reads it in a child process, and the upload once
+    more before the store keeps it: nothing of an untrusted source is read in
+    the process of the server.
+    """
+    content = REPRESSILATOR_SBML.read_bytes()
+
+    def download(url: str) -> bytes:
+        return content
+
+    monkeypatch.setattr(api, "download", download)
+    upload_id = client.post(
+        "/api/upload", files={"source": ("model.xml", content)}
+    ).json()["id"]
+    answers = [
+        client.post("/api/content", content=content),
+        client.post("/api/file", files={"source": ("model.xml", content)}),
+        client.get("/api/url", params={"url": "https://example.org/model.xml"}),
+        client.get(f"/api/upload/{upload_id}"),
+    ]
+    # the uid and the times of the debug data differ between two reads
+    reports = [_without_request(_strict_json(answer.content)) for answer in answers]
+    _check_report(reports[0])
+    assert reports[1:] == reports[:-1]
+    assert len(spy_children) == len(answers) + 1
+
+
+def test_a_report_beyond_the_admission_is_busy(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A server full of reports answers a further one at once as busy.
+
+    A busy report is an error of the contract: the report is the answer of its
+    request, where a busy validation is one part of a page the frontend shows
+    without it.
+    """
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "waiting", 0)
+    with isolation.admission(isolation.REPORT_BUDGET) as admitted:
+        assert admitted
+        start = time.perf_counter()
+        response = client.post("/api/content", content=REPRESSILATOR_SBML.read_bytes())
+        elapsed = time.perf_counter() - start
+    assert response.status_code == 200
+    data = response.json()
+    _check_error(data, info={})
+    assert "busy" in data["errors"][0]
+    assert elapsed < 2.0
+
+
+def test_a_busy_report_of_a_url_downloads_nothing(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A report is admitted before its source is downloaded.
+
+    A client which loops over large urls would otherwise cost a full server
+    the download of every report it refuses.
+    """
+    urls: list[str] = []
+
+    def download(url: str) -> bytes:
+        urls.append(url)
+        return REPRESSILATOR_SBML.read_bytes()
+
+    monkeypatch.setattr(api, "download", download)
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "concurrency", 1)
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "waiting", 0)
+    url = "https://example.org/model.xml"
+    with isolation.admission(isolation.REPORT_BUDGET) as admitted:
+        assert admitted
+        data = client.get("/api/url", params={"url": url}).json()
+    _check_error(data, info={"url": url})
+    assert "busy" in data["errors"][0]
+    assert urls == []
+
+
+def test_a_report_which_crashes_is_an_error_body(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A document which ends the process which reads it is an error of its request."""
+    monkeypatch.setattr(report, "report_gzip", _crashing_child)
+    response = client.post("/api/content", content=REPRESSILATOR_SBML.read_bytes())
+    assert response.status_code == 200
+    data = response.json()
+    _check_error(data, info={})
+    assert "ended unexpectedly" in data["errors"][0]
+
+
+def test_an_upload_whose_report_crashes_is_not_kept(
+    client: TestClient, uploads: UploadStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """An upload is vetted by the child before the store keeps it."""
+    monkeypatch.setattr(report, "report_gzip", _crashing_child)
+    response = client.post(
+        "/api/upload", files={"source": ("model.xml", REPRESSILATOR_SBML.read_bytes())}
+    )
+    data = response.json()
+    _check_error(data, info={})
+    assert "ended unexpectedly" in data["errors"][0]
+    assert list(uploads.directory.iterdir()) == []
+
+
+def test_a_report_of_an_example_forks_no_child(
+    client: TestClient, spy_children: list[int]
+) -> None:
+    """A trusted source pays nothing for the isolation of a request."""
+    api.example_report_gzip.cache_clear()
+    assert client.get("/api/examples/annotation (annotation.xml)").status_code == 200
+    assert spy_children == []
+
+
+def test_a_report_whose_client_leaves_frees_its_admission(
+    monkeypatch: pytest.MonkeyPatch,
+    spy_children: list[int],
+    live_server: int,
+    post_and_leave: Callable[..., None],
+    eventually: Callable[..., bool],
+) -> None:
+    """A report waiting for a child ends when its client disconnects."""
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "concurrency", 1)
+    # another request holds the one child
+    semaphore = isolation._semaphore(isolation.REPORT_BUDGET)
+    semaphore.acquire()
+    try:
+        post_and_leave(
+            live_server,
+            "/api/content",
+            REPRESSILATOR_SBML.read_bytes(),
+            lambda: _reports_admitted() == 1,
+        )
+        assert eventually(lambda: _reports_admitted() == 0, 3.0)
+    finally:
+        semaphore.release()
+    assert spy_children == []
+
+
+# -------------------------------------------------------------------------------------
 # validation
 # -------------------------------------------------------------------------------------
 VALIDATION_EXAMPLE = "validation (validation.xml)"
@@ -694,8 +931,6 @@ def test_validation_of_an_example_with_a_timeout_is_not_kept(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A validation which was ended by its limits is tried again next time."""
-    from sbml4humans import isolation
-
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 0.2)
     api.example_validations.clear()
@@ -882,8 +1117,6 @@ def test_a_validation_beyond_the_admission_is_busy_at_once(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A server full of validations answers a further one at once as busy."""
-    from sbml4humans import isolation
-
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "waiting", 0)
     with isolation.admission(isolation.VALIDATION_BUDGET) as admitted:
@@ -901,8 +1134,6 @@ def test_a_busy_validation_of_a_url_downloads_nothing(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A validation is admitted before its source is downloaded."""
-    from sbml4humans import isolation
-
     urls: list[str] = []
 
     def download(url: str) -> bytes:
@@ -924,8 +1155,6 @@ def test_the_forkserver_is_started_with_the_api(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The children of the first validation do not wait for the forkserver."""
-    from sbml4humans import isolation
-
     started: list[bool] = []
     monkeypatch.setattr(isolation, "start_forkserver", lambda: started.append(True))
     with TestClient(api.api, raise_server_exceptions=False):
@@ -943,8 +1172,6 @@ def test_reports_are_answered_while_validations_are_saturated(
     no child before their timeout and are busy as well.
     """
     from anyio import to_thread
-
-    from sbml4humans import isolation
 
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "waiting", 1)

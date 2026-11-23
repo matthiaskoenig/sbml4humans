@@ -20,23 +20,29 @@ client which accepts it. The report of an example is built once and kept
 gzipped (`example_report_gzip`), so that a request for it is answered without
 building or compressing it again.
 
-The validation of libsbml of a source is answered by endpoints of its own below
+The report of a source of a request and the validation of libsbml of it both
+run in a child process bounded in time and memory (`isolation.py`), waited for
+in a thread of a limiter of their own (`report_limiter`, `validation_limiter`),
+so that they never hold a thread of the other endpoints, and cancelled when
+their client disconnects (`run_report`, `run_validation`): the child is killed
+and the admission freed at once. Work beyond the admission of the server is
+busy: a report says so as an error of the contract, since the report is the
+answer of its request, a validation as a `ValidationResponse` without entries,
+since it is one part of a page the frontend shows without it.
+
+A report endpoint answers the gzipped JSON of its `ReportResponse`, which was
+written once where the report was built: by pydantic in the child of a request
+(`report.report_gzip_for_bytes`) or in the server for an example
+(`example_report_gzip`). The JSON applies the configuration of the model:
+camelCase keys and an infinite value or a value which is not a number as the
+strings `"Infinity"`, `"-Infinity"` and `"NaN"`. `report_response` sends those
+bytes to a client which accepts gzip and the JSON to one which does not.
+
+The validation of a source is answered by endpoints of its own below
 `/api/validation/`, which take the sources of the report endpoints with their
 limits and their trust and answer a `ValidationResponse`, so that a report is
-shown before its validation has ended. The validation runs in a child process
-bounded in time and memory (`isolation.py`), waited for in a thread of its own
-(`validation_limiter`), so that it never holds a thread of the other endpoints;
-a validation beyond the admission of the server is answered at once as busy.
-A validation whose client disconnects is cancelled (`run_validation`): its
-child is killed and its admission freed at once.
-The validation of an example is kept (`example_validations`) unless a limit
-ended it.
-
-A report endpoint returns its `ReportResponse` as it is. FastAPI takes an
-instance of the response model without validating it again and writes its JSON
-in one pass of pydantic, which applies the configuration of the model: camelCase
-keys and an infinite value or a value which is not a number as the strings
-`"Infinity"`, `"-Infinity"` and `"NaN"`.
+shown before its validation has ended. The validation of an example is kept
+(`example_validations`) unless a limit ended it.
 """
 
 import asyncio
@@ -88,8 +94,9 @@ from sbml4humans.report import (
 )
 from sbml4humans.report import (
     OdeFile,
+    ReportInterruptedError,
     ode_for_bytes,
-    report_for_bytes,
+    report_gzip_for_bytes,
     validation_for_bytes,
 )
 from sbml4humans.uploads import CLEANUP_INTERVAL, UploadStore, upload_store
@@ -326,23 +333,51 @@ def examples() -> dict[str, list[dict[str, Any]]]:
     }
 
 
+async def report_response(request: Request, packed: bytes) -> Response:
+    """The response of a report, whose JSON was written where it was built.
+
+    The JSON of a report is gzipped where it was written, in the child of a
+    request or in the cache of an example, which holds even the largest report
+    in a few megabytes: a client which accepts gzip reads those bytes as they
+    are, one which does not reads the JSON, which is expanded in a thread.
+
+    Args:
+        request: the request, whose `Accept-Encoding` decides the encoding.
+        packed: the gzipped JSON of the `ReportResponse`.
+
+    Returns:
+        The response of the report.
+    """
+    if "gzip" in request.headers.get("accept-encoding", ""):
+        return Response(
+            packed,
+            media_type="application/json",
+            headers={"Content-Encoding": "gzip", "Vary": "Accept-Encoding"},
+        )
+    # the JSON of the largest report expands from a few megabytes to a hundred,
+    # which the event loop may not do: it would stall every other request of
+    # the worker, the watchers of the clients which left among them. The gzip
+    # middleware names the header in `Vary` itself, and compresses a body of
+    # that size in a thread of its own as well
+    content = await run_in_threadpool(gzip.decompress, packed)
+    return Response(content, media_type="application/json")
+
+
 @api.get(
     "/api/examples/{example_id}",
     tags=["examples"],
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def example(example_id: str, request: Request) -> Response:
-    """The report data of an example, built on the first request for it."""
-    content = example_report_gzip(example_id)
-    if "gzip" in request.headers.get("accept-encoding", ""):
-        return Response(
-            content,
-            media_type="application/json",
-            headers={"Content-Encoding": "gzip", "Vary": "Accept-Encoding"},
-        )
-    # the gzip middleware names the header in `Vary` itself
-    return Response(gzip.decompress(content), media_type="application/json")
+async def example(example_id: str, request: Request) -> Response:
+    """The report data of an example, built on the first request for it.
+
+    The report of the first request for an example is built in a thread: it is
+    read in the process of the server, since an example is trusted, and takes
+    as long as the report of a request does.
+    """
+    packed = await run_in_threadpool(example_report_gzip, example_id)
+    return await report_response(request, packed)
 
 
 @lru_cache(maxsize=EXAMPLE_CACHE_SIZE)
@@ -366,15 +401,184 @@ def example_report_gzip(example_id: str) -> bytes:
     )
 
 
+# the threads of the isolated work of a kind, one per admitted run, apart from
+# the threadpool of the other endpoints, which a run waiting for its child
+# would otherwise hold
+_REPORT_LIMITER: RunVar[tuple[int, CapacityLimiter]] = RunVar("reports")
+_VALIDATION_LIMITER: RunVar[tuple[int, CapacityLimiter]] = RunVar("validations")
+
+
+def _limiter(
+    run_var: RunVar[tuple[int, CapacityLimiter]], budget: isolation.Budget
+) -> CapacityLimiter:
+    """The limiter of the threads of a budget of this event loop.
+
+    The limiter holds as many threads as the server admits runs of the budget,
+    and is replaced when that number changed, which a test lowers.
+
+    Args:
+        run_var: where the limiter of this event loop is kept.
+        budget: the budget whose runs wait in the threads.
+
+    Returns:
+        The limiter of the threads of the budget.
+    """
+    capacity = isolation.admission_capacity(budget)
+    try:
+        total, limiter = run_var.get()
+    except LookupError:
+        total, limiter = -1, None
+    if limiter is None or total != capacity:
+        limiter = CapacityLimiter(capacity)
+        run_var.set((capacity, limiter))
+    return limiter
+
+
+def report_limiter() -> CapacityLimiter:
+    """The limiter of the threads of the reports of this event loop."""
+    return _limiter(_REPORT_LIMITER, isolation.REPORT_BUDGET)
+
+
+def validation_limiter() -> CapacityLimiter:
+    """The limiter of the threads of the validations of this event loop."""
+    return _limiter(_VALIDATION_LIMITER, isolation.VALIDATION_BUDGET)
+
+
+async def _run_admitted[R](
+    request: Request,
+    limiter: CapacityLimiter,
+    function: Callable[..., R],
+    *args: Any,
+) -> R:
+    """Run the admitted work of a request in a thread of its limiter.
+
+    The work is cancelled when the client of the request disconnects: it stops
+    waiting for a child or its child is killed, and the thread and the
+    admission are free again.
+
+    Args:
+        request: the request whose client is watched.
+        limiter: the limiter of the threads of its kind of work.
+        function: the work, which runs in a thread of the limiter.
+        args: the arguments of the function.
+
+    Returns:
+        What the function returned.
+
+    Raises:
+        isolation.IsolatedRunCancelledError: if the client disconnected.
+        Exception: the exception the function raised.
+    """
+    cancel = threading.Event()
+    done: list[R] = []
+    failure: Exception | None = None
+    async with create_task_group() as group:
+        group.start_soon(_cancel_on_disconnect, request, cancel)
+        try:
+            done.append(
+                await to_thread.run_sync(
+                    isolation.run_cancellable, cancel, function, *args, limiter=limiter
+                )
+            )
+        except Exception as exc:
+            # raised outside of the task group, which would wrap it in an
+            # exception group
+            failure = exc
+        finally:
+            group.cancel_scope.cancel()
+    if failure is not None:
+        raise failure
+    return done[0]
+
+
+async def _cancel_on_disconnect(request: Request, cancel: threading.Event) -> None:
+    """Set `cancel` when the client of the request disconnects.
+
+    The body of the request has been read, so the next message of the
+    connection is its end.
+    """
+    while (await request.receive())["type"] != "http.disconnect":
+        pass
+    cancel.set()
+
+
+async def run_report(
+    request: Request, function: Callable[..., bytes], *args: Any
+) -> bytes:
+    """Build a report in a thread of the reports, if the server admits it.
+
+    A report beyond the admission of `isolation.REPORT_BUDGET` is an error of
+    the contract, which says that the server is busy: the report is the answer
+    of its request, where a busy validation is one part of a page the frontend
+    shows without it. A report whose client disconnects is busy as well, which
+    nobody reads.
+
+    Args:
+        request: the request of the report, whose client is watched.
+        function: what builds the report, which runs in a thread.
+        args: the arguments of the function.
+
+    Returns:
+        The gzipped JSON of the `ReportResponse` the function built.
+
+    Raises:
+        ReportInterruptedError: if the server is busy or the client left.
+        Exception: the exception the function raised.
+    """
+    with isolation.admission(isolation.REPORT_BUDGET) as admitted:
+        if not admitted:
+            logger.warning("a report was refused, the server is busy")
+            raise ReportInterruptedError("busy")
+        try:
+            return await _run_admitted(request, report_limiter(), function, *args)
+        except isolation.IsolatedRunCancelledError as exc:
+            logger.info("a report was cancelled, its client disconnected")
+            raise ReportInterruptedError("busy") from exc
+
+
+async def run_validation(
+    request: Request, function: Callable[..., ValidationResponse], *args: Any
+) -> ValidationResponse:
+    """Validate in a thread of the validations, if the server admits it.
+
+    A validation beyond the admission of `isolation.VALIDATION_BUDGET` is
+    answered at once as busy, without an entry, and never holds a thread of the
+    other endpoints. A validation whose client disconnects answers busy as
+    well, which nobody reads.
+
+    Args:
+        request: the request of the validation, whose client is watched.
+        function: what validates the source, which runs in a thread.
+        args: the arguments of the function.
+
+    Returns:
+        The validation, busy where the server had no room for it.
+
+    Raises:
+        Exception: the exception the function raised.
+    """
+    with isolation.admission(isolation.VALIDATION_BUDGET) as admitted:
+        if not admitted:
+            logger.warning("a validation was refused, the server is busy")
+            return ValidationResponse(skipped="busy")
+        try:
+            return await _run_admitted(request, validation_limiter(), function, *args)
+        except isolation.IsolatedRunCancelledError:
+            logger.info("a validation was cancelled, its client disconnected")
+            return ValidationResponse(skipped="busy")
+
+
 @api.post(
     "/api/file",
     tags=["reports"],
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def report_from_file(source: UploadFile) -> ReportResponse:
+async def report_from_file(source: UploadFile, request: Request) -> Response:
     """Create the report data of an uploaded SBML file or COMBINE archive."""
-    return report_for_bytes(source.file.read())
+    content = await source.read()
+    packed = await run_report(request, report_gzip_for_bytes, content)
+    return await report_response(request, packed)
 
 
 @api.get(
@@ -383,9 +587,24 @@ def report_from_file(source: UploadFile) -> ReportResponse:
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def report_from_url(url: str) -> ReportResponse:
-    """Create the report data of an SBML file or COMBINE archive behind a url."""
-    return report_for_bytes(download(url))
+async def report_from_url(url: str, request: Request) -> Response:
+    """Create the report data of an SBML file or COMBINE archive behind a url.
+
+    The report is admitted before the download, a busy server downloads
+    nothing.
+    """
+    packed = await run_report(request, report_of_download, url)
+    return await report_response(request, packed)
+
+
+def report_of_download(url: str) -> bytes:
+    """Download the source behind a url and report it, in the thread of the report.
+
+    The download is not cancelled when the client leaves, as the one of
+    `validation_of_download` is not: the cancellation reaches the child of the
+    report, which is started once the source is there.
+    """
+    return report_gzip_for_bytes(download(url))
 
 
 @api.post(
@@ -394,10 +613,11 @@ def report_from_url(url: str) -> ReportResponse:
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-async def report_from_content(request: Request) -> ReportResponse:
+async def report_from_content(request: Request) -> Response:
     """Create the report data of the SBML content in the request body."""
     content = await request.body()
-    return await run_in_threadpool(report_for_bytes, content)
+    packed = await run_report(request, report_gzip_for_bytes, content)
+    return await report_response(request, packed)
 
 
 class UploadResponse(BaseModel):
@@ -408,17 +628,21 @@ class UploadResponse(BaseModel):
 
 
 @api.post("/api/upload", tags=["reports"], response_model=UploadResponse)
-def upload(
-    source: UploadFile, store: Annotated[UploadStore, Depends(upload_store)]
+async def upload(
+    source: UploadFile,
+    store: Annotated[UploadStore, Depends(upload_store)],
+    request: Request,
 ) -> UploadResponse:
     """Keep an SBML file or COMBINE archive for 24 hours, for the report of its id.
 
-    The upload is reported once, so content which cannot be reported is an error
-    and not kept. Its size is limited by `BodyLimitMiddleware` like every body.
+    The upload is reported once in a child like every report of a request, so
+    content which cannot be reported is an error and not kept; its report is
+    built again for every request for it. Its size is limited by
+    `BodyLimitMiddleware` like every body.
     """
-    content = source.file.read()
-    report_for_bytes(content)
-    stored = store.put(content)
+    content = await source.read()
+    await run_report(request, report_gzip_for_bytes, content)
+    stored = await run_in_threadpool(store.put, content)
     return UploadResponse(id=stored.id, expires=stored.expires)
 
 
@@ -428,11 +652,15 @@ def upload(
     response_model=ReportResponse,
     response_model_by_alias=True,
 )
-def report_from_upload(
-    upload_id: str, store: Annotated[UploadStore, Depends(upload_store)]
-) -> ReportResponse:
+async def report_from_upload(
+    upload_id: str,
+    store: Annotated[UploadStore, Depends(upload_store)],
+    request: Request,
+) -> Response:
     """Create the report data of an upload."""
-    return report_for_bytes(store.get(upload_id))
+    content = await run_in_threadpool(store.get, upload_id)
+    packed = await run_report(request, report_gzip_for_bytes, content)
+    return await report_response(request, packed)
 
 
 class ExampleValidations:
@@ -473,78 +701,6 @@ class ExampleValidations:
 
 
 example_validations = ExampleValidations()
-
-# the threads of the validations, one per admitted validation, apart from the
-# threadpool of the other endpoints, which a validation waiting for its child
-# would otherwise hold
-_VALIDATION_LIMITER: RunVar[tuple[int, CapacityLimiter]] = RunVar("validations")
-
-
-def validation_limiter() -> CapacityLimiter:
-    """The limiter of the threads of the validations of this event loop."""
-    capacity = isolation.admission_capacity(isolation.VALIDATION_BUDGET)
-    try:
-        total, limiter = _VALIDATION_LIMITER.get()
-    except LookupError:
-        total, limiter = -1, None
-    if limiter is None or total != capacity:
-        limiter = CapacityLimiter(capacity)
-        _VALIDATION_LIMITER.set((capacity, limiter))
-    return limiter
-
-
-async def run_validation(
-    request: Request, function: Callable[..., ValidationResponse], *args: Any
-) -> ValidationResponse:
-    """Validate in a thread of the validations, if the server admits it.
-
-    A validation beyond the admission of `isolation.VALIDATION_BUDGET` is
-    answered at once as busy, without an entry, and never holds a thread of the
-    other endpoints. A validation whose client disconnects is cancelled: it
-    stops waiting for a child or its child is killed, and its admission is free
-    again; it answers busy, which nobody reads.
-    """
-    with isolation.admission(isolation.VALIDATION_BUDGET) as admitted:
-        if not admitted:
-            logger.warning("a validation was refused, the server is busy")
-            return ValidationResponse(skipped="busy")
-        cancel = threading.Event()
-        validation: ValidationResponse | None = None
-        failure: Exception | None = None
-        async with create_task_group() as group:
-            group.start_soon(_cancel_on_disconnect, request, cancel)
-            try:
-                validation = await to_thread.run_sync(
-                    isolation.run_cancellable,
-                    cancel,
-                    function,
-                    *args,
-                    limiter=validation_limiter(),
-                )
-            except isolation.IsolatedRunCancelledError:
-                logger.info("a validation was cancelled, its client disconnected")
-                validation = ValidationResponse(skipped="busy")
-            except Exception as exc:
-                # raised outside of the task group, which would wrap it in an
-                # exception group
-                failure = exc
-            finally:
-                group.cancel_scope.cancel()
-        if failure is not None:
-            raise failure
-        assert validation is not None
-        return validation
-
-
-async def _cancel_on_disconnect(request: Request, cancel: threading.Event) -> None:
-    """Set `cancel` when the client of the request disconnects.
-
-    The body of the request has been read, so the next message of the
-    connection is its end.
-    """
-    while (await request.receive())["type"] != "http.disconnect":
-        pass
-    cancel.set()
 
 
 @api.get(

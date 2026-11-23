@@ -4,7 +4,6 @@ import functools
 import http.server
 import os
 import signal
-import socket
 import sys
 import tempfile
 import threading
@@ -17,7 +16,6 @@ from typing import Any
 
 import libsbml
 import pytest
-import uvicorn
 
 from sbml4humans import isolation, limits, report, validation
 from sbml4humans.model import EntryValidation, ValidationResponse
@@ -1025,55 +1023,9 @@ def test_a_child_free_too_late_is_busy(
     semaphore.release()
 
 
-@contextmanager
-def _live_server() -> Generator[int]:
-    """The api served by uvicorn on a free port of the loopback interface."""
-    from sbml4humans.api import api
-
-    server = uvicorn.Server(
-        uvicorn.Config(api, host="127.0.0.1", port=0, log_level="warning")
-    )
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-    started = time.monotonic() + 20
-    while not server.started:
-        assert time.monotonic() < started, "the server did not start"
-        time.sleep(0.05)
-    try:
-        yield server.servers[0].sockets[0].getsockname()[1]
-    finally:
-        server.should_exit = True
-        thread.join(10)
-
-
-def _post_and_leave(port: int, content: bytes, until: Callable[[], bool]) -> None:
-    """Post a validation of the content, close the connection once `until` holds."""
-    with socket.create_connection(("127.0.0.1", port)) as connection:
-        connection.sendall(
-            b"POST /api/validation/content HTTP/1.1\r\nHost: 127.0.0.1\r\n"
-            b"Content-Type: application/octet-stream\r\n"
-            + f"Content-Length: {len(content)}\r\n\r\n".encode()
-            + content
-        )
-        limit = time.monotonic() + 20
-        while not until():
-            assert time.monotonic() < limit, "the validation did not start"
-            time.sleep(0.05)
-
-
 def _validations_admitted() -> int:
     """The validations the server admitted, running or waiting for a child."""
     return isolation._admitted.get(isolation.VALIDATION_BUDGET.name, 0)
-
-
-def _until_gone(condition: Callable[[], bool], seconds: float) -> bool:
-    """Whether the condition holds within some seconds."""
-    limit = time.monotonic() + seconds
-    while not condition():
-        if time.monotonic() > limit:
-            return False
-        time.sleep(0.05)
-    return True
 
 
 def test_a_client_which_leaves_ends_its_validation(
@@ -1081,21 +1033,34 @@ def test_a_client_which_leaves_ends_its_validation(
     monkeypatch: pytest.MonkeyPatch,
     slow_content: bytes,
     spy_children: list[int],
+    live_server: int,
+    post_and_leave: Callable[..., None],
+    eventually: Callable[..., bool],
 ) -> None:
     """A client which disconnects mid-validation frees the child and the admission."""
-    # the server keeps its uploads in the temporary directory it started with
-    with _live_server() as port, _leaves_nothing(tmp_path / "tmp", monkeypatch):
-        _post_and_leave(port, slow_content, lambda: bool(spy_children))
+    # the live server of the fixture started before this context, so that it
+    # keeps its uploads in the temporary directory of the system and not in `root`
+    with _leaves_nothing(tmp_path / "tmp", monkeypatch):
+        post_and_leave(
+            live_server,
+            "/api/validation/content",
+            slow_content,
+            lambda: bool(spy_children),
+        )
         left = time.monotonic()
-        assert _until_gone(lambda: _gone(spy_children[0]), 3.0)
-        assert _until_gone(lambda: _validations_admitted() == 0, 3.0)
+        assert eventually(lambda: _gone(spy_children[0]), 3.0)
+        assert eventually(lambda: _validations_admitted() == 0, 3.0)
         assert time.monotonic() - left < 3.0
         # the run directory of the child is gone with it
-        assert _until_gone(lambda: list((tmp_path / "tmp").iterdir()) == [], 3.0)
+        assert eventually(lambda: list((tmp_path / "tmp").iterdir()) == [], 3.0)
 
 
 def test_a_client_which_leaves_while_waiting_frees_its_admission(
-    monkeypatch: pytest.MonkeyPatch, spy_children: list[int]
+    monkeypatch: pytest.MonkeyPatch,
+    spy_children: list[int],
+    live_server: int,
+    post_and_leave: Callable[..., None],
+    eventually: Callable[..., bool],
 ) -> None:
     """A validation waiting for a child ends when its client disconnects."""
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
@@ -1104,9 +1069,13 @@ def test_a_client_which_leaves_while_waiting_frees_its_admission(
     semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
     try:
-        with _live_server() as port:
-            _post_and_leave(port, content, lambda: _validations_admitted() == 1)
-            assert _until_gone(lambda: _validations_admitted() == 0, 3.0)
+        post_and_leave(
+            live_server,
+            "/api/validation/content",
+            content,
+            lambda: _validations_admitted() == 1,
+        )
+        assert eventually(lambda: _validations_admitted() == 0, 3.0)
     finally:
         semaphore.release()
     assert spy_children == []

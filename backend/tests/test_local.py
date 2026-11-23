@@ -161,6 +161,16 @@ def test_the_responses_are_gzipped(local: TestClient, frontend: Path) -> None:
         assert response.num_bytes_downloaded < len(response.content), path
 
 
+def test_the_local_report_of_a_path_forks_no_child(
+    local: TestClient, spy_children: list[int]
+) -> None:
+    """The file the user gave the local server is read in the server process."""
+    token = _post_report(local, REPRESSILATOR_SBML)["token"]
+    body = local.get(f"/api/local/reports/{token}").json()
+    assert list(body["reports"]) == ["./BIOMD0000000012_urn.xml"]
+    assert spy_children == []
+
+
 def test_the_files_next_to_a_model_are_read(local: TestClient) -> None:
     """A path of the user is a trusted path (#36)."""
     answer = _post_report(local, EXAMPLES_DIR / "comp_deletion.xml")
