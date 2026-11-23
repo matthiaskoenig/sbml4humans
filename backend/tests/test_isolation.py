@@ -1,6 +1,7 @@
 """Tests of the budgets of the isolated work of a request."""
 
 import os
+import signal
 import tempfile
 from collections.abc import Iterator
 from pathlib import Path
@@ -79,6 +80,70 @@ def test_an_admission_is_free_again_after_its_context() -> None:
         assert admitted
         assert isolation._admitted[name] == before + 1
     assert isolation._admitted.get(name, 0) == before
+
+
+@pytest.mark.parametrize(
+    ("exitcode", "written"),
+    [
+        pytest.param(
+            -signal.SIGABRT,
+            "terminate called after throwing an instance of 'std::bad_alloc'\n"
+            "  what():  std::bad_alloc",
+            id="the abort of an uncaught bad_alloc of libstdc++",
+        ),
+        pytest.param(
+            -signal.SIGABRT,
+            "terminate called after throwing an instance of 'St9bad_alloc'",
+            id="the abort of a bad_alloc libstdc++ could not demangle",
+        ),
+        pytest.param(
+            -signal.SIGABRT,
+            "libc++abi: terminating due to uncaught exception of type "
+            "std::bad_alloc: std::bad_alloc",
+            id="the abort of an uncaught bad_alloc of libc++",
+        ),
+        pytest.param(
+            127,
+            "cannot allocate memory for thread-local data: ABORT",
+            id="the exit of a glibc which could not allocate thread-local data",
+        ),
+    ],
+)
+def test_a_child_which_ran_out_of_memory_says_so(exitcode: int, written: str) -> None:
+    """Every end of a child for lack of memory is `"memory"`, not a crash.
+
+    The whole standard error of a child of a report at its bound, as it was
+    captured: the C++ runtime aborts the child where it threw a `std::bad_alloc`
+    nobody caught, and glibc ends it itself, without a signal and with the exit
+    code 127, where it could not place the thread-local storage of a library.
+    A client which reads of a crash instead is told that the process ended
+    unexpectedly where the work needed more memory than it may use.
+    """
+    assert isolation._abnormal_end(exitcode, written, "report") == "memory"
+
+
+@pytest.mark.parametrize(
+    ("exitcode", "written"),
+    [
+        pytest.param(
+            -signal.SIGSEGV,
+            "",
+            id="a signal which leaves nothing, the crash of libsbml or the OOM killer",
+        ),
+        pytest.param(
+            -signal.SIGABRT,
+            "terminate called after throwing an instance of 'std::logic_error'",
+            id="an abort of another uncaught exception",
+        ),
+        pytest.param(1, "Traceback (most recent call last):", id="an exit of python"),
+        pytest.param(None, "", id="a child whose exit code the server never got"),
+    ],
+)
+def test_an_end_which_is_no_lack_of_memory_is_a_crash(
+    exitcode: int | None, written: str
+) -> None:
+    """Only what the runtime names a failed allocation reads as memory."""
+    assert isolation._abnormal_end(exitcode, written, "report") == "crashed"
 
 
 def test_a_child_of_a_budget_names_its_temporary_directory() -> None:

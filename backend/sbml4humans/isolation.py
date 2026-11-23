@@ -37,17 +37,20 @@ sends every result back as soon as it has it, so that a timeout keeps the
 results before it. An exception of the function is sent back and raised by the
 server, with the traceback of the child as a note.
 
-A child which runs out of memory either raises `MemoryError` in python or is
-aborted by the `std::bad_alloc` libsbml does not catch, both end what is left
-of it as `"memory"`. The abort is told apart from one of another cause by what
-the C++ runtime writes to the standard error before it aborts: libstdc++ (and
-libc++) names the `std::bad_alloc` which ended the program. The child writes
-its standard error to a file of its temporary directory, which the server
-reads and logs after the child has ended. Any other abnormal end of a child, a
-signal (also the SIGKILL of the OOM killer of the kernel, which leaves no trace
-the server could read), another abort or an exit without its results, keeps
-the results the child sent before and ends what is left of it as
-`"crashed"`.
+A child which runs out of memory raises `MemoryError` in python, is aborted by
+the `std::bad_alloc` libsbml does not catch, or is ended by the C library
+itself, which cannot allocate the thread-local storage of a library it loads
+and exits with the code 127 and no signal; all three end what is left of it as
+`"memory"`. An abort and an exit are told apart from one of another cause by
+what the runtime wrote to the standard error before the end: libstdc++ (and
+libc++) names the `std::bad_alloc` which ended the program, glibc writes a
+fatal line of its loader (`_abnormal_end`, `_BAD_ALLOC` and `_OUT_OF_MEMORY`).
+The child writes its standard error to a file of its temporary directory,
+which the server reads and logs after the child has ended. Any other abnormal
+end of a child, a signal (also the SIGKILL of the OOM killer of the kernel,
+which leaves no trace the server could read), another abort or an exit without
+its results, keeps the results the child sent before and ends what is left of
+it as `"crashed"`.
 
 A child keeps its temporary files, the archive of the source extracted by
 pymetadata among them, in a temporary directory the server makes for it (also
@@ -216,6 +219,14 @@ _BAD_ALLOC = (
     "terminate called after throwing an instance of 'St9bad_alloc'",
     "uncaught exception of type std::bad_alloc",
 )
+# what the C library writes when it ends the child itself because it could not
+# allocate: the loader of glibc cannot place the thread-local storage of a
+# library the child loads and ends the process with the exit code 127 and no
+# signal (`_dl_fatal_printf` of `elf/dl-tls.c`), so an end for lack of memory
+# is not always an abort. It is a fatal message, a child which wrote it did not
+# go on, and the child of a report at its bound writes this one as often as it
+# is aborted by a `std::bad_alloc`
+_OUT_OF_MEMORY = ("cannot allocate memory for thread-local data",)
 
 # the cancellation of the isolated run of this thread, None where none can cancel
 _CANCEL: ContextVar[threading.Event | None] = ContextVar("cancel", default=None)
@@ -550,11 +561,22 @@ def _written(tempdir: str) -> str:
 def _abnormal_end(exitcode: int | None, written: str, name: str) -> Interruption:
     """Why a child ended without its results: `"memory"` or `"crashed"`.
 
-    An abort is for lack of memory when the C++ runtime wrote that a
-    `std::bad_alloc` ended the child, every other end is `"crashed"`.
+    An end is for lack of memory where the C++ runtime aborted the child with
+    an uncaught `std::bad_alloc` (`_BAD_ALLOC`), and where the C library wrote
+    that it could not allocate and ended the child itself (`_OUT_OF_MEMORY`),
+    which comes with an exit code and not with a signal. Every other end,
+    another signal, another abort or an exit without the results, is
+    `"crashed"`.
     """
-    if exitcode == -signal.SIGABRT and any(text in written for text in _BAD_ALLOC):
-        logger.warning("the %s was aborted, out of memory", name)
+    aborted = exitcode == -signal.SIGABRT and any(
+        text in written for text in _BAD_ALLOC
+    )
+    if aborted or any(text in written for text in _OUT_OF_MEMORY):
+        logger.warning(
+            "the %s ran out of memory (exit code %s)",
+            name,
+            exitcode,
+        )
         return "memory"
     logger.warning("the %s ended unexpectedly (exit code %s)", name, exitcode)
     return "crashed"
