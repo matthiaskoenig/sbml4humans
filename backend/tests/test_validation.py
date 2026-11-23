@@ -549,19 +549,6 @@ def _submodels(model_ref: str, n: int) -> str:
     )
 
 
-def _fan_out(depth: int, n: int = 10) -> bytes:
-    """A document whose main model expands to `n` submodels on `depth` levels."""
-    definitions = '<comp:modelDefinition id="d0"/>' + "".join(
-        f'<comp:modelDefinition id="d{k}">{_submodels(f"d{k - 1}", n)}'
-        "</comp:modelDefinition>"
-        for k in range(1, depth)
-    )
-    return _COMP.format(
-        f'<model id="m">{_UNITLESS}{_submodels(f"d{depth - 1}", n)}</model>'
-        f"<comp:listOfModelDefinitions>{definitions}</comp:listOfModelDefinitions>"
-    ).encode()
-
-
 def _info(content: bytes) -> SBMLDocumentInfo:
     """The report of a document, without its link graph."""
     info = SBMLDocumentInfo(SBMLDocumentInfo.read(content.decode()))
@@ -579,9 +566,11 @@ def _size(info: SBMLDocumentInfo) -> int:
     return sum(info.elements.values()) + _instantiated(info)
 
 
-def test_the_elements_are_the_pks_of_the_report() -> None:
+def test_the_elements_are_the_pks_of_the_report(
+    fan_out_document: Callable[..., bytes],
+) -> None:
     """The elements counted per scope are the pks of the report."""
-    info = _info(_fan_out(3))
+    info = _info(fan_out_document(3))
     pks = _report_pks(info)
     scopes: dict[str, int] = {}
     for pk in pks:
@@ -590,9 +579,11 @@ def test_the_elements_are_the_pks_of_the_report() -> None:
     assert dict(info.elements) == scopes
 
 
-def test_instantiated_elements_count_every_instance() -> None:
+def test_instantiated_elements_count_every_instance(
+    fan_out_document: Callable[..., bytes],
+) -> None:
     """Every instance adds the elements of its model, along every level."""
-    info = _info(_fan_out(3, n=4))
+    info = _info(fan_out_document(3, n=4))
     sizes = {
         model.id: info.elements[model.pk.split("/", 1)[0]]
         for model in info.report.models
@@ -636,19 +627,23 @@ def test_wide_instantiation_beyond_the_budget_is_skipped_at_once(
     assert elapsed < 3.0
 
 
-def test_submodel_fan_out_beyond_the_budget_is_skipped() -> None:
+def test_submodel_fan_out_beyond_the_budget_is_skipped(
+    fan_out_document: Callable[..., bytes],
+) -> None:
     """A document which expands to 111,110 instances is answered at once."""
     start = time.perf_counter()
-    entry = _entry(validation_for_bytes(_fan_out(5)))
+    entry = _entry(validation_for_bytes(fan_out_document(5)))
     elapsed = time.perf_counter() - start
     assert entry.skipped == "expandedSize"
     assert 80701 not in {issue.rule for issue in entry.issues}
     assert elapsed < 3.0
 
 
-def test_read_errors_are_reported_without_validation() -> None:
+def test_read_errors_are_reported_without_validation(
+    fan_out_document: Callable[..., bytes],
+) -> None:
     """A document which is not validated still has the read errors of libsbml."""
-    content = _fan_out(5).replace(b'<model id="m">', b'<model id="m" foo="1">')
+    content = fan_out_document(5).replace(b'<model id="m">', b'<model id="m" foo="1">')
     entry = _entry(validation_for_bytes(content))
     assert entry.skipped == "expandedSize"
     assert 20222 in {issue.rule for issue in entry.issues}
@@ -668,9 +663,11 @@ def test_a_document_at_the_budget_is_validated(
     assert _entry(validation_for_bytes(content)).skipped == "expandedSize"
 
 
-def test_submodel_fan_out_within_the_budget_is_validated() -> None:
+def test_submodel_fan_out_within_the_budget_is_validated(
+    fan_out_document: Callable[..., bytes],
+) -> None:
     """A document which expands to 110 instances is validated."""
-    entry = _entry(validation_for_bytes(_fan_out(2)))
+    entry = _entry(validation_for_bytes(fan_out_document(2)))
     assert entry.skipped is None
     assert 80701 in {issue.rule for issue in entry.issues}
 

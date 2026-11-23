@@ -27,6 +27,12 @@ content through sbmlode and libsbml the same way. `report_for_path` and
 `ode_for_path` build in the process which calls them, for a trusted path: the
 examples and the file the user gave the local server of `show`.
 
+The equations of an entry whose comp submodels expand beyond the budget of the
+expanded size are not built (`_odes`): the flattening of libsbml clones every
+instantiated element into one model, so a document of a few kilobytes can ask
+for more memory than a child may use, and the report keeps its elements and
+says in its `ode_error` why it has no equations.
+
 The validation of libsbml is not part of the report: `validation_for_path`
 reads the entries of a source the same way, without their link graph, and
 checks them, all of it in a child process as well, so that the report is
@@ -40,7 +46,7 @@ import tempfile
 import time
 import uuid
 import zipfile
-from collections.abc import Generator, Iterator
+from collections.abc import Generator, Iterator, Mapping
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -85,6 +91,15 @@ CHUNK_SIZE = 1024 * 1024  # [byte]
 # the api. A moderate level: the reports compress about 20 fold already at this
 # level, and a higher one costs time on every large report for a few percent
 REPORT_GZIP_LEVEL = 5
+
+# what a client reads where the equations of a model were not built because its
+# comp submodels expand beyond the budget of the expanded size, the one failure
+# of the ODE system which is none of sbmlode
+_NOT_FLATTENED = (
+    "The equations of the model were not built: it expands by its comp "
+    "submodels to {size:,} elements, more than the {budget:,} elements a model "
+    "may expand to."
+)
 
 
 class _Entry:
@@ -143,7 +158,7 @@ def report_for_sbml(source: Path | str, uid: str = "") -> ReportEntry:
     entry = _Entry(source, uid=uid)
     external = _resolve({SBML_LOCATION: entry}, checksums={}, locations=[])
     _link({SBML_LOCATION: entry}, external)
-    _odes({SBML_LOCATION: entry})
+    _odes({SBML_LOCATION: entry}, validation.MAX_EXPANDED_ELEMENTS)
     return entry.report_entry
 
 
@@ -204,7 +219,9 @@ def _read(path: Path, trusted: bool) -> Generator[_Read]:
         yield _Read(omex=omex, entries=entries, external=external, uid=uid)
 
 
-def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
+def report_for_path(
+    path: Path, trusted: bool = False, budget: int | None = None
+) -> ReportResponse:
     """Create the reports of an SBML file or a COMBINE archive.
 
     Returns the archive manifest and one report per SBML entry of the archive.
@@ -216,15 +233,21 @@ def report_for_path(path: Path, trusted: bool = False) -> ReportResponse:
             single SBML file name are read as further entries. Never set for a
             path which holds the content of a request. The content of a path
             which is not trusted is read within the limits of `limits.py`.
+        budget: the elements an entry may expand to for its equations, see
+            `_odes`; by default `validation.MAX_EXPANDED_ELEMENTS`, which a
+            child of a report gets in its job, since it does not see what a
+            test changed in the server.
 
     Raises:
         ValueError: if no model could be read from an SBML entry.
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
+    if budget is None:
+        budget = validation.MAX_EXPANDED_ELEMENTS
     with _read(path, trusted) as read:
         _link(read.entries, read.external)
-        _odes(read.entries)
+        _odes(read.entries, budget)
         manifest = Manifest(
             entries=[
                 ManifestEntry(
@@ -249,11 +272,14 @@ class ReportJob:
         trusted: as for `report_for_path`.
         limits: the limits of `limits.py` an untrusted source is read within,
             read by the server when the report is asked for.
+        budget: the elements an entry may expand to for its equations, read by
+            the server when the report is asked for.
     """
 
     path: str
     trusted: bool
     limits: limits.ContentLimits
+    budget: int
 
 
 # the key of the one result of a report, the gzipped json of the whole of it
@@ -268,7 +294,8 @@ def report_gzip(job: ReportJob) -> Iterator[tuple[str, bytes]]:
     report in a few megabytes of the pipe to the server instead of a hundred.
 
     Args:
-        job: the source and the limits it is read within.
+        job: the source, the limits it is read within and the budget of its
+            expanded size.
 
     Yields:
         The one pair of the key of a report and the gzipped JSON of its
@@ -280,7 +307,7 @@ def report_gzip(job: ReportJob) -> Iterator[tuple[str, bytes]]:
             limits.
     """
     with job.limits.applied():
-        response = report_for_path(Path(job.path), job.trusted)
+        response = report_for_path(Path(job.path), job.trusted, job.budget)
     yield (
         _REPORT,
         gzip.compress(
@@ -423,7 +450,10 @@ def report_gzip_for_bytes(content: bytes) -> bytes:
             path = Path(tmp_dir) / "model"
             path.write_bytes(content)
             job = ReportJob(
-                path=str(path), trusted=False, limits=limits.ContentLimits.current()
+                path=str(path),
+                trusted=False,
+                limits=limits.ContentLimits.current(),
+                budget=validation.MAX_EXPANDED_ELEMENTS,
             )
             run = isolation.run_isolated(report_gzip, job, isolation.REPORT_BUDGET)
     finally:
@@ -458,6 +488,34 @@ class SourceJob:
 _LOCATIONS = ""
 
 
+def _expanded_size(entries: Mapping[str, _Entry], location: str) -> int | None:
+    """The elements an entry of a source expands to by its comp submodels.
+
+    Its own elements and those its submodel instances add along every level
+    (`validation.instantiated_elements`), which is what the comp validator
+    instantiates when it checks the entry and what the flattening of its ODE
+    system builds, each of them in the memory of one process. An entry without
+    a submodel instance expands to nothing and is bounded by no budget of the
+    expanded size, however many elements of its own it has.
+
+    Args:
+        entries: the report of every entry of the source by its location.
+        location: the location of the entry.
+
+    Returns:
+        The expanded size of an entry with submodel instances, None for an
+        entry without one.
+    """
+    instantiated = instantiated_elements(
+        {loc: entry.info.report for loc, entry in entries.items()},
+        {loc: entry.info.elements for loc, entry in entries.items()},
+        location,
+    )
+    if instantiated == 0:
+        return None
+    return sum(entries[location].info.elements.values()) + instantiated
+
+
 def validate_source(job: SourceJob) -> Iterator[tuple[str, Any]]:
     """Read a source and validate its entries, what the child process runs.
 
@@ -484,19 +542,12 @@ def validate_source(job: SourceJob) -> Iterator[tuple[str, Any]]:
     """
     with job.limits.applied(), _read(Path(job.path), job.trusted) as read:
         yield _LOCATIONS, list(read.entries)
-        reports = {
-            location: entry.info.report for location, entry in read.entries.items()
-        }
-        elements = {
-            location: entry.info.elements for location, entry in read.entries.items()
-        }
         documents = ReportDocuments(
             {location: entry.info.doc for location, entry in read.entries.items()}
         )
         for location, entry in read.entries.items():
-            instantiated = instantiated_elements(reports, elements, location)
-            size = sum(entry.info.elements.values()) + instantiated
-            if instantiated > 0 and size > job.budget:
+            size = _expanded_size(read.entries, location)
+            if size is not None and size > job.budget:
                 logger.warning(
                     "'%s' is not validated: it expands to %s elements, more than %s",
                     location,
@@ -581,11 +632,27 @@ def _link(entries: dict[str, _Entry], external: ExternalModels) -> None:
     )
 
 
-def _odes(entries: dict[str, _Entry]) -> None:
+def _odes(entries: dict[str, _Entry], budget: int) -> None:
     """Build the ODE system of every entry, its submodels flattened within the report.
 
     An external model definition of an entry resolves to another entry of the
     report alone, as in the validation, see `odes.ode_system`.
+
+    An entry which expands by its comp submodels to more than `budget`
+    elements (`_expanded_size`) keeps its elements and gets no equations, with
+    `_NOT_FLATTENED` as its `ode_error`: the flattening of libsbml clones every
+    instantiated element into one model, so its memory grows with the expanded
+    size and not with the size of the document, and a document of a few
+    kilobytes whose submodels fan out reaches beyond every bound a child of
+    `isolation.REPORT_BUDGET` could have, while the rest of its report costs
+    what its own elements cost. The budget is the one the comp validator is
+    gated by, which instantiates the same submodels, so a document the
+    validation skips for its expanded size is the document whose equations are
+    not built.
+
+    Args:
+        entries: the report of every entry by its location.
+        budget: the elements an entry may expand to for its equations.
     """
     documents = ReportDocuments(
         {location: entry.info.doc for location, entry in entries.items()}
@@ -594,6 +661,16 @@ def _odes(entries: dict[str, _Entry]) -> None:
         report = entry.info.report
         main = next((m for m in report.models if m.kind == "model"), None)
         if main is None:
+            continue
+        size = _expanded_size(entries, location)
+        if size is not None and size > budget:
+            logger.warning(
+                "no equations of '%s': it expands to %s elements, more than %s",
+                location,
+                size,
+                budget,
+            )
+            report.ode_error = _NOT_FLATTENED.format(size=size, budget=budget)
             continue
         report.ode_system, report.ode_error = ode_system(
             entry.info.doc, main, documents, location
@@ -672,6 +749,7 @@ def ode_for_path(
     location: str | None = None,
     trusted: bool = False,
     simulator: bool = False,
+    budget: int | None = None,
 ) -> OdeFile:
     """Write the ODE system of the model of an SBML entry in a format of sbmlode.
 
@@ -690,10 +768,13 @@ def ode_for_path(
             `report_for_path`.
         simulator: whether code holds the simulator of sbmlode, which integrates
             the model.
+        budget: the elements the entry may expand to, as for `report_for_path`;
+            an entry beyond it is not flattened, here as in a report.
 
     Raises:
         ValueError: for an unknown format or location, a source without a model,
-            or a model sbmlode cannot write in the format.
+            a model which expands beyond `budget` elements, or a model sbmlode
+            cannot write in the format.
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
@@ -702,6 +783,8 @@ def ode_for_path(
         raise ValueError(
             f"The format '{fmt}' is none of {', '.join(sorted(sbmlode.FORMATS))}."
         )
+    if budget is None:
+        budget = validation.MAX_EXPANDED_ELEMENTS
     with _read(path, trusted) as read:
         if location is None:
             masters = [e.location for e in read.omex.manifest.entries if e.master]
@@ -711,6 +794,9 @@ def ode_for_path(
         entry = read.entries.get(location)
         if entry is None:
             raise ValueError(f"The source has no SBML entry '{location}'.")
+        size = _expanded_size(read.entries, location)
+        if size is not None and size > budget:
+            raise ValueError(_NOT_FLATTENED.format(size=size, budget=budget))
         documents = ReportDocuments(
             {loc: e.info.doc for loc, e in read.entries.items()}
         )
@@ -737,6 +823,8 @@ class OdeJob:
         fmt: the format, a key of `sbmlode.FORMATS`.
         location: the SBML entry of an archive, by default its master entry or
             the first one.
+        budget: the elements the entry may expand to, read by the server when
+            the file is asked for.
     """
 
     path: str
@@ -744,6 +832,7 @@ class OdeJob:
     limits: limits.ContentLimits
     fmt: str
     location: str | None
+    budget: int
 
 
 # the key of the one result of an ODE download, the file of the whole system
@@ -759,20 +848,30 @@ def ode_source(job: OdeJob) -> Iterator[tuple[str, OdeFile]]:
     of a validation do.
 
     Args:
-        job: the source, the format of the file and the limits it is read
-            within.
+        job: the source, the format of the file, the limits it is read within
+            and the budget of its expanded size.
 
     Yields:
         The one pair of the key of an ODE file and the file.
 
     Raises:
         ValueError: for an unknown format or location, a source without a model,
-            or a model sbmlode cannot write in the format.
+            a model which expands beyond the budget of the job, or a model
+            sbmlode cannot write in the format.
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
     with job.limits.applied():
-        yield _ODE, ode_for_path(Path(job.path), job.fmt, job.location, job.trusted)
+        yield (
+            _ODE,
+            ode_for_path(
+                Path(job.path),
+                job.fmt,
+                job.location,
+                job.trusted,
+                budget=job.budget,
+            ),
+        )
 
 
 def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeFile:
@@ -796,7 +895,8 @@ def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeF
     Raises:
         ReportInterruptedError: if the child did not finish the file.
         ValueError: for an unknown format or location, content without a model,
-            or a model sbmlode cannot write in the format.
+            a model which expands beyond `validation.MAX_EXPANDED_ELEMENTS`
+            elements, or a model sbmlode cannot write in the format.
         ContentTooLargeError: if the content exceeds the limits.
     """
     start = time.perf_counter()
@@ -811,6 +911,7 @@ def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeF
                 limits=limits.ContentLimits.current(),
                 fmt=fmt,
                 location=location,
+                budget=validation.MAX_EXPANDED_ELEMENTS,
             )
             run = isolation.run_isolated(ode_source, job, isolation.REPORT_BUDGET)
     finally:

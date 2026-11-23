@@ -20,6 +20,41 @@ export async function openExample(page: Page, id: string, timeout = 30_000): Pro
   await expectReport(page, timeout);
 }
 
+/** Paste SBML on the home page and wait for its report (`expectReport`). */
+export async function paste(page: Page, sbml: string): Promise<void> {
+  await page.goto("/");
+  await page.getByTestId("home-tab-paste").click();
+  await page.getByTestId("paste-input").fill(sbml);
+  await page.getByTestId("paste-submit").click();
+  await expectReport(page);
+}
+
+/** A comp document whose main model expands to `n` submodels on each of `depth` levels. Five
+ * levels of ten expand 3 KB to 222,267 elements: more than the comp validator checks, and more
+ * than the flattening of the equations fits in the memory of the backend. */
+export function fanOut(depth: number, n: number): string {
+  const submodels = (ref: string) =>
+    "<comp:listOfSubmodels>" +
+    Array.from(
+      { length: n },
+      (_, i) => `<comp:submodel comp:id="s${i}" comp:modelRef="${ref}"/>`,
+    ).join("") +
+    "</comp:listOfSubmodels>";
+  const definitions = Array.from({ length: depth }, (_, k) =>
+    k === 0
+      ? '<comp:modelDefinition id="d0"/>'
+      : `<comp:modelDefinition id="d${k}">${submodels(`d${k - 1}`)}</comp:modelDefinition>`,
+  ).join("");
+  return (
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" ' +
+    'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" ' +
+    'level="3" version="1" comp:required="true">' +
+    `<model id="m">${submodels(`d${depth - 1}`)}</model>` +
+    `<comp:listOfModelDefinitions>${definitions}</comp:listOfModelDefinitions></sbml>`
+  );
+}
+
 /** Search the report and wait until the search is applied. The search box applies what is typed
  * after a short pause, and the tables shrink to the matches then: a click in that pause lands on
  * the row which the shrinking tables move under the pointer. */

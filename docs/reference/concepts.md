@@ -281,6 +281,8 @@ Every symbol of an equation stands for an element of the model: a click on it op
 
 The system is the one of the model of the document; a model with submodels is flattened first, and a symbol which the flattening makes up, the identifier of a submodel joined to the identifier of its element, links to no element. The equations are written by [sbmlode](https://matthiaskoenig.github.io/sbmlode/), which also writes the system as python, julia and R code and as LaTeX, typst and markdown documents: the tabs of the view show the [code](#code) of each format next to the math.
 
+Flattening a model holds every element of every submodel instance at once, so a document with submodels of submodels asks for more memory than any report may use, however small the document itself is. A model which expands by its submodels to more than 10,000 elements, the elements of the document and those of every instance, is therefore not flattened and has no equations: the view says so with the size the model expands to, and the elements of the report are all there. It is the bound of the [validation](#validation), which instantiates the same submodels.
+
 ## ODE system
 
 The rate of change of every state of the model.

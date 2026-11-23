@@ -111,6 +111,50 @@ def wide_document() -> Callable[..., bytes]:
     return _wide
 
 
+def _fan_out(depth: int, n: int = 10) -> bytes:
+    """A document whose main model expands to `n` submodels on `depth` levels.
+
+    With five levels of ten the 3 KB document expands to 222,268 elements:
+    more than the comp validator checks, and more than the flattening of its
+    ODE system fits in the memory of a child (5.2 GiB of address space, where
+    the report of its elements takes 1 GiB and a second).
+    """
+
+    def submodels(model_ref: str) -> str:
+        """A list of `n` submodels of one model."""
+        return (
+            "<comp:listOfSubmodels>"
+            + "".join(
+                f'<comp:submodel comp:id="s{i}" comp:modelRef="{model_ref}"/>'
+                for i in range(n)
+            )
+            + "</comp:listOfSubmodels>"
+        )
+
+    definitions = '<comp:modelDefinition id="d0"/>' + "".join(
+        f'<comp:modelDefinition id="d{k}">{submodels(f"d{k - 1}")}'
+        "</comp:modelDefinition>"
+        for k in range(1, depth)
+    )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" '
+        'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" '
+        'level="3" version="1" comp:required="true">'
+        f'<model id="m"><listOfParameters>'
+        '<parameter id="p" value="1" constant="true"/></listOfParameters>'
+        f"{submodels(f'd{depth - 1}')}</model>"
+        f"<comp:listOfModelDefinitions>{definitions}"
+        "</comp:listOfModelDefinitions></sbml>"
+    ).encode()
+
+
+@pytest.fixture
+def fan_out_document() -> Callable[..., bytes]:
+    """The document of `_fan_out`, by the levels and the width it is asked for."""
+    return _fan_out
+
+
 @pytest.fixture
 def slow_content(monkeypatch: pytest.MonkeyPatch) -> bytes:
     """Content whose read outlasts a short timeout, validated and reported.

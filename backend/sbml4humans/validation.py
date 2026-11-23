@@ -15,7 +15,9 @@ reported. One instance is enough for the whole model to be flattened: 10,100
 species with one submodel of one parameter take 30 seconds and 2.1 GB, the
 same species without the submodel 0.4 seconds and 0.6 GB. A document without
 instances is always validated, in a time linear in its size, which the
-timeout of the child process bounds.
+timeout of the child process bounds. The flattening of the ODE system of a
+report instantiates the same submodels and is gated by the same budget
+(`report._odes`).
 
 The validation runs in a child process (`isolation.py`), from reading the
 source on (`report.validate_source`). The child bounds its resources, it is no
@@ -45,8 +47,11 @@ from sbml4humans.model import Model, Report, Severity, ValidationIssue
 logger = logging.getLogger(__name__)
 
 # the elements a document with comp submodel instances may expand to and still
-# be validated: 3,000 elements with issues are checked in half a second, 10,000
-# in about 5 seconds, and the time grows faster beyond
+# be validated, and still have the equations of its model (`report._odes`):
+# 3,000 elements with issues are checked in half a second, 10,000 in about 5
+# seconds, and the time grows faster beyond; the flattening of the ODE system
+# holds the instantiated elements of 10,000 in 1.2 GiB of address space and
+# that of 222,000 in 5.2 GiB, more than a child of the report may have
 MAX_EXPANDED_ELEMENTS = 10_000
 
 _ERRORS = frozenset(

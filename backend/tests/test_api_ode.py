@@ -3,7 +3,7 @@
 import gzip
 import logging
 import os
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from typing import Any
 
 import pytest
@@ -143,6 +143,23 @@ def test_ode_of_unsupported_model(client: TestClient) -> None:
         content=(EXAMPLES_DIR / "algebraic_rule.xml").read_bytes(),
     )
     _check_error(response, "algebraic rule")
+
+
+def test_ode_of_a_model_beyond_the_expanded_size(
+    client: TestClient, fan_out_document: Callable[..., bytes]
+) -> None:
+    """A document whose comp submodels expand beyond the budget is an error.
+
+    The download flattens the model as the report does, so it is gated like
+    the report: the client reads why the equations were not built instead of
+    the sentence of a child which ran out of memory.
+    """
+    response = client.post(
+        "/api/ode/content",
+        params={"format": "python"},
+        content=fan_out_document(5),
+    )
+    _check_error(response, "expands by its comp submodels to 222,268 elements")
 
 
 def test_ode_routes_are_documented(client: TestClient) -> None:

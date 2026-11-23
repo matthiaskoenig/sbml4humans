@@ -20,7 +20,7 @@ from fastapi.testclient import TestClient
 from pydantic import BaseModel
 from pymetadata.omex import Omex
 
-from sbml4humans import isolation, limits, report, sbmlinfo
+from sbml4humans import isolation, limits, report, sbmlinfo, validation
 from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
 from sbml4humans.limits import ContentTooLargeError
 from sbml4humans.model import EdgeKind, ReportResponse, ResolutionStatus, SBase
@@ -1024,6 +1024,88 @@ def test_a_trusted_path_is_reported_in_this_process(spy_children: list[int]) -> 
     """The examples and the files of the user are read without a child."""
     _check_report(report_for_path(EXAMPLES_DIR / "annotation.xml", trusted=True))
     assert spy_children == []
+
+
+# -------------------------------------------------------------------------------------
+# a document whose comp submodels expand beyond the budget keeps its elements and
+# loses its equations: the flattening of libsbml fits in no memory a child may have
+# -------------------------------------------------------------------------------------
+def test_a_fan_out_of_submodels_is_reported_without_its_equations(
+    monkeypatch: pytest.MonkeyPatch, fan_out_document: Callable[..., bytes]
+) -> None:
+    """The document of 222,268 instances is reported, inside a memory a child has.
+
+    Its 3 KB are read and reported in 0.6 seconds and in 1 GiB of address
+    space, while the flattening of its ODE system clones every instantiated
+    element and needs 5.2 GiB, more than the 4 GiB of the budget: the report
+    of this document was answered before the children, and the elements of a
+    document are a far better answer than the sentence of a child which died.
+    The child runs at the memory of a validation here, half of its own, so
+    that a report which flattened again would not fit.
+    """
+    monkeypatch.setattr(isolation.REPORT_BUDGET, "memory", 2 * 1024**3)
+    packed = report_gzip_for_bytes(fan_out_document(5))
+    (entry,) = ReportResponse.model_validate_json(
+        gzip.decompress(packed)
+    ).reports.values()
+    assert entry.report.ode_system is None
+    assert entry.report.ode_error is not None
+    assert "expands by its comp submodels to 222,268 elements" in entry.report.ode_error
+    assert "more than the 10,000 elements" in entry.report.ode_error
+    # the report itself is whole: the main model with its ten submodels
+    (model,) = (m for m in entry.report.models if m.kind == "model")
+    assert len(model.list_of_submodels) == 10
+
+
+def test_a_document_at_the_budget_keeps_its_equations(
+    tmp_path: Path, fan_out_document: Callable[..., bytes]
+) -> None:
+    """The budget is the largest expanded size whose equations are built."""
+    path = tmp_path / "fan_out.xml"
+    path.write_bytes(fan_out_document(2))
+    with report._read(path, trusted=False) as read:
+        size = report._expanded_size(read.entries, report.SBML_LOCATION)
+    assert size is not None
+    (at_budget,) = report_for_path(path, budget=size).reports.values()
+    assert at_budget.report.ode_system is not None
+    assert at_budget.report.ode_error is None
+    (beyond,) = report_for_path(path, budget=size - 1).reports.values()
+    assert beyond.report.ode_system is None
+    assert beyond.report.ode_error is not None
+    assert f"to {size:,} elements" in beyond.report.ode_error
+
+
+def test_a_document_without_submodels_keeps_its_equations(
+    spy_children: list[int],
+) -> None:
+    """No budget of the expanded size holds a document which instantiates nothing.
+
+    A document without submodel instances expands to nothing, and the
+    flattening of libsbml has nothing to clone, however many elements the
+    document has; Recon3D has 300,000 of them and keeps its equations.
+    """
+    (entry,) = report_for_path(EXAMPLES_DIR / "species.xml", budget=1).reports.values()
+    assert entry.report.ode_system is not None
+    assert entry.report.ode_error is None
+    assert spy_children == []
+
+
+def test_the_budget_of_the_expanded_size_reaches_the_child(
+    monkeypatch: pytest.MonkeyPatch, fan_out_document: Callable[..., bytes]
+) -> None:
+    """A child builds the equations within the budget of its server, which it is given.
+
+    A child of the forkserver does not see a `monkeypatch` of the server, so
+    the budget goes to it in its job, as the limits do.
+    """
+    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 1)
+    packed = report_gzip_for_bytes(fan_out_document(2))
+    (entry,) = ReportResponse.model_validate_json(
+        gzip.decompress(packed)
+    ).reports.values()
+    assert entry.report.ode_system is None
+    assert entry.report.ode_error is not None
+    assert "more than the 1 elements" in entry.report.ode_error
 
 
 # -------------------------------------------------------------------------------------
