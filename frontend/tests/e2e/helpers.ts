@@ -30,8 +30,10 @@ export async function paste(page: Page, sbml: string): Promise<void> {
 }
 
 /** A comp document whose main model expands to `n` submodels on each of `depth` levels. Five
- * levels of ten expand 3 KB to 222,267 elements: more than the comp validator checks, and more
- * than the flattening of the equations fits in the memory of the backend. */
+ * levels of ten expand 3 KB to 222,268 elements: more than the comp validator checks, and more
+ * than the flattening of the equations fits in the memory of the backend. The document is the
+ * one of `_fan_out` of `backend/tests/conftest.py`, down to the parameter of its main model, so
+ * that both suites state the same number of elements. */
 export function fanOut(depth: number, n: number): string {
   const submodels = (ref: string) =>
     "<comp:listOfSubmodels>" +
@@ -50,7 +52,9 @@ export function fanOut(depth: number, n: number): string {
     '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" ' +
     'xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1" ' +
     'level="3" version="1" comp:required="true">' +
-    `<model id="m">${submodels(`d${depth - 1}`)}</model>` +
+    '<model id="m"><listOfParameters>' +
+    '<parameter id="p" value="1" constant="true"/></listOfParameters>' +
+    `${submodels(`d${depth - 1}`)}</model>` +
     `<comp:listOfModelDefinitions>${definitions}</comp:listOfModelDefinitions></sbml>`
   );
 }

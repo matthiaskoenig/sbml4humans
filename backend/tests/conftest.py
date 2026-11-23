@@ -117,7 +117,9 @@ def _fan_out(depth: int, n: int = 10) -> bytes:
     With five levels of ten the 3 KB document expands to 222,268 elements:
     more than the comp validator checks, and more than the flattening of its
     ODE system fits in the memory of a child (5.2 GiB of address space, where
-    the report of its elements takes 1 GiB and a second).
+    the report of its elements takes 1 GiB and a second). `fanOut` of
+    `frontend/tests/e2e/helpers.ts` builds the same document byte for byte, so
+    that both suites state the same number of elements.
     """
 
     def submodels(model_ref: str) -> str:

@@ -143,12 +143,12 @@ test("a model with an algebraic rule names it as unsupported", async ({ page }) 
 test("a model which expands beyond the flattening keeps its elements and says why", async ({
   page,
 }) => {
-  // 3 KB of submodels of submodels expand to 222,267 elements, which no process can flatten
+  // 3 KB of submodels of submodels expand to 222,268 elements, which no process can flatten
   await paste(page, fanOut(5, 10));
   await expect(page.getByTestId("bar-type-Submodel")).toBeVisible();
   await page.getByTestId("view-equations").click();
   const failure = page.getByTestId("equations-view").getByTestId("error-message");
-  await expect(failure).toContainText("expands by its comp submodels to 222,267 elements");
+  await expect(failure).toContainText("expands by its comp submodels to 222,268 elements");
   await expect(failure).toContainText("more than the 10,000 elements");
   // the elements of the report are all there, the tables are one click away
   await page.getByTestId("view-tables").click();
