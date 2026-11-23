@@ -146,6 +146,27 @@ def test_an_end_which_is_no_lack_of_memory_is_a_crash(
     assert isolation._abnormal_end(exitcode, written, "report") == "crashed"
 
 
+@pytest.mark.parametrize(
+    ("exitcode", "reads"),
+    [
+        pytest.param(-signal.SIGABRT, "signal 6 SIGABRT", id="an abort"),
+        pytest.param(-signal.SIGSEGV, "signal 11 SIGSEGV", id="a segmentation fault"),
+        pytest.param(127, "exit code 127", id="an exit of the C library"),
+        pytest.param(0, "exit code 0", id="an exit without the results"),
+        pytest.param(None, "no exit code", id="a child without an exit code"),
+    ],
+)
+def test_the_end_of_a_child_reads_as_a_signal_or_an_exit_code(
+    exitcode: int | None, reads: str
+) -> None:
+    """A signal is logged as a signal, not as a negative exit code.
+
+    `multiprocessing` reports the signal which killed a child as the negative
+    of its number, which read as "exit code -6" in the log of an abort.
+    """
+    assert isolation._end_of(exitcode) == reads
+
+
 def test_a_child_of_a_budget_names_its_temporary_directory() -> None:
     """The temporary directory of a child says which kind of work it runs."""
     run = isolation.run_isolated(_tempdir, None, isolation.REPORT_BUDGET)

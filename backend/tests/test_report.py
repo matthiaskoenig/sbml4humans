@@ -1185,7 +1185,7 @@ def test_a_document_which_crashes_libsbml_is_an_error_and_the_server_lives(
     assert raised.value.work == "report"
     # the segmentation fault of libsbml is what ended the child, not an error of
     # python and not a child which never ran
-    assert f"exit code -{signal.SIGSEGV}" in caplog.text
+    assert f"signal {signal.SIGSEGV} SIGSEGV" in caplog.text
     # this process lived: the next document is reported as every other one is,
     # by a child of the report as the server gives it
     monkeypatch.undo()

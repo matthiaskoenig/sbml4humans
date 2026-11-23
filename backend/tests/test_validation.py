@@ -1201,7 +1201,7 @@ def test_a_crash_before_the_entries_skips_the_validation(
     monkeypatch.setattr(report, "validate_source", _crash)
     response = validation_for_path(EXAMPLES_DIR / "validation.xml")
     assert response == ValidationResponse(skipped="crashed")
-    assert "exit code -11" in caplog.text
+    assert "signal 11 SIGSEGV" in caplog.text
 
 
 def _status(_: object) -> Iterator[tuple[str, int]]:

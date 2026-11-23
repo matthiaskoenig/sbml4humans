@@ -558,6 +558,31 @@ def _written(tempdir: str) -> str:
         return ""
 
 
+def _end_of(exitcode: int | None) -> str:
+    """How a child ended, as its log reads: a signal, an exit code or neither.
+
+    `multiprocessing` reports the signal which killed a child as the negative
+    of its number, so a log which calls that an exit code says "exit code -6"
+    for an abort.
+
+    Args:
+        exitcode: the `exitcode` of the child process, None where it has none.
+
+    Returns:
+        The signal with its name, the exit code, or that there was neither.
+    """
+    if exitcode is None:
+        return "no exit code"
+    if exitcode >= 0:
+        return f"exit code {exitcode}"
+    number = -exitcode
+    try:
+        return f"signal {number} {signal.Signals(number).name}"
+    except ValueError:
+        # a number which is no signal of this platform, which no child sends
+        return f"signal {number}"
+
+
 def _abnormal_end(exitcode: int | None, written: str, name: str) -> Interruption:
     """Why a child ended without its results: `"memory"` or `"crashed"`.
 
@@ -572,13 +597,9 @@ def _abnormal_end(exitcode: int | None, written: str, name: str) -> Interruption
         text in written for text in _BAD_ALLOC
     )
     if aborted or any(text in written for text in _OUT_OF_MEMORY):
-        logger.warning(
-            "the %s ran out of memory (exit code %s)",
-            name,
-            exitcode,
-        )
+        logger.warning("the %s ran out of memory (%s)", name, _end_of(exitcode))
         return "memory"
-    logger.warning("the %s ended unexpectedly (exit code %s)", name, exitcode)
+    logger.warning("the %s ended unexpectedly (%s)", name, _end_of(exitcode))
     return "crashed"
 
 
