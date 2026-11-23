@@ -1,6 +1,8 @@
 """Tests of the report information of a document."""
 
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import libsbml
@@ -24,7 +26,7 @@ from sbml4humans.resources import (
     REPRESSILATOR_SBML,
 )
 from sbml4humans.sbml import read_sbml
-from sbml4humans.sbmlinfo import SBMLDocumentInfo
+from sbml4humans.sbmlinfo import MAX_UNIT_INFERENCE_DEPTH, SBMLDocumentInfo
 from sbml4humans.units import udef_to_string
 
 
@@ -2216,3 +2218,471 @@ def test_list_of_parameters_of_a_level_2_kinetic_law() -> None:
     assert parameters.xml is not None
     assert "fitted" in parameters.xml
     assert "<parameter" not in parameters.xml
+
+
+# -------------------------------------------------------------------------------------
+# the model whose math is too deep for the unit inference of libsbml
+# -------------------------------------------------------------------------------------
+# the body of a model whose one math sits in that element, `{math}` the math. The
+# unit inference of libsbml was measured to die on a math of a crashing depth in
+# every one of them, which is why the guard has to find them all
+MATH_CARRIERS: dict[str, str] = {
+    "functionDefinition": """
+      <listOfFunctionDefinitions>
+        <functionDefinition id="f">
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <lambda><bvar><ci> y </ci></bvar>{math}</lambda>
+          </math>
+        </functionDefinition>
+      </listOfFunctionDefinitions>
+      <listOfRules>
+        <assignmentRule variable="x">
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply><ci> f </ci><ci> a </ci></apply>
+          </math>
+        </assignmentRule>
+      </listOfRules>""",
+    "initialAssignment": """
+      <listOfInitialAssignments>
+        <initialAssignment symbol="x">
+          <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+        </initialAssignment>
+      </listOfInitialAssignments>""",
+    "assignmentRule": """
+      <listOfRules>
+        <assignmentRule variable="x">
+          <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+        </assignmentRule>
+      </listOfRules>""",
+    "rateRule": """
+      <listOfRules>
+        <rateRule variable="x">
+          <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+        </rateRule>
+      </listOfRules>""",
+    "algebraicRule": """
+      <listOfRules>
+        <algebraicRule>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+        </algebraicRule>
+      </listOfRules>""",
+    "constraint": """
+      <listOfConstraints>
+        <constraint>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply><gt/>{math}<cn> 0 </cn></apply>
+          </math>
+        </constraint>
+      </listOfConstraints>""",
+    "kineticLaw": """
+      <listOfReactions>
+        <reaction id="r" reversible="false">
+          <listOfReactants>
+            <speciesReference species="s" stoichiometry="1" constant="true"/>
+          </listOfReactants>
+          <kineticLaw>
+            <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+          </kineticLaw>
+        </reaction>
+      </listOfReactions>""",
+    "trigger": """
+      <listOfEvents>
+        <event id="e" useValuesFromTriggerTime="true">
+          <trigger initialValue="true" persistent="true">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <apply><gt/>{math}<cn> 0 </cn></apply>
+            </math>
+          </trigger>
+        </event>
+      </listOfEvents>""",
+    "delay": """
+      <listOfEvents>
+        <event id="e" useValuesFromTriggerTime="true">
+          <delay><math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math></delay>
+        </event>
+      </listOfEvents>""",
+    "priority": """
+      <listOfEvents>
+        <event id="e" useValuesFromTriggerTime="true">
+          <priority>
+            <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+          </priority>
+        </event>
+      </listOfEvents>""",
+    "eventAssignment": """
+      <listOfEvents>
+        <event id="e" useValuesFromTriggerTime="true">
+          <listOfEventAssignments>
+            <eventAssignment variable="x">
+              <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+            </eventAssignment>
+          </listOfEventAssignments>
+        </event>
+      </listOfEvents>""",
+}
+
+# the `stoichiometryMath` of a species reference, which Level 2 alone has
+# (core §4.13.3), so its model is written at that level
+STOICHIOMETRY_MATH_BODY = """
+  <listOfReactions>
+    <reaction id="r">
+      <listOfReactants>
+        <speciesReference species="s">
+          <stoichiometryMath>
+            <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+          </stoichiometryMath>
+        </speciesReference>
+      </listOfReactants>
+    </reaction>
+  </listOfReactions>"""
+
+
+def _flat_sum(terms: int) -> str:
+    """The MathML of a flat sum of `terms` names, which is an AST that deep.
+
+    The MathML reader of libsbml answers a right nested binary tree for a flat
+    n-ary operator, so the sum is `terms` levels deep (`test_mathml.py`), while
+    its xml stays three elements deep and is read in milliseconds.
+    """
+    return "<apply><plus/>" + "<ci> a </ci>" * terms + "</apply>"
+
+
+def _model_with_math(body: str, terms: int, level: int = 3) -> libsbml.Model:
+    """The model of a document whose one math is a flat sum of `terms` names."""
+    namespace = (
+        "http://www.sbml.org/sbml/level3/version2/core"
+        if level == 3
+        else "http://www.sbml.org/sbml/level2/version4"
+    )
+    units = (
+        'substanceUnits="mole" timeUnits="second" extentUnits="mole" volumeUnits="litre"'
+        if level == 3
+        else ""
+    )
+    flags = 'hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"'
+    sbml = f"""<sbml xmlns="{namespace}" level="{level}" version="{4 if level == 2 else 2}">
+      <model id="m" {units}>
+        <listOfCompartments>
+          <compartment id="c" size="1" constant="true" spatialDimensions="3"
+            units="litre"/>
+        </listOfCompartments>
+        <listOfSpecies>
+          <species id="s" compartment="c" initialAmount="1" substanceUnits="mole"
+            {flags if level == 3 else ""}/>
+        </listOfSpecies>
+        <listOfParameters>
+          <parameter id="a" value="1" units="mole" {'constant="true"' if level == 3 else ""}/>
+          <parameter id="x" value="0" units="mole" {'constant="false"' if level == 3 else ""}/>
+        </listOfParameters>
+        {body.format(math=_flat_sum(terms))}
+      </model>
+    </sbml>"""
+    model: libsbml.Model = _read_valid(sbml).getModel()
+    return model
+
+
+def _derives_units(model: libsbml.Model) -> bool:
+    """Whether the report would ask libsbml for the derived units of the model."""
+    return SBMLDocumentInfo(model.getSBMLDocument())._derives_units(model)
+
+
+@pytest.mark.parametrize("carrier", list(MATH_CARRIERS))
+def test_a_deep_math_of_any_core_element_stops_the_unit_inference(
+    carrier: str,
+) -> None:
+    """A math beyond the bound stops the inference, wherever in the model it is.
+
+    libsbml builds the units of a whole model on the first element of it which
+    is asked for its derived units, walking the math of every element of the
+    model and recursing over each: a math of about 40,200 levels ends the
+    process with SIGSEGV, whichever element asked (issue #130). The guard
+    therefore has to find the math of every element which carries one.
+    """
+    assert _derives_units(_model_with_math(MATH_CARRIERS[carrier], 3))
+    assert not _derives_units(
+        _model_with_math(MATH_CARRIERS[carrier], MAX_UNIT_INFERENCE_DEPTH + 1)
+    )
+
+
+def test_a_deep_stoichiometry_math_stops_the_unit_inference() -> None:
+    """The `stoichiometryMath` of Level 2 is a math of the model like the others."""
+    assert _derives_units(_model_with_math(STOICHIOMETRY_MATH_BODY, 3, level=2))
+    assert not _derives_units(
+        _model_with_math(STOICHIOMETRY_MATH_BODY, MAX_UNIT_INFERENCE_DEPTH + 1, level=2)
+    )
+
+
+# the math of a package, which the unit inference of the core does not walk:
+# measured at a depth which crashes it, both answered the derived units of an
+# unrelated parameter without trouble
+PACKAGE_MATHS: dict[str, str] = {
+    "functionTerm": """
+      <qual:listOfQualitativeSpecies>
+        <qual:qualitativeSpecies qual:id="q" qual:compartment="c"
+          qual:constant="false" qual:maxLevel="1"/>
+      </qual:listOfQualitativeSpecies>
+      <qual:listOfTransitions>
+        <qual:transition qual:id="t">
+          <qual:listOfInputs>
+            <qual:input qual:qualitativeSpecies="q" qual:transitionEffect="none"/>
+          </qual:listOfInputs>
+          <qual:listOfOutputs>
+            <qual:output qual:qualitativeSpecies="q"
+              qual:transitionEffect="assignmentLevel"/>
+          </qual:listOfOutputs>
+          <qual:listOfFunctionTerms>
+            <qual:defaultTerm qual:resultLevel="0"/>
+            <qual:functionTerm qual:resultLevel="1">
+              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                <apply><gt/>{math}<cn> 0 </cn></apply>
+              </math>
+            </qual:functionTerm>
+          </qual:listOfFunctionTerms>
+        </qual:transition>
+      </qual:listOfTransitions>""",
+    "uncertParameter": """
+      <listOfRules>
+        <assignmentRule variable="x">
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><ci> a </ci></math>
+          <distrib:listOfUncertainties>
+            <distrib:uncertainty>
+              <distrib:uncertParameter distrib:type="mean">
+                <math xmlns="http://www.w3.org/1998/Math/MathML">{math}</math>
+              </distrib:uncertParameter>
+            </distrib:uncertainty>
+          </distrib:listOfUncertainties>
+        </assignmentRule>
+      </listOfRules>""",
+}
+
+
+def _package_sbml(carrier: str, terms: int) -> str:
+    """A document whose one deep math sits in an element of a package."""
+    return f"""<sbml
+      xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1"
+      xmlns:distrib="http://www.sbml.org/sbml/level3/version1/distrib/version1"
+      qual:required="true" distrib:required="true" level="3" version="1">
+      <model id="m" substanceUnits="mole" timeUnits="second" extentUnits="mole"
+        volumeUnits="litre">
+        <listOfCompartments>
+          <compartment id="c" size="1" constant="true" spatialDimensions="3"
+            units="litre"/>
+        </listOfCompartments>
+        <listOfSpecies>
+          <species id="s" compartment="c" initialAmount="1" substanceUnits="mole"
+            hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+        </listOfSpecies>
+        <listOfParameters>
+          <parameter id="a" value="1" units="mole" constant="true"/>
+          <parameter id="x" value="0" units="mole" constant="false"/>
+        </listOfParameters>
+        {PACKAGE_MATHS[carrier].format(math=_flat_sum(terms))}
+      </model>
+    </sbml>"""
+
+
+@pytest.mark.parametrize("carrier", list(PACKAGE_MATHS))
+def test_a_deep_math_of_a_package_leaves_the_unit_inference_alone(
+    carrier: str,
+) -> None:
+    """A math only a package knows is no math of the unit inference of libsbml.
+
+    The condition of a function term of qual and the math of an uncertainty of
+    distrib are unknown to the inference of the core, so the guard does not
+    take the derived units of such a model away. That they really do not reach
+    libsbml is what `test_a_deep_math_of_a_package_does_not_reach_libsbml`
+    measures, at a depth which crashes the inference.
+    """
+    model: libsbml.Model = _read_valid(
+        _package_sbml(carrier, MAX_UNIT_INFERENCE_DEPTH + 1)
+    ).getModel()
+    assert _derives_units(model)
+
+
+def _model_definition_sbml(terms: int) -> str:
+    """A document whose model definition carries the one deep math.
+
+    The main model instantiates that definition as a submodel, so that a
+    resolution of the submodel would reach the deep math if there were one.
+    """
+    return f"""<sbml
+      xmlns="http://www.sbml.org/sbml/level3/version1/core"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      comp:required="true" level="3" version="1">
+      <comp:listOfModelDefinitions>
+        <comp:modelDefinition id="md">
+          <listOfParameters>
+            <parameter id="a" value="1" units="mole" constant="true"/>
+            <parameter id="x" value="0" units="mole" constant="false"/>
+          </listOfParameters>
+          <listOfRules>
+            <assignmentRule variable="x">
+              <math xmlns="http://www.w3.org/1998/Math/MathML">
+                {_flat_sum(terms)}
+              </math>
+            </assignmentRule>
+          </listOfRules>
+        </comp:modelDefinition>
+      </comp:listOfModelDefinitions>
+      <model id="m">
+        <listOfParameters>
+          <parameter id="a" value="1" units="mole" constant="true"/>
+        </listOfParameters>
+        <comp:listOfSubmodels>
+          <comp:submodel comp:id="s1" comp:modelRef="md"/>
+        </comp:listOfSubmodels>
+      </model>
+    </sbml>"""
+
+
+def test_a_deep_math_of_a_model_definition_leaves_the_main_model_alone() -> None:
+    """The unit inference of libsbml is per model, so the guard is per model.
+
+    That the main model of this document really does answer its derived units
+    at a depth which crashes the inference of the model definition is what
+    `test_a_deep_math_of_a_model_definition_does_not_reach_the_main_model`
+    measures.
+    """
+    report = SBMLDocumentInfo.from_doc(
+        _read_valid(_model_definition_sbml(MAX_UNIT_INFERENCE_DEPTH + 1))
+    )
+    main, definition = report.models
+    assert (main.id, definition.id) == ("m", "md")
+    (parameter,) = main.list_of_parameters
+    assert parameter.derived_units == "mol"
+    assert [p.derived_units for p in definition.list_of_parameters] == [None, None]
+    (rule,) = definition.list_of_rules
+    assert rule.derived_units is None
+    assert rule.math is not None
+
+
+def test_the_log_of_a_stopped_unit_inference_names_the_model_and_the_depth(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """The guard logs once per model, not once per element of it."""
+    depth = MAX_UNIT_INFERENCE_DEPTH + 1
+    model = _model_with_math(MATH_CARRIERS["assignmentRule"], depth)
+    with caplog.at_level("WARNING"):
+        report = SBMLDocumentInfo.from_doc(model.getSBMLDocument())
+    assert all(p.derived_units is None for p in report.models[0].list_of_parameters)
+    [record] = [r for r in caplog.records if "derived units" in r.getMessage()]
+    assert record.levelname == "WARNING"
+    assert "model m " in record.getMessage()
+    assert f"costs {depth} levels of recursion" in record.getMessage()
+
+
+def test_the_log_of_a_cycle_of_function_definitions_names_them(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A cycle is refused by its own message, which names the definitions of it."""
+    sbml = """<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"
+      level="3" version="2">
+      <model id="m">
+        <listOfFunctionDefinitions>
+          <functionDefinition id="f0">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <lambda><bvar><ci> y </ci></bvar>
+                <apply><ci> f1 </ci><ci> y </ci></apply>
+              </lambda>
+            </math>
+          </functionDefinition>
+          <functionDefinition id="f1">
+            <math xmlns="http://www.w3.org/1998/Math/MathML">
+              <lambda><bvar><ci> y </ci></bvar>
+                <apply><ci> f0 </ci><ci> y </ci></apply>
+              </lambda>
+            </math>
+          </functionDefinition>
+        </listOfFunctionDefinitions>
+        <listOfParameters>
+          <parameter id="a" value="1" units="mole" constant="true"/>
+        </listOfParameters>
+      </model>
+    </sbml>"""
+    with caplog.at_level("WARNING"):
+        report = SBMLDocumentInfo.from_doc(_read_valid(sbml))
+    (parameter,) = report.models[0].list_of_parameters
+    assert parameter.derived_units is None
+    [record] = [r for r in caplog.records if "derived units" in r.getMessage()]
+    assert record.levelname == "WARNING"
+    assert "model m " in record.getMessage()
+    assert "f0, f1" in record.getMessage()
+
+
+# -------------------------------------------------------------------------------------
+# what libsbml itself answers, asked in a child process at a crashing depth
+# -------------------------------------------------------------------------------------
+# a math this deep ends the unit inference of libsbml with SIGSEGV: the cliff of
+# a math deep as it stands was bisected between 40,156 and 40,312 levels
+CRASHING_DEPTH = 45000
+
+# libsbml asked for the derived units of the parameter `a` of a model of a
+# document, in a child process, so that a math which overflows its stack ends
+# that child with a signal instead of taking the test process down with it
+_DERIVED_UNITS_IN_A_CHILD = """
+import sys
+
+import libsbml
+
+doc = libsbml.readSBMLFromFile(sys.argv[1])
+assert doc.getNumErrors(libsbml.LIBSBML_SEV_ERROR) == 0, doc.getErrorLog().toString()
+if sys.argv[2]:
+    model = doc.getPlugin("comp").getModelDefinition(sys.argv[2])
+else:
+    model = doc.getModel()
+udef = model.getParameter("a").getDerivedUnitDefinition()
+print(libsbml.UnitDefinition.printUnits(udef))
+"""
+
+
+def _derived_units_in_a_child(tmp_path: Path, sbml: str, definition: str = "") -> str:
+    """What libsbml derives for the parameter `a`, asked in a child process.
+
+    `definition` names a model definition of the comp package to ask instead
+    of the model of the document.
+    """
+    source = tmp_path / "document.xml"
+    source.write_text(f'<?xml version="1.0" encoding="UTF-8"?>{sbml}')
+    child = subprocess.run(
+        [sys.executable, "-c", _DERIVED_UNITS_IN_A_CHILD, str(source), definition],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert child.returncode == 0, (
+        f"the unit inference of libsbml ended the child with "
+        f"{child.returncode}: {child.stderr[-2000:]}"
+    )
+    return child.stdout.strip()
+
+
+@pytest.mark.parametrize("carrier", list(PACKAGE_MATHS))
+def test_a_deep_math_of_a_package_does_not_reach_libsbml(
+    carrier: str, tmp_path: Path
+) -> None:
+    """The maths of the packages the guard leaves out really are left out.
+
+    The condition of a function term of qual and the math of an uncertainty of
+    distrib are `CRASHING_DEPTH` levels deep here, and libsbml answers the
+    derived units of an unrelated parameter all the same: its unit inference
+    knows neither element. Should a version of libsbml start walking them,
+    this test fails rather than a worker of the server dying.
+    """
+    units = _derived_units_in_a_child(tmp_path, _package_sbml(carrier, CRASHING_DEPTH))
+    assert units.startswith("mole")
+
+
+def test_a_deep_math_of_a_model_definition_does_not_reach_the_main_model(
+    tmp_path: Path,
+) -> None:
+    """The unit inference of libsbml really is per model.
+
+    The model definition of this document carries a math `CRASHING_DEPTH`
+    levels deep and the main model instantiates it as a submodel, and the
+    parameter of the main model answers its derived units all the same, while
+    the same parameter of the model definition ends the process. That is what
+    lets the guard be a property of one model.
+    """
+    sbml = _model_definition_sbml(CRASHING_DEPTH)
+    assert _derived_units_in_a_child(tmp_path, sbml).startswith("mole")

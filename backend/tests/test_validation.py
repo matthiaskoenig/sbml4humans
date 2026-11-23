@@ -851,9 +851,13 @@ def test_a_child_has_a_cpu_limit(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_timeout_terminates_the_child(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A validation beyond the timeout is ended and its entry skipped.
+    """A validation beyond the timeout is ended and every entry of it skipped.
 
-    The child is killed, the server removes what it left of the source.
+    The child is killed, the server removes what it left of the source. The
+    child is killed wherever the timeout of one second finds it: an entry it
+    reported is skipped for the timeout, and an entry it did not reach is
+    missing from the response, which on a loaded machine is every entry of the
+    source, since the child is killed before it could name them.
     """
     content = _slow(monkeypatch)
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
@@ -864,9 +868,12 @@ def test_timeout_terminates_the_child(
         response = validation_for_bytes(content)
     elapsed = time.perf_counter() - start
     assert response.skipped == "timeout"
-    entry = _entry(response)
-    assert entry.skipped == "timeout"
-    assert entry.issues == []
+    # the one entry of the source, or none of it, and nothing else
+    assert set(response.entries) <= {"./model.xml"}
+    assert all(
+        entry == EntryValidation(skipped="timeout")
+        for entry in response.entries.values()
+    )
     assert elapsed < 5.0
     assert len(pids) == 1
     assert _gone(pids[0])

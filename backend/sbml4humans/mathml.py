@@ -6,7 +6,10 @@ latex for a better rendering. The stylesheets live in `sbml4humans.resources`.
 
 Compiling a stylesheet costs about twenty times its application, so each is
 compiled once per thread: an `XSLT` object of lxml must not be shared between
-threads, and the api builds its reports in the threads of its threadpool.
+threads, and the api builds its reports in the threads of its threadpool. The
+latex of a math is the opposite case: one `_LatexCache` which every thread
+shares, so a math which repeats inside a document or between documents is
+converted once, with a lock around what it changes.
 
 Not every math can be typeset: libsbml cannot write the MathML of a node whose
 shape its writer does not expect, and lxml refuses a MathML document deeper
@@ -25,8 +28,10 @@ python of the backend, nothing else below `sbml4humans/` calls `getChild`.
 
 import logging
 import re
+import sys
 import threading
-from functools import lru_cache
+from collections import OrderedDict
+from collections.abc import Mapping
 
 import libsbml
 import lxml.etree as ET  # ty: ignore[unresolved-import]
@@ -36,6 +41,19 @@ from sbml4humans.resources import XSLT_DIR
 
 
 logger = logging.getLogger(__name__)
+
+# what the latex of the maths converted so far may hold, the MathML of every
+# math it is keyed by included, per worker process: a server started with
+# `--workers N` has a cache of its own in each of them and costs N times this.
+# A math is as large as the file it comes from allows, and the MathML of a sum
+# of 20,000 terms is 419 kB of key next to 302 kB of latex, so a bound in
+# entries alone is no bound at all: a client which sends document after
+# document with a different large math in each would keep every one of them for
+# the life of the worker process. The number of entries is bounded as well, so
+# that a flood of small maths cannot grow the bookkeeping of the cache without
+# end
+MAX_LATEX_CACHE_BYTES = 32 * 1024 * 1024
+MAX_LATEX_CACHE_ENTRIES = 10000
 
 xslt_cmml2pmml = ET.parse(str(XSLT_DIR / "ctopff.xsl"))
 xslt_pmml2tex = ET.parse(str(XSLT_DIR / "xsltml" / "mmltex.xsl"))
@@ -51,6 +69,88 @@ class _Transforms(threading.local):
 
 
 _transforms = _Transforms()
+
+
+class _LatexCache:
+    """The latex of a math by its MathML, bounded in bytes and in entries.
+
+    The least recently used entry is evicted until the entries hold no more
+    than `max_bytes` of keys and values together and are no more than
+    `max_entries`. The size of a string is `sys.getsizeof`, the bytes of its
+    characters and the header of the object; the entry of the mapping which
+    holds it is some hundred bytes more, which the bound on the number of
+    entries keeps in hand.
+
+    One instance is shared by every thread which builds a report, so the lock
+    is held for every read as well: the order of the entries is what a read
+    changes.
+    """
+
+    def __init__(self, max_bytes: int, max_entries: int) -> None:
+        """A cache which keeps at most that many bytes in that many entries."""
+        self._max_bytes = max_bytes
+        self._max_entries = max_entries
+        self._entries: OrderedDict[str, str] = OrderedDict()
+        self._bytes = 0
+        self._lock = threading.Lock()
+
+    @staticmethod
+    def _size(key: str, value: str) -> int:
+        """The bytes of one entry: its key and its value."""
+        return sys.getsizeof(key) + sys.getsizeof(value)
+
+    def get(self, key: str) -> str | None:
+        """The latex of this MathML, None where the cache does not hold it."""
+        with self._lock:
+            value = self._entries.get(key)
+            if value is not None:
+                self._entries.move_to_end(key)
+            return value
+
+    def put(self, key: str, value: str) -> None:
+        """Keep the latex of this MathML, evict what no longer fits.
+
+        An entry which is larger than the whole cache is not kept, rather than
+        emptying the cache for one math nothing else fits next to.
+        """
+        size = self._size(key, value)
+        with self._lock:
+            if (held := self._entries.pop(key, None)) is not None:
+                self._bytes -= self._size(key, held)
+            if size > self._max_bytes:
+                return
+            self._entries[key] = value
+            self._bytes += size
+            while (
+                self._bytes > self._max_bytes or len(self._entries) > self._max_entries
+            ):
+                evicted, held = self._entries.popitem(last=False)
+                self._bytes -= self._size(evicted, held)
+
+    def clear(self) -> None:
+        """Forget every entry."""
+        with self._lock:
+            self._entries.clear()
+            self._bytes = 0
+
+    @property
+    def nbytes(self) -> int:
+        """The bytes the keys and the values of the entries hold."""
+        with self._lock:
+            return self._bytes
+
+    def __len__(self) -> int:
+        """The number of entries."""
+        with self._lock:
+            return len(self._entries)
+
+    def __contains__(self, key: str) -> bool:
+        """Whether the cache holds this MathML, without using the entry."""
+        with self._lock:
+            return key in self._entries
+
+
+_latex_cache = _LatexCache(MAX_LATEX_CACHE_BYTES, MAX_LATEX_CACHE_ENTRIES)
 
 # greek symbols rendered in latex, without the small lambda which marks
 # function definitions
@@ -140,8 +240,20 @@ def astnode_to_latex(astnode: libsbml.ASTNode) -> str:
     return cmathml_to_latex(cmml_str)
 
 
-@lru_cache(maxsize=10000)
 def cmathml_to_latex(cmml_str: str) -> str:
+    """Convert content MathML to latex, the result kept by `_LatexCache`.
+
+    A model repeats its maths, within a document and between the documents of
+    a request, and converting one is far more expensive than holding it.
+    """
+    latex = _latex_cache.get(cmml_str)
+    if latex is None:
+        latex = _convert_cmathml(cmml_str)
+        _latex_cache.put(cmml_str, latex)
+    return latex
+
+
+def _convert_cmathml(cmml_str: str) -> str:
     """Convert content MathML to latex with the xslt transformations."""
     cmml_dom = ET.fromstring(cmml_str)
     transforms = _transforms
@@ -265,3 +377,84 @@ def math_units(astnode: libsbml.ASTNode) -> set[str]:
             units.add(node.getUnits())
         stack.extend(node.getChild(k) for k in range(node.getNumChildren()))
     return units
+
+
+def math_depth(astnode: libsbml.ASTNode, functions: Mapping[str, int]) -> int:
+    """The levels a recursion over a math costs, every function call expanded.
+
+    A node without children counts as one level and a sum of n terms is n
+    levels deep and not two, as the MathML reader of libsbml keeps no flat
+    n-ary operator. A call of a function definition counts as the levels of
+    that definition's body, `functions[name]` as `function_depths` gives them,
+    because the unit inference of libsbml follows the call into the body and
+    walks the arguments of the call below it: a chain of 200 definitions called
+    200 deep is 40,000 levels, not 400, and the measure of the AST as it stands
+    is blind to it (issue #130). The call of a name which `functions` does not
+    hold, a function of MathML or a definition without a body, counts as one
+    level like any other node.
+
+    `functions` is empty where the math calls no function definition of the
+    model, and the measure is then the depth of the AST as it stands.
+    """
+    deepest = 0
+    # the node and the levels above it
+    stack: list[tuple[libsbml.ASTNode, int]] = [(astnode, 0)]
+    while stack:
+        node, above = stack.pop()
+        step = 1
+        if node.isFunction() and node.isUserFunction():
+            step = functions.get(node.getName(), 1)
+        depth = above + step
+        deepest = max(deepest, depth)
+        stack.extend((node.getChild(k), depth) for k in range(node.getNumChildren()))
+    return deepest
+
+
+def _function_body(math: libsbml.ASTNode) -> libsbml.ASTNode:
+    """The body of the math of a function definition, which is a lambda.
+
+    The body is the last child of the lambda, the ones before it are its bound
+    variables (core §4.3.2). A math which is no lambda, and the lambda without
+    children a Level 1 `formula` can hold (`unwritable_mathml`), have no body
+    of their own and stand for themselves.
+    """
+    children = math.getNumChildren()
+    if math.getType() == libsbml.AST_LAMBDA and children > 0:
+        return math.getChild(children - 1)
+    return math
+
+
+def function_depths(definitions: Mapping[str, libsbml.ASTNode]) -> dict[str, int]:
+    """The levels the body of every function definition costs, by its id.
+
+    `definitions` is the math of the function definitions of a model by their
+    id. A definition whose body calls another one costs the levels of that one
+    as well, so the depths are taken in the order of the calls, every callee
+    before its caller.
+
+    A definition which calls itself, directly or through others, is missing
+    from the result: its expansion has no depth at all, since the unit
+    inference of libsbml follows the calls without end, so there is nothing to
+    measure and the caller has to refuse the whole model (issue #130). The
+    missing ids are therefore the definitions of every cycle and those which
+    call into one. Such a model is invalid SBML, which the reader of libsbml
+    answers all the same, and the report validates nothing.
+    """
+    bodies = {name: _function_body(math) for name, math in definitions.items()}
+    called = {name: math_symbols(body) & bodies.keys() for name, body in bodies.items()}
+    callers: dict[str, set[str]] = {name: set() for name in bodies}
+    for name, callees in called.items():
+        for callee in callees:
+            callers[callee].add(name)
+    # the calls still to be measured before a definition can be
+    waiting = {name: len(callees) for name, callees in called.items()}
+    ready = [name for name, count in waiting.items() if count == 0]
+    depths: dict[str, int] = {}
+    while ready:
+        name = ready.pop()
+        depths[name] = math_depth(bodies[name], depths)
+        for caller in callers[name]:
+            waiting[caller] -= 1
+            if waiting[caller] == 0:
+                ready.append(caller)
+    return depths

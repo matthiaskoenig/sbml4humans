@@ -2,9 +2,13 @@
 
 import contextlib
 import gzip
+import subprocess
+import sys
 import tempfile
 import zipfile
 from collections import Counter
+from collections.abc import Callable
+from functools import partial
 from pathlib import Path
 
 import libsbml
@@ -24,6 +28,7 @@ from sbml4humans.resources import (
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
 )
+from sbml4humans.sbmlinfo import MAX_UNIT_INFERENCE_DEPTH
 
 
 # The report of a curated biomodel example is the one of its main SBML entry
@@ -596,3 +601,253 @@ def test_a_wide_sum_keeps_the_report_and_its_latex(terms: int) -> None:
         if edge.source == rule.pk and edge.kind == EdgeKind.MATH
     }
     assert symbols == {f"x{k}" for k in range(terms)}
+
+
+# -------------------------------------------------------------------------------------
+# a math too deep for the unit inference of libsbml costs the derived units
+# -------------------------------------------------------------------------------------
+def _deep_constraint_sbml(depth: int) -> bytes:
+    """A document whose one constraint compares a flat sum of that depth to zero.
+
+    The MathML reader of libsbml answers a right nested binary tree for a flat
+    sum, so the math of the constraint is `depth` levels deep: the comparison
+    and the `depth - 1` terms below it. Its xml stays shallow, so the latex of
+    the math is produced as it is for any other math, and the constraint is no
+    part of the ODE system, so the whole report is there except for what the
+    unit inference answers.
+    """
+    terms = "<ci> a </ci>" * (depth - 1)
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m" substanceUnits="mole" timeUnits="second" '
+        'extentUnits="mole" volumeUnits="litre"><listOfParameters>'
+        '<parameter id="a" value="1" constant="true" units="mole"/>'
+        '<parameter id="x" value="0" constant="false" units="mole"/>'
+        '</listOfParameters><listOfRules><assignmentRule variable="x">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        "<apply><times/><cn> 2 </cn><ci> a </ci></apply></math></assignmentRule>"
+        "</listOfRules><listOfConstraints><constraint>"
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"<apply><gt/><apply><plus/>{terms}</apply><cn> 0 </cn></apply>"
+        "</math></constraint></listOfConstraints></model></sbml>"
+    ).encode()
+
+
+@pytest.mark.parametrize(
+    ("depth", "derived"),
+    [(MAX_UNIT_INFERENCE_DEPTH, "mol"), (MAX_UNIT_INFERENCE_DEPTH + 1, None)],
+)
+def test_a_math_too_deep_for_the_unit_inference_keeps_the_report(
+    depth: int, derived: str | None
+) -> None:
+    """Past the bound the derived units are absent and nothing else changes.
+
+    The unit inference of libsbml recurses over the math of the whole model on
+    the first element of it which is asked for its derived units, and ends the
+    process with SIGSEGV about 40,200 levels deep (issue #130), which no error
+    response can answer. The report therefore does not ask for the derived
+    units of a model which carries a math deeper than the bound, and the
+    optional attribute stays absent for every element of it. At the bound they
+    are reported, so the guard is no blanket switch of the inference.
+    """
+    response = report_for_bytes(_deep_constraint_sbml(depth))
+    _check_report(response)
+    (entry,) = response.reports.values()
+    model = entry.report.models[0]
+    assert [p.derived_units for p in model.list_of_parameters] == [derived, derived]
+    (rule,) = model.list_of_rules
+    assert rule.derived_units == derived
+    # everything else of the report is there, whichever way the guard went
+    assert [p.id for p in model.list_of_parameters] == ["a", "x"]
+    assert rule.math is not None
+    assert rule.math.latex is not None
+    (constraint,) = model.list_of_constraints
+    assert constraint.math is not None
+    assert constraint.math.latex is not None
+    assert entry.report.ode_error is None
+    assert entry.report.ode_system is not None
+
+
+# the report of a document in a child process, which a crash of libsbml ends
+# with a signal instead of taking the test process down with it
+_REPORT_IN_A_CHILD = """
+import sys
+
+from sbml4humans.report import report_for_bytes
+
+with open(sys.argv[1], "rb") as f:
+    response = report_for_bytes(f.read())
+(entry,) = response.reports.values()
+model = entry.report.models[0]
+print(len(model.list_of_parameters), model.list_of_parameters[0].derived_units)
+"""
+
+
+def _report_in_a_child(tmp_path: Path, sbml: bytes) -> list[str]:
+    """Build the report of a document in a child, answer what the child printed.
+
+    The number of parameters of its model and the derived units of the first
+    of them. A document which overflows the stack of libsbml ends the child
+    with SIGSEGV rather than raising, so a report of one is tested in a child
+    of its own: a regression ends that child and fails the test instead of
+    taking the test process down with it.
+    """
+    assert len(sbml) < limits.MAX_CONTENT_SIZE
+    source = tmp_path / "document.xml"
+    source.write_bytes(sbml)
+    child = subprocess.run(
+        [sys.executable, "-c", _REPORT_IN_A_CHILD, str(source)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert child.returncode == 0, (
+        f"the report of the document ended the child with {child.returncode}: "
+        f"{child.stderr[-2000:]}"
+    )
+    return child.stdout.split()
+
+
+@pytest.mark.slow
+def test_a_math_which_crashes_the_unit_inference_keeps_the_report(
+    tmp_path: Path,
+) -> None:
+    """The report of the model of issue #130 is answered, in a child process.
+
+    A model whose one assignment rule sums 45,000 parameters is 3 MB of xml,
+    well inside `MAX_CONTENT_SIZE`, and libsbml reads it without a single
+    error. Before the guard the first `getDerivedUnitDefinition()` of the
+    report overflowed the stack of libsbml and the process died with SIGSEGV.
+    """
+    terms = 45000
+    parameters = "".join(
+        f'<parameter id="p{k}" value="1" constant="true" units="mole"/>'
+        for k in range(terms)
+    )
+    cis = "".join(f"<ci> p{k} </ci>" for k in range(terms))
+    sbml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m"><listOfParameters>'
+        f'{parameters}<parameter id="x" value="0" constant="false"/>'
+        '</listOfParameters><listOfRules><assignmentRule variable="x">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"<apply><plus/>{cis}</apply></math></assignmentRule>"
+        "</listOfRules></model></sbml>"
+    ).encode()
+    assert _report_in_a_child(tmp_path, sbml) == [str(terms + 1), "None"]
+
+
+# -------------------------------------------------------------------------------------
+# a math which the unit inference expands past the bound, which is cheap to write
+# -------------------------------------------------------------------------------------
+def _function_model_sbml(definitions: str, rule_math: str) -> bytes:
+    """A document with those function definitions and that assignment rule."""
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" '
+        'version="2"><model id="m"><listOfParameters>'
+        '<parameter id="a" value="1" constant="true" units="mole"/>'
+        '<parameter id="x" value="0" constant="false" units="mole"/>'
+        "</listOfParameters>"
+        f"<listOfFunctionDefinitions>{definitions}</listOfFunctionDefinitions>"
+        '<listOfRules><assignmentRule variable="x">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"{rule_math}</math></assignmentRule></listOfRules></model></sbml>"
+    ).encode()
+
+
+def _definition(sid: str, body: str) -> str:
+    """One function definition of one bound variable `y` with that body."""
+    return (
+        f'<functionDefinition id="{sid}">'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML">'
+        f"<lambda><bvar><ci> y </ci></bvar>{body}</lambda>"
+        "</math></functionDefinition>"
+    )
+
+
+def _self_recursive_sbml() -> bytes:
+    """`f0(y) = f0(y)`, the whole document under a kilobyte."""
+    return _function_model_sbml(
+        _definition("f0", "<apply><ci> f0 </ci><ci> y </ci></apply>"),
+        "<apply><ci> f0 </ci><ci> a </ci></apply>",
+    )
+
+
+def _mutually_recursive_sbml() -> bytes:
+    """`f0(y) = f1(y)` and `f1(y) = f0(y)`, a cycle of two."""
+    definitions = "".join(
+        _definition(f"f{k}", f"<apply><ci> f{1 - k} </ci><ci> y </ci></apply>")
+        for k in (0, 1)
+    )
+    return _function_model_sbml(definitions, "<apply><ci> f0 </ci><ci> a </ci></apply>")
+
+
+def _call_chain_sbml(links: int, nesting: int) -> bytes:
+    """A chain of `links` definitions, the rule calling the first `nesting` deep.
+
+    `f0` calls `f1`, `f1` calls `f2` and so on down to a definition which is
+    its bound variable, and the rule is `f0(f0(...f0(a)...))`. The unit
+    inference of libsbml follows every call into the body of its definition
+    and walks the argument below it, so the recursion it costs is the length
+    of the chain times the nesting of the calls, while the AST of the rule is
+    `nesting + 1` levels deep.
+    """
+    definitions = "".join(
+        _definition(
+            f"f{k}",
+            f"<apply><ci> f{k + 1} </ci><ci> y </ci></apply>"
+            if k + 1 < links
+            else "<ci> y </ci>",
+        )
+        for k in range(links)
+    )
+    math = "<ci> a </ci>"
+    for _ in range(nesting):
+        math = f"<apply><ci> f0 </ci>{math}</apply>"
+    return _function_model_sbml(definitions, math)
+
+
+@pytest.mark.parametrize(
+    "document",
+    [
+        pytest.param(_self_recursive_sbml, id="a definition which calls itself"),
+        pytest.param(_mutually_recursive_sbml, id="two definitions in a cycle"),
+        pytest.param(
+            partial(_call_chain_sbml, 200, 200), id="200 definitions called 200 deep"
+        ),
+    ],
+)
+def test_a_math_which_expands_too_deep_keeps_the_report(
+    document: Callable[[], bytes], tmp_path: Path
+) -> None:
+    """A call of a function definition is what the unit inference descends into.
+
+    It follows a `ci` which names a function definition into the body of that
+    definition, once per call site and without remembering what it measured,
+    so the depth of the AST as it stands says nothing about the recursion: a
+    document of 714 bytes whose one definition calls itself, and one of 44 kB
+    whose maths are 201 levels deep, both ended the process with SIGSEGV while
+    every math of them is within the bound (issue #130). The guard therefore
+    measures the expanded depth and refuses a cycle outright.
+    """
+    assert _report_in_a_child(tmp_path, document()) == ["2", "None"]
+
+
+def test_a_model_which_calls_a_function_definition_reports_its_derived_units() -> None:
+    """A function definition is no reason of its own to leave the units out.
+
+    A chain of fifty definitions called twice is 101 expanded levels, far
+    inside the bound, and the units of every element of the model are derived
+    as they are without a function definition.
+    """
+    response = report_for_bytes(_call_chain_sbml(50, 2))
+    _check_report(response)
+    (entry,) = response.reports.values()
+    model = entry.report.models[0]
+    assert [p.derived_units for p in model.list_of_parameters] == ["mol", "mol"]
+    (rule,) = model.list_of_rules
+    assert rule.derived_units == "mol"
+    assert len(model.list_of_function_definitions) == 50
