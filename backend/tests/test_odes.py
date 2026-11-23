@@ -219,6 +219,39 @@ def test_concurrent_analyses_of_comp_models() -> None:
     assert all(r.reports for r in reports)
 
 
+def test_every_example_which_instantiates_a_submodel_keeps_its_equations() -> None:
+    """A shipped example is never beyond the budget of the expanded size.
+
+    The equations of a model which expands by its comp submodels to more than
+    `validation.MAX_EXPANDED_ELEMENTS` elements are not built (`report._odes`),
+    and the largest comp model of the examples expands to 788 elements. An
+    example which grew past the budget would lose its equations without a word,
+    and `test_concurrent_analyses_of_comp_models` would have nothing left to
+    flatten.
+    """
+    # a model whose main model has a submodel is a model which is flattened
+    with_submodels: dict[str, Report] = {}
+    for example in load_examples().values():
+        if not ("comp" in example.packages or "OMEX" in example.packages):
+            continue
+        for location, entry in report_for_example(example).reports.items():
+            main = next((m for m in entry.report.models if m.kind == "model"), None)
+            if main is not None and main.list_of_submodels:
+                with_submodels[f"{example.id} {location}"] = entry.report
+    # the bodies built of organ models, the two small comp examples and the archive
+    for name in (
+        "icg_body",
+        "spt_body",
+        "dex_body",
+        "comp_deletion",
+        "minimal_model_comp",
+    ):
+        assert any(key.startswith(name) for key in with_submodels), name
+    for name, report in with_submodels.items():
+        assert report.ode_error is None, name
+        assert report.ode_system is not None, name
+
+
 def test_unsupported_rule_does_not_link_to_an_element_of_its_label() -> None:
     """An algebraic rule without id and metaid links no element.
 
