@@ -329,6 +329,67 @@ def test_model_without_id_is_scoped_by_its_key() -> None:
     assert model.list_of_compartments[0].pk == "meta_m/Compartment:c"
 
 
+def _model_definitions_sbml(second: str) -> str:
+    """A document whose two model definitions carry no id, the second as given."""
+    return (
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/'
+        'version1" comp:required="true"><model id="m"/>'
+        "<comp:listOfModelDefinitions><comp:modelDefinition>"
+        '<listOfCompartments><compartment id="c" constant="true"/>'
+        "</listOfCompartments></comp:modelDefinition>"
+        f"<comp:modelDefinition {second}><listOfCompartments>"
+        '<compartment id="c" constant="true"/></listOfCompartments>'
+        "</comp:modelDefinition></comp:listOfModelDefinitions></sbml>"
+    )
+
+
+def test_model_definitions_without_an_identifier_are_two_models() -> None:
+    """A model definition without an id is scoped by its place in the document.
+
+    Its id is optional, libsbml reports no error for a document without it,
+    and the digest of the xml which scoped it is the same digest for two byte
+    identical definitions, so the elements of two whole models were one set of
+    elements of the report (issue #135). The key of a model is the scope of
+    every element of it, which is why this one key reaches further than the
+    element it names.
+    """
+    report = SBMLDocumentInfo.from_sbml(_model_definitions_sbml(""))
+    definitions = [model for model in report.models if model.kind == "modelDefinition"]
+    assert [model.pk for model in definitions] == [
+        "modelDefinition.0/Model:modelDefinition.0",
+        "modelDefinition.1/Model:modelDefinition.1",
+    ]
+    compartments = [model.list_of_compartments[0].pk for model in definitions]
+    assert compartments == [
+        "modelDefinition.0/Compartment:c",
+        "modelDefinition.1/Compartment:c",
+    ]
+    # the link graph holds the compartment of each of the two models
+    assert all(pk in report.link_graph.nodes for pk in compartments)
+
+
+def test_a_model_definition_keeps_the_identifier_of_its_file() -> None:
+    """A model definition with an id or a metaId is scoped by it, as before.
+
+    The place of a definition is passed over where a sibling carries it as its
+    metaid, which a metaid may be: it is an XML `ID`, which allows the dot an
+    SId does not.
+    """
+    by_id = SBMLDocumentInfo.from_sbml(_model_definitions_sbml('id="md2"'))
+    assert [model.pk for model in by_id.models if model.kind == "modelDefinition"] == [
+        "modelDefinition.0/Model:modelDefinition.0",
+        "md2/Model:md2",
+    ]
+    taken = SBMLDocumentInfo.from_sbml(
+        _model_definitions_sbml('metaid="modelDefinition.0"')
+    )
+    assert [model.pk for model in taken.models if model.kind == "modelDefinition"] == [
+        "modelDefinition.0.1/Model:modelDefinition.0.1",
+        "modelDefinition.0/Model:modelDefinition.0",
+    ]
+
+
 def test_sbo_is_added_as_cvterm() -> None:
     """The SBO term of an element is reported as BQB_IS annotation."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "annotation.xml")
@@ -1273,6 +1334,64 @@ def test_a_key_of_a_place_passes_over_the_metaid_of_a_sibling() -> None:
     assert [r.pk for r in model.list_of_reactions] == [
         "m/Reaction:reaction.0.1",
         "m/Reaction:reaction.0",
+    ]
+
+
+def test_a_key_within_one_parent_passes_over_the_metaid_of_a_sibling() -> None:
+    """The children of one parent are told apart by their place and by nothing else.
+
+    The inputs, the outputs and the function terms of a transition are keyed
+    by their transition and their place, which another child of that list may
+    carry as its metaid, so that key is passed over as the key of a place in a
+    list of the model is (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1" xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/'
+        'version1" qual:required="true"><model id="m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments>'
+        "<qual:listOfQualitativeSpecies>"
+        '<qual:qualitativeSpecies qual:id="q1" qual:compartment="c" '
+        'qual:constant="false"/></qual:listOfQualitativeSpecies>'
+        '<qual:listOfTransitions><qual:transition qual:id="t1">'
+        '<qual:listOfInputs><qual:input qual:qualitativeSpecies="q1"/>'
+        '<qual:input qual:metaid="t1.input.0" qual:qualitativeSpecies="q1"/>'
+        "</qual:listOfInputs></qual:transition></qual:listOfTransitions>"
+        "</model></sbml>"
+    ).models[0]
+    (transition,) = model.list_of_transitions
+    assert [i.pk for i in transition.list_of_inputs] == [
+        "m/Input:t1.input.0.1",
+        "m/Input:t1.input.0",
+    ]
+
+
+def test_a_list_passes_over_the_metaid_of_another_list_of_its_owner() -> None:
+    """Every list of one owner carries the type `ListOf`, so their keys are one set.
+
+    A `listOfProducts` which carries the key of the `listOfReactants` of its
+    reaction as its metaid took the pk of that list, since both are keyed
+    `<reaction>.<name>` under the type `ListOf` (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments>'
+        '<listOfSpecies><species id="S1" compartment="c" '
+        'hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>'
+        "</listOfSpecies>"
+        '<listOfReactions><reaction id="J0" reversible="false">'
+        '<listOfReactants sboTerm="SBO:0000010">'
+        '<speciesReference species="S1" stoichiometry="1" constant="true"/>'
+        "</listOfReactants>"
+        '<listOfProducts metaid="J0.listOfReactants">'
+        '<speciesReference species="S1" stoichiometry="1" constant="true"/>'
+        "</listOfProducts></reaction></listOfReactions></model></sbml>"
+    ).models[0]
+    (reaction,) = model.list_of_reactions
+    assert [list_of.pk for list_of in reaction.lists] == [
+        "m/ListOf:J0.listOfReactants.1",
+        "m/ListOf:J0.listOfReactants",
     ]
 
 

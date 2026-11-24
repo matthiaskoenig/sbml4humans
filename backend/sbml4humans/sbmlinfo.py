@@ -322,6 +322,23 @@ def _indexed[T: libsbml.SBase](siblings: Iterable[T]) -> list[tuple[T, str]]:
     return _keyed_by(children, candidates)
 
 
+def _named[T: libsbml.SBase](
+    siblings: Iterable[T], parent_key: str, name: str
+) -> list[tuple[T, str]]:
+    """The children of one list, each with a key of its parent and its place.
+
+    The key is the key of the parent, the name the children have in the file
+    and the place of the child in the list, `e1.input.0`. It is the key of
+    children whose parent is no scope of a primary key, the inputs of a
+    transition or the components of a user defined constraint, which nothing
+    else tells apart where the file gives them no identifier.
+    """
+    children = list(siblings)
+    return _keyed_by(
+        children, [f"{parent_key}.{name}.{index}" for index in range(len(children))]
+    )
+
+
 def _reference_path(ref: libsbml.SBaseRef) -> list[str]:
     """The identifiers a comp reference and the chain of references below it name.
 
@@ -466,8 +483,8 @@ class SBMLDocumentInfo:
         external: list[ExternalModelDefinition] = []
         doc_comp: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
         if doc_comp:
-            for md in doc_comp.getListOfModelDefinitions():
-                models.append(self.model(md, kind="modelDefinition"))
+            for md, key in _indexed(doc_comp.getListOfModelDefinitions()):
+                models.append(self.model(md, kind="modelDefinition", key=key))
             self.scope = DOCUMENT_SCOPE
             for emd, key in _indexed(doc_comp.getListOfExternalModelDefinitions()):
                 external.append(self.external_model_definition(emd, key))
@@ -511,11 +528,10 @@ class SBMLDocumentInfo:
         two bare reactions and would otherwise make them one element of the
         report (issue #135).
 
-        The digest is the last resort of an element whose parent derives no
-        key for it, which is the model of a document: it carries the key
-        `model` unless a model definition of the document carries that id
-        (`_main_model_key`), and a model definition without an id, whose key is
-        the scope of every element of it.
+        The digest is the last resort of the one element of a document no list
+        holds, its model: it carries the key `model` unless a model definition
+        of the document carries that id, where the digest keeps the two apart
+        (`_main_model_key`).
 
         An initial assignment and a rule without an id of their own are keyed
         by the symbol or the variable they set, which a model has at most one
@@ -614,7 +630,9 @@ class SBMLDocumentInfo:
         has in the file, which an owner has one list of at most:
         `J0.listOfReactants`. A list of the model or of the document is keyed
         by that name alone, `listOfRules`, because the scope of the primary key
-        names its owner already.
+        names its owner already. Every list of one owner carries the same type
+        in its pk, `ListOf`, so the key of a list which another list of that
+        owner carries as its metaid is passed over (`_keyed_by`).
 
         Args:
             owner: the element which holds the lists.
@@ -626,14 +644,18 @@ class SBMLDocumentInfo:
         """
         is_scope = isinstance(owner, libsbml.Model | libsbml.SBMLDocument)
         prefix = "" if is_scope else f"{owner_key}."
-        result: list[ListOf] = []
+        shown: list[libsbml.ListOf] = []
+        candidates: list[str] = []
         for list_of in (*lists, *self._extension_lists(owner)):
             if _states_something(list_of):
-                key = f"{prefix}{list_of.getElementName()}"
-                result.append(self.list_of(list_of, key, scope))
+                shown.append(list_of)
+                candidates.append(f"{prefix}{list_of.getElementName()}")
             elif owner_pk is not None:
                 self.positions.add(list_of, owner_pk)
-        return result
+        return [
+            self.list_of(list_of, key, scope)
+            for list_of, key in _keyed_by(shown, candidates)
+        ]
 
     def _plugin(self, sbase: libsbml.SBase, package: str) -> Any:
         """The plugin of a package of an element, None if the document lacks it."""
@@ -899,19 +921,28 @@ class SBMLDocumentInfo:
         ]
 
     def model(
-        self, model: libsbml.Model, kind: Literal["model", "modelDefinition"]
+        self,
+        model: libsbml.Model,
+        kind: Literal["model", "modelDefinition"],
+        key: str | None = None,
     ) -> Model:
         """A model or model definition with the lists of its elements.
 
-        The model of the document without an id or a metaId is keyed as the
-        model, where the digest of its xml moved every primary key of it
-        whenever any value of it changed. A model definition carries an id.
+        The key of a model is the scope of the primary key of every element of
+        it, so a model which two of them share is two models the report shows
+        as one. The model of the document is in no list and is keyed as the
+        model (`_main_model_key`), where the digest of its xml moved every
+        primary key of it whenever any value of it changed; a model definition
+        which carries no identifier is keyed by `key`, its place in the list of
+        the document, which is why it is the one element of a list whose key
+        reaches further than itself.
 
         Whether libsbml may be asked for the derived units of the elements of
         this model is decided here, before the first of them is built: the
         inference walks the math of the whole model on the first question.
         """
-        key = self._main_model_key() if kind == "model" else None
+        if kind == "model":
+            key = self._main_model_key()
         self.scope = self._key(model, key)
         self.derives_units = self._derives_units(model)
         fields = self.sbase(
@@ -1762,7 +1793,7 @@ class SBMLDocumentInfo:
                     upper_bound=_attribute(udc, "upperBound"),
                     list_of_user_defined_constraint_components=[
                         UserDefinedConstraintComponent(
-                            **self.sbase(c, key=f"{key}.component.{position}"),
+                            **self.sbase(c, key=c_key),
                             variable=_attribute(c, "variable"),
                             variable2=_attribute(c, "variable2"),
                             coefficient=_attribute(c, "coefficient"),
@@ -1770,8 +1801,10 @@ class SBMLDocumentInfo:
                             if c.isSetVariableType()
                             else None,
                         )
-                        for position, c in enumerate(
-                            udc.getListOfUserDefinedConstraintComponents()
+                        for c, c_key in _named(
+                            udc.getListOfUserDefinedConstraintComponents(),
+                            key,
+                            "component",
                         )
                     ],
                 )
@@ -1830,15 +1863,23 @@ class SBMLDocumentInfo:
     def _associations(self, a: libsbml.FbcAssociation, key: str) -> list[Association]:
         """The nodes below an `and` or an `or`, keyed by their position.
 
+        A node which carries an id or a metaId is keyed by it, and a position
+        another node of the same parent carries as its metaid is passed over
+        (`_keyed_by`).
+
         FbcAnd and FbcOr expose `getNumAssociations` and `getAssociation`; the
         libsbml stubs declare neither of them on the base class.
         """
-        return [
-            self.association(
-                a.getAssociation(k),  # ty: ignore[unresolved-attribute]
-                f"{self._key(a, key)}.{k}",
-            )
+        nodes = [
+            a.getAssociation(k)  # ty: ignore[unresolved-attribute]
             for k in range(a.getNumAssociations())  # ty: ignore[unresolved-attribute]
+        ]
+        parent_key = self._key(a, key)
+        return [
+            self.association(node, node_key)
+            for node, node_key in _keyed_by(
+                nodes, [f"{parent_key}.{k}" for k in range(len(nodes))]
+            )
         ]
 
     # ---------------------------------------------------------------------------------
@@ -1890,16 +1931,18 @@ class SBMLDocumentInfo:
                         ],
                     ),
                     list_of_inputs=[
-                        self.qual_input(i, f"{key}.input.{position}")
-                        for position, i in enumerate(t.getListOfInputs())
+                        self.qual_input(i, i_key)
+                        for i, i_key in _named(t.getListOfInputs(), key, "input")
                     ],
                     list_of_outputs=[
-                        self.qual_output(o, f"{key}.output.{position}")
-                        for position, o in enumerate(t.getListOfOutputs())
+                        self.qual_output(o, o_key)
+                        for o, o_key in _named(t.getListOfOutputs(), key, "output")
                     ],
                     list_of_function_terms=[
-                        self.function_term(ft, f"{key}.functionTerm.{position}")
-                        for position, ft in enumerate(t.getListOfFunctionTerms())
+                        self.function_term(ft, ft_key)
+                        for ft, ft_key in _named(
+                            t.getListOfFunctionTerms(), key, "functionTerm"
+                        )
                     ],
                     default_term=self.default_term(t, key),
                 )
@@ -1982,8 +2025,9 @@ class SBMLDocumentInfo:
         if not plugin or not isinstance(plugin, libsbml.DistribSBasePlugin):
             return []
         uncertainties = []
-        for index, u in enumerate(plugin.getListOfUncertainties()):
-            key = f"{parent_key}.uncertainty.{index}"
+        for u, key in _named(
+            plugin.getListOfUncertainties(), parent_key, "uncertainty"
+        ):
             fields = self.sbase(u, key=key)
             uncertainties.append(
                 Uncertainty(
@@ -2023,10 +2067,13 @@ class SBMLDocumentInfo:
                 children, partial(self._uncert_measure_key, uncertainty_key=parent_key)
             )
         else:
-            keyed = [
-                (p, f"{parent_key}.{p.getElementName()}.{index}")
-                for index, p in enumerate(children)
-            ]
+            keyed = _keyed_by(
+                children,
+                [
+                    f"{parent_key}.{p.getElementName()}.{index}"
+                    for index, p in enumerate(children)
+                ],
+            )
         for p, key in keyed:
             fields = self.sbase(p, key=key, lists=[p.getListOfUncertParameters()])
             fields |= {
