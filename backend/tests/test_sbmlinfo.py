@@ -1299,7 +1299,10 @@ BARE_CORE_SBML = """<?xml version="1.0" encoding="UTF-8"?>
           <speciesReference species="S1" stoichiometry="1" constant="true"/>
         </listOfReactants>
         <kineticLaw>
-          <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><ci> k </ci></math>
+          <listOfLocalParameters>
+            <localParameter id="k" value="1"/>
+          </listOfLocalParameters>
         </kineticLaw>
       </reaction>
       <reaction reversible="false"/>
@@ -1361,6 +1364,10 @@ def test_everything_below_a_bare_element_is_keyed_after_its_place() -> None:
     assert reactant.pk == "m/SpeciesReference:reaction.0.reactant.S1"
     assert reaction.kinetic_law is not None
     assert reaction.kinetic_law.pk == "m/KineticLaw:reaction.0.kineticLaw"
+    # a local parameter carries an id, which is the one of its reaction, so the
+    # report keys it after the law and its key follows the place of the reaction
+    (parameter,) = reaction.kinetic_law.list_of_local_parameters
+    assert parameter.pk == "m/LocalParameter:reaction.0.kineticLaw.k"
 
 
 BARE_PACKAGES_SBML = """<?xml version="1.0" encoding="UTF-8"?>
