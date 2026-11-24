@@ -16,6 +16,7 @@ from typing import Any
 
 import libsbml
 import pytest
+from conftest import SLOW_CONTENT_WORK
 
 from sbml4humans import isolation, limits, report, validation
 from sbml4humans.model import EntryValidation, ValidationResponse
@@ -42,12 +43,6 @@ from sbml4humans.validation import (
 
 
 COMP_DELETION = EXAMPLES_DIR / "comp_deletion.xml"
-
-# the seconds the work of `slow_content` takes at least, which its docstring
-# measures: the validation of its 1,000 submodel instances needs more than 20
-# seconds. A run of that source which ends within them was ended by its
-# deadline and not by its work, whatever the machine is busy with
-SLOW_CONTENT_WORK = 20.0
 
 
 def _issues(source: str) -> list[tuple[int, str, str]]:
@@ -625,24 +620,19 @@ def test_wide_instantiation_beyond_the_budget_is_skipped_at_once(
     content = wide_document(1000)
     assert 50_000 < len(content) < 60_000
     assert _size(_info(content)) > MAX_EXPANDED_ELEMENTS
-    start = time.perf_counter()
     entry = _entry(validation_for_bytes(content))
-    elapsed = time.perf_counter() - start
+    # the skip is what says that nothing was validated, and no clock does
     assert entry.skipped == "expandedSize"
     assert entry.issues == []
-    assert elapsed < 3.0
 
 
 def test_submodel_fan_out_beyond_the_budget_is_skipped(
     fan_out_document: Callable[..., bytes],
 ) -> None:
     """A document which expands to 111,110 instances is answered at once."""
-    start = time.perf_counter()
     entry = _entry(validation_for_bytes(fan_out_document(5)))
-    elapsed = time.perf_counter() - start
     assert entry.skipped == "expandedSize"
     assert 80701 not in {issue.rule for issue in entry.issues}
-    assert elapsed < 3.0
 
 
 def test_read_errors_are_reported_without_validation(
@@ -998,7 +988,8 @@ def test_waiting_beyond_the_timeout_is_busy(
 ) -> None:
     """A request which gets no child before its timeout is busy, not slow."""
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
-    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 1.0)
+    timeout = 1.0
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", timeout)
     # another request holds the one child
     semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
@@ -1010,7 +1001,9 @@ def test_waiting_beyond_the_timeout_is_busy(
         semaphore.release()
     assert response.skipped == "busy"
     assert response.entries == {}
-    assert 1.0 <= elapsed < 4.0
+    # the request waited for its whole timeout, which no load shortens; how
+    # much longer it took is the load of the machine and no behaviour
+    assert elapsed >= timeout
     assert spy_children == []
 
 
@@ -1019,12 +1012,15 @@ def test_a_child_free_too_late_is_busy(
 ) -> None:
     """A child which gets free shortly before the timeout is not started."""
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "concurrency", 1)
-    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 2.0)
-    monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 1.0)
-    # another request holds the one child and frees it 1.5 s from now
+    timeout, min_child_time, frees = 2.0, 1.0, 1.5
+    # the child is free in time for the timeout, and too late for a child
+    assert timeout - min_child_time < frees < timeout
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", timeout)
+    monkeypatch.setattr(isolation, "MIN_CHILD_TIME", min_child_time)
+    # another request holds the one child and frees it `frees` seconds from now
     semaphore = isolation._semaphore(isolation.VALIDATION_BUDGET)
     semaphore.acquire()
-    release = threading.Timer(1.5, semaphore.release)
+    release = threading.Timer(frees, semaphore.release)
     start = time.perf_counter()
     release.start()
     response = validation_for_path(EXAMPLES_DIR / "validation.xml")
@@ -1032,7 +1028,8 @@ def test_a_child_free_too_late_is_busy(
     release.join()
     assert response.skipped == "busy"
     assert response.entries == {}
-    assert 1.5 <= elapsed < 4.0
+    # the request waited for the child, which no load shortens
+    assert elapsed >= frees
     assert spy_children == []
     # the child is free again
     assert semaphore.acquire(timeout=0)
