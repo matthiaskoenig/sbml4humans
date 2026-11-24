@@ -263,7 +263,7 @@ def _unique_keys(keys: Sequence[str], reserved: Iterable[str] = ()) -> list[str]
 
 
 def _keyed_by[T: libsbml.SBase](
-    children: Sequence[T], candidates: Sequence[str]
+    children: Sequence[T], candidates: Sequence[str], reserved: Iterable[str] = ()
 ) -> list[tuple[T, str]]:
     """The children of one list with the keys their parent gives them.
 
@@ -272,6 +272,11 @@ def _keyed_by[T: libsbml.SBase](
     it. The candidates of the other children are made unique against each
     other and against the identifiers of the list, so that no key of the list
     names two of its children.
+
+    `reserved` are the keys of elements which are no children of the list and
+    whose key the keys of the list have to stay clear of nonetheless: the
+    model of a document, which its model definitions are keyed next to and
+    which is keyed by nothing of their list.
     """
     own = [_own_key(child) for child in children]
     derived = iter(
@@ -281,7 +286,7 @@ def _keyed_by[T: libsbml.SBase](
                 for candidate, key in zip(candidates, own, strict=True)
                 if key is None
             ],
-            reserved=[key for key in own if key is not None],
+            reserved=[key for key in own if key is not None] + list(reserved),
         )
     )
     return [
@@ -305,7 +310,9 @@ def _keyed[T: libsbml.SBase](
     return _keyed_by(children, [key_of(child) for child in children])
 
 
-def _indexed[T: libsbml.SBase](siblings: Iterable[T]) -> list[tuple[T, str]]:
+def _indexed[T: libsbml.SBase](
+    siblings: Iterable[T], reserved: Iterable[str] = ()
+) -> list[tuple[T, str]]:
     """The children of one list, each with a key of its place in that list.
 
     The key is the name of the element in SBML and the place of the child
@@ -313,6 +320,9 @@ def _indexed[T: libsbml.SBase](siblings: Iterable[T]) -> list[tuple[T, str]]:
     moves and which no id of the file is, since an SId carries no dot. The
     names are counted apart, so the algebraic rules of a `listOfRules` are
     `algebraicRule.0` and `algebraicRule.1` whatever the rules between them.
+
+    `reserved` are keys outside the list which the places may not take, which
+    `_keyed_by` explains.
     """
     children = list(siblings)
     places: Counter[str] = Counter()
@@ -321,7 +331,7 @@ def _indexed[T: libsbml.SBase](siblings: Iterable[T]) -> list[tuple[T, str]]:
         name = _element_name(child)
         candidates.append(f"{name}.{places[name]}")
         places[name] += 1
-    return _keyed_by(children, candidates)
+    return _keyed_by(children, candidates, reserved)
 
 
 def _named[T: libsbml.SBase](
@@ -476,16 +486,28 @@ class SBMLDocumentInfo:
     def build_report(self) -> Report:
         """Build the report without its link graph.
 
+        The models of the document are keyed next to each other: the key of
+        the model of the document is reserved before its model definitions are
+        keyed by their places, so that a model which carries the metaid
+        `modelDefinition.0` does not take the place of the first definition,
+        and `_main_model_key` keeps the other direction, a definition which is
+        keyed `model`, apart. The key of a model is the scope of every element
+        of it, so two models of one key are one model of the report.
+
         The graph of the report of an archive is built over all of its entries,
         once the report of every entry is there (`report.link_reports`).
         """
         models: list[Model] = []
+        model_keys: list[str] = []
         if self.doc.isSetModel():
             models.append(self.model(self.doc.getModel(), kind="model"))
+            model_keys.append(self.scope)
         external: list[ExternalModelDefinition] = []
         doc_comp: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
         if doc_comp:
-            for md, key in _indexed(doc_comp.getListOfModelDefinitions()):
+            for md, key in _indexed(
+                doc_comp.getListOfModelDefinitions(), reserved=model_keys
+            ):
                 models.append(self.model(md, kind="modelDefinition", key=key))
             self.scope = DOCUMENT_SCOPE
             for emd, key in _indexed(doc_comp.getListOfExternalModelDefinitions()):

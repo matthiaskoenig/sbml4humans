@@ -426,6 +426,56 @@ def test_a_model_definition_which_is_keyed_model_keeps_the_model_apart() -> None
     assert scopes('id="md"') == ["model", "md"]
 
 
+def test_a_model_keyed_like_a_place_leaves_that_place_to_the_definition() -> None:
+    """A model which is keyed `modelDefinition.0` does not take that place.
+
+    The other direction of `test_a_model_definition_which_is_keyed_model_keeps
+    _the_model_apart`: the model of the document is keyed by its metaid, which
+    may read `modelDefinition.0`, and the model definitions of the document
+    are keyed by their places next to it, so the place of the first definition
+    passes over the key of the model (issue #135). The key of a model is the
+    scope of every element of it, so the two models and their compartments,
+    which both carry the id `c`, were one model of the report.
+    """
+
+    def models(model: str, definitions: int = 1) -> list[tuple[str, str]]:
+        """The scope and the compartment of every model of such a document."""
+        compartments = (
+            '<listOfCompartments><compartment id="c" constant="true"/>'
+            "</listOfCompartments>"
+        )
+        report = SBMLDocumentInfo.from_sbml(
+            '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+            'version="1" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/'
+            f'version1" comp:required="true">{model}'
+            "<comp:listOfModelDefinitions>"
+            + f"<comp:modelDefinition>{compartments}</comp:modelDefinition>"
+            * definitions
+            + "</comp:listOfModelDefinitions></sbml>"
+        )
+        return [
+            (m.pk.partition("/")[0], m.list_of_compartments[0].pk)
+            for m in report.models
+        ]
+
+    main_model = (
+        '<model metaid="modelDefinition.0"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments></model>'
+    )
+    assert models(main_model) == [
+        ("modelDefinition.0", "modelDefinition.0/Compartment:c"),
+        ("modelDefinition.0.1", "modelDefinition.0.1/Compartment:c"),
+    ]
+    # the second definition keeps its own place, which nothing reserved
+    assert models(main_model, definitions=2) == [
+        ("modelDefinition.0", "modelDefinition.0/Compartment:c"),
+        ("modelDefinition.0.1", "modelDefinition.0.1/Compartment:c"),
+        ("modelDefinition.1", "modelDefinition.1/Compartment:c"),
+    ]
+    # a document without a model reserves nothing
+    assert models("") == [("modelDefinition.0", "modelDefinition.0/Compartment:c")]
+
+
 def test_sbo_is_added_as_cvterm() -> None:
     """The SBO term of an element is reported as BQB_IS annotation."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "annotation.xml")
