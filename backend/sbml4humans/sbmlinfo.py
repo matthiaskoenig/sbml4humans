@@ -211,7 +211,9 @@ def _element_name(sbase: libsbml.SBase) -> str:
     writes, which is `speciesConcentrationRule` for a rate rule of Level 1,
     while the report names an element of a kind the same way whatever the
     level: by the class of the specification, which is the `sbml_type` of the
-    report object.
+    report object for every element but a comp model definition, whose type is
+    `Model` while the name of its element is `modelDefinition`, so that its pk
+    reads `modelDefinition.0/Model:modelDefinition.0`.
     """
     name = type(sbase).__name__
     return f"{name[0].lower()}{name[1:]}"
@@ -948,10 +950,10 @@ class SBMLDocumentInfo:
         fields = self.sbase(
             model, sbml_type="Model", key=key, lists=self._model_lists(model)
         )
-        for key in ["substance", "time", "volume", "area", "length", "extent"]:
-            sid = _attribute(model, f"{key}Units")
-            fields[f"{key}_units"] = sid
-            fields[f"{key}_units_latex"] = self.units(sid, model)
+        for quantity in ["substance", "time", "volume", "area", "length", "extent"]:
+            sid = _attribute(model, f"{quantity}Units")
+            fields[f"{quantity}_units"] = sid
+            fields[f"{quantity}_units_latex"] = self.units(sid, model)
         return Model(
             **fields,
             kind=kind,
@@ -1145,12 +1147,15 @@ class SBMLDocumentInfo:
     def _main_model_key(self) -> str | None:
         """The key of the model of the document when it carries no identifier.
 
-        It is `model`, unless a model definition of the document carries that
-        id, where the digest of the xml keeps the two apart.
+        It is `model`, unless a model definition of the document is keyed by
+        that string, by its id or by its metaid, where the digest of the xml
+        keeps the two apart. A metaid is an XML `ID` and may read `model` as
+        well, and the key of a model is the scope of every element of it, so
+        the two models would otherwise be one model of the report.
         """
         plugin: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
         if plugin and any(
-            md.getId() == MAIN_MODEL_KEY for md in plugin.getListOfModelDefinitions()
+            _own_key(md) == MAIN_MODEL_KEY for md in plugin.getListOfModelDefinitions()
         ):
             return None
         return MAIN_MODEL_KEY
@@ -1308,9 +1313,12 @@ class SBMLDocumentInfo:
         """The kinetic law of a reaction with its local parameters.
 
         A local parameter is keyed by its law and its id, which SBML requires
-        and which is unique within the law (core §4.11.6). A law which repeats
-        an id or leaves one out is invalid, and its parameters are told apart
-        by their occurrence, so that no two of them share a pk.
+        and which is unique within the law (core §4.11.6). A law which leaves
+        an id out is invalid and its parameter is keyed by its place instead,
+        `J0.kineticLaw.localParameter.1`, which is what the inspector and the
+        permalink of that parameter show; a law which repeats an id tells the
+        repetition apart by its occurrence, so that no two parameters of one
+        law share a pk.
         """
         kinetic_law_key = f"{reaction_key}.kineticLaw"
         fields = self.sbase(
@@ -1319,7 +1327,12 @@ class SBMLDocumentInfo:
         local_parameters = []
         parameters = self._kinetic_law_parameters(klaw)
         keys = _unique_keys(
-            [f"{kinetic_law_key}.{lp.getId()}" for lp in parameters],
+            [
+                f"{kinetic_law_key}.{lp.getId()}"
+                if lp.isSetId()
+                else f"{kinetic_law_key}.localParameter.{index}"
+                for index, lp in enumerate(parameters)
+            ],
             reserved=[lp.getMetaId() for lp in parameters if lp.isSetMetaId()],
         )
         for lp, key in zip(parameters, keys, strict=True):

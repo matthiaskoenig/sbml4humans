@@ -390,6 +390,42 @@ def test_a_model_definition_keeps_the_identifier_of_its_file() -> None:
     ]
 
 
+def test_a_model_definition_which_is_keyed_model_keeps_the_model_apart() -> None:
+    """A model definition keyed `model`, by its id or its metaid, is not the model.
+
+    The key of a model is the scope of every element of it, so the model of a
+    document which carries no identifier and a model definition which is keyed
+    `model` would be one model of the report. The model of the document falls
+    back to the digest of its xml, which it carries no identifier for.
+    """
+
+    def scopes(identifier: str) -> list[str]:
+        """The scope of every model of the document whose definition is named so."""
+        report = SBMLDocumentInfo.from_sbml(
+            '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+            'version="1" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/'
+            'version1" comp:required="true"><model><listOfCompartments>'
+            '<compartment id="c" constant="true"/></listOfCompartments></model>'
+            f"<comp:listOfModelDefinitions><comp:modelDefinition {identifier}>"
+            '<listOfCompartments><compartment id="c" constant="true"/>'
+            "</listOfCompartments></comp:modelDefinition>"
+            "</comp:listOfModelDefinitions></sbml>"
+        )
+        return [model.pk.partition("/")[0] for model in report.models]
+
+    main, definition = scopes('id="model"')
+    assert definition == "model"
+    assert main != definition
+    # the model of the document carries no identifier, so its scope is the digest
+    assert len(main) == 40
+    main, definition = scopes('metaid="model"')
+    assert definition == "model"
+    assert main != definition
+    assert len(main) == 40
+    # a definition named otherwise leaves the model of the document its key
+    assert scopes('id="md"') == ["model", "md"]
+
+
 def test_sbo_is_added_as_cvterm() -> None:
     """The SBO term of an element is reported as BQB_IS annotation."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "annotation.xml")
@@ -948,10 +984,33 @@ def test_local_parameters_of_one_law_without_an_id_are_two_elements() -> None:
     assert kinetic_law is not None
     pks = [lp.pk for lp in kinetic_law.list_of_local_parameters]
     assert pks == [
-        "m/LocalParameter:r1.kineticLaw.",
-        "m/LocalParameter:r1.kineticLaw..1",
+        "m/LocalParameter:r1.kineticLaw.localParameter.0",
+        "m/LocalParameter:r1.kineticLaw.localParameter.1",
     ]
     assert all(pk in report.link_graph.nodes for pk in pks)
+
+
+def test_local_parameters_of_one_law_of_one_id_are_two_elements() -> None:
+    """Two parameters of one law which repeat an id keep two pks.
+
+    The id of the first keys it as it does in a valid document, and the
+    repetition is told apart by its occurrence.
+    """
+    report = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfReactions>'
+        '<reaction id="r1" reversible="false"><kineticLaw>'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><ci> k </ci></math>'
+        '<listOfLocalParameters><localParameter id="k" value="1"/>'
+        '<localParameter id="k" value="2"/></listOfLocalParameters>'
+        "</kineticLaw></reaction></listOfReactions></model></sbml>"
+    )
+    kinetic_law = report.models[0].list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    assert [lp.pk for lp in kinetic_law.list_of_local_parameters] == [
+        "m/LocalParameter:r1.kineticLaw.k",
+        "m/LocalParameter:r1.kineticLaw.k.1",
+    ]
 
 
 def test_level_2_biomodel_reports_its_kinetic_law_parameters(
