@@ -43,6 +43,12 @@ from sbml4humans.validation import (
 
 COMP_DELETION = EXAMPLES_DIR / "comp_deletion.xml"
 
+# the seconds the work of `slow_content` takes at least, which its docstring
+# measures: the validation of its 1,000 submodel instances needs more than 20
+# seconds. A run of that source which ends within them was ended by its
+# deadline and not by its work, whatever the machine is busy with
+SLOW_CONTENT_WORK = 20.0
+
 
 def _issues(source: str) -> list[tuple[int, str, str]]:
     """The rule, severity and pk of every issue of a document after the check."""
@@ -820,6 +826,8 @@ def test_timeout_terminates_the_child(
     source, since the child is killed before it could name them.
     """
     timeout = 1.0
+    # the bound below says nothing where the deadline outlasts the work
+    assert timeout < SLOW_CONTENT_WORK
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", timeout)
     start = time.perf_counter()
@@ -838,12 +846,12 @@ def test_timeout_terminates_the_child(
     )
     assert len(spy_children) == 1
     assert _gone(spy_children[0])
-    # the run does not wait for the work: the validation of this source takes
-    # more than 20 seconds, which is more than the 20 timeouts this allows, so
-    # the bound still holds a server which waited for it. It is the timeout of
-    # this test and no wall clock, which measured the machine and not the
-    # server: the five seconds here before failed on a loaded one
-    assert elapsed < 20 * timeout
+    # the run does not wait for the work, which is the one thing a clock can
+    # say here: the bound is the work of the source and no wall clock of its
+    # own, which measured the machine and not the server (the five seconds
+    # here before failed on a machine loaded with the rest of the suite, which
+    # ends this run in under two)
+    assert elapsed < SLOW_CONTENT_WORK
 
 
 def test_timeout_keeps_the_entries_validated_before(
