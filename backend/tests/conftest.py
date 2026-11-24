@@ -168,10 +168,9 @@ SLOW_CONTENT_WORK = 20.0
 def slow_content(monkeypatch: pytest.MonkeyPatch) -> bytes:
     """Content whose read outlasts a short timeout, validated and reported.
 
-    The validation of the 1,000 instances takes more than `SLOW_CONTENT_WORK`
-    (20) seconds once the
-    budget of the expanded size no longer skips it, and their report more than
-    a minute.
+    The validation of the 1,000 instances takes more than the 20 seconds of
+    `SLOW_CONTENT_WORK` once the budget of the expanded size no longer skips
+    it, and their report more than a minute.
     """
     monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 10**9)
     return _wide(1000)
