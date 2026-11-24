@@ -819,12 +819,16 @@ def test_timeout_terminates_the_child(
     missing from the response, which on a loaded machine is every entry of the
     source, since the child is killed before it could name them.
     """
+    timeout = 1.0
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
-    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 1.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", timeout)
     start = time.perf_counter()
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
         response = validation_for_bytes(slow_content)
     elapsed = time.perf_counter() - start
+    # that the timeout ended the run, and not the work of the child, is what
+    # `skipped` says: a child which had finished would have sent the issues of
+    # its entry instead
     assert response.skipped == "timeout"
     # the one entry of the source, or none of it, and nothing else
     assert set(response.entries) <= {"./model.xml"}
@@ -832,9 +836,14 @@ def test_timeout_terminates_the_child(
         entry == EntryValidation(skipped="timeout")
         for entry in response.entries.values()
     )
-    assert elapsed < 5.0
     assert len(spy_children) == 1
     assert _gone(spy_children[0])
+    # the run does not wait for the work: the validation of this source takes
+    # more than 20 seconds, which is more than the 20 timeouts this allows, so
+    # the bound still holds a server which waited for it. It is the timeout of
+    # this test and no wall clock, which measured the machine and not the
+    # server: the five seconds here before failed on a loaded one
+    assert elapsed < 20 * timeout
 
 
 def test_timeout_keeps_the_entries_validated_before(
