@@ -329,6 +329,153 @@ def test_model_without_id_is_scoped_by_its_key() -> None:
     assert model.list_of_compartments[0].pk == "meta_m/Compartment:c"
 
 
+def _model_definitions_sbml(second: str) -> str:
+    """A document whose two model definitions carry no id, the second as given."""
+    return (
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/'
+        'version1" comp:required="true"><model id="m"/>'
+        "<comp:listOfModelDefinitions><comp:modelDefinition>"
+        '<listOfCompartments><compartment id="c" constant="true"/>'
+        "</listOfCompartments></comp:modelDefinition>"
+        f"<comp:modelDefinition {second}><listOfCompartments>"
+        '<compartment id="c" constant="true"/></listOfCompartments>'
+        "</comp:modelDefinition></comp:listOfModelDefinitions></sbml>"
+    )
+
+
+def test_model_definitions_without_an_identifier_are_two_models() -> None:
+    """A model definition without an id is scoped by its place in the document.
+
+    Its id is optional, libsbml reports no error for a document without it,
+    and the digest of the xml which scoped it is the same digest for two byte
+    identical definitions, so the elements of two whole models were one set of
+    elements of the report (issue #135). The key of a model is the scope of
+    every element of it, which is why this one key reaches further than the
+    element it names.
+    """
+    report = SBMLDocumentInfo.from_sbml(_model_definitions_sbml(""))
+    definitions = [model for model in report.models if model.kind == "modelDefinition"]
+    assert [model.pk for model in definitions] == [
+        "modelDefinition.0/Model:modelDefinition.0",
+        "modelDefinition.1/Model:modelDefinition.1",
+    ]
+    compartments = [model.list_of_compartments[0].pk for model in definitions]
+    assert compartments == [
+        "modelDefinition.0/Compartment:c",
+        "modelDefinition.1/Compartment:c",
+    ]
+    # the link graph holds the compartment of each of the two models
+    assert all(pk in report.link_graph.nodes for pk in compartments)
+
+
+def test_a_model_definition_keeps_the_identifier_of_its_file() -> None:
+    """A model definition with an id or a metaId is scoped by it, as before.
+
+    The place of a definition is passed over where a sibling carries it as its
+    metaid, which a metaid may be: it is an XML `ID`, which allows the dot an
+    SId does not.
+    """
+    by_id = SBMLDocumentInfo.from_sbml(_model_definitions_sbml('id="md2"'))
+    assert [model.pk for model in by_id.models if model.kind == "modelDefinition"] == [
+        "modelDefinition.0/Model:modelDefinition.0",
+        "md2/Model:md2",
+    ]
+    taken = SBMLDocumentInfo.from_sbml(
+        _model_definitions_sbml('metaid="modelDefinition.0"')
+    )
+    assert [model.pk for model in taken.models if model.kind == "modelDefinition"] == [
+        "modelDefinition.0.1/Model:modelDefinition.0.1",
+        "modelDefinition.0/Model:modelDefinition.0",
+    ]
+
+
+def test_a_model_definition_which_is_keyed_model_keeps_the_model_apart() -> None:
+    """A model definition keyed `model`, by its id or its metaid, is not the model.
+
+    The key of a model is the scope of every element of it, so the model of a
+    document which carries no identifier and a model definition which is keyed
+    `model` would be one model of the report. The model of the document falls
+    back to the digest of its xml, which it carries no identifier for.
+    """
+
+    def scopes(identifier: str) -> list[str]:
+        """The scope of every model of the document whose definition is named so."""
+        report = SBMLDocumentInfo.from_sbml(
+            '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+            'version="1" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/'
+            'version1" comp:required="true"><model><listOfCompartments>'
+            '<compartment id="c" constant="true"/></listOfCompartments></model>'
+            f"<comp:listOfModelDefinitions><comp:modelDefinition {identifier}>"
+            '<listOfCompartments><compartment id="c" constant="true"/>'
+            "</listOfCompartments></comp:modelDefinition>"
+            "</comp:listOfModelDefinitions></sbml>"
+        )
+        return [model.pk.partition("/")[0] for model in report.models]
+
+    main, definition = scopes('id="model"')
+    assert definition == "model"
+    assert main != definition
+    # the model of the document carries no identifier, so its scope is the digest
+    assert len(main) == 40
+    main, definition = scopes('metaid="model"')
+    assert definition == "model"
+    assert main != definition
+    assert len(main) == 40
+    # a definition named otherwise leaves the model of the document its key
+    assert scopes('id="md"') == ["model", "md"]
+
+
+def test_a_model_keyed_like_a_place_leaves_that_place_to_the_definition() -> None:
+    """A model which is keyed `modelDefinition.0` does not take that place.
+
+    The other direction of `test_a_model_definition_which_is_keyed_model_keeps
+    _the_model_apart`: the model of the document is keyed by its metaid, which
+    may read `modelDefinition.0`, and the model definitions of the document
+    are keyed by their places next to it, so the place of the first definition
+    passes over the key of the model (issue #135). The key of a model is the
+    scope of every element of it, so the two models and their compartments,
+    which both carry the id `c`, were one model of the report.
+    """
+
+    def models(model: str, definitions: int = 1) -> list[tuple[str, str]]:
+        """The scope and the compartment of every model of such a document."""
+        compartments = (
+            '<listOfCompartments><compartment id="c" constant="true"/>'
+            "</listOfCompartments>"
+        )
+        report = SBMLDocumentInfo.from_sbml(
+            '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+            'version="1" xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/'
+            f'version1" comp:required="true">{model}'
+            "<comp:listOfModelDefinitions>"
+            + f"<comp:modelDefinition>{compartments}</comp:modelDefinition>"
+            * definitions
+            + "</comp:listOfModelDefinitions></sbml>"
+        )
+        return [
+            (m.pk.partition("/")[0], m.list_of_compartments[0].pk)
+            for m in report.models
+        ]
+
+    main_model = (
+        '<model metaid="modelDefinition.0"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments></model>'
+    )
+    assert models(main_model) == [
+        ("modelDefinition.0", "modelDefinition.0/Compartment:c"),
+        ("modelDefinition.0.1", "modelDefinition.0.1/Compartment:c"),
+    ]
+    # the second definition keeps its own place, which nothing reserved
+    assert models(main_model, definitions=2) == [
+        ("modelDefinition.0", "modelDefinition.0/Compartment:c"),
+        ("modelDefinition.0.1", "modelDefinition.0.1/Compartment:c"),
+        ("modelDefinition.1", "modelDefinition.1/Compartment:c"),
+    ]
+    # a document without a model reserves nothing
+    assert models("") == [("modelDefinition.0", "modelDefinition.0/Compartment:c")]
+
+
 def test_sbo_is_added_as_cvterm() -> None:
     """The SBO term of an element is reported as BQB_IS annotation."""
     report = SBMLDocumentInfo.from_sbml(EXAMPLES_DIR / "annotation.xml")
@@ -867,6 +1014,55 @@ def test_kinetic_law_parameters_of_both_levels(level: int) -> None:
     assert local_parameter.pk == "m/LocalParameter:r1.kineticLaw.k"
 
 
+def test_local_parameters_of_one_law_without_an_id_are_two_elements() -> None:
+    """Two parameters of one law which carry no id keep two pks.
+
+    The id of a local parameter is required and unique within its law (core
+    §4.11.6), which keys it, so a law whose parameters repeat an id or carry
+    none made them one element of the report.
+    """
+    report = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfReactions>'
+        '<reaction id="r1" reversible="false"><kineticLaw>'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>'
+        '<listOfLocalParameters><localParameter value="1"/>'
+        '<localParameter value="2"/></listOfLocalParameters>'
+        "</kineticLaw></reaction></listOfReactions></model></sbml>"
+    )
+    kinetic_law = report.models[0].list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    pks = [lp.pk for lp in kinetic_law.list_of_local_parameters]
+    assert pks == [
+        "m/LocalParameter:r1.kineticLaw.localParameter.0",
+        "m/LocalParameter:r1.kineticLaw.localParameter.1",
+    ]
+    assert all(pk in report.link_graph.nodes for pk in pks)
+
+
+def test_local_parameters_of_one_law_of_one_id_are_two_elements() -> None:
+    """Two parameters of one law which repeat an id keep two pks.
+
+    The id of the first keys it as it does in a valid document, and the
+    repetition is told apart by its occurrence.
+    """
+    report = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfReactions>'
+        '<reaction id="r1" reversible="false"><kineticLaw>'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><ci> k </ci></math>'
+        '<listOfLocalParameters><localParameter id="k" value="1"/>'
+        '<localParameter id="k" value="2"/></listOfLocalParameters>'
+        "</kineticLaw></reaction></listOfReactions></model></sbml>"
+    )
+    kinetic_law = report.models[0].list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    assert [lp.pk for lp in kinetic_law.list_of_local_parameters] == [
+        "m/LocalParameter:r1.kineticLaw.k",
+        "m/LocalParameter:r1.kineticLaw.k.1",
+    ]
+
+
 def test_level_2_biomodel_reports_its_kinetic_law_parameters(
     level2_biomodel: Report,
 ) -> None:
@@ -1051,6 +1247,268 @@ def test_elements_without_an_identifier_are_keyed_by_their_place() -> None:
     assert event.trigger.pk == "m/Trigger:event.0.trigger"
     changed = report("<apply><minus/><ci> x </ci><cn> 1 </cn></apply>").models[0]
     assert changed.list_of_rules[0].pk == "m/AlgebraicRule:algebraicRule.0"
+
+
+BARE_CORE_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model id="m">
+    <listOfFunctionDefinitions>
+      <functionDefinition>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <lambda><bvar><ci> x </ci></bvar><ci> x </ci></lambda>
+        </math>
+      </functionDefinition>
+    </listOfFunctionDefinitions>
+    <listOfUnitDefinitions>
+      <unitDefinition>
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments><compartment constant="true"/></listOfCompartments>
+    <listOfSpecies>
+      <species hasOnlySubstanceUnits="false" boundaryCondition="false"
+               constant="false"/>
+    </listOfSpecies>
+    <listOfParameters><parameter value="1" constant="false"/></listOfParameters>
+    <listOfInitialAssignments>
+      <initialAssignment>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </initialAssignment>
+    </listOfInitialAssignments>
+    <listOfRules>
+      <assignmentRule>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </assignmentRule>
+      <rateRule>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </rateRule>
+      <algebraicRule>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </algebraicRule>
+    </listOfRules>
+    <listOfConstraints>
+      <constraint>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>
+      </constraint>
+    </listOfConstraints>
+    <listOfReactions>
+      <reaction reversible="false">
+        <listOfReactants>
+          <speciesReference species="S1" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><ci> k </ci></math>
+          <listOfLocalParameters>
+            <localParameter id="k" value="1"/>
+          </listOfLocalParameters>
+        </kineticLaw>
+      </reaction>
+      <reaction reversible="false"/>
+    </listOfReactions>
+    <listOfEvents>
+      <event useValuesFromTriggerTime="true">
+        <trigger initialValue="false" persistent="true">
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>
+        </trigger>
+      </event>
+    </listOfEvents>
+  </model>
+</sbml>
+"""
+
+
+def test_every_core_list_keys_an_element_without_an_identifier() -> None:
+    """Every list of a model keys an element the file leaves bare by its place.
+
+    An element of most of these lists is required to carry an id, so a bare
+    one is an invalid document, which the report is of as well: it is built
+    before and apart from the validation. The digest of the xml keyed such an
+    element and is identical for two byte identical siblings, which made the
+    two reactions here one element of the report (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(BARE_CORE_SBML).models[0]
+    (function_definition,) = model.list_of_function_definitions
+    assert function_definition.pk == "m/FunctionDefinition:functionDefinition.0"
+    (unit_definition,) = model.list_of_unit_definitions
+    assert unit_definition.pk == "m/UnitDefinition:unitDefinition.0"
+    (compartment,) = model.list_of_compartments
+    assert compartment.pk == "m/Compartment:compartment.0"
+    (species,) = model.list_of_species
+    assert species.pk == "m/Species:species.0"
+    (parameter,) = model.list_of_parameters
+    assert parameter.pk == "m/Parameter:parameter.0"
+    (initial_assignment,) = model.list_of_initial_assignments
+    assert initial_assignment.pk == "m/InitialAssignment:initialAssignment.0"
+    assert [r.pk for r in model.list_of_rules] == [
+        "m/AssignmentRule:assignmentRule.0",
+        "m/RateRule:rateRule.0",
+        "m/AlgebraicRule:algebraicRule.0",
+    ]
+    (constraint,) = model.list_of_constraints
+    assert constraint.pk == "m/Constraint:constraint.0"
+    assert [r.pk for r in model.list_of_reactions] == [
+        "m/Reaction:reaction.0",
+        "m/Reaction:reaction.1",
+    ]
+    (event,) = model.list_of_events
+    assert event.pk == "m/Event:event.0"
+
+
+def test_everything_below_a_bare_element_is_keyed_after_its_place() -> None:
+    """The objects of a reaction without an id follow the key of its place."""
+    model = SBMLDocumentInfo.from_sbml(BARE_CORE_SBML).models[0]
+    reaction = model.list_of_reactions[0]
+    (reactant,) = reaction.list_of_reactants
+    assert reactant.pk == "m/SpeciesReference:reaction.0.reactant.S1"
+    assert reaction.kinetic_law is not None
+    assert reaction.kinetic_law.pk == "m/KineticLaw:reaction.0.kineticLaw"
+    # a local parameter carries an id, which is the one of its reaction, so the
+    # report keys it after the law and its key follows the place of the reaction
+    (parameter,) = reaction.kinetic_law.list_of_local_parameters
+    assert parameter.pk == "m/LocalParameter:reaction.0.kineticLaw.k"
+
+
+BARE_PACKAGES_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2"
+      xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1"
+      comp:required="true" fbc:required="false" qual:required="true">
+  <model id="m" fbc:strict="false">
+    <listOfCompartments><compartment id="c" constant="true"/></listOfCompartments>
+    <comp:listOfSubmodels>
+      <comp:submodel comp:modelRef="md"/>
+    </comp:listOfSubmodels>
+    <comp:listOfPorts>
+      <comp:port comp:idRef="c"/>
+    </comp:listOfPorts>
+    <fbc:listOfGeneProducts>
+      <fbc:geneProduct fbc:label="g1"/>
+    </fbc:listOfGeneProducts>
+    <fbc:listOfObjectives fbc:activeObjective="obj">
+      <fbc:objective fbc:type="maximize"/>
+    </fbc:listOfObjectives>
+    <qual:listOfQualitativeSpecies>
+      <qual:qualitativeSpecies qual:compartment="c" qual:constant="false"/>
+    </qual:listOfQualitativeSpecies>
+    <qual:listOfTransitions>
+      <qual:transition/>
+    </qual:listOfTransitions>
+  </model>
+  <comp:listOfModelDefinitions>
+    <comp:modelDefinition id="md"/>
+  </comp:listOfModelDefinitions>
+  <comp:listOfExternalModelDefinitions>
+    <comp:externalModelDefinition comp:source="other.xml"/>
+  </comp:listOfExternalModelDefinitions>
+</sbml>
+"""
+
+
+def test_every_list_of_a_package_keys_an_element_without_an_identifier() -> None:
+    """The lists of comp, fbc and qual key a bare element by its place as well.
+
+    The id of a submodel, a port, a gene product, an objective, a qualitative
+    species and an external model definition is required by its package, so a
+    bare one is an invalid document, which the digest of the xml keyed and
+    two byte identical ones made one element of the report (issue #135).
+    """
+    report = SBMLDocumentInfo.from_sbml(BARE_PACKAGES_SBML)
+    (emd,) = report.external_model_definitions
+    assert emd.pk == "document/ExternalModelDefinition:externalModelDefinition.0"
+    model = next(m for m in report.models if m.id == "m")
+    (submodel,) = model.list_of_submodels
+    assert submodel.pk == "m/Submodel:submodel.0"
+    (port,) = model.list_of_ports
+    assert port.pk == "m/Port:port.0"
+    (gene_product,) = model.list_of_gene_products
+    assert gene_product.pk == "m/GeneProduct:geneProduct.0"
+    (objective,) = model.list_of_objectives
+    assert objective.pk == "m/Objective:objective.0"
+    (qualitative_species,) = model.list_of_qualitative_species
+    assert qualitative_species.pk == "m/QualitativeSpecies:qualitativeSpecies.0"
+    (transition,) = model.list_of_transitions
+    assert transition.pk == "m/Transition:transition.0"
+
+
+def test_a_key_of_a_place_passes_over_the_metaid_of_a_sibling() -> None:
+    """A key of a place never takes the metaid another element of the list carries.
+
+    A metaid is an XML `ID`, which allows the dot an SId does not, so a
+    sibling may carry `reaction.0` as its metaid; the key of the place of the
+    bare reaction passes over it (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfReactions>'
+        '<reaction reversible="false"/>'
+        '<reaction metaid="reaction.0" reversible="false"/>'
+        "</listOfReactions></model></sbml>"
+    ).models[0]
+    assert [r.pk for r in model.list_of_reactions] == [
+        "m/Reaction:reaction.0.1",
+        "m/Reaction:reaction.0",
+    ]
+
+
+def test_a_key_within_one_parent_passes_over_the_metaid_of_a_sibling() -> None:
+    """The children of one parent are told apart by their place and by nothing else.
+
+    The inputs, the outputs and the function terms of a transition are keyed
+    by their transition and their place, which another child of that list may
+    carry as its metaid, so that key is passed over as the key of a place in a
+    list of the model is (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1" xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/'
+        'version1" qual:required="true"><model id="m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments>'
+        "<qual:listOfQualitativeSpecies>"
+        '<qual:qualitativeSpecies qual:id="q1" qual:compartment="c" '
+        'qual:constant="false"/></qual:listOfQualitativeSpecies>'
+        '<qual:listOfTransitions><qual:transition qual:id="t1">'
+        '<qual:listOfInputs><qual:input qual:qualitativeSpecies="q1"/>'
+        '<qual:input qual:metaid="t1.input.0" qual:qualitativeSpecies="q1"/>'
+        "</qual:listOfInputs></qual:transition></qual:listOfTransitions>"
+        "</model></sbml>"
+    ).models[0]
+    (transition,) = model.list_of_transitions
+    assert [i.pk for i in transition.list_of_inputs] == [
+        "m/Input:t1.input.0.1",
+        "m/Input:t1.input.0",
+    ]
+
+
+def test_a_list_passes_over_the_metaid_of_another_list_of_its_owner() -> None:
+    """Every list of one owner carries the type `ListOf`, so their keys are one set.
+
+    A `listOfProducts` which carries the key of the `listOfReactants` of its
+    reaction as its metaid took the pk of that list, since both are keyed
+    `<reaction>.<name>` under the type `ListOf` (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments>'
+        '<listOfSpecies><species id="S1" compartment="c" '
+        'hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>'
+        "</listOfSpecies>"
+        '<listOfReactions><reaction id="J0" reversible="false">'
+        '<listOfReactants sboTerm="SBO:0000010">'
+        '<speciesReference species="S1" stoichiometry="1" constant="true"/>'
+        "</listOfReactants>"
+        '<listOfProducts metaid="J0.listOfReactants">'
+        '<speciesReference species="S1" stoichiometry="1" constant="true"/>'
+        "</listOfProducts></reaction></listOfReactions></model></sbml>"
+    ).models[0]
+    (reaction,) = model.list_of_reactions
+    assert [list_of.pk for list_of in reaction.lists] == [
+        "m/ListOf:J0.listOfReactants.1",
+        "m/ListOf:J0.listOfReactants",
+    ]
 
 
 # -------------------------------------------------------------------------------------

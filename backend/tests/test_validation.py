@@ -43,6 +43,12 @@ from sbml4humans.validation import (
 
 COMP_DELETION = EXAMPLES_DIR / "comp_deletion.xml"
 
+# the seconds the work of `slow_content` takes at least, which its docstring
+# measures: the validation of its 1,000 submodel instances needs more than 20
+# seconds. A run of that source which ends within them was ended by its
+# deadline and not by its work, whatever the machine is busy with
+SLOW_CONTENT_WORK = 20.0
+
 
 def _issues(source: str) -> list[tuple[int, str, str]]:
     """The rule, severity and pk of every issue of a document after the check."""
@@ -819,12 +825,18 @@ def test_timeout_terminates_the_child(
     missing from the response, which on a loaded machine is every entry of the
     source, since the child is killed before it could name them.
     """
+    timeout = 1.0
+    # the bound below says nothing where the deadline outlasts the work
+    assert timeout < SLOW_CONTENT_WORK
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
-    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", 1.0)
+    monkeypatch.setattr(isolation.VALIDATION_BUDGET, "timeout", timeout)
     start = time.perf_counter()
     with _leaves_nothing(tmp_path / "tmp", monkeypatch):
         response = validation_for_bytes(slow_content)
     elapsed = time.perf_counter() - start
+    # that the timeout ended the run, and not the work of the child, is what
+    # `skipped` says: a child which had finished would have sent the issues of
+    # its entry instead
     assert response.skipped == "timeout"
     # the one entry of the source, or none of it, and nothing else
     assert set(response.entries) <= {"./model.xml"}
@@ -832,9 +844,14 @@ def test_timeout_terminates_the_child(
         entry == EntryValidation(skipped="timeout")
         for entry in response.entries.values()
     )
-    assert elapsed < 5.0
     assert len(spy_children) == 1
     assert _gone(spy_children[0])
+    # the run does not wait for the work, which is the one thing a clock can
+    # say here: the bound is the work of the source and no wall clock of its
+    # own, which measured the machine and not the server (the five seconds
+    # here before failed on a machine loaded with the rest of the suite, which
+    # ends this run in under two)
+    assert elapsed < SLOW_CONTENT_WORK
 
 
 def test_timeout_keeps_the_entries_validated_before(

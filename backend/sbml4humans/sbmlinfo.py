@@ -187,9 +187,36 @@ def _identifier(sbase: libsbml.SBase) -> str | None:
     return sbase.getId() if sbase.isSetId() else None
 
 
+def _own_key(sbase: libsbml.SBase) -> str | None:
+    """The identifier of the file an element is keyed by, its id else its metaId.
+
+    None for an element which carries neither of them, whose key its parent
+    derives (`_keyed`, `_indexed`).
+    """
+    identifier = _identifier(sbase)
+    if identifier is not None:
+        return identifier
+    return sbase.getMetaId() if sbase.isSetMetaId() else None
+
+
 def _has_own_key(sbase: libsbml.SBase) -> bool:
     """Whether an element is keyed by an identifier of the file, its id or metaId."""
-    return _identifier(sbase) is not None or sbase.isSetMetaId()
+    return _own_key(sbase) is not None
+
+
+def _element_name(sbase: libsbml.SBase) -> str:
+    """The name of the element in SBML: its class with a lower first letter.
+
+    `getElementName()` of libsbml answers the name the level of the document
+    writes, which is `speciesConcentrationRule` for a rate rule of Level 1,
+    while the report names an element of a kind the same way whatever the
+    level: by the class of the specification, which is the `sbml_type` of the
+    report object for every element but a comp model definition, whose type is
+    `Model` while the name of its element is `modelDefinition`, so that its pk
+    reads `modelDefinition.0/Model:modelDefinition.0`.
+    """
+    name = type(sbase).__name__
+    return f"{name[0].lower()}{name[1:]}"
 
 
 def _states_something(list_of: libsbml.ListOf) -> bool:
@@ -209,20 +236,25 @@ def _states_something(list_of: libsbml.ListOf) -> bool:
     )
 
 
-def _unique_keys(keys: Sequence[str]) -> list[str]:
-    """The keys, a key which repeats an earlier one told apart by its occurrence.
+def _unique_keys(keys: Sequence[str], reserved: Iterable[str] = ()) -> list[str]:
+    """The keys, a key which repeats or is taken told apart by its occurrence.
 
-    The first occurrence keeps its key and a repetition becomes `<key>.1`,
+    The first occurrence of a key keeps it and a repetition becomes `<key>.1`,
     `<key>.2` and so on, passing over a key which another element of the list
-    carries already. A key a parent gives its child ends in an identifier of
-    the file, which cannot be a number, so the suffix names no other child.
+    carries already: `reserved` are the keys of the list which are no
+    candidate of its own, the identifiers of the siblings the file keys, so
+    that a key this function writes never names another element of the list.
     """
-    reserved = set(keys)
+    taken = set(keys) | set(reserved)
+    blocked = set(reserved)
     used: set[str] = set()
     unique: list[str] = []
     for key in keys:
         candidate, occurrence = key, 0
-        while candidate in used or (occurrence > 0 and candidate in reserved):
+        # the key itself is blocked by the identifiers of the list alone, which
+        # it is no candidate of; a key with a suffix is blocked by every key of
+        # the list, so that it never takes the one of another candidate
+        while candidate in used or candidate in (taken if occurrence else blocked):
             occurrence += 1
             candidate = f"{key}.{occurrence}"
         used.add(candidate)
@@ -230,26 +262,93 @@ def _unique_keys(keys: Sequence[str]) -> list[str]:
     return unique
 
 
+def _keyed_by[T: libsbml.SBase](
+    children: Sequence[T], candidates: Sequence[str], reserved: Iterable[str] = ()
+) -> list[tuple[T, str]]:
+    """The children of one list with the keys their parent gives them.
+
+    A child which carries an id or a metaId is keyed by that identifier and
+    takes no part: its candidate is handed on unchanged and its pk never uses
+    it. The candidates of the other children are made unique against each
+    other and against the identifiers of the list, so that no key of the list
+    names two of its children.
+
+    `reserved` are the keys of elements which are no children of the list and
+    whose key the keys of the list have to stay clear of nonetheless: the
+    model of a document, which its model definitions are keyed next to and
+    which is keyed by nothing of their list.
+    """
+    own = [_own_key(child) for child in children]
+    derived = iter(
+        _unique_keys(
+            [
+                candidate
+                for candidate, key in zip(candidates, own, strict=True)
+                if key is None
+            ],
+            reserved=[key for key in own if key is not None] + list(reserved),
+        )
+    )
+    return [
+        (child, candidate if key is not None else next(derived))
+        for child, candidate, key in zip(children, candidates, own, strict=True)
+    ]
+
+
 def _keyed[T: libsbml.SBase](
     siblings: Iterable[T], key_of: Callable[[T], str]
 ) -> list[tuple[T, str]]:
-    """The children of one list with the keys their parent gives them.
+    """The children of one list, each with a key of what it is about.
 
     The key names what a child is about, the species of a species reference
     or the fluxes of a flux objective, which the file does not change when it
     reorders the list. Where the specification allows two children about the
     same thing, a species twice among the reactants of a reaction (core
-    §4.11.3), the repetition is told apart by its occurrence. A child which
-    carries an id or a metaId is keyed by it and takes no part.
+    §4.11.3), the repetition is told apart by its occurrence.
     """
     children = list(siblings)
-    derived = iter(
-        _unique_keys([key_of(child) for child in children if not _has_own_key(child)])
+    return _keyed_by(children, [key_of(child) for child in children])
+
+
+def _indexed[T: libsbml.SBase](
+    siblings: Iterable[T], reserved: Iterable[str] = ()
+) -> list[tuple[T, str]]:
+    """The children of one list, each with a key of its place in that list.
+
+    The key is the name of the element in SBML and the place of the child
+    among the children of that name, `reaction.3`, which no edit of the child
+    moves and which no id of the file is, since an SId carries no dot. The
+    names are counted apart, so the algebraic rules of a `listOfRules` are
+    `algebraicRule.0` and `algebraicRule.1` whatever the rules between them.
+
+    `reserved` are keys outside the list which the places may not take, which
+    `_keyed_by` explains.
+    """
+    children = list(siblings)
+    places: Counter[str] = Counter()
+    candidates: list[str] = []
+    for child in children:
+        name = _element_name(child)
+        candidates.append(f"{name}.{places[name]}")
+        places[name] += 1
+    return _keyed_by(children, candidates, reserved)
+
+
+def _named[T: libsbml.SBase](
+    siblings: Iterable[T], parent_key: str, name: str
+) -> list[tuple[T, str]]:
+    """The children of one list, each with a key of its parent and its place.
+
+    The key is the key of the parent, the name the children have in the file
+    and the place of the child in the list, `e1.input.0`. It is the key of
+    children whose parent is no scope of a primary key, the inputs of a
+    transition or the components of a user defined constraint, which nothing
+    else tells apart where the file gives them no identifier.
+    """
+    children = list(siblings)
+    return _keyed_by(
+        children, [f"{parent_key}.{name}.{index}" for index in range(len(children))]
     )
-    return [
-        (child, key_of(child) if _has_own_key(child) else next(derived))
-        for child in children
-    ]
 
 
 def _reference_path(ref: libsbml.SBaseRef) -> list[str]:
@@ -387,20 +486,32 @@ class SBMLDocumentInfo:
     def build_report(self) -> Report:
         """Build the report without its link graph.
 
+        The models of the document are keyed next to each other: the key of
+        the model of the document is reserved before its model definitions are
+        keyed by their places, so that a model which carries the metaid
+        `modelDefinition.0` does not take the place of the first definition,
+        and `_main_model_key` keeps the other direction, a definition which is
+        keyed `model`, apart. The key of a model is the scope of every element
+        of it, so two models of one key are one model of the report.
+
         The graph of the report of an archive is built over all of its entries,
         once the report of every entry is there (`report.link_reports`).
         """
         models: list[Model] = []
+        model_keys: list[str] = []
         if self.doc.isSetModel():
             models.append(self.model(self.doc.getModel(), kind="model"))
+            model_keys.append(self.scope)
         external: list[ExternalModelDefinition] = []
         doc_comp: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
         if doc_comp:
-            for md in doc_comp.getListOfModelDefinitions():
-                models.append(self.model(md, kind="modelDefinition"))
+            for md, key in _indexed(
+                doc_comp.getListOfModelDefinitions(), reserved=model_keys
+            ):
+                models.append(self.model(md, kind="modelDefinition", key=key))
             self.scope = DOCUMENT_SCOPE
-            for emd in doc_comp.getListOfExternalModelDefinitions():
-                external.append(self.external_model_definition(emd))
+            for emd, key in _indexed(doc_comp.getListOfExternalModelDefinitions()):
+                external.append(self.external_model_definition(emd, key))
 
         self.scope = DOCUMENT_SCOPE
         self.report = Report(
@@ -432,11 +543,19 @@ class SBMLDocumentInfo:
     def _key(sbase: libsbml.SBase, key: str | None = None, use_id: bool = True) -> str:
         """The bare key of an element: its id, else metaId, else `key` or a digest.
 
-        `key` is a deterministic key derived from the parent of a nested
-        element without an id or metaId (a species reference, a kinetic law,
-        an event assignment, an uncertainty, ...). It replaces the digest of
-        the xml, which is byte identical for siblings such as two reactant
-        references without ids and would otherwise collide.
+        `key` is a deterministic key derived from the parent of an element
+        without an id or a metaId: what it is about within its parent (a
+        species reference, an event assignment, an uncertainty, ...) or its
+        place in the list which holds it (a reaction, a constraint, a port,
+        ...). Every element of a list is given one, since the digest of the
+        xml is byte identical for siblings such as two reactant references or
+        two bare reactions and would otherwise make them one element of the
+        report (issue #135).
+
+        The digest is the last resort of the one element of a document no list
+        holds, its model: it carries the key `model` unless a model definition
+        of the document carries that id, where the digest keeps the two apart
+        (`_main_model_key`).
 
         An initial assignment and a rule without an id of their own are keyed
         by the symbol or the variable they set, which a model has at most one
@@ -535,7 +654,9 @@ class SBMLDocumentInfo:
         has in the file, which an owner has one list of at most:
         `J0.listOfReactants`. A list of the model or of the document is keyed
         by that name alone, `listOfRules`, because the scope of the primary key
-        names its owner already.
+        names its owner already. Every list of one owner carries the same type
+        in its pk, `ListOf`, so the key of a list which another list of that
+        owner carries as its metaid is passed over (`_keyed_by`).
 
         Args:
             owner: the element which holds the lists.
@@ -547,14 +668,18 @@ class SBMLDocumentInfo:
         """
         is_scope = isinstance(owner, libsbml.Model | libsbml.SBMLDocument)
         prefix = "" if is_scope else f"{owner_key}."
-        result: list[ListOf] = []
+        shown: list[libsbml.ListOf] = []
+        candidates: list[str] = []
         for list_of in (*lists, *self._extension_lists(owner)):
             if _states_something(list_of):
-                key = f"{prefix}{list_of.getElementName()}"
-                result.append(self.list_of(list_of, key, scope))
+                shown.append(list_of)
+                candidates.append(f"{prefix}{list_of.getElementName()}")
             elif owner_pk is not None:
                 self.positions.add(list_of, owner_pk)
-        return result
+        return [
+            self.list_of(list_of, key, scope)
+            for list_of, key in _keyed_by(shown, candidates)
+        ]
 
     def _plugin(self, sbase: libsbml.SBase, package: str) -> Any:
         """The plugin of a package of an element, None if the document lacks it."""
@@ -820,62 +945,77 @@ class SBMLDocumentInfo:
         ]
 
     def model(
-        self, model: libsbml.Model, kind: Literal["model", "modelDefinition"]
+        self,
+        model: libsbml.Model,
+        kind: Literal["model", "modelDefinition"],
+        key: str | None = None,
     ) -> Model:
         """A model or model definition with the lists of its elements.
 
-        The model of the document without an id or a metaId is keyed as the
-        model, where the digest of its xml moved every primary key of it
-        whenever any value of it changed. A model definition carries an id.
+        The key of a model is the scope of the primary key of every element of
+        it, so a model which two of them share is two models the report shows
+        as one. The model of the document is in no list and is keyed as the
+        model (`_main_model_key`), where the digest of its xml moved every
+        primary key of it whenever any value of it changed; a model definition
+        which carries no identifier is keyed by `key`, its place in the list of
+        the document, which is why it is the one element of a list whose key
+        reaches further than itself.
 
         Whether libsbml may be asked for the derived units of the elements of
         this model is decided here, before the first of them is built: the
         inference walks the math of the whole model on the first question.
         """
-        key = self._main_model_key() if kind == "model" else None
+        if kind == "model":
+            key = self._main_model_key()
         self.scope = self._key(model, key)
         self.derives_units = self._derives_units(model)
         fields = self.sbase(
             model, sbml_type="Model", key=key, lists=self._model_lists(model)
         )
-        for key in ["substance", "time", "volume", "area", "length", "extent"]:
-            sid = _attribute(model, f"{key}Units")
-            fields[f"{key}_units"] = sid
-            fields[f"{key}_units_latex"] = self.units(sid, model)
+        for quantity in ["substance", "time", "volume", "area", "length", "extent"]:
+            sid = _attribute(model, f"{quantity}Units")
+            fields[f"{quantity}_units"] = sid
+            fields[f"{quantity}_units_latex"] = self.units(sid, model)
         return Model(
             **fields,
             kind=kind,
             annotation_xml=self.annotation_xml(model),
             conversion_factor=self.conversion_factor(model, model),
             list_of_function_definitions=[
-                self.function_definition(fd)
-                for fd in model.getListOfFunctionDefinitions()
+                self.function_definition(fd, fd_key)
+                for fd, fd_key in _indexed(model.getListOfFunctionDefinitions())
             ],
             list_of_unit_definitions=[
-                self.unit_definition(ud) for ud in model.getListOfUnitDefinitions()
+                self.unit_definition(ud, ud_key)
+                for ud, ud_key in _indexed(model.getListOfUnitDefinitions())
             ],
             list_of_compartments=[
-                self.compartment(c, model) for c in model.getListOfCompartments()
+                self.compartment(c, model, c_key)
+                for c, c_key in _indexed(model.getListOfCompartments())
             ],
-            list_of_species=[self.species(s, model) for s in model.getListOfSpecies()],
+            list_of_species=[
+                self.species(s, model, s_key)
+                for s, s_key in _indexed(model.getListOfSpecies())
+            ],
             list_of_parameters=[
-                self.parameter(p, model) for p in model.getListOfParameters()
+                self.parameter(p, model, p_key)
+                for p, p_key in _indexed(model.getListOfParameters())
             ],
             list_of_initial_assignments=[
-                self.initial_assignment(ia)
-                for ia in model.getListOfInitialAssignments()
+                self.initial_assignment(ia, ia_key)
+                for ia, ia_key in _indexed(model.getListOfInitialAssignments())
             ],
             list_of_rules=self.rules(model),
             list_of_constraints=[
-                self.constraint(c, f"constraint.{index}")
-                for index, c in enumerate(model.getListOfConstraints())
+                self.constraint(c, c_key)
+                for c, c_key in _indexed(model.getListOfConstraints())
             ],
             list_of_reactions=[
-                self.reaction(r, model) for r in model.getListOfReactions()
+                self.reaction(r, model, r_key)
+                for r, r_key in _indexed(model.getListOfReactions())
             ],
             list_of_events=[
-                self.event(e, f"event.{index}")
-                for index, e in enumerate(model.getListOfEvents())
+                self.event(e, e_key) for e, e_key in _indexed(model.getListOfEvents())
             ],
             list_of_submodels=self.submodels(model),
             list_of_ports=self.ports(model),
@@ -926,17 +1066,22 @@ class SBMLDocumentInfo:
     # ---------------------------------------------------------------------------------
     # core elements
     # ---------------------------------------------------------------------------------
-    def function_definition(self, fd: libsbml.FunctionDefinition) -> FunctionDefinition:
-        """A function definition."""
-        fields = self.sbase(fd)
+    def function_definition(
+        self, fd: libsbml.FunctionDefinition, key: str
+    ) -> FunctionDefinition:
+        """A function definition, `key` names it by its place without an identifier."""
+        fields = self.sbase(fd, key=key)
         return FunctionDefinition(
             **fields, math=self.math(fields["pk"], _attribute(fd, "math"))
         )
 
-    def unit_definition(self, ud: libsbml.UnitDefinition) -> UnitDefinition:
-        """A unit definition with its units and their rendered formula."""
+    def unit_definition(self, ud: libsbml.UnitDefinition, key: str) -> UnitDefinition:
+        """A unit definition with its units and their rendered formula.
+
+        `key` names it by its place when it carries no identifier.
+        """
         return UnitDefinition(
-            **self.sbase(ud, lists=[ud.getListOfUnits()]),
+            **self.sbase(ud, key=key, lists=[ud.getListOfUnits()]),
             units_latex=udef_to_string(ud),
             list_of_units=[self.unit(u) for u in ud.getListOfUnits()],
         )
@@ -956,8 +1101,10 @@ class SBMLDocumentInfo:
             multiplier=_attribute(u, "multiplier"),
         )
 
-    def compartment(self, c: libsbml.Compartment, model: libsbml.Model) -> Compartment:
-        """A compartment."""
+    def compartment(
+        self, c: libsbml.Compartment, model: libsbml.Model, key: str
+    ) -> Compartment:
+        """A compartment, `key` names it by its place without an identifier."""
         units = _attribute(c, "units")
         # `getSpatialDimensions` truncates the fractional dimensions of L3 to an
         # unsigned int; an L2 compartment without the attribute stays unset, the
@@ -966,7 +1113,7 @@ class SBMLDocumentInfo:
             c.getSpatialDimensionsAsDouble() if c.isSetSpatialDimensions() else None
         )
         return Compartment(
-            **self.sbase(c),
+            **self.sbase(c, key=key),
             spatial_dimensions=spatial_dimensions,
             size=_attribute(c, "size"),
             constant=_attribute(c, "constant"),
@@ -975,11 +1122,11 @@ class SBMLDocumentInfo:
             derived_units=self.derived_units(c),
         )
 
-    def species(self, s: libsbml.Species, model: libsbml.Model) -> Species:
-        """A species."""
+    def species(self, s: libsbml.Species, model: libsbml.Model, key: str) -> Species:
+        """A species, `key` names it by its place without an identifier."""
         substance_units = _attribute(s, "substanceUnits")
         return Species(
-            **self.sbase(s),
+            **self.sbase(s, key=key),
             compartment=s.getCompartment(),
             initial_amount=_attribute(s, "initialAmount"),
             initial_concentration=_attribute(s, "initialConcentration"),
@@ -993,11 +1140,13 @@ class SBMLDocumentInfo:
             fbc=self.species_fbc(s),
         )
 
-    def parameter(self, p: libsbml.Parameter, model: libsbml.Model) -> Parameter:
-        """A global parameter."""
+    def parameter(
+        self, p: libsbml.Parameter, model: libsbml.Model, key: str
+    ) -> Parameter:
+        """A global parameter, `key` names it by its place without an identifier."""
         units = _attribute(p, "units")
         return Parameter(
-            **self.sbase(p),
+            **self.sbase(p, key=key),
             value=_attribute(p, "value"),
             constant=_attribute(p, "constant"),
             units=units,
@@ -1005,9 +1154,11 @@ class SBMLDocumentInfo:
             derived_units=self.derived_units(p),
         )
 
-    def initial_assignment(self, ia: libsbml.InitialAssignment) -> InitialAssignment:
-        """An initial assignment."""
-        fields = self.sbase(ia)
+    def initial_assignment(
+        self, ia: libsbml.InitialAssignment, key: str
+    ) -> InitialAssignment:
+        """An initial assignment, keyed by its symbol, else by `key`, its place."""
+        fields = self.sbase(ia, key=key)
         return InitialAssignment(
             **fields,
             symbol=ia.getSymbol(),
@@ -1018,12 +1169,15 @@ class SBMLDocumentInfo:
     def _main_model_key(self) -> str | None:
         """The key of the model of the document when it carries no identifier.
 
-        It is `model`, unless a model definition of the document carries that
-        id, where the digest of the xml keeps the two apart.
+        It is `model`, unless a model definition of the document is keyed by
+        that string, by its id or by its metaid, where the digest of the xml
+        keeps the two apart. A metaid is an XML `ID` and may read `model` as
+        well, and the key of a model is the scope of every element of it, so
+        the two models would otherwise be one model of the report.
         """
         plugin: libsbml.CompSBMLDocumentPlugin | None = self.doc.getPlugin("comp")
         if plugin and any(
-            md.getId() == MAIN_MODEL_KEY for md in plugin.getListOfModelDefinitions()
+            _own_key(md) == MAIN_MODEL_KEY for md in plugin.getListOfModelDefinitions()
         ):
             return None
         return MAIN_MODEL_KEY
@@ -1031,25 +1185,19 @@ class SBMLDocumentInfo:
     def rules(
         self, model: libsbml.Model
     ) -> list[AssignmentRule | RateRule | AlgebraicRule]:
-        """The rules of a model, an algebraic rule keyed by its place.
+        """The rules of a model, each of them keyed by its place as a fallback.
 
         An assignment and a rate rule are keyed by the variable they set, which
         a model has one rule for at most (core §4.9.1). An algebraic rule sets
         no variable, so one without an id or a metaId is keyed by its place
-        among the algebraic rules, which an edit of its formula does not move.
+        among the algebraic rules, which an edit of its formula does not move;
+        the place keys an assignment or a rate rule which sets no variable
+        either, which is a rule the file leaves incomplete.
         """
-        rules: list[AssignmentRule | RateRule | AlgebraicRule] = []
-        algebraic = 0
-        for r in model.getListOfRules():
-            key = None
-            if isinstance(r, libsbml.AlgebraicRule):
-                key = f"algebraicRule.{algebraic}"
-                algebraic += 1
-            rules.append(self.rule(r, key))
-        return rules
+        return [self.rule(r, key) for r, key in _indexed(model.getListOfRules())]
 
     def rule(
-        self, rule: libsbml.Rule, key: str | None = None
+        self, rule: libsbml.Rule, key: str
     ) -> AssignmentRule | RateRule | AlgebraicRule:
         """A rule, by its libsbml class, `key` names it without an identifier."""
         fields = self.sbase(rule, key=key)
@@ -1076,17 +1224,22 @@ class SBMLDocumentInfo:
             message=c.getMessageString() if c.isSetMessage() else None,
         )
 
-    def reaction(self, r: libsbml.Reaction, model: libsbml.Model) -> Reaction:
-        """A reaction with its participants, kinetic law and fbc extension."""
+    def reaction(self, r: libsbml.Reaction, model: libsbml.Model, key: str) -> Reaction:
+        """A reaction with its participants, kinetic law and fbc extension.
+
+        `key` names the reaction by its place when it carries no identifier,
+        and everything below it is keyed after the reaction.
+        """
         fields = self.sbase(
             r,
+            key=key,
             lists=[
                 r.getListOfReactants(),
                 r.getListOfProducts(),
                 r.getListOfModifiers(),
             ],
         )
-        reaction_key = self._key(r)
+        reaction_key = self._key(r, key)
         return Reaction(
             **fields,
             reversible=self._reversible(r),
@@ -1179,20 +1332,39 @@ class SBMLDocumentInfo:
     def kinetic_law(
         self, klaw: libsbml.KineticLaw, model: libsbml.Model, reaction_key: str
     ) -> KineticLaw:
-        """The kinetic law of a reaction with its local parameters."""
+        """The kinetic law of a reaction with its local parameters.
+
+        A local parameter is keyed by its law and its id, which SBML requires
+        and which is unique within the law (core §4.11.6). A law which leaves
+        an id out is invalid and its parameter is keyed by its place instead,
+        `J0.kineticLaw.localParameter.1`, which is what the inspector and the
+        permalink of that parameter show; a law which repeats an id tells the
+        repetition apart by its occurrence, so that no two parameters of one
+        law share a pk.
+        """
         kinetic_law_key = f"{reaction_key}.kineticLaw"
         fields = self.sbase(
             klaw, key=kinetic_law_key, lists=[self._kinetic_law_list(klaw)]
         )
         local_parameters = []
-        for lp in self._kinetic_law_parameters(klaw):
+        parameters = self._kinetic_law_parameters(klaw)
+        keys = _unique_keys(
+            [
+                f"{kinetic_law_key}.{lp.getId()}"
+                if lp.isSetId()
+                else f"{kinetic_law_key}.localParameter.{index}"
+                for index, lp in enumerate(parameters)
+            ],
+            reserved=[lp.getMetaId() for lp in parameters if lp.isSetMetaId()],
+        )
+        for lp, key in zip(parameters, keys, strict=True):
             units = _attribute(lp, "units")
             local_parameters.append(
                 LocalParameter(
                     **self.sbase(
                         lp,
                         sbml_type="LocalParameter",
-                        key=f"{kinetic_law_key}.{lp.getId()}",
+                        key=key,
                         use_id=False,
                     ),
                     value=_attribute(lp, "value"),
@@ -1391,36 +1563,40 @@ class SBMLDocumentInfo:
         return ".".join([element_key, "replacedElement", re.getSubmodelRef(), *path])
 
     def external_model_definition(
-        self, emd: libsbml.ExternalModelDefinition
+        self, emd: libsbml.ExternalModelDefinition, key: str
     ) -> ExternalModelDefinition:
-        """A comp external model definition, scoped to the document."""
+        """A comp external model definition, scoped to the document.
+
+        `key` names it by its place in the list of the document when it
+        carries no identifier, which its id is required for (comp §3.5).
+        """
         return ExternalModelDefinition(
-            **self.sbase(emd, scope=DOCUMENT_SCOPE),
+            **self.sbase(emd, scope=DOCUMENT_SCOPE, key=key),
             source=emd.getSource(),
             model_ref=_attribute(emd, "modelRef"),
             md5=_attribute(emd, "md5"),
         )
 
     def submodels(self, model: libsbml.Model) -> list[Submodel]:
-        """The comp submodels of a model."""
+        """The comp submodels of a model, a submodel without an id by its place."""
         plugin: libsbml.CompModelPlugin | None = model.getPlugin("comp")
         if not plugin:
             return []
         return [
             Submodel(
-                **self.sbase(s, lists=[s.getListOfDeletions()]),
+                **self.sbase(s, key=key, lists=[s.getListOfDeletions()]),
                 model_ref=s.getModelRef(),
                 time_conversion_factor=_attribute(s, "timeConversionFactor"),
                 extent_conversion_factor=_attribute(s, "extentConversionFactor"),
                 list_of_deletions=[
-                    Deletion(**self._sbase_ref_fields(d, key))
-                    for d, key in _keyed(
+                    Deletion(**self._sbase_ref_fields(d, d_key))
+                    for d, d_key in _keyed(
                         s.getListOfDeletions(),
-                        partial(self._deletion_key, submodel_key=self._key(s)),
+                        partial(self._deletion_key, submodel_key=self._key(s, key)),
                     )
                 ],
             )
-            for s in plugin.getListOfSubmodels()
+            for s, key in _indexed(plugin.getListOfSubmodels())
         ]
 
     @staticmethod
@@ -1434,30 +1610,30 @@ class SBMLDocumentInfo:
         return ".".join([submodel_key, "deletion", *_reference_path(d)])
 
     def ports(self, model: libsbml.Model) -> list[Port]:
-        """The comp ports of a model."""
+        """The comp ports of a model, a port without an id keyed by its place."""
         plugin: libsbml.CompModelPlugin | None = model.getPlugin("comp")
         if not plugin:
             return []
         return [
-            Port(**self._sbase_ref_fields(p, self._key(p)))
-            for p in plugin.getListOfPorts()
+            Port(**self._sbase_ref_fields(p, key))
+            for p, key in _indexed(plugin.getListOfPorts())
         ]
 
     # ---------------------------------------------------------------------------------
     # fbc
     # ---------------------------------------------------------------------------------
     def gene_products(self, model: libsbml.Model) -> list[GeneProduct]:
-        """The fbc gene products of a model."""
+        """The fbc gene products of a model, one without an id by its place."""
         plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
         if not plugin:
             return []
         return [
             GeneProduct(
-                **self.sbase(gp),
+                **self.sbase(gp, key=key),
                 label=_attribute(gp, "label"),
                 associated_species=_attribute(gp, "associatedSpecies"),
             )
-            for gp in plugin.getListOfGeneProducts()
+            for gp, key in _indexed(plugin.getListOfGeneProducts())
         ]
 
     def model_fbc(self, model: libsbml.Model) -> ModelFbc | None:
@@ -1477,20 +1653,24 @@ class SBMLDocumentInfo:
         )
 
     def objectives(self, model: libsbml.Model) -> list[Objective]:
-        """The fbc objectives of a model with their flux objectives."""
+        """The fbc objectives of a model with their flux objectives.
+
+        An objective without an id is keyed by its place in the list, and its
+        terms are keyed after it.
+        """
         plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
         if not plugin:
             return []
         objectives = []
-        for o in plugin.getListOfObjectives():
-            objective_key = self._key(o)
+        for o, key in _indexed(plugin.getListOfObjectives()):
+            objective_key = self._key(o, key)
             objectives.append(
                 Objective(
-                    **self.sbase(o, lists=[o.getListOfFluxObjectives()]),
+                    **self.sbase(o, key=key, lists=[o.getListOfFluxObjectives()]),
                     type=_attribute(o, "type"),
                     list_of_flux_objectives=[
-                        self.flux_objective(f, key)
-                        for f, key in _keyed(
+                        self.flux_objective(f, f_key)
+                        for f, f_key in _keyed(
                             o.getListOfFluxObjectives(),
                             partial(
                                 self._flux_objective_key, objective_key=objective_key
@@ -1537,18 +1717,19 @@ class SBMLDocumentInfo:
 
         libsbml keeps the list empty for a document of a later version, where
         the bounds of a reaction are the two attributes which name a parameter.
+        The id of a bound is optional, so one without it is keyed by its place.
         """
         plugin: libsbml.FbcModelPlugin | None = model.getPlugin("fbc")
         if not plugin:
             return []
         return [
             FluxBound(
-                **self.sbase(fb, key=f"fluxBound.{index}"),
+                **self.sbase(fb, key=key),
                 reaction=_attribute(fb, "reaction"),
                 operation=_attribute(fb, "operation"),
                 value=_attribute(fb, "value"),
             )
-            for index, fb in enumerate(plugin.getListOfFluxBounds())
+            for fb, key in _indexed(plugin.getListOfFluxBounds())
         ]
 
     def key_value_pairs(self, sbase: libsbml.SBase) -> list[KeyValuePair]:
@@ -1634,8 +1815,8 @@ class SBMLDocumentInfo:
         if not plugin:
             return []
         constraints = []
-        for index, udc in enumerate(plugin.getListOfUserDefinedConstraints()):
-            key = self._key(udc, f"userDefinedConstraint.{index}")
+        for udc, place in _indexed(plugin.getListOfUserDefinedConstraints()):
+            key = self._key(udc, place)
             constraints.append(
                 UserDefinedConstraint(
                     **self.sbase(
@@ -1647,7 +1828,7 @@ class SBMLDocumentInfo:
                     upper_bound=_attribute(udc, "upperBound"),
                     list_of_user_defined_constraint_components=[
                         UserDefinedConstraintComponent(
-                            **self.sbase(c, key=f"{key}.component.{position}"),
+                            **self.sbase(c, key=c_key),
                             variable=_attribute(c, "variable"),
                             variable2=_attribute(c, "variable2"),
                             coefficient=_attribute(c, "coefficient"),
@@ -1655,8 +1836,10 @@ class SBMLDocumentInfo:
                             if c.isSetVariableType()
                             else None,
                         )
-                        for position, c in enumerate(
-                            udc.getListOfUserDefinedConstraintComponents()
+                        for c, c_key in _named(
+                            udc.getListOfUserDefinedConstraintComponents(),
+                            key,
+                            "component",
                         )
                     ],
                 )
@@ -1715,15 +1898,23 @@ class SBMLDocumentInfo:
     def _associations(self, a: libsbml.FbcAssociation, key: str) -> list[Association]:
         """The nodes below an `and` or an `or`, keyed by their position.
 
+        A node which carries an id or a metaId is keyed by it, and a position
+        another node of the same parent carries as its metaid is passed over
+        (`_keyed_by`).
+
         FbcAnd and FbcOr expose `getNumAssociations` and `getAssociation`; the
         libsbml stubs declare neither of them on the base class.
         """
-        return [
-            self.association(
-                a.getAssociation(k),  # ty: ignore[unresolved-attribute]
-                f"{self._key(a, key)}.{k}",
-            )
+        nodes = [
+            a.getAssociation(k)  # ty: ignore[unresolved-attribute]
             for k in range(a.getNumAssociations())  # ty: ignore[unresolved-attribute]
+        ]
+        parent_key = self._key(a, key)
+        return [
+            self.association(node, node_key)
+            for node, node_key in _keyed_by(
+                nodes, [f"{parent_key}.{k}" for k in range(len(nodes))]
+            )
         ]
 
     # ---------------------------------------------------------------------------------
@@ -1741,13 +1932,13 @@ class SBMLDocumentInfo:
             return []
         return [
             QualitativeSpecies(
-                **self.sbase(qs),
+                **self.sbase(qs, key=key),
                 compartment=qs.getCompartment(),
                 constant=_attribute(qs, "constant"),
                 initial_level=_attribute(qs, "initialLevel"),
                 max_level=_attribute(qs, "maxLevel"),
             )
-            for qs in plugin.getListOfQualitativeSpecies()
+            for qs, key in _indexed(plugin.getListOfQualitativeSpecies())
         ]
 
     def transitions(self, model: libsbml.Model) -> list[Transition]:
@@ -1761,8 +1952,8 @@ class SBMLDocumentInfo:
         if not plugin:
             return []
         transitions = []
-        for index, t in enumerate(plugin.getListOfTransitions()):
-            key = self._key(t, f"transition.{index}")
+        for t, place in _indexed(plugin.getListOfTransitions()):
+            key = self._key(t, place)
             transitions.append(
                 Transition(
                     **self.sbase(
@@ -1775,16 +1966,18 @@ class SBMLDocumentInfo:
                         ],
                     ),
                     list_of_inputs=[
-                        self.qual_input(i, f"{key}.input.{position}")
-                        for position, i in enumerate(t.getListOfInputs())
+                        self.qual_input(i, i_key)
+                        for i, i_key in _named(t.getListOfInputs(), key, "input")
                     ],
                     list_of_outputs=[
-                        self.qual_output(o, f"{key}.output.{position}")
-                        for position, o in enumerate(t.getListOfOutputs())
+                        self.qual_output(o, o_key)
+                        for o, o_key in _named(t.getListOfOutputs(), key, "output")
                     ],
                     list_of_function_terms=[
-                        self.function_term(ft, f"{key}.functionTerm.{position}")
-                        for position, ft in enumerate(t.getListOfFunctionTerms())
+                        self.function_term(ft, ft_key)
+                        for ft, ft_key in _named(
+                            t.getListOfFunctionTerms(), key, "functionTerm"
+                        )
                     ],
                     default_term=self.default_term(t, key),
                 )
@@ -1867,8 +2060,9 @@ class SBMLDocumentInfo:
         if not plugin or not isinstance(plugin, libsbml.DistribSBasePlugin):
             return []
         uncertainties = []
-        for index, u in enumerate(plugin.getListOfUncertainties()):
-            key = f"{parent_key}.uncertainty.{index}"
+        for u, key in _named(
+            plugin.getListOfUncertainties(), parent_key, "uncertainty"
+        ):
             fields = self.sbase(u, key=key)
             uncertainties.append(
                 Uncertainty(
@@ -1908,10 +2102,13 @@ class SBMLDocumentInfo:
                 children, partial(self._uncert_measure_key, uncertainty_key=parent_key)
             )
         else:
-            keyed = [
-                (p, f"{parent_key}.{p.getElementName()}.{index}")
-                for index, p in enumerate(children)
-            ]
+            keyed = _keyed_by(
+                children,
+                [
+                    f"{parent_key}.{p.getElementName()}.{index}"
+                    for index, p in enumerate(children)
+                ],
+            )
         for p, key in keyed:
             fields = self.sbase(p, key=key, lists=[p.getListOfUncertParameters()])
             fields |= {

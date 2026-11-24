@@ -900,6 +900,107 @@ def test_a_report_whose_client_leaves_frees_its_admission(
 
 
 # -------------------------------------------------------------------------------------
+# one primary key per element
+# -------------------------------------------------------------------------------------
+def _pks(report: dict[str, Any]) -> list[str]:
+    """Every pk the report of one entry carries, in the order it writes them."""
+    found: list[str] = []
+
+    def walk(value: Any) -> None:
+        if isinstance(value, dict):
+            pk = value.get("pk")
+            if isinstance(pk, str):
+                found.append(pk)
+            for item in value.values():
+                walk(item)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    walk(report["models"])
+    return found
+
+
+def _report_of_content(client: TestClient, content: str) -> dict[str, Any]:
+    """The report of the one entry of a document posted to `/api/content`."""
+    response = client.post("/api/content", content=content.encode("utf-8"))
+    assert response.status_code == 200
+    data = _strict_json(response.content)
+    _check_report(data)
+    return next(iter(data["reports"].values()))["report"]
+
+
+def _reactants(identifier: str) -> str:
+    """A reaction of three reactants, the third of them carrying `identifier`.
+
+    Two of the references are about `S1`, so the second of them is keyed by
+    its occurrence, `J0.reactant.S1.1`, and the third carries that key as an
+    identifier of its own.
+    """
+    return (
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfCompartments>'
+        '<compartment id="c" constant="true"/></listOfCompartments>'
+        '<listOfSpecies><species id="S1" compartment="c" hasOnlySubstanceUnits="false" '
+        'boundaryCondition="false" constant="false"/>'
+        '<species id="S2" compartment="c" hasOnlySubstanceUnits="false" '
+        'boundaryCondition="false" constant="false"/></listOfSpecies>'
+        '<listOfReactions><reaction id="J0" reversible="false"><listOfReactants>'
+        '<speciesReference species="S1" constant="true" stoichiometry="1"/>'
+        '<speciesReference species="S1" constant="true" stoichiometry="1"/>'
+        f'<speciesReference {identifier} species="S2" constant="true" '
+        'stoichiometry="1"/>'
+        "</listOfReactants></reaction></listOfReactions></model></sbml>"
+    )
+
+
+@pytest.mark.parametrize(
+    "identifier", ['metaid="J0.reactant.S1.1"', 'id="S1.1"'], ids=["metaid", "id"]
+)
+def test_a_derived_key_does_not_take_the_identifier_of_a_sibling(
+    client: TestClient, identifier: str
+) -> None:
+    """A reference keyed by its occurrence never takes the identifier of another.
+
+    The key of the second reference about `S1` is `J0.reactant.S1.1`, which a
+    sibling may carry as its metaid: a metaid is an XML `ID`, which allows the
+    dot an SId does not, so the two shared one pk and the link graph of the
+    model held one node for them (issue #135). The id `S1.1` of the example of
+    that issue is no such collision, since the key of a reference carries its
+    reaction and its side, and it is kept here to hold that apart.
+    """
+    report = _report_of_content(client, _reactants(identifier))
+    (reaction,) = report["models"][0]["listOfReactions"]
+    pks = [sr["pk"] for sr in reaction["listOfReactants"]]
+    assert len(set(pks)) == 3, pks
+    nodes = report["linkGraph"]["nodes"]
+    assert [pk for pk in pks if pk in nodes] == pks
+    assert len(set(_pks(report))) == len(_pks(report))
+
+
+def test_two_bare_elements_of_one_list_are_two_elements(client: TestClient) -> None:
+    """Two byte identical elements without an identifier keep two pks.
+
+    The digest of the xml keyed an element whose parent gave it no key, and the
+    digest of two byte identical reactions is one digest, so the two were one
+    element to the inspector and the link graph of the model held one node for
+    them (issue #135).
+    """
+    report = _report_of_content(
+        client,
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfReactions>'
+        '<reaction reversible="false"/><reaction reversible="false"/>'
+        "</listOfReactions></model></sbml>",
+    )
+    pks = [r["pk"] for r in report["models"][0]["listOfReactions"]]
+    assert len(set(pks)) == 2, pks
+    nodes = report["linkGraph"]["nodes"]
+    assert [pk for pk in pks if pk in nodes] == pks
+    assert len(set(_pks(report))) == len(_pks(report))
+
+
+# -------------------------------------------------------------------------------------
 # validation
 # -------------------------------------------------------------------------------------
 VALIDATION_EXAMPLE = "validation (validation.xml)"
