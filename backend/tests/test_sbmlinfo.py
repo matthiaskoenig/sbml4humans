@@ -867,6 +867,32 @@ def test_kinetic_law_parameters_of_both_levels(level: int) -> None:
     assert local_parameter.pk == "m/LocalParameter:r1.kineticLaw.k"
 
 
+def test_local_parameters_of_one_law_without_an_id_are_two_elements() -> None:
+    """Two parameters of one law which carry no id keep two pks.
+
+    The id of a local parameter is required and unique within its law (core
+    §4.11.6), which keys it, so a law whose parameters repeat an id or carry
+    none made them one element of the report.
+    """
+    report = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfReactions>'
+        '<reaction id="r1" reversible="false"><kineticLaw>'
+        '<math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>'
+        '<listOfLocalParameters><localParameter value="1"/>'
+        '<localParameter value="2"/></listOfLocalParameters>'
+        "</kineticLaw></reaction></listOfReactions></model></sbml>"
+    )
+    kinetic_law = report.models[0].list_of_reactions[0].kinetic_law
+    assert kinetic_law is not None
+    pks = [lp.pk for lp in kinetic_law.list_of_local_parameters]
+    assert pks == [
+        "m/LocalParameter:r1.kineticLaw.",
+        "m/LocalParameter:r1.kineticLaw..1",
+    ]
+    assert all(pk in report.link_graph.nodes for pk in pks)
+
+
 def test_level_2_biomodel_reports_its_kinetic_law_parameters(
     level2_biomodel: Report,
 ) -> None:
@@ -1051,6 +1077,203 @@ def test_elements_without_an_identifier_are_keyed_by_their_place() -> None:
     assert event.trigger.pk == "m/Trigger:event.0.trigger"
     changed = report("<apply><minus/><ci> x </ci><cn> 1 </cn></apply>").models[0]
     assert changed.list_of_rules[0].pk == "m/AlgebraicRule:algebraicRule.0"
+
+
+BARE_CORE_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1">
+  <model id="m">
+    <listOfFunctionDefinitions>
+      <functionDefinition>
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <lambda><bvar><ci> x </ci></bvar><ci> x </ci></lambda>
+        </math>
+      </functionDefinition>
+    </listOfFunctionDefinitions>
+    <listOfUnitDefinitions>
+      <unitDefinition>
+        <listOfUnits>
+          <unit kind="mole" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments><compartment constant="true"/></listOfCompartments>
+    <listOfSpecies>
+      <species hasOnlySubstanceUnits="false" boundaryCondition="false"
+               constant="false"/>
+    </listOfSpecies>
+    <listOfParameters><parameter value="1" constant="false"/></listOfParameters>
+    <listOfInitialAssignments>
+      <initialAssignment>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </initialAssignment>
+    </listOfInitialAssignments>
+    <listOfRules>
+      <assignmentRule>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </assignmentRule>
+      <rateRule>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </rateRule>
+      <algebraicRule>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+      </algebraicRule>
+    </listOfRules>
+    <listOfConstraints>
+      <constraint>
+        <math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>
+      </constraint>
+    </listOfConstraints>
+    <listOfReactions>
+      <reaction reversible="false">
+        <listOfReactants>
+          <speciesReference species="S1" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><cn> 1 </cn></math>
+        </kineticLaw>
+      </reaction>
+      <reaction reversible="false"/>
+    </listOfReactions>
+    <listOfEvents>
+      <event useValuesFromTriggerTime="true">
+        <trigger initialValue="false" persistent="true">
+          <math xmlns="http://www.w3.org/1998/Math/MathML"><true/></math>
+        </trigger>
+      </event>
+    </listOfEvents>
+  </model>
+</sbml>
+"""
+
+
+def test_every_core_list_keys_an_element_without_an_identifier() -> None:
+    """Every list of a model keys an element the file leaves bare by its place.
+
+    An element of most of these lists is required to carry an id, so a bare
+    one is an invalid document, which the report is of as well: it is built
+    before and apart from the validation. The digest of the xml keyed such an
+    element and is identical for two byte identical siblings, which made the
+    two reactions here one element of the report (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(BARE_CORE_SBML).models[0]
+    (function_definition,) = model.list_of_function_definitions
+    assert function_definition.pk == "m/FunctionDefinition:functionDefinition.0"
+    (unit_definition,) = model.list_of_unit_definitions
+    assert unit_definition.pk == "m/UnitDefinition:unitDefinition.0"
+    (compartment,) = model.list_of_compartments
+    assert compartment.pk == "m/Compartment:compartment.0"
+    (species,) = model.list_of_species
+    assert species.pk == "m/Species:species.0"
+    (parameter,) = model.list_of_parameters
+    assert parameter.pk == "m/Parameter:parameter.0"
+    (initial_assignment,) = model.list_of_initial_assignments
+    assert initial_assignment.pk == "m/InitialAssignment:initialAssignment.0"
+    assert [r.pk for r in model.list_of_rules] == [
+        "m/AssignmentRule:assignmentRule.0",
+        "m/RateRule:rateRule.0",
+        "m/AlgebraicRule:algebraicRule.0",
+    ]
+    (constraint,) = model.list_of_constraints
+    assert constraint.pk == "m/Constraint:constraint.0"
+    assert [r.pk for r in model.list_of_reactions] == [
+        "m/Reaction:reaction.0",
+        "m/Reaction:reaction.1",
+    ]
+    (event,) = model.list_of_events
+    assert event.pk == "m/Event:event.0"
+
+
+def test_everything_below_a_bare_element_is_keyed_after_its_place() -> None:
+    """The objects of a reaction without an id follow the key of its place."""
+    model = SBMLDocumentInfo.from_sbml(BARE_CORE_SBML).models[0]
+    reaction = model.list_of_reactions[0]
+    (reactant,) = reaction.list_of_reactants
+    assert reactant.pk == "m/SpeciesReference:reaction.0.reactant.S1"
+    assert reaction.kinetic_law is not None
+    assert reaction.kinetic_law.pk == "m/KineticLaw:reaction.0.kineticLaw"
+
+
+BARE_PACKAGES_SBML = """<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" version="1"
+      xmlns:comp="http://www.sbml.org/sbml/level3/version1/comp/version1"
+      xmlns:fbc="http://www.sbml.org/sbml/level3/version1/fbc/version2"
+      xmlns:qual="http://www.sbml.org/sbml/level3/version1/qual/version1"
+      comp:required="true" fbc:required="false" qual:required="true">
+  <model id="m" fbc:strict="false">
+    <listOfCompartments><compartment id="c" constant="true"/></listOfCompartments>
+    <comp:listOfSubmodels>
+      <comp:submodel comp:modelRef="md"/>
+    </comp:listOfSubmodels>
+    <comp:listOfPorts>
+      <comp:port comp:idRef="c"/>
+    </comp:listOfPorts>
+    <fbc:listOfGeneProducts>
+      <fbc:geneProduct fbc:label="g1"/>
+    </fbc:listOfGeneProducts>
+    <fbc:listOfObjectives fbc:activeObjective="obj">
+      <fbc:objective fbc:type="maximize"/>
+    </fbc:listOfObjectives>
+    <qual:listOfQualitativeSpecies>
+      <qual:qualitativeSpecies qual:compartment="c" qual:constant="false"/>
+    </qual:listOfQualitativeSpecies>
+    <qual:listOfTransitions>
+      <qual:transition/>
+    </qual:listOfTransitions>
+  </model>
+  <comp:listOfModelDefinitions>
+    <comp:modelDefinition id="md"/>
+  </comp:listOfModelDefinitions>
+  <comp:listOfExternalModelDefinitions>
+    <comp:externalModelDefinition comp:source="other.xml"/>
+  </comp:listOfExternalModelDefinitions>
+</sbml>
+"""
+
+
+def test_every_list_of_a_package_keys_an_element_without_an_identifier() -> None:
+    """The lists of comp, fbc and qual key a bare element by its place as well.
+
+    The id of a submodel, a port, a gene product, an objective, a qualitative
+    species and an external model definition is required by its package, so a
+    bare one is an invalid document, which the digest of the xml keyed and
+    two byte identical ones made one element of the report (issue #135).
+    """
+    report = SBMLDocumentInfo.from_sbml(BARE_PACKAGES_SBML)
+    (emd,) = report.external_model_definitions
+    assert emd.pk == "document/ExternalModelDefinition:externalModelDefinition.0"
+    model = next(m for m in report.models if m.id == "m")
+    (submodel,) = model.list_of_submodels
+    assert submodel.pk == "m/Submodel:submodel.0"
+    (port,) = model.list_of_ports
+    assert port.pk == "m/Port:port.0"
+    (gene_product,) = model.list_of_gene_products
+    assert gene_product.pk == "m/GeneProduct:geneProduct.0"
+    (objective,) = model.list_of_objectives
+    assert objective.pk == "m/Objective:objective.0"
+    (qualitative_species,) = model.list_of_qualitative_species
+    assert qualitative_species.pk == "m/QualitativeSpecies:qualitativeSpecies.0"
+    (transition,) = model.list_of_transitions
+    assert transition.pk == "m/Transition:transition.0"
+
+
+def test_a_key_of_a_place_passes_over_the_metaid_of_a_sibling() -> None:
+    """A key of a place never takes the metaid another element of the list carries.
+
+    A metaid is an XML `ID`, which allows the dot an SId does not, so a
+    sibling may carry `reaction.0` as its metaid; the key of the place of the
+    bare reaction passes over it (issue #135).
+    """
+    model = SBMLDocumentInfo.from_sbml(
+        '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
+        'version="1"><model id="m"><listOfReactions>'
+        '<reaction reversible="false"/>'
+        '<reaction metaid="reaction.0" reversible="false"/>'
+        "</listOfReactions></model></sbml>"
+    ).models[0]
+    assert [r.pk for r in model.list_of_reactions] == [
+        "m/Reaction:reaction.0.1",
+        "m/Reaction:reaction.0",
+    ]
 
 
 # -------------------------------------------------------------------------------------
