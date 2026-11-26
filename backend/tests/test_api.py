@@ -351,6 +351,26 @@ def test_content(client: TestClient) -> None:
     _check_report(response.json())
 
 
+def test_content_without_a_reaction_id_keeps_its_report_without_a_traceback(
+    client: TestClient, caplog: pytest.LogCaptureFixture
+) -> None:
+    """An input sbmlode cannot typeset remains a report and logs one warning."""
+    content = (EXAMPLES_DIR / "minimal_model.xml").read_bytes()
+    assert b'<reaction id="J0"' in content
+    content = content.replace(b'<reaction id="J0"', b"<reaction", 1)
+    response = client.post("/api/content", content=content)
+    assert response.status_code == 200
+    _check_report(response.json())
+    report = next(iter(response.json()["reports"].values()))["report"]
+    assert report["odeSystem"] is None
+    assert report["odeError"] == "The id '' is not an SId and cannot be typeset."
+    assert len(report["models"][0]["listOfReactions"]) == 1
+    warnings = [r for r in caplog.records if "ODE system" in r.getMessage()]
+    assert warnings
+    assert all(r.levelname == "WARNING" and r.exc_info is None for r in warnings)
+    assert "Traceback" not in " ".join(r.getMessage() for r in warnings)
+
+
 def test_content_invalid(client: TestClient) -> None:
     """Invalid content results in an error payload."""
     response = client.post("/api/content", content=b"garbage")

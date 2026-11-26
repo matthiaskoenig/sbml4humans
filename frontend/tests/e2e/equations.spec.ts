@@ -140,6 +140,23 @@ test("a model with an algebraic rule names it as unsupported", async ({ page }) 
   await expect(notice).toBeVisible();
 });
 
+test("a reaction without an id keeps its report and shows the equation failure", async ({
+  page,
+}) => {
+  const source = readFileSync(
+    new URL("../../../backend/sbml4humans/resources/examples/minimal_model.xml", import.meta.url),
+    "utf8",
+  );
+  expect(source).toContain('<reaction id="J0"');
+  await paste(page, source.replace('<reaction id="J0"', "<reaction"));
+  await page.getByTestId("view-equations").click();
+  await expect(page.getByTestId("equations-view").getByTestId("error-message")).toHaveText(
+    "The id '' is not an SId and cannot be typeset.",
+  );
+  await page.getByTestId("view-tables").click();
+  await expect(page.getByTestId("bar-type-Reaction")).toBeVisible();
+});
+
 test("a model which expands beyond the flattening keeps its elements and says why", async ({
   page,
 }) => {

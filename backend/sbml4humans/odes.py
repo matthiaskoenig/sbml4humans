@@ -24,6 +24,7 @@ from typing import cast
 
 import libsbml
 import sbmlode
+from sbmlode.astutil import UnsupportedMathError
 from sbmlode.documents import TypesetEquation, TypesetSystem
 
 from sbml4humans.links import ModelIndex
@@ -240,9 +241,10 @@ def ode_system(
     sbmlode flattens a model with submodels; the external model definitions it
     names are resolved to the documents of the report alone (`resolving_within`),
     never to a file or a url, so a model of a request reads nothing of the server.
-    A failure of sbmlode, a model it refuses, an external model which is not in
-    the report or an error in it, is logged with its traceback and returned as its
-    message; the rest of the report does not depend on it.
+    Expected input failures of sbmlode are logged as one warning line, with the
+    original message returned to the report. Unexpected analysis or report
+    conversion failures retain their traceback; the rest of the report does not
+    depend on the equations.
 
     Args:
         doc: the document, which is not changed
@@ -256,8 +258,18 @@ def ode_system(
     """
     links = _Links(model)
     try:
-        analysed = analyse(doc, documents, location)
-        typeset = analysed.typeset("latex", "id", links.wrap)
+        try:
+            # sbmlode documents ValueError for invalid input and names unsupported math
+            # separately. Conversion into our report below is outside this input boundary.
+            analysed = analyse(doc, documents, location)
+            typeset = analysed.typeset("latex", "id", links.wrap)
+        except (ValueError, UnsupportedMathError) as err:
+            message = str(err) or type(err).__name__
+            logger.warning(
+                "The ODE system of the model could not be built: %s",
+                " ".join(message.split()),
+            )
+            return None, message
         system = _system(links, typeset)
     except Exception as err:
         logger.exception("The ODE system of the model could not be built.")
