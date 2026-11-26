@@ -6,7 +6,9 @@ from pathlib import Path
 import libsbml
 import pytest
 import sbmlode
+from sbmlode.astutil import UnsupportedMathError
 
+from sbml4humans import odes
 from sbml4humans.examples import load_examples, report_for_example
 from sbml4humans.model import Report
 from sbml4humans.report import report_for_bytes, report_for_path
@@ -184,6 +186,82 @@ def test_flattened_symbol_is_not_linked() -> None:
     text = " ".join(flattened)
     assert "submodel0" in text
     assert "pk=minimal_model_comp/Species:submodel0__S2" not in text
+
+
+def test_missing_reaction_id_is_one_warning(caplog: pytest.LogCaptureFixture) -> None:
+    """A real input failure keeps the elements and has no traceback."""
+    content = (EXAMPLES_DIR / "minimal_model.xml").read_bytes()
+    content = content.replace(b'<reaction id="J0"', b"<reaction", 1)
+    report = next(iter(report_for_bytes(content).reports.values())).report
+    message = "The id '' is not an SId and cannot be typeset."
+    assert report.ode_error == message
+    assert report.ode_system is None
+    assert len(report.models[0].list_of_reactions) == 1
+    records = [r for r in caplog.records if r.name == "sbml4humans.odes"]
+    assert len(records) == 1
+    assert records[0].levelname == "WARNING"
+    assert records[0].exc_info is None
+    assert records[0].getMessage().endswith(message)
+
+
+@pytest.mark.parametrize(
+    "failure",
+    [
+        ValueError("first line\nsecond line"),
+        UnsupportedMathError("unsupported math"),
+        ValueError(),
+    ],
+)
+def test_expected_analysis_error_is_one_line(
+    failure: Exception,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Expected input errors retain the original report text, with one warning line."""
+
+    def fail(source: object) -> object:
+        raise failure
+
+    monkeypatch.setattr(sbmlode.OdeSystem, "from_sbml", staticmethod(fail))
+    report = _report_of_path(REPRESSILATOR_SBML)
+    message = str(failure) or type(failure).__name__
+    assert report.ode_error == message
+    assert report.ode_system is None
+    records = [r for r in caplog.records if r.name == "sbml4humans.odes"]
+    assert len(records) == 1
+    assert records[0].levelname == "WARNING"
+    assert records[0].exc_info is None
+    assert records[0].getMessage().endswith(" ".join(message.split()))
+    assert "\n" not in records[0].getMessage()
+
+
+@pytest.mark.parametrize("phase", ["analysis", "report"])
+def test_unexpected_equation_error_keeps_its_traceback(
+    phase: str, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    """A programming failure, including report ValueError, remains diagnosable."""
+    failure = (
+        RuntimeError("analysis defect")
+        if phase == "analysis"
+        else ValueError("report defect")
+    )
+
+    def fail(*args: object) -> object:
+        raise failure
+
+    if phase == "analysis":
+        monkeypatch.setattr(sbmlode.OdeSystem, "from_sbml", staticmethod(fail))
+    else:
+        monkeypatch.setattr(odes, "_system", fail)
+    report = _report_of_path(REPRESSILATOR_SBML)
+    assert report.ode_error == str(failure)
+    assert report.ode_system is None
+    assert report.models[0].list_of_species
+    records = [r for r in caplog.records if r.name == "sbml4humans.odes"]
+    assert len(records) == 1
+    assert records[0].levelname == "ERROR"
+    assert isinstance(records[0].exc_info, tuple)
+    assert records[0].exc_info[1] is failure
 
 
 def test_analysis_error_is_contained(monkeypatch: pytest.MonkeyPatch) -> None:
