@@ -1,18 +1,21 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { conceptEntry } from "@/report/glossary";
 import type { ReportViewKind } from "@/report/query";
 import { useReportView } from "@/report/view";
 
-/** The two views of a model next to the inspector: its elements in tables and its differential
- * equations. The words and their tooltips are the entries of the glossary. */
+/** Views share the report selection and its inspector. */
+const props = withDefaults(defineProps<{ hasEquations?: boolean }>(), { hasEquations: true });
 const view = useReportView();
 
-const options: { kind: ReportViewKind; label: string; summary: string | undefined }[] = (
-  ["tables", "equations"] as const
-).map((kind) => {
-  const entry = conceptEntry(kind);
-  return { kind, label: entry?.label ?? kind, summary: entry?.summary };
-});
+const options = computed(() =>
+  (["tables", "network", ...(props.hasEquations ? ["equations"] : [])] as ReportViewKind[]).map(
+    (kind) => {
+      const entry = conceptEntry(kind);
+      return { kind, label: entry?.label ?? kind, summary: entry?.summary };
+    },
+  ),
+);
 </script>
 
 <template>

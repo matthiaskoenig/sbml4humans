@@ -21,12 +21,15 @@ export interface ViewState {
   /** What the report page shows next to the inspector: the element tables or the
    * differential equations of the model. */
   view: ReportViewKind;
+  /** The network projection, omitted for the reaction graph. */
+  network?: NetworkKind;
   /** The format of sbmlode whose code the equations show, null = the math. */
   code: OdeFormat | null;
 }
 
 /** The views of the report page. */
-export type ReportViewKind = "tables" | "equations";
+export type ReportViewKind = "tables" | "equations" | "network";
+export type NetworkKind = "base" | "kinetic" | "all";
 
 function first(value: LocationQueryValue | LocationQueryValue[] | undefined): string | null {
   const single = Array.isArray(value) ? value[0] : value;
@@ -35,6 +38,7 @@ function first(value: LocationQueryValue | LocationQueryValue[] | undefined): st
 
 export function parseQuery(query: LocationQuery): ViewState {
   const types = first(query.types);
+  const network = first(query.network);
   return {
     entry: first(query.entry),
     model: first(query.model),
@@ -42,8 +46,14 @@ export function parseQuery(query: LocationQuery): ViewState {
     q: first(query.q) ?? "",
     types: types === null ? null : types.split(",").filter(isElementType),
     help: first(query.help),
-    view: first(query.view) === "equations" ? "equations" : "tables",
+    view:
+      first(query.view) === "network"
+        ? "network"
+        : first(query.view) === "equations"
+          ? "equations"
+          : "tables",
     code: isOdeFormat(first(query.code) ?? "") ? (first(query.code) as OdeFormat) : null,
+    ...(network === "kinetic" || network === "all" ? { network } : {}),
   };
 }
 
@@ -55,7 +65,8 @@ export function toQuery(state: ViewState): LocationQueryRaw {
   if (state.q) query.q = state.q;
   if (state.types !== null) query.types = state.types.join(",");
   if (state.help) query.help = state.help;
-  if (state.view === "equations") query.view = state.view;
+  if (state.view !== "tables") query.view = state.view;
+  if (state.network && state.network !== "base") query.network = state.network;
   // the code is a tab of the equations
   if (state.view === "equations" && state.code) query.code = state.code;
   return query;

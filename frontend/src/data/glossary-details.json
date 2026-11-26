@@ -128,6 +128,78 @@
       "package": "core",
       "docs": "reference/concepts/#model-kind"
     },
+    "concepts/network": {
+      "kind": "concept",
+      "label": "Network",
+      "summary": "the objects of the model and their relationships in an interactive graph",
+      "description": "The network view draws the objects of the current model and their relationships. Selecting an object or a link opens the same inspector used by the tables. The graph is derived from the report without reading the SBML again. The model selector chooses the model or model definition to draw.\n\nThe reaction projection shows species, reactions, qualitative species and transitions. The kinetic projection adds parameters, kinetic laws and mathematical dependencies. The complete projection shows the document, every model, reported objects and archive boundary references. Layout and Render geometry is not yet available through the report contract.",
+      "package": "core",
+      "docs": "reference/concepts/#network"
+    },
+    "concepts/network-all": {
+      "kind": "concept",
+      "label": "Complete graph",
+      "summary": "the document, all its models and reported objects, and their relationships",
+      "description": "The complete graph includes the SBML document, every model and model definition, external model definitions, nested objects and package objects represented by the report. It includes boundary objects referenced from other archive entries; selecting one opens the report and inspector of that entry. Source identities remain distinct across entries. Built-in unit names and unit factors have no report object and are not invented as SBML entities.\n\nReference links retain their direction. Faint dotted containment links show document and object ownership separately from biochemical relationships. The complete graph covers the whole current report entry; the model selector scopes only the reaction and kinetic projections.",
+      "package": "core",
+      "docs": "reference/concepts/#complete-graph"
+    },
+    "concepts/network-base": {
+      "kind": "concept",
+      "label": "Reactions",
+      "summary": "species and reactions with reactant, product and modifier relationships",
+      "description": "Species and qualitative species are circles. Reactions and qualitative transitions are squares. Reactant links run from a species to a reaction, product links from a reaction to a species, and modifier links from a species to the reaction it influences. An unresolved participant reference is reported instead of being matched by its name.",
+      "package": "core",
+      "docs": "reference/concepts/#reactions"
+    },
+    "concepts/network-biological-layout": {
+      "kind": "concept",
+      "label": "Biological force",
+      "summary": "a force layout guided by object size, compartments and biochemical relationship roles",
+      "description": "The biological layout separates overlapping glyphs, uses longer and weaker springs for modifiers and mathematical dependencies, and limits the pull of highly connected entities. Reactions whose participants share one compartment use that compartment as a layout hint. This changes drawing coordinates, not the model. Disconnected components are packed with padding. Layout runs outside the interface thread and does not replace source coordinates in an SBML document.",
+      "package": "core",
+      "docs": "reference/concepts/#biological-force"
+    },
+    "concepts/network-force-layout": {
+      "kind": "concept",
+      "label": "Force directed",
+      "summary": "a general force layout with glyph collision handling and component packing",
+      "description": "The general force layout balances link springs and repulsion without biological relationship or compartment hints. It uses the same glyph collision handling and disconnected component packing as the biological layout.",
+      "package": "core",
+      "docs": "reference/concepts/#force-directed"
+    },
+    "concepts/network-kinetic": {
+      "kind": "concept",
+      "label": "Kinetic",
+      "summary": "the reaction graph with parameters, kinetic laws and mathematical dependencies",
+      "description": "The kinetic projection adds parameters, local parameters, kinetic laws, functions, rules, initial assignments and events. Mathematical dependencies use the references already resolved by the report, including the scope of local parameters. A dependency link runs from the referenced object to the formula which reads it.",
+      "package": "core",
+      "docs": "reference/concepts/#kinetic"
+    },
+    "concepts/network-label-annotation": {
+      "kind": "concept",
+      "label": "Resolved metadata",
+      "summary": "labels from the annotation services already used by the report",
+      "description": "Visible labels resolve identity annotations through the same annotation client, request queue and cache as the report inspector. The graph resolves at most 48 visible label targets at once, plus selected and hovered objects, and cancels queued requests when their targets leave the view. It does not fetch metadata for the whole graph. Missing or failed resolutions retain the SBML name or identifier. Generic SBO class terms do not replace biological names. Annotation lookups update text without restarting layout or uploading graph topology.",
+      "package": "core",
+      "docs": "reference/concepts/#resolved-metadata"
+    },
+    "concepts/network-label-id": {
+      "kind": "concept",
+      "label": "Identifiers",
+      "summary": "the identifier or report name of each graph object",
+      "description": "Graph labels use the same identifiers and names for anonymous objects as the report and its inspector. The object list remains searchable by these identifiers regardless of the label source.",
+      "package": "core",
+      "docs": "reference/concepts/#identifiers"
+    },
+    "concepts/network-label-name": {
+      "kind": "concept",
+      "label": "Names",
+      "summary": "the names stated in SBML, falling back to the identifiers of the report",
+      "description": "The graph uses the name an object states in SBML when it has one, and its report identifier otherwise. Labels are placed in the visible viewport without covering other glyphs or labels; selected and hovered objects have priority.",
+      "package": "core",
+      "docs": "reference/concepts/#names"
+    },
     "concepts/number": {
       "kind": "concept",
       "label": "number",

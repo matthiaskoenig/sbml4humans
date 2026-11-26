@@ -1,5 +1,15 @@
 # Reading a report
 
+The **Network** tab draws the model beside the existing inspector. **Reactions** shows species, reactions and qualitative transitions; **Kinetic** adds parameters and mathematical dependencies; **Complete graph** includes the document, every model and model definition, nested package objects, and referenced archive boundary objects. Selecting an external object opens its report entry and inspector. **Objects** provides searchable keyboard navigation and remains available when WebGL cannot start.
+
+Choose **Biological force** for size-aware collision handling, compartment hints and relationship-specific springs, or **Force directed** for the general layout. Change spacing between compact, balanced and spacious drawings. Light and dark styles distinguish SBML classes; arrowheads sit at glyph boundaries, with bars for inhibition and diamonds for activation. Labels avoid overlapping glyphs and other labels, with selected and hovered objects first.
+
+Label sources include identifiers, SBML names and **Resolved metadata**. Metadata uses the report's existing resolver, cache and request queue. Only a bounded set of visible labels, plus selected and hovered objects, is resolved; the graph does not fetch the whole model's annotations on import. Metadata changes preserve graph positions and camera. See [the network projections](reference/concepts.md#network) for semantics and current source-geometry limits.
+
+![The repressilator reaction network with resolved UniProt labels and the shared SBML inspector](images/report-network.png)
+
+![The complete report graph includes parameters, kinetic laws, rules, units and the document](images/report-network-complete.png)
+
 A report shows one [model](reference/model.md) of one SBML file at a time. The type bar at the top says what the model is made of, the tables under it show the elements of every type, and the inspector at the right of them shows one element in full. The whole model is on the page, the three parts are three views of it.
 
 [![The type bar and the element tables of the repressilator report](images/report-tables.png)](images/report-tables.png)

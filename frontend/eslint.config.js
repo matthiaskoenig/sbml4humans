@@ -10,6 +10,7 @@ export default defineConfig([
     ignores: [
       "dist/",
       "dist-e2e/",
+      "dist-network/",
       "node_modules/",
       "src/types/report.ts",
       "src/types/annotation.ts",

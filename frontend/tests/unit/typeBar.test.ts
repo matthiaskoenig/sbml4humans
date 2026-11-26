@@ -4,6 +4,7 @@ import { ref } from "vue";
 
 import type { ElementType, Model } from "@/api/types";
 import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
+import { vTooltip } from "@/directives/tooltip";
 import { ValidationIndexKey } from "@/report/context";
 import { ReportIndex } from "@/report/index";
 import { ValidationIndex } from "@/report/validationIndex";
@@ -16,7 +17,11 @@ const model = index.mainModel!;
 
 /** The mount options of the bar with the validation of its report, null while it is pending. */
 function globalWith(validation: ValidationIndex | null = null) {
-  return { plugins: [router], provide: { [ValidationIndexKey as symbol]: ref(validation) } };
+  return {
+    plugins: [router],
+    directives: { tooltip: vTooltip },
+    provide: { [ValidationIndexKey as symbol]: ref(validation) },
+  };
 }
 
 /** The counts of the model, the way the report page builds them: every element of a type counts
@@ -263,7 +268,9 @@ describe("TypeBar", () => {
       props: { index: without, model: without.mainModel!, counts: countsOf() },
       global: globalWith(),
     });
-    expect(wrapper.find("[data-testid=view-switch]").exists()).toBe(false);
+    expect(wrapper.find("[data-testid=view-switch]").exists()).toBe(true);
+    expect(wrapper.find("[data-testid=view-network]").exists()).toBe(true);
+    expect(wrapper.find("[data-testid=view-equations]").exists()).toBe(false);
     wrapper.unmount();
   });
 });

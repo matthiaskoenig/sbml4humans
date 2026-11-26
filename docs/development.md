@@ -1,5 +1,7 @@
 # Development
 
+The reusable network renderer is the local `@graphvis/viewer` package in `frontend/vendor/graphvis-viewer`. Its source is maintained in the graphvis repository under `packages/viewer`; `npm run viewer:sync -- /path/to/sbml4humans` from that repository updates the snapshot. The SBML projection adapter is `frontend/src/report/network.ts`; it consumes the existing report and preserves its element keys. `npm run test:network` from `frontend/` runs the network browser checks against real report fixtures without a backend, using Chromium's software WebGL renderer. This is functional verification, not a hardware performance benchmark.
+
 Everything below starts from a clone of the repository:
 
 ```bash
