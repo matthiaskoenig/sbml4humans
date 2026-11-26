@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onUnmounted, provide, watch } from "vue";
+import { computed, defineAsyncComponent, onUnmounted, provide, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { pingLocal } from "@/api/client";
@@ -16,6 +16,7 @@ import ContextBar from "@/components/report/ContextBar.vue";
 import ReportTables from "@/components/report/ReportTables.vue";
 import SearchBox from "@/components/report/SearchBox.vue";
 import TypeBar, { type TypeCount } from "@/components/report/TypeBar.vue";
+import ViewSwitch from "@/components/report/ViewSwitch.vue";
 import { ELEMENT_TYPES } from "@/data/sbmlTypes";
 import { useNarrow } from "@/narrow";
 import { ReportIndexKey, ValidationFailureKey, ValidationIndexKey } from "@/report/context";
@@ -27,6 +28,8 @@ const route = useRoute();
 const store = useReportStore();
 const view = useReportView();
 const narrow = useNarrow();
+const NetworkView = defineAsyncComponent(() => import("@/components/network/NetworkView.vue"));
+const showsNetwork = computed(() => view.state.value.view === "network");
 
 /** The width the inspector opens with: a third of the window, which leaves the tables the two
  * thirds they need for their widest columns. A reader who drags the divider keeps their width,
@@ -164,7 +167,7 @@ const showsEquations = computed(
  * one tap away in the type bar. */
 const defaultPk = computed(() =>
   showsReport.value && !narrow.value && !store.loading && !store.error
-    ? (model.value?.pk ?? null)
+    ? (model.value?.pk ?? index.value?.document.pk ?? null)
     : null,
 );
 watch(
@@ -209,10 +212,24 @@ watch([selectedPk, index], ([pk, current]) => {
     <p>No report loaded.</p>
     <RouterLink to="/" class="text-link hover:underline">Load a model</RouterLink>
   </div>
-  <div v-else-if="index && model" class="flex min-h-0 flex-1 flex-col" data-testid="report-page">
+  <div v-else-if="index" class="flex min-h-0 flex-1 flex-col" data-testid="report-page">
     <!-- the bar is about the tables, and on a narrow window the inspector stands in their place:
     it gives its rows to the element which is read -->
-    <TypeBar v-show="!(narrow && selectedPk)" :index="index" :model="model" :counts="counts" />
+    <TypeBar
+      v-if="model"
+      v-show="!(narrow && selectedPk)"
+      :index="index"
+      :model="model"
+      :counts="counts"
+    />
+    <nav v-else class="flex items-center gap-4 border-b border-gray-200 px-4 py-2 text-sm">
+      <ViewSwitch :has-equations="false" /><button
+        type="button"
+        @click="view.select(index.document.pk)"
+      >
+        SBMLDocument
+      </button>
+    </nav>
     <!-- the inspector is the second pane: the tables a reader selects in stand at the left, where
     a reader begins, and the element which is read opens at the right of them, the side a panel
     of details takes in most applications -->
@@ -226,7 +243,8 @@ watch([selectedPk, index], ([pk, current]) => {
       :collapsed="!selectedPk"
     >
       <template #first>
-        <EquationsView v-if="showsEquations && entry" :index="index" :location="entry" />
+        <NetworkView v-if="showsNetwork" :index="index" :model="model" />
+        <EquationsView v-else-if="showsEquations && entry" :index="index" :location="entry" />
         <ReportTables v-else :sections="visibleSections" :empty-message="emptyMessage" />
       </template>
       <template #second>
@@ -238,8 +256,15 @@ watch([selectedPk, index], ([pk, current]) => {
     mounted below it, so that they are where the reader left them -->
     <div v-else class="flex min-h-0 flex-1 flex-col" data-testid="report-stack">
       <InspectorPanel v-if="selectedPk" :pk="selectedPk" class="min-h-0 flex-1" />
+      <NetworkView
+        v-if="showsNetwork"
+        v-show="!selectedPk"
+        class="min-h-0 flex-1"
+        :index="index"
+        :model="model"
+      />
       <EquationsView
-        v-if="showsEquations && entry"
+        v-else-if="showsEquations && entry"
         v-show="!selectedPk"
         class="min-h-0 flex-1"
         :index="index"

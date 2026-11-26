@@ -3,6 +3,24 @@ import { describe, expect, it } from "vitest";
 import { parseQuery, toQuery } from "@/report/query";
 
 describe("view state query", () => {
+  it("round trips network view and selection without an equations code tab", () => {
+    const state = parseQuery({ view: "network", pk: "model/Species:S", entry: "model.xml" });
+    expect(state.view).toBe("network");
+    expect(toQuery(state)).toMatchObject({
+      view: "network",
+      pk: "model/Species:S",
+      entry: "model.xml",
+    });
+    expect(toQuery({ ...state, code: "python" })).not.toHaveProperty("code");
+  });
+  it("keeps the network projection when switching report views", () => {
+    const state = parseQuery({ view: "network", network: "all", pk: "p" });
+    expect(state.network).toBe("all");
+    expect(
+      parseQuery(toQuery({ ...state, view: "tables" }) as Record<string, string>).network,
+    ).toBe("all");
+    expect(parseQuery({ view: "network", network: "invalid" }).network).toBeUndefined();
+  });
   it("parses an empty query into the defaults", () => {
     expect(parseQuery({})).toEqual({
       entry: null,

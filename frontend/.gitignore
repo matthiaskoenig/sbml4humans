@@ -6,3 +6,4 @@ test-results/
 .env.*.local
 npm-debug.log*
 dist-e2e/
+dist-network/

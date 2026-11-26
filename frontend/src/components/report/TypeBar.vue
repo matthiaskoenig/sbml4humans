@@ -44,7 +44,7 @@ const showsEquations = computed(() => hasEquations.value && view.state.value.vie
  * the bar at all. The count of a type is its number of elements, which a search does not change,
  * so the entries of the bar stay the same while a search runs. */
 const types = computed<ElementTypeInfo[]>(() =>
-  showsEquations.value
+  showsEquations.value || view.state.value.view === "network"
     ? []
     : ELEMENT_TYPES.filter(
         (info) =>
@@ -118,7 +118,7 @@ function selectedClass(pk: string): string {
     class="flex shrink-0 flex-wrap items-center gap-x-5 gap-y-1 border-b border-gray-200 px-4 py-1.5 text-sm max-md:gap-x-3"
     data-testid="type-bar"
   >
-    <ViewSwitch v-if="hasEquations" />
+    <ViewSwitch :has-equations="hasEquations" />
     <button
       type="button"
       class="flex items-center gap-1.5 rounded px-1 py-0.5 max-md:py-1.5"

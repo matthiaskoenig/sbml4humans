@@ -1656,6 +1656,42 @@
       "label": "model kind",
       "summary": "whether a model is the model of the document or a model definition"
     },
+    "network": {
+      "label": "Network",
+      "summary": "the objects of the model and their relationships in an interactive graph"
+    },
+    "network-all": {
+      "label": "Complete graph",
+      "summary": "the document, all its models and reported objects, and their relationships"
+    },
+    "network-base": {
+      "label": "Reactions",
+      "summary": "species and reactions with reactant, product and modifier relationships"
+    },
+    "network-biological-layout": {
+      "label": "Biological force",
+      "summary": "a force layout guided by object size, compartments and biochemical relationship roles"
+    },
+    "network-force-layout": {
+      "label": "Force directed",
+      "summary": "a general force layout with glyph collision handling and component packing"
+    },
+    "network-kinetic": {
+      "label": "Kinetic",
+      "summary": "the reaction graph with parameters, kinetic laws and mathematical dependencies"
+    },
+    "network-label-annotation": {
+      "label": "Resolved metadata",
+      "summary": "labels from the annotation services already used by the report"
+    },
+    "network-label-id": {
+      "label": "Identifiers",
+      "summary": "the identifier or report name of each graph object"
+    },
+    "network-label-name": {
+      "label": "Names",
+      "summary": "the names stated in SBML, falling back to the identifiers of the report"
+    },
     "number": {
       "label": "number",
       "summary": "how the report shows a number which is infinite or not a number"

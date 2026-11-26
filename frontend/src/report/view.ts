@@ -3,7 +3,13 @@ import { useRoute, useRouter, type LocationQueryRaw, type RouteLocationRaw } fro
 
 import type { OdeFormat } from "@/api/client";
 import type { ElementType } from "@/api/types";
-import { parseQuery, toQuery, type ReportViewKind, type ViewState } from "@/report/query";
+import {
+  parseQuery,
+  toQuery,
+  type NetworkKind,
+  type ReportViewKind,
+  type ViewState,
+} from "@/report/query";
 
 type Mode = "push" | "replace";
 
@@ -18,6 +24,7 @@ export function useReportView(): {
   select(pk: string | null, mode?: Mode): Promise<unknown>;
   setSearch(q: string): Promise<unknown>;
   setView(view: ReportViewKind): Promise<unknown>;
+  setNetwork(network: NetworkKind): Promise<unknown>;
   setCode(code: OdeFormat | null): Promise<unknown>;
   setTypes(types: ElementType[] | null): Promise<unknown>;
   setEntry(entry: string | null): Promise<unknown>;
@@ -51,6 +58,7 @@ export function useReportView(): {
     // a search filters the tables, so it shows them
     setSearch: (q) => update(q ? { q, view: "tables" } : { q }, "replace"),
     setView: (view) => update({ view }),
+    setNetwork: (network) => update({ network, view: "network" }),
     setCode: (code) => update({ code }, "replace"),
     setTypes: (types) => update({ types }),
     setEntry: (entry) => update({ entry, model: null, pk: null, help: null }),
@@ -68,6 +76,7 @@ export function useReportView(): {
             types: null,
             help: null,
             view: state.value.view,
+            network: state.value.network,
             code: state.value.code,
           }
         : { ...state.value, pk };

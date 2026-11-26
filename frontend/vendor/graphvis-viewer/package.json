@@ -1,0 +1,26 @@
+{
+  "name": "@graphvis/viewer",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A domain-neutral Cosmos viewer with packed scene buffers and controlled selection.",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./layout": {
+      "types": "./src/layout.d.ts",
+      "import": "./src/layout.js"
+    }
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "dependencies": {
+    "@cosmos.gl/graph": "3.6.0",
+    "d3-force": "3.0.0",
+    "d3-quadtree": "3.0.1"
+  }
+}

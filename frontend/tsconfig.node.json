@@ -5,6 +5,7 @@
     "chunkSizeLimit.ts",
     "vitest.config.ts",
     "playwright.config.ts",
+    "playwright.network.config.ts",
     "tests/e2e/**/*",
     "src/types/annotation.ts"
   ],

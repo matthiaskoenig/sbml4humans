@@ -12,6 +12,7 @@
     "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
     "build:package": "vue-tsc --noEmit -p tsconfig.app.json && vite build --mode package --outDir ../backend/sbml4humans/resources/frontend --emptyOutDir",
     "build:e2e": "vite build --mode e2e --outDir dist-e2e --emptyOutDir",
+    "build:network": "vite build --mode e2e --outDir dist-network --emptyOutDir",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
     "lint": "eslint . && prettier --check .",
@@ -20,7 +21,8 @@
     "fixtures": "node scripts/fixtures.mjs",
     "screenshots": "node scripts/screenshots.mjs",
     "test:unit": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:network": "playwright test --config playwright.network.config.ts"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
@@ -34,7 +36,8 @@
     "tm-grammars": "^1.32.22",
     "vue": "^3.5.44",
     "vue-gtag": "^3.7.1",
-    "vue-router": "^5.4.0"
+    "vue-router": "^5.4.0",
+    "@graphvis/viewer": "file:vendor/graphvis-viewer"
   },
   "overrides": {
     "minimatch": "^11.0.4",

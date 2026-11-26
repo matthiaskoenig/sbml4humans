@@ -52,7 +52,16 @@ export default defineConfig({
         // KaTeX, which only the report page imports, is a chunk of its own: it changes with its
         // version alone, so a browser keeps it across releases, and the chunk of the report page
         // stays below `CHUNK_SIZE_LIMIT`
-        codeSplitting: { groups: [{ name: "katex", test: /node_modules[\\/]katex[\\/]/ }] },
+        codeSplitting: {
+          groups: [
+            { name: "katex", test: /node_modules[\\/]katex[\\/]/ },
+            { name: "luma-core", test: /node_modules[\\/]@luma\.gl[\\/]core[\\/]/ },
+            { name: "luma-engine", test: /node_modules[\\/]@luma\.gl[\\/]engine[\\/]/ },
+            { name: "luma-shaders", test: /node_modules[\\/]@luma\.gl[\\/]shadertools[\\/]/ },
+            { name: "luma-webgl", test: /node_modules[\\/]@luma\.gl[\\/]webgl[\\/]/ },
+            { name: "cosmos-interaction", test: /node_modules[\\/]d3-[^\\/]+[\\/]/ },
+          ],
+        },
       },
     },
   },
