@@ -276,6 +276,9 @@ def _spy_find(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, str | None, st
     The resolver answers in the child process of the validation, where a spy of
     the test sees nothing, so the entries are validated in this process.
     """
+    # This spy exercises the compatibility resolver. Native resolution is checked
+    # through complete diagnostic parity and confinement tests in test_native.
+    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
     found: list[tuple[str, str | None, str]] = []
     find = ReportDocuments.find
 

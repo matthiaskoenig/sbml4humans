@@ -1,4 +1,4 @@
-"""The optional native source reader, within the application's existing worker budgets.
+"""Optional native reports and validation within the application's worker budgets.
 
 The browser ships its own WASM build. Servers can install the matching native wheel
 without making a Rust compiler a requirement of the pure Python application package.
@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+from collections.abc import Callable
 from pathlib import Path
 from typing import Literal, Protocol, cast
 
@@ -17,6 +18,17 @@ from sbml4humans.limits import ContentLimits, ContentTooLargeError, format_size
 
 logger = logging.getLogger(__name__)
 _ODE_ERROR = re.compile(rb'"odeError":(?!null)')
+
+# location, admitted file path, location URI, serialized source positions
+ValidationSources = list[tuple[str, str, str, str]]
+
+
+class NativeValidation(Protocol):
+    """An owned native document session, used only inside a bounded worker."""
+
+    def issues_json(self, location: str, *, check_consistency: bool = True) -> bytes:
+        """Read parser diagnostics or run consistency checks, without holding the GIL."""
+        ...
 
 
 def _warn_ode_errors(content: bytes) -> None:
@@ -38,6 +50,11 @@ class NativeCore(Protocol):
 
     REPORT_CONTRACT: str
     SOURCE_CONTRACT: str
+    VALIDATION_CONTRACT: str
+
+    def ValidationSession(self, sources: ValidationSources) -> NativeValidation:
+        """Parse admitted documents once for the native validator."""
+        ...
 
     def source_json(
         self, source: bytes, *, max_expanded_elements: int, limits: dict[str, int]
@@ -82,6 +99,28 @@ def _reader(parser: Parser | None = None) -> NativeCore | None:
             "The installed Rust parser does not support the complete source/1 contract."
         )
     return core
+
+
+def validator(
+    parser: Parser | None = None,
+) -> Callable[[ValidationSources], NativeValidation] | None:
+    """Select native validation independently of the portable report capability.
+
+    A report-only wheel remains usable in auto mode. Explicit Rust selection
+    requires the native validation feature; validation errors never fall back.
+    """
+    selected = preference() if parser is None else parser
+    core = _reader(selected)
+    if core is None:
+        return None
+    if getattr(core, "VALIDATION_CONTRACT", None) != "validation/1":
+        if selected == "auto":
+            return None
+        raise RuntimeError(
+            "The installed Rust parser has no native validator; "
+            "install sbml4humans-core built with the validation feature."
+        )
+    return core.ValidationSession
 
 
 def report_json(

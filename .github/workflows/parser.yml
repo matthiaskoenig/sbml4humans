@@ -17,7 +17,7 @@ jobs:
   parser:
     name: parser
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
         with:
@@ -31,6 +31,8 @@ jobs:
           python-version: "3.14"
       - name: Install the parser toolchain and native WASM target
         run: rustup toolchain install 1.100.0 --profile minimal --target wasm32-unknown-unknown
+      - name: Install native validation build dependencies
+        run: sudo apt-get update && sudo apt-get install --yes g++ cmake make libexpat1-dev zlib1g-dev libbz2-dev
       - name: Rebuild and verify the pinned browser package; build the native wheel
         run: python3 scripts/build_parser.py --check --verify-build --wheel-out /tmp/parser-wheels
       - name: Install the application and the real native wheel
@@ -38,6 +40,7 @@ jobs:
           uv sync --project backend --locked
           uv pip install --python backend/.venv/bin/python --no-deps /tmp/parser-wheels/*.whl
           backend/.venv/bin/python -c 'import sbml4humans_core; assert sbml4humans_core.SOURCE_CONTRACT == "source/1"'
+          backend/.venv/bin/python -c 'import sbml4humans_core; assert sbml4humans_core.VALIDATION_CONTRACT == "validation/1"'
       - name: Check the parser build script
         run: |
           uv run --no-sync --project backend ruff check --config backend/pyproject.toml scripts/build_parser.py
@@ -52,4 +55,4 @@ jobs:
       - name: Build the production native backend image
         run: |
           docker build -t sbml4humans-parser-check .
-          docker run --rm --entrypoint python sbml4humans-parser-check -c 'from sbml4humans.native import _reader; assert _reader() is not None'
+          docker run --rm --entrypoint python sbml4humans-parser-check -c 'from sbml4humans.native import _reader, validator; assert _reader() is not None; assert validator("rust") is not None'

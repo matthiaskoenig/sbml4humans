@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -165,6 +166,8 @@ def main() -> None:
             else:
                 render(source, VENDOR, pin)
         if args.wheel_out:
+            if not os.environ.get("LIBSBML_DIR"):
+                run(["bash", "scripts/build-libsbml.sh"], source)
             output = args.wheel_out.resolve()
             output.mkdir(parents=True, exist_ok=True)
             run(
@@ -173,11 +176,13 @@ def main() -> None:
                     "tool",
                     "run",
                     "--from",
-                    "maturin>=1.16,<2",
+                    "maturin[patchelf]>=1.16,<2",
                     "maturin",
                     "build",
                     "--release",
                     "--locked",
+                    "--features",
+                    "validation",
                     "--out",
                     str(output),
                 ],
