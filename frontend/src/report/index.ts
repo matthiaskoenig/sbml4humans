@@ -134,6 +134,13 @@ export class ReportIndex {
     return indexes;
   }
 
+  /** Reports of this archive, for compact network preparation in a worker. */
+  networkEntries(): [string | null, Report][] {
+    return this.entries.size
+      ? [...this.entries].map(([location, index]) => [location, index.report])
+      : [[this.location, this.report]];
+  }
+
   /** The index of another entry of the archive, this one for null and for its own location. */
   entry(location: string | null | undefined): ReportIndex | null {
     if (!location || location === this.location) return this;

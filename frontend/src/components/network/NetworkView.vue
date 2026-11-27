@@ -7,13 +7,13 @@ import type { Model } from "@/api/types";
 import SelectInput from "@/components/input/SelectInput.vue";
 import { conceptEntry } from "@/report/glossary";
 import type { ReportIndex } from "@/report/index";
+import type { NetworkKind, NetworkTheme, NetworkProjection } from "@/report/network";
 import {
-  buildNetwork,
-  networkScene,
-  networkLayout,
-  type NetworkKind,
-  type NetworkTheme,
-} from "@/report/network";
+  networkInput,
+  encodeNetworkInput,
+  type Palette,
+  type PreparedNetwork,
+} from "@/report/network-pipeline";
 import {
   useNetworkMetadata,
   networkLabels,
@@ -45,7 +45,12 @@ const status = ref("loading"),
 const hoveredEntity = ref<string | null>(null),
   visible = shallowRef<string[]>([]);
 const scene = shallowRef<Scene | null>(null);
-const projection = computed(() => buildNetwork(props.index, props.model, kind.value, theme.value));
+const projection = shallowRef<NetworkProjection>({
+  scope: "",
+  nodes: [],
+  edges: [],
+  unresolved: [],
+});
 const nodes = computed(() => projection.value.nodes);
 const byId = computed(() => new Map(nodes.value.map((node) => [node.id, node])));
 const selected = computed(
@@ -92,7 +97,9 @@ const selectedVisible = computed(
 let viewer: CosmosViewer | null = null,
   worker: Worker | null = null,
   generation = 0;
-const positions = new Map<string, Float32Array>();
+let workerIndex: ReportIndex | null = null;
+let workerBusy = false;
+let palettes: { light: Palette; dark: Palette } | null = null;
 
 function selectEntity(id: string | null): void {
   if (!id) {
@@ -116,66 +123,89 @@ function selectEntity(id: string | null): void {
   } else void view.select(node.pk);
 }
 
-async function rebuild(): Promise<void> {
+function rebuild(): void {
   if (!viewer) return;
   const current = ++generation;
-  worker?.terminate();
-  worker = null;
   viewer.clear();
   scene.value = null;
+  projection.value = { scope: "", nodes: [], edges: [], unresolved: [] };
+  palettes = null;
   error.value = "";
+  status.value = "layout";
   try {
-    const packet = networkScene(projection.value, theme.value);
-    packet.labels = graphLabels.value;
-    if (!packet.ids.length) {
-      status.value = "empty";
-      return;
-    }
-    const key = `${packet.key}:${layout.value}:${spacing.value}`;
-    const show = (xy: Float32Array) => {
-      if (current !== generation || !viewer) return;
-      const styled = networkScene(projection.value, theme.value);
-      styled.positions = xy;
-      styled.labels = graphLabels.value;
-      scene.value = styled;
-      void viewer.setScene(styled, { labels: labels.value });
-    };
-    const cached = positions.get(key);
-    if (cached) {
-      show(cached);
-      return;
-    }
-    status.value = "layout";
-    worker = new Worker(new URL("./layout-worker.ts", import.meta.url), { type: "module" });
-    worker.onmessage = (event: MessageEvent<Float32Array>) => {
-      if (current !== generation) return;
+    let reports;
+    if (!worker || workerBusy || workerIndex !== props.index) {
       worker?.terminate();
-      worker = null;
-      if (positions.size >= 12) positions.delete(positions.keys().next().value!);
-      positions.set(key, event.data);
-      show(event.data);
-    };
-    worker.onerror = () => {
-      if (current !== generation) return;
-      status.value = "failed";
-      error.value = "The network layout could not be calculated.";
-      worker?.terminate();
-      worker = null;
-    };
-    const links = packet.links.slice(),
-      hints = networkLayout(projection.value, layout.value === "biological", Number(spacing.value));
-    const transfer: ArrayBuffer[] = [
-      links.buffer,
-      ...Object.values(hints)
-        .filter((value) => value instanceof Float32Array || value instanceof Uint32Array)
-        .map((value) => (value as Float32Array).buffer as ArrayBuffer),
-    ];
-    worker.postMessage({ count: packet.ids.length, links, options: hints }, transfer);
+      worker = new Worker(new URL("./network-worker.ts", import.meta.url), { type: "module" });
+      workerIndex = props.index;
+      reports = encodeNetworkInput(networkInput(props.index));
+      worker.onmessage = (
+        event: MessageEvent<{ generation: number; result?: PreparedNetwork; error?: string }>,
+      ) => {
+        if (event.data.generation !== generation || !viewer) return;
+        workerBusy = false;
+        if (event.data.error || !event.data.result) {
+          status.value = "failed";
+          error.value = event.data.error ?? "The network could not be prepared.";
+          return;
+        }
+        const prepared = event.data.result;
+        projection.value = {
+          ...prepared.projection,
+          nodes: prepared.projection.nodes.map((node) => {
+            const index = props.index.entry(node.entry) ?? props.index;
+            return { ...node, index, element: index.get(node.pk) };
+          }),
+        };
+        const packet = prepared.scene;
+        if (!packet.ids.length) {
+          status.value = "empty";
+          return;
+        }
+        palettes = {
+          light: {
+            colors: packet.colors,
+            strokeColors: packet.strokeColors,
+            linkColors: packet.linkColors,
+            background: packet.background,
+            foreground: packet.foreground,
+          },
+          dark: prepared.dark,
+        };
+        Object.assign(packet, palettes[theme.value]);
+        packet.labels = graphLabels.value;
+        scene.value = packet;
+        void viewer.setScene(packet, { labels: labels.value });
+      };
+      worker.onerror = () => {
+        status.value = "failed";
+        error.value = "The network could not be prepared.";
+        worker?.terminate();
+        worker = null;
+        workerIndex = null;
+      };
+    }
+    workerBusy = true;
+    worker.postMessage(
+      {
+        generation: current,
+        reports,
+        request: {
+          entry: props.index.location,
+          model: props.model?.pk ?? null,
+          kind: kind.value,
+          biological: layout.value === "biological",
+          spacing: Number(spacing.value),
+        },
+      },
+      reports ? [reports.buffer as ArrayBuffer] : [],
+    );
   } catch (cause) {
     status.value = "failed";
     error.value = cause instanceof Error ? cause.message : "The network could not be prepared.";
     worker?.terminate();
     worker = null;
+    workerIndex = null;
   }
 }
 
@@ -198,17 +228,16 @@ onMounted(async () => {
     },
   });
   viewer.select(selected.value);
-  void rebuild();
+  rebuild();
 });
 watch([() => props.index, () => props.model, kind], ([index], [before]) => {
-  if (index !== before) positions.clear();
   if (index === before && scene.value?.key === projection.value.scope && kind.value === "all") {
     viewer?.select(selected.value);
     return;
   }
-  void rebuild();
+  rebuild();
 });
-watch([layout, spacing], () => void rebuild());
+watch([layout, spacing], () => rebuild());
 watch(selected, (pk) => viewer?.select(pk));
 watch([graphLabels, labels], () => {
   if (scene.value) {
@@ -217,19 +246,17 @@ watch([graphLabels, labels], () => {
   }
 });
 watch(theme, () => {
-  if (!scene.value) return;
-  const packet = networkScene(projection.value, theme.value);
-  packet.positions = scene.value.positions;
-  packet.labels = graphLabels.value;
-  scene.value = packet;
-  void viewer?.setScene(packet, { labels: labels.value, fit: false });
+  if (!scene.value || !palettes) return;
+  Object.assign(scene.value, palettes[theme.value]);
+  viewer?.updatePalette(palettes[theme.value]);
 });
 onBeforeUnmount(() => {
   generation++;
   worker?.terminate();
   viewer?.destroy();
   viewer = null;
-  positions.clear();
+  palettes = null;
+  workerIndex = null;
 });
 </script>
 

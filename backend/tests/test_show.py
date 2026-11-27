@@ -49,6 +49,23 @@ def test_show_is_a_function_of_the_package() -> None:
     assert sbml4humans.stop is stop
 
 
+def test_local_server_ignores_python_packages_in_the_model_directory(
+    environment: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Opening a model must not execute Python supplied beside that model."""
+    package = environment / "sbml4humans"
+    package.mkdir()
+    marker = environment / "imported-untrusted-code"
+    (package / "__init__.py").write_text(
+        f"from pathlib import Path\nPath({str(marker)!r}).write_text('executed')\n"
+    )
+    (package / "local.py").write_text("raise SystemExit(23)\n")
+    monkeypatch.chdir(environment)
+    url = show(REPRESSILATOR_SBML, open_browser=False)
+    assert "/report?local=" in url
+    assert not marker.exists()
+
+
 def test_show_starts_a_server_and_opens_the_report(environment: Path) -> None:
     """The url serves the page, and its token the report of the file."""
     url = show(REPRESSILATOR_SBML)

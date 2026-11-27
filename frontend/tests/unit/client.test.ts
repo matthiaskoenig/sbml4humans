@@ -2,6 +2,9 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   getLocal,
+  getUrl,
+  getUrlOde,
+  getSourceSnapshot,
   getUpload,
   pingLocal,
   ApiError,
@@ -226,5 +229,28 @@ describe("api client", () => {
     expect(report?.document.sbmlType).toBe("SBMLDocument");
     expect(report?.models?.[0]?.id).toBe("BIOMD0000000012");
     expect(report?.linkGraph?.edges?.length).toBeGreaterThan(0);
+  });
+  it("passes cancellation and preserves the immutable URL source for validation and exports", async () => {
+    const snapshot = "abcdefghijklmnopqrstuv";
+    const response = jsonResponse(loadFixture("repressilator"));
+    response.headers.set("X-SBML4Humans-Source", snapshot);
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response)
+      .mockResolvedValueOnce(jsonResponse({ skipped: "busy" }))
+      .mockResolvedValueOnce(new Response("x = 1", { headers: { "Content-Type": "text/plain" } }));
+    vi.stubGlobal("fetch", fetchMock);
+    const signal = new AbortController().signal;
+    const report = await getUrl("https://example.org/model.xml", signal);
+    expect(fetchMock.mock.calls[0]![1].signal).toBe(signal);
+    expect(getSourceSnapshot(report)).toBe(snapshot);
+    await getUrlValidation("https://example.org/model.xml", signal, snapshot);
+    await getUrlOde("https://example.org/model.xml", "python", null, snapshot);
+    expect(
+      new URL(fetchMock.mock.calls[1]![0], "http://localhost").searchParams.get("snapshot"),
+    ).toBe(snapshot);
+    expect(
+      new URL(fetchMock.mock.calls[2]![0], "http://localhost").searchParams.get("snapshot"),
+    ).toBe(snapshot);
   });
 });

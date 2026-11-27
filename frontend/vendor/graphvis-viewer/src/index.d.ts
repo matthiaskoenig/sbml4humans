@@ -69,6 +69,9 @@ export class CosmosViewer {
   clear(): void;
   select(entityId: string | null): void;
   updateColors(colors: Float32Array): void;
+  updatePalette(
+    palette: Pick<Scene, "colors" | "strokeColors" | "linkColors" | "background" | "foreground">,
+  ): void;
   updateLabels(labels: string[], visible?: boolean): void;
   fit(): void;
   zoom(factor: number): void;

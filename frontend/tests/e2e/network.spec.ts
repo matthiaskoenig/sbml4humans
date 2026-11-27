@@ -221,6 +221,7 @@ test("offers biological force layout and updates spacing without changing the gr
   page,
 }) => {
   await page.goto("/examples/BIOMD0000000012?view=network&network=all");
+  await expect(page.getByTestId("network-counts")).toHaveText("79 objects · 162 links");
   await expect(page.getByTestId("network-status")).toHaveCount(0, { timeout: 30000 });
   const counts = await page.getByTestId("network-counts").textContent();
   await page.getByTestId("network-layout").selectOption("force");

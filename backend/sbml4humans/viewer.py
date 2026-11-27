@@ -179,7 +179,7 @@ def _start() -> dict[str, Any]:
     )
     with log.open("ab") as output:
         process = subprocess.Popen(
-            [sys.executable, "-m", "sbml4humans.local", "--port", str(port)],
+            [sys.executable, "-I", "-m", "sbml4humans.local", "--port", str(port)],
             env={**os.environ, SECRET_VARIABLE: secret},
             stdin=subprocess.DEVNULL,
             stdout=output,

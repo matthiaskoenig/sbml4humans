@@ -194,6 +194,60 @@ class IsolatedRunCancelledError(Exception):
     """Raised by an isolated run which was cancelled, nobody waits for it any more."""
 
 
+class CancellationEvent(threading.Event):
+    """One-shot request cancellation which can interrupt established sockets."""
+
+    def __init__(self) -> None:
+        """Keep interruption callbacks separate from the Event's condition lock."""
+        super().__init__()
+        self._callbacks: dict[object, Callable[[], None]] = {}
+        self._callback_lock = threading.Lock()
+
+    def register(self, callback: Callable[[], None]) -> Callable[[], None]:
+        """Register bounded nonblocking interruption and return its cleanup."""
+        key = object()
+        with self._callback_lock:
+            already_cancelled = self.is_set()
+            if not already_cancelled:
+                self._callbacks[key] = callback
+        if already_cancelled:
+            callback()
+
+        def remove() -> None:
+            """Forget a stream when its normal owner closes it."""
+            with self._callback_lock:
+                self._callbacks.pop(key, None)
+
+        return remove
+
+    def set(self) -> None:
+        """Wake native work and interrupt I/O without another thread."""
+        super().set()
+        with self._callback_lock:
+            callbacks = list(self._callbacks.values())
+            self._callbacks.clear()
+        for callback in callbacks:
+            try:
+                callback()
+            except Exception:
+                logger.exception("Cancelling request I/O failed")
+
+
+def check_cancelled() -> None:
+    """Stop source acquisition when its request has lost the caller."""
+    cancel = _CANCEL.get()
+    if cancel is not None and cancel.is_set():
+        raise IsolatedRunCancelledError
+
+
+def on_cancel(callback: Callable[[], None]) -> Callable[[], None]:
+    """Attach interruption to a request, or do nothing for ordinary calls."""
+    cancel = _CANCEL.get()
+    if isinstance(cancel, CancellationEvent):
+        return cancel.register(callback)
+    return lambda: None
+
+
 def run_cancellable[R](
     cancel: threading.Event, function: Callable[..., R], *args: Any
 ) -> R:

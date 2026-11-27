@@ -1,5 +1,6 @@
 import {
   scenePacket,
+  refreshPalette,
   terminalPlacement,
   placeLabels,
   visibleCandidates,
@@ -371,6 +372,52 @@ export class CosmosViewer {
       outlinedPointIndices: outlines.length ? outlines : undefined,
     });
     engine.render(undefined, 0);
+    this.scheduleDecorations();
+  }
+
+  /** Update a palette without changing geometry, spatial lookup, selection or camera. */
+  updatePalette({ colors, strokeColors, linkColors, background, foreground }) {
+    const scene = this.scene;
+    if (!scene || !this.uploaded) return;
+    for (const [name, values] of Object.entries({
+      colors,
+      strokeColors,
+      linkColors,
+    })) {
+      if (!(values instanceof Float32Array) || values.length !== scene[name].length)
+        throw new Error(`Palette ${name} count does not match the scene`);
+    }
+    Object.assign(scene, {
+      colors,
+      strokeColors,
+      linkColors,
+      background,
+      foreground,
+    });
+    refreshPalette(scene, this.packet, this.container.ownerDocument);
+    this.engine.setConfigPartial({ backgroundColor: background });
+    this.engine.setPointColors(this.packet.colors);
+    this.engine.setPointStrokeColors(this.packet.strokeColors);
+    this.engine.setLinkColors(linkColors);
+    this.engine.setImageData(this.packet.images);
+    this.engine.setPointImageIndices(this.packet.imageIndices);
+    // Visibility can change with edge alpha, but terminal coordinates stay fixed.
+    const scale = this.markerScale ?? 1;
+    this.packet.terminals.forEach((terminal, i) => {
+      const a = scene.links[terminal.edge * 2],
+        b = scene.links[terminal.edge * 2 + 1];
+      const distance =
+        Math.hypot(
+          scene.positions[a * 2] - scene.positions[b * 2],
+          scene.positions[a * 2 + 1] - scene.positions[b * 2 + 1],
+        ) * scale;
+      this.packet.imageSizes[scene.ids.length + i] =
+        linkColors[terminal.edge * 4 + 3] <= 0 || distance < this.radii[a] + this.radii[b] + 14
+          ? 0
+          : terminal.size;
+    });
+    this.engine.setPointImageSizes(this.packet.imageSizes);
+    this.engine.render(undefined, 0);
     this.scheduleDecorations();
   }
 
