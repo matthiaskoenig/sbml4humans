@@ -75,6 +75,7 @@ import logging
 import math
 import multiprocessing
 import os
+import re
 import shutil
 import signal
 import sys
@@ -214,6 +215,9 @@ _STDERR_TAIL = 64 * 1024
 _STDERR_LOGGED = 4 * 1024
 # what the C++ runtime writes when an uncaught std::bad_alloc aborts the child:
 # libstdc++ (the name mangled when it cannot demangle it) and libc++
+_RUST_ALLOCATION = re.compile(
+    r"^memory allocation of [0-9]+ bytes failed$", re.MULTILINE
+)
 _BAD_ALLOC = (
     "terminate called after throwing an instance of 'std::bad_alloc'",
     "terminate called after throwing an instance of 'St9bad_alloc'",
@@ -591,15 +595,17 @@ def _end_of(exitcode: int | None) -> str:
 def _abnormal_end(exitcode: int | None, written: str, name: str) -> Interruption:
     """Why a child ended without its results: `"memory"` or `"crashed"`.
 
-    An end is for lack of memory where the C++ runtime aborted the child with
-    an uncaught `std::bad_alloc` (`_BAD_ALLOC`), and where the C library wrote
+    An end is for lack of memory where C++ aborted with an uncaught
+    `std::bad_alloc` (`_BAD_ALLOC`), Rust aborted after a failed allocation
+    (`_RUST_ALLOCATION`), or the C library wrote
     that it could not allocate and ended the child itself (`_OUT_OF_MEMORY`),
     which comes with an exit code and not with a signal. Every other end,
     another signal, another abort or an exit without the results, is
     `"crashed"`.
     """
-    aborted = exitcode == -signal.SIGABRT and any(
-        text in written for text in _BAD_ALLOC
+    aborted = exitcode == -signal.SIGABRT and (
+        any(text in written for text in _BAD_ALLOC)
+        or _RUST_ALLOCATION.search(written) is not None
     )
     if aborted or any(text in written for text in _OUT_OF_MEMORY):
         logger.warning("the %s ran out of memory (%s)", name, _end_of(exitcode))

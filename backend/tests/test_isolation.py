@@ -103,6 +103,11 @@ def test_an_admission_is_free_again_after_its_context() -> None:
             id="the abort of an uncaught bad_alloc of libc++",
         ),
         pytest.param(
+            -signal.SIGABRT,
+            "memory allocation of 7200432 bytes failed\n",
+            id="Rust allocation failure",
+        ),
+        pytest.param(
             127,
             "cannot allocate memory for thread-local data: ABORT",
             id="the exit of a glibc which could not allocate thread-local data",
@@ -134,6 +139,11 @@ def test_a_child_which_ran_out_of_memory_says_so(exitcode: int, written: str) ->
             -signal.SIGABRT,
             "terminate called after throwing an instance of 'std::logic_error'",
             id="an abort of another uncaught exception",
+        ),
+        pytest.param(
+            1,
+            "memory allocation of 7200432 bytes failed",
+            id="allocation text without abort",
         ),
         pytest.param(1, "Traceback (most recent call last):", id="an exit of python"),
         pytest.param(None, "", id="a child whose exit code the server never got"),
