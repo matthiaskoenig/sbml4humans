@@ -1464,7 +1464,7 @@ export interface Edge {
 /**
  * The ordinary differential equations of the model of a document.
  *
- * The system of the model, flattened if it has submodels, as sbmlode writes it:
+ * The system of the model, flattened if it has submodels, as sbmlsim-core writes it:
  * the ODE of every state, the rates of the reactions, the assignment rules in
  * the order of their dependencies, the function definitions, the initial values
  * which are no number, the events and the constructs it does not hold.

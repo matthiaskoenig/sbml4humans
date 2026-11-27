@@ -3,6 +3,7 @@
 import gzip
 import logging
 import os
+import time
 from collections.abc import Callable, Iterator
 from typing import Any
 
@@ -49,6 +50,7 @@ def _check_error(response: Any, message: str) -> None:
     ("fmt", "filename", "contains"),
     [
         ("python", "BIOMD0000000012.py", "def f_dxdt("),
+        ("diffrax", "BIOMD0000000012.py", "import jax"),
         ("julia", "BIOMD0000000012.jl", "function"),
         ("r", "BIOMD0000000012.R", "function("),
         ("latex", "BIOMD0000000012.tex", r"\begin{document}"),
@@ -130,13 +132,13 @@ def test_ode_of_unknown_location(client: TestClient) -> None:
 
 
 def test_ode_of_unknown_format(client: TestClient) -> None:
-    """A format sbmlode does not write is an error."""
+    """A format sbmlsim-core does not write is an error."""
     response = client.get(f"/api/ode/examples/{EXAMPLE}", params={"format": "pdf"})
     _check_error(response, "pdf")
 
 
 def test_ode_of_unsupported_model(client: TestClient) -> None:
-    """Code of a model with an algebraic rule is refused by sbmlode, an error."""
+    """Code of a model with an algebraic rule is refused by sbmlsim-core, an error."""
     response = client.post(
         "/api/ode/content",
         params={"format": "python"},
@@ -272,17 +274,24 @@ def test_an_ode_file_whose_child_crashes_is_an_error_body(
     )
 
 
+def _delayed_ode(job: report.OdeJob) -> Iterator[tuple[str, OdeFile]]:
+    """Keep an actual isolated export busy independently of generator speed."""
+    time.sleep(20)
+    yield from report.ode_source(job)
+
+
 def test_an_ode_file_which_times_out_is_an_error(
-    monkeypatch: pytest.MonkeyPatch, slow_content: bytes
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A file beyond the timeout of the report budget is an error the client reads."""
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation.REPORT_BUDGET, "timeout", 1.0)
+    monkeypatch.setattr(report, "ode_source", _delayed_ode)
     with pytest.raises(
         ReportInterruptedError,
         match="The ODE system took longer than the 1 seconds an ODE system may take",
     ) as raised:
-        ode_for_bytes(slow_content, "latex")
+        ode_for_bytes(REPRESSILATOR_SBML.read_bytes(), "latex")
     assert raised.value.interruption == "timeout"
     assert raised.value.work == "ode system"
 
@@ -340,3 +349,16 @@ def test_code_is_the_ode_system_without_simulator() -> None:
     assert "def simulate(" in full.content
     document = ode_for_path(REPRESSILATOR_SBML, "latex")
     assert r"\begin{document}" in document.content
+
+
+def test_export_preserves_the_original_double_precision(client: TestClient) -> None:
+    """An export must not round source values through a libSBML XML serialization."""
+    source = b"""<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2"><model id="precise"><listOfParameters><parameter id="p" constant="false" value="1.2345678901234567"/></listOfParameters><listOfRules><rateRule variable="p"><math xmlns="http://www.w3.org/1998/Math/MathML"><cn type="real">1.2345678901234567</cn></math></rateRule></listOfRules></model></sbml>"""
+    response = client.post(
+        "/api/ode/content?format=python",
+        content=source,
+        headers={"Content-Type": "application/xml"},
+    )
+    assert response.status_code == 200
+    assert "1.2345678901234567" in response.text
+    assert "1.23456789012346" not in response.text

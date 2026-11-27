@@ -5,8 +5,7 @@ from pathlib import Path
 
 import libsbml
 import pytest
-import sbmlode
-from sbmlode.astutil import UnsupportedMathError
+import sbmlsim_core
 
 from sbml4humans import odes
 from sbml4humans.examples import load_examples, report_for_example
@@ -98,7 +97,7 @@ def test_json_is_camel_case() -> None:
 
 
 def test_local_parameter_links_to_its_kinetic_law() -> None:
-    """A local parameter, which sbmlode renames, links to the local parameter."""
+    """A local parameter, which the Rust core renames, links to the local parameter."""
     doc, _ = _document()
     report = _report_of_doc(doc)
     ode = report.ode_system
@@ -113,7 +112,7 @@ def test_local_parameter_links_to_its_kinetic_law() -> None:
 def test_algebraic_rule_is_unsupported() -> None:
     """An algebraic rule is reported as unsupported.
 
-    Without an id or a metaid, which sbmlode could name, it is not linked.
+    Without an id or a metaid, which the Rust core could name, it is not linked.
     """
     report = _report_of_path(EXAMPLES_DIR / "algebraic_rule.xml")
     ode = report.ode_system
@@ -208,7 +207,7 @@ def test_missing_reaction_id_is_one_warning(caplog: pytest.LogCaptureFixture) ->
     "failure",
     [
         ValueError("first line\nsecond line"),
-        UnsupportedMathError("unsupported math"),
+        ValueError("unsupported math"),
         ValueError(),
     ],
 )
@@ -219,10 +218,10 @@ def test_expected_analysis_error_is_one_line(
 ) -> None:
     """Expected input errors retain the original report text, with one warning line."""
 
-    def fail(source: object) -> object:
+    def fail(source: object, **options: object) -> object:
         raise failure
 
-    monkeypatch.setattr(sbmlode.OdeSystem, "from_sbml", staticmethod(fail))
+    monkeypatch.setattr(sbmlsim_core.OdeSystem, "from_sbml", staticmethod(fail))
     report = _report_of_path(REPRESSILATOR_SBML)
     message = str(failure) or type(failure).__name__
     assert report.ode_error == message
@@ -246,11 +245,11 @@ def test_unexpected_equation_error_keeps_its_traceback(
         else ValueError("report defect")
     )
 
-    def fail(*args: object) -> object:
+    def fail(*args: object, **options: object) -> object:
         raise failure
 
     if phase == "analysis":
-        monkeypatch.setattr(sbmlode.OdeSystem, "from_sbml", staticmethod(fail))
+        monkeypatch.setattr(sbmlsim_core.OdeSystem, "from_sbml", staticmethod(fail))
     else:
         monkeypatch.setattr(odes, "_system", fail)
     report = _report_of_path(REPRESSILATOR_SBML)
@@ -267,10 +266,10 @@ def test_unexpected_equation_error_keeps_its_traceback(
 def test_analysis_error_is_contained(monkeypatch: pytest.MonkeyPatch) -> None:
     """A failure of the analysis is its message, the rest of the report is there."""
 
-    def boom(source: object) -> object:
+    def boom(source: object, **options: object) -> object:
         raise ValueError("the analysis failed")
 
-    monkeypatch.setattr(sbmlode.OdeSystem, "from_sbml", staticmethod(boom))
+    monkeypatch.setattr(sbmlsim_core.OdeSystem, "from_sbml", staticmethod(boom))
     report = _report_of_path(REPRESSILATOR_SBML)
     assert report.ode_system is None
     assert report.ode_error == "the analysis failed"
@@ -278,12 +277,7 @@ def test_analysis_error_is_contained(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_concurrent_analyses_of_comp_models() -> None:
-    """Reports of comp models in parallel threads, as the threadpool of the api builds them.
-
-    libsbml aborts the process when two threads flatten a comp model at once, so the analysis
-    runs in one thread at a time (`odes._ANALYSIS_LOCK`). The crash is a race: without the lock
-    this test ends the session in about one run out of three, with it never.
-    """
+    """Threaded report requests use independent Rust equation analysis without a global lock."""
     # the comp models and the archives which hold them; a biomodel is an archive
     # without comp, which would only add reports without a flattening
     examples = [
@@ -333,7 +327,7 @@ def test_every_example_which_instantiates_a_submodel_keeps_its_equations() -> No
 def test_unsupported_rule_does_not_link_to_an_element_of_its_label() -> None:
     """An algebraic rule without id and metaid links no element.
 
-    sbmlode labels it `rule<k>`, which can be the id of another element, here a parameter.
+    the Rust core labels it `rule<k>`, which can be the id of another element, here a parameter.
     """
     doc, model = _document()
     parameter: libsbml.Parameter = model.createParameter()
@@ -364,7 +358,7 @@ def test_unsupported_rule_links_by_its_metaid_before_an_id() -> None:
 def test_symbol_is_never_linked_by_a_metaid() -> None:
     """A symbol is an SId; the metaid of another element with its text names no symbol.
 
-    sbmlode names an event without an id `event0`, which here is the metaid of the compartment.
+    the Rust core names an event without an id `event0`, which here is the metaid of the compartment.
     """
     doc, model = _document()
     model.getCompartment("c").setMetaId("event0")
@@ -402,3 +396,22 @@ def test_concentrations_in_variable_compartments() -> None:
     assert by_variable["variable_compartment/Species:B"].origin == "dilution"
     size_rates = [a for a in ode.assignments if a.origin == "size_rate"]
     assert [a.variable for a in size_rates] == ["variable_compartment/Compartment:Va"]
+
+
+def test_validation_import_does_not_load_the_codegen_runtime() -> None:
+    """Validation workers retain their budget without importing the simulator allocator."""
+    import subprocess
+    import sys
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import sys; import sbml4humans.report; assert 'sbmlsim_core' not in sys.modules",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr

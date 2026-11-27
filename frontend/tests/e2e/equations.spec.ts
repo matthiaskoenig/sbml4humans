@@ -82,6 +82,10 @@ test("the code of the equations in tabs, kept in the url", async ({ page }) => {
   await page.getByTestId("equations-tab-julia").press("ArrowRight");
   await expect.poll(() => query(page, "code")).toBe("r");
   await expect(page.getByTestId("equations-tab-r")).toBeFocused();
+  await page.getByTestId("equations-tab-diffrax").click();
+  await expect.poll(() => query(page, "code")).toBe("diffrax");
+  await expect(page.getByTestId("equations-code-text")).toContainText("import jax");
+  await expect(page.getByTestId("equations-code-filename")).toHaveText("BIOMD0000000012.py");
   await page.getByTestId("equations-tab-math").click();
   await expect.poll(() => query(page, "code")).toBeNull();
   await expect(view.getByTestId("equation-row").first()).toBeVisible();
@@ -106,9 +110,9 @@ test("the code downloads and copies the ODE system without the simulator", async
   await expect(page.getByTestId("equations-code-copy")).toHaveText("Copied");
   // an expression of the page, the tests are typed without the DOM
   expect(await page.evaluate("navigator.clipboard.readText()")).toBe(code);
-  await expect(page.getByTestId("equations-code-sbmlode")).toHaveAttribute(
+  await expect(page.getByTestId("equations-code-sbmlsim-core")).toHaveAttribute(
     "href",
-    "https://matthiaskoenig.github.io/sbmlode/formats/",
+    "https://matthiaskoenig.github.io/sbmlsim-core/odes/",
   );
 });
 

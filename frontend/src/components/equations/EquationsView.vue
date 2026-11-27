@@ -18,7 +18,7 @@ import { elementLabel } from "@/report/label";
 import { useReportView } from "@/report/view";
 
 /** The differential equations of the model of the document, the view next to the tables. The
- * tabs of its header show the math or the code of a format of sbmlode (`code` of the query). The
+ * tabs of its header show the math or the code of a format of sbmlsim-core (`code` of the query). The
  * math reads from the definitions to the system: the constructs the system leaves out first, then
  * the function definitions, the assignment rules, the reaction rates, the ODE system, the initial
  * assignments and the events, a section without an equation left out. A click on a symbol selects

@@ -23,7 +23,7 @@ export interface ViewState {
   view: ReportViewKind;
   /** The network projection, omitted for the reaction graph. */
   network?: NetworkKind;
-  /** The format of sbmlode whose code the equations show, null = the math. */
+  /** The format of sbmlsim-core whose code the equations show, null = the math. */
   code: OdeFormat | null;
 }
 

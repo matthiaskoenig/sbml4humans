@@ -109,7 +109,7 @@ server {
     # request brings, which the backend admits a few of at a time for everyone. The report of an
     # example (`/api/examples/`) is not among them, it is built once in the server process and
     # kept; the ODE download of an example is, it flattens and analyses the model of the example
-    # on every request, in the server process and behind the one lock of sbmlode. A location of a
+    # on every request, in the server process and behind the one lock of sbmlsim-core. A location of a
     # regular expression wins over a location of a prefix, and this one matches none of the paths
     # of the locations above, so each of them keeps the requests it had.
     location ~ ^/api/(file|url|content|upload|ode)(/|$) {

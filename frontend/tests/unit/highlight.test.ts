@@ -4,7 +4,15 @@ import { HIGHLIGHT_LIMIT, highlight } from "@/report/highlight";
 
 describe("highlight", () => {
   it("highlights the code of every format", async () => {
-    for (const format of ["python", "julia", "r", "latex", "typst", "markdown"] as const) {
+    for (const format of [
+      "python",
+      "diffrax",
+      "julia",
+      "r",
+      "latex",
+      "typst",
+      "markdown",
+    ] as const) {
       const html = await highlight("x = 1  # <b>", format);
       expect(html).toContain("<pre");
       // the code is text, never markup

@@ -5,11 +5,32 @@ without making a Rust compiler a requirement of the pure Python application pack
 """
 
 import importlib
+import json
+import logging
 import os
+import re
 from pathlib import Path
 from typing import Literal, Protocol, cast
 
 from sbml4humans.limits import ContentLimits, ContentTooLargeError, format_size
+
+
+logger = logging.getLogger(__name__)
+_ODE_ERROR = re.compile(rb'"odeError":(?!null)')
+
+
+def _warn_ode_errors(content: bytes) -> None:
+    """Log ordinary equation diagnostics without decoding successful large reports."""
+    if _ODE_ERROR.search(content) is None:
+        return
+    response = json.loads(content)
+    for entry in response.get("reports", {}).values():
+        message = entry["report"].get("odeError")
+        if message:
+            logger.warning(
+                "The ODE system of the model could not be built: %s",
+                " ".join(message.split()),
+            )
 
 
 class NativeCore(Protocol):
@@ -81,7 +102,7 @@ def report_json(
             f"The source is larger than the limit of {format_size(limits.max_content_size)}."
         )
     try:
-        return core.source_json(
+        content = core.source_json(
             source,
             max_expanded_elements=budget,
             limits={
@@ -95,3 +116,6 @@ def report_json(
         if getattr(error, "kind", None) == "refused":
             raise ContentTooLargeError(str(error)) from error
         raise
+
+    _warn_ode_errors(content)
+    return content

@@ -32,7 +32,7 @@ import { ValidationIndex } from "@/report/validationIndex";
 /** The download of the differential equations of a report in a format, see `odeCode`. */
 type OdeDownload = (format: OdeFormat, location: string) => Promise<OdeDownloadFile>;
 
-/** The differential equations of an entry in a format of sbmlode: the code or the document and
+/** The differential equations of an entry in a format of sbmlsim-core: the code or the document and
  * the name of its file. */
 export interface OdeCode {
   filename: string;
@@ -167,7 +167,7 @@ export const useReportStore = defineStore("report", () => {
    * dropped, so that the next view asks again. */
   let codes = new Map<string, Promise<OdeCode>>();
 
-  /** The differential equations of an entry of the report in a format of sbmlode, the code and
+  /** The differential equations of an entry of the report in a format of sbmlsim-core, the code and
    * the name of its file, fetched once per report. */
   function odeCode(format: OdeFormat, location: string): Promise<OdeCode> {
     const request = download;

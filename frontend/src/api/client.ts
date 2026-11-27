@@ -99,10 +99,11 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return body as T;
 }
 
-/** The formats sbmlode writes the differential equations of a model in, with the suffix of a
+/** The formats sbmlsim-core writes the differential equations of a model in, with the suffix of a
  * file of each. */
 export const ODE_FORMATS = {
   python: ".py",
+  diffrax: ".py",
   julia: ".jl",
   r: ".R",
   latex: ".tex",
@@ -111,7 +112,7 @@ export const ODE_FORMATS = {
 } as const;
 export type OdeFormat = keyof typeof ODE_FORMATS;
 
-/** Whether a string is a format of sbmlode, e.g. a value of the query. */
+/** Whether a string is a format of sbmlsim-core, e.g. a value of the query. */
 export function isOdeFormat(value: string): value is OdeFormat {
   return Object.hasOwn(ODE_FORMATS, value);
 }

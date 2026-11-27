@@ -5,7 +5,7 @@ import type { OdeFormat } from "@/api/client";
 import { tabId } from "@/components/equations/tabId";
 
 /** The tabs of the equations: the math, typeset by KaTeX, and the code of each format of
- * sbmlode. `null` is the math. The arrow keys, Home and End move between the tabs and select the
+ * sbmlsim-core. `null` is the math. The arrow keys, Home and End move between the tabs and select the
  * tab they move to, as a tablist of WAI-ARIA does; every tab controls the panel `panel`, the
  * element of the view which shows the math or the code, whose label is the selected tab
  * (`tabId`). */
@@ -16,6 +16,7 @@ const emit = defineEmits<{ select: [code: OdeFormat | null] }>();
 const TABS: { code: OdeFormat | null; name: string; testid: string }[] = [
   { code: null, name: "Math", testid: "equations-tab-math" },
   { code: "python", name: "Python", testid: "equations-tab-python" },
+  { code: "diffrax", name: "Diffrax/JAX", testid: "equations-tab-diffrax" },
   { code: "julia", name: "Julia", testid: "equations-tab-julia" },
   { code: "r", name: "R", testid: "equations-tab-r" },
   { code: "latex", name: "LaTeX", testid: "equations-tab-latex" },

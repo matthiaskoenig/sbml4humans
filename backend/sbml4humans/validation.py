@@ -33,7 +33,7 @@ of urls or another one which was registered before is gone.
 
 import bisect
 import logging
-from collections.abc import Generator, Mapping
+from collections.abc import Callable, Generator, Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -159,8 +159,18 @@ class ReportDocuments:
     is kept.
     """
 
-    def __init__(self, documents: Mapping[str, libsbml.SBMLDocument]) -> None:
+    def __init__(
+        self,
+        documents: Mapping[str, libsbml.SBMLDocument],
+        *,
+        sources: Mapping[str, Callable[[], bytes]] | None = None,
+    ) -> None:
         """The documents of a report keyed by their location in it."""
+        self._sources = {
+            normalized: loader
+            for location, loader in (sources or {}).items()
+            if (normalized := normalize_location(location)) is not None
+        }
         self._documents: dict[str, libsbml.SBMLDocument] = {}
         names: dict[str, str] = {}
         by_uri: dict[str, list[str]] = {}
@@ -186,6 +196,24 @@ class ReportDocuments:
             uri: locations[0]
             for uri, locations in by_uri.items()
             if len(locations) == 1
+        }
+
+    def source_bytes(self, location: str, doc: libsbml.SBMLDocument) -> bytes:
+        """Read the original source when available; preserve every authored double."""
+        normalized = normalize_location(location)
+        loader = self._sources.get(normalized) if normalized is not None else None
+        if loader is not None:
+            return loader()
+        return libsbml.writeSBMLToString(doc).encode()
+
+    def sources(
+        self, *, exclude: libsbml.SBMLDocument | None = None
+    ) -> dict[str, bytes]:
+        """Supply original bytes of the closed source set to the Rust generator."""
+        return {
+            location: self.source_bytes(location, doc)
+            for location, doc in self._documents.items()
+            if doc is not exclude
         }
 
     def location_of(self, uri: str) -> str | None:
@@ -327,7 +355,7 @@ def resolving_within(
     Within the context, libsbml resolves the source of an external model
     definition of the document, or of a document it resolved, to a document of
     the report alone and never reads a file or a url: the comp validator and the
-    flattening of comp (`sbmlode`) read what the report holds, whatever the
+    flattening of comp (`sbmlsim-core`) read what the report holds, whatever the
     content of a request names.
 
     Args:
