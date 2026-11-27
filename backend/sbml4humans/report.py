@@ -23,12 +23,12 @@ The report of a source which is not trusted is built in a child process
 server sends, so that a document which ends the process of libsbml is an error
 of one request and not an outage of the server. The ODE file of such a source
 is written in a child of its own as well (`ode_source`), which reads the
-content through sbmlode and libsbml the same way. `report_for_path` and
+content through sbmlsim-core and libsbml the same way. `report_for_path` and
 `ode_for_path` build in the process which calls them, for a trusted path: the
 examples and the file the user gave the local server of `show`.
 
 The equations of an entry whose comp submodels expand beyond the budget of the
-expanded size are not built (`_odes`): the flattening of libsbml clones every
+expanded size are not built (`_odes`): the shared Rust expansion holds every
 instantiated element into one model, so a document of a few kilobytes can ask
 for more memory than a child may use, and the report keeps its elements and
 says in its `ode_error` why it has no equations.
@@ -53,7 +53,6 @@ from pathlib import Path
 from typing import Any, Literal
 
 import libsbml
-import sbmlode
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
@@ -94,7 +93,7 @@ REPORT_GZIP_LEVEL = 5
 
 # what a client reads where the equations of a model were not built because its
 # comp submodels expand beyond the budget of the expanded size, the one failure
-# of the ODE system which is none of sbmlode
+# of the ODE system which is none of sbmlsim-core
 _NOT_FLATTENED = (
     "The equations of the model were not built: it expands by its comp "
     "submodels to {size:,} elements, more than the {budget:,} elements a model "
@@ -113,6 +112,7 @@ class _Entry:
                 the memory as a `MemoryError` of python, see `isolation`.
             ValueError: if no model could be read from the source.
         """
+        self.source = source
         start = time.perf_counter()
         self.info = SBMLDocumentInfo(SBMLDocumentInfo.read(source))
         log: libsbml.SBMLErrorLog = self.info.doc.getErrorLog()
@@ -130,6 +130,17 @@ class _Entry:
         self.info.build_report()
         self.elapsed = round(time.perf_counter() - start, 3)
         logger.info("report created for '%s' in %s s", uid, self.elapsed)
+
+    def source_bytes(self) -> bytes:
+        """Return original admitted XML bytes without rounding through an XML writer."""
+        if isinstance(self.source, str):
+            return self.source.encode()
+        opener = gzip.open if _is_gzipped(self.source) else open
+        with opener(self.source, "rb") as stream:
+            content = stream.read(limits.MAX_CONTENT_SIZE + 1)
+        if len(content) > limits.MAX_CONTENT_SIZE:
+            raise ContentTooLargeError("The source exceeds its content size limit.")
+        return content
 
     @property
     def link_source(self) -> LinkSource:
@@ -643,7 +654,7 @@ def _odes(entries: dict[str, _Entry], budget: int) -> None:
 
     An entry which expands by its comp submodels to more than `budget`
     elements (`_expanded_size`) keeps its elements and gets no equations, with
-    `_NOT_FLATTENED` as its `ode_error`: the flattening of libsbml clones every
+    `_NOT_FLATTENED` as its `ode_error`: the shared Rust expansion holds every
     instantiated element into one model, so its memory grows with the expanded
     size and not with the size of the document, and a document of a few
     kilobytes whose submodels fan out reaches beyond every bound a child of
@@ -658,7 +669,8 @@ def _odes(entries: dict[str, _Entry], budget: int) -> None:
         budget: the elements an entry may expand to for its equations.
     """
     documents = ReportDocuments(
-        {location: entry.info.doc for location, entry in entries.items()}
+        {location: entry.info.doc for location, entry in entries.items()},
+        sources={location: entry.source_bytes for location, entry in entries.items()},
     )
     for location, entry in entries.items():
         report = entry.info.report
@@ -676,7 +688,7 @@ def _odes(entries: dict[str, _Entry], budget: int) -> None:
             report.ode_error = _NOT_FLATTENED.format(size=size, budget=budget)
             continue
         report.ode_system, report.ode_error = ode_system(
-            entry.info.doc, main, documents, location
+            entry.info.doc, main, documents, location, budget
         )
 
 
@@ -734,7 +746,7 @@ def _add_files_of_directory(
 
 @dataclass(frozen=True)
 class OdeFile:
-    """The ODE system of a model in a format of sbmlode, as a file.
+    """The ODE system of a model in a format of sbmlsim-core, as a file.
 
     Attributes:
         filename: the name of the file, the id of the model with the suffix of the
@@ -754,37 +766,39 @@ def ode_for_path(
     simulator: bool = False,
     budget: int | None = None,
 ) -> OdeFile:
-    """Write the ODE system of the model of an SBML entry in a format of sbmlode.
+    """Write the ODE system of the model of an SBML entry in a format of sbmlsim-core.
 
     The source is read like for its report, and an external model definition is
     resolved to the entries of the report alone, see `odes.ode_system`. Code is
     the ODE system alone (the initial values, the rates of change and the assigned
-    values), without the simulator of sbmlode unless `simulator` is set; a
-    document is standalone with the ids as symbols, the defaults of sbmlode.
+    values), without the simulator of sbmlsim-core unless `simulator` is set; a
+    document is standalone with the ids as symbols, the defaults of sbmlsim-core.
 
     Args:
         path: an SBML file or COMBINE archive.
-        fmt: the format, a key of `sbmlode.FORMATS`.
+        fmt: the format, a key of `sbmlsim_core.ODE_FORMATS`.
         location: the SBML entry of an archive, by default its master entry or
             the first one.
         trusted: whether the files next to a single SBML file are read, see
             `report_for_path`.
-        simulator: whether code holds the simulator of sbmlode, which integrates
+        simulator: whether code holds the simulator of sbmlsim-core, which integrates
             the model.
         budget: the elements the entry may expand to, as for `report_for_path`;
             an entry beyond it is not flattened, here as in a report.
 
     Raises:
         ValueError: for an unknown format or location, a source without a model,
-            a model which expands beyond `budget` elements, or a model sbmlode
+            a model which expands beyond `budget` elements, or a model sbmlsim-core
             cannot write in the format.
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
-    format_ = sbmlode.FORMATS.get(fmt)
+    import sbmlsim_core
+
+    format_ = sbmlsim_core.ODE_FORMATS.get(fmt)
     if format_ is None:
         raise ValueError(
-            f"The format '{fmt}' is none of {', '.join(sorted(sbmlode.FORMATS))}."
+            f"The format '{fmt}' is none of {', '.join(sorted(sbmlsim_core.ODE_FORMATS))}."
         )
     if budget is None:
         budget = validation.MAX_EXPANDED_ELEMENTS
@@ -801,10 +815,11 @@ def ode_for_path(
         if size is not None and size > budget:
             raise ValueError(_NOT_FLATTENED.format(size=size, budget=budget))
         documents = ReportDocuments(
-            {loc: e.info.doc for loc, e in read.entries.items()}
+            {loc: e.info.doc for loc, e in read.entries.items()},
+            sources={loc: e.source_bytes for loc, e in read.entries.items()},
         )
         doc = entry.info.doc
-        system = analyse(doc, documents, location)
+        system = analyse(doc, documents, location, budget)
         if format_.kind == "code":
             content = system.render(fmt, simulator=simulator)
         else:
@@ -823,7 +838,7 @@ class OdeJob:
         trusted: as for `report_for_path`.
         limits: the limits of `limits.py` an untrusted source is read within,
             read by the server when the file is asked for.
-        fmt: the format, a key of `sbmlode.FORMATS`.
+        fmt: the format, a key of `sbmlsim_core.ODE_FORMATS`.
         location: the SBML entry of an archive, by default its master entry or
             the first one.
         budget: the elements the entry may expand to, read by the server when
@@ -860,7 +875,7 @@ def ode_source(job: OdeJob) -> Iterator[tuple[str, OdeFile]]:
     Raises:
         ValueError: for an unknown format or location, a source without a model,
             a model which expands beyond the budget of the job, or a model
-            sbmlode cannot write in the format.
+            sbmlsim-core cannot write in the format.
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
@@ -878,7 +893,7 @@ def ode_source(job: OdeJob) -> Iterator[tuple[str, OdeFile]]:
 
 
 def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeFile:
-    """Write the ODE system of untrusted content in a format of sbmlode.
+    """Write the ODE system of untrusted content in a format of sbmlsim-core.
 
     The content is written to a temporary file like for `report_gzip_for_bytes`,
     which is there until the child has ended, and read in a child process
@@ -888,7 +903,7 @@ def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeF
 
     Args:
         content: an SBML file, plain or gzipped, or a COMBINE archive.
-        fmt: the format, a key of `sbmlode.FORMATS`.
+        fmt: the format, a key of `sbmlsim_core.ODE_FORMATS`.
         location: the SBML entry of an archive, by default its master entry or
             the first one.
 
@@ -899,7 +914,7 @@ def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeF
         ReportInterruptedError: if the child did not finish the file.
         ValueError: for an unknown format or location, content without a model,
             a model which expands beyond `validation.MAX_EXPANDED_ELEMENTS`
-            elements, or a model sbmlode cannot write in the format.
+            elements, or a model sbmlsim-core cannot write in the format.
         ContentTooLargeError: if the content exceeds the limits.
     """
     start = time.perf_counter()

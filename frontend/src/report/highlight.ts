@@ -6,9 +6,10 @@ import type { OdeFormat } from "@/api/client";
  * page for seconds. */
 export const HIGHLIGHT_LIMIT = 200_000;
 
-/** The grammar of Shiki of each format of sbmlode. */
+/** The grammar of Shiki of each format of sbmlsim-core. */
 const LANGUAGES: Record<OdeFormat, string> = {
   python: "python",
+  diffrax: "python",
   julia: "julia",
   r: "r",
   latex: "latex",
@@ -22,13 +23,13 @@ let highlighter: Promise<HighlighterCore> | null = null;
 
 /** A grammar of `tm-grammars` (the grammars of Shiki as plain JSON) as a language of Shiki. The
  * languages of Shiki itself import every language they embed, a julia string of C++ or a raw block
- * of typst in any language, which would load megabytes the code of sbmlode never uses: the
+ * of typst in any language, which would load megabytes the code of sbmlsim-core never uses: the
  * grammars are loaded alone, an embedded block is not highlighted. */
 async function grammar(json: Promise<{ default: object }>): Promise<LanguageRegistration> {
   return { ...((await json).default as LanguageRegistration), embeddedLangs: [] };
 }
 
-/** The highlighter of the six formats, created with the first code shown: Shiki, its grammars and
+/** The highlighter of the seven formats, created with the first code shown: Shiki, its grammars and
  * its theme are chunks of their own which only the code of the equations loads. The regular
  * expressions run on the JavaScript engine, so no WebAssembly is loaded. LaTeX builds on the
  * grammar of TeX, which is loaded with it. */

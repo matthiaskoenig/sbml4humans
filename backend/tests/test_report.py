@@ -8,9 +8,11 @@ import signal
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 from collections import Counter
 from collections.abc import Callable, Iterator
+from dataclasses import replace
 from functools import partial
 from pathlib import Path
 
@@ -883,14 +885,21 @@ def test_the_report_of_untrusted_content_runs_in_a_child(
     assert len(spy_children) == 1
 
 
+def _delayed_report(job: ReportJob) -> Iterator[tuple[str, bytes]]:
+    """Keep a real isolated report busy independently of parser speed."""
+    time.sleep(20)
+    yield from report.report_gzip(job)
+
+
 def test_a_report_which_times_out_is_an_error(
-    monkeypatch: pytest.MonkeyPatch, slow_content: bytes
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A report beyond the timeout of its budget is an error the client reads."""
     monkeypatch.setattr(isolation, "MIN_CHILD_TIME", 0.1)
     monkeypatch.setattr(isolation.REPORT_BUDGET, "timeout", 1.0)
+    monkeypatch.setattr(report, "report_gzip", _delayed_report)
     with pytest.raises(ReportInterruptedError, match="longer than") as raised:
-        report_gzip_for_bytes(slow_content)
+        report_gzip_for_bytes((EXAMPLES_DIR / "annotation.xml").read_bytes())
     assert raised.value.interruption == "timeout"
 
 
@@ -950,7 +959,7 @@ def test_the_sentences_of_an_interruption_name_their_work(
 
 def test_a_report_which_fails_logs_its_time(caplog: pytest.LogCaptureFixture) -> None:
     """The time of a report is logged also when it raised, which a reader wants most."""
-    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>'
+    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2"/>'
     with (
         caplog.at_level(logging.INFO, logger="sbml4humans.report"),
         pytest.raises(ValueError, match="No SBML model"),
@@ -1001,7 +1010,7 @@ def test_a_report_which_got_no_child_is_an_error(
 
 def test_a_document_without_a_model_is_an_error_through_the_child() -> None:
     """The error of the child is raised in the server, with its traceback."""
-    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>'
+    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2"/>'
     with pytest.raises(ValueError, match="No SBML model") as raised:
         report_gzip_for_bytes(content)
     assert any("child process" in note for note in raised.value.__notes__)
@@ -1147,8 +1156,7 @@ def _report_gzip_unguarded(job: ReportJob) -> Iterator[tuple[str, bytes]]:
     the stack of the machine crashes on the two shapes whose recursion is
     deep but finite, a chain of 200 definitions called 200 deep and a sum of
     45,000 terms, under the 8 MiB of a default linux process and reports them
-    whole under the 64 MiB of a CI runner, which the equations then answer with
-    a `RecursionError` of sbmlode in `ode_error`. Pinning the stack makes the
+    whole under the 64 MiB of a CI runner, where the compatibility reader can finish the recursion. Pinning the stack makes the
     crash a property of the document again. Only the soft limit is lowered and
     only where it is larger, so a machine with a smaller stack keeps it. The
     child of a report of the server inherits the stack of its machine, which is
@@ -1169,7 +1177,7 @@ def _report_gzip_unguarded(job: ReportJob) -> Iterator[tuple[str, bytes]]:
         stack = min(stack, soft)
     resource.setrlimit(resource.RLIMIT_STACK, (stack, hard))
     sbmlinfo.SBMLDocumentInfo._derives_units = _derives_units_unguarded
-    yield from report.report_gzip(job)
+    yield from report.report_gzip(replace(job, parser="python"))
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")

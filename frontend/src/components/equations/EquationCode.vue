@@ -9,19 +9,19 @@ import { conceptEntry, conceptKey } from "@/report/glossary";
 import { highlight } from "@/report/highlight";
 import { type OdeCode, useReportStore } from "@/stores/report";
 
-/** The code of the differential equations in a format of sbmlode, the ODE system alone: the
+/** The code of the differential equations in a format of sbmlsim-core, the ODE system alone: the
  * backend writes it from the source of the report, which the store sends again once per format
  * and entry. The code is highlighted by Shiki (its HTML escapes the code), a code too long for it
  * is shown as text. Copy and download take the code shown; the help explains the code and links
- * the formats of sbmlode, which writes custom exports. A failure, the code of a model with an
+ * the formats of sbmlsim-core, which writes custom exports. A failure, the code of a model with an
  * unsupported construct for example, is shown in place of the code. */
 const props = defineProps<{ format: OdeFormat; location: string }>();
 const store = useReportStore();
 const entry = conceptEntry("odeDownload");
 const helpKey = conceptKey("odeDownload");
 
-/** The page of the formats of sbmlode, where its custom exports are described. */
-const SBMLODE_FORMATS_URL = "https://matthiaskoenig.github.io/sbmlode/formats/";
+/** The page of the formats of sbmlsim-core, where its custom exports are described. */
+const ODE_FORMATS_URL = "https://matthiaskoenig.github.io/sbmlsim-core/odes/";
 
 const code = ref<OdeCode | null>(null);
 const html = ref<string | null>(null);
@@ -96,12 +96,12 @@ onBeforeUnmount(() => clearTimeout(copiedTimer));
       </span>
       <span class="ml-auto flex items-center gap-2">
         <a
-          :href="SBMLODE_FORMATS_URL"
+          :href="ODE_FORMATS_URL"
           target="_blank"
           rel="noopener"
           class="inline-flex items-center gap-1 text-link hover:underline"
-          data-testid="equations-code-sbmlode"
-          >Custom exports with sbmlode<ExternalLinkIcon class="size-3" aria-hidden="true"
+          data-testid="equations-code-sbmlsim-core"
+          >Custom exports with sbmlsim-core<ExternalLinkIcon class="size-3" aria-hidden="true"
         /></a>
         <button
           v-if="canCopy"

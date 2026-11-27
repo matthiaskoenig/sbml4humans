@@ -29,7 +29,7 @@ and the admission freed at once. Work beyond the admission of the server is
 busy: a report says so as an error of the contract, since the report is the
 answer of its request, a validation as a `ValidationResponse` without entries,
 since it is one part of a page the frontend shows without it. The ODE file of a
-source of a request (`/api/ode/...`) reads that source through sbmlode and
+source of a request (`/api/ode/...`) reads that source through sbmlsim-core and
 libsbml as well, so it is admitted, run and cancelled by `run_report` with the
 budget of the reports; the file of an example is written in the process of the
 server, as its report is.
@@ -811,7 +811,7 @@ def ode_response(ode: OdeFile) -> Response:
     response_class=PlainTextResponse,
 )
 def ode_of_example(example_id: str, format: str) -> Response:
-    """The ODE system of an example in a format of sbmlode, as a file."""
+    """The ODE system of an example in a format of sbmlsim-core, as a file."""
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)

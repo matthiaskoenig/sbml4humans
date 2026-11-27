@@ -354,7 +354,7 @@ def test_content(client: TestClient) -> None:
 def test_content_without_a_reaction_id_keeps_its_report_without_a_traceback(
     client: TestClient, caplog: pytest.LogCaptureFixture
 ) -> None:
-    """An input sbmlode cannot typeset remains a report and logs one warning."""
+    """An input sbmlsim-core cannot typeset remains a report and logs one warning."""
     content = (EXAMPLES_DIR / "minimal_model.xml").read_bytes()
     assert b'<reaction id="J0"' in content
     content = content.replace(b'<reaction id="J0"', b"<reaction", 1)

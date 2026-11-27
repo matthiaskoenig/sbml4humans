@@ -4989,7 +4989,7 @@
       "type": "object"
     },
     "OdeSystem": {
-      "description": "The ordinary differential equations of the model of a document.\n\nThe system of the model, flattened if it has submodels, as sbmlode writes it:\nthe ODE of every state, the rates of the reactions, the assignment rules in\nthe order of their dependencies, the function definitions, the initial values\nwhich are no number, the events and the constructs it does not hold.",
+      "description": "The ordinary differential equations of the model of a document.\n\nThe system of the model, flattened if it has submodels, as sbmlsim-core writes it:\nthe ODE of every state, the rates of the reactions, the assignment rules in\nthe order of their dependencies, the function definitions, the initial values\nwhich are no number, the events and the constructs it does not hold.",
       "properties": {
         "odes": {
           "items": {

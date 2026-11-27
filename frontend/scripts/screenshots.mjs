@@ -451,7 +451,7 @@ try {
   });
 
   // report-equations-code.png: the tab Python of the equations of the repressilator, the ODE
-  // system as code with its toolbar (copy, download and the custom exports of sbmlode). The
+  // system as code with its toolbar (copy, download and the custom exports of sbmlsim-core). The
   // picture is the window.
   await report.goto(`${BASE_URL}/examples/BIOMD0000000012?view=equations&code=python`);
   await reportShown(report);
