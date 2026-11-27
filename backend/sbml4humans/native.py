@@ -9,25 +9,23 @@ import json
 import logging
 import os
 import re
-from collections.abc import Callable
 from pathlib import Path
 from typing import Literal, Protocol, cast
 
-from sbml4humans.limits import ContentLimits, ContentTooLargeError, format_size
+from sbml4humans.limits import ContentLimits, ContentTooLargeError
 
 
 logger = logging.getLogger(__name__)
 _ODE_ERROR = re.compile(rb'"odeError":(?!null)')
 
-# location, admitted file path, location URI, serialized source positions
-ValidationSources = list[tuple[str, str, str, str]]
-
 
 class NativeValidation(Protocol):
-    """An owned native document session, used only inside a bounded worker."""
+    """A prepared source owned by Rust inside a bounded worker."""
 
-    def issues_json(self, location: str, *, check_consistency: bool = True) -> bytes:
-        """Read parser diagnostics or run consistency checks, without holding the GIL."""
+    locations: list[str]
+
+    def entry_json(self, location: str) -> bytes:
+        """Check one entry, applying the native comp expansion gate."""
         ...
 
 
@@ -50,16 +48,44 @@ class NativeCore(Protocol):
 
     REPORT_CONTRACT: str
     SOURCE_CONTRACT: str
-    VALIDATION_CONTRACT: str
+    ODE_SOURCE_CONTRACT: str
+    SOURCE_PATH_CONTRACT: str
+    VALIDATION_SOURCE_CONTRACT: str
 
-    def ValidationSession(self, sources: ValidationSources) -> NativeValidation:
-        """Parse admitted documents once for the native validator."""
+    def source_path_json(
+        self,
+        path: str,
+        *,
+        trusted: bool,
+        max_expanded_elements: int,
+        limits: dict[str, int],
+    ) -> bytes:
+        """Read a source and construct serialized reports entirely in Rust."""
         ...
 
-    def source_json(
-        self, source: bytes, *, max_expanded_elements: int, limits: dict[str, int]
+    def validation_source(
+        self,
+        path: str,
+        *,
+        trusted: bool,
+        max_expanded_elements: int,
+        limits: dict[str, int],
+    ) -> NativeValidation:
+        """Admit sources, derive keys and own native validation entirely in Rust."""
+        ...
+
+    def ode_path_json(
+        self,
+        path: str,
+        format: str,
+        *,
+        location: str | None,
+        trusted: bool,
+        simulator: bool,
+        max_expanded_elements: int,
+        limits: dict[str, int],
     ) -> bytes:
-        """Build the complete response without constructing Python objects per element."""
+        """Select and export one admitted model with the shared Rust generator."""
         ...
 
 
@@ -92,69 +118,120 @@ def _reader(parser: Parser | None = None) -> NativeCore | None:
     if (
         getattr(core, "REPORT_CONTRACT", None) != "report/1"
         or getattr(core, "SOURCE_CONTRACT", None) != "source/1"
+        or getattr(core, "SOURCE_PATH_CONTRACT", None) != "source-path/1"
     ):
         if selected == "auto":
             return None
         raise RuntimeError(
-            "The installed Rust parser does not support the complete source/1 contract."
+            "The installed Rust parser does not support the complete source-path/1 contract."
         )
     return core
 
 
-def validator(
-    parser: Parser | None = None,
-) -> Callable[[ValidationSources], NativeValidation] | None:
-    """Select native validation independently of the portable report capability.
+def _source_limits(limits: ContentLimits) -> dict[str, int]:
+    return {
+        "maxContentSize": limits.max_content_size,
+        "maxArchiveEntries": limits.max_archive_entries,
+        "maxCompressionRatio": limits.max_compression_ratio,
+        "compressionRatioMinSize": limits.compression_ratio_min_size,
+    }
 
-    A report-only wheel remains usable in auto mode. Explicit Rust selection
-    requires the native validation feature; validation errors never fall back.
-    """
+
+def validation_source(
+    path: Path,
+    limits: ContentLimits,
+    budget: int,
+    parser: Parser | None = None,
+    *,
+    trusted: bool = False,
+) -> NativeValidation | None:
+    """Prepare and validate through Rust, retaining optional compatibility mode."""
     selected = preference() if parser is None else parser
     core = _reader(selected)
     if core is None:
         return None
-    if getattr(core, "VALIDATION_CONTRACT", None) != "validation/1":
+    if getattr(core, "VALIDATION_SOURCE_CONTRACT", None) != "validation-source/1":
         if selected == "auto":
             return None
         raise RuntimeError(
-            "The installed Rust parser has no native validator; "
+            "The installed Rust parser has no native source validator; "
             "install sbml4humans-core built with the validation feature."
         )
-    return core.ValidationSession
-
-
-def report_json(
-    path: Path, limits: ContentLimits, budget: int, parser: Parser | None = None
-) -> bytes | None:
-    """Read an untrusted source through the optional Rust backend.
-
-    Returns None only when the native backend was not selected. A native parse
-    failure is returned to the caller, never retried through another parser.
-    """
-    core = _reader(parser)
-    if core is None:
-        return None
-    with path.open("rb") as stream:
-        source = stream.read(limits.max_content_size + 1)
-    if len(source) > limits.max_content_size:
-        raise ContentTooLargeError(
-            f"The source is larger than the limit of {format_size(limits.max_content_size)}."
-        )
     try:
-        content = core.source_json(
-            source,
+        return core.validation_source(
+            str(path),
+            trusted=trusted,
             max_expanded_elements=budget,
-            limits={
-                "maxContentSize": limits.max_content_size,
-                "maxArchiveEntries": limits.max_archive_entries,
-                "maxCompressionRatio": limits.max_compression_ratio,
-                "compressionRatioMinSize": limits.compression_ratio_min_size,
-            },
+            limits=_source_limits(limits),
         )
     except ValueError as error:
         if getattr(error, "kind", None) == "refused":
             raise ContentTooLargeError(str(error)) from error
         raise
 
+
+def report_json(
+    path: Path,
+    limits: ContentLimits,
+    budget: int,
+    parser: Parser | None = None,
+    *,
+    trusted: bool = False,
+) -> bytes | None:
+    """Read and report a path through Rust without per-element Python objects.
+
+    Native failures reach the API error contract and never retry through Python.
+    Trusted paths may admit companions only inside the selected directory.
+    """
+    core = _reader(parser)
+    if core is None:
+        return None
+    try:
+        content = core.source_path_json(
+            str(path),
+            trusted=trusted,
+            max_expanded_elements=budget,
+            limits=_source_limits(limits),
+        )
+    except ValueError as error:
+        if getattr(error, "kind", None) == "refused":
+            raise ContentTooLargeError(str(error)) from error
+        raise
     _warn_ode_errors(content)
     return content
+
+
+def ode_json(
+    path: Path,
+    format: str,
+    location: str | None,
+    limits: ContentLimits,
+    budget: int,
+    parser: Parser | None = None,
+    *,
+    trusted: bool = False,
+    simulator: bool = False,
+) -> bytes | None:
+    """Read source entries and generate one ODE download without Python SBML objects."""
+    selected = preference() if parser is None else parser
+    core = _reader(selected)
+    if core is None:
+        return None
+    if getattr(core, "ODE_SOURCE_CONTRACT", None) != "ode-source/1":
+        if selected == "auto":
+            return None
+        raise RuntimeError("The installed Rust parser does not support ode-source/1.")
+    try:
+        return core.ode_path_json(
+            str(path),
+            format,
+            location=location,
+            trusted=trusted,
+            simulator=simulator,
+            max_expanded_elements=budget,
+            limits=_source_limits(limits),
+        )
+    except ValueError as error:
+        if getattr(error, "kind", None) == "refused":
+            raise ContentTooLargeError(str(error)) from error
+        raise

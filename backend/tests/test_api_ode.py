@@ -322,7 +322,7 @@ def test_an_ode_file_which_fails_logs_its_time(
     caplog: pytest.LogCaptureFixture,
 ) -> None:
     """The time of a file is logged also when it raised, which a reader wants most."""
-    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>'
+    content = b'<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2"/>'
     with (
         caplog.at_level(logging.INFO, logger="sbml4humans.report"),
         pytest.raises(ValueError, match="No SBML model"),

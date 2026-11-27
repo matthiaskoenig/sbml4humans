@@ -1,46 +1,24 @@
-"""Report data for SBML models and COMBINE archives.
+"""SBML source operations behind the FastAPI transport and worker boundary.
 
-The report of a model is the `Report` created by `SBMLDocumentInfo`. A single
-SBML file is wrapped in a COMBINE archive with one master model, so that the
-frontend always receives an archive manifest with one report per SBML entry.
+Native reports, validation preparation and ODE exports use the shared Rust
+source pipeline. It admits standalone/gzipped SBML and COMBINE archives,
+derives canonical keys, resolves admitted comp models and enforces expansion
+budgets. Trusted standalone paths may admit companions within their selected
+directory. Uploads and archives cannot discover files beside their source.
 
-The reports of one archive are linked together: an external model definition of
-comp is resolved against the other entries (`external.py`), and the link graph
-of an entry follows it into the report of the entry it names (`links.py`).
-Nothing is fetched. A single file which was read from a trusted directory, which
-is one the operator or the user chose and never the temporary file of an upload,
-gains the files next to it which its external model definitions name as further
-entries of its archive.
+The compatibility reader below remains available when the native extension
+is absent or `SBML4HUMANS_PARSER=python`. It builds reports with
+`SBMLDocumentInfo` and supplies the independent report and validation oracles.
 
-An archive is extracted into a temporary directory of its own, which is removed
-when the report is built. The content of a request is read within the limits of
-`limits.py`: a gzipped model is decompressed up to `MAX_CONTENT_SIZE`, and an
-archive is checked for the number, the size and the compression of its entries
-before it is extracted.
-
-The report of a source which is not trusted is built in a child process
-(`report_gzip` run by `isolation.py`), which answers it as the gzipped JSON the
-server sends, so that a document which ends the process of libsbml is an error
-of one request and not an outage of the server. The ODE file of such a source
-is written in a child of its own as well (`ode_source`), which reads the
-content through sbmlsim-core and libsbml the same way. `report_for_path` and
-`ode_for_path` build in the process which calls them, for a trusted path: the
-examples and the file the user gave the local server of `show`.
-
-The equations of an entry whose comp submodels expand beyond the budget of the
-expanded size are not built (`_odes`): the shared Rust expansion holds every
-instantiated element into one model, so a document of a few kilobytes can ask
-for more memory than a child may use, and the report keeps its elements and
-says in its `ode_error` why it has no equations.
-
-The validation of libsbml is not part of the report: `validation_for_path`
-reads the entries of a source the same way, without their link graph, and
-checks them, all of it in a child process as well, so that the report is
-answered as fast as it is built and its validation when it is finished.
+Untrusted work runs in isolated children with captured parser preferences,
+source limits, deadlines, memory limits and cancellation. Report JSON is
+compressed before crossing the worker pipe. Validation sends entry results
+as they finish, preserving completed results after an interruption.
 """
 
 import gzip
 import hashlib
+import json
 import logging
 import tempfile
 import time
@@ -53,7 +31,6 @@ from pathlib import Path
 from typing import Any, Literal
 
 import libsbml
-from pydantic import TypeAdapter
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
@@ -68,7 +45,6 @@ from sbml4humans.model import (
     ManifestEntry,
     ReportEntry,
     ReportResponse,
-    ValidationIssue,
     ValidationResponse,
 )
 from sbml4humans.odes import analyse, ode_system
@@ -82,7 +58,6 @@ from sbml4humans.validation import (
 
 
 logger = logging.getLogger(__name__)
-_VALIDATION_ISSUES = TypeAdapter(list[ValidationIssue])
 
 # location of a single SBML file in the archive created for it
 SBML_LOCATION = "./model.xml"
@@ -234,7 +209,10 @@ def _read(path: Path, trusted: bool) -> Generator[_Read]:
 
 
 def report_for_path(
-    path: Path, trusted: bool = False, budget: int | None = None
+    path: Path,
+    trusted: bool = False,
+    budget: int | None = None,
+    parser: native.Parser | None = None,
 ) -> ReportResponse:
     """Create the reports of an SBML file or a COMBINE archive.
 
@@ -251,6 +229,7 @@ def report_for_path(
             `_odes`; by default `validation.MAX_EXPANDED_ELEMENTS`, which a
             child of a report gets in its job, since it does not see what a
             test changed in the server.
+        parser: selected backend, captured before a job enters the forkserver.
 
     Raises:
         ValueError: if no model could be read from an SBML entry.
@@ -259,6 +238,11 @@ def report_for_path(
     """
     if budget is None:
         budget = validation.MAX_EXPANDED_ELEMENTS
+    raw = native.report_json(
+        path, limits.ContentLimits.current(), budget, parser, trusted=trusted
+    )
+    if raw is not None:
+        return ReportResponse.model_validate_json(raw)
     with _read(path, trusted) as read:
         _link(read.entries, read.external)
         _odes(read.entries, budget)
@@ -323,13 +307,13 @@ def report_gzip(job: ReportJob) -> Iterator[tuple[str, bytes]]:
             limits.
     """
     with job.limits.applied():
-        raw = (
-            None
-            if job.trusted
-            else native.report_json(Path(job.path), job.limits, job.budget, job.parser)
+        raw = native.report_json(
+            Path(job.path), job.limits, job.budget, job.parser, trusted=job.trusted
         )
         if raw is None:
-            response = report_for_path(Path(job.path), job.trusted, job.budget)
+            response = report_for_path(
+                Path(job.path), job.trusted, job.budget, job.parser
+            )
             raw = response.model_dump_json(by_alias=True).encode()
     yield (_REPORT, gzip.compress(raw, compresslevel=REPORT_GZIP_LEVEL))
 
@@ -559,56 +543,51 @@ def validate_source(job: SourceJob) -> Iterator[tuple[str, Any]]:
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
-    with job.limits.applied(), _read(Path(job.path), job.trusted) as read:
-        yield _LOCATIONS, list(read.entries)
-        factory = native.validator(job.parser)
-        session = (
-            factory(
-                [
-                    (
-                        location,
-                        str(entry.source),
-                        entry.info.doc.getLocationURI(),
-                        entry.info.positions.native_json(),
-                    )
-                    for location, entry in read.entries.items()
-                ]
-            )
-            if factory is not None
-            else None
+    with job.limits.applied():
+        session = native.validation_source(
+            Path(job.path), job.limits, job.budget, job.parser, trusted=job.trusted
         )
-        documents = ReportDocuments(
-            {location: entry.info.doc for location, entry in read.entries.items()}
-        )
-        for location, entry in read.entries.items():
-            size = _expanded_size(read.entries, location)
-            if size is not None and size > job.budget:
-                logger.warning(
-                    "'%s' is not validated: it expands to %s elements, more than %s",
-                    location,
-                    size,
-                    job.budget,
-                )
+        if session is not None:
+            yield _LOCATIONS, session.locations
+            for location in session.locations:
                 yield (
                     location,
-                    EntryValidation(
-                        issues=(
-                            _VALIDATION_ISSUES.validate_json(
-                                session.issues_json(location, check_consistency=False)
-                            )
-                            if session is not None
-                            else issues_of(entry.info.doc, entry.info.positions)
-                        ),
-                        skipped="expandedSize",
-                    ),
+                    EntryValidation.model_validate_json(session.entry_json(location)),
                 )
-                continue
-            issues = (
-                _VALIDATION_ISSUES.validate_json(session.issues_json(location))
-                if session is not None
-                else validate(entry.info.doc, entry.info.positions, documents, location)
+            return
+        with _read(Path(job.path), job.trusted) as read:
+            yield _LOCATIONS, list(read.entries)
+            documents = ReportDocuments(
+                {location: entry.info.doc for location, entry in read.entries.items()}
             )
-            yield location, EntryValidation(issues=issues)
+            for location, entry in read.entries.items():
+                size = _expanded_size(read.entries, location)
+                if size is not None and size > job.budget:
+                    logger.warning(
+                        "'%s' is not validated: it expands to %s elements, more than %s",
+                        location,
+                        size,
+                        job.budget,
+                    )
+                    yield (
+                        location,
+                        EntryValidation(
+                            issues=issues_of(entry.info.doc, entry.info.positions),
+                            skipped="expandedSize",
+                        ),
+                    )
+                else:
+                    yield (
+                        location,
+                        EntryValidation(
+                            issues=validate(
+                                entry.info.doc,
+                                entry.info.positions,
+                                documents,
+                                location,
+                            )
+                        ),
+                    )
 
 
 def validation_for_path(path: Path, trusted: bool = False) -> ValidationResponse:
@@ -796,6 +775,7 @@ def ode_for_path(
     trusted: bool = False,
     simulator: bool = False,
     budget: int | None = None,
+    parser: native.Parser | None = None,
 ) -> OdeFile:
     """Write the ODE system of the model of an SBML entry in a format of sbmlsim-core.
 
@@ -817,6 +797,8 @@ def ode_for_path(
         budget: the elements the entry may expand to, as for `report_for_path`;
             an entry beyond it is not flattened, here as in a report.
 
+        parser: selected backend, captured before a job enters the forkserver.
+
     Raises:
         ValueError: for an unknown format or location, a source without a model,
             a model which expands beyond `budget` elements, or a model sbmlsim-core
@@ -824,6 +806,20 @@ def ode_for_path(
         ContentTooLargeError: if the content of an untrusted path exceeds the
             limits.
     """
+    if budget is None:
+        budget = validation.MAX_EXPANDED_ELEMENTS
+    raw = native.ode_json(
+        path,
+        fmt,
+        location,
+        limits.ContentLimits.current(),
+        budget,
+        parser,
+        trusted=trusted,
+        simulator=simulator,
+    )
+    if raw is not None:
+        return OdeFile(**json.loads(raw))
     import sbmlsim_core
 
     format_ = sbmlsim_core.ODE_FORMATS.get(fmt)
@@ -831,8 +827,6 @@ def ode_for_path(
         raise ValueError(
             f"The format '{fmt}' is none of {', '.join(sorted(sbmlsim_core.ODE_FORMATS))}."
         )
-    if budget is None:
-        budget = validation.MAX_EXPANDED_ELEMENTS
     with _read(path, trusted) as read:
         if location is None:
             masters = [e.location for e in read.omex.manifest.entries if e.master]
@@ -883,6 +877,8 @@ class OdeJob:
     location: str | None
     budget: int
 
+    parser: native.Parser = field(default_factory=native.preference)
+
 
 # the key of the one result of an ODE download, the file of the whole system
 _ODE = "ode"
@@ -919,6 +915,7 @@ def ode_source(job: OdeJob) -> Iterator[tuple[str, OdeFile]]:
                 job.location,
                 job.trusted,
                 budget=job.budget,
+                parser=job.parser,
             ),
         )
 

@@ -40,7 +40,7 @@ jobs:
           uv sync --project backend --locked
           uv pip install --python backend/.venv/bin/python --no-deps /tmp/parser-wheels/*.whl
           backend/.venv/bin/python -c 'import sbml4humans_core; assert sbml4humans_core.SOURCE_CONTRACT == "source/1"'
-          backend/.venv/bin/python -c 'import sbml4humans_core; assert sbml4humans_core.VALIDATION_CONTRACT == "validation/1"'
+          backend/.venv/bin/python -c 'import sbml4humans_core; assert sbml4humans_core.VALIDATION_SOURCE_CONTRACT == "validation-source/1"; assert sbml4humans_core.ODE_SOURCE_CONTRACT == "ode-source/1"'
       - name: Check the parser build script
         run: |
           uv run --no-sync --project backend ruff check --config backend/pyproject.toml scripts/build_parser.py
@@ -51,8 +51,8 @@ jobs:
           SBML4HUMANS_PARSER: rust
         run: |
           uv run --no-sync python -c 'import sbml4humans_core; assert sbml4humans_core.SOURCE_CONTRACT == "source/1"'
-          uv run --no-sync pytest tests/test_native.py -q
+          uv run --no-sync pytest tests/test_native.py tests/test_api.py tests/test_api_ode.py -q
       - name: Build the production native backend image
         run: |
           docker build -t sbml4humans-parser-check .
-          docker run --rm --entrypoint python sbml4humans-parser-check -c 'from sbml4humans.native import _reader, validator; assert _reader() is not None; assert validator("rust") is not None'
+          docker run --rm --entrypoint python sbml4humans-parser-check -c 'from sbml4humans.native import _reader, preference; assert preference() == "rust"; c = _reader("rust"); assert c is not None; assert c.VALIDATION_SOURCE_CONTRACT == "validation-source/1"; assert c.ODE_SOURCE_CONTRACT == "ode-source/1"'
