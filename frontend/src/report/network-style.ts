@@ -49,6 +49,16 @@ const STYLES: Record<
   ListOf: { shape: 1, size: 12, fill: "#edf0f2", stroke: "#98a3ab", priority: 5 },
 };
 
+/** Theme colors depend only on SBML type and reversibility, never topology. */
+export function nodeColors(type: string, reversible: boolean, theme: NetworkTheme) {
+  const style = STYLES[type] ?? { fill: "#e6e2ed", stroke: "#8a789e" };
+  const dark = theme === "dark";
+  return {
+    color: color(reversible ? (dark ? "#679fa7" : "#4e7e84") : dark ? style.stroke : style.fill),
+    strokeColor: color(dark ? style.fill : style.stroke),
+  };
+}
+
 function compartmentOf(index: ReportIndex, element: SBase | undefined): string | null {
   if (!element) return null;
   if (element.sbmlType === "Compartment") return element.id ?? null;
@@ -77,8 +87,7 @@ export function visualNode(
   theme: NetworkTheme,
   external = false,
 ): NetworkNode {
-  const type = element.sbmlType ?? "SBase",
-    dark = theme === "dark";
+  const type = element.sbmlType ?? "SBase";
   const style = STYLES[type] ?? {
     shape: 4,
     size: 18,
@@ -108,8 +117,7 @@ export function visualNode(
     shape: style.shape,
     size: style.size,
     labelPriority: style.priority,
-    color: color(reversible ? (dark ? "#679fa7" : "#4e7e84") : dark ? style.stroke : style.fill),
-    strokeColor: color(dark ? style.fill : style.stroke),
+    ...nodeColors(type, reversible, theme),
     strokeWidth: reversible ? 2.2 : 1.5,
   };
 }

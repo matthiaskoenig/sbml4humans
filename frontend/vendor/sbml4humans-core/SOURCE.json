@@ -1,6 +1,6 @@
 {
   "repository": "https://github.com/matthiaskoenig/sbml4humans-core.git",
-  "revision": "6afcdb047bbbeb4152de3ffee07855acaf5e0b7d",
+  "revision": "b0c2d3fc16e7b9853337d415eaae6ba259c34d6b",
   "reportContract": "report/1",
   "sourceContract": "source/1",
   "hostContract": "host/1",
@@ -12,7 +12,7 @@
     "index.mjs": "71c0cec63f8bf65526584f856507f5a43eb47da2859597398781166a3a43984a",
     "package.json": "a302260780f4631e01291cc9287183bac2e5c31fe2c5de25050a8880525c93e9",
     "report.d.ts": "293ef087a401cfc2e96425ce7d7a8afb1ac099ccfe022f9c7d5222f384c4b565",
-    "runtime/sbml4humans-core.wasm": "62e873d75ffa5e6f6dda1e5e29173c6b1f571a1fd59cfde9a4379b7039ea5554",
+    "runtime/sbml4humans-core.wasm": "5b00cfe3e71ccc9040cd2e34970b77bb96f1f479e9791fb23ff4691c9995b87d",
     "wasm.d.mts": "de22b1239c852ddba685bd9ea292138f58eaaa3b7447ec6b2913794fa3ef2697",
     "wasm.mjs": "ab0471eb02d9d275fca682afb95e971852f83fe46e05ae352896ef36e65ea64e",
     "worker.mjs": "93db2c1eab9d274f791355d62b905605f96ad41a1babb020ee08932db31ca8df"

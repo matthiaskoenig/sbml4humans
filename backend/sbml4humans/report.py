@@ -9,13 +9,14 @@ import json
 import logging
 import tempfile
 import time
-from collections.abc import Iterator
+from collections.abc import Generator, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, BinaryIO, Literal
 
 from sbml4humans import isolation, limits, native
-from sbml4humans.limits import format_size
+from sbml4humans.limits import ContentTooLargeError, format_size
 from sbml4humans.model import (
     EntryValidation,
     ReportEntry,
@@ -25,6 +26,44 @@ from sbml4humans.model import (
 
 
 logger = logging.getLogger(__name__)
+
+type SourceInput = bytes | Path | BinaryIO
+
+
+@contextmanager
+def source_path(content: SourceInput) -> Generator[Path]:
+    """Spool an input once without materializing uploads as Python byte arrays."""
+    if isinstance(content, Path):
+        yield content
+        return
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "model"
+        with path.open("wb") as target:
+            if isinstance(content, bytes):
+                target.write(content)
+            else:
+                total = 0
+                while chunk := content.read(64 * 1024):
+                    total += len(chunk)
+                    if total > limits.MAX_CONTENT_SIZE:
+                        raise ContentTooLargeError(
+                            "The source exceeds its content size limit."
+                        )
+                    target.write(chunk)
+        yield path
+
+
+def _input_size(content: SourceInput) -> int:
+    """The source size for request diagnostics, without reading it again."""
+    if isinstance(content, bytes):
+        return len(content)
+    if isinstance(content, Path):
+        return content.stat().st_size
+    try:
+        return content.tell()
+    except OSError:
+        return 0
+
 
 # location of a single SBML file in the archive created for it
 SBML_LOCATION = "./model.xml"
@@ -64,6 +103,23 @@ def report_gzip_for_path(
         source_entry=source_entry,
         gzip=True,
     )
+
+
+def isolated_report_for_path(
+    path: Path, trusted: bool = False, *, source_entry: str | None = None
+) -> bytes:
+    """Report a path in a bounded child, including immutable example sources."""
+    job = ReportJob(
+        str(path),
+        trusted,
+        limits.ContentLimits.current(),
+        limits.MAX_EXPANDED_ELEMENTS,
+        source_entry,
+    )
+    run = isolation.run_isolated(report_gzip, job, isolation.REPORT_BUDGET)
+    if run.interruption is not None or not run.results:
+        raise ReportInterruptedError(run.interruption or "crashed")
+    return run.results[0][1]
 
 
 def report_for_sbml(source: Path | str, uid: str = "") -> ReportEntry:
@@ -223,7 +279,7 @@ def _log_isolated(
     )
 
 
-def report_gzip_for_bytes(content: bytes) -> bytes:
+def report_gzip_for_bytes(content: SourceInput) -> bytes:
     """Create the gzipped JSON of the reports of untrusted content.
 
     The content is written to a temporary file like for `report_for_bytes`,
@@ -245,9 +301,7 @@ def report_gzip_for_bytes(content: bytes) -> bytes:
     start = time.perf_counter()
     run: isolation.IsolatedRun | None = None
     try:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            path = Path(tmp_dir) / "model"
-            path.write_bytes(content)
+        with source_path(content) as path:
             job = ReportJob(
                 path=str(path),
                 trusted=False,
@@ -256,7 +310,7 @@ def report_gzip_for_bytes(content: bytes) -> bytes:
             )
             run = isolation.run_isolated(report_gzip, job, isolation.REPORT_BUDGET)
     finally:
-        _log_isolated("report", len(content), start, run)
+        _log_isolated("report", _input_size(content), start, run)
     if run.interruption is not None or not run.results:
         # a child which ended without its one result ended abnormally
         raise ReportInterruptedError(run.interruption or "crashed")
@@ -466,7 +520,33 @@ def ode_source(job: OdeJob) -> Iterator[tuple[str, OdeFile]]:
         )
 
 
-def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeFile:
+def isolated_ode_for_path(
+    path: Path,
+    fmt: str,
+    location: str | None = None,
+    *,
+    trusted: bool = False,
+    source_entry: str | None = None,
+) -> OdeFile:
+    """Export a path under the same bounds as uploaded ODE sources."""
+    job = OdeJob(
+        str(path),
+        trusted,
+        limits.ContentLimits.current(),
+        fmt,
+        location,
+        limits.MAX_EXPANDED_ELEMENTS,
+        source_entry,
+    )
+    run = isolation.run_isolated(ode_source, job, isolation.REPORT_BUDGET)
+    if run.interruption is not None or not run.results:
+        raise ReportInterruptedError(run.interruption or "crashed", "ode system")
+    return run.results[0][1]
+
+
+def ode_for_bytes(
+    content: SourceInput, fmt: str, location: str | None = None
+) -> OdeFile:
     """Write the ODE system of untrusted content in a format of sbmlsim-core.
 
     The content is written to a temporary file like for `report_gzip_for_bytes`,
@@ -494,9 +574,7 @@ def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeF
     start = time.perf_counter()
     run: isolation.IsolatedRun | None = None
     try:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            path = Path(tmp_dir) / "model"
-            path.write_bytes(content)
+        with source_path(content) as path:
             job = OdeJob(
                 path=str(path),
                 trusted=False,
@@ -507,7 +585,7 @@ def ode_for_bytes(content: bytes, fmt: str, location: str | None = None) -> OdeF
             )
             run = isolation.run_isolated(ode_source, job, isolation.REPORT_BUDGET)
     finally:
-        _log_isolated(f"ode system ({fmt})", len(content), start, run)
+        _log_isolated(f"ode system ({fmt})", _input_size(content), start, run)
     if run.interruption is not None or not run.results:
         # a child which ended without its one result ended abnormally
         raise ReportInterruptedError(run.interruption or "crashed", "ode system")
@@ -520,19 +598,15 @@ def report_for_bytes(content: bytes) -> ReportResponse:
     The content is written to a temporary file, so that archives (zip files)
     as well as plain or gzipped SBML are handled by `report_for_path`.
     """
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        path = Path(tmp_dir) / "model"
-        path.write_bytes(content)
+    with source_path(content) as path:
         return report_for_path(path)
 
 
-def validation_for_bytes(content: bytes) -> ValidationResponse:
+def validation_for_bytes(content: SourceInput) -> ValidationResponse:
     """Validate the content of an SBML file or COMBINE archive.
 
     The content is written to a temporary file like for `report_for_bytes`,
     which is there until the validation has ended.
     """
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        path = Path(tmp_dir) / "model"
-        path.write_bytes(content)
+    with source_path(content) as path:
         return validation_for_path(path)

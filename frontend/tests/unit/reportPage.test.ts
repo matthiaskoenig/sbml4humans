@@ -135,7 +135,7 @@ describe("ReportPage", () => {
   it("shows the report of an upload", async () => {
     vi.mocked(client.getUpload).mockReset().mockResolvedValue(loadFixture("repressilator"));
     const page = await mountReport({ upload: "upload1" });
-    expect(client.getUpload).toHaveBeenCalledWith("upload1");
+    expect(client.getUpload).toHaveBeenCalledWith("upload1", expect.any(AbortSignal));
     expect(page.find("[data-testid=report-page]").exists()).toBe(true);
   });
 
@@ -144,7 +144,7 @@ describe("ReportPage", () => {
     vi.mocked(client.getLocal).mockReset().mockResolvedValue(loadFixture("repressilator"));
     vi.mocked(client.pingLocal).mockReset().mockResolvedValue(undefined);
     const page = await mountReport({ local: "token1" });
-    expect(client.getLocal).toHaveBeenCalledWith("token1");
+    expect(client.getLocal).toHaveBeenCalledWith("token1", expect.any(AbortSignal));
     expect(page.find("[data-testid=report-page]").exists()).toBe(true);
 
     // the server ends itself when it is idle, so an open report says that it is still read

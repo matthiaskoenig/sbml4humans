@@ -54,7 +54,11 @@ function isErrorBody(body: unknown): body is ErrorBody {
   );
 }
 
-async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  init: RequestInit = {},
+  observe?: (response: Response, body: T) => void,
+): Promise<T> {
   const url = `${API_URL}${path}`;
   let response: Response;
   try {
@@ -96,7 +100,15 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
       response.status,
     );
   }
+  observe?.(response, body as T);
   return body as T;
+}
+
+const sourceSnapshots = new WeakMap<ReportResponse, string>();
+
+/** The opaque immutable source retained by the server for one URL report. */
+export function getSourceSnapshot(report: ReportResponse): string | undefined {
+  return sourceSnapshots.get(report);
 }
 
 /** The formats sbmlsim-core writes the differential equations of a model in, with the suffix of a
@@ -196,8 +208,12 @@ export function getUrlOde(
   url: string,
   format: OdeFormat,
   location?: string | null,
+  snapshot?: string,
 ): Promise<OdeDownloadFile> {
-  return requestFile(`/ode/url?${odeQuery(format, location, { url })}`, format);
+  return requestFile(
+    `/ode/url?${odeQuery(format, location, snapshot ? { url, snapshot } : { url })}`,
+    format,
+  );
 }
 
 export function getUploadOde(
@@ -250,13 +266,21 @@ export async function getExamples(): Promise<ExampleMetaData[]> {
 }
 
 /** Fetch the report of one example by its id. */
-export function getExample(id: string): Promise<ReportResponse> {
-  return request<ReportResponse>(`/examples/${encodeURIComponent(id)}`);
+export function getExample(id: string, signal?: AbortSignal): Promise<ReportResponse> {
+  return request<ReportResponse>(`/examples/${encodeURIComponent(id)}`, { signal });
 }
 
 /** Download and report the SBML (or COMBINE archive) at a url. */
-export function getUrl(url: string): Promise<ReportResponse> {
-  return request<ReportResponse>(`/url?url=${encodeURIComponent(url)}`);
+export function getUrl(url: string, signal?: AbortSignal): Promise<ReportResponse> {
+  return request<ReportResponse>(
+    `/url?url=${encodeURIComponent(url)}`,
+    { signal },
+    (response, body) => {
+      const snapshot = response.headers.get("X-SBML4Humans-Source");
+      if (snapshot && /^[A-Za-z0-9_-]{22}$/.test(snapshot) && body && typeof body === "object")
+        sourceSnapshots.set(body, snapshot);
+    },
+  );
 }
 
 /** Upload a file for its report, as the multipart field the backend expects. */
@@ -276,14 +300,14 @@ export function postContent(text: string): Promise<ReportResponse> {
 }
 
 /** The report the local server of `sbml4humans.show` holds under a token. */
-export function getLocal(token: string): Promise<ReportResponse> {
-  return request<ReportResponse>(`/local/reports/${encodeURIComponent(token)}`);
+export function getLocal(token: string, signal?: AbortSignal): Promise<ReportResponse> {
+  return request<ReportResponse>(`/local/reports/${encodeURIComponent(token)}`, { signal });
 }
 
 /** The report of a model another tool uploaded (`POST /api/upload`), which the backend keeps
  * for 24 hours under its id. */
-export function getUpload(id: string): Promise<ReportResponse> {
-  return request<ReportResponse>(`/upload/${encodeURIComponent(id)}`);
+export function getUpload(id: string, signal?: AbortSignal): Promise<ReportResponse> {
+  return request<ReportResponse>(`/upload/${encodeURIComponent(id)}`, { signal });
 }
 
 /** The validation of the source of a report, which every report request has a twin of: the
@@ -299,10 +323,17 @@ export function getExampleValidation(
 }
 
 /** The validation of the SBML (or COMBINE archive) at a url, downloaded again. */
-export function getUrlValidation(url: string, signal?: AbortSignal): Promise<ValidationResponse> {
-  return request<ValidationResponse>(`/validation/url?url=${encodeURIComponent(url)}`, {
-    signal,
-  });
+export function getUrlValidation(
+  url: string,
+  signal?: AbortSignal,
+  snapshot?: string,
+): Promise<ValidationResponse> {
+  return request<ValidationResponse>(
+    `/validation/url?url=${encodeURIComponent(url)}${snapshot ? `&snapshot=${encodeURIComponent(snapshot)}` : ""}`,
+    {
+      signal,
+    },
+  );
 }
 
 /** The validation of a file, uploaded again. */

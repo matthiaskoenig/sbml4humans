@@ -105,8 +105,23 @@ export function scenePacket(scene, document) {
       i < count ? i : -1 - terminals[i - count].edge,
     ),
   };
-  const images = new Map();
   terminals.forEach((terminal, i) => {
+    const p = count + i;
+    packet.positions.set([terminal.x, terminal.y], p * 2);
+    packet.shapes[p] = 8;
+    packet.imageSizes[p] = terminal.size;
+  });
+  refreshPalette(scene, packet, document);
+  return packet;
+}
+
+/** Reuse geometry and terminal ownership when only the palette changes. */
+export function refreshPalette(scene, packet, document) {
+  packet.colors.set(scene.colors);
+  packet.strokeColors.set(scene.strokeColors);
+  packet.images = [];
+  const images = new Map();
+  packet.terminals.forEach((terminal, i) => {
     const color = `rgba(${Array.from(scene.linkColors.subarray(terminal.edge * 4, terminal.edge * 4 + 3), (c) => Math.round(c * 255)).join(",")},${scene.linkColors[terminal.edge * 4 + 3]})`;
     const angle = (Math.round((terminal.angle / (Math.PI * 2)) * 64) / 64) * Math.PI * 2;
     const key = `${terminal.type}:${color}:${angle}`;
@@ -114,14 +129,10 @@ export function scenePacket(scene, document) {
       images.set(key, packet.images.length);
       packet.images.push(markerImage(document, { ...terminal, angle }, color, scene.background));
     }
-    const p = count + i;
-    packet.positions.set([terminal.x, terminal.y], p * 2);
-    packet.shapes[p] = 8;
+    const p = scene.ids.length + i;
     packet.colors.set([1, 1, 1, 1], p * 4);
     packet.imageIndices[p] = images.get(key);
-    packet.imageSizes[p] = terminal.size;
   });
-  return packet;
 }
 
 /** Place high-priority labels first. A spatial grid bounds collision checks. */

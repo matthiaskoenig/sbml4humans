@@ -380,3 +380,58 @@ def test_an_error_status_fails(server: int, resolved: list[str]) -> None:
     """A url which answers with an error status is no model."""
     with pytest.raises(Exception, match="404"):
         download(f"http://{PUBLIC_HOST}:{server}/missing")
+
+
+def test_cancellation_interrupts_a_stalled_socket_and_releases_callbacks(
+    server: int, resolved: list[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A disconnected URL caller does not leave its download reading until timeout."""
+    from sbml4humans import isolation
+
+    reading = threading.Event()
+    original = download_module._DeadlineStream.read
+
+    def read(stream, *args, **kwargs):
+        """Observe socket reads without changing the real HTTP transport."""
+        reading.set()
+        return original(stream, *args, **kwargs)
+
+    monkeypatch.setattr(download_module._DeadlineStream, "read", read)
+    cancel = isolation.CancellationEvent()
+    failures: list[BaseException] = []
+
+    def run() -> None:
+        """Keep the result of the actual blocking download."""
+        try:
+            isolation.run_cancellable(
+                cancel, download, f"http://{PUBLIC_HOST}:{server}/stall"
+            )
+        except BaseException as exc:
+            failures.append(exc)
+
+    thread = threading.Thread(target=run, daemon=True)
+    thread.start()
+    try:
+        assert reading.wait(2)
+        start = time.monotonic()
+        cancel.set()
+        thread.join(1)
+        assert not thread.is_alive()
+        assert time.monotonic() - start < 1
+        assert len(failures) == 1
+        assert isinstance(failures[0], isolation.IsolatedRunCancelledError)
+        assert not cancel._callbacks
+    finally:
+        cancel.set()
+        thread.join(2)
+
+
+def test_successful_download_unregisters_cancellation(
+    server: int, resolved: list[str]
+) -> None:
+    """A completed request cannot retain sockets in a later cancellation callback."""
+    from sbml4humans import isolation
+
+    cancel = isolation.CancellationEvent()
+    isolation.run_cancellable(cancel, download, f"http://{PUBLIC_HOST}:{server}/model")
+    assert not cancel._callbacks

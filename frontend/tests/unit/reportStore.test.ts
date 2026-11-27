@@ -27,6 +27,7 @@ vi.mock("@/api/client", async (importOriginal) => {
     postFileValidation: vi.fn(),
     postContentValidation: vi.fn(),
     getExampleOde: vi.fn(),
+    getUrlOde: vi.fn(),
     postContentOde: vi.fn(),
   };
 });
@@ -111,7 +112,7 @@ describe("report store", () => {
     await store.loadUpload("upload1");
     await store.loadUpload("upload1");
     expect(client.getUpload).toHaveBeenCalledTimes(1);
-    expect(client.getUpload).toHaveBeenCalledWith("upload1");
+    expect(client.getUpload).toHaveBeenCalledWith("upload1", expect.any(AbortSignal));
     expect(store.source).toEqual({ kind: "upload", id: "upload1", name: "uploaded model" });
   });
 
@@ -121,7 +122,7 @@ describe("report store", () => {
     await store.loadLocal("token1");
     await store.loadLocal("token1");
     expect(client.getLocal).toHaveBeenCalledTimes(1);
-    expect(client.getLocal).toHaveBeenCalledWith("token1");
+    expect(client.getLocal).toHaveBeenCalledWith("token1", expect.any(AbortSignal));
     expect(store.source).toEqual({ kind: "local", token: "token1", name: "local report" });
     expect(store.defaultEntry).toBe("./comp_deletion.xml");
     await store.loadLocal("token2");
@@ -481,5 +482,37 @@ describe("report store", () => {
     expect(await loading).toBe(false);
     expect(store.response).toBeNull();
     expect(store.error).toBeNull();
+  });
+  it("aborts a superseded URL download", async () => {
+    const pending = deferred<ReturnType<typeof loadFixture>>();
+    vi.mocked(client.getUrl).mockReturnValueOnce(pending.promise);
+    vi.mocked(client.getExample).mockResolvedValue(loadFixture("repressilator"));
+    const store = useReportStore();
+    const old = store.loadUrl("https://example.org/old.xml");
+    const signal = vi.mocked(client.getUrl).mock.calls[0]![1]!;
+    expect(signal.aborted).toBe(false);
+    await store.loadExample("new");
+    expect(signal.aborted).toBe(true);
+    pending.resolve(loadFixture("validation"));
+    expect(await old).toBe(false);
+  });
+  it("validates and exports the immutable source returned with a URL report", async () => {
+    const url = "https://example.org/model.xml",
+      snapshot = "abcdefghijklmnopqrstuv";
+    const observed = vi.spyOn(client, "getSourceSnapshot").mockReturnValue(snapshot);
+    vi.mocked(client.getUrl).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(client.getUrlOde).mockResolvedValue({
+      filename: "model.py",
+      blob: new Blob(["x = 1"]),
+    });
+    try {
+      const store = useReportStore();
+      await store.loadUrl(url);
+      expect(client.getUrlValidation).toHaveBeenCalledWith(url, expect.any(AbortSignal), snapshot);
+      await store.odeCode("python", store.defaultEntry!);
+      expect(client.getUrlOde).toHaveBeenCalledWith(url, "python", store.defaultEntry, snapshot);
+    } finally {
+      observed.mockRestore();
+    }
   });
 });

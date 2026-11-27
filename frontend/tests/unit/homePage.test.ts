@@ -56,7 +56,10 @@ describe("HomePage", () => {
     await wrapper.get("[data-testid=url-input]").setValue("https://example.org/model.xml");
     await wrapper.get("[data-testid=url-submit]").trigger("click");
     await flushPromises();
-    expect(client.getUrl).toHaveBeenCalledWith("https://example.org/model.xml");
+    expect(client.getUrl).toHaveBeenCalledWith(
+      "https://example.org/model.xml",
+      expect.any(AbortSignal),
+    );
     expect(router.currentRoute.value.name).toBe("report");
     expect(router.currentRoute.value.query.url).toBe("https://example.org/model.xml");
     expect(localStorage.getItem("sbml4humans.lastUrl")).toBe("https://example.org/model.xml");

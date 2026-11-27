@@ -22,6 +22,7 @@ from dataclasses import dataclass
 
 # the most bytes of the content of a request, before and after decompression
 MAX_CONTENT_SIZE = 100 * 1024 * 1024  # [byte]
+SOURCE_RECEIVE_TIMEOUT = 120.0  # [s], bounded admission while reading a request body
 # the most entries of a COMBINE archive
 MAX_ARCHIVE_ENTRIES = 1000
 # the most an entry of a COMBINE archive may be compressed, a model compresses

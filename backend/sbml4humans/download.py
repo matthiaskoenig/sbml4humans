@@ -33,6 +33,7 @@ system. At most `MAX_RESOLUTIONS` resolutions run at a time, the hanging ones
 included, a download beyond them is refused.
 """
 
+import contextlib
 import ipaddress
 import logging
 import os
@@ -46,7 +47,7 @@ from typing import Any
 import httpcore
 import httpx
 
-from sbml4humans import limits
+from sbml4humans import isolation, limits
 from sbml4humans.limits import ContentTooLargeError, format_size
 
 
@@ -164,6 +165,7 @@ def _resolve_within(host: str, port: int, timeout: float) -> list[IPAddress] | N
         httpx.ConnectError: if `MAX_RESOLUTIONS` resolutions run already.
         Exception: what the resolution raised.
     """
+    isolation.check_cancelled()
     resolutions = _RESOLUTIONS
     if not resolutions.acquire(blocking=False):
         raise httpx.ConnectError(
@@ -187,9 +189,14 @@ def _resolve_within(host: str, port: int, timeout: float) -> list[IPAddress] | N
     except BaseException:
         resolutions.release()
         raise
-    thread.join(timeout)
-    if thread.is_alive():
-        return None
+    deadline = time.monotonic() + timeout
+    while thread.is_alive():
+        isolation.check_cancelled()
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return None
+        thread.join(min(remaining, isolation.CANCEL_INTERVAL))
+    isolation.check_cancelled()
     if errors:
         raise errors[0]
     return addresses[0]
@@ -202,17 +209,34 @@ class _DeadlineStream(httpcore.NetworkStream):
         """Wrap the stream."""
         self._stream = stream
         self._deadline = deadline
+        self._remove_cancel = isolation.on_cancel(self._interrupt)
+
+    def _interrupt(self) -> None:
+        """Wake a blocked read of an established connection on client departure."""
+        sock = self._stream.get_extra_info("socket")
+        if isinstance(sock, socket.socket):
+            with contextlib.suppress(OSError):
+                sock.shutdown(socket.SHUT_RDWR)
 
     def read(self, max_bytes: int, timeout: float | None = None) -> bytes:
         """Read, until the deadline at the latest."""
-        return self._stream.read(max_bytes, self._deadline.bound(timeout))
+        isolation.check_cancelled()
+        try:
+            return self._stream.read(max_bytes, self._deadline.bound(timeout))
+        finally:
+            isolation.check_cancelled()
 
     def write(self, buffer: bytes, timeout: float | None = None) -> None:
         """Write, until the deadline at the latest."""
-        self._stream.write(buffer, self._deadline.bound(timeout))
+        isolation.check_cancelled()
+        try:
+            self._stream.write(buffer, self._deadline.bound(timeout))
+        finally:
+            isolation.check_cancelled()
 
     def close(self) -> None:
         """Close the stream."""
+        self._remove_cancel()
         self._stream.close()
 
     def start_tls(
@@ -225,6 +249,12 @@ class _DeadlineStream(httpcore.NetworkStream):
         stream = self._stream.start_tls(
             ssl_context, server_hostname, self._deadline.bound(timeout)
         )
+        self._remove_cancel()
+        try:
+            isolation.check_cancelled()
+        except BaseException:
+            stream.close()
+            raise
         return _DeadlineStream(stream, self._deadline)
 
     def get_extra_info(self, info: str) -> Any:

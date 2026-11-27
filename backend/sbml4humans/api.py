@@ -52,15 +52,20 @@ shown before its validation has ended. The validation of an example is kept
 import asyncio
 import contextlib
 import gzip
+import io
+import json
 import logging
+import tempfile
 import threading
+import time
 import traceback
 from collections import OrderedDict
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator, Callable, Iterator
 from contextlib import asynccontextmanager
+from dataclasses import dataclass
 from datetime import datetime
-from functools import lru_cache
-from typing import Annotated, Any
+from pathlib import Path
+from typing import Annotated, Any, BinaryIO
 
 from anyio import CapacityLimiter, create_task_group, to_thread
 from anyio.lowlevel import RunVar
@@ -72,7 +77,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel
 from starlette.middleware.base import RequestResponseEndpoint
 from starlette.middleware.gzip import GZipMiddleware
-from starlette.responses import Response
+from starlette.responses import Response, StreamingResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from sbml4humans import __version__, isolation, limits, native
@@ -99,12 +104,26 @@ from sbml4humans.report import (
     OdeFile,
     ReportInterruptedError,
     Work,
+    isolated_report_for_path,
     ode_for_bytes,
     report_gzip_for_bytes,
-    report_gzip_for_path,
+    source_path,
     validation_for_bytes,
 )
-from sbml4humans.uploads import CLEANUP_INTERVAL, UploadStore, upload_store
+from sbml4humans.sourcecache import (
+    SOURCE_HEADER,
+    snapshot_path,
+    snapshot_store,
+    source_key,
+)
+from sbml4humans.uploads import (
+    CLEANUP_INTERVAL,
+    Upload,
+    UploadStore,
+    UploadStoreFullError,
+    upload_store,
+)
+from sbml4humans.workcache import CachedWork, WorkCache
 
 
 logger = logging.getLogger(__name__)
@@ -114,7 +133,7 @@ TRACEBACK_STATE = "sbml4humans_traceback"
 
 # responses below this size are sent as they are, in bytes
 GZIP_MINIMUM_SIZE = 1000
-# the number of example reports kept gzipped, the largest (Recon3D) is 5 MB
+# completed example artifacts are bounded by both entries and compressed bytes
 EXAMPLE_CACHE_SIZE = 32
 
 
@@ -155,13 +174,16 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
     native._reader()
     load_examples()
     isolation.start_forkserver()
-    cleanup = asyncio.create_task(remove_expired_uploads(upload_store()))
+    cleanups = [
+        asyncio.create_task(remove_expired_uploads(store))
+        for store in (upload_store(), snapshot_store())
+    ]
     try:
         yield
     finally:
-        cleanup.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
-            await cleanup
+        for cleanup in cleanups:
+            cleanup.cancel()
+        await asyncio.gather(*cleanups, return_exceptions=True)
 
 
 api = FastAPI(
@@ -247,17 +269,30 @@ class BodyLimitMiddleware:
             return
 
         received = 0
-        exceeded = False
         replaced = False
+        body_done = False
+        failure: Exception | None = None
+        deadline = time.monotonic() + limits.SOURCE_RECEIVE_TIMEOUT
 
         async def counting_receive() -> Message:
             """Receive the body, up to the limit."""
-            nonlocal received, exceeded
-            message = await receive()
+            nonlocal received, body_done, failure
+            try:
+                if body_done:
+                    message = await receive()
+                else:
+                    async with asyncio.timeout(max(0, deadline - time.monotonic())):
+                        message = await receive()
+            except TimeoutError as exc:
+                failure = ValueError(
+                    f"The source body took longer than {limits.SOURCE_RECEIVE_TIMEOUT:g} s."
+                )
+                raise failure from exc
             if message["type"] == "http.request":
+                body_done = not message.get("more_body", False)
                 received += len(message.get("body", b""))
                 if received > limit:
-                    exceeded = True
+                    failure = too_large
                     raise too_large
             return message
 
@@ -266,13 +301,95 @@ class BodyLimitMiddleware:
             nonlocal replaced
             if replaced:
                 return
-            if exceeded and message["type"] == "http.response.start":
+            if failure is not None and message["type"] == "http.response.start":
                 replaced = True
-                await error_response(request, too_large)(scope, receive, send)
+                await error_response(request, failure)(scope, receive, send)
                 return
             await send(message)
 
         await self.app(scope, counting_receive, replacing_send)
+
+
+ADMITTED_STATE = "sbml4humans_admitted_work"
+
+
+class SourceAdmissionMiddleware:
+    """Reserve source-request capacity before FastAPI reads or parses any body.
+
+    The reservation lasts through response streaming, bounding both buffered
+    inputs and completed results. Worker semaphores still bound actual native
+    work independently of requests waiting for a child.
+    """
+
+    def __init__(self, app: ASGIApp) -> None:
+        """Wrap the source endpoints of the public application."""
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """Refuse busy source requests without consuming their body."""
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        path, method = scope["path"], scope["method"]
+        source = (
+            method == "POST"
+            and path
+            in {
+                "/api/file",
+                "/api/content",
+                "/api/upload",
+                "/api/validation/file",
+                "/api/validation/content",
+                "/api/ode/file",
+                "/api/ode/content",
+            }
+        ) or (
+            method == "GET"
+            and (
+                path in {"/api/url", "/api/validation/url", "/api/ode/url"}
+                or any(
+                    path.startswith(prefix)
+                    for prefix in (
+                        "/api/upload/",
+                        "/api/validation/upload/",
+                        "/api/ode/upload/",
+                    )
+                )
+            )
+        )
+        if not source:
+            await self.app(scope, receive, send)
+            return
+        budget = (
+            isolation.VALIDATION_BUDGET
+            if path.startswith("/api/validation/")
+            else isolation.REPORT_BUDGET
+        )
+        state = scope.setdefault("state", {})
+        with isolation.admission(budget) as admitted:
+            if not admitted:
+                response = (
+                    JSONResponse(
+                        ValidationResponse(skipped="busy").model_dump(
+                            mode="json", by_alias=True
+                        )
+                    )
+                    if budget is isolation.VALIDATION_BUDGET
+                    else error_response(
+                        Request(scope),
+                        ReportInterruptedError(
+                            "busy",
+                            "ode system" if path.startswith("/api/ode/") else "report",
+                        ),
+                    )
+                )
+                await response(scope, receive, send)
+                return
+            state[ADMITTED_STATE] = budget.name
+            try:
+                await self.app(scope, receive, send)
+            finally:
+                state.pop(ADMITTED_STATE, None)
 
 
 def add_error_contract(app: FastAPI) -> None:
@@ -315,6 +432,7 @@ def add_gzip(app: FastAPI) -> None:
 
 
 add_error_contract(api)
+api.add_middleware(SourceAdmissionMiddleware)
 # inside the CORS middleware, so that its error responses carry the CORS headers
 api.add_middleware(BodyLimitMiddleware)
 api.add_middleware(
@@ -322,7 +440,7 @@ api.add_middleware(
     allow_origins=["*"],
     allow_methods=["*"],
     # the frontend of another origin names a download of the ODE system after its file
-    expose_headers=["Content-Disposition"],
+    expose_headers=["Content-Disposition", SOURCE_HEADER],
     allow_headers=["*"],
 )
 add_gzip(api)
@@ -360,13 +478,21 @@ async def report_response(request: Request, packed: bytes) -> Response:
             media_type="application/json",
             headers={"Content-Encoding": "gzip", "Vary": "Accept-Encoding"},
         )
+
     # the JSON of the largest report expands from a few megabytes to a hundred,
     # which the event loop may not do: it would stall every other request of
     # the worker, the watchers of the clients which left among them. The gzip
     # middleware names the header in `Vary` itself, and compresses a body of
     # that size in a thread of its own as well
-    content = await run_in_threadpool(gzip.decompress, packed)
-    return Response(content, media_type="application/json")
+    def chunks() -> Iterator[bytes]:
+        """Expand only one transport chunk at a time under backpressure."""
+        with gzip.GzipFile(fileobj=io.BytesIO(packed)) as content:
+            while chunk := content.read(64 * 1024):
+                yield chunk
+
+    return StreamingResponse(
+        chunks(), media_type="application/json", headers={"Vary": "Accept-Encoding"}
+    )
 
 
 @api.get(
@@ -382,12 +508,13 @@ async def example(example_id: str, request: Request) -> Response:
     read in the process of the server, since an example is trusted, and takes
     as long as the report of a request does.
     """
-    packed = await run_in_threadpool(example_report_gzip, example_id)
+    packed = example_report_gzip.peek(example_id)
+    if packed is None:
+        packed = await run_report(request, example_report_gzip, example_id)
     return await report_response(request, packed)
 
 
-@lru_cache(maxsize=EXAMPLE_CACHE_SIZE)
-def example_report_gzip(example_id: str) -> bytes:
+def _build_example_report(example_id: str) -> bytes:
     """The gzipped JSON of the report of an example.
 
     An example does not change while the server runs, so its report is built
@@ -401,9 +528,22 @@ def example_report_gzip(example_id: str) -> bytes:
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    return report_gzip_for_path(
+    return isolated_report_for_path(
         example.file, trusted=True, source_entry=example.location
     )
+
+
+def report_variant() -> str:
+    """Identify report semantics for immutable source and result caches."""
+    return f"{native._reader().SOURCE_REVISION}:{limits.MAX_EXPANDED_ELEMENTS}:{limits.ContentLimits.current()}"
+
+
+example_report_gzip = CachedWork(
+    _build_example_report,
+    weight=len,
+    maxsize=EXAMPLE_CACHE_SIZE,
+    key=lambda key: f"{report_variant()}:{key}",
+)
 
 
 # the threads of the isolated work of a kind, one per admitted run, apart from
@@ -474,7 +614,7 @@ async def _run_admitted[R](
         isolation.IsolatedRunCancelledError: if the client disconnected.
         Exception: the exception the function raised.
     """
-    cancel = threading.Event()
+    cancel = isolation.CancellationEvent()
     done: list[R] = []
     failure: Exception | None = None
     async with create_task_group() as group:
@@ -537,7 +677,12 @@ async def run_report[R](
         ReportInterruptedError: if the server is busy or the client left.
         Exception: the exception the function raised.
     """
-    with isolation.admission(isolation.REPORT_BUDGET) as admitted:
+    reservation = (
+        contextlib.nullcontext(True)
+        if getattr(request.state, ADMITTED_STATE, None) == isolation.REPORT_BUDGET.name
+        else isolation.admission(isolation.REPORT_BUDGET)
+    )
+    with reservation as admitted:
         if not admitted:
             logger.warning("the %s of a request was refused, the server is busy", work)
             raise ReportInterruptedError("busy", work)
@@ -569,7 +714,13 @@ async def run_validation(
     Raises:
         Exception: the exception the function raised.
     """
-    with isolation.admission(isolation.VALIDATION_BUDGET) as admitted:
+    reservation = (
+        contextlib.nullcontext(True)
+        if getattr(request.state, ADMITTED_STATE, None)
+        == isolation.VALIDATION_BUDGET.name
+        else isolation.admission(isolation.VALIDATION_BUDGET)
+    )
+    with reservation as admitted:
         if not admitted:
             logger.warning("a validation was refused, the server is busy")
             return ValidationResponse(skipped="busy")
@@ -588,8 +739,7 @@ async def run_validation(
 )
 async def report_from_file(source: UploadFile, request: Request) -> Response:
     """Create the report data of an uploaded SBML file or COMBINE archive."""
-    content = await source.read()
-    packed = await run_report(request, report_gzip_for_bytes, content)
+    packed = await run_report(request, report_gzip_for_bytes, source.file)
     return await report_response(request, packed)
 
 
@@ -605,18 +755,52 @@ async def report_from_url(url: str, request: Request) -> Response:
     The report is admitted before the download, a busy server downloads
     nothing.
     """
-    packed = await run_report(request, report_of_download, url)
-    return await report_response(request, packed)
+    result = await run_report(request, report_of_download, url)
+    response = await report_response(request, result.packed)
+    response.headers[SOURCE_HEADER] = result.source
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
-def report_of_download(url: str) -> bytes:
+@dataclass(frozen=True)
+class UrlReport:
+    """A complete report and its opaque immutable source handle."""
+
+    packed: bytes
+    source: str
+
+
+url_reports = WorkCache[UrlReport](weight=lambda value: len(value.packed), maxsize=0)
+
+
+def report_of_download(url: str) -> UrlReport:
     """Download the source behind a url and report it, in the thread of the report.
 
-    The download is not cancelled when the client leaves, as the one of
-    `validation_of_download` is not: the cancellation reaches the child of the
-    report, which is started once the source is there.
+    Concurrent callers share one download and report. Cancellation interrupts
+    established download sockets as well as the isolated native worker.
     """
-    return report_gzip_for_bytes(download(url))
+    variant = report_variant()
+
+    def build() -> UrlReport:
+        """Download once for concurrent requests, retaining the admitted bytes."""
+        with source_path(download(url)) as path:
+            packed = report_gzip_for_bytes(path)
+            store = snapshot_store()
+            for _ in range(store.max_entries + 1):
+                try:
+                    saved = store.put(
+                        path,
+                        packed,
+                        variant=variant,
+                        cache_key=source_key(url, variant),
+                    )
+                    return UrlReport(packed, saved.id)
+                except UploadStoreFullError:
+                    if not store.evict_oldest():
+                        raise
+            raise ReportInterruptedError("busy")
+
+    return url_reports.get(source_key(url, variant), build)
 
 
 @api.post(
@@ -627,9 +811,20 @@ def report_of_download(url: str) -> bytes:
 )
 async def report_from_content(request: Request) -> Response:
     """Create the report data of the SBML content in the request body."""
-    content = await request.body()
-    packed = await run_report(request, report_gzip_for_bytes, content)
+    async with body_source(request) as path:
+        packed = await run_report(request, report_gzip_for_bytes, path)
     return await report_response(request, packed)
+
+
+@asynccontextmanager
+async def body_source(request: Request) -> AsyncGenerator[Path]:
+    """Spool admitted raw bodies in chunks before handing their path to Rust."""
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "model"
+        with path.open("wb") as target:
+            async for chunk in request.stream():
+                await run_in_threadpool(target.write, chunk)
+        yield path
 
 
 class UploadResponse(BaseModel):
@@ -652,10 +847,15 @@ async def upload(
     built again for every request for it. Its size is limited by
     `BodyLimitMiddleware` like every body.
     """
-    content = await source.read()
-    await run_report(request, report_gzip_for_bytes, content)
-    stored = await run_in_threadpool(store.put, content)
+    stored = await run_report(request, store_upload, source.file, store)
     return UploadResponse(id=stored.id, expires=stored.expires)
+
+
+def store_upload(content: BinaryIO, store: UploadStore) -> Upload:
+    """Persist the already constructed immutable report with its admitted source."""
+    with source_path(content) as path:
+        packed = report_gzip_for_bytes(path)
+        return store.put(path, packed, variant=report_variant())
 
 
 @api.get(
@@ -670,9 +870,20 @@ async def report_from_upload(
     request: Request,
 ) -> Response:
     """Create the report data of an upload."""
-    content = await run_in_threadpool(store.get, upload_id)
-    packed = await run_report(request, report_gzip_for_bytes, content)
+    packed = await run_report(request, report_of_upload, store, upload_id)
     return await report_response(request, packed)
+
+
+def report_of_upload(store: UploadStore, upload_id: str) -> bytes:
+    """Reuse a matching report or construct it from a leased immutable source."""
+    variant = report_variant()
+    packed = store.get_report(upload_id, variant)
+    if packed is not None:
+        return packed
+    with store.lease(upload_id) as path:
+        packed = report_gzip_for_bytes(path)
+        store.save_report(upload_id, packed, variant)
+        return packed
 
 
 class ExampleValidations:
@@ -746,7 +957,7 @@ async def validation_of_file(
     source: UploadFile, request: Request
 ) -> ValidationResponse:
     """Validate an uploaded SBML file or COMBINE archive."""
-    return await run_validation(request, validation_for_bytes, await source.read())
+    return await run_validation(request, validation_for_bytes, source.file)
 
 
 @api.get(
@@ -755,17 +966,22 @@ async def validation_of_file(
     response_model=ValidationResponse,
     response_model_by_alias=True,
 )
-async def validation_of_url(url: str, request: Request) -> ValidationResponse:
+async def validation_of_url(
+    url: str, request: Request, snapshot: str | None = None
+) -> ValidationResponse:
     """Validate an SBML file or COMBINE archive behind a url.
 
     The validation is admitted before the download, a busy server downloads
     nothing.
     """
-    return await run_validation(request, validation_of_download, url)
+    return await run_validation(request, validation_of_download, url, snapshot)
 
 
-def validation_of_download(url: str) -> ValidationResponse:
+def validation_of_download(url: str, snapshot: str | None = None) -> ValidationResponse:
     """Download the source behind a url and validate it."""
+    if snapshot is not None:
+        with snapshot_path(url, snapshot, report_variant()) as path:
+            return validation_for_bytes(path)
     return validation_for_bytes(download(url))
 
 
@@ -777,7 +993,8 @@ def validation_of_download(url: str) -> ValidationResponse:
 )
 async def validation_of_content(request: Request) -> ValidationResponse:
     """Validate the SBML content in the request body."""
-    return await run_validation(request, validation_for_bytes, await request.body())
+    async with body_source(request) as path:
+        return await run_validation(request, validation_for_bytes, path)
 
 
 @api.get(
@@ -792,8 +1009,15 @@ async def validation_of_upload(
     request: Request,
 ) -> ValidationResponse:
     """Validate an upload."""
-    content = await run_in_threadpool(store.get, upload_id)
-    return await run_validation(request, validation_for_bytes, content)
+    return await run_validation(request, validation_of_stored_source, store, upload_id)
+
+
+def validation_of_stored_source(
+    store: UploadStore, upload_id: str
+) -> ValidationResponse:
+    """Validate the immutable source without loading it into parent memory."""
+    with store.lease(upload_id) as path:
+        return validation_for_bytes(path)
 
 
 def ode_response(ode: OdeFile) -> Response:
@@ -810,12 +1034,29 @@ def ode_response(ode: OdeFile) -> Response:
     tags=["ode"],
     response_class=PlainTextResponse,
 )
-def ode_of_example(example_id: str, format: str) -> Response:
+async def ode_of_example(example_id: str, format: str, request: Request) -> Response:
     """The ODE system of an example in a format of sbmlsim-core, as a file."""
-    example: ExampleMetaData | None = load_examples().get(example_id)
+    key = json.dumps([example_id, format])
+    result = example_odes.peek(key)
+    if result is None:
+        result = await run_report(request, example_odes, key, work="ode system")
+    return ode_response(result)
+
+
+def _build_example_ode(key: str) -> OdeFile:
+    """Export one immutable example through the bounded native worker."""
+    example_id, fmt = json.loads(key)
+    example = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    return ode_response(ode_for_example(example, format))
+    return ode_for_example(example, fmt)
+
+
+example_odes = CachedWork(
+    _build_example_ode,
+    weight=lambda value: 4 * (len(value.content) + len(value.filename)),
+    key=lambda key: f"{report_variant()}:{key}",
+)
 
 
 @api.post("/api/ode/file", tags=["ode"], response_class=PlainTextResponse)
@@ -826,9 +1067,8 @@ async def ode_of_file(
     location: str | None = None,
 ) -> Response:
     """The ODE system of an uploaded SBML file or COMBINE archive, as a file."""
-    content = await source.read()
     ode = await run_report(
-        request, ode_for_bytes, content, format, location, work="ode system"
+        request, ode_for_bytes, source.file, format, location, work="ode system"
     )
     return ode_response(ode)
 
@@ -839,24 +1079,29 @@ async def ode_of_url(
     format: str,
     request: Request,
     location: str | None = None,
+    snapshot: str | None = None,
 ) -> Response:
     """The ODE system of an SBML file or COMBINE archive behind a url, as a file.
 
     The file is admitted before the download, a busy server downloads nothing.
     """
     ode = await run_report(
-        request, ode_of_download, url, format, location, work="ode system"
+        request, ode_of_download, url, format, location, snapshot, work="ode system"
     )
     return ode_response(ode)
 
 
-def ode_of_download(url: str, fmt: str, location: str | None) -> OdeFile:
+def ode_of_download(
+    url: str, fmt: str, location: str | None, snapshot: str | None = None
+) -> OdeFile:
     """Download the source behind a url and write its ODE system, in its own thread.
 
-    The download is not cancelled when the client leaves, as the one of
-    `report_of_download` is not: the cancellation reaches the child, which is
-    started once the source is there.
+    A source handle reuses the exact bytes shown in the report. Legacy callers
+    without a handle download afresh. Request cancellation also interrupts I/O.
     """
+    if snapshot is not None:
+        with snapshot_path(url, snapshot, report_variant()) as path:
+            return ode_for_bytes(path, fmt, location)
     return ode_for_bytes(download(url), fmt, location)
 
 
@@ -867,10 +1112,10 @@ async def ode_of_content(
     location: str | None = None,
 ) -> Response:
     """The ODE system of the SBML content in the request body, as a file."""
-    content = await request.body()
-    ode = await run_report(
-        request, ode_for_bytes, content, format, location, work="ode system"
-    )
+    async with body_source(request) as path:
+        ode = await run_report(
+            request, ode_for_bytes, path, format, location, work="ode system"
+        )
     return ode_response(ode)
 
 
@@ -883,11 +1128,24 @@ async def ode_of_upload(
     location: str | None = None,
 ) -> Response:
     """The ODE system of an upload, as a file."""
-    content = await run_in_threadpool(store.get, upload_id)
     ode = await run_report(
-        request, ode_for_bytes, content, format, location, work="ode system"
+        request,
+        ode_of_stored_source,
+        store,
+        upload_id,
+        format,
+        location,
+        work="ode system",
     )
     return ode_response(ode)
+
+
+def ode_of_stored_source(
+    store: UploadStore, upload_id: str, fmt: str, location: str | None
+) -> OdeFile:
+    """Export the same immutable source retained by the report."""
+    with store.lease(upload_id) as path:
+        return ode_for_bytes(path, fmt, location)
 
 
 @api.get(

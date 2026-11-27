@@ -4,6 +4,7 @@ import { computed, markRaw, ref, shallowRef } from "vue";
 import {
   ApiError,
   getExample,
+  getSourceSnapshot,
   getExampleOde,
   getExampleValidation,
   getLocal,
@@ -30,7 +31,11 @@ import { ReportIndex } from "@/report/index";
 import { ValidationIndex } from "@/report/validationIndex";
 
 /** The download of the differential equations of a report in a format, see `odeCode`. */
-type OdeDownload = (format: OdeFormat, location: string) => Promise<OdeDownloadFile>;
+type OdeDownload = (
+  format: OdeFormat,
+  location: string,
+  snapshot?: string,
+) => Promise<OdeDownloadFile>;
 
 /** The differential equations of an entry in a format of sbmlsim-core: the code or the document and
  * the name of its file. */
@@ -191,7 +196,7 @@ export const useReportStore = defineStore("report", () => {
   async function load(
     next: ReportSource,
     request: (signal: AbortSignal) => Promise<ReportResponse>,
-    validation: (signal: AbortSignal) => Promise<ValidationResponse>,
+    validation: (signal: AbortSignal, snapshot?: string) => Promise<ValidationResponse>,
     ode: OdeDownload,
   ): Promise<boolean> {
     if (response.value && source.value && sameSource(source.value, next)) return true;
@@ -207,9 +212,12 @@ export const useReportStore = defineStore("report", () => {
     indexes.value = new Map();
     source.value = next;
     let connected: Map<string, ReportIndex>;
+    let snapshot: string | undefined;
     try {
       const result = await request(controller.signal);
       if (current !== generation) return false;
+      snapshot = getSourceSnapshot(result);
+      download = (format, location) => ode(format, location, snapshot);
       connected = ReportIndex.forEntries(result.reports);
       for (const index of connected.values()) markRaw(index);
       indexes.value = connected;
@@ -221,35 +229,41 @@ export const useReportStore = defineStore("report", () => {
       if (current === generation) loading.value = false;
     }
     // a file and pasted content are not part of the url of the page, a reload loses them
-    void validate(connected, validation, next.kind !== "file" && next.kind !== "content");
+    void validate(
+      connected,
+      (signal) => validation(signal, snapshot),
+      next.kind !== "file" && next.kind !== "content",
+    );
     return true;
   }
 
   const loadExample = (id: string) =>
     load(
       { kind: "example", id, name: id },
-      () => getExample(id),
+      (signal) => getExample(id, signal),
       (signal) => getExampleValidation(id, signal),
       (format) => getExampleOde(id, format),
     );
   const loadUrl = (url: string) =>
     load(
       { kind: "url", url, name: url },
-      () => getUrl(url),
-      (signal) => getUrlValidation(url, signal),
-      (format, location) => getUrlOde(url, format, location),
+      (signal) => getUrl(url, signal),
+      (signal, snapshot) =>
+        snapshot ? getUrlValidation(url, signal, snapshot) : getUrlValidation(url, signal),
+      (format, location, snapshot) =>
+        snapshot ? getUrlOde(url, format, location, snapshot) : getUrlOde(url, format, location),
     );
   const loadLocal = (token: string) =>
     load(
       { kind: "local", token, name: "local report" },
-      () => getLocal(token),
+      (signal) => getLocal(token, signal),
       (signal) => getLocalValidation(token, signal),
       (format, location) => getLocalOde(token, format, location),
     );
   const loadUpload = (id: string) =>
     load(
       { kind: "upload", id, name: "uploaded model" },
-      () => getUpload(id),
+      (signal) => getUpload(id, signal),
       (signal) => getUploadValidation(id, signal),
       (format, location) => getUploadOde(id, format, location),
     );

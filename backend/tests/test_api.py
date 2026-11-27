@@ -14,7 +14,7 @@ from typing import Any
 import pytest
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
-from starlette.responses import Response
+from starlette.responses import StreamingResponse
 
 from sbml4humans import __version__, annotations, api, isolation, limits, report
 from sbml4humans.annotations import AnnotationResource, OntologyTerm
@@ -740,13 +740,14 @@ def test_a_report_without_gzip_is_not_expanded_on_the_event_loop(
     other request of the worker while it runs, the watchers of the clients
     which left among them.
     """
-    expand = gzip.decompress
+    expand = gzip.GzipFile.read
     threads: list[int] = []
 
-    def spy(data: bytes) -> bytes:
+    def spy(reader: gzip.GzipFile, size: int = -1) -> bytes:
         """Expand the JSON and record the thread it was expanded in."""
         threads.append(threading.get_ident())
-        return expand(data)
+        assert 0 < size <= 64 * 1024
+        return expand(reader, size)
 
     packed = gzip.compress(b'{"uid": "the report"}')
     scope = {
@@ -757,18 +758,20 @@ def test_a_report_without_gzip_is_not_expanded_on_the_event_loop(
         "headers": [(b"accept-encoding", b"identity")],
     }
 
-    async def answer() -> tuple[Response, int]:
+    async def answer() -> tuple[bytes, int]:
         """The response of the report, and the thread of the event loop."""
-        return (
-            await api.report_response(Request(scope), packed),
-            threading.get_ident(),
-        )
+        response = await api.report_response(Request(scope), packed)
+        assert isinstance(response, StreamingResponse)
+        chunks = [
+            chunk.encode() if isinstance(chunk, str) else bytes(chunk)
+            async for chunk in response.body_iterator
+        ]
+        return b"".join(chunks), threading.get_ident()
 
-    monkeypatch.setattr(gzip, "decompress", spy)
+    monkeypatch.setattr(gzip.GzipFile, "read", spy)
     response, loop = asyncio.run(answer())
-    assert response.body == b'{"uid": "the report"}'
-    assert len(threads) == 1
-    assert threads[0] != loop
+    assert response == b'{"uid": "the report"}'
+    assert threads and all(thread != loop for thread in threads)
 
 
 def test_every_report_endpoint_answers_the_same_report(
@@ -802,7 +805,8 @@ def test_every_report_endpoint_answers_the_same_report(
     reports = [_without_request(_strict_json(answer.content)) for answer in answers]
     _check_report(reports[0])
     assert reports[1:] == reports[:-1]
-    assert len(spy_children) == len(answers) + 1
+    # The upload's first report is reused, so opening it starts no second child.
+    assert len(spy_children) == len(answers)
 
 
 def test_a_report_beyond_the_admission_is_busy(
@@ -882,13 +886,15 @@ def test_an_upload_whose_report_crashes_is_not_kept(
     assert list(uploads.directory.iterdir()) == []
 
 
-def test_a_report_of_an_example_forks_no_child(
+def test_a_report_of_an_example_builds_once_in_a_bounded_child(
     client: TestClient, spy_children: list[int]
 ) -> None:
-    """A trusted source pays nothing for the isolation of a request."""
+    """Public example requests keep isolation even though their input is trusted."""
     api.example_report_gzip.cache_clear()
     assert client.get("/api/examples/annotation (annotation.xml)").status_code == 200
-    assert spy_children == []
+    assert len(spy_children) == 1
+    assert client.get("/api/examples/annotation (annotation.xml)").status_code == 200
+    assert len(spy_children) == 1
 
 
 def test_a_report_whose_client_leaves_frees_its_admission(

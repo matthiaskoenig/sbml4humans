@@ -2,6 +2,7 @@
 
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pytest
@@ -83,7 +84,9 @@ def test_put_refused_when_the_store_is_full(tmp_path: Path) -> None:
     store.put(b"x" * 8)
     with pytest.raises(UploadStoreFullError):
         store.put(b"y" * 3)
-    assert len(list(tmp_path.iterdir())) == 1
+    assert (
+        len([path for path in tmp_path.iterdir() if not path.name.startswith(".")]) == 1
+    )
 
 
 def test_put_after_the_directory_was_removed(tmp_path: Path) -> None:
@@ -100,3 +103,87 @@ def test_remove_expired_of_a_removed_directory(tmp_path: Path) -> None:
     store = UploadStore(tmp_path / "uploads")
     (tmp_path / "uploads").rmdir()
     assert store.remove_expired() == 0
+
+
+def test_independent_writers_share_one_atomic_quota(tmp_path: Path) -> None:
+    """Separate store objects cannot both reserve the same remaining bytes."""
+
+    def write(_: int) -> bool:
+        """Race independent SQLite connections against one shared directory."""
+        try:
+            UploadStore(tmp_path, max_bytes=100).put(b"x" * 80)
+            return True
+        except UploadStoreFullError:
+            return False
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        results = list(pool.map(write, range(8)))
+    assert sum(results) == 1
+    assert UploadStore(tmp_path)._size() == 80
+
+
+def test_reports_are_revision_bound_counted_and_expire_with_the_source(
+    tmp_path: Path,
+) -> None:
+    """A cached response never survives or exceeds the source's storage policy."""
+    store = UploadStore(tmp_path, max_bytes=20, lifetime=60)
+    saved = store.put(b"source", b"report", variant="native/a")
+    assert store.get_report(saved.id, "native/a") == b"report"
+    assert store.get_report(saved.id, "native/b") is None
+    assert store._size() == 12
+    expired = time.time() - 61
+    os.utime(tmp_path / saved.id, (expired, expired))
+    assert store.remove_expired() == 1
+    assert store._size() == 0
+    assert not list(tmp_path.glob("*.report.gz"))
+
+
+def test_a_lease_survives_source_expiry_and_cleanup(tmp_path: Path) -> None:
+    """An admitted worker cannot lose its source while waiting for capacity."""
+    store = UploadStore(tmp_path, lifetime=60)
+    saved = store.put(b"source")
+    with store.lease(saved.id) as leased:
+        expired = time.time() - 61
+        os.utime(tmp_path / saved.id, (expired, expired))
+        store.remove_expired()
+        assert leased.read_bytes() == b"source"
+    assert not leased.exists()
+
+
+def test_failed_publication_releases_files_and_reserved_bytes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A filesystem failure cannot leak quota or partial uploads."""
+    store = UploadStore(tmp_path)
+
+    def fail(*args):
+        """Fail after quota reservation and writing the partial file."""
+        raise OSError("failed publication")
+
+    monkeypatch.setattr(os, "replace", fail)
+    with pytest.raises(OSError, match="failed publication"):
+        store.put(b"source", b"report")
+    assert store._size() == 0
+    assert not list(tmp_path.glob(".partial-*"))
+
+
+def _process_upload(directory: str) -> bool:
+    """Reserve bytes in a separate server process with an independent connection."""
+    try:
+        UploadStore(Path(directory), max_bytes=100).put(b"x" * 80)
+        return True
+    except UploadStoreFullError:
+        return False
+
+
+def test_server_processes_share_the_same_quota(tmp_path: Path) -> None:
+    """The filesystem quota also holds across multiple API worker processes."""
+    import multiprocessing
+    from concurrent.futures import ProcessPoolExecutor
+
+    with ProcessPoolExecutor(
+        max_workers=2, mp_context=multiprocessing.get_context("spawn")
+    ) as pool:
+        results = list(pool.map(_process_upload, [str(tmp_path)] * 4))
+    assert sum(results) == 1
+    assert UploadStore(tmp_path)._size() == 80

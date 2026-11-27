@@ -16,7 +16,7 @@ from sbml4humans import native
 from sbml4humans.model import ReportResponse, ValidationResponse
 from sbml4humans.report import (
     OdeFile,
-    ode_for_path,
+    isolated_ode_for_path,
     report_for_path,
     validation_for_path,
 )
@@ -125,7 +125,9 @@ def report_for_example(example: ExampleMetaData) -> ReportResponse:
 
 def ode_for_example(example: ExampleMetaData, fmt: str) -> OdeFile:
     """Export the example through the shared Rust source and ODE pipeline."""
-    return ode_for_path(example.file, fmt, trusted=True, source_entry=example.location)
+    return isolated_ode_for_path(
+        example.file, fmt, trusted=True, source_entry=example.location
+    )
 
 
 def validation_for_example(example: ExampleMetaData) -> ValidationResponse:
