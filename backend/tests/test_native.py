@@ -3,6 +3,7 @@
 import gzip
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
@@ -10,6 +11,99 @@ from fastapi.testclient import TestClient
 
 from sbml4humans import limits, native, report
 from sbml4humans.resources import EXAMPLES_DIR, OMEX_COMPMODELS
+
+
+def test_native_validation_worker_does_not_call_the_python_validator(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The real native session validates inside the existing isolated-worker entrypoint."""
+    pytest.importorskip("sbml4humans_core")
+    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
+    monkeypatch.setattr(
+        report, "validate", Mock(side_effect=AssertionError("Python validator called"))
+    )
+    job = report.SourceJob(
+        path=str(EXAMPLES_DIR / "validation.xml"),
+        trusted=False,
+        budget=10000,
+        limits=limits.ContentLimits.current(),
+    )
+    results = list(report.validate_source(job))
+    assert results[0] == ("", ["./model.xml"])
+    assert 10601 in {issue.rule for issue in results[1][1].issues}
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "validation.xml",
+        "reaction.xml",
+        "minimal_model_comp.xml",
+        "comp_deletion.xml",
+        "fbc_constraints_v3.xml",
+        "qual_example.xml",
+        "distrib_comp.xml",
+    ],
+)
+def test_native_validation_preserves_every_diagnostic(
+    name: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Keep rule IDs, messages, order, severities, source positions and element keys."""
+    pytest.importorskip("sbml4humans_core")
+    path = EXAMPLES_DIR / name
+    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
+    expected = report.validation_for_path(path, trusted=True)
+    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
+    actual = report.validation_for_path(path, trusted=True)
+    assert actual == expected
+
+
+def test_explicit_native_validation_requires_the_validation_feature(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A report-only wheel is optional in auto mode and actionable in Rust mode."""
+    core = SimpleNamespace(REPORT_CONTRACT="report/1", SOURCE_CONTRACT="source/1")
+    monkeypatch.setattr(native.importlib, "import_module", Mock(return_value=core))
+    assert native.validator("auto") is None
+    with pytest.raises(RuntimeError, match="validation feature"):
+        native.validator("rust")
+
+
+def test_native_validation_errors_never_retry_the_python_validator(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A selected native validator's failure reaches the existing error boundary."""
+    fail = Mock(side_effect=ValueError("native validation failure"))
+    monkeypatch.setattr(native, "validator", Mock(return_value=fail))
+    python = Mock(side_effect=AssertionError("Python validator called"))
+    monkeypatch.setattr(report, "validate", python)
+    job = report.SourceJob(
+        path=str(EXAMPLES_DIR / "validation.xml"),
+        trusted=False,
+        budget=10000,
+        limits=limits.ContentLimits.current(),
+    )
+    with pytest.raises(ValueError, match="native validation failure"):
+        list(report.validate_source(job))
+    python.assert_not_called()
+
+
+def test_native_validation_runs_through_the_http_api(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A request captures native validation selection before entering its worker."""
+    pytest.importorskip("sbml4humans_core")
+    content = (EXAMPLES_DIR / "validation.xml").read_bytes()
+    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
+    expected = report.validation_for_bytes(content).model_dump(by_alias=True)
+    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
+    response = client.post(
+        "/api/validation/content",
+        content=content,
+        headers={"Content-Type": "application/xml"},
+    )
+    assert response.status_code == 200
+    assert response.json() == expected
 
 
 def _normalized(content: bytes) -> dict:

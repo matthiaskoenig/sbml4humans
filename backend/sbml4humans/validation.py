@@ -32,6 +32,7 @@ of urls or another one which was registered before is gone.
 """
 
 import bisect
+import json
 import logging
 from collections.abc import Callable, Generator, Mapping
 from contextlib import contextmanager
@@ -105,6 +106,17 @@ class ElementPositions:
             return self.document_pk
         index = bisect.bisect_right(self._keys, (line, column, 1 << 30))
         return self._pks[index - 1] if index > 0 else self.document_pk
+
+    def native_json(self) -> str:
+        """Marshal the canonical positions without rebuilding element keys in Rust."""
+        return json.dumps(
+            {
+                "documentPk": self.document_pk,
+                "elements": [
+                    [*key, pk] for key, pk in zip(self._keys, self._pks, strict=True)
+                ],
+            }
+        )
 
 
 def _severity(error: libsbml.SBMLError) -> Severity:

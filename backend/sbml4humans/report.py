@@ -53,6 +53,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import libsbml
+from pydantic import TypeAdapter
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
@@ -67,6 +68,7 @@ from sbml4humans.model import (
     ManifestEntry,
     ReportEntry,
     ReportResponse,
+    ValidationIssue,
     ValidationResponse,
 )
 from sbml4humans.odes import analyse, ode_system
@@ -80,6 +82,7 @@ from sbml4humans.validation import (
 
 
 logger = logging.getLogger(__name__)
+_VALIDATION_ISSUES = TypeAdapter(list[ValidationIssue])
 
 # location of a single SBML file in the archive created for it
 SBML_LOCATION = "./model.xml"
@@ -490,12 +493,14 @@ class SourceJob:
             read by the server when the validation is asked for.
         limits: the limits of `limits.py` an untrusted source is read within,
             read by the server when the validation is asked for.
+        parser: the selected native or compatibility backend, captured by the server.
     """
 
     path: str
     trusted: bool
     budget: int
     limits: limits.ContentLimits
+    parser: native.Parser = field(default_factory=native.preference)
 
 
 # the key of the result which names the entries, which no location is
@@ -556,6 +561,22 @@ def validate_source(job: SourceJob) -> Iterator[tuple[str, Any]]:
     """
     with job.limits.applied(), _read(Path(job.path), job.trusted) as read:
         yield _LOCATIONS, list(read.entries)
+        factory = native.validator(job.parser)
+        session = (
+            factory(
+                [
+                    (
+                        location,
+                        str(entry.source),
+                        entry.info.doc.getLocationURI(),
+                        entry.info.positions.native_json(),
+                    )
+                    for location, entry in read.entries.items()
+                ]
+            )
+            if factory is not None
+            else None
+        )
         documents = ReportDocuments(
             {location: entry.info.doc for location, entry in read.entries.items()}
         )
@@ -571,12 +592,22 @@ def validate_source(job: SourceJob) -> Iterator[tuple[str, Any]]:
                 yield (
                     location,
                     EntryValidation(
-                        issues=issues_of(entry.info.doc, entry.info.positions),
+                        issues=(
+                            _VALIDATION_ISSUES.validate_json(
+                                session.issues_json(location, check_consistency=False)
+                            )
+                            if session is not None
+                            else issues_of(entry.info.doc, entry.info.positions)
+                        ),
                         skipped="expandedSize",
                     ),
                 )
                 continue
-            issues = validate(entry.info.doc, entry.info.positions, documents, location)
+            issues = (
+                _VALIDATION_ISSUES.validate_json(session.issues_json(location))
+                if session is not None
+                else validate(entry.info.doc, entry.info.positions, documents, location)
+            )
             yield location, EntryValidation(issues=issues)
 
 
