@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
-      SBML4HUMANS_BUILD_CACHE: ${{ runner.temp }}/sbml4humans-build
+      SBML4HUMANS_BUILD_CACHE: /tmp/sbml4humans-build
     steps:
       - uses: actions/checkout@v7
         with:
@@ -45,7 +45,7 @@ jobs:
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         uses: actions/cache@v6  # zizmor: ignore[cache-poisoning]
         with:
-          path: ${{ runner.temp }}/sbml4humans-build/libsbml/**/prefix
+          path: /tmp/sbml4humans-build/libsbml/**/prefix
           key: libsbml-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('backend/sbml4humans/native-source.json') }}
           restore-keys: libsbml-${{ runner.os }}-${{ runner.arch }}-
       - name: Rebuild and verify the pinned browser package; build the native wheel
@@ -63,7 +63,7 @@ jobs:
     timeout-minutes: 20
     needs: native
     env:
-      SBML4HUMANS_NATIVE_WHEEL: ${{ runner.temp }}/native-runtime
+      SBML4HUMANS_NATIVE_WHEEL: /tmp/sbml4humans-native-runtime
     steps:
       - uses: actions/checkout@v7
         with:
@@ -80,7 +80,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: native-runtime
-          path: ${{ runner.temp }}/native-runtime
+          path: /tmp/sbml4humans-native-runtime
       - name: Install the backend
         working-directory: backend
         run: uv sync --locked
@@ -159,7 +159,7 @@ jobs:
     timeout-minutes: 30
     needs: native
     env:
-      SBML4HUMANS_NATIVE_WHEEL: ${{ runner.temp }}/native-runtime
+      SBML4HUMANS_NATIVE_WHEEL: /tmp/sbml4humans-native-runtime
     steps:
       - uses: actions/checkout@v7
         with:
@@ -176,7 +176,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: native-runtime
-          path: ${{ runner.temp }}/native-runtime
+          path: /tmp/sbml4humans-native-runtime
       - name: Install the backend
         working-directory: backend
         run: uv sync --locked
@@ -227,7 +227,7 @@ jobs:
     timeout-minutes: 15
     needs: native
     env:
-      SBML4HUMANS_NATIVE_WHEEL: ${{ runner.temp }}/native-runtime
+      SBML4HUMANS_NATIVE_WHEEL: /tmp/sbml4humans-native-runtime
     steps:
       - uses: actions/checkout@v7
         with:
@@ -257,7 +257,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: native-runtime
-          path: ${{ runner.temp }}/native-runtime
+          path: /tmp/sbml4humans-native-runtime
       - name: Build the wheel and the sdist
         working-directory: backend
         run: |
@@ -357,7 +357,7 @@ jobs:
     timeout-minutes: 20
     needs: native
     env:
-      SBML4HUMANS_NATIVE_WHEEL: ${{ runner.temp }}/native-runtime
+      SBML4HUMANS_NATIVE_WHEEL: /tmp/sbml4humans-native-runtime
     steps:
       - uses: actions/checkout@v7
         with:
@@ -374,7 +374,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: native-runtime
-          path: ${{ runner.temp }}/native-runtime
+          path: /tmp/sbml4humans-native-runtime
       - name: Install the backend
         # the dev group, which zensical is part of, is installed by default
         working-directory: backend
