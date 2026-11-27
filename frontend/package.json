@@ -3,7 +3,7 @@
   "version": "0.13.0",
   "private": true,
   "type": "module",
-  "author": "Matthias König <konigmatt@googlemail.com> (https://livermetabolism.com)",
+  "author": "Matthias K\u00f6nig <konigmatt@googlemail.com> (https://livermetabolism.com)",
   "engines": {
     "node": ">=24"
   },
@@ -22,7 +22,9 @@
     "screenshots": "node scripts/screenshots.mjs",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
-    "test:network": "playwright test --config playwright.network.config.ts"
+    "test:network": "playwright test --config playwright.network.config.ts",
+    "parser:check": "python3 ../scripts/build_parser.py --check",
+    "parser:build": "python3 ../scripts/build_parser.py --wasm"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
@@ -37,7 +39,8 @@
     "vue": "^3.5.44",
     "vue-gtag": "^3.7.1",
     "vue-router": "^5.4.0",
-    "@graphvis/viewer": "file:vendor/graphvis-viewer"
+    "@graphvis/viewer": "file:vendor/graphvis-viewer",
+    "@sbml4humans/core": "file:vendor/sbml4humans-core"
   },
   "overrides": {
     "minimatch": "^11.0.4",

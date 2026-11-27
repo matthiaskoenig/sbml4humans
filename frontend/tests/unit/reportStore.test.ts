@@ -3,9 +3,12 @@ import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as client from "@/api/client";
+import { readSource } from "@/parsing/reader";
 import { useReportStore } from "@/stores/report";
 
 import { loadFixture, loadValidationFixture } from "./fixtures";
+
+vi.mock("@/parsing/reader", () => ({ readSource: vi.fn() }));
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
@@ -181,8 +184,7 @@ describe("report store", () => {
     });
 
     it("resends a file and a pasted content for their validation", async () => {
-      vi.mocked(client.postFile).mockResolvedValue(loadFixture("validation"));
-      vi.mocked(client.postContent).mockResolvedValue(loadFixture("validation"));
+      vi.mocked(readSource).mockResolvedValue(loadFixture("validation"));
       const store = useReportStore();
       const file = new File(["<sbml/>"], "model.xml");
       await store.loadFile(file);
@@ -373,8 +375,7 @@ describe("report store", () => {
 
     it("knows whether a reload asks for the validation again", async () => {
       vi.mocked(client.getExample).mockResolvedValue(loadFixture("fan_out"));
-      vi.mocked(client.postContent).mockResolvedValue(loadFixture("fan_out"));
-      vi.mocked(client.postFile).mockResolvedValue(loadFixture("fan_out"));
+      vi.mocked(readSource).mockResolvedValue(loadFixture("fan_out"));
       const busy = { entries: {}, skipped: "busy" as const };
       vi.mocked(client.getExampleValidation).mockResolvedValue(busy);
       vi.mocked(client.postContentValidation).mockResolvedValue(busy);
@@ -415,7 +416,7 @@ describe("report store", () => {
     });
     expect(client.getExampleOde).toHaveBeenCalledWith("BIOMD0000000012", "python");
 
-    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(readSource).mockResolvedValue(loadFixture("repressilator"));
     vi.mocked(client.postContentOde).mockResolvedValue({
       filename: "m.md",
       blob: new Blob(["$$"]),
@@ -447,5 +448,38 @@ describe("report store", () => {
     await expect(store.odeCode("latex", "./model.xml")).rejects.toThrow("algebraic rule");
     await store.odeCode("latex", "./model.xml");
     expect(client.getExampleOde).toHaveBeenCalledTimes(4);
+  });
+  it("aborts a superseded local parse and publishes only the new response", async () => {
+    const first = deferred<ReturnType<typeof loadFixture>>();
+    let signal!: AbortSignal;
+    vi.mocked(readSource).mockImplementationOnce((_, next) => {
+      signal = next;
+      return first.promise;
+    });
+    vi.mocked(readSource).mockResolvedValueOnce(loadFixture("repressilator"));
+    const store = useReportStore();
+    const old = store.loadContent("old");
+    expect(await store.loadContent("new")).toBe(true);
+    expect(signal.aborted).toBe(true);
+    first.resolve(loadFixture("validation"));
+    expect(await old).toBe(false);
+    expect(store.indexFor(store.defaultEntry!)?.mainModel?.id).toBe("BIOMD0000000012");
+  });
+
+  it("clearing a report aborts its worker and does not accept a late response", async () => {
+    const pending = deferred<ReturnType<typeof loadFixture>>();
+    let signal!: AbortSignal;
+    vi.mocked(readSource).mockImplementation((_, next) => {
+      signal = next;
+      return pending.promise;
+    });
+    const store = useReportStore();
+    const loading = store.loadContent("pending");
+    store.clear();
+    expect(signal.aborted).toBe(true);
+    pending.resolve(loadFixture("validation"));
+    expect(await loading).toBe(false);
+    expect(store.response).toBeNull();
+    expect(store.error).toBeNull();
   });
 });

@@ -48,7 +48,7 @@ import uuid
 import zipfile
 from collections.abc import Generator, Iterator, Mapping
 from contextlib import ExitStack, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
@@ -57,7 +57,7 @@ import sbmlode
 from pymetadata.omex import EntryFormat, Omex
 from pymetadata.omex import ManifestEntry as OmexManifestEntry
 
-from sbml4humans import isolation, limits, validation
+from sbml4humans import isolation, limits, native, validation
 from sbml4humans.external import ExternalModels, normalize_location, resolve_source
 from sbml4humans.limits import ContentTooLargeError, format_size
 from sbml4humans.links import LinkSource, build_link_graphs
@@ -274,12 +274,14 @@ class ReportJob:
             read by the server when the report is asked for.
         budget: the elements an entry may expand to for its equations, read by
             the server when the report is asked for.
+        parser: the server's selected parser, carried into forkserver children.
     """
 
     path: str
     trusted: bool
     limits: limits.ContentLimits
     budget: int
+    parser: native.Parser = field(default_factory=native.preference)
 
 
 # the key of the one result of a report, the gzipped json of the whole of it
@@ -307,14 +309,15 @@ def report_gzip(job: ReportJob) -> Iterator[tuple[str, bytes]]:
             limits.
     """
     with job.limits.applied():
-        response = report_for_path(Path(job.path), job.trusted, job.budget)
-    yield (
-        _REPORT,
-        gzip.compress(
-            response.model_dump_json(by_alias=True).encode(),
-            compresslevel=REPORT_GZIP_LEVEL,
-        ),
-    )
+        raw = (
+            None
+            if job.trusted
+            else native.report_json(Path(job.path), job.limits, job.budget, job.parser)
+        )
+        if raw is None:
+            response = report_for_path(Path(job.path), job.trusted, job.budget)
+            raw = response.model_dump_json(by_alias=True).encode()
+    yield (_REPORT, gzip.compress(raw, compresslevel=REPORT_GZIP_LEVEL))
 
 
 # the work of a request a child of `isolation.REPORT_BUDGET` does, of which a

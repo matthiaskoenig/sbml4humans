@@ -3,7 +3,18 @@
 #   sudo docker build -t sbml4humans-backend .
 #   sudo docker run -p 127.0.0.1:1444:1444 sbml4humans-backend
 # -------------------------------------------------------------------------------------
-FROM python:3.14-slim
+# Native parsing is compiled from the same reviewed revision as the browser package.
+FROM rust:1.100-slim-trixie AS native-parser
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 gcc libc6-dev git \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /build
+COPY parser-source.json /build/parser-source.json
+COPY scripts/build_parser.py /build/scripts/build_parser.py
+RUN python3 scripts/build_parser.py --wheel-out /wheels
+
+FROM python:3.14-slim-trixie
 
 COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
 
@@ -26,6 +37,9 @@ RUN apt-get update \
 # container serves the working tree
 COPY ./backend /code/backend
 RUN uv sync --project /code/backend --locked --no-dev --no-cache
+COPY --from=native-parser /wheels /wheels
+RUN uv pip install --python /opt/venv/bin/python --no-deps /wheels/*.whl \
+    && rm -rf /wheels
 
 # the server runs as an unprivileged user which cannot change the code. It writes only to its
 # home directory, the temporary directory, /uploads and /cache, the mount points of the volumes

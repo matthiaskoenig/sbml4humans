@@ -28,7 +28,18 @@ async function mountDialog(query: Record<string, string>): Promise<VueWrapper> {
   await router.isReady();
   wrapper = mount(HelpDialog, {
     attachTo: document.body,
-    global: { plugins: [router], directives: { tooltip: vTooltip } },
+    global: {
+      plugins: [router],
+      directives: { tooltip: vTooltip },
+      config: {
+        errorHandler(error) {
+          const failure = error as Error & { cause?: Error };
+          expect(failure.cause?.message ?? failure.message).toBe(
+            "the chunk of the renderer is gone",
+          );
+        },
+      },
+    },
   });
   await flushPromises();
   await flushPromises();

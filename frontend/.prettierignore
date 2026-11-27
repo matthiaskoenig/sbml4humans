@@ -10,3 +10,5 @@ src/schema/validation.schema.json
 src/data/glossary.json
 src/data/glossary-details.json
 tests/fixtures/
+
+vendor/sbml4humans-core/

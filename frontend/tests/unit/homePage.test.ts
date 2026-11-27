@@ -3,14 +3,18 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as client from "@/api/client";
+import { readSource } from "@/parsing/reader";
 import HomePage from "@/pages/HomePage.vue";
 // The report route lazy-loads this page; importing it here warms the module cache so the
 // router's dynamic import resolves within the microtask queue `flushPromises()` flushes,
 // instead of needing a real timer tick.
 import "@/pages/ReportPage.vue";
 import { router } from "@/router";
+import { vTooltip } from "@/directives/tooltip";
 
 import { loadFixture } from "./fixtures";
+
+vi.mock("@/parsing/reader", () => ({ readSource: vi.fn() }));
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
@@ -26,7 +30,7 @@ async function mountHome() {
   await router.push("/");
   await router.isReady();
   wrapper = mount(HomePage, {
-    global: { plugins: [createPinia(), router] },
+    global: { plugins: [createPinia(), router], directives: { tooltip: vTooltip } },
     attachTo: document.body,
   });
   return wrapper;
@@ -37,7 +41,7 @@ describe("HomePage", () => {
     setActivePinia(createPinia());
     localStorage.clear();
     vi.mocked(client.getUrl).mockReset();
-    vi.mocked(client.postContent).mockReset();
+    vi.mocked(readSource).mockReset();
   });
 
   afterEach(() => {
@@ -69,7 +73,7 @@ describe("HomePage", () => {
   });
 
   it("shows the api error inline", async () => {
-    vi.mocked(client.postContent).mockRejectedValue(new client.ApiError("no SBML", "Traceback"));
+    vi.mocked(readSource).mockRejectedValue(new client.ApiError("no SBML", "Traceback"));
     const wrapper = await mountHome();
     await wrapper.get("[data-testid=home-tab-paste]").trigger("click");
     await wrapper.get("[data-testid=paste-input]").setValue("<nonsense/>");
@@ -77,5 +81,23 @@ describe("HomePage", () => {
     await flushPromises();
     expect(wrapper.get("[data-testid=error-message]").text()).toBe("no SBML");
     expect(router.currentRoute.value.name).toBe("home");
+  });
+  it("does not navigate after its load finishes following unmount", async () => {
+    let resolve!: (value: ReturnType<typeof loadFixture>) => void;
+    vi.mocked(readSource).mockReturnValue(
+      new Promise((done) => {
+        resolve = done;
+      }),
+    );
+    const page = await mountHome();
+    await page.get("[data-testid=home-tab-paste]").trigger("click");
+    await page.get("[data-testid=paste-input]").setValue("<sbml/>");
+    await page.get("[data-testid=paste-submit]").trigger("click");
+    page.unmount();
+    wrapper = null;
+    await router.push("/examples");
+    resolve(loadFixture("repressilator"));
+    await flushPromises();
+    expect(router.currentRoute.value.name).toBe("examples");
   });
 });

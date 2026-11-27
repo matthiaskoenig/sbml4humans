@@ -1,0 +1,19 @@
+{
+  "name": "@sbml4humans/core",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./index.d.mts",
+      "import": "./index.mjs"
+    },
+    "./wasm": {
+      "types": "./wasm.d.mts",
+      "import": "./wasm.mjs"
+    }
+  },
+  "types": "./index.d.mts",
+  "license": "MIT",
+  "repository": "https://github.com/matthiaskoenig/sbml4humans-core.git"
+}

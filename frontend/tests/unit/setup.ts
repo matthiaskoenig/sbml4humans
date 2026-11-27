@@ -1,8 +1,12 @@
+import { config } from "@vue/test-utils";
 import { vi } from "vitest";
 import { defineComponent } from "vue";
 import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router";
 
 import type * as Router from "@/router";
+
+// Parents can render without their app shell. Tooltip behavior tests register the real directive.
+config.global.directives.tooltip = {};
 
 /** The page of every route of the router of the unit tests. */
 const Page = defineComponent({ name: "TestPage", render: () => null });
