@@ -7,7 +7,7 @@
 FROM rust:1.100-slim-trixie AS native-parser
 COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends python3 gcc g++ cmake libc6-dev git libexpat1-dev zlib1g-dev libbz2-dev \
+    && apt-get install -y --no-install-recommends python3 gcc g++ cmake make libc6-dev git libexpat1-dev zlib1g-dev libbz2-dev \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /build
 COPY parser-source.json /build/parser-source.json

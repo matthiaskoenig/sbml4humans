@@ -32,7 +32,7 @@ jobs:
       - name: Install the parser toolchain and native WASM target
         run: rustup toolchain install 1.100.0 --profile minimal --target wasm32-unknown-unknown
       - name: Install native validation build dependencies
-        run: sudo apt-get update && sudo apt-get install --yes g++ cmake libexpat1-dev zlib1g-dev libbz2-dev
+        run: sudo apt-get update && sudo apt-get install --yes g++ cmake make libexpat1-dev zlib1g-dev libbz2-dev
       - name: Rebuild and verify the pinned browser package; build the native wheel
         run: python3 scripts/build_parser.py --check --verify-build --wheel-out /tmp/parser-wheels
       - name: Install the application and the real native wheel
