@@ -13,7 +13,7 @@ from sbml4humans import local as local_module
 from sbml4humans.local import MAX_REPORTS, LocalApp, ReportStore
 from sbml4humans.localstate import SECRET_HEADER, read_state
 from sbml4humans.model import ReportResponse, ValidationResponse
-from sbml4humans.report import report_for_path
+from sbml4humans.report import report_gzip_for_path
 from sbml4humans.resources import EXAMPLES_DIR, REPRESSILATOR_SBML
 
 
@@ -75,15 +75,15 @@ def _post_report(local: TestClient, path: Path | str) -> dict[str, str]:
 # -------------------------------------------------------------------------------------
 def test_store_keeps_the_last_reports() -> None:
     """A token names a report until too many newer ones were added."""
-    report = report_for_path(REPRESSILATOR_SBML)
+    report = report_gzip_for_path(REPRESSILATOR_SBML)
     store = ReportStore()
     first = store.add(report, REPRESSILATOR_SBML)
     tokens = [store.add(report, REPRESSILATOR_SBML) for _ in range(MAX_REPORTS - 1)]
-    assert store.get(first).report is report
+    assert store.get(first).packed is report
     assert store.get(first).path == REPRESSILATOR_SBML
     # the first one was read last, so the next report pushes out the second one
     store.add(report, REPRESSILATOR_SBML)
-    assert store.get(first).report is report
+    assert store.get(first).packed is report
     with pytest.raises(KeyError):
         store.get(tokens[0])
     assert len({first, *tokens}) == MAX_REPORTS
@@ -218,7 +218,7 @@ def test_errors_follow_the_contract_of_the_api(
     """Status 200 with the message, for a bad file, a missing one and a bad token."""
     garbage = tmp_path / "garbage.xml"
     garbage.write_text("no sbml")
-    assert "No SBML model could be read" in _post_report(local, garbage)["errors"][0]
+    assert _post_report(local, garbage)["errors"][0] == "unknown token at 1:1"
     missing = _post_report(local, tmp_path / "missing.xml")
     assert "does not exist" in missing["errors"][0]
     relative = _post_report(local, "model.xml")

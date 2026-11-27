@@ -1,7 +1,7 @@
 """sbml4humans, the human readable report of SBML models.
 
-`sbml4humans.sbmlinfo` creates the report of an SBML document, `sbml4humans.api`
-serves it over http for the sbml4humans frontend, and `sbml4humans.show` opens
+The bundled Rust runtime creates the report, `sbml4humans.api` serves it
+over HTTP for the sbml4humans frontend, and `sbml4humans.show` opens
 the report of a local file in the browser:
 
     from sbml4humans import show

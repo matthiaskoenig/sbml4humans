@@ -95,7 +95,7 @@ def test_show_raises_what_the_report_says(environment: Path) -> None:
         show(environment / "missing.xml")
     garbage = environment / "garbage.xml"
     garbage.write_text("no sbml")
-    with pytest.raises(ValueError, match="No SBML model could be read"):
+    with pytest.raises(ValueError, match="unknown token at 1:1"):
         show(garbage, open_browser=False)
     assert _opened() == []
 

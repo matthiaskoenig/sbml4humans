@@ -1,66 +1,48 @@
-"""Optional native reports and validation within the application's worker budgets.
-
-The browser ships its own WASM build. Servers can install the matching native wheel
-without making a Rust compiler a requirement of the pure Python application package.
-"""
+"""The mandatory, privately bundled Rust runtime used by every source operation."""
 
 import importlib
 import json
 import logging
 import os
-import re
+from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Protocol, cast
+from typing import Protocol, cast
 
 from sbml4humans.limits import ContentLimits, ContentTooLargeError
 
 
 logger = logging.getLogger(__name__)
-_ODE_ERROR = re.compile(rb'"odeError":(?!null)')
 
 
 class NativeValidation(Protocol):
-    """A prepared source owned by Rust inside a bounded worker."""
+    """An owned native source, kept inside its isolated worker."""
 
     locations: list[str]
 
     def entry_json(self, location: str) -> bytes:
-        """Check one entry, applying the native comp expansion gate."""
+        """Validate one entry and preserve completed worker results."""
         ...
 
 
-def _warn_ode_errors(content: bytes) -> None:
-    """Log ordinary equation diagnostics without decoding successful large reports."""
-    if _ODE_ERROR.search(content) is None:
-        return
-    response = json.loads(content)
-    for entry in response.get("reports", {}).values():
-        message = entry["report"].get("odeError")
-        if message:
-            logger.warning(
-                "The ODE system of the model could not be built: %s",
-                " ".join(message.split()),
-            )
-
-
 class NativeCore(Protocol):
-    """The small, versioned interface needed from the native extension."""
+    """The versioned private host interface, without per-element Python objects."""
 
-    REPORT_CONTRACT: str
-    SOURCE_CONTRACT: str
-    ODE_SOURCE_CONTRACT: str
-    SOURCE_PATH_CONTRACT: str
+    SOURCE_REVISION: str
+    HOST_CONTRACT: str
     VALIDATION_SOURCE_CONTRACT: str
+    ODE_SOURCE_CONTRACT: str
 
-    def source_path_json(
+    def report_path(
         self,
         path: str,
         *,
         trusted: bool,
         max_expanded_elements: int,
         limits: dict[str, int],
-    ) -> bytes:
-        """Read a source and construct serialized reports entirely in Rust."""
+        gzip: bool,
+        source_entry: str | None,
+    ) -> tuple[bytes, list[str]]:
+        """Construct and serialize a report directly into JSON or gzip."""
         ...
 
     def validation_source(
@@ -70,8 +52,9 @@ class NativeCore(Protocol):
         trusted: bool,
         max_expanded_elements: int,
         limits: dict[str, int],
+        source_entry: str | None,
     ) -> NativeValidation:
-        """Admit sources, derive keys and own native validation entirely in Rust."""
+        """Prepare canonical positions, budgets and native documents in Rust."""
         ...
 
     def ode_path_json(
@@ -84,46 +67,47 @@ class NativeCore(Protocol):
         simulator: bool,
         max_expanded_elements: int,
         limits: dict[str, int],
+        source_entry: str | None,
     ) -> bytes:
-        """Select and export one admitted model with the shared Rust generator."""
+        """Select an admitted model and call the shared ODE generator."""
+        ...
+
+    def example_json(self, path: str, mode: str, example_id: str | None) -> bytes:
+        """Read example metadata without constructing its report."""
+        ...
+
+    def rule_json(self, code: int) -> bytes:
+        """Resolve rule documentation from the native validator tables."""
+        ...
+
+    def rule_package(self, code: int) -> str:
+        """Identify the specification a rule belongs to."""
         ...
 
 
-Parser = Literal["auto", "rust", "python"]
-
-
-def preference() -> Parser:
-    """Capture the parser setting in the server, before an isolated job is sent."""
-    value = os.environ.get("SBML4HUMANS_PARSER", "auto").strip().lower()
-    if value not in {"auto", "rust", "python"}:
-        raise ValueError("SBML4HUMANS_PARSER must be auto, rust or python.")
-    return value
-
-
-def _reader(parser: Parser | None = None) -> NativeCore | None:
-    """Select the installed native reader, or the explicit Python compatibility path."""
-    selected = preference() if parser is None else parser
-    if selected == "python":
-        return None
-    try:
-        core = cast(NativeCore, importlib.import_module("sbml4humans_core"))
-    except ModuleNotFoundError as error:
-        if error.name != "sbml4humans_core":
-            raise
-        if selected == "rust":
-            raise RuntimeError(
-                "The Rust parser was requested but sbml4humans-core is not installed."
-            ) from error
-        return None
-    if (
-        getattr(core, "REPORT_CONTRACT", None) != "report/1"
-        or getattr(core, "SOURCE_CONTRACT", None) != "source/1"
-        or getattr(core, "SOURCE_PATH_CONTRACT", None) != "source-path/1"
-    ):
-        if selected == "auto":
-            return None
+@lru_cache(maxsize=1)
+def _reader() -> NativeCore:
+    """Load the exact bundled runtime, failing clearly before serving any model."""
+    if os.environ.get("SBML4HUMANS_PARSER", "rust").strip().lower() != "rust":
         raise RuntimeError(
-            "The installed Rust parser does not support the complete source-path/1 contract."
+            "Rust is the only backend. Remove the obsolete SBML4HUMANS_PARSER setting."
+        )
+    try:
+        core = cast(NativeCore, importlib.import_module("_sbml4humans_runtime"))
+    except ImportError as error:
+        raise RuntimeError(
+            "The bundled Rust runtime is missing or cannot load. Reinstall sbml4humans, or run uv sync for a source checkout."
+        ) from error
+    pin = json.loads(Path(__file__).with_name("native-source.json").read_text())
+    expected = {
+        "SOURCE_REVISION": pin["revision"],
+        "HOST_CONTRACT": "host/1",
+        "VALIDATION_SOURCE_CONTRACT": "validation-source/1",
+        "ODE_SOURCE_CONTRACT": "ode-source/1",
+    }
+    if any(getattr(core, key, None) != value for key, value in expected.items()):
+        raise RuntimeError(
+            "The bundled Rust runtime does not match this application. Reinstall or rebuild sbml4humans."
         )
     return core
 
@@ -141,28 +125,18 @@ def validation_source(
     path: Path,
     limits: ContentLimits,
     budget: int,
-    parser: Parser | None = None,
     *,
     trusted: bool = False,
-) -> NativeValidation | None:
-    """Prepare and validate through Rust, retaining optional compatibility mode."""
-    selected = preference() if parser is None else parser
-    core = _reader(selected)
-    if core is None:
-        return None
-    if getattr(core, "VALIDATION_SOURCE_CONTRACT", None) != "validation-source/1":
-        if selected == "auto":
-            return None
-        raise RuntimeError(
-            "The installed Rust parser has no native source validator; "
-            "install sbml4humans-core built with the validation feature."
-        )
+    source_entry: str | None = None,
+) -> NativeValidation:
+    """Prepare validation through Rust under the worker's captured source limits."""
     try:
-        return core.validation_source(
+        return _reader().validation_source(
             str(path),
             trusted=trusted,
             max_expanded_elements=budget,
             limits=_source_limits(limits),
+            source_entry=source_entry,
         )
     except ValueError as error:
         if getattr(error, "kind", None) == "refused":
@@ -174,30 +148,27 @@ def report_json(
     path: Path,
     limits: ContentLimits,
     budget: int,
-    parser: Parser | None = None,
     *,
     trusted: bool = False,
-) -> bytes | None:
-    """Read and report a path through Rust without per-element Python objects.
-
-    Native failures reach the API error contract and never retry through Python.
-    Trusted paths may admit companions only inside the selected directory.
-    """
-    core = _reader(parser)
-    if core is None:
-        return None
+    gzip: bool = False,
+    source_entry: str | None = None,
+) -> bytes:
+    """Receive serialized Rust output and small diagnostics without decoding the report."""
     try:
-        content = core.source_path_json(
+        content, diagnostics = _reader().report_path(
             str(path),
             trusted=trusted,
             max_expanded_elements=budget,
             limits=_source_limits(limits),
+            source_entry=source_entry,
+            gzip=gzip,
         )
     except ValueError as error:
         if getattr(error, "kind", None) == "refused":
             raise ContentTooLargeError(str(error)) from error
         raise
-    _warn_ode_errors(content)
+    for message in diagnostics:
+        logger.warning("The ODE system of the model could not be built: %s", message)
     return content
 
 
@@ -207,22 +178,14 @@ def ode_json(
     location: str | None,
     limits: ContentLimits,
     budget: int,
-    parser: Parser | None = None,
     *,
     trusted: bool = False,
     simulator: bool = False,
-) -> bytes | None:
-    """Read source entries and generate one ODE download without Python SBML objects."""
-    selected = preference() if parser is None else parser
-    core = _reader(selected)
-    if core is None:
-        return None
-    if getattr(core, "ODE_SOURCE_CONTRACT", None) != "ode-source/1":
-        if selected == "auto":
-            return None
-        raise RuntimeError("The installed Rust parser does not support ode-source/1.")
+    source_entry: str | None = None,
+) -> bytes:
+    """Generate one ODE download without Python SBML objects or format tables."""
     try:
-        return core.ode_path_json(
+        return _reader().ode_path_json(
             str(path),
             format,
             location=location,
@@ -230,6 +193,7 @@ def ode_json(
             simulator=simulator,
             max_expanded_elements=budget,
             limits=_source_limits(limits),
+            source_entry=source_entry,
         )
     except ValueError as error:
         if getattr(error, "kind", None) == "refused":

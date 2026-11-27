@@ -35,3 +35,5 @@ Matthias König is supported by the Federal Ministry of Education and Research (
 - Documentation: [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)
 
 &copy; 2021-2026 Matthias König
+
+The backend uses one bundled Rust implementation for SBML, archives, validation, graphs, units and ODE exports. Platform wheels include the native runtime; source builds require Rust and the native validation build dependencies. See the [native runtime documentation](https://matthiaskoenig.github.io/sbml4humans/native-runtime/) for installation and source-build details. There is no Python parser fallback.

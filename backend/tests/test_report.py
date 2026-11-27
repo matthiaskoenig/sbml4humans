@@ -12,17 +12,14 @@ import time
 import zipfile
 from collections import Counter
 from collections.abc import Callable, Iterator
-from dataclasses import replace
 from functools import partial
 from pathlib import Path
 
-import libsbml
 import pytest
-from fastapi.testclient import TestClient
 from pydantic import BaseModel
 from pymetadata.omex import Omex
 
-from sbml4humans import isolation, limits, report, sbmlinfo, validation
+from sbml4humans import isolation, limits, report
 from sbml4humans.examples import ExampleMetaData, load_examples, report_for_example
 from sbml4humans.limits import ContentTooLargeError
 from sbml4humans.model import EdgeKind, ReportResponse, ResolutionStatus, SBase
@@ -42,7 +39,6 @@ from sbml4humans.resources import (
     OMEX_ICGMODEL,
     REPRESSILATOR_SBML,
 )
-from sbml4humans.sbmlinfo import MAX_UNIT_INFERENCE_DEPTH
 
 
 # The report of a curated biomodel example is the one of its main SBML entry
@@ -215,14 +211,16 @@ def test_report_for_bytes_gzipped_sbml() -> None:
 
 def test_report_for_bytes_invalid() -> None:
     """Content which is neither SBML nor an archive raises."""
-    with pytest.raises(ValueError, match="No SBML model could be read"):
+    with pytest.raises(ValueError, match="unknown token at 1:1"):
         report_for_bytes(b"this is not a model")
 
 
 def test_report_for_sbml_without_model() -> None:
     """An SBML document without model raises with the libsbml errors."""
     with pytest.raises(ValueError, match="No SBML model"):
-        report_for_sbml('<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core"/>')
+        report_for_sbml(
+            '<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2"/>'
+        )
 
 
 def test_error_of_unreadable_content_names_no_path() -> None:
@@ -234,8 +232,7 @@ def test_error_of_unreadable_content_names_no_path() -> None:
     with pytest.raises(ValueError) as error:
         report_for_bytes(b"<not-sbml/>")
     message = str(error.value)
-    assert message.startswith("No SBML model could be read:")
-    assert "line 1:" in message
+    assert message == "The source is not an SBML document."
     assert tempfile.gettempdir() not in message
     assert "model.xml" not in message
 
@@ -318,7 +315,9 @@ def test_an_archive_beyond_the_limits_is_refused(
 
     monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 1024)
     large = _archive(tmp_path / "large.omex", {"large.txt": b"x" * 2048})
-    with pytest.raises(ContentTooLargeError, match="larger than the limit"):
+    with pytest.raises(
+        ContentTooLargeError, match="uncompressed archive exceeds the source limit"
+    ):
         report_for_bytes(large.read_bytes())
 
     monkeypatch.setattr(limits, "MAX_CONTENT_SIZE", 100 * 1024 * 1024)
@@ -463,28 +462,6 @@ def test_a_link_out_of_the_trusted_directory_is_not_followed(tmp_path: Path) -> 
     assert list(response.reports) == ["./body.xml"]
 
 
-def test_out_of_memory_of_libsbml_is_a_memory_error(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """A read which libsbml ends out of memory raises `MemoryError`, no read error.
-
-    libsbml catches the failed allocation of the parser itself and logs the error
-    `XMLOutOfMemory`; the child of a validation reports it as `memory` like a
-    `MemoryError` of python.
-    """
-    from sbml4humans import report
-    from sbml4humans.sbmlinfo import SBMLDocumentInfo
-
-    def out_of_memory(source: Path | str) -> libsbml.SBMLDocument:
-        doc = libsbml.SBMLDocument(3, 2)
-        doc.getErrorLog().add(libsbml.SBMLError(libsbml.XMLOutOfMemory))
-        return doc
-
-    monkeypatch.setattr(SBMLDocumentInfo, "read", staticmethod(out_of_memory))
-    with pytest.raises(MemoryError, match="Out of memory"):
-        report._Entry(REPRESSILATOR_SBML)
-
-
 # -------------------------------------------------------------------------------------
 # a math the backend cannot typeset costs the latex of that math and nothing else
 # -------------------------------------------------------------------------------------
@@ -511,7 +488,7 @@ def _level_1_kinetic_law_sbml(formula: str) -> bytes:
 
 @pytest.mark.parametrize("formula", ["lambda()", "1 + lambda()", "abs(lambda())"])
 def test_a_lambda_without_children_keeps_the_report(formula: str) -> None:
-    """A math which libsbml cannot write as MathML costs its latex alone.
+    """Malformed lambdas retain their formula and Rust's safe rendering.
 
     `writeMathMLToString` of libsbml segfaults on a childless lambda, whether
     it is the whole math or sits anywhere inside it (sbmlteam/libsbml#521), so
@@ -525,7 +502,8 @@ def test_a_lambda_without_children_keeps_the_report(formula: str) -> None:
     assert kinetic_law is not None
     assert kinetic_law.math is not None
     assert kinetic_law.math.formula == formula
-    assert kinetic_law.math.latex is None
+    assert kinetic_law.math.latex is not None
+    assert "lambda" in kinetic_law.math.latex
 
 
 def _nested_difference_sbml(depth: int) -> bytes:
@@ -648,41 +626,6 @@ def _deep_constraint_sbml(depth: int) -> bytes:
     ).encode()
 
 
-@pytest.mark.parametrize(
-    ("depth", "derived"),
-    [(MAX_UNIT_INFERENCE_DEPTH, "mol"), (MAX_UNIT_INFERENCE_DEPTH + 1, None)],
-)
-def test_a_math_too_deep_for_the_unit_inference_keeps_the_report(
-    depth: int, derived: str | None
-) -> None:
-    """Past the bound the derived units are absent and nothing else changes.
-
-    The unit inference of libsbml recurses over the math of the whole model on
-    the first element of it which is asked for its derived units, and ends the
-    process with SIGSEGV about 40,200 levels deep (issue #130), which no error
-    response can answer. The report therefore does not ask for the derived
-    units of a model which carries a math deeper than the bound, and the
-    optional attribute stays absent for every element of it. At the bound they
-    are reported, so the guard is no blanket switch of the inference.
-    """
-    response = report_for_bytes(_deep_constraint_sbml(depth))
-    _check_report(response)
-    (entry,) = response.reports.values()
-    model = entry.report.models[0]
-    assert [p.derived_units for p in model.list_of_parameters] == [derived, derived]
-    (rule,) = model.list_of_rules
-    assert rule.derived_units == derived
-    # everything else of the report is there, whichever way the guard went
-    assert [p.id for p in model.list_of_parameters] == ["a", "x"]
-    assert rule.math is not None
-    assert rule.math.latex is not None
-    (constraint,) = model.list_of_constraints
-    assert constraint.math is not None
-    assert constraint.math.latex is not None
-    assert entry.report.ode_error is None
-    assert entry.report.ode_system is not None
-
-
 # the report of a document in a child process, which a crash of libsbml ends
 # with a signal instead of taking the test process down with it
 _REPORT_IN_A_CHILD = """
@@ -724,10 +667,10 @@ def _report_in_a_child(tmp_path: Path, sbml: bytes) -> list[str]:
 
 
 @pytest.mark.slow
-def test_a_math_which_crashes_the_unit_inference_keeps_the_report(
+def test_a_math_beyond_the_native_depth_bound_is_refused_without_a_crash(
     tmp_path: Path,
 ) -> None:
-    """The report of the model of issue #130 is answered, in a child process.
+    """The model of issue #130 reaches Rust's explicit depth bound safely.
 
     A model whose one assignment rule sums 45,000 parameters is 3 MB of xml,
     well inside `MAX_CONTENT_SIZE`, and libsbml reads it without a single
@@ -750,7 +693,18 @@ def test_a_math_which_crashes_the_unit_inference_keeps_the_report(
         f"<apply><plus/>{cis}</apply></math></assignmentRule>"
         "</listOfRules></model></sbml>"
     ).encode()
-    assert _report_in_a_child(tmp_path, sbml) == [str(terms + 1), "None"]
+    source = tmp_path / "document.xml"
+    source.write_bytes(sbml)
+    child = subprocess.run(
+        [sys.executable, "-c", _REPORT_IN_A_CHILD, str(source)],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    assert child.returncode == 1, child.stderr
+    assert "ValueError:" in child.stderr
+    assert "the math is nested deeper than 10000 levels" in child.stderr
 
 
 # -------------------------------------------------------------------------------------
@@ -1072,9 +1026,9 @@ def test_a_document_at_the_budget_keeps_its_equations(
     """The budget is the largest expanded size whose equations are built."""
     path = tmp_path / "fan_out.xml"
     path.write_bytes(fan_out_document(2))
-    with report._read(path, trusted=False) as read:
-        size = report._expanded_size(read.entries, report.SBML_LOCATION)
-    assert size is not None
+    # Independent fixture count: 10 instantiated definitions, each containing
+    # 10 empty instances, plus their owning SBML/list containers and parameter.
+    size = 235
     (at_budget,) = report_for_path(path, budget=size).reports.values()
     assert at_budget.report.ode_system is not None
     assert at_budget.report.ode_error is None
@@ -1107,7 +1061,7 @@ def test_the_budget_of_the_expanded_size_reaches_the_child(
     A child of the forkserver does not see a `monkeypatch` of the server, so
     the budget goes to it in its job, as the limits do.
     """
-    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 1)
+    monkeypatch.setattr(limits, "MAX_EXPANDED_ELEMENTS", 1)
     packed = report_gzip_for_bytes(fan_out_document(2))
     (entry,) = ReportResponse.model_validate_json(
         gzip.decompress(packed)
@@ -1123,138 +1077,3 @@ def test_the_budget_of_the_expanded_size_reaches_the_child(
 # the stack the child of `_report_gzip_unguarded` reports within, the default of a
 # linux process; a login shell or a CI runner gives a process far more
 _UNGUARDED_CHILD_STACK = 8 * 1024**2
-
-
-def _derives_units_unguarded(
-    self: sbmlinfo.SBMLDocumentInfo, model: libsbml.Model
-) -> bool:
-    """Ask libsbml for the derived units of every model, whatever its math is."""
-    return True
-
-
-def _report_gzip_unguarded(job: ReportJob) -> Iterator[tuple[str, bytes]]:
-    """Report a source in the child, with the guard of the unit inference lifted.
-
-    `SBMLDocumentInfo._derives_units` is the whole guard: it answers false for
-    a model one math of which costs more than `MAX_UNIT_INFERENCE_DEPTH` levels
-    of recursion, every call of a function definition expanded, and for one
-    whose function definitions hold a cycle. A guard which answers true is the
-    report as it was before the guard, which is what the isolation has to
-    survive.
-
-    It is lifted here and not in the server, because a child is forked from a
-    forkserver which imported `sbmlinfo` before any `monkeypatch` of the
-    server, so a patched attribute of the server never reaches the child and
-    the guard would hold inside it. `multiprocessing` pickles the function of a
-    child by its name, so the child imports this module and runs this
-    replacement of `report.report_gzip`, which lifts the guard where libsbml
-    runs.
-
-    The stack of the child is pinned to `_UNGUARDED_CHILD_STACK` first, because
-    the depth at which the C++ recursion of libsbml overflows is a property of
-    the stack the process got and not of the document: a child which inherits
-    the stack of the machine crashes on the two shapes whose recursion is
-    deep but finite, a chain of 200 definitions called 200 deep and a sum of
-    45,000 terms, under the 8 MiB of a default linux process and reports them
-    whole under the 64 MiB of a CI runner, where the compatibility reader can finish the recursion. Pinning the stack makes the
-    crash a property of the document again. Only the soft limit is lowered and
-    only where it is larger, so a machine with a smaller stack keeps it. The
-    child of a report of the server inherits the stack of its machine, which is
-    right: a larger stack means fewer crashes and not more.
-
-    Args:
-        job: the source and the limits it is read within.
-
-    Yields:
-        The one pair of `report.report_gzip`, for a document which survives.
-    """
-    # there is no module `resource` on Windows, where this test is skipped
-    import resource
-
-    soft, hard = resource.getrlimit(resource.RLIMIT_STACK)
-    stack = _UNGUARDED_CHILD_STACK
-    if soft != resource.RLIM_INFINITY:
-        stack = min(stack, soft)
-    resource.setrlimit(resource.RLIMIT_STACK, (stack, hard))
-    sbmlinfo.SBMLDocumentInfo._derives_units = _derives_units_unguarded
-    yield from report.report_gzip(replace(job, parser="python"))
-
-
-@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
-@pytest.mark.parametrize(
-    "document",
-    [
-        pytest.param(_self_recursive_sbml, id="a definition which calls itself"),
-        pytest.param(_mutually_recursive_sbml, id="two definitions in a cycle"),
-        pytest.param(
-            partial(_call_chain_sbml, 200, 200), id="200 definitions called 200 deep"
-        ),
-        # no test of minutes: the child dies on the first element of the model
-        # it builds, so this shape costs the read of the document and the crash
-        # alone, as the three cheap ones above do. The terms are the levels of
-        # the recursion, and against the pinned stack of the child a sum of
-        # 40,000 of them is reported whole while one of 41,000 crashes libsbml,
-        # so the number is twice that threshold: a crash of the document and
-        # not of the version of libsbml which happens to recurse a little
-        # cheaper than the one it was measured against
-        pytest.param(partial(_wide_sum_sbml, 80000), id="a sum of 80,000 terms"),
-    ],
-)
-def test_a_document_which_crashes_libsbml_is_an_error_and_the_server_lives(
-    document: Callable[[], bytes],
-    monkeypatch: pytest.MonkeyPatch,
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """A document which ends the process of libsbml costs its one request.
-
-    Three times a document which libsbml read without a single error ended the
-    process which built its report (issues #127 and #130), and every guard
-    which keeps one of those shapes out of libsbml is narrow by construction:
-    it holds the shape which was measured and says nothing of the next one.
-    With the guard of the unit inference lifted inside the child, each of the
-    shapes of #130 crashes libsbml again, and the client reads the one sentence
-    of an interrupted report while the process which answered it reports the
-    next document. Without the child the crash ends the process which asked for
-    the report, this test process, with SIGSEGV, which no response can answer.
-    """
-    monkeypatch.setattr(report, "report_gzip", _report_gzip_unguarded)
-    with pytest.raises(ReportInterruptedError, match="ended unexpectedly") as raised:
-        report_gzip_for_bytes(document())
-    assert raised.value.interruption == "crashed"
-    assert raised.value.work == "report"
-    # the segmentation fault of libsbml is what ended the child, not an error of
-    # python and not a child which never ran
-    assert f"signal {signal.SIGSEGV} SIGSEGV" in caplog.text
-    # this process lived: the next document is reported as every other one is,
-    # by a child of the report as the server gives it
-    monkeypatch.undo()
-    packed = report_gzip_for_bytes((EXAMPLES_DIR / "annotation.xml").read_bytes())
-    _check_report(ReportResponse.model_validate_json(gzip.decompress(packed)))
-
-
-@pytest.mark.skipif(sys.platform == "win32", reason="no signals on Windows")
-def test_a_crash_of_libsbml_is_an_error_of_the_contract(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """A client of the api reads a crash of libsbml as the error of its request.
-
-    The one sentence of the interruption, status 200 like every answer of the
-    contract, no warning and no traceback for a request which sets no
-    `api.TRACEBACK_STATE`, and the next request is answered with its report.
-    """
-    monkeypatch.setattr(report, "report_gzip", _report_gzip_unguarded)
-    response = client.post("/api/content", content=_self_recursive_sbml())
-    assert response.status_code == 200
-    data = response.json()
-    assert set(data) == {"errors", "warnings", "info"}
-    assert data["errors"] == [
-        "The document could not be reported: the process which read it ended "
-        "unexpectedly."
-    ]
-    assert data["warnings"] == []
-    assert data["info"] == {}
-    # the server lived: it answers the next request with the report of its document
-    monkeypatch.undo()
-    answer = client.post("/api/content", content=REPRESSILATOR_SBML.read_bytes())
-    assert answer.status_code == 200
-    _check_report(ReportResponse.model_validate(answer.json()))

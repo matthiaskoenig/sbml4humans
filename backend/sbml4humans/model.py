@@ -58,7 +58,7 @@ Double = Annotated[
 class Math(ReportModel):
     """The math of an element as latex and as L3 formula string.
 
-    The latex is absent for a math the backend cannot typeset (`mathml.py`),
+    The latex is absent for math the shared Rust renderer cannot typeset,
     and the report then shows the infix formula alone.
     """
 
@@ -67,7 +67,7 @@ class Math(ReportModel):
 
 
 class CVTerm(ReportModel):
-    """An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.
+    """An annotation: an SBML biological or model qualifier with its resources.
 
     A term can carry terms of its own, which qualify it further: the evidence
     for a relation or the modification of a protein (core §6).

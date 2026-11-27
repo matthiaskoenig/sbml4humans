@@ -75,7 +75,7 @@ from starlette.middleware.gzip import GZipMiddleware
 from starlette.responses import Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from sbml4humans import __version__, isolation, limits
+from sbml4humans import __version__, isolation, limits, native
 from sbml4humans.annotations import (
     CHEBI_ID,
     MAX_RESOURCE_LENGTH,
@@ -88,7 +88,6 @@ from sbml4humans.examples import (
     ExampleMetaData,
     load_examples,
     ode_for_example,
-    report_for_example,
     validation_for_example,
 )
 from sbml4humans.limits import ContentTooLargeError, format_size
@@ -102,6 +101,7 @@ from sbml4humans.report import (
     Work,
     ode_for_bytes,
     report_gzip_for_bytes,
+    report_gzip_for_path,
     validation_for_bytes,
 )
 from sbml4humans.uploads import CLEANUP_INTERVAL, UploadStore, upload_store
@@ -152,6 +152,7 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
     The examples are read and the forkserver of the validations is started on
     startup, so that the first requests are fast.
     """
+    native._reader()
     load_examples()
     isolation.start_forkserver()
     cleanup = asyncio.create_task(remove_expired_uploads(upload_store()))
@@ -400,9 +401,8 @@ def example_report_gzip(example_id: str) -> bytes:
     example: ExampleMetaData | None = load_examples().get(example_id)
     if example is None:
         raise ExampleNotFoundError(example_id)
-    report = report_for_example(example)
-    return gzip.compress(
-        report.model_dump_json(by_alias=True).encode(), compresslevel=GZIP_LEVEL
+    return report_gzip_for_path(
+        example.file, trusted=True, source_entry=example.location
     )
 
 

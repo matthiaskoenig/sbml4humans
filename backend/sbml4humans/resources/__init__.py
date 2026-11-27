@@ -1,7 +1,6 @@
 """Resources of sbml4humans: the example models served by the api.
 
-The models are the example models and the first curated biomodels, the xslt
-stylesheets render the math of the report.
+The models are the example models and the first curated biomodels.
 """
 
 from pathlib import Path
@@ -12,9 +11,6 @@ RESOURCES_DIR = Path(__file__).parent
 # the built frontend, which `npm run build:package` writes and the wheel ships;
 # it is not part of the repository
 FRONTEND_DIR = RESOURCES_DIR / "frontend"
-
-# stylesheets of the content MathML -> presentation MathML -> latex conversion
-XSLT_DIR = RESOURCES_DIR / "xslt"
 
 # -------------------------------------------------------------------------------------
 # COMBINE archives

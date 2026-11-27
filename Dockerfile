@@ -12,6 +12,7 @@ RUN apt-get update \
 WORKDIR /build
 COPY parser-source.json /build/parser-source.json
 COPY scripts/build_parser.py /build/scripts/build_parser.py
+COPY backend/build_native.py /build/backend/build_native.py
 RUN python3 scripts/build_parser.py --wheel-out /wheels
 
 FROM python:3.14-slim-trixie
@@ -20,7 +21,6 @@ COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /usr/local/bin/uv
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    SBML4HUMANS_PARSER=rust \
     UV_PYTHON_DOWNLOADS=never \
     UV_LINK_MODE=copy \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
@@ -37,9 +37,8 @@ RUN apt-get update \
 # and docker-compose-develop.yml mounts the repository over /code (read-only) so that the
 # container serves the working tree
 COPY ./backend /code/backend
-RUN uv sync --project /code/backend --locked --no-dev --no-cache
 COPY --from=native-parser /wheels /wheels
-RUN uv pip install --python /opt/venv/bin/python --no-deps /wheels/*.whl \
+RUN SBML4HUMANS_NATIVE_WHEEL=/wheels uv sync --project /code/backend --locked --no-dev --no-cache \
     && rm -rf /wheels
 
 # the server runs as an unprivileged user which cannot change the code. It writes only to its
