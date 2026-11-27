@@ -3,12 +3,15 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import * as client from "@/api/client";
+import { readSource } from "@/parsing/reader";
 import { vTooltip } from "@/directives/tooltip";
 import ReportPage from "@/pages/ReportPage.vue";
 import { router } from "@/router";
 import { LOCAL_PING_INTERVAL, useReportStore } from "@/stores/report";
 
 import { loadFixture, loadValidationFixture } from "./fixtures";
+
+vi.mock("@/parsing/reader", () => ({ readSource: vi.fn() }));
 
 vi.mock("@/api/client", async (importOriginal) => {
   const original = await importOriginal<typeof client>();
@@ -45,7 +48,7 @@ describe("ReportPage", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.mocked(client.getExample).mockReset();
-    vi.mocked(client.postContent).mockReset();
+    vi.mocked(readSource).mockReset();
     // a validation which never answers unless a test answers it
     for (const request of [
       client.getExampleValidation,
@@ -159,7 +162,7 @@ describe("ReportPage", () => {
   it("does not ping for a report which is not a local one", async () => {
     vi.useFakeTimers();
     vi.mocked(client.pingLocal).mockReset();
-    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(readSource).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
     await mountReport();
@@ -168,7 +171,7 @@ describe("ReportPage", () => {
   });
 
   it("shows the report of pasted content on /report", async () => {
-    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(readSource).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
     const page = await mountReport();
@@ -177,7 +180,7 @@ describe("ReportPage", () => {
   });
 
   it("opens the inspector at the right of the tables and carries the footer", async () => {
-    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(readSource).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
     const pk = store.indexFor(store.defaultEntry!)!.mainModel!.pk;
@@ -198,7 +201,7 @@ describe("ReportPage", () => {
   });
 
   it("opens with the model in the inspector, which a reader can close", async () => {
-    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(readSource).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
     const model = store.indexFor(store.defaultEntry!)!.mainModel!;
@@ -216,7 +219,7 @@ describe("ReportPage", () => {
   });
 
   it("links the list of a table from its heading where the list states something", async () => {
-    vi.mocked(client.postContent).mockResolvedValue(loadFixture("list_of"));
+    vi.mocked(readSource).mockResolvedValue(loadFixture("list_of"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
     const index = store.indexFor(store.defaultEntry!)!;
@@ -242,7 +245,7 @@ describe("ReportPage", () => {
   });
 
   it("keeps the element a url names", async () => {
-    vi.mocked(client.postContent).mockResolvedValue(loadFixture("repressilator"));
+    vi.mocked(readSource).mockResolvedValue(loadFixture("repressilator"));
     const store = useReportStore();
     await store.loadContent("<sbml/>");
     const index = store.indexFor(store.defaultEntry!)!;

@@ -2,6 +2,14 @@
 
 The reusable network renderer is the local `@graphvis/viewer` package in `frontend/vendor/graphvis-viewer`. Its source is maintained in the graphvis repository under `packages/viewer`; `npm run viewer:sync -- /path/to/sbml4humans` from that repository updates the snapshot. The SBML projection adapter is `frontend/src/report/network.ts`; it consumes the existing report and preserves its element keys. `npm run test:network` from `frontend/` runs the network browser checks against real report fixtures without a backend, using Chromium's software WebGL renderer. This is functional verification, not a hardware performance benchmark.
 
+The SBML parser is maintained in [sbml4humans-core](https://github.com/matthiaskoenig/sbml4humans-core). `parser-source.json` pins its reviewed revision. The generated runtime package in `frontend/vendor/sbml4humans-core` contains import-free WebAssembly and the worker loaders; `SOURCE.json` records every artifact hash and the application schema hash. Normal frontend builds need no Rust compiler. `python3 scripts/build_parser.py --check` checks the committed package; `--verify-build` rebuilds it from the pinned revision and compares every artifact, while `--wasm` updates the package when the pin changes. Rebuilding requires Rust 1.100.0 with `wasm32-unknown-unknown` installed and Node 24.
+
+The browser uses this source pipeline for selected files and pasted content, with a worker per load and a shared compiled module. Cancellation terminates the worker and stale loads cannot replace a newer report. Validation and ODE file exports keep their existing backend paths and original source. Archives resolve external definitions only within their supplied entries.
+
+The production backend image builds and installs the native ABI3 extension from the same pin. `SBML4HUMANS_PARSER=auto` uses a compatible `source/1` extension when installed and the Python implementation otherwise; `rust` requires it, and `python` selects compatibility mode. Parser selection, limits and expansion budgets are captured in each isolated job. Native errors are never retried through Python. Trusted directory reads, libsbml validation and sbmlode file exports retain their existing implementations.
+
+For a native development server, run `python3 scripts/build_parser.py --wheel-out /tmp/parser-wheels`, install the resulting wheel with `uv pip install --python backend/.venv/bin/python /tmp/parser-wheels/*.whl`, and launch with `uv run --no-sync` after the normal backend installation. The extension remains optional for the pure Python package; regular frontend assets include the browser runtime.
+
 Everything below starts from a clone of the repository:
 
 ```bash

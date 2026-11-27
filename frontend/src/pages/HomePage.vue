@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeUnmount, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import logo from "@/assets/logo.png";
@@ -22,11 +22,15 @@ const TABS: { id: Tab; label: string }[] = [
 const router = useRouter();
 const store = useReportStore();
 const tab = ref<Tab>("upload");
+let active = true;
+onBeforeUnmount(() => {
+  active = false;
+});
 
-async function submit(load: () => Promise<void>, route: { url?: string } = {}): Promise<void> {
+async function submit(load: () => Promise<boolean>, route: { url?: string } = {}): Promise<void> {
   store.clear();
-  await load();
-  if (!store.error)
+  const loaded = await load();
+  if (active && loaded && !store.error)
     await router.push({ name: "report", query: route.url ? { url: route.url } : {} });
 }
 </script>
@@ -64,10 +68,17 @@ async function submit(load: () => Promise<void>, route: { url?: string } = {}): 
     </div>
 
     <div class="mt-6">
-      <LoadingState
-        v-if="store.loading"
-        :message="`Creating the report of ${store.source?.name ?? 'the model'}`"
-      />
+      <div v-if="store.loading" class="flex flex-col items-center">
+        <LoadingState :message="`Creating the report of ${store.source?.name ?? 'the model'}`" />
+        <button
+          type="button"
+          class="rounded border border-gray-300 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+          data-testid="load-cancel"
+          @click="store.clear()"
+        >
+          Cancel
+        </button>
+      </div>
       <template v-else>
         <FileUpload
           v-if="tab === 'upload'"

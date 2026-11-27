@@ -17,16 +17,15 @@ import {
   getUrlValidation,
   type OdeDownloadFile,
   type OdeFormat,
-  postContent,
   postContentOde,
   postContentValidation,
-  postFile,
   postFileOde,
   postFileValidation,
   toApiError,
   TOO_MANY_REQUESTS,
 } from "@/api/client";
 import type { ReportResponse, ValidationResponse } from "@/api/types";
+import { readSource } from "@/parsing/reader";
 import { ReportIndex } from "@/report/index";
 import { ValidationIndex } from "@/report/validationIndex";
 
@@ -87,6 +86,8 @@ export const useReportStore = defineStore("report", () => {
   let generation = 0;
   /** Aborts the validation request of the current report. */
   let validationController: AbortController | null = null;
+  /** Cancels the current parser worker when another load or clear supersedes it. */
+  let reportController: AbortController | null = null;
 
   /** The manifest locations of the SBML entries with a report. */
   const entries = computed(() => (response.value ? Object.keys(response.value.reports) : []));
@@ -189,12 +190,14 @@ export const useReportStore = defineStore("report", () => {
 
   async function load(
     next: ReportSource,
-    request: () => Promise<ReportResponse>,
+    request: (signal: AbortSignal) => Promise<ReportResponse>,
     validation: (signal: AbortSignal) => Promise<ValidationResponse>,
     ode: OdeDownload,
-  ): Promise<void> {
-    if (response.value && source.value && sameSource(source.value, next)) return;
+  ): Promise<boolean> {
+    if (response.value && source.value && sameSource(source.value, next)) return true;
     const current = ++generation;
+    reportController?.abort();
+    const controller = (reportController = new AbortController());
     download = ode;
     codes = new Map();
     resetValidation();
@@ -205,20 +208,21 @@ export const useReportStore = defineStore("report", () => {
     source.value = next;
     let connected: Map<string, ReportIndex>;
     try {
-      const result = await request();
-      if (current !== generation) return;
+      const result = await request(controller.signal);
+      if (current !== generation) return false;
       connected = ReportIndex.forEntries(result.reports);
       for (const index of connected.values()) markRaw(index);
       indexes.value = connected;
       response.value = result;
     } catch (caught) {
       if (current === generation) error.value = toApiError(caught);
-      return;
+      return false;
     } finally {
       if (current === generation) loading.value = false;
     }
     // a file and pasted content are not part of the url of the page, a reload loses them
     void validate(connected, validation, next.kind !== "file" && next.kind !== "content");
+    return true;
   }
 
   const loadExample = (id: string) =>
@@ -252,20 +256,22 @@ export const useReportStore = defineStore("report", () => {
   const loadFile = (file: File) =>
     load(
       { kind: "file", name: file.name },
-      () => postFile(file),
+      (signal) => readSource(file, signal),
       (signal) => postFileValidation(file, signal),
       (format, location) => postFileOde(file, format, location),
     );
   const loadContent = (text: string) =>
     load(
       { kind: "content", name: "pasted SBML" },
-      () => postContent(text),
+      (signal) => readSource(text, signal),
       (signal) => postContentValidation(text, signal),
       (format, location) => postContentOde(text, format, location),
     );
 
   function clear(): void {
     generation += 1;
+    reportController?.abort();
+    reportController = null;
     download = null;
     codes = new Map();
     resetValidation();

@@ -12,6 +12,7 @@ export default defineConfig([
       "dist-e2e/",
       "dist-network/",
       "node_modules/",
+      "vendor/sbml4humans-core/",
       "src/types/report.ts",
       "src/types/annotation.ts",
       "src/types/validation.ts",

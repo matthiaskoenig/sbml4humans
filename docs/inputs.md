@@ -1,6 +1,6 @@
 # Loading a model
 
-A report is created from a model you provide. The home page offers three ways to do that, and the examples page offers models which are already there. A fourth way does not use the web application at all: the python package opens the report of a file on your own machine, as [Reports from python](python.md) describes. Whatever the input is, it is sent to the backend, which reads it with libsbml and answers with the data the report is built from. The file is written to a temporary file for that and is deleted with the request, it is not stored.
+A report is created from a model you provide. The home page offers three ways to do that, and the examples page offers models which are already there. A fourth way does not use the web application at all: the python package opens the report of a file on your own machine, as [Reports from python](python.md) describes. Selected files and pasted SBML are parsed in a browser worker, including gzipped SBML and COMBINE archives. Their validation and requested ODE file exports use the existing backend endpoints and send the original source. URL, example and shared-upload reports are requested from the backend. Temporary request files are deleted with the request and are not stored.
 
 ## The three inputs
 
@@ -16,11 +16,11 @@ The home page has a tab for each input: "Upload", "URL" and "Paste".
 
 ## The accepted formats
 
-The backend recognises three kinds of input, and it recognises them by their content, not by the name of the file:
+The reader recognises three kinds of input by their content, rather than by the name of the file:
 
 | input | what it is |
 | --- | --- |
-| SBML | an XML file of any SBML level and version which libsbml can read |
+| SBML | an SBML XML file |
 | gzipped SBML | the same file compressed with gzip, which is how large models are usually shipped |
 | COMBINE archive | a zip file with a manifest, usually with the extension `.omex`, holding one or more SBML files next to the other files of a study |
 
@@ -58,9 +58,9 @@ Other tools open a model in sbml4humans with an upload that has an address: they
 
 ## When a model cannot be read
 
-The application shows what went wrong instead of an empty report. The message comes from the backend and the errors of libsbml are part of it, so a file which is not valid SBML is reported with the line and the reason libsbml gives:
+The application shows what went wrong instead of an empty report. The message comes from the parser which reads the source. A browser parse failure is shown directly and is never retried by uploading the file for another parser. Invalid XML reports its position; backend validation retains the detailed libsbml issues:
 
-- a file which contains no model at all is reported as "No SBML model could be read", followed by the error log of libsbml
+- a file which contains no model at all is reported as "No SBML model could be read"
 - a url which answers with an error is reported with the status of the request; a url which cannot be reached at all, or which is still downloading after 60 seconds, is reported without one
 - a url which is no `http` or `https` address of the public internet is reported as not downloaded
 - an upload, pasted content or a download larger than 100 MB is refused, and so is a gzipped model which decompresses to more than 100 MB or a COMBINE archive with more than 1000 entries, more than 100 MB uncompressed or an entry which is compressed more than 200 times
