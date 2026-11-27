@@ -17,7 +17,7 @@ uv sync --project backend --locked
 uv run --project backend --no-sync uvicorn sbml4humans.api:api --port 1444
 ```
 
-Native builds default to two Cargo jobs and two CMake jobs. `CARGO_BUILD_JOBS` and `CMAKE_BUILD_PARALLEL_LEVEL` can allocate a different build budget. `SBML4HUMANS_BUILD_CACHE` selects the build cache, otherwise it is `~/.cache/sbml4humans-build`. A process lock prevents concurrent source builds from duplicating the same compilation. libSBML prefixes are shared by build-script hash, so a report-only Rust change does not rebuild the C++ library. `LIBSBML_DIR` selects an existing compatible prefix.
+Native builds default to two Cargo jobs and two CMake jobs. `CARGO_BUILD_JOBS` and `CMAKE_BUILD_PARALLEL_LEVEL` can allocate a different build budget. `SBML4HUMANS_BUILD_CACHE` selects the build cache, otherwise it is `~/.cache/sbml4humans-build`. A process lock prevents concurrent source builds from duplicating the same compilation. Native caches distinguish the host platform, architecture and libc version. libSBML prefixes are shared by build-script hash, so a report-only Rust change does not rebuild the C++ library. `LIBSBML_DIR` selects an existing compatible prefix.
 
 CI builds the native runtime once and passes the same artifact to backend tests, documentation, browser tests and package builds. The production image is built separately and checked with its installed private runtime. Release builds do not restore the native build cache.
 

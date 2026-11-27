@@ -10,6 +10,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import platform
 import subprocess
 import sys
 import sysconfig
@@ -40,6 +41,12 @@ def cache_root() -> Path:
     return base
 
 
+def platform_key() -> str:
+    """Separate shared build caches by architecture, OS and libc compatibility."""
+    libc, version = platform.libc_ver()
+    return "-".join(part for part in (sysconfig.get_platform(), libc, version) if part)
+
+
 def build_core(source: Path, output: Path, pin: dict[str, str]) -> Path:
     """Build the pinned validation-enabled ABI3 wheel with shared native dependencies."""
     revision = subprocess.check_output(
@@ -62,7 +69,7 @@ def build_core(source: Path, output: Path, pin: dict[str, str]) -> Path:
     if not env.get("LIBSBML_DIR"):
         script = source / "scripts/build-libsbml.sh"
         fingerprint = hashlib.sha256(script.read_bytes()).hexdigest()
-        dependencies = cache_root() / "libsbml" / fingerprint
+        dependencies = cache_root() / "libsbml" / platform_key() / fingerprint
         prefix = dependencies / "prefix"
         if not (
             (prefix / "include/sbml/SBMLTypes.h").is_file()
@@ -185,9 +192,7 @@ def runtime() -> tuple[Path, str]:
                     "SBML4HUMANS_NATIVE_WHEEL must select exactly one runtime wheel."
                 )
             return payload(wheels[0], pin)
-        wheels_dir = (
-            cache_root() / "wheels" / sysconfig.get_platform() / pin["revision"]
-        )
+        wheels_dir = cache_root() / "wheels" / platform_key() / pin["revision"]
         wheels = list(wheels_dir.glob("*.whl"))
         if len(wheels) == 1:
             return payload(wheels[0], pin)
