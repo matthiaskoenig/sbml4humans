@@ -2,9 +2,6 @@
 
 import json
 from collections.abc import Iterator
-from pathlib import Path
-
-import pytest
 
 from sbml4humans.model import (
     AlgebraicRule,
@@ -29,8 +26,6 @@ from sbml4humans.model import (
     SBMLDocument,
     Species,
 )
-from sbml4humans.resources import API_EXAMPLES_MODEL
-from sbml4humans.sbmlinfo import SBMLDocumentInfo
 
 
 def test_json_uses_camel_case() -> None:
@@ -271,24 +266,3 @@ def test_report_round_trip() -> None:
     assert data["linkGraph"]["edges"][0]["kind"] == "compartment"
     assert data["models"][0]["listOfSpecies"][0]["compartment"] == "c"
     assert Report.model_validate(data) == report
-
-
-@pytest.mark.parametrize(
-    "path",
-    [
-        # the genome scale model takes half a minute, see the `slow` marker in pyproject.toml
-        pytest.param(p, marks=pytest.mark.slow) if p.name == "Recon3D.xml.gz" else p
-        for p in API_EXAMPLES_MODEL
-    ],
-    ids=lambda path: path.name,
-)
-def test_examples_round_trip(path: Path) -> None:
-    """Every example builds a report which survives the JSON round trip."""
-    report = SBMLDocumentInfo.from_sbml(path)
-    data = report.model_dump(mode="json", by_alias=True)
-    assert Report.model_validate(data) == report
-    nodes = report.link_graph.nodes
-    pks = [n.pk for n in nodes.values()]
-    assert len(pks) == len(set(pks))
-    for edge in report.link_graph.edges:
-        assert edge.source in nodes and edge.target in nodes

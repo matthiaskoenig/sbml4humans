@@ -1,6 +1,7 @@
 {
   "repository": "https://github.com/matthiaskoenig/sbml4humans-core.git",
-  "revision": "a25d96e390c152e21d41f8945053dd36a26e1b34",
+  "revision": "6afcdb047bbbeb4152de3ffee07855acaf5e0b7d",
   "reportContract": "report/1",
-  "sourceContract": "source/1"
+  "sourceContract": "source/1",
+  "hostContract": "host/1"
 }

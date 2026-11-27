@@ -91,6 +91,7 @@ nav = [
   { "References" = "references.md" },
   { "Release notes" = "release-notes.md" },
   { "Development" = "development.md" },
+  { "Native runtime" = "native-runtime.md" },
 ]
 
 [project.theme]

@@ -61,6 +61,7 @@ from sbml4humans.api import (
     add_gzip,
     api,
     ode_response,
+    report_response,
     run_validation,
 )
 from sbml4humans.localstate import (
@@ -73,7 +74,7 @@ from sbml4humans.localstate import (
     write_state,
 )
 from sbml4humans.model import ReportResponse, ValidationResponse
-from sbml4humans.report import ode_for_path, report_for_path, validation_for_path
+from sbml4humans.report import ode_for_path, report_gzip_for_path, validation_for_path
 
 
 logger = logging.getLogger(__name__)
@@ -93,7 +94,7 @@ FETCH_SITES = ("same-origin", "none")
 class LocalReport:
     """A report of the server and the path it was built from, to validate it."""
 
-    report: ReportResponse
+    packed: bytes
     path: Path
 
 
@@ -109,10 +110,10 @@ class ReportStore:
         self.limit = limit
         self._reports: OrderedDict[str, LocalReport] = OrderedDict()
 
-    def add(self, report: ReportResponse, path: Path) -> str:
+    def add(self, packed: bytes, path: Path) -> str:
         """Keep the report of a path and return its token."""
         token = secrets.token_hex(16)
-        self._reports[token] = LocalReport(report=report, path=path)
+        self._reports[token] = LocalReport(packed=packed, path=path)
         while len(self._reports) > self.limit:
             self._reports.popitem(last=False)
         return token
@@ -279,8 +280,8 @@ class LocalApp:
                 raise FileNotFoundError(f"The file does not exist: '{path}'")
             # the path was chosen by the user of this machine, so the files next
             # to it which its external model definitions name are read as well
-            report = await run_in_threadpool(report_for_path, path, trusted=True)
-            token = self.reports.add(report, path)
+            packed = await run_in_threadpool(report_gzip_for_path, path, trusted=True)
+            token = self.reports.add(packed, path)
             return {
                 "token": token,
                 "url": f"http://{HOST}:{self.port}/report?local={token}",
@@ -291,10 +292,11 @@ class LocalApp:
             response_model=ReportResponse,
             response_model_by_alias=True,
         )
-        def read_report(token: str) -> ReportResponse:
+        async def read_report(request: Request, token: str) -> Response:
             """The report of a token."""
             try:
-                return self.reports.get(token).report
+                packed = self.reports.get(token).packed
+                return await report_response(request, packed)
             except KeyError:
                 raise ReportNotFoundError(token) from None
 
@@ -378,6 +380,9 @@ def serve(port: int, secret: str, idle_timeout: float = IDLE_TIMEOUT) -> None:
     """
     app = LocalApp(port=port, secret=secret, frontend=frontend_dir())
     # the first validation does not wait for the imports of the forkserver
+    from sbml4humans import native
+
+    native._reader()
     isolation.start_forkserver()
     server = uvicorn.Server(uvicorn.Config(app, host=HOST, port=port))
     state = state_file()

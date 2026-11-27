@@ -1,15 +1,15 @@
 """Build or verify the pinned Rust parser used by the application.
 
-The browser package is committed so regular frontend and Python package builds need
-no Rust toolchain. CI rebuilds it from pinned source and verifies every shipped byte.
+The browser package is committed so regular frontend builds need no Rust toolchain.
+Application wheels bundle the exact native runtime; source builds compile this pin. CI rebuilds it from pinned source and verifies every shipped byte.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
-import os
 import shutil
 import subprocess
 import tempfile
@@ -109,8 +109,17 @@ def render(source: Path, destination: Path, pin: dict[str, str]) -> None:
     (destination / "SOURCE.json").write_text(json.dumps(provenance, indent=2) + "\n")
 
 
+def native_manifest(pin: dict[str, str]) -> str:
+    """Record the single source pin in installed packages and source distributions."""
+    return json.dumps({"generator": "scripts/build_parser.py", **pin}, indent=2) + "\n"
+
+
 def verify(pin: dict[str, str]) -> None:
     """Check committed artifacts without a compiler, network or external checkout."""
+    if (ROOT / "backend/sbml4humans/native-source.json").read_text() != native_manifest(
+        pin
+    ):
+        raise SystemExit("The native runtime manifest differs from parser-source.json")
     provenance = json.loads((VENDOR / "SOURCE.json").read_text())
     for key, value in pin.items():
         if provenance.get(key) != value:
@@ -165,29 +174,23 @@ def main() -> None:
                     print("Rebuilt parser matches all committed artifacts.")
             else:
                 render(source, VENDOR, pin)
+                (ROOT / "backend/sbml4humans/native-source.json").write_text(
+                    native_manifest(pin)
+                )
+                for license_file in (source / "python/sbml4humans_core/licenses").glob(
+                    "*.txt"
+                ):
+                    shutil.copyfile(
+                        license_file, ROOT / "backend/licenses" / license_file.name
+                    )
         if args.wheel_out:
-            if not os.environ.get("LIBSBML_DIR"):
-                run(["bash", "scripts/build-libsbml.sh"], source)
-            output = args.wheel_out.resolve()
-            output.mkdir(parents=True, exist_ok=True)
-            run(
-                [
-                    "uv",
-                    "tool",
-                    "run",
-                    "--from",
-                    "maturin[patchelf]>=1.16,<2",
-                    "maturin",
-                    "build",
-                    "--release",
-                    "--locked",
-                    "--features",
-                    "validation",
-                    "--out",
-                    str(output),
-                ],
-                source,
+            spec = importlib.util.spec_from_file_location(
+                "sbml4humans_native_build", ROOT / "backend/build_native.py"
             )
+            assert spec is not None and spec.loader is not None
+            builder = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(builder)
+            builder.build_core(source, args.wheel_out.resolve(), pin)
 
 
 if __name__ == "__main__":

@@ -95,3 +95,7 @@ def format_size(size: int) -> str:
     if size >= 1024 * 1024:
         return f"{size / (1024 * 1024):g} MB"
     return f"{size} bytes"
+
+
+# Shared gate of comp validation and equation expansion, captured in worker jobs.
+MAX_EXPANDED_ELEMENTS = 10_000

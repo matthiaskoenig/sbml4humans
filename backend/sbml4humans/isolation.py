@@ -1,73 +1,14 @@
-"""The child processes which run the work of a request, bounded in time and memory.
+"""Bounded worker processes for native source operations.
 
-What libsbml does with untrusted content is not bounded by the size of the
-content, neither its validation nor its report, so all of that work, from
-reading the source on, runs in a child process of its own, one per request,
-which the server ends when it takes too long.
+Reports and ODE downloads use REPORT_BUDGET; validation uses
+VALIDATION_BUDGET. Each budget has independent admission and concurrency, a
+deadline, address-space and CPU bounds, cancellation and a private temporary
+directory. Completed validation entries survive an interrupted worker.
 
-Every kind of work has a `Budget` of its own, which holds what one of its
-children may take and how many of them run: `VALIDATION_BUDGET` (60 seconds,
-2 GiB of address space, `SBML4HUMANS_VALIDATIONS` children) and `REPORT_BUDGET`
-(180 seconds, 4 GiB, `SBML4HUMANS_REPORTS` children); without its variable a
-budget runs half the cpus the server may run on. A call of `run_isolated` is
-given the budget of the work it runs, and the children, the admission and the
-semaphore of a budget are counted by its name alone, so that one kind of work
-never starves the other.
-
-A child is a boundary of resources, not a sandbox: it bounds the time, the
-memory and the temporary files of one run and keeps a crash of libsbml out of
-the server, but it runs as the user of the server, with its file system and its
-network. What a run may read is confined by the code it runs (the resolver of
-the report in `validation.py`, the limits of the content in `limits.py`), not by
-the process.
-
-A server admits at most `budget.concurrency + budget.waiting` runs of a budget
-at a time (`admission`), a request beyond them is answered at once as `"busy"`,
-and so is one which got no child while at least `MIN_CHILD_TIME` of its timeout
-was left: a run is `"timeout"` only when its child ran out of time.
-
-The children are forked by the forkserver of `multiprocessing`, a process of
-its own which imported the report and the validation once and is single
-threaded (`forkserver.py` keeps the thread pool of numpy out of it), so that a
-child starts at once and small, without the threads of the server and with the
-resolver of the report installed in the registry of libsbml. A child
-gets the function it runs, its argument and its budget pickled, which is why
-the source goes to it as the path of a file and not as objects of libsbml, and
-sends every result back as soon as it has it, so that a timeout keeps the
-results before it. An exception of the function is sent back and raised by the
-server, with the traceback of the child as a note.
-
-A child which runs out of memory raises `MemoryError` in python, is aborted by
-the `std::bad_alloc` libsbml does not catch, or is ended by the C library
-itself, which cannot allocate the thread-local storage of a library it loads
-and exits with the code 127 and no signal; all three end what is left of it as
-`"memory"`. An abort and an exit are told apart from one of another cause by
-what the runtime wrote to the standard error before the end: libstdc++ (and
-libc++) names the `std::bad_alloc` which ended the program, glibc writes a
-fatal line of its loader (`_abnormal_end`, `_BAD_ALLOC` and `_OUT_OF_MEMORY`).
-The child writes its standard error to a file of its temporary directory,
-which the server reads and logs after the child has ended. Any other abnormal
-end of a child, a signal (also the SIGKILL of the OOM killer of the kernel,
-which leaves no trace the server could read), another abort or an exit without
-its results, keeps the results the child sent before and ends what is left of
-it as `"crashed"`.
-
-A child keeps its temporary files, the archive of the source extracted by
-pymetadata among them, in a temporary directory the server makes for it (also
-its `TMPDIR`, `TEMP` and `TMP`, for native libraries), names after the budget
-and removes when it has ended, so that a child which was killed or aborted
-leaves nothing of the content on the server. The cpu time of a child is limited
-to twice the timeout of its budget, so that a child ends itself also when its
-server died without ending it.
-
-A run is cancelled when nobody waits for it any more, its client left
-(`run_cancellable`): it stops waiting for a child, or its child is killed, at
-once, which frees the child, the admission and the temporary directory.
-
-The python interface runs the same server on the machine of the user: where
-there is no forkserver (Windows) a child is spawned, a fresh interpreter which
-imports the code of the work itself, and where the address space cannot be
-limited (Windows, macOS) the child runs without the memory limit.
+The forkserver preloads the native library and thin report adapter. No Python numeric or SBML
+engine is initialized. The Rust source pipeline confines companion access;
+the process boundary bounds resources and keeps native failures out of the
+server. Native allocation failures retain the memory interruption status.
 """
 
 import faulthandler
@@ -203,7 +144,9 @@ Interruption = Literal["timeout", "memory", "busy", "crashed"]
 
 if "forkserver" in multiprocessing.get_all_start_methods():
     _CONTEXT = multiprocessing.get_context("forkserver")
-    _CONTEXT.set_forkserver_preload(["sbml4humans.forkserver", "sbml4humans.report"])
+    # Map the required extension before children apply address-space limits.
+    # Otherwise dlopen can turn resource exhaustion into an installation error.
+    _CONTEXT.set_forkserver_preload(["_sbml4humans_runtime", "sbml4humans.report"])
 else:
     _CONTEXT = multiprocessing.get_context("spawn")
 

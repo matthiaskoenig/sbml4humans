@@ -6,9 +6,9 @@ The SBML parser is maintained in [sbml4humans-core](https://github.com/matthiask
 
 The browser uses this source pipeline for selected files and pasted content, with a worker per load and a shared compiled module. Cancellation terminates the worker and stale loads cannot replace a newer report. Validation and ODE file exports keep their existing backend paths and original source. Archives resolve external definitions only within their supplied entries.
 
-The production backend image builds and installs the native ABI3 extension from the same pin and selects `SBML4HUMANS_PARSER=rust` explicitly. `SBML4HUMANS_PARSER=auto` selects a compatible `source-path/1` extension when installed and the Python implementation otherwise; `rust` requires it, and `python` selects compatibility mode. Parser selection, limits and expansion budgets are captured in each isolated job. Native errors are never retried through Python. Rust now prepares every native report, validation and ODE download: standalone and gzipped SBML, COMBINE manifests, trusted directory companions, canonical report keys and comp expansion estimates all use the shared source pipeline. Trusted companions must stay inside the selected directory after symlink resolution; archives and uploads cannot discover local files. Validation-enabled wheels expose `validation-source/1`, own the admitted libSBML documents and return one completed entry at a time through the existing bounded worker. `ode-source/1` selects the archive entry and calls the shared sbmlsim-core generator for all seven formats. FastAPI retains transport, worker isolation, cancellation and response caching. Rust allocator failures preserve the worker's memory status.
+The backend always uses its privately bundled Rust runtime. Platform wheels contain the ABI3 extension; source and editable builds compile the exact pin. The application verifies its source identity and capabilities before serving models. There is no Python parser or validation fallback. See [Native runtime](native-runtime.md) for build requirements, artifact reuse, CPU controls, provenance and the source-update workflow.
 
-For a native development server, install a C++ compiler, CMake, Make and the development headers of expat, zlib and bzip2, then run `python3 scripts/build_parser.py --wheel-out /tmp/parser-wheels`, install the resulting wheel with `uv pip install --python backend/.venv/bin/python /tmp/parser-wheels/*.whl`, and launch with `uv run --no-sync` after the normal backend installation. The build enables the native `validation` feature and bundles the libSBML license notices. `LIBSBML_DIR` can reuse an existing compatible prefix; source builds default to two CMake jobs unless `CMAKE_BUILD_PARALLEL_LEVEL` allocates another budget. The extension remains optional for the compatibility package; explicit `SBML4HUMANS_PARSER=rust` validation requires `VALIDATION_SOURCE_CONTRACT = "validation-source/1"`. Regular frontend assets include the independent browser runtime.
+Reports, validation, example metadata, archive selection, units, equations and ODE exports use Rust. FastAPI retains transport, worker admission, isolation, cancellation and caching. Trusted companions stay inside the selected directory; uploads and archives cannot discover local files. Validation preserves entry results as they finish, and report JSON is serialized directly into gzip in Rust.
 
 Everything below starts from a clone of the repository:
 
@@ -22,7 +22,7 @@ cd sbml4humans
 | path | content |
 | --- | --- |
 | `frontend/` | the Vue 3 application (Vite, TypeScript, Pinia, Vue Router, Tailwind CSS, Lucide icons) |
-| `backend/` | the `sbml4humans` Python package: the report of a document (`sbmlinfo`, `mathml`, `units`) and the FastAPI api which serves it |
+| `backend/` | the FastAPI server, typed API contracts and native-runtime packaging |
 | `glossary/` | the glossary the reference pages of the documentation and the explanations of the application are generated from |
 | `docs/`, `zensical.toml` | the pages and the configuration of the documentation site |
 | `release-notes/` | one file per version, the body of its GitHub release and a section of the generated [release notes](release-notes.md) page |
@@ -43,7 +43,7 @@ The frontend answers on <http://localhost:8083>, the api on <http://localhost:14
 
 ## Backend
 
-The backend is the `sbml4humans` Python package in `backend/`, it supports Python 3.12 to 3.15, is developed on 3.14 (`backend/.python-version`) and needs [uv](https://docs.astral.sh/uv/) 0.13.7 or later. The report is created with libsbml, lxml (the math), pint (the units) and pymetadata (COMBINE archives and annotations); the example models are part of the package (`backend/sbml4humans/resources/`).
+The backend is the `sbml4humans` Python package in `backend/`, it supports Python 3.12 to 3.15, is developed on 3.14 (`backend/.python-version`) and needs [uv](https://docs.astral.sh/uv/) 0.13.7 or later. Reports are created by the bundled Rust implementation; pymetadata supplies annotation HTTP services; the example models are part of the package (`backend/sbml4humans/resources/`).
 
 ```bash
 cd backend
@@ -64,12 +64,12 @@ The environment variable `SBML4HUMANS_REPORTS` is the same for the reports of a 
 Tests, linting and type checks run from the `backend` directory, the same checks run as GitHub Actions on every pull request (see [Branches and pull requests](#branches-and-pull-requests)):
 
 ```bash
-uv run pytest -n auto
+uv run pytest -n 2
 uv run ruff check . && uv run ruff format --check .
 uv run ty check
 ```
 
-`-n auto` runs the tests in parallel on every core (pytest-xdist), every worker with a temporary directory of its own (`backend/tests/conftest.py`). A test of minutes, the report of the genome scale model Recon3D, is marked `slow`: it runs locally, continuous integration deselects it with `-m "not slow"` and lists the 15 slowest tests (`--durations=15`), so that a test which becomes slow is seen.
+`-n 2` runs two pytest workers; allocate a larger explicit count only within the available CPU and memory budget, every worker with a temporary directory of its own (`backend/tests/conftest.py`). A test of minutes, the report of the genome scale model Recon3D, is marked `slow`: it runs locally, continuous integration deselects it with `-m "not slow"` and lists the 15 slowest tests (`--durations=15`), so that a test which becomes slow is seen.
 
 Continuous integration tests Python 3.14 only. The other supported versions are tested locally before a pull request is opened, each in an isolated environment of its own:
 
@@ -206,9 +206,11 @@ A pull request can only be merged once the required checks are green:
 | `schema`   | `ci-cd.yml` | the committed JSON schema of the report is current                                          |
 | `frontend` | `ci-cd.yml` | the generated types are current, lint, type check, unit tests and the build of the frontend, which fails on a chunk above 500 kB |
 | `e2e`      | `ci-cd.yml` | the Playwright end to end tests against the backend                                         |
-| `ruff`     | `ruff.yml`  | `ruff check` and `ruff format --check` of the backend                                       |
-| `ty`       | `ty.yml`    | `ty check` of the backend                                                                   |
-| `docs`     | `docs.yml`  | the documentation site builds                                                               |
+| `ruff`     | `ci-cd.yml` | `ruff check` and `ruff format --check` of the backend                                       |
+| `ty`       | `ci-cd.yml` | `ty check` of the backend                                                                   |
+| `docs`     | `ci-cd.yml` | the generated reference is current and the documentation site builds                       |
+
+The same workflow builds the exact native runtime once, verifies the browser SDK, and shares that artifact with backend, browser, documentation and package jobs. Additional `parser` and `package` jobs check the production container and installed platform wheel. Schema and type checks install only their tooling and do not compile a runtime. See [Native runtime](native-runtime.md) for source-build caching and resource controls.
 
 Continuous integration is kept small: every workflow cancels its running build when a newer commit of the same branch or pull request arrives, uv caches the packages and the interpreters, npm its packages and the e2e job the browser of Playwright between runs, and the backend is tested on Python 3.14 only, in parallel and without the tests marked `slow`. The other supported Python versions, 3.12, 3.13 and 3.15, and the `slow` tests are tested locally, see [Backend](#backend), before a pull request is opened. `ty` checks against the lowest supported version, the `requires-python` of `backend/pyproject.toml`, and `ruff` targets it as well, so that code which needs a newer Python fails before a release.
 

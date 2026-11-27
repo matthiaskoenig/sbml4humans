@@ -455,7 +455,7 @@
       "type": "object"
     },
     "CVTerm": {
-      "description": "An annotation: a qualifier (BQB or BQM of pymetadata) with its resources.\n\nA term can carry terms of its own, which qualify it further: the evidence\nfor a relation or the modification of a protein (core §6).",
+      "description": "An annotation: an SBML biological or model qualifier with its resources.\n\nA term can carry terms of its own, which qualify it further: the evidence\nfor a relation or the modification of a protein (core §6).",
       "properties": {
         "qualifier": {
           "type": "string"
@@ -4031,7 +4031,7 @@
       "type": "object"
     },
     "Math": {
-      "description": "The math of an element as latex and as L3 formula string.\n\nThe latex is absent for a math the backend cannot typeset (`mathml.py`),\nand the report then shows the infix formula alone.",
+      "description": "The math of an element as latex and as L3 formula string.\n\nThe latex is absent for math the shared Rust renderer cannot typeset,\nand the report then shows the infix formula alone.",
       "properties": {
         "latex": {
           "anyOf": [

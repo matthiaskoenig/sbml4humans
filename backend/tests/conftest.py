@@ -14,7 +14,7 @@ import pytest
 import uvicorn
 from fastapi.testclient import TestClient
 
-from sbml4humans import isolation, validation
+from sbml4humans import isolation, limits
 from sbml4humans.api import api
 from sbml4humans.model import Report
 from sbml4humans.report import report_for_path
@@ -172,7 +172,7 @@ def slow_content(monkeypatch: pytest.MonkeyPatch) -> bytes:
     `SLOW_CONTENT_WORK` once the budget of the expanded size no longer skips
     it, and their report more than a minute.
     """
-    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 10**9)
+    monkeypatch.setattr(limits, "MAX_EXPANDED_ELEMENTS", 10**9)
     return _wide(1000)
 
 

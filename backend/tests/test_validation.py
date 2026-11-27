@@ -14,11 +14,11 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-import libsbml
 import pytest
 from conftest import SLOW_CONTENT_WORK
 
-from sbml4humans import isolation, limits, report, validation
+from sbml4humans import isolation, limits, report
+from sbml4humans.limits import MAX_EXPANDED_ELEMENTS
 from sbml4humans.model import EntryValidation, ValidationResponse
 from sbml4humans.report import (
     SourceJob,
@@ -29,129 +29,9 @@ from sbml4humans.report import (
     validation_for_path,
 )
 from sbml4humans.resources import EXAMPLES_DIR
-from sbml4humans.sbmlinfo import SBMLDocumentInfo
-from sbml4humans.validation import (
-    _RESOLVER,
-    MAX_EXPANDED_ELEMENTS,
-    ElementPositions,
-    ReportDocuments,
-    ReportResolver,
-    instantiated_elements,
-    issues_of,
-    validate,
-)
 
 
 COMP_DELETION = EXAMPLES_DIR / "comp_deletion.xml"
-
-
-def _issues(source: str) -> list[tuple[int, str, str]]:
-    """The rule, severity and pk of every issue of a document after the check."""
-    info = SBMLDocumentInfo(SBMLDocumentInfo.read(source))
-    info.build_report()
-    info.doc.checkConsistency()
-    return [(i.rule, i.severity, i.pk) for i in issues_of(info.doc, info.positions)]
-
-
-def _report_pks(info: SBMLDocumentInfo) -> list[str]:
-    """The pk of every element of the report of a document."""
-    pks: list[str] = []
-
-    def walk(obj: object) -> None:
-        if isinstance(obj, dict):
-            if "pk" in obj and "sbmlType" in obj:
-                pks.append(obj["pk"])
-            for value in obj.values():
-                walk(value)
-        elif isinstance(obj, list):
-            for value in obj:
-                walk(value)
-
-    walk(info.report.model_dump(by_alias=True))
-    return pks
-
-
-def test_example_issues_on_their_elements() -> None:
-    """Every issue of the example goes to the element it concerns."""
-    issues = _issues(str(EXAMPLES_DIR / "validation.xml"))
-    by_rule: dict[int, set[str]] = {}
-    for rule, _, pk in issues:
-        by_rule.setdefault(rule, set()).add(pk)
-    assert by_rule[10601] == {"validation/Model:validation"}
-    assert by_rule[10712] == {"validation/Compartment:cell"}
-    assert by_rule[10703] == by_rule[20702] == {"validation/Parameter:k1"}
-    assert by_rule[99505] == {
-        "validation/AssignmentRule:x",
-        "validation/KineticLaw:R1.kineticLaw",
-    }
-    severities = {rule: severity for rule, severity, _ in issues}
-    assert severities[10601] == "error"
-    assert severities[10712] == "warning"
-
-
-def test_valid_example_has_no_issues() -> None:
-    """A valid document has no issues."""
-    assert _issues(str(EXAMPLES_DIR / "species.xml")) == []
-
-
-def test_read_errors_are_kept() -> None:
-    """A read error stays in the log after the check and comes first."""
-    sbml = (EXAMPLES_DIR / "minimal_model.xml").read_text()
-    issues = _issues(sbml.replace("<model ", '<model foo="1" ', 1))
-    assert issues[0][0] == 20222
-    assert issues[0][1] == "error"
-    assert issues[0][2] == "minimal_model/Model:minimal_model"
-
-
-def test_duplicates_are_dropped() -> None:
-    """An issue libsbml logs twice is one issue."""
-    info = SBMLDocumentInfo(SBMLDocumentInfo.read(str(EXAMPLES_DIR / "validation.xml")))
-    info.build_report()
-    info.doc.checkConsistency()
-    log: libsbml.SBMLErrorLog = info.doc.getErrorLog()
-    logged = log.getNumErrors()
-    assert logged > 0
-    log.add(info.doc.getError(0))
-    # libsbml logs the issue a second time
-    assert log.getNumErrors() == logged + 1
-    issues = issues_of(info.doc, info.positions)
-    assert len(issues) < log.getNumErrors()
-    keys = [(i.rule, i.line, i.column, i.message) for i in issues]
-    assert len(keys) == len(set(keys))
-
-
-def test_one_line_document() -> None:
-    """Elements on one line are told apart by their column, every issue has a pk."""
-    sbml = " ".join((EXAMPLES_DIR / "validation.xml").read_text().split())
-    issues = _issues(sbml)
-    assert issues
-    pks = {rule: pk for rule, _, pk in issues}
-    assert pks[10712] == "validation/Compartment:cell"
-    assert pks[10703] == "validation/Parameter:k1"
-
-
-def test_position_before_every_element_is_the_document() -> None:
-    """A position before the first element, or line 0, is the document."""
-    positions = ElementPositions("document/SBMLDocument:document")
-    doc: libsbml.SBMLDocument = libsbml.readSBMLFromFile(
-        str(EXAMPLES_DIR / "species.xml")
-    )
-    model: libsbml.Model = doc.getModel()
-    positions.add(model, "species/Model:species")
-    assert positions.pk_at(0, 0) == "document/SBMLDocument:document"
-    assert positions.pk_at(1, 1) == "document/SBMLDocument:document"
-    assert positions.pk_at(model.getLine() + 1, 1) == "species/Model:species"
-
-
-@pytest.mark.parametrize("name", ["model_composition.xml", "minimal_model_comp.xml"])
-def test_comp_examples_map_every_issue(name: str) -> None:
-    """Every issue of a comp example has a pk of the report."""
-    info = SBMLDocumentInfo(SBMLDocumentInfo.read(str(EXAMPLES_DIR / name)))
-    info.build_report()
-    info.doc.checkConsistency()
-    issues = issues_of(info.doc, info.positions)
-    assert issues
-    assert {i.pk for i in issues} <= set(_report_pks(info))
 
 
 def test_unit_warnings_of_the_reaction_example() -> None:
@@ -188,22 +68,6 @@ def test_unresolved_comp_example_marks_its_submodels_and_definitions() -> None:
             for k in range(5)
         ),
     }
-
-
-def test_issue_on_a_list_without_content_goes_to_its_owner() -> None:
-    """An issue on a list the report does not carry is the issue of the owner."""
-    sbml = (EXAMPLES_DIR / "validation.xml").read_text()
-    sbml = sbml.replace("<listOfParameters>", '<listOfParameters foo="1">')
-    issues = _issues(sbml)
-    assert (20227, "error", "validation/Model:validation") in issues
-
-
-def test_issue_on_a_list_of_a_reaction_goes_to_the_reaction() -> None:
-    """The lists of a reaction and of its kinetic law belong to their owner."""
-    sbml = (EXAMPLES_DIR / "validation.xml").read_text()
-    sbml = sbml.replace("<listOfReactants>", '<listOfReactants foo="1">')
-    issues = _issues(sbml)
-    assert (21150, "error", "validation/Reaction:R1") in issues
 
 
 def _entry(
@@ -252,48 +116,6 @@ def test_untrusted_source_is_not_read() -> None:
         server.shutdown()
 
 
-def test_untrusted_absolute_source_opens_no_file() -> None:
-    """The resolver answers no absolute path, whatever libsbml asks."""
-    target = (EXAMPLES_DIR / "unit_definitions.xml").resolve()
-    sbml = COMP_DELETION.read_text().replace(
-        'comp:source="unit_definitions.xml"', f'comp:source="{target}"'
-    )
-    doc: libsbml.SBMLDocument = libsbml.readSBMLFromString(sbml)
-    issues = validate(doc, ElementPositions("d"))
-    assert 1090101 in {i.rule for i in issues}
-
-
-def test_neighbour_file_is_not_read_by_the_validation() -> None:
-    """A file next to the document is not resolved unless the report gives it."""
-    doc: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(COMP_DELETION))
-    issues = validate(doc, ElementPositions("d"))
-    assert 1090101 in {i.rule for i in issues}
-
-
-def _spy_find(monkeypatch: pytest.MonkeyPatch) -> list[tuple[str, str | None, str]]:
-    """Record every request of the resolver: source, base and the found model.
-
-    The resolver answers in the child process of the validation, where a spy of
-    the test sees nothing, so the entries are validated in this process.
-    """
-    # This spy exercises the compatibility resolver. Native resolution is checked
-    # through complete diagnostic parity and confinement tests in test_native.
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
-    found: list[tuple[str, str | None, str]] = []
-    find = ReportDocuments.find
-
-    def spy(
-        self: ReportDocuments, source: str, base: str | None
-    ) -> libsbml.SBMLDocument | None:
-        doc = find(self, source, base)
-        found.append((source, base, doc.getModel().getId() if doc else ""))
-        return doc
-
-    monkeypatch.setattr(ReportDocuments, "find", spy)
-    _in_process(monkeypatch)
-    return found
-
-
 def _in_process(monkeypatch: pytest.MonkeyPatch) -> None:
     """Validate in this process rather than in a child process."""
 
@@ -306,23 +128,6 @@ def _in_process(monkeypatch: pytest.MonkeyPatch) -> None:
         return isolation.IsolatedRun(results=list(function(argument)))
 
     monkeypatch.setattr(isolation, "run_isolated", run_here)
-
-
-@pytest.mark.parametrize("child", [False, True])
-def test_trusted_neighbour_is_resolved_from_the_report(
-    monkeypatch: pytest.MonkeyPatch, child: bool
-) -> None:
-    """A source the report read is resolved for the validation, without 1090101."""
-    found = [] if child else _spy_find(monkeypatch)
-    response = validation_for_path(COMP_DELETION, trusted=True)
-    assert "./unit_definitions.xml" in response.entries
-    if not child:
-        assert (
-            "unit_definitions.xml",
-            "./comp_deletion.xml",
-            "unit_definitions",
-        ) in found
-    assert 1090101 not in _rules(response, "./comp_deletion.xml")
 
 
 _COMP = (
@@ -379,28 +184,6 @@ def _check_chain(
     assert {model for source, _, model in found if source == "c.xml"} == {"C", "W"}
 
 
-@pytest.mark.parametrize("child", [False, True])
-def test_chained_sources_resolve_against_their_document(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, child: bool
-) -> None:
-    """A chain of external model definitions of trusted files is followed."""
-    for name, content in _CHAIN.items():
-        (tmp_path / name).parent.mkdir(exist_ok=True)
-        (tmp_path / name).write_text(content)
-    found = None if child else _spy_find(monkeypatch)
-    _check_chain(validation_for_path(tmp_path / "m.xml", trusted=True), found)
-
-
-@pytest.mark.parametrize("child", [False, True])
-def test_chained_sources_resolve_in_an_archive(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, child: bool
-) -> None:
-    """A chain of external model definitions across the entries of an archive."""
-    path = _archive(tmp_path / "chain.omex", _CHAIN, master="m.xml")
-    found = None if child else _spy_find(monkeypatch)
-    _check_chain(validation_for_path(path), found)
-
-
 def test_every_entry_is_validated() -> None:
     """The neighbour which a trusted file names is validated as well."""
     response = validation_for_path(COMP_DELETION, trusted=True)
@@ -427,38 +210,6 @@ def test_the_report_carries_no_validation() -> None:
         assert "validationSkipped" not in entry["report"]
 
 
-def test_resolver_delegates_outside_validation(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Outside of a validation libsbml resolves files as before, through the report."""
-    registry = libsbml.SBMLResolverRegistry.getInstance()
-    assert registry.getNumResolvers() == 1
-    assert isinstance(_RESOLVER, ReportResolver)
-    # the registry answers through the installed resolver, and the file resolver of
-    # libsbml behind it answers a file
-    calls: list[str] = []
-    resolve_uri = ReportResolver.resolveUri
-
-    def spy(
-        self: ReportResolver, uri: str, baseUri: str = ""
-    ) -> libsbml.SBMLUri | None:
-        """Record the uri the registry asks the report resolver for."""
-        calls.append(uri)
-        return resolve_uri(self, uri, baseUri)
-
-    monkeypatch.setattr(ReportResolver, "resolveUri", spy)
-    uri = (EXAMPLES_DIR / "unit_definitions.xml").resolve().as_uri()
-    resolved = registry.resolveUri(uri, "")
-    assert calls == [uri]
-    assert resolved is not None
-
-
-def test_the_registry_owns_the_resolver() -> None:
-    """The registry took the C++ side of the resolver, python keeps its proxy."""
-    registry = libsbml.SBMLResolverRegistry.getInstance()
-    assert registry.getNumResolvers() == 1
-    assert _RESOLVER.thisown is False
-    assert _RESOLVER.clone() is _RESOLVER
-
-
 def _sbml(model_id: str) -> str:
     """A document of an empty model."""
     return (
@@ -466,70 +217,6 @@ def _sbml(model_id: str) -> str:
         '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
         f'version="1"><model id="{model_id}"/></sbml>'
     )
-
-
-def test_report_documents_keep_the_first_of_a_location(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Of two locations which normalize the same the first document is kept."""
-    first: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("first"))
-    second: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("second"))
-    documents = ReportDocuments({"./a.xml": first, "a.xml": second})
-    found = documents.find("a.xml", "b.xml")
-    assert found is not None
-    assert found.getModel().getId() == "first"
-    [record] = [r for r in caplog.records if r.levelname == "WARNING"]
-    assert "'./a.xml'" in record.getMessage()
-    assert "'a.xml'" in record.getMessage()
-
-
-@contextmanager
-def _validating(documents: ReportDocuments, location: str, uri: str) -> Generator[None]:
-    """The resolver answers as in the validation of the document at `location`."""
-    token = validation._VALIDATION.set(validation._Validation(documents, location, uri))
-    try:
-        yield
-    finally:
-        validation._VALIDATION.reset(token)
-
-
-def test_resolve_uri_without_a_uri_of_the_document_is_none() -> None:
-    """A document without a location uri of its own has no uri to answer."""
-    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
-    target: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("target"))
-    assert target.getLocationURI() == ""
-    documents = ReportDocuments({"a.xml": main, "b.xml": target})
-    with _validating(documents, "a.xml", ""):
-        # the document is found, its uri is not the source it was asked for
-        assert _RESOLVER.resolve("b.xml", "") is not None
-        assert _RESOLVER.resolveUri("b.xml", "") is None
-
-
-def test_resolve_uri_of_a_shared_uri_is_none(tmp_path: Path) -> None:
-    """A location uri which two documents of the report share names neither."""
-    path = tmp_path / "shared.xml"
-    path.write_text(_sbml("shared"))
-    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
-    one: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
-    other: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
-    assert one.getLocationURI() == other.getLocationURI() != ""
-    documents = ReportDocuments({"a.xml": main, "b.xml": one, "c.xml": other})
-    with _validating(documents, "a.xml", ""):
-        assert _RESOLVER.resolve("b.xml", "") is not None
-        assert _RESOLVER.resolveUri("b.xml", "") is None
-
-
-def test_resolve_uri_of_a_document_is_its_location_uri(tmp_path: Path) -> None:
-    """The uri of a document of the report is its own location uri."""
-    path = tmp_path / "target.xml"
-    path.write_text(_sbml("target"))
-    main: libsbml.SBMLDocument = libsbml.readSBMLFromString(_sbml("main"))
-    target: libsbml.SBMLDocument = libsbml.readSBMLFromFile(str(path))
-    documents = ReportDocuments({"a.xml": main, "b.xml": target})
-    with _validating(documents, "a.xml", ""):
-        resolved = _RESOLVER.resolveUri("b.xml", "")
-        assert resolved is not None
-        assert resolved.getUri() == target.getLocationURI()
 
 
 # -------------------------------------------------------------------------------------
@@ -553,82 +240,6 @@ def _submodels(model_ref: str, n: int) -> str:
     )
 
 
-def _info(content: bytes) -> SBMLDocumentInfo:
-    """The report of a document, without its link graph."""
-    info = SBMLDocumentInfo(SBMLDocumentInfo.read(content.decode()))
-    info.build_report()
-    return info
-
-
-def _instantiated(info: SBMLDocumentInfo) -> int:
-    """The elements the submodels of a single document instantiate."""
-    return instantiated_elements({"d": info.report}, {"d": info.elements}, "d")
-
-
-def _size(info: SBMLDocumentInfo) -> int:
-    """The elements a single document expands to, its own and the instantiated."""
-    return sum(info.elements.values()) + _instantiated(info)
-
-
-def test_the_elements_are_the_pks_of_the_report(
-    fan_out_document: Callable[..., bytes],
-) -> None:
-    """The elements counted per scope are the pks of the report."""
-    info = _info(fan_out_document(3))
-    pks = _report_pks(info)
-    scopes: dict[str, int] = {}
-    for pk in pks:
-        scope = pk.split("/", 1)[0]
-        scopes[scope] = scopes.get(scope, 0) + 1
-    assert dict(info.elements) == scopes
-
-
-def test_instantiated_elements_count_every_instance(
-    fan_out_document: Callable[..., bytes],
-) -> None:
-    """Every instance adds the elements of its model, along every level."""
-    info = _info(fan_out_document(3, n=4))
-    sizes = {
-        model.id: info.elements[model.pk.split("/", 1)[0]]
-        for model in info.report.models
-    }
-    # m has 4 instances of d2, each with 4 instances of d1, each with 4 of d0
-    expected = 4 * (sizes["d2"] + 4 * (sizes["d1"] + 4 * sizes["d0"]))
-    assert _instantiated(info) == expected
-
-
-def test_a_flat_document_instantiates_nothing() -> None:
-    """A document without submodels instantiates no element."""
-    info = _info((EXAMPLES_DIR / "validation.xml").read_bytes())
-    assert _instantiated(info) == 0
-
-
-def test_instantiated_elements_cut_a_cycle() -> None:
-    """A model which instantiates itself is counted once along its cycle."""
-    content = _COMP.format(
-        f'<model id="m">{_submodels("d", 2)}</model><comp:listOfModelDefinitions>'
-        f'<comp:modelDefinition id="d">{_submodels("d", 2)}</comp:modelDefinition>'
-        "</comp:listOfModelDefinitions>"
-    )
-    info = _info(content.encode())
-    d = next(model for model in info.report.models if model.id == "d")
-    size_d = info.elements[d.pk.split("/", 1)[0]]
-    assert _instantiated(info) == 2 * size_d
-
-
-def test_wide_instantiation_beyond_the_budget_is_skipped_at_once(
-    wide_document: Callable[..., bytes],
-) -> None:
-    """The 52 KB document of 1,000 instances of 20 species is not validated."""
-    content = wide_document(1000)
-    assert 50_000 < len(content) < 60_000
-    assert _size(_info(content)) > MAX_EXPANDED_ELEMENTS
-    entry = _entry(validation_for_bytes(content))
-    # the skip is what says that nothing was validated, and no clock does
-    assert entry.skipped == "expandedSize"
-    assert entry.issues == []
-
-
 def test_submodel_fan_out_beyond_the_budget_is_skipped(
     fan_out_document: Callable[..., bytes],
 ) -> None:
@@ -646,20 +257,6 @@ def test_read_errors_are_reported_without_validation(
     entry = _entry(validation_for_bytes(content))
     assert entry.skipped == "expandedSize"
     assert 20222 in {issue.rule for issue in entry.issues}
-
-
-def test_a_document_at_the_budget_is_validated(
-    monkeypatch: pytest.MonkeyPatch, wide_document: Callable[..., bytes]
-) -> None:
-    """The budget is the largest expanded size which is validated."""
-    content = wide_document(30)
-    size = _size(_info(content))
-    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", size)
-    entry = _entry(validation_for_bytes(content))
-    assert entry.skipped is None
-    assert 20616 in {issue.rule for issue in entry.issues}
-    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", size - 1)
-    assert _entry(validation_for_bytes(content)).skipped == "expandedSize"
 
 
 def test_submodel_fan_out_within_the_budget_is_validated(
@@ -710,7 +307,7 @@ def test_archive_chain_beyond_the_budget_is_not_validated(
     }
     path = _archive(tmp_path / "chain.omex", documents)
     # the submodels of a instantiate about 4,300 elements, of b 400, of c 20
-    monkeypatch.setattr(validation, "MAX_EXPANDED_ELEMENTS", 1000)
+    monkeypatch.setattr(limits, "MAX_EXPANDED_ELEMENTS", 1000)
     response = validation_for_path(path)
     skipped = {location: entry.skipped for location, entry in response.entries.items()}
     assert skipped == {
@@ -890,33 +487,6 @@ def _flat(species: int, submodel: bool = False) -> bytes:
         '<sbml xmlns="http://www.sbml.org/sbml/level3/version1/core" level="3" '
         f'version="1"><model id="m">{model}</model></sbml>'
     ).encode()
-
-
-def test_a_flat_document_beyond_the_budget_is_validated() -> None:
-    """A document without instances is always checked, the timeout bounds it."""
-    content = _flat(MAX_EXPANDED_ELEMENTS + 100)
-    assert _size(_info(content)) > MAX_EXPANDED_ELEMENTS
-    entry = _entry(validation_for_bytes(content))
-    assert entry.skipped is None
-    assert 20616 in {issue.rule for issue in entry.issues}
-
-
-def test_one_tiny_submodel_makes_a_large_document_expand() -> None:
-    """One instance is enough for the comp validator to flatten the whole model.
-
-    The same document is checked in 0.4 s without the submodel, and in 30 s with
-    2.1 GB with it, so its own elements count once it has an instance.
-    """
-    content = _flat(MAX_EXPANDED_ELEMENTS + 100, submodel=True)
-    info = _info(content)
-    assert 0 < _instantiated(info) < 10
-    assert _size(info) > MAX_EXPANDED_ELEMENTS
-    start = time.perf_counter()
-    entry = _entry(validation_for_bytes(content))
-    assert entry.skipped == "expandedSize"
-    # the skipped entry is read in 2.4 s, which takes twice as long while the
-    # workers of the suite read other documents; the flattening takes 30 s
-    assert time.perf_counter() - start < 10.0
 
 
 def test_memory_limit_skips_the_entry(

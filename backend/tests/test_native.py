@@ -1,6 +1,7 @@
-"""The native source reader must preserve reports and the application's isolation boundary."""
+"""Independent wire fixtures and the mandatory Rust backend contract."""
 
 import gzip
+import hashlib
 import json
 import subprocess
 import sys
@@ -9,276 +10,159 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
-from fastapi.testclient import TestClient
+from pydantic import BaseModel
 
 from sbml4humans import isolation, limits, native, report
-from sbml4humans.resources import EXAMPLES_DIR, OMEX_COMPMODELS, OMEX_ICGMODEL
+from sbml4humans.examples import load_examples
+from sbml4humans.model import SBase
+from sbml4humans.resources import RESOURCES_DIR
 
 
-def test_native_validation_worker_does_not_call_the_python_validator(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """The real native session validates inside the existing isolated-worker entrypoint."""
-    pytest.importorskip("sbml4humans_core")
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
-    monkeypatch.setattr(
-        report, "_read", Mock(side_effect=AssertionError("Python source reader called"))
-    )
-    job = report.SourceJob(
-        path=str(EXAMPLES_DIR / "validation.xml"),
-        trusted=False,
-        budget=10000,
-        limits=limits.ContentLimits.current(),
-    )
-    results = list(report.validate_source(job))
-    assert results[0] == ("", ["./model.xml"])
-    assert 10601 in {issue.rule for issue in results[1][1].issues}
-
-
-@pytest.mark.parametrize(
-    "name", sorted(path.name for path in EXAMPLES_DIR.glob("*.xml"))
+REFERENCE = json.loads(
+    (Path(__file__).parent / "fixtures/rust-contract.json").read_text()
 )
-def test_native_validation_preserves_every_diagnostic(
-    name: str, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Keep rule IDs, messages, order, severities, source positions and element keys."""
-    pytest.importorskip("sbml4humans_core")
-    path = EXAMPLES_DIR / name
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
-    expected = report.validation_for_path(path, trusted=True)
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
-    actual = report.validation_for_path(path, trusted=True)
-    assert actual == expected
+SOURCES = REFERENCE["sources"]
 
 
-def test_explicit_native_validation_requires_the_validation_feature(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """A report-only wheel is optional in auto mode and actionable in Rust mode."""
-    core = SimpleNamespace(
-        REPORT_CONTRACT="report/1",
-        SOURCE_CONTRACT="source/1",
-        SOURCE_PATH_CONTRACT="source-path/1",
-    )
-    monkeypatch.setattr(native.importlib, "import_module", Mock(return_value=core))
-    assert (
-        native.validation_source(
-            EXAMPLES_DIR / "validation.xml",
-            limits.ContentLimits.current(),
-            10000,
-            "auto",
-        )
-        is None
-    )
-    with pytest.raises(RuntimeError, match="validation feature"):
-        native.validation_source(
-            EXAMPLES_DIR / "validation.xml",
-            limits.ContentLimits.current(),
-            10000,
-            "rust",
-        )
-
-
-def test_native_validation_errors_never_retry_the_python_validator(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """A selected native validator's failure reaches the existing error boundary."""
-    fail = Mock(side_effect=ValueError("native validation failure"))
-    monkeypatch.setattr(native, "validation_source", fail)
-    python = Mock(side_effect=AssertionError("Python validator called"))
-    monkeypatch.setattr(report, "validate", python)
-    job = report.SourceJob(
-        path=str(EXAMPLES_DIR / "validation.xml"),
-        trusted=False,
-        budget=10000,
-        limits=limits.ContentLimits.current(),
-    )
-    with pytest.raises(ValueError, match="native validation failure"):
-        list(report.validate_source(job))
-    python.assert_not_called()
-
-
-def test_native_validation_runs_through_the_http_api(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """A request captures native validation selection before entering its worker."""
-    pytest.importorskip("sbml4humans_core")
-    content = (EXAMPLES_DIR / "validation.xml").read_bytes()
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
-    expected = report.validation_for_bytes(content).model_dump(by_alias=True)
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
-    response = client.post(
-        "/api/validation/content",
-        content=content,
-        headers={"Content-Type": "application/xml"},
-    )
-    assert response.status_code == 200
-    assert response.json() == expected
-
-
-def _normalized(content: bytes) -> dict:
-    """Normalize request identity and diagnostics, preserving every report field."""
-    response = json.loads(content)
-    response["uid"] = ""
-    for entry in response["reports"].values():
+def normalized(response: BaseModel) -> dict:
+    """Ignore only request identity and elapsed time in an independent report."""
+    value = json.loads(response.model_dump_json(by_alias=True))
+    value["uid"] = ""
+    for entry in value["reports"].values():
         entry["debug"]["jsonReportTime"] = ""
-    return response
+    return value
 
 
-def test_python_selection_does_not_import_the_native_extension(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """The Python path remains usable without a native wheel."""
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
-    loader = Mock(side_effect=AssertionError("unexpected native import"))
-    monkeypatch.setattr(native.importlib, "import_module", loader)
-    assert native._reader() is None
-    loader.assert_not_called()
+@pytest.mark.parametrize("source", SOURCES, ids=lambda source: source["path"])
+def test_reports_match_the_independent_reference(source: dict) -> None:
+    """Every wire field, equation and graph survives removing the old implementation."""
+    path = RESOURCES_DIR / source["path"]
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == source["sha256"]
+    assert normalized(report.report_for_path(path, trusted=True)) == source["report"]
 
 
-def test_an_explicit_native_request_never_silently_falls_back(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Missing or incompatible native builds produce an actionable error."""
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
-    missing = ModuleNotFoundError("missing", name="sbml4humans_core")
-    monkeypatch.setattr(native.importlib, "import_module", Mock(side_effect=missing))
-    with pytest.raises(RuntimeError, match="not installed"):
-        native._reader()
-    monkeypatch.setattr(native.importlib, "import_module", Mock(return_value=object()))
-    with pytest.raises(RuntimeError):
-        native._reader()
+@pytest.mark.parametrize("source", SOURCES, ids=lambda source: source["path"])
+def test_validation_matches_every_independent_diagnostic(source: dict) -> None:
+    """Keep issue ordering, text, severity, rule numbers, positions and primary keys."""
+    actual = report.validation_for_path(RESOURCES_DIR / source["path"], trusted=True)
+    assert actual.model_dump(mode="json", by_alias=True) == source["validation"]
 
 
 @pytest.mark.parametrize(
-    "path",
-    [
-        EXAMPLES_DIR / "minimal_model.xml",
-        EXAMPLES_DIR / "distrib_uncertainties.xml",
-        OMEX_COMPMODELS,
-    ],
+    "expected",
+    REFERENCE["exports"],
+    ids=lambda expected: expected["path"] + ":" + expected["format"],
 )
-def test_native_sources_preserve_the_complete_python_response(
-    path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Test the real installed extension across core, packages and external models."""
-    pytest.importorskip("sbml4humans_core")
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "python")
-    expected = report.report_for_path(path).model_dump_json(by_alias=True).encode()
-    actual = native.report_json(path, limits.ContentLimits.current(), 10000, "rust")
-    assert actual is not None
-    assert _normalized(actual) == _normalized(expected)
-
-
-def test_native_report_child_entrypoint_does_not_rebuild_in_python(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """Use the actual binding, proving the worker path preserves serialized native bytes."""
-    pytest.importorskip("sbml4humans_core")
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
-    path = tmp_path / "model"
-    path.write_bytes((EXAMPLES_DIR / "minimal_model.xml").read_bytes())
-    monkeypatch.setattr(
-        report,
-        "report_for_path",
-        Mock(side_effect=AssertionError("Python report builder called")),
+def test_every_ode_format_matches_the_independent_reference(expected: dict) -> None:
+    """Every generated byte comes from the shared Rust generator."""
+    actual = report.ode_for_path(
+        RESOURCES_DIR / expected["path"], expected["format"], trusted=True
     )
-    job = report.ReportJob(
-        path=str(path),
-        trusted=False,
-        limits=limits.ContentLimits.current(),
-        budget=10000,
-    )
-    [(key, content)] = list(report.report_gzip(job))
-    assert key == report._REPORT
-    assert (
-        json.loads(gzip.decompress(content))["reports"]["./model.xml"]["report"][
-            "models"
-        ][0]["id"]
-        == "minimal_model"
-    )
+    assert actual.filename == expected["filename"]
+    assert actual.content == expected["content"]
 
 
-def test_the_selected_native_parser_reaches_the_isolated_api_child(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch
+def test_all_example_metadata_matches_the_independent_reference() -> None:
+    """Metadata uses Rust's lightweight reader, preserving the existing example API."""
+    actual = {
+        key: value.model_dump(mode="json", exclude={"file"})
+        for key, value in load_examples().items()
+    }
+    assert actual == REFERENCE["examples"]
+
+
+def objects(value: object):
+    """Walk typed report objects independently of the Rust graph builder."""
+    if isinstance(value, SBase):
+        yield value
+    if isinstance(value, BaseModel):
+        for field in type(value).model_fields:
+            yield from objects(getattr(value, field))
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from objects(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from objects(item)
+
+
+@pytest.mark.parametrize("source", SOURCES, ids=lambda source: source["path"])
+def test_complete_graph_contains_every_reported_object(source: dict) -> None:
+    """Sidebar objects and complete graph nodes keep the same unique identities."""
+    response = report.report_for_path(RESOURCES_DIR / source["path"], trusted=True)
+    for entry in response.reports.values():
+        keys = [item.pk for item in objects(entry.report)]
+        assert len(keys) == len(set(keys))
+        assert set(keys) == set(entry.report.link_graph.nodes)
+
+
+@pytest.mark.parametrize("setting", ["python", "auto", "unknown"])
+def test_removed_parser_modes_fail_clearly(
+    setting: str, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A forkserver child uses the parser captured by its request, not stale server environment."""
-    core = pytest.importorskip("sbml4humans_core")
-    content = b"<not-sbml/>"
-    with pytest.raises(ValueError) as expected:
-        core.source_json(content)
-    monkeypatch.setenv("SBML4HUMANS_PARSER", "rust")
-    response = client.post(
-        "/api/content", content=content, headers={"Content-Type": "application/xml"}
-    )
-    assert response.status_code == 200
-    assert response.json()["errors"] == [str(expected.value)]
+    """No request or environment setting can select a Python parser."""
+    native._reader.cache_clear()
+    monkeypatch.setenv("SBML4HUMANS_PARSER", setting)
+    try:
+        with pytest.raises(RuntimeError, match="Rust is the only backend"):
+            native._reader()
+    finally:
+        native._reader.cache_clear()
 
 
-@pytest.mark.parametrize(
-    "format", ["python", "diffrax", "julia", "r", "latex", "markdown", "typst"]
-)
-@pytest.mark.parametrize("path", [EXAMPLES_DIR / "reaction.xml", OMEX_COMPMODELS])
-def test_native_ode_download_preserves_the_shared_generator_output(
-    path: Path, format: str
-) -> None:
-    """Source selection, metadata and every generated byte match the compatibility path."""
-    pytest.importorskip("sbml4humans_core")
-    expected = report.ode_for_path(path, format, trusted=True, parser="python")
-    actual = report.ode_for_path(path, format, trusted=True, parser="rust")
-    assert actual == expected
-
-
-def test_trusted_native_sources_do_not_prepare_any_python_report(
+def test_missing_native_runtime_never_falls_back(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Trusted reports and ODE downloads use the same native source admission as uploads."""
-    pytest.importorskip("sbml4humans_core")
+    """A broken install reports an actionable installation error."""
+    native._reader.cache_clear()
     monkeypatch.setattr(
-        report, "_read", Mock(side_effect=AssertionError("Python source reader called"))
+        native.importlib,
+        "import_module",
+        Mock(side_effect=ImportError("missing native runtime")),
     )
-    path = EXAMPLES_DIR / "minimal_model_comp.xml"
-    assert report.report_for_path(path, trusted=True, parser="rust").reports
-    assert report.ode_for_path(
-        path, "python", trusted=True, parser="rust"
-    ).filename.endswith(".py")
+    try:
+        with pytest.raises(RuntimeError, match="Reinstall"):
+            native._reader()
+    finally:
+        native._reader.cache_clear()
 
 
-@pytest.mark.parametrize("budget", [1, 20, 10000])
-def test_native_comp_work_gate_matches_python(budget: int) -> None:
-    """Repeated instances share the report's expansion estimate before native validation."""
-    pytest.importorskip("sbml4humans_core")
-    path = EXAMPLES_DIR / "minimal_model_comp.xml"
-
-    def run(parser: native.Parser) -> list:
-        return list(
-            report.validate_source(
-                report.SourceJob(
-                    str(path), True, budget, limits.ContentLimits.current(), parser
-                )
-            )
-        )
-
-    assert run("rust") == run("python")
+def test_mismatched_native_runtime_never_loads(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Native code and browser reports must come from the exact application pin."""
+    native._reader.cache_clear()
+    monkeypatch.setattr(
+        native.importlib,
+        "import_module",
+        Mock(return_value=SimpleNamespace(SOURCE_REVISION="old")),
+    )
+    try:
+        with pytest.raises(RuntimeError, match="does not match"):
+            native._reader()
+    finally:
+        native._reader.cache_clear()
 
 
-@pytest.mark.parametrize("path", [OMEX_COMPMODELS, OMEX_ICGMODEL])
-def test_native_archive_validation_preserves_entry_order_and_diagnostics(
-    path: Path,
+def test_compressed_reports_do_not_rebuild_json_in_python(
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Closed comp resolution uses canonical archive locations without Python extraction."""
-    pytest.importorskip("sbml4humans_core")
+    """The worker receives final compressed bytes and a small diagnostic list."""
+    native._reader()
+    monkeypatch.setattr(
+        native.json,
+        "loads",
+        Mock(side_effect=AssertionError("Python decoded a report")),
+    )
+    path = RESOURCES_DIR / "examples/validation.xml"
+    compressed = native.report_json(
+        path, limits.ContentLimits.current(), 10000, gzip=True
+    )
+    assert gzip.decompress(compressed).startswith(b"{")
 
-    def run(parser: native.Parser) -> list:
-        return list(
-            report.validate_source(
-                report.SourceJob(
-                    str(path), False, 10000, limits.ContentLimits.current(), parser
-                )
-            )
-        )
 
-    assert run("rust") == run("python")
+def test_api_imports_no_python_sbml_engines() -> None:
+    """The server and its source pipeline no longer initialize removed numeric/XML stacks."""
+    code = "import sys; import sbml4humans.api; forbidden={'libsbml','lxml','numpy','pint','sbmlsim_core'}; assert not (forbidden & set(sys.modules)), forbidden & set(sys.modules)"
+    subprocess.run([sys.executable, "-c", code], check=True, timeout=30)
 
 
 @pytest.mark.skipif(
@@ -288,7 +172,6 @@ def test_native_source_allocation_failure_keeps_the_memory_status(
     tmp_path: Path,
 ) -> None:
     """Exercise the actual Rust allocator termination and its worker status."""
-    pytest.importorskip("sbml4humans_core")
     path = tmp_path / "large.xml"
     with path.open("w") as stream:
         stream.write(
@@ -300,11 +183,12 @@ def test_native_source_allocation_failure_keeps_the_memory_status(
     code = """
 import resource, sys
 from pathlib import Path
-import sbml4humans_core as core
+from sbml4humans import native
+core = native._reader()
 resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 size = int(next(line.split()[1] for line in Path('/proc/self/status').read_text().splitlines() if line.startswith('VmSize:'))) * 1024
 resource.setrlimit(resource.RLIMIT_AS, (size + 16 * 1024 * 1024,) * 2)
-core.validation_source(sys.argv[1])
+core.validation_source(sys.argv[1], trusted=False, max_expanded_elements=10000, limits={})
 """
     result = subprocess.run(
         [sys.executable, "-c", code, str(path)],
@@ -317,37 +201,3 @@ core.validation_source(sys.argv[1])
         isolation._abnormal_end(result.returncode, result.stderr, "validation")
         == "memory"
     )
-
-
-@pytest.mark.parametrize(
-    "case", ["model-list", "reaction-list", "unicode-one-line", "multiline-attributes"]
-)
-def test_native_issue_positions_include_plain_lists_and_unusual_columns(
-    case: str, tmp_path: Path
-) -> None:
-    """Preserve issue links for unreported containers and authored XML coordinates."""
-    pytest.importorskip("sbml4humans_core")
-    content = (EXAMPLES_DIR / "validation.xml").read_text()
-    if case == "model-list":
-        content = content.replace("<listOfParameters>", '<listOfParameters foo="1">')
-    elif case == "reaction-list":
-        content = content.replace("<listOfReactants>", '<listOfReactants foo="1">')
-    elif case == "unicode-one-line":
-        content = " ".join(
-            content.replace('name="model with', 'name="αβ model with').split()
-        )
-    else:
-        content = content.replace('<parameter id="k1"', '<parameter\n id="k1"')
-    path = tmp_path / "input.xml"
-    path.write_text(content)
-
-    def run(parser: native.Parser) -> list:
-        return list(
-            report.validate_source(
-                report.SourceJob(
-                    str(path), False, 10000, limits.ContentLimits.current(), parser
-                )
-            )
-        )
-
-    assert run("rust") == run("python")

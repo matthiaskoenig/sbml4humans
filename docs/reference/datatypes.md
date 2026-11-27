@@ -122,7 +122,7 @@ SBML writes every formula as content MathML, which is exact and unreadable. The 
 
 Every formula the report shows is of this kind: the kinetic law of a reaction, the formula of a function definition, of an initial assignment, of a rule, of a constraint and of an event assignment, the trigger, the delay and the priority of an event, the condition of a function term of the qual package and the math of a parameter of an uncertainty of the distrib package. A table and the inspector show the typeset formula, the infix formula is its tooltip and what a click copies, and a formula too long to typeset stays text, which the inspector offers to render on demand where it shows the formula on a line of its own, while a table leaves it as it is. [Rendered math](concepts.md#rendered-math) describes this, and every element a formula names becomes a link of the kind [math](links.md#math).
 
-A rare formula carries no latex at all, because the report could not produce it: a math whose content MathML libsbml refuses to write, which a `lambda` without arguments in the formula attribute of a Level 1 file is, and a math nested more than 254 levels deep, which the xml parser of the conversion refuses. Such a formula is shown as the infix text alone, with nothing to render, and the report of the document and of its every other element is unaffected.
+A formula carries no latex when its mathematical structure exceeds the typesetting limits. The shared Rust renderer preserves its infix text, so it can still be read and the other elements retain their reports. Source admission has a separate mathematical depth limit; an input beyond that limit is refused with a diagnostic.
 
 ## `ModelHistory` {#modelhistory}
 
